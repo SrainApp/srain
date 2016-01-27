@@ -1,3 +1,6 @@
+# Custom
+build/
+
 # Object files
 *.o
 *.ko
