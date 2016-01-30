@@ -5,5 +5,6 @@
 #include <locale.h>
 
 #define _(str) gettext(str)
+void i18n_init(void);
 
-#endif
+#endif /* __I18N_H */
