@@ -1,6 +1,7 @@
 # Custom
 build/
 *.pyc
+*.*~
 
 # Object files
 *.o
