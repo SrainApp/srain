@@ -5,6 +5,7 @@
 static GtkWidget *window;
 static GtkWidget *chat_list_sidebar;
 static GtkWidget *chat_panel_stack;
+static GtkWidget *chat_msg_listbox;
 static unsigned int nchan = 0;
 static Chan chan_list[100];
 
@@ -36,7 +37,7 @@ void ui_window_init(){
     ui_apply_css(window, provider);
 
     /* transition effect */
-    // gtk_stack_set_transition_type(GTK_STACK(chat_panel_stack), GTK_STACK_TRANSITION_TYPE_SLIDE_UP_DOWN);
+    gtk_stack_set_transition_type(GTK_STACK(chat_panel_stack), GTK_STACK_TRANSITION_TYPE_SLIDE_UP_DOWN);
 
     /* display window */
     gtk_widget_show_all(window);
@@ -49,12 +50,13 @@ void ui_join_chan(const char *chan){
     builder = gtk_builder_new();
     gtk_builder_add_from_file(builder, "../ui/chat_panel.glade", NULL);
     chat_panel_box = GTK_WIDGET(gtk_builder_get_object(builder, "chat_panel_box"));
+    chat_msg_listbox = GTK_WIDGET(gtk_builder_get_object(builder, "chat_msg_listbox"));
 
     gtk_stack_add_named(GTK_STACK(chat_panel_stack), chat_panel_box, (gchar *)chan);
     gtk_container_child_set(GTK_CONTAINER(chat_panel_stack), chat_panel_box, "title", (gchar *)chan, NULL);
 
     strncpy(chan_list[nchan].name, chan, 20);
-    chan_list[nchan].panel = chat_panel_box;
+    chan_list[nchan].panel = chat_msg_listbox;
     nchan++;
 
     g_object_unref(G_OBJECT(builder));
@@ -65,5 +67,32 @@ void ui_part_chan(Chan chan){
 }
 
 void ui_send_msg(const char *msg){
+    GtkBuilder *builder;
+    GtkWidget *send_msg_bubble;
+    builder = gtk_builder_new();
+    gtk_builder_add_from_file(builder, "../ui/msg_bubble.glade", NULL);
+    send_msg_bubble = GTK_WIDGET(gtk_builder_get_object(builder, "send_msg_bubble_box"));
+    // gtk_widget_show(recv_msg_bubble);
+    gtk_container_add(GTK_CONTAINER(chan_list[0].panel), GTK_WIDGET(send_msg_bubble));
+}
+
+void ui_recv_msg(const char *msg){
+    GtkBuilder *builder;
+    GtkWidget *recv_msg_bubble;
+    builder = gtk_builder_new();
+    gtk_builder_add_from_file(builder, "../ui/msg_bubble.glade", NULL);
+    recv_msg_bubble = GTK_WIDGET(gtk_builder_get_object(builder, "recv_msg_bubble_box"));
+    // gtk_widget_show(recv_msg_bubble);
+    gtk_container_add(GTK_CONTAINER(chan_list[0].panel), GTK_WIDGET(recv_msg_bubble));
+}
+
+void ui_sys_msg(const char *msg){
+    GtkBuilder *builder;
+    GtkWidget *recv_msg_bubble;
+    builder = gtk_builder_new();
+    gtk_builder_add_from_file(builder, "../ui/msg_bubble.glade", NULL);
+    recv_msg_bubble = GTK_WIDGET(gtk_builder_get_object(builder, "sys_msg_label"));
+    // gtk_widget_show(recv_msg_bubble);
+    gtk_container_add(GTK_CONTAINER(chan_list[0].panel), GTK_WIDGET(recv_msg_bubble));
 
 }

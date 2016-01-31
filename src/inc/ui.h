@@ -12,5 +12,7 @@ void ui_window_init();
 void ui_join_chan(const char *chan);
 void ui_part_chan(Chan chan);
 void ui_send_msg(const char *msg);
+void ui_recv_msg(const char *msg);
+void ui_sys_msg(const char *msg);
 
 #endif /* __UI_H */
