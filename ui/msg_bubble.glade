@@ -86,7 +86,9 @@
               <object class="GtkLabel" id="recv_msg_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">received message.</property>
+                <property name="label" translatable="yes">received message.
+&lt;a href="http://www.baidu.com"&gt;Google&lt;/a&gt;</property>
+                <property name="use_markup">True</property>
                 <property name="wrap">True</property>
                 <property name="selectable">True</property>
                 <property name="track_visited_links">False</property>
@@ -103,7 +105,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkImage" id="image2">
+                  <object class="GtkImage" id="recv_image">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                   </object>
@@ -167,7 +169,7 @@
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkLabel" id="send_message_label1">
+          <object class="GtkLabel" id="send_msg_label">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="label" translatable="yes">sent message</property>
@@ -187,7 +189,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <object class="GtkImage" id="image1">
+              <object class="GtkImage" id="send_image">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
               </object>

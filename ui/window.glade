@@ -2,7 +2,7 @@
 <!-- Generated with glade 3.19.0 -->
 <interface>
   <requires lib="gtk+" version="3.16"/>
-  <object class="GtkWindow" id="srain_window">
+  <object class="GtkWindow" id="window">
     <property name="can_focus">False</property>
     <child>
       <object class="GtkBox" id="box1">
@@ -12,6 +12,7 @@
           <object class="GtkStackSidebar" id="chat_list_sidebar">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="stack">chat_panel_stack</property>
           </object>
           <packing>
             <property name="expand">False</property>
