@@ -10,7 +10,7 @@ LD = ld
 CFLAGS = -Wall -Isrc/inc -ggdb -gstabs+
 GTK3FLAGS = `pkg-config --cflags gtk+-3.0`
 GTK3LIBS = `pkg-config --libs gtk+-3.0`
-OBJS = src/srain.c src/i18n.c src/ui.c
+OBJS = src/srain.c src/i18n.c src/ui/ui_common.c src/ui/ui_window.c src/ui/ui_chat.c src/ui/ui_msg.c
 
 build/srain: $(OBJS)
 	$(CC) $(CFLAGS) $(GTK3FLAGS) $(GTK3LIBS) $^ -o $@
@@ -33,4 +33,4 @@ run: build/srain
 	cd build/ && ./srain
 
 clean: 
-	$(DEL) build/*
+	$(DEL) build/srain
