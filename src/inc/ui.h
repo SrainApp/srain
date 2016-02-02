@@ -12,6 +12,6 @@ void ui_send_msg(const MsgSend msg);
 void ui_recv_msg(const MsgRecv msg);
 void ui_sys_msg(const MsgSys msg);
 void ui_online_list_add(const char *chat_name, const char *nick);
-void ui_online_list_remove(const char *chat_name, const char *nick);
+void ui_online_list_rm(const char *chat_name, const char *nick);
 
 #endif /* __UI_H */
