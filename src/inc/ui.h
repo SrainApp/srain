@@ -4,14 +4,9 @@
 #include <gtk/gtk.h>
 #include "msg.h"
 
-typedef struct {
-    char name[20];
-    char *topic;
-} Chat;
-
 void ui_window_init();
-void ui_new_chat(const Chat chat);
-void ui_rm_chat(const char *chat_name);
+int ui_new_chat(const char *name, const char *topic);
+int ui_rm_chat(const char *name);
 void ui_send_msg(const MsgSend msg);
 void ui_recv_msg(const MsgRecv msg);
 void ui_sys_msg(const MsgSys msg);

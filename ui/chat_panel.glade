@@ -9,6 +9,7 @@
     <property name="spacing">1</property>
     <child>
       <object class="GtkLabel" id="chat_name_label">
+        <property name="name">chat_name_label</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">#channel</property>
@@ -25,6 +26,7 @@
     </child>
     <child>
       <object class="GtkLabel" id="chat_topic_label">
+        <property name="name">chat_topic_label</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">topic or whois</property>
@@ -55,13 +57,13 @@
           <object class="GtkScrolledWindow" id="scrolledwindow2">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="shadow_type">in</property>
             <child>
               <object class="GtkViewport" id="viewport1">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
                   <object class="GtkListBox" id="chat_msg_listbox">
+                    <property name="name">chat_msg_listbox</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="selection_mode">none</property>
@@ -91,6 +93,7 @@
         </child>
         <child>
           <object class="GtkListBox" id="chat_online_listbox">
+            <property name="name">chat_online_box</property>
             <property name="width_request">150</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
@@ -125,6 +128,7 @@
         <property name="can_focus">False</property>
         <child>
           <object class="GtkEntry" id="chat_input_entry">
+            <property name="name">chat_input_entry</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="shadow_type">none</property>
@@ -138,6 +142,7 @@
         <child>
           <object class="GtkButton" id="chat_send_button">
             <property name="label" translatable="yes">Send</property>
+            <property name="name">chat_send_button</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
