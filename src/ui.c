@@ -25,29 +25,48 @@ static gint msg_label_popup_handler(GtkWidget *label, GdkEvent *event, GtkWidget
  * NOTE: only used for `msg_bubble_box`, so this function **ignore**
  * child inside `chat_msg_listbox` and `chat_online_box`
  */
-static GtkWidget* get_widget_by_name(GtkWidget* widget, const gchar* name)
-{
-    const gchar *widget_name = gtk_widget_get_name(GTK_WIDGET(widget));
-    g_print("%s\n", widget_name);
-    if (strcmp(widget_name, (gchar*)name) == 0) {
+static GtkWidget* get_widget_by_name(GtkWidget* widget, const gchar* name){
+    const gchar *widget_name;
+
+    widget_name = gtk_widget_get_name(GTK_WIDGET(widget));
+    if (strcmp(widget_name, (gchar*)name) == 0){
         return widget;
     }
 
     /* if this widget is the one which contain many childern we don't need, ignroe it */
     if (strcmp(widget_name, "chat_msg_listbox") == 0
-            || strcmp(widget_name, "chat_online_box") == 0) {
+            || strcmp(widget_name, "chat_online_box") == 0){
         return NULL;
     }
 
-    if (GTK_IS_CONTAINER(widget)) {
+    if (GTK_IS_CONTAINER(widget)){
         GList *children = gtk_container_get_children(GTK_CONTAINER(widget));
         while (children){
             GtkWidget* widget = get_widget_by_name(children->data, name);
-            if (widget) {
+            if (widget){
                 return widget;
             }
             children = g_list_next(children);
         }
+    }
+    return NULL;
+}
+
+/* get a non-internal child widget by `name` in GtkListBox `widget`
+ * return a GtkListBoxRow
+ * */
+static GtkListBoxRow* get_list_item_by_name(GtkListBox *listbox, const gchar* name){
+    const gchar *widget_name;
+    GtkWidget *item;
+    GList *row = gtk_container_get_children(GTK_CONTAINER(listbox));
+
+    while (row){
+        item = gtk_bin_get_child(GTK_BIN(row->data));
+        widget_name = gtk_widget_get_name(item);
+        if (strcmp(widget_name, name) == 0){
+            return row->data;
+        }
+        row = g_list_next(row);
     }
     return NULL;
 }
@@ -113,6 +132,13 @@ int ui_rm_chat(const char *name){
     if (!chat_panel_box) return 0;
     gtk_container_remove(GTK_CONTAINER(chat_panel_stack), chat_panel_box);
     return 1;
+}
+
+void ui_chat_set_topic(const char *name, const char *topic){
+    GtkWidget *chat_topic_label;
+    chat_topic_label = get_widget_by_name(gtk_stack_get_child_by_name(GTK_STACK(chat_panel_stack), name), "chat_topic_label");
+    assert(chat_topic_label);
+    gtk_label_set_text(GTK_LABEL(chat_topic_label), topic);
 }
 
 void ui_send_msg(const MsgSend msg){
@@ -204,12 +230,24 @@ void ui_sys_msg(const MsgSys msg){
     g_object_unref(G_OBJECT(builder));
 }
 
-void ui_online_list_add(const char *nick){
+void ui_online_list_add(const char *chat_name, const char *nick){
+    GtkWidget *nick_label;
+    GtkWidget *chat_online_listbox;
 
+    nick_label = gtk_label_new(nick);
+    gtk_widget_set_name(nick_label, nick);
+
+    chat_online_listbox = get_widget_by_name(gtk_stack_get_child_by_name(GTK_STACK(chat_panel_stack), chat_name), "chat_online_listbox");
+    assert(chat_online_listbox);
+    gtk_container_add(GTK_CONTAINER(chat_online_listbox), nick_label);
+    gtk_widget_show(nick_label);
 }
-void ui_online_list_remove(const char *nick){
 
-}
-void ui_online_list_init(const char **nick){
+void ui_online_list_rm(const char *chat_name, const char *nick){
+    GtkListBox *listbox;
+    GtkListBoxRow*label;
 
+    listbox = GTK_LIST_BOX(get_widget_by_name(gtk_stack_get_child_by_name(GTK_STACK(chat_panel_stack), chat_name), "chat_online_listbox"));
+    label = get_list_item_by_name(listbox, nick);
+    gtk_container_remove(GTK_CONTAINER(listbox), GTK_WIDGET(label));
 }
