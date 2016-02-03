@@ -34,11 +34,16 @@ void ui_msg_send(const MsgSend msg){
     GtkWidget *msg_bubble_menu;
 
     builder = gtk_builder_new_from_file( "../ui/msg_bubble.glade");
-    // if (msg.img) UI_BUILDER_GET_WIDGET(builder, send_image);
+    if (msg.img) UI_BUILDER_GET_WIDGET(builder, send_image);
     UI_BUILDER_GET_WIDGET(builder, send_msg_bubble_box);
     UI_BUILDER_GET_WIDGET(builder, send_msg_label);
     UI_BUILDER_GET_WIDGET(builder, send_time_label);
     UI_BUILDER_GET_WIDGET(builder, msg_bubble_menu);
+    if (msg.img){
+        GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file_at_size (msg.img, 300, 300, NULL);
+        gtk_image_set_from_pixbuf(GTK_IMAGE(send_image), pixbuf);
+        g_object_unref (pixbuf);
+    }
 
     gtk_label_set_text(GTK_LABEL(send_msg_label), msg.msg);
     gtk_label_set_text(GTK_LABEL(send_time_label), msg.time);
@@ -82,6 +87,11 @@ void ui_msg_recv(const MsgRecv msg){
     gtk_label_set_text(GTK_LABEL(identify_label), msg.id);
     gtk_label_set_text(GTK_LABEL(recv_time_label), msg.time);
     gtk_label_set_text(GTK_LABEL(recv_msg_label), msg.msg);
+    if (msg.img){
+        GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file_at_size (msg.img, 300, 300, NULL);
+        gtk_image_set_from_pixbuf(GTK_IMAGE(recv_image), pixbuf);
+        g_object_unref (pixbuf);
+    }
 
     g_signal_connect(G_OBJECT(nick_button), "button_press_event", G_CALLBACK(nick_button_on_click), nick_label);
     g_signal_connect(G_OBJECT(recv_msg_label), "button_press_event", G_CALLBACK(msg_label_popup_handler), G_OBJECT(msg_bubble_menu));

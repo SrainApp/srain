@@ -105,16 +105,20 @@
               <object class="GtkLabel" id="recv_msg_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="halign">start</property>
+                <property name="xpad">15</property>
                 <property name="label" translatable="yes">received message.
 &lt;a href="http://www.baidu.com"&gt;Google&lt;/a&gt;</property>
                 <property name="use_markup">True</property>
+                <property name="justify">fill</property>
                 <property name="wrap">True</property>
+                <property name="wrap_mode">word-char</property>
                 <property name="selectable">True</property>
               </object>
               <packing>
                 <property name="expand">True</property>
                 <property name="fill">True</property>
-                <property name="padding">8</property>
+                <property name="padding">4</property>
                 <property name="position">1</property>
               </packing>
             </child>
@@ -122,10 +126,12 @@
               <object class="GtkBox" id="box4">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkImage" id="recv_image">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="halign">start</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -138,6 +144,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="halign">end</property>
+                    <property name="ypad">2</property>
                     <property name="label" translatable="yes">mm-dd HH:MM</property>
                     <style>
                       <class name="dim-label"/>
@@ -146,6 +153,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
+                    <property name="padding">4</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
@@ -190,6 +198,7 @@
           <object class="GtkLabel" id="send_msg_label">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="halign">start</property>
             <property name="label" translatable="yes">sent message</property>
             <property name="wrap">True</property>
             <property name="selectable">True</property>
@@ -198,7 +207,7 @@
           <packing>
             <property name="expand">True</property>
             <property name="fill">True</property>
-            <property name="padding">8</property>
+            <property name="padding">4</property>
             <property name="position">1</property>
           </packing>
         </child>
@@ -206,10 +215,12 @@
           <object class="GtkBox" id="box6">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
             <child>
               <object class="GtkImage" id="send_image">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="halign">end</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -221,7 +232,8 @@
               <object class="GtkLabel" id="send_time_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="valign">end</property>
+                <property name="halign">end</property>
+                <property name="ypad">2</property>
                 <property name="label" translatable="yes">mm-dd HH:MM</property>
                 <style>
                   <class name="dim-label"/>
@@ -230,6 +242,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
+                <property name="padding">4</property>
                 <property name="position">1</property>
               </packing>
             </child>
@@ -245,7 +258,6 @@
         <property name="expand">False</property>
         <property name="fill">True</property>
         <property name="padding">10</property>
-        <property name="pack_type">end</property>
         <property name="position">1</property>
       </packing>
     </child>
@@ -253,6 +265,8 @@
   <object class="GtkLabel" id="sys_msg_label">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
+    <property name="xpad">15</property>
+    <property name="ypad">15</property>
     <property name="label" translatable="yes">system message.</property>
   </object>
 </interface>
