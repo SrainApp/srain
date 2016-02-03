@@ -1,14 +1,25 @@
 #include <gtk/gtk.h>
 #include <assert.h>
+#include <string.h>
 #include "ui_common.h"
 #include "msg.h"
 
 /* extern variable from ui_window.c */
 extern GtkWidget *chat_panel_stack;
 
-static gint msg_label_popup_handler(GtkWidget *label, GdkEvent *event, GtkWidget *menu){
-    if (event->button.button == 3 && !gtk_label_get_selection_bounds(GTK_LABEL(label), NULL, NULL)){
-        gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL, event->button.button, event->button.time);
+static gint nick_button_on_click(GtkWidget *widget, GdkEventButton *event, GtkLabel *label){
+    const gchar *nick = gtk_label_get_text(label);
+    if (event->button == 1){
+        detail_dialog_init(nick, "");
+        // replace it with a WHOIS function
+        return TRUE;
+    }
+    return FALSE;
+}
+
+static gint msg_label_popup_handler(GtkWidget *label, GdkEventButton *event, GtkWidget *menu){
+    if (event->button == 3 && !gtk_label_get_selection_bounds(GTK_LABEL(label), NULL, NULL)){
+        gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL, event->button, event->time);
         return TRUE;
     }
     return FALSE;
@@ -33,7 +44,7 @@ void ui_msg_send(const MsgSend msg){
     gtk_label_set_text(GTK_LABEL(send_time_label), msg.time);
 
     /* popmenu event of message label */
-    g_signal_connect(G_OBJECT(send_msg_label), "event", G_CALLBACK(msg_label_popup_handler), G_OBJECT(msg_bubble_menu));
+    g_signal_connect(G_OBJECT(send_msg_label), "button_press_event", G_CALLBACK(msg_label_popup_handler), G_OBJECT(msg_bubble_menu));
     g_object_ref(msg_bubble_menu); // TODO with out this statement, gtkmenu will be free after unref builder
 
     /* add msg_bubble into message listbox */
@@ -72,7 +83,8 @@ void ui_msg_recv(const MsgRecv msg){
     gtk_label_set_text(GTK_LABEL(recv_time_label), msg.time);
     gtk_label_set_text(GTK_LABEL(recv_msg_label), msg.msg);
 
-    g_signal_connect(G_OBJECT(recv_msg_label), "event", G_CALLBACK(msg_label_popup_handler), G_OBJECT(msg_bubble_menu));
+    g_signal_connect(G_OBJECT(nick_button), "button_press_event", G_CALLBACK(nick_button_on_click), nick_label);
+    g_signal_connect(G_OBJECT(recv_msg_label), "button_press_event", G_CALLBACK(msg_label_popup_handler), G_OBJECT(msg_bubble_menu));
     g_object_ref(msg_bubble_menu); // TODO with out this statement, gtkmenu will be free after unref builder
 
     /* add msg_bubble into message listbox */

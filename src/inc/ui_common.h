@@ -9,5 +9,6 @@
 
 GtkWidget* get_widget_by_name(GtkWidget* widget, const gchar* name);
 GtkListBoxRow* get_list_item_by_name(GtkListBox *listbox, const gchar* name);
+void detail_dialog_init(const char *name, const char *content);
 
 #endif /** __UI_COMMON_H **/

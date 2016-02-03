@@ -1,5 +1,7 @@
 #include <string.h>
 #include <gtk/gtk.h>
+#include <assert.h>
+#include "ui_common.h"
 
 /* get a internal child widget by `name` in gtkContainer `widget`
  * you'd better to name the widget you want to find in glade file.
