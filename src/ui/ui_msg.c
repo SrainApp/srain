@@ -3,9 +3,12 @@
 #include <string.h>
 #include "ui_common.h"
 #include "msg.h"
+#include "log.h"
 
 /* extern variable from ui_window.c */
 extern GtkWidget *chat_panel_stack;
+
+static GtkWidget *msg_bubble_menu;
 
 static gint nick_button_on_click(GtkWidget *widget, GdkEventButton *event, GtkLabel *label){
     const gchar *nick = gtk_label_get_text(label);
@@ -17,12 +20,26 @@ static gint nick_button_on_click(GtkWidget *widget, GdkEventButton *event, GtkLa
     return FALSE;
 }
 
-static gint msg_label_popup_handler(GtkWidget *label, GdkEventButton *event, GtkWidget *menu){
+static gint menu_popup(GtkWidget *label, GdkEventButton *event, GtkWidget *menu){
     if (event->button == 3 && !gtk_label_get_selection_bounds(GTK_LABEL(label), NULL, NULL)){
         gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL, event->button, event->time);
         return TRUE;
     }
     return FALSE;
+}
+
+void ui_msg_init(){
+    GtkBuilder *builder;
+    GtkWidget *menu;
+
+    builder = gtk_builder_new_from_file( "../ui/msg_bubble.glade");
+    UI_BUILDER_GET_WIDGET(builder, msg_bubble_menu);
+    /* NOTE: if we do not ref msg_bubble_menu to menu,
+     * msg_bubble_menu will be free after g_object_unref(builder)
+     * issuse #2
+     */
+    menu = g_object_ref(msg_bubble_menu);
+    g_object_unref(builder);
 }
 
 void ui_msg_send(const MsgSend msg){
@@ -31,14 +48,12 @@ void ui_msg_send(const MsgSend msg){
     GtkWidget *send_msg_label;
     GtkWidget *send_image;
     GtkWidget *send_time_label;
-    GtkWidget *msg_bubble_menu;
 
     builder = gtk_builder_new_from_file( "../ui/msg_bubble.glade");
     if (msg.img) UI_BUILDER_GET_WIDGET(builder, send_image);
     UI_BUILDER_GET_WIDGET(builder, send_msg_bubble_box);
     UI_BUILDER_GET_WIDGET(builder, send_msg_label);
     UI_BUILDER_GET_WIDGET(builder, send_time_label);
-    UI_BUILDER_GET_WIDGET(builder, msg_bubble_menu);
     if (msg.img){
         GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file_at_size (msg.img, 300, 300, NULL);
         gtk_image_set_from_pixbuf(GTK_IMAGE(send_image), pixbuf);
@@ -49,8 +64,7 @@ void ui_msg_send(const MsgSend msg){
     gtk_label_set_text(GTK_LABEL(send_time_label), msg.time);
 
     /* popmenu event of message label */
-    g_signal_connect(G_OBJECT(send_msg_label), "button_press_event", G_CALLBACK(msg_label_popup_handler), G_OBJECT(msg_bubble_menu));
-    g_object_ref(msg_bubble_menu); // TODO with out this statement, gtkmenu will be free after unref builder
+    g_signal_connect(G_OBJECT(send_msg_label), "button_press_event", G_CALLBACK(menu_popup), G_OBJECT(msg_bubble_menu));
 
     /* add msg_bubble into message listbox */
     GtkWidget *chat_msg_listbox = get_widget_by_name(gtk_stack_get_child_by_name(GTK_STACK(chat_panel_stack), msg.chan), "chat_msg_listbox");
@@ -70,7 +84,6 @@ void ui_msg_recv(const MsgRecv msg){
     GtkWidget *identify_label;
     GtkWidget *recv_msg_label;
     GtkWidget *recv_time_label;
-    GtkWidget *msg_bubble_menu;
 
     builder = gtk_builder_new_from_file( "../ui/msg_bubble.glade");
     if (msg.avatar) UI_BUILDER_GET_WIDGET(builder, avatar_image);
@@ -81,7 +94,6 @@ void ui_msg_recv(const MsgRecv msg){
     UI_BUILDER_GET_WIDGET(builder, identify_label);
     UI_BUILDER_GET_WIDGET(builder, recv_msg_label);
     UI_BUILDER_GET_WIDGET(builder, recv_time_label);
-    UI_BUILDER_GET_WIDGET(builder, msg_bubble_menu);
 
     gtk_label_set_text(GTK_LABEL(nick_label), msg.nick);
     gtk_label_set_text(GTK_LABEL(identify_label), msg.id);
@@ -94,8 +106,7 @@ void ui_msg_recv(const MsgRecv msg){
     }
 
     g_signal_connect(G_OBJECT(nick_button), "button_press_event", G_CALLBACK(nick_button_on_click), nick_label);
-    g_signal_connect(G_OBJECT(recv_msg_label), "button_press_event", G_CALLBACK(msg_label_popup_handler), G_OBJECT(msg_bubble_menu));
-    g_object_ref(msg_bubble_menu); // TODO with out this statement, gtkmenu will be free after unref builder
+    g_signal_connect(G_OBJECT(recv_msg_label), "button_press_event", G_CALLBACK(menu_popup), G_OBJECT(msg_bubble_menu));
 
     /* add msg_bubble into message listbox */
     GtkWidget *chat_msg_listbox = get_widget_by_name(gtk_stack_get_child_by_name(GTK_STACK(chat_panel_stack), msg.chan), "chat_msg_listbox");
