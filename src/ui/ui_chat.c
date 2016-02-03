@@ -22,13 +22,25 @@ static gint online_listbox_on_dbclick(GtkWidget *widget, GdkEventButton *event){
     return FALSE;
 }
 
+static gint send_button_on_click(GtkEntry *entry, GdkEventButton *event){
+    const char *input;
+    if(event->button == 1){
+        input = gtk_entry_get_text(entry);
+        g_print("%s", input);
+        /* replace it by logic send msg func */
+        return TRUE;
+    }
+    return FALSE;
+}
+
 int ui_chat_add(const char *name, const char *topic){
     GtkBuilder *builder;
     GtkWidget *chat_name_label;
     GtkWidget *chat_topic_label;
     GtkWidget *chat_panel_box;
-    GtkWidget *chat_msg_listbox;
     GtkWidget *chat_online_listbox;
+    GtkWidget *chat_send_button;
+    GtkWidget *chat_input_entry;
 
     builder = gtk_builder_new_from_file("../ui/chat_panel.glade");
     UI_BUILDER_GET_WIDGET(builder, chat_panel_box);
@@ -36,6 +48,8 @@ int ui_chat_add(const char *name, const char *topic){
     UI_BUILDER_GET_WIDGET(builder, chat_name_label);
     UI_BUILDER_GET_WIDGET(builder, chat_topic_label);
     UI_BUILDER_GET_WIDGET(builder, chat_online_listbox);
+    UI_BUILDER_GET_WIDGET(builder, chat_send_button);
+    UI_BUILDER_GET_WIDGET(builder, chat_input_entry);
 
     gtk_label_set_text(GTK_LABEL(chat_name_label), name);
     gtk_label_set_text(GTK_LABEL(chat_topic_label), topic);
@@ -43,6 +57,7 @@ int ui_chat_add(const char *name, const char *topic){
     gtk_container_child_set(GTK_CONTAINER(chat_panel_stack), chat_panel_box, "title", (gchar *)name, NULL);
 
     g_signal_connect(chat_online_listbox, "button_press_event", G_CALLBACK(online_listbox_on_dbclick), NULL);
+    g_signal_connect_swapped(chat_send_button, "button_press_event", G_CALLBACK(send_button_on_click), chat_input_entry);
 
     g_object_unref(G_OBJECT(builder));
 
