@@ -176,6 +176,7 @@
       <packing>
         <property name="expand">False</property>
         <property name="fill">True</property>
+        <property name="padding">10</property>
         <property name="position">0</property>
       </packing>
     </child>
@@ -199,6 +200,8 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="halign">start</property>
+            <property name="margin_left">2</property>
+            <property name="xpad">15</property>
             <property name="label" translatable="yes">sent message</property>
             <property name="wrap">True</property>
             <property name="selectable">True</property>
@@ -258,6 +261,7 @@
         <property name="expand">False</property>
         <property name="fill">True</property>
         <property name="padding">10</property>
+        <property name="pack_type">end</property>
         <property name="position">1</property>
       </packing>
     </child>
