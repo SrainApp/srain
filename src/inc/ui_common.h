@@ -7,8 +7,10 @@
     widget = GTK_WIDGET(gtk_builder_get_object(builder, ""#widget"")); \
     assert(widget)
 
+void detail_dialog_init(const char *name, const char *content);
+void image_window_init(const gchar *path);
+
 GtkWidget* get_widget_by_name(GtkWidget* widget, const gchar* name);
 GtkListBoxRow* get_list_item_by_name(GtkListBox *listbox, const gchar* name);
-void detail_dialog_init(const char *name, const char *content);
 
 #endif /** __UI_COMMON_H **/

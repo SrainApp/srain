@@ -31,8 +31,8 @@
         <property name="can_focus">False</property>
         <child>
           <object class="GtkImage" id="avatar_image">
-            <property name="width_request">48</property>
-            <property name="height_request">48</property>
+            <property name="width_request">36</property>
+            <property name="height_request">36</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="valign">start</property>
@@ -128,10 +128,16 @@
                 <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkImage" id="recv_image">
+                  <object class="GtkEventBox" id="recv_image_eventbox">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="halign">start</property>
+                    <child>
+                      <object class="GtkImage" id="recv_image">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="halign">start</property>
+                      </object>
+                    </child>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -220,10 +226,16 @@
             <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
             <child>
-              <object class="GtkImage" id="send_image">
+              <object class="GtkEventBox" id="send_image_eventbox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="halign">end</property>
+                <child>
+                  <object class="GtkImage" id="send_image">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">end</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">True</property>
