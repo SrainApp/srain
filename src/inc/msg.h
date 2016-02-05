@@ -1,6 +1,8 @@
 #ifndef __MSG_H
 #define __MSG_H
 
+#include "irc.h"
+
 typedef struct {
     char *id;
     char *nick;
@@ -15,7 +17,7 @@ typedef struct {
     char *nick;
     char *chan;
     char *msg;
-    void *time;
+    char *time;
     char *img;      // path of cached img, can be null
 } MsgSend;
 

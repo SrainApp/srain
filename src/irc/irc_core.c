@@ -3,7 +3,6 @@
  */
 
 #include <string.h>
-#include <time.h>
 #include <unistd.h>
 #include "socket.h"
 #include "irc.h"

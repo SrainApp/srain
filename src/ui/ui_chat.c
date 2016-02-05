@@ -1,6 +1,8 @@
 #include <gtk/gtk.h>
 #include <assert.h>
 #include "ui_common.h"
+#include "log.h"
+#include "srain.h"
 
 /* extern variable from ui_window.c */
 extern GtkWidget *chat_panel_stack;
@@ -25,11 +27,13 @@ static gint online_listbox_on_dbclick(GtkWidget *widget, GdkEventButton *event){
 
 static void send_button_on_click(GtkEntry *entry, GdkEventButton *event){
     const char *input;
+    const char *panel;
 
     if(event->button == 1){
+        panel = gtk_stack_get_visible_child_name(GTK_STACK(chat_panel_stack));
         input = gtk_entry_get_text(entry);
-        g_print("%s", input);
-        /* replace it by logic send msg func */
+        LOG_FR("panel =  %s, text = %s", panel, input);
+        srain_send(panel, input);
     }
 }
 
