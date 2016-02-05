@@ -1,28 +1,23 @@
 #include <stdio.h>
 #include <gtk/gtk.h>
+#include <pthread.h>
 #include "i18n.h"
 #include "ui.h"
-
+#include "log.h"
+#include "irc.h"
 
 int main(int argc, char **argv){
-    const char* chat_list[] = {
-        "#archlinux-cn",
-        "#opensuse-cn",
-        "#kernel",
-        "#gzlug",
-        NULL
-    };
+    IRC irc;
+    char in[128];
 
     i18n_init();
-    printf(_("Hello srain!\n"));
+    // irc_connect(&irc, "irc.freenode.net", "6666");
+    // irc_login("srainbot");
+    printf(_("Srain!\n"));
 
     gtk_init(&argc, &argv);
     ui_window_init();
-
-    int i;
-    for(i = 0; chat_list[i] != NULL; i++ ){
-        ui_join_chan(chat_list[i]);
-    }
+    ui_msg_init();
 
     gtk_main();
 

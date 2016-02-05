@@ -10,10 +10,20 @@ LD = ld
 CFLAGS = -Wall -Isrc/inc -ggdb -gstabs+
 GTK3FLAGS = `pkg-config --cflags gtk+-3.0`
 GTK3LIBS = `pkg-config --libs gtk+-3.0`
-OBJS = src/srain.c src/i18n.c src/ui/ui_common.c src/ui/ui_window.c \
-	   src/ui/ui_chat.c src/ui/ui_msg.c src/ui/ui_detail.c  src/ui/ui_image.c
 
-build/srain: $(OBJS)
+TARGET = build/srain
+OBJS = build/srain.o build/i18n.o build/ui_common.o build/ui_window.o 		\
+	   build/ui_chat.o build/ui_msg.o build/ui_detail.o build/ui_image.o	\
+	   build/irc_shell.o build/irc_core.o build/socket.o
+
+build/%.o: src/%.c
+	$(CC) $(CFLAGS) -c $(GTK3FLAGS) $(GTK3LIBS) $^ -o $@
+
+build/%.o: src/*/%.c
+	$(CC) $(CFLAGS) -c $(GTK3FLAGS) $(GTK3LIBS) $^ -o $@
+
+
+$(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) $(GTK3FLAGS) $(GTK3LIBS) $^ -o $@
 
 po: $(OBJS)
@@ -28,9 +38,9 @@ init:
 	mkdir -p build/locale/zh_CN/LC_MESSAGES > /dev/null
 
 default: Makefile
-	$(MAKE) bulid/srain
+	$(MAKE) $(TARGET)
 
-run: build/srain
+run: $(TARGET)
 	cd build/ && ./srain
 
 clean: 

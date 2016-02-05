@@ -17,4 +17,20 @@
 #define LOG(...)            \
     g_print(__VA_ARGS__);   \
 
+// printerr macro with Line number, Fucntion name and Return
+#define ERR_LFR(...)                                \
+    g_print("%d: [%s]: ", __LINE__, __FUNCTION__);  \
+    g_print(__VA_ARGS__);                           \
+    g_print("\n")
+
+// printerr macro with Fucntion name and Return
+#define ERR_FR(...)                     \
+    g_printerr("[%s]: ",  __FUNCTION__);   \
+    g_printerr(__VA_ARGS__);               \
+    g_printerr("\n")
+
+// printerr macro, equal to g_printerr
+#define ERR(...)            \
+    g_printerr(__VA_ARGS__);   \
+
 #endif /* __LOG_H */
