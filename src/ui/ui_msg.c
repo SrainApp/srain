@@ -52,7 +52,7 @@ void ui_msg_init(){
     g_object_unref(builder);
 }
 
-void ui_msg_send(const MsgSend msg){
+int ui_msg_send(const MsgSend msg){
     GtkBuilder *builder;
     GtkWidget *send_msg_bubble_box;
     GtkWidget *send_msg_label;
@@ -60,7 +60,16 @@ void ui_msg_send(const MsgSend msg){
     GtkWidget *send_image_eventbox;
     GtkWidget *send_time_label;
     GtkWidget *chat_msg_listbox;
+    GtkWidget *chat_panel_box;
 
+    chat_panel_box = gtk_stack_get_child_by_name(GTK_STACK(chat_panel_stack), msg.chan);
+    if (!chat_panel_box){
+        ERR_FR("chat_panel %s not found", msg.chan);
+        return -1;
+    }
+
+    chat_msg_listbox = get_widget_by_name(chat_panel_box, "chat_msg_listbox");
+    assert(chat_msg_listbox);
     builder = gtk_builder_new_from_file( "../ui/msg_bubble.glade");
     if (msg.img){
         UI_BUILDER_GET_WIDGET(builder, send_image);
@@ -81,16 +90,14 @@ void ui_msg_send(const MsgSend msg){
 
     g_signal_connect(send_msg_label, "button_press_event", G_CALLBACK(menu_popup), msg_bubble_menu);
 
-    /* add msg_bubble into message listbox */
-    chat_msg_listbox = get_widget_by_name(gtk_stack_get_child_by_name(GTK_STACK(chat_panel_stack), msg.chan), "chat_msg_listbox");
-    assert(chat_msg_listbox);
     gtk_container_add(GTK_CONTAINER(chat_msg_listbox), send_msg_bubble_box);
 
     g_object_unref(G_OBJECT(builder));
+
+    return 0;
 }
 
-void ui_msg_recv(const MsgRecv msg){
-    LOG_FR("==2 %s", msg.chan);
+gboolean ui_msg_recv(MsgRecv *msg){
     GtkBuilder *builder;
     GtkWidget *recv_msg_bubble_box;
     GtkWidget *avatar_image;
@@ -102,10 +109,21 @@ void ui_msg_recv(const MsgRecv msg){
     GtkWidget *recv_msg_label;
     GtkWidget *recv_time_label;
     GtkWidget *chat_msg_listbox;
+    GtkWidget *chat_panel_box;
 
+    LOG_FR("called");
+
+    chat_panel_box = gtk_stack_get_child_by_name(GTK_STACK(chat_panel_stack), msg->chan);
+    if (!chat_panel_box){
+        ERR_FR("chat_panel %s not found", msg->chan);
+        return FALSE;
+    }
+
+    chat_msg_listbox = get_widget_by_name(chat_panel_box, "chat_msg_listbox");
+    assert(chat_msg_listbox);
     builder = gtk_builder_new_from_file( "../ui/msg_bubble.glade");
-    if (msg.avatar) UI_BUILDER_GET_WIDGET(builder, avatar_image);
-    if (msg.img){
+    if (msg->avatar) UI_BUILDER_GET_WIDGET(builder, avatar_image);
+    if (msg->img){
         UI_BUILDER_GET_WIDGET(builder, recv_image);
         UI_BUILDER_GET_WIDGET(builder, recv_image_eventbox);
     }
@@ -115,47 +133,50 @@ void ui_msg_recv(const MsgRecv msg){
     UI_BUILDER_GET_WIDGET(builder, identify_label);
     UI_BUILDER_GET_WIDGET(builder, recv_msg_label);
     UI_BUILDER_GET_WIDGET(builder, recv_time_label);
-    LOG_FR("==");
 
-    gtk_label_set_text(GTK_LABEL(nick_label), msg.nick);
-    gtk_label_set_text(GTK_LABEL(identify_label), msg.id);
-    gtk_label_set_text(GTK_LABEL(recv_time_label), msg.time);
-    gtk_label_set_text(GTK_LABEL(recv_msg_label), msg.msg);
-    LOG_FR("==");
-    if (msg.img){
-        GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file_at_size (msg.img, 300, 300, NULL);
+    gtk_label_set_text(GTK_LABEL(nick_label), msg->nick);
+    gtk_label_set_text(GTK_LABEL(identify_label), msg->id);
+    gtk_label_set_text(GTK_LABEL(recv_time_label), msg->time);
+    gtk_label_set_text(GTK_LABEL(recv_msg_label), msg->msg);
+    if (msg->img){
+        GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file_at_size (msg->img, 300, 300, NULL);
         gtk_image_set_from_pixbuf(GTK_IMAGE(recv_image), pixbuf);
         g_object_unref (pixbuf);
-        g_signal_connect_swapped(recv_image_eventbox, "button_release_event", G_CALLBACK(image_on_click), msg.img);
+        g_signal_connect_swapped(recv_image_eventbox, "button_release_event", G_CALLBACK(image_on_click), msg->img);
     }
+
     g_signal_connect(nick_button, "button_release_event", G_CALLBACK(nick_button_on_click), nick_label);
     g_signal_connect(recv_msg_label, "button_press_event", G_CALLBACK(menu_popup), G_OBJECT(msg_bubble_menu));
 
-    LOG_FR("==3 %s", msg.chan);
-    /* add msg_bubble into message listbox */
-    chat_msg_listbox = get_widget_by_name(gtk_stack_get_child_by_name(GTK_STACK(chat_panel_stack), msg.chan), "chat_msg_listbox");
-    LOG_FR("==4 %s", msg.chan);
-    assert(chat_msg_listbox);
-    LOG_FR("==5 %s", msg.chan);
     gtk_container_add(GTK_CONTAINER(chat_msg_listbox), recv_msg_bubble_box);
-    LOG_FR("==6 %s", msg.chan);
 
     g_object_unref(G_OBJECT(builder));
+
+    return FALSE;
 }
 
-void ui_msg_sys(const MsgSys msg){
+int ui_msg_sys(const MsgSys *msg){
     GtkBuilder *builder;
     GtkWidget *sys_msg_label;
+    GtkWidget *chat_msg_listbox;
+    GtkWidget *chat_panel_box;
+
+    chat_panel_box = gtk_stack_get_child_by_name(GTK_STACK(chat_panel_stack), msg->chan);
+    if (!chat_panel_box){
+        ERR_FR("chat_panel %s not found", msg->chan);
+        return -1;
+    }
+    chat_msg_listbox = get_widget_by_name(chat_panel_box, "chat_msg_listbox");
+    assert(chat_msg_listbox);
 
     builder = gtk_builder_new_from_file( "../ui/msg_bubble.glade");
     UI_BUILDER_GET_WIDGET(builder, sys_msg_label);
 
-    gtk_label_set_text(GTK_LABEL(sys_msg_label), msg.msg);
+    gtk_label_set_text(GTK_LABEL(sys_msg_label), msg->msg);
 
-    /* add sys_msg_label into message listbox */
-    GtkWidget *chat_msg_listbox = get_widget_by_name(gtk_stack_get_child_by_name(GTK_STACK(chat_panel_stack), msg.chan), "chat_msg_listbox");
-    assert(chat_msg_listbox);
     gtk_container_add(GTK_CONTAINER(chat_msg_listbox), sys_msg_label);
 
     g_object_unref(G_OBJECT(builder));
+
+    return 0;
 }

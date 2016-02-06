@@ -32,7 +32,7 @@ static void send_button_on_click(GtkEntry *entry, GdkEventButton *event){
     if(event->button == 1){
         panel = gtk_stack_get_visible_child_name(GTK_STACK(chat_panel_stack));
         input = gtk_entry_get_text(entry);
-        LOG_FR("panel =  %s, text = %s", panel, input);
+        LOG_FR("panel = %s, text = \"%s\"", panel, input);
         srain_send(panel, input);
     }
 }
@@ -48,7 +48,6 @@ int ui_chat_add(const char *name, const char *topic){
 
     builder = gtk_builder_new_from_file("../ui/chat_panel.glade");
     UI_BUILDER_GET_WIDGET(builder, chat_panel_box);
-    // UI_BUILDER_GET_WIDGET(builder, chat_msg_listbox);
     UI_BUILDER_GET_WIDGET(builder, chat_name_label);
     UI_BUILDER_GET_WIDGET(builder, chat_topic_label);
     UI_BUILDER_GET_WIDGET(builder, chat_online_listbox);
@@ -65,45 +64,89 @@ int ui_chat_add(const char *name, const char *topic){
 
     g_object_unref(G_OBJECT(builder));
 
-    return 1;
+    return 0;
 }
 
 int ui_chat_rm(const char *name){
-    GtkWidget *chat_panel_box = gtk_stack_get_child_by_name(GTK_STACK(chat_panel_stack), name);
-    if (!chat_panel_box) return 0;
+    GtkWidget *chat_panel_box;
+
+    chat_panel_box = gtk_stack_get_child_by_name(GTK_STACK(chat_panel_stack), name);
+    if (!chat_panel_box){
+        ERR_FR("chat_panel %s no found", name);
+        return -1;
+    }
     gtk_container_remove(GTK_CONTAINER(chat_panel_stack), chat_panel_box);
-    return 1;
+
+    return 0;
 }
 
-void ui_chat_set_topic(const char *name, const char *topic){
+int ui_chat_set_topic(const char *name, const char *topic){
     GtkWidget *chat_topic_label;
-    chat_topic_label = get_widget_by_name(gtk_stack_get_child_by_name(GTK_STACK(chat_panel_stack), name), "chat_topic_label");
+    GtkWidget *chat_panel_box;
+
+    chat_panel_box = gtk_stack_get_child_by_name(GTK_STACK(chat_panel_stack), name);
+    if (!chat_panel_box){
+        ERR_FR("chat_panel %s no found", name);
+        return -1;
+    }
+    chat_topic_label = get_widget_by_name(chat_panel_box, "chat_topic_label");
     assert(chat_topic_label);
+
     gtk_label_set_text(GTK_LABEL(chat_topic_label), topic);
+
+    return 0;
 }
 
 int ui_online_list_add(const char *chat_name, const char *nick){
     GtkWidget *nick_label;
+    GtkWidget *chat_panel_box;
     GtkWidget *chat_online_listbox;
+    GtkListBoxRow *item;
+
+    chat_panel_box = gtk_stack_get_child_by_name(GTK_STACK(chat_panel_stack), chat_name);
+    if (!chat_panel_box){
+        ERR_FR("chat_panel %s no found", chat_name);
+        return -1;
+    }
+    chat_online_listbox = get_widget_by_name(chat_panel_box, "chat_online_listbox");
+    assert(chat_online_listbox);
+
+    /* is this nick already exist? */
+    item = get_list_item_by_name(GTK_LIST_BOX(chat_online_listbox), nick);
+    if (item){
+        ERR_FR("GtkListBoxRow %s already exist", nick);
+        return -1;
+    }
 
     nick_label = gtk_label_new(nick);
     gtk_widget_set_name(nick_label, nick);
 
-    chat_online_listbox = get_widget_by_name(gtk_stack_get_child_by_name(GTK_STACK(chat_panel_stack), chat_name), "chat_online_listbox");
-    assert(chat_online_listbox);
     gtk_container_add(GTK_CONTAINER(chat_online_listbox), nick_label);
     gtk_widget_show(nick_label);
 
-    return 1;
+    return 0;
 }
 
 int ui_online_list_rm(const char *chat_name, const char *nick){
-    GtkListBox *listbox;
+    GtkWidget *chat_panel_box;
+    GtkListBox *chat_online_listbox;
     GtkListBoxRow *item;
 
-    listbox = GTK_LIST_BOX(get_widget_by_name(gtk_stack_get_child_by_name(GTK_STACK(chat_panel_stack), chat_name), "chat_online_listbox"));
-    item = get_list_item_by_name(listbox, nick);
-    gtk_container_remove(GTK_CONTAINER(listbox), GTK_WIDGET(item));
+    chat_panel_box = gtk_stack_get_child_by_name(GTK_STACK(chat_panel_stack), chat_name);
+    if (!chat_panel_box){
+        ERR_FR("chat_panel %s no found", chat_name);
+        return -1;
+    }
+    chat_online_listbox= GTK_LIST_BOX(get_widget_by_name(chat_panel_box, "chat_online_listbox"));
+    assert(chat_online_listbox);
 
-    return 1;
+    item = get_list_item_by_name(chat_online_listbox, nick);
+    if (!item){
+        ERR_FR("GtkListBoxRow %s no found", nick);
+        return -1;
+    }
+
+    gtk_container_remove(GTK_CONTAINER(chat_online_listbox), GTK_WIDGET(item));
+
+    return 0;
 }

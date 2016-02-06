@@ -52,7 +52,6 @@ int irc_join_chan(IRC *irc, const char* chan){
 
 int irc_leave_chan(IRC *irc, const char *chan){
     int i;
-    int res;
 
     for (i = 0; i < irc->nchan; i++){
         if (strncmp(irc->chans[i], chan, CHAN_LEN) == 0){
@@ -167,7 +166,7 @@ int irc_recv(IRC *irc, char *irc_nick, char *irc_msg){
                      }
         }
     }
-    return 0;
+    return -1;
 }
 
 
