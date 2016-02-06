@@ -1,5 +1,5 @@
-#ifndef IRC_SOCKET_H
-#define IRC_SOCKET_H
+#ifndef __SOCKET_H
+#define __SOCKET_H
 
 #include <stdlib.h>
 

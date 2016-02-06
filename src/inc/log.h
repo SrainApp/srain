@@ -1,6 +1,8 @@
 #ifndef __LOG_H
 #define __LOG_H
 
+#include <glib.h>
+
 // log macro with Line number, Fucntion name and Return
 #define LOG_LFR(...)                                \
     g_print("%d: [%s]: ", __LINE__, __FUNCTION__);  \

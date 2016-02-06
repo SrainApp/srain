@@ -72,8 +72,11 @@ int irc_send(IRC *irc, const char *chan, const char *msg){
     return irc_msg(irc->fd, chan, msg);
 }
 
-int irc_parse(IRC *irc, char *irc_nick, char *irc_msg){
+int irc_parse(IRC *irc, char *nick, char *chan, char *cmd, char *msg){
+    char *nick_ptr, *user_ptr, *chan_ptr, *msg_ptr, *host_ptr, *cmd_ptr;
+
     if (strncmp(irc->servbuf, "PING :", 6) == 0){
+        LOG_FR("PING? PONG");
         return irc_pong(irc->fd, &irc->servbuf[6]);
     } 
     else if (strncmp(irc->servbuf, "NOTICE AUTH :", 13) == 0 ){
@@ -85,59 +88,47 @@ int irc_parse(IRC *irc, char *irc_nick, char *irc_msg){
         // Still don't care
         LOG_FR("ERROR %s", irc->servbuf);
         return 0;
-    }
-
-    // Here be lvl. 42 dragonn boss
-    // Parses IRC message that pulls out nick and message. 
-    else {
-        char *ptr;
-        int privmsg = 0;
-
-        *irc_nick = '\0';
-        *irc_msg = '\0';
+    } else {
+        // See: https://tools.ietf.org/html/rfc1459#section-2.3
+        *nick = *chan = *cmd = *msg = '\0';
 
         // Checks if we have non-message string
         if (strchr(irc->servbuf, 1) != NULL){
             return 0;
         }
+#define FIRST_TOKEN(ptr, str, tok)  \
+        ptr = strtok(str, tok);
+        // if (ptr) { LOG_FR(""#ptr" = %s", ptr); } else { LOG_FR(""#ptr" is null"); }
 
-        if (irc->servbuf[0] == ':'){
-            ptr = strtok(irc->servbuf, "!");
-            if (ptr == NULL){
-                LOG_FR("unkown message");
-                return 0;
-            } else {
-                strncpy(irc_nick, &ptr[1], NICK_LEN - 1);
-                irc_nick[NICK_LEN-1] = '\0';
-                LOG_FR("nick %s", irc_nick);
-            }
+#define NEXT_TOKEN(ptr, tok)        \
+        ptr = strtok(NULL, tok);
+        // if (ptr) { LOG_FR(""#ptr" = %s", ptr); } else { LOG_FR(""#ptr" is null"); }
 
-            while ((ptr = strtok(NULL, " ")) != NULL){
-                if (strcmp(ptr, "PRIVMSG") == 0){
-                    LOG_FR("PRIVMG");
-                    privmsg = 1;
-                    break;
-                }
-            }
-
-            if (privmsg){
-                if ((ptr = strtok(NULL, ":")) != NULL && (ptr = strtok(NULL, "")) != NULL){
-                    strncpy(irc_msg, ptr, MSG_LEN - 1);
-                    irc_msg[MSG_LEN - 1] = '\0';
-                    LOG_FR("received message %s", irc_msg);
-                }
-            }
-
-            if (privmsg && strlen(irc_nick) > 0 && strlen(irc_msg) > 0){
-                // irc_log_message(irc, irc_nick, irc_msg);
-                LOG_FR("MSG");
-                return 0;
-            }
+        FIRST_TOKEN(nick_ptr, irc->servbuf + 1, "!");
+        NEXT_TOKEN(user_ptr, "@");
+        /* is prefix a server message */
+        if (!user_ptr){
+            FIRST_TOKEN(user_ptr, irc->servbuf + 1, ":");
+            /* ignore <servername>, <command> and <middle> */
+            NEXT_TOKEN(msg_ptr, ":");
+            // LOG_FR("server_msg: %s", msg_ptr);
+            if (msg_ptr) strncpy(msg, msg_ptr, MSG_LEN);
+            return 0;
+        } else {
         }
+        NEXT_TOKEN(host_ptr, " ");
+        NEXT_TOKEN(cmd_ptr, " ");
+        NEXT_TOKEN(chan_ptr, " ");
+        NEXT_TOKEN(msg_ptr, "");
+
+        if (nick_ptr) strncpy(nick, nick_ptr, NICK_LEN);
+        if (msg_ptr) strncpy(msg, msg_ptr + 1, MSG_LEN);
+        if (chan_ptr) strncpy(chan, chan_ptr, CHAN_LEN);
+        if (cmd_ptr) strncpy(cmd, cmd_ptr, 32); // how long?
+        return 0;
     }
-    return -1;
 }
-int irc_recv(IRC *irc, char *irc_nick, char *irc_msg){
+int irc_recv(IRC *irc, char *nick, char *chan, char *cmd, char *msg){
     char tmpbuf[512];
     int rc, i;
 
@@ -147,14 +138,25 @@ int irc_recv(IRC *irc, char *irc_nick, char *irc_msg){
     }
 
     tmpbuf[rc] = '\0';
+    // LOG("{ %s }", tmpbuf);
 
+    *nick = *chan = *cmd = *msg = '\0'; 
+    char *msgoff = msg;
     for (i = 0; i < rc; ++i ){
         switch (tmpbuf[i]){
-            case '\r':
+            /* a respone may include one or more \r\n */
+            case '\r': break;
             case '\n': {
                            irc->servbuf[irc->bufptr] = '\0';
                            irc->bufptr = 0;
-                           return irc_parse(irc, irc_nick, irc_msg);
+                           if (irc_parse(irc, nick, chan, cmd, msgoff) == 0){
+                               int i = strlen(msgoff);
+                               msgoff[i] = '\n';
+                               msgoff += i + 1;
+                               break;
+                           } else {
+                               return -1;
+                           }
                        }
             default: {
                          irc->servbuf[irc->bufptr] = tmpbuf[i];
@@ -166,7 +168,8 @@ int irc_recv(IRC *irc, char *irc_nick, char *irc_msg){
                      }
         }
     }
-    return -1;
+    LOG_FR("nick = %s chan = %s cmd = %s msg = \n%s", nick, chan, cmd, msg);
+    return 0;
 }
 
 

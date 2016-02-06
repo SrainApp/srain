@@ -17,14 +17,19 @@ OBJS = build/main.o build/i18n.o build/ui_common.o build/ui_window.o 		\
 	   build/irc_shell.o build/irc_core.o build/socket.o					\
 	   build/srain.o
 
+IRCTEST = build/irctest
+IRCTEST_OBJS = build/irc_core.o build/irc_shell.o build/irc_test.o build/socket.o
+
 build/%.o: src/%.c
 	$(CC) $(CFLAGS) -c $(GTK3FLAGS) $(GTK3LIBS) $^ -o $@
 
 build/%.o: src/*/%.c
 	$(CC) $(CFLAGS) -c $(GTK3FLAGS) $(GTK3LIBS) $^ -o $@
 
-
 $(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) $(GTK3FLAGS) $(GTK3LIBS) $^ -o $@
+
+$(IRCTEST): $(IRCTEST_OBJS)
 	$(CC) $(CFLAGS) $(GTK3FLAGS) $(GTK3LIBS) $^ -o $@
 
 po: $(OBJS)

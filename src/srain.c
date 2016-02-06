@@ -63,19 +63,21 @@ void srain_recv(){
         .msg = "unknown"
     };
     char timestr[32];
-    char irc_nick[NICK_LEN];
-    char irc_msg[MSG_LEN];
+    char cmd[32];
+    char msg[MSG_LEN];
+    char nick[NICK_LEN];
+    char chan[CHAN_LEN];
 
     LOG_FR("start listen in a new thread");
 
     for (;;){
-        if (irc_recv(&irc, irc_nick, irc_msg) == 0){
-            LOG_FR("receive message %s from %s", irc_msg, irc_nick);
+        if (irc_recv(&irc, nick, chan, cmd, msg) == 0){
+            // LOG_FR("receive message %s from %s", irc_msg, irc_nick);
             get_cur_time(timestr);
             rmsg.time = timestr;
-            rmsg.nick = irc_nick;
-            rmsg.chan = "#lasttest";
-            rmsg.msg = irc_msg;
+            rmsg.nick = nick;
+            rmsg.chan = chan;
+            rmsg.msg = msg;
             // gdk_threads_add_idle or gdk_idle_add ?
             g_idle_add((GSourceFunc)ui_msg_recv, &rmsg);
             LOG_FR("idle added");
