@@ -96,30 +96,20 @@ int irc_parse(IRC *irc, char *nick, char *chan, char *cmd, char *msg){
         if (strchr(irc->servbuf, 1) != NULL){
             return 0;
         }
-#define FIRST_TOKEN(ptr, str, tok)  \
-        ptr = strtok(str, tok);
-        // if (ptr) { LOG_FR(""#ptr" = %s", ptr); } else { LOG_FR(""#ptr" is null"); }
-
-#define NEXT_TOKEN(ptr, tok)        \
-        ptr = strtok(NULL, tok);
-        // if (ptr) { LOG_FR(""#ptr" = %s", ptr); } else { LOG_FR(""#ptr" is null"); }
-
-        FIRST_TOKEN(nick_ptr, irc->servbuf + 1, "!");
-        NEXT_TOKEN(user_ptr, "@");
+        nick_ptr = strtok(irc->servbuf + 1, "!");
+        user_ptr = strtok(NULL, "@");
         /* is prefix a server message */
         if (!user_ptr){
-            FIRST_TOKEN(user_ptr, irc->servbuf + 1, ":");
+            user_ptr = strtok(irc->servbuf + 1, ":");
             /* ignore <servername>, <command> and <middle> */
-            NEXT_TOKEN(msg_ptr, ":");
-            // LOG_FR("server_msg: %s", msg_ptr);
+            msg_ptr = strtok(NULL, ":");
             if (msg_ptr) strncpy(msg, msg_ptr, MSG_LEN);
             return 0;
-        } else {
         }
-        NEXT_TOKEN(host_ptr, " ");
-        NEXT_TOKEN(cmd_ptr, " ");
-        NEXT_TOKEN(chan_ptr, " ");
-        NEXT_TOKEN(msg_ptr, "");
+        host_ptr = strtok(NULL, " ");
+        cmd_ptr = strtok(NULL, " ");
+        chan_ptr = strtok(NULL, " ");
+        msg_ptr = strtok(NULL, "");
 
         if (nick_ptr) strncpy(nick, nick_ptr, NICK_LEN);
         if (msg_ptr) strncpy(msg, msg_ptr + 1, MSG_LEN);
@@ -128,6 +118,7 @@ int irc_parse(IRC *irc, char *nick, char *chan, char *cmd, char *msg){
         return 0;
     }
 }
+
 int irc_recv(IRC *irc, char *nick, char *chan, char *cmd, char *msg){
     char tmpbuf[512];
     int rc, i;
@@ -140,7 +131,7 @@ int irc_recv(IRC *irc, char *nick, char *chan, char *cmd, char *msg){
     tmpbuf[rc] = '\0';
     // LOG("{ %s }", tmpbuf);
 
-    *nick = *chan = *cmd = *msg = '\0'; 
+    *nick = *chan = *cmd = *msg = '\0';
     char *msgoff = msg;
     for (i = 0; i < rc; ++i ){
         switch (tmpbuf[i]){
