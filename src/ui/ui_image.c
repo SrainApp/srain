@@ -11,7 +11,7 @@ void image_window_init(const gchar *path){
     gint height, width;
     GdkPixbuf *pixbuf;
 
-    builder = gtk_builder_new_from_file( "../ui/image_window.glade");
+    builder = gtk_builder_new_from_file( "../data/ui/image_window.glade");
     UI_BUILDER_GET_WIDGET(builder, image_window);
     UI_BUILDER_GET_WIDGET(builder, image);
 

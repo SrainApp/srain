@@ -42,7 +42,7 @@ void ui_msg_init(){
     GtkBuilder *builder;
     GtkWidget *menu;
 
-    builder = gtk_builder_new_from_file( "../ui/msg_bubble.glade");
+    builder = gtk_builder_new_from_file( "../data/ui/msg_bubble.glade");
     UI_BUILDER_GET_WIDGET(builder, msg_bubble_menu);
     /* NOTE: if we do not ref msg_bubble_menu to menu,
      * msg_bubble_menu will be free after g_object_unref(builder)
@@ -70,7 +70,7 @@ int ui_msg_send(const MsgSend msg){
 
     chat_msg_listbox = get_widget_by_name(chat_panel_box, "chat_msg_listbox");
     assert(chat_msg_listbox);
-    builder = gtk_builder_new_from_file( "../ui/msg_bubble.glade");
+    builder = gtk_builder_new_from_file( "../data/ui/msg_bubble.glade");
     if (msg.img){
         UI_BUILDER_GET_WIDGET(builder, send_image);
         UI_BUILDER_GET_WIDGET(builder, send_image_eventbox);
@@ -121,7 +121,7 @@ gboolean ui_msg_recv(MsgRecv *msg){
 
     chat_msg_listbox = get_widget_by_name(chat_panel_box, "chat_msg_listbox");
     assert(chat_msg_listbox);
-    builder = gtk_builder_new_from_file( "../ui/msg_bubble.glade");
+    builder = gtk_builder_new_from_file( "../data/ui/msg_bubble.glade");
     if (msg->avatar) UI_BUILDER_GET_WIDGET(builder, avatar_image);
     if (msg->img){
         UI_BUILDER_GET_WIDGET(builder, recv_image);
@@ -169,7 +169,7 @@ int ui_msg_sys(const MsgSys *msg){
     chat_msg_listbox = get_widget_by_name(chat_panel_box, "chat_msg_listbox");
     assert(chat_msg_listbox);
 
-    builder = gtk_builder_new_from_file( "../ui/msg_bubble.glade");
+    builder = gtk_builder_new_from_file("../data/ui/msg_bubble.glade");
     UI_BUILDER_GET_WIDGET(builder, sys_msg_label);
 
     gtk_label_set_text(GTK_LABEL(sys_msg_label), msg->msg);

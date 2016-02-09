@@ -46,7 +46,7 @@ int ui_chat_add(const char *name, const char *topic){
     GtkWidget *chat_send_button;
     GtkWidget *chat_input_entry;
 
-    builder = gtk_builder_new_from_file("../ui/chat_panel.glade");
+    builder = gtk_builder_new_from_file("../data/ui/chat_panel.glade");
     UI_BUILDER_GET_WIDGET(builder, chat_panel_box);
     UI_BUILDER_GET_WIDGET(builder, chat_name_label);
     UI_BUILDER_GET_WIDGET(builder, chat_topic_label);

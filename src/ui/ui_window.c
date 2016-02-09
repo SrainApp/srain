@@ -16,7 +16,7 @@ void ui_window_init(){
     GtkStyleProvider *provider;
     GtkWidget *window;
 
-    builder = gtk_builder_new_from_file( "../ui/window.glade");
+    builder = gtk_builder_new_from_file( "../data/ui/window.glade");
     UI_BUILDER_GET_WIDGET(builder, window);
     UI_BUILDER_GET_WIDGET(builder, chat_panel_stack);
 

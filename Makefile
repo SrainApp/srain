@@ -33,11 +33,11 @@ $(IRCTEST): $(IRCTEST_OBJS)
 	$(CC) $(CFLAGS) $(GTK3FLAGS) $(GTK3LIBS) $^ -o $@
 
 po: $(OBJS)
-	xgettext --from-code=UTF-8 -o i18n/srain.pot -k_ -s $(OBJS)
-	cd i18n/ && msginit --no-translator -i srain.pot
+	xgettext --from-code=UTF-8 -o po/srain.pot -k_ -s $(OBJS)
+	cd po/ && msginit --no-translator -i srain.pot
 
 mo:
-	msgfmt i18n/zh_CN.po -o build/locale/zh_CN/LC_MESSAGES/srain.mo
+	msgfmt po/zh_CN.po -o build/locale/zh_CN/LC_MESSAGES/srain.mo
 
 init:
 	mkdir -p build > /dev/null

@@ -9,7 +9,7 @@ void detail_dialog_init(const char *name, const char *content){
         GtkWidget *detail_chat_button;
         GtkWidget *detail_close_button;
 
-        builder = gtk_builder_new_from_file( "../ui/detail_dialog.glade");
+        builder = gtk_builder_new_from_file( "../data/ui/detail_dialog.glade");
         UI_BUILDER_GET_WIDGET(builder, detail_dialog);
         UI_BUILDER_GET_WIDGET(builder, detail_chat_button);
         UI_BUILDER_GET_WIDGET(builder, detail_close_button);
