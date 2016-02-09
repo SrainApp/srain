@@ -61,6 +61,7 @@ void srain_recv(){
     MsgRecv rmsg_pool[20];
     MsgRecv *rmsg;
     IRCMsg *ircmsg;
+    IRCMsgType msgtype;
 
     LOG_FR("start listen in a new thread");
 
@@ -71,13 +72,14 @@ void srain_recv(){
         memset(rmsg, 0, sizeof(MsgRecv));
         get_cur_time(timestr);
         rmsg->time = timestr;
-        if (irc_recv(&irc, ircmsg) == IRCMSG_MSG_NORMAL){
+        msgtype = irc_recv(&irc, ircmsg);
+        if (msgtype == IRCMSG_MSG_NORMAL){
             if (strcmp(ircmsg->command, "PRIVMSG") == 0){
                 rmsg->nick = ircmsg->nick;
                 rmsg->chan = ircmsg->param[0];
             } else continue;
         }
-        else if (irc_recv(&irc, ircmsg) == IRCMSG_MSG_SERVER){
+        else if (msgtype == IRCMSG_MSG_SERVER){
             rmsg->nick = ircmsg->servername;
             rmsg->chan = "irc.freenode.net";
         } else continue;
