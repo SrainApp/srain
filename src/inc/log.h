@@ -15,6 +15,11 @@
     g_print(__VA_ARGS__);               \
     g_print("\n")
 
+// log macro with Fucntion name
+#define LOG_F(...)                     \
+    g_print("[%s]: ",  __FUNCTION__);   \
+    g_print(__VA_ARGS__);
+
 // log macro, equal to g_print
 #define LOG(...)            \
     g_print(__VA_ARGS__);   \

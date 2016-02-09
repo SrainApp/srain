@@ -25,7 +25,7 @@ void ui_window_init(){
 
     /* load style */
     provider = GTK_STYLE_PROVIDER(gtk_css_provider_new());
-    gtk_css_provider_load_from_path(GTK_CSS_PROVIDER(provider), "../ui/spring_rain.css", NULL);
+    gtk_css_provider_load_from_path(GTK_CSS_PROVIDER(provider), "../data/ui/summer_rain.css", NULL);
     apply_css(window, provider);
 
     /* transition effect */

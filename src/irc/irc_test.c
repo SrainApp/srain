@@ -14,7 +14,7 @@ int main(){
             ERR_FR("IRCMSG_UNKNOWN");
             return -1;
         }
-        LOG_FR("{ %s }", ircmsg.message);
+        LOG_FR("{\n%s}", ircmsg.message);
     }
     return 0;
 }

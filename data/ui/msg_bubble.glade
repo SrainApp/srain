@@ -36,7 +36,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="valign">start</property>
-            <property name="pixbuf">archlinux_avatar.jpg</property>
+            <property name="icon_name">user-online</property>
           </object>
           <packing>
             <property name="expand">False</property>

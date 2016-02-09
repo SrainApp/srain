@@ -18,9 +18,11 @@ static void get_cur_time(char *timestr){
 }
 
 
-int srain_init(){
+int srain_login(const char *nick){
     irc_connect(&irc, "irc.freenode.net", "6666");
-    irc_login(&irc, "srainbot222");
+    ui_chat_add("irc.freenode.net", "");
+    irc_login(&irc, nick);
+
     return 0;
 }
 
@@ -52,36 +54,38 @@ int srain_send(const char *chan, const char *msg){
     return 0;
 }
 
+    IRCMsg ircmsg_pool[20];
 void srain_recv(){
-    MsgRecv rmsg = {
-        .avatar = NULL,
-        .img = NULL,
-        .id = "unknown",
-        .time = "unknown",
-        .nick = "unknown",
-        .chan = "unknown",
-        .msg = "unknown"
-    };
+    int poolptr = 0;
     char timestr[32];
-    char cmd[32];
-    char msg[MSG_LEN];
-    char nick[NICK_LEN];
-    char chan[CHAN_LEN];
+    MsgRecv rmsg_pool[20];
+    MsgRecv *rmsg;
+    IRCMsg *ircmsg;
 
     LOG_FR("start listen in a new thread");
 
     for (;;){
-        if (irc_recv(&irc, nick, chan, cmd, msg) == 0){
-            // LOG_FR("receive message %s from %s", irc_msg, irc_nick);
-            get_cur_time(timestr);
-            rmsg.time = timestr;
-            rmsg.nick = nick;
-            rmsg.chan = chan;
-            rmsg.msg = msg;
-            // gdk_threads_add_idle or gdk_idle_add ?
-            g_idle_add((GSourceFunc)ui_msg_recv, &rmsg);
-            LOG_FR("idle added");
+        ircmsg = &ircmsg_pool[(poolptr++)%19];
+        rmsg = &rmsg_pool[(poolptr++)%19];
+        memset(ircmsg, 0, sizeof(IRCMsg));
+        memset(rmsg, 0, sizeof(MsgRecv));
+        get_cur_time(timestr);
+        rmsg->time = timestr;
+        if (irc_recv(&irc, ircmsg) == IRCMSG_MSG_NORMAL){
+            if (strcmp(ircmsg->command, "PRIVMSG") == 0){
+                rmsg->nick = ircmsg->nick;
+                rmsg->chan = ircmsg->param[0];
+            } else continue;
         }
+        else if (irc_recv(&irc, ircmsg) == IRCMSG_MSG_SERVER){
+            rmsg->nick = ircmsg->servername;
+            rmsg->chan = "irc.freenode.net";
+        } else continue;
+        rmsg->msg = ircmsg->message;
+        LOG_FR("{\n%s}", rmsg->msg);
+        // gdk_threads_add_idle or gdk_idle_add ?
+        g_idle_add((GSourceFunc)ui_msg_recv, rmsg);
+        LOG_FR("idle added");
     }
 }
 

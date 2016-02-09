@@ -34,11 +34,12 @@ typedef struct {
 } IRCMsg;
 
 typedef enum {
-    IRCMSG_PING,
-    IRCMSG_NOTICE,
-    IRCMSG_ERROR,
-    IRCMSG_MSG,
-    IRCMSG_SERVER,
+    IRCMSG_SRV_PING,
+    IRCMSG_SRV_NOTICE,
+    IRCMSG_SRV_ERROR,
+
+    IRCMSG_MSG_NORMAL,
+    IRCMSG_MSG_SERVER,
     IRCMSG_UNKNOWN
 } IRCMsgType;
 

@@ -12,8 +12,8 @@ int main(int argc, char **argv){
     gtk_init(&argc, &argv);
     printf(_("Srain!\n"));
 
-    srain_init();
     ui_window_init();
+    srain_login("srainbot");
     ui_msg_init();
     srain_join("#lasttest");
     srain_listen();

@@ -72,29 +72,26 @@ int irc_send(IRC *irc, const char *chan, const char *msg){
     return irc_msg(irc->fd, chan, msg);
 }
 
-IRCMsgType irc_parse(IRC *irc, IRCMsg *ircmsg, unsigned int msgoff){
+IRCMsgType irc_parse(IRC *irc, IRCMsg *ircmsg, int msgoff){
     if (strncmp(irc->servbuf, "PING :", 6) == 0){
         LOG_FR("PING? PONG");
         irc_pong(irc->fd, &irc->servbuf[6]);
-        return IRCMSG_PING;
+        return IRCMSG_SRV_PING;
     } 
     else if (strncmp(irc->servbuf, "NOTICE AUTH :", 13) == 0 ){
         // Don't care
         LOG_FR("NOTICE: %s", irc->servbuf);
-        return IRCMSG_NOTICE;
+        return IRCMSG_SRV_NOTICE;
     }
     else if (strncmp(irc->servbuf, "ERROR :", 7) == 0 ){
         // Still don't care
         LOG_FR("ERROR %s", irc->servbuf);
-        return IRCMSG_ERROR;
+        return IRCMSG_SRV_ERROR;
     } else {
         /* This is a irc message
          * IRS protocol message format?
          * See: https://tools.ietf.org/html/rfc1459#section-2.3
          */
-        // Checks if we have non-message string
-        if (strchr(irc->servbuf, 1) != NULL) return IRCMSG_UNKNOWN;
-
         char *prefix_ptr, *command_ptr;
         char *trailing_ptr, *middle_ptr;
         char *nick_ptr, *user_ptr, *host_ptr;
@@ -107,7 +104,7 @@ IRCMsgType irc_parse(IRC *irc, IRCMsg *ircmsg, unsigned int msgoff){
         trailing_ptr = strtok(NULL, "");
         if (!prefix_ptr || !command_ptr || !middle_ptr) goto bad;
         strncpy(ircmsg->command, command_ptr, COMMAND_LEN);
-        LOG_FR("command: %s", ircmsg->command);
+        // LOG_FR("command: %s", ircmsg->command);
 
         // <prefix> ::= <servername> | <nick> [ '!' <user> ] [ '@' <host> ]
         nick_ptr = strtok(prefix_ptr, "!");
@@ -117,11 +114,11 @@ IRCMsgType irc_parse(IRC *irc, IRCMsg *ircmsg, unsigned int msgoff){
             strncpy(ircmsg->nick, nick_ptr, NICK_LEN);
             strncpy(ircmsg->user, user_ptr, USER_LEN);
             strncpy(ircmsg->host, host_ptr, HOST_LEN);
-            LOG_FR("nick: %s, user: %s, host: %s",
+            // LOG_FR("nick: %s, user: %s, host: %s",   \
                     ircmsg->nick, ircmsg->user, ircmsg->host);
         } else {
             strncpy(ircmsg->servername, prefix_ptr, SERVER_LEN);
-            LOG_FR("servername: %s", ircmsg->servername);
+            // LOG_FR("servername: %s", ircmsg->servername);
         }
 
         // <params> ::= <SPACE> [ ':' <trailing> | <middle> <params> ]
@@ -132,25 +129,27 @@ IRCMsgType irc_parse(IRC *irc, IRCMsg *ircmsg, unsigned int msgoff){
             LOG_FR("part of message: %s", ircmsg->message + msgoff);
         }
 
-        /* */
         if (msgoff == 0){
-            LOG("param: ");
+            // LOG_F("param: ");
             middle_ptr = strtok(middle_ptr, " ");
             do {
                 strncpy(ircmsg->param[ircmsg->nparam++], middle_ptr, PRARM_LEN);
-                LOG("%s ", ircmsg->param[ircmsg->nparam-1]);
+                // LOG("%s ", ircmsg->param[ircmsg->nparam-1]);
                 if (ircmsg->nparam > PRARM_COUNT - 1){
-                    ERR_FR("too many params");
+                    ERR_FR("too many params: %s", irc->servbuf);
                     return IRCMSG_UNKNOWN;
                 }
             } while ((middle_ptr = strtok(NULL, " ")) != NULL);
-            LOG("\n")
+            // LOG("\n")
         };
 
-        return IRCMSG_MSG;
-
+        if (nick_ptr && user_ptr && host_ptr){
+            return IRCMSG_MSG_NORMAL;
+        } else {
+            return IRCMSG_MSG_SERVER;
+        }
 bad:
-        ERR_FR("unrecognized message");
+        ERR_FR("unrecognized message: %s", irc->servbuf);
         return IRCMSG_UNKNOWN;
     }
 }
@@ -159,19 +158,17 @@ IRCMsgType irc_recv(IRC *irc, IRCMsg *ircmsg){
     char tmpbuf[BUF_LEN];
     int rc, i;
 
-    memset(ircmsg, 0, sizeof(IRCMsg));
-
     if ((rc = sck_recv(irc->fd, tmpbuf, BUF_LEN -2)) <= 0 ){
         ERR_FR("socket error");
         return IRCMSG_UNKNOWN;
     }
 
     tmpbuf[rc] = '\0';
-    LOG("{ %s }", tmpbuf);
+    // LOG("{ %s }", tmpbuf);
 
-    /*  */
     IRCMsgType res = IRCMSG_UNKNOWN;
-    unsigned int msgoff = 0;
+    int msgoff = 0;
+
     for (i = 0; i < rc; ++i ){
         switch (tmpbuf[i]){
             /* a respone may include one or more \r\n */
@@ -182,7 +179,6 @@ IRCMsgType irc_recv(IRC *irc, IRCMsg *ircmsg){
                            res = irc_parse(irc, ircmsg, msgoff);
                            if (res != IRCMSG_UNKNOWN){
                                msgoff = strlen(ircmsg->message);
-                               LOG_FR("msgoff = %d", msgoff);
                                ircmsg->message[msgoff] = '\n';
                                ircmsg->message[++msgoff] = '\0';
                                if (msgoff > MSG_LEN - 1){
@@ -203,23 +199,8 @@ IRCMsgType irc_recv(IRC *irc, IRCMsg *ircmsg){
         }
     }
 
-    /*
-    int j = 0;
-    if (ircmsg->nick[0] != '\0')
-        LOG_FR("nick: %s, user: %s, host: %s", 
-                ircmsg->nick,
-                ircmsg->user,
-                ircmsg->host);
-    if (ircmsg->servername[0] != '\0'){
-        LOG_FR("servername: %s", ircmsg->servername);
-    }
-    LOG_FR("command: %s, param: ", ircmsg->command);
-    for (j = 0; j < ircmsg->nparam; j++){
-        LOG("%s ", ircmsg->param[j]);
-    }
-    LOG("\n");
-    */
-
+    msgoff = strlen(ircmsg->message);
+    if (ircmsg->message[msgoff-1] == '\n') ircmsg->message[msgoff-1] = '\0';
     return res;
 }
 
