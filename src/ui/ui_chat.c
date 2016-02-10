@@ -18,9 +18,25 @@ static gint online_listbox_on_dbclick(GtkWidget *widget, GdkEventButton *event){
             label = gtk_bin_get_child(GTK_BIN(row));
             nick = gtk_label_get_text(GTK_LABEL(label));
             detail_dialog_init(nick, "");
-            // replace it with a WHOIS function
-            return TRUE;
+            // replace it with a WHOIS function return TRUE;
         }
+    }
+    return FALSE;
+}
+
+static gint input_entry_on_enter(GtkWidget *widget, GdkEventKey *event){
+    const char *input;
+    const char *panel;
+
+    if (event->keyval == GDK_KEY_Return){
+        panel = gtk_stack_get_visible_child_name(GTK_STACK(chat_panel_stack));
+        assert(panel);
+        input = gtk_entry_get_text(GTK_ENTRY(widget));
+        LOG_FR("panel = %s, text = \"%s\"", panel, input);
+        if (srain_send(panel, input) != -1){
+            gtk_entry_set_text(GTK_ENTRY(widget), "");
+        }
+        return TRUE;
     }
     return FALSE;
 }
@@ -31,9 +47,12 @@ static void send_button_on_click(GtkEntry *entry, GdkEventButton *event){
 
     if(event->button == 1){
         panel = gtk_stack_get_visible_child_name(GTK_STACK(chat_panel_stack));
+        assert(panel);
         input = gtk_entry_get_text(entry);
         LOG_FR("panel = %s, text = \"%s\"", panel, input);
-        srain_send(panel, input);
+        if (srain_send(panel, input) != -1){
+            gtk_entry_set_text(entry, "");
+        }
     }
 }
 
@@ -60,6 +79,7 @@ int ui_chat_add(const char *name, const char *topic){
     gtk_container_child_set(GTK_CONTAINER(chat_panel_stack), chat_panel_box, "title", (gchar *)name, NULL);
 
     g_signal_connect(chat_online_listbox, "button_press_event", G_CALLBACK(online_listbox_on_dbclick), NULL);
+    g_signal_connect(chat_input_entry, "key_press_event", G_CALLBACK(input_entry_on_enter), NULL);
     g_signal_connect_swapped(chat_send_button, "button_release_event", G_CALLBACK(send_button_on_click), chat_input_entry);
 
     g_object_unref(G_OBJECT(builder));
