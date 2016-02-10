@@ -100,8 +100,8 @@ IRCMsgType irc_parse(IRC *irc, IRCMsg *ircmsg, int msgoff){
         // <params> ::= <SPACE> [ ':' <trailing> | <middle> <params> ]
         prefix_ptr = strtok(irc->servbuf + 1, " ");
         command_ptr = strtok(NULL, " ");
-        middle_ptr = strtok(NULL, ":");
-        trailing_ptr = strtok(NULL, "");
+        middle_ptr = strtok(NULL, "");
+        trailing_ptr = strstr(middle_ptr, " :");
         if (!prefix_ptr || !command_ptr || !middle_ptr) goto bad;
         strncpy(ircmsg->command, command_ptr, COMMAND_LEN);
         // LOG_FR("command: %s", ircmsg->command);
@@ -114,8 +114,7 @@ IRCMsgType irc_parse(IRC *irc, IRCMsg *ircmsg, int msgoff){
             strncpy(ircmsg->nick, nick_ptr, NICK_LEN);
             strncpy(ircmsg->user, user_ptr, USER_LEN);
             strncpy(ircmsg->host, host_ptr, HOST_LEN);
-            // LOG_FR("nick: %s, user: %s, host: %s",   \
-                    ircmsg->nick, ircmsg->user, ircmsg->host);
+            // LOG_FR("nick: %s, user: %s, host: %s", ircmsg->nick, ircmsg->user, ircmsg->host);
         } else {
             strncpy(ircmsg->servername, prefix_ptr, SERVER_LEN);
             // LOG_FR("servername: %s", ircmsg->servername);
@@ -125,22 +124,23 @@ IRCMsgType irc_parse(IRC *irc, IRCMsg *ircmsg, int msgoff){
         /* if no trailing */
         if (trailing_ptr){
             /* a message may be separated in different irc message */
-            strncpy(ircmsg->message + msgoff, trailing_ptr, MSG_LEN - msgoff);
-            LOG_FR("part of message: %s", ircmsg->message + msgoff);
+            strncpy(ircmsg->message + msgoff, trailing_ptr + 2, MSG_LEN - msgoff);
+            // LOG_FR("part of message: %s", ircmsg->message + msgoff);
         }
 
         if (msgoff == 0){
-            // LOG_F("param: ");
+            LOG_F("param: ");
             middle_ptr = strtok(middle_ptr, " ");
             do {
+                if (middle_ptr[0] == ':') break;
                 strncpy(ircmsg->param[ircmsg->nparam++], middle_ptr, PRARM_LEN);
-                // LOG("%s ", ircmsg->param[ircmsg->nparam-1]);
+                LOG("%s ", ircmsg->param[ircmsg->nparam-1]);
                 if (ircmsg->nparam > PRARM_COUNT - 1){
                     ERR_FR("too many params: %s", irc->servbuf);
                     return IRCMSG_UNKNOWN;
                 }
             } while ((middle_ptr = strtok(NULL, " ")) != NULL);
-            // LOG("\n")
+            LOG("\n")
         };
 
         if (nick_ptr && user_ptr && host_ptr){
@@ -190,7 +190,7 @@ IRCMsgType irc_recv(IRC *irc, IRCMsg *ircmsg){
                        }
             default: {
                          irc->servbuf[irc->bufptr] = tmpbuf[i];
-                         if (irc->bufptr >= (sizeof (irc->servbuf) -1))
+                         if (irc->bufptr >= (sizeof (irc->servbuf) - 1))
                              // Overflow!
                              ;
                          else
