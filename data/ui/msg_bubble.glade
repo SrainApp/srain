@@ -106,7 +106,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="halign">start</property>
-                <property name="xpad">15</property>
+                <property name="xpad">9</property>
                 <property name="label" translatable="yes">received message.
 &lt;a href="http://www.baidu.com"&gt;Google&lt;/a&gt;</property>
                 <property name="use_markup">True</property>
@@ -131,11 +131,13 @@
                   <object class="GtkEventBox" id="recv_image_eventbox">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="halign">start</property>
                     <child>
                       <object class="GtkImage" id="recv_image">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="halign">start</property>
+                        <property name="xpad">9</property>
+                        <property name="icon_size">0</property>
                       </object>
                     </child>
                   </object>
@@ -206,8 +208,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="halign">start</property>
-            <property name="margin_left">2</property>
-            <property name="xpad">15</property>
+            <property name="xpad">9</property>
             <property name="label" translatable="yes">sent message</property>
             <property name="wrap">True</property>
             <property name="selectable">True</property>
@@ -229,11 +230,13 @@
               <object class="GtkEventBox" id="send_image_eventbox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="halign">start</property>
                 <child>
                   <object class="GtkImage" id="send_image">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="halign">end</property>
+                    <property name="xpad">9</property>
+                    <property name="icon_size">0</property>
                   </object>
                 </child>
               </object>
