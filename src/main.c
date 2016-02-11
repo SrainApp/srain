@@ -13,8 +13,10 @@ int main(int argc, char **argv){
     printf(_("Srain!\n"));
 
     ui_window_init();
-    srain_login("srainbot");
     ui_msg_init();
+
+    srain_connect("irc.freenode.net", "Freenode");
+    srain_login("srainbot");
     srain_join("#lasttest");
     srain_listen();
     gtk_main();

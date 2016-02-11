@@ -26,7 +26,7 @@ void image_window_init(const gchar *path){
 
     LOG_FR("path = %s, height = %d, width = %d",path, height, width);
 
-    pixbuf = gdk_pixbuf_new_from_file_at_size(path, width, height, NULL);
+    pixbuf = gdk_pixbuf_new_from_file_at_size(path, width - 100, height - 100, NULL);
     gtk_image_set_from_pixbuf(GTK_IMAGE(image), pixbuf);
     g_object_unref(pixbuf);
 

@@ -4,10 +4,10 @@
 #include <string.h>
 #include "ui.h"
 #include "irc.h"
+#include "irc_cmd.h"
 #include "log.h"
-#include "msg.h"
 
-IRC irc;
+irc_t irc;
 
 static void get_cur_time(char *timestr){
     time_t curtime;
@@ -17,13 +17,16 @@ static void get_cur_time(char *timestr){
     timestr[31] = '\0';
 }
 
+int srain_connect(const char *server, const char *alias){
+    irc.alias = (char *)alias;
+    irc.server = (char *)server;
+
+    ui_chat_add(alias, server);
+    return irc_connect(&irc, server, "6666");
+}
 
 int srain_login(const char *nick){
-    irc_connect(&irc, "irc.freenode.net", "6666");
-    ui_chat_add("irc.freenode.net", "");
-    irc_login(&irc, nick);
-
-    return 0;
+    return irc_login(&irc, nick);
 }
 
 int srain_join(const char *chan){
@@ -38,55 +41,82 @@ int srain_join(const char *chan){
 
 int srain_send(const char *chan, const char *msg){
     char timestr[32];
-    MsgSend smsg;
+    bubble_msg_t bmsg;
 
     LOG_FR("send message %s to %s", msg, chan);
 
     get_cur_time(timestr);
-    smsg.time = timestr;
-    smsg.msg = (char *)msg;
-    smsg.nick = irc.nick;
-    smsg.chan = (char *)chan;
-    smsg.img = NULL;
+    bmsg.time = timestr;
+    bmsg.msg = (char *)msg;
+    bmsg.nick = irc.nick;
+    bmsg.chan = (char *)chan;
+    bmsg.img = NULL;
 
-    ui_msg_send(smsg);
+    ui_msg_send(&bmsg);
     irc_send(&irc, chan, msg);
     return 0;
 }
 
-    IRCMsg ircmsg_pool[20];
 void srain_recv(){
-    int poolptr = 0;
     char timestr[32];
-    MsgRecv rmsg_pool[20];
-    MsgRecv *rmsg;
-    IRCMsg *ircmsg;
-    IRCMsgType msgtype;
+    int pool = 0;
+    bubble_msg_t bmsg_pool[10];
+    irc_msg_t imsg_pool[10];
+    irc_msg_type_t type;
+
+    bubble_msg_t *bmsg;
+    irc_msg_t *imsg;
 
     LOG_FR("start listen in a new thread");
 
     for (;;){
-        ircmsg = &ircmsg_pool[(poolptr++)%19];
-        rmsg = &rmsg_pool[(poolptr++)%19];
-        memset(ircmsg, 0, sizeof(IRCMsg));
-        memset(rmsg, 0, sizeof(MsgRecv));
+        imsg = &imsg_pool[(pool++)%9];
+        bmsg = &bmsg_pool[(pool++)%9];
+        memset(imsg, 0, sizeof(irc_msg_t));
+        memset(bmsg, 0, sizeof(bubble_msg_t));
+
         get_cur_time(timestr);
-        rmsg->time = timestr;
-        msgtype = irc_recv(&irc, ircmsg);
-        if (msgtype == IRCMSG_MSG_NORMAL){
-            if (strcmp(ircmsg->command, "PRIVMSG") == 0){
-                rmsg->nick = ircmsg->nick;
-                rmsg->chan = ircmsg->param[0];
-            } else continue;
-        }
-        else if (msgtype == IRCMSG_MSG_SERVER){
-            rmsg->nick = ircmsg->servername;
-            rmsg->chan = "irc.freenode.net";
+        bmsg->time = timestr;
+        type = irc_recv(&irc, imsg);
+
+        if (type == IRCMSG_MSG){
+            if (strcmp(imsg->command, "PRIVMSG") == 0){
+                bmsg->nick = imsg->nick;
+                bmsg->chan = imsg->param[0];
+                bmsg->msg = imsg->message;
+                g_idle_add((GSourceFunc)ui_msg_recv, bmsg);
+            }
+            else if (strcmp(imsg->command, "NOTICE") == 0
+                    || strcmp(imsg->command, RPL_WELCOME) == 0
+                    || strcmp(imsg->command, RPL_YOURHOST) == 0
+                    || strcmp(imsg->command, RPL_CREATED) == 0){
+                bmsg->nick = imsg->servername;
+                bmsg->chan = irc.alias;
+                bmsg->msg = imsg->message;
+                g_idle_add((GSourceFunc)ui_msg_recv, bmsg);
+            }
+            else if (strcmp(imsg->command, RPL_MYINFO) == 0
+                    || strcmp(imsg->command, RPL_BOUNCE) == 0){
+                int i;
+                char tmp[MSG_LEN];
+                memset(tmp, 0, MSG_LEN);
+
+                bmsg->chan = irc.alias;
+                bmsg->nick = imsg->servername;
+                // overflow?
+                for (i = 1; i < imsg->nparam; i++){
+                    strcat(tmp, imsg->param[i]);
+                    strcat(tmp, " ");
+                }
+                strcat(tmp, imsg->message);
+                strncpy(imsg->message, tmp, MSG_LEN);
+                bmsg->msg = imsg->message;
+                g_idle_add((GSourceFunc)ui_msg_recv, bmsg);
+            }
+
         } else continue;
-        rmsg->msg = ircmsg->message;
-        LOG_FR("{\n%s}", rmsg->msg);
+
         // gdk_threads_add_idle or gdk_idle_add ?
-        g_idle_add((GSourceFunc)ui_msg_recv, rmsg);
         LOG_FR("idle added");
     }
 }

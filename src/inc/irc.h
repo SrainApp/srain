@@ -17,11 +17,14 @@
 typedef struct {
    int fd;
    char *nick;
-   unsigned int nchan;
+   char *server;
+   char *alias;
+
+   int nchan;
    char chans[CHAN_NUM][CHAN_LEN];
    char servbuf[BUF_LEN];
    int bufptr;
-} IRC;
+} irc_t;
 
 typedef struct {
     char servername[SERVER_LEN];
@@ -31,24 +34,23 @@ typedef struct {
     int nparam;
     char param[PRARM_COUNT][PRARM_LEN];  // middle
     char message[MSG_LEN];  // trailing
-} IRCMsg;
+} irc_msg_t;
 
 typedef enum {
-    IRCMSG_SRV_PING,
-    IRCMSG_SRV_NOTICE,
-    IRCMSG_SRV_ERROR,
+    IRCMSG_PING,
+    IRCMSG_NOTICE,
+    IRCMSG_ERROR,
 
-    IRCMSG_MSG_NORMAL,
-    IRCMSG_MSG_SERVER,
+    IRCMSG_MSG,
     IRCMSG_UNKNOWN
-} IRCMsgType;
+} irc_msg_type_t;
 
-int irc_connect(IRC *irc, const char* server, const char* port);
-int irc_login(IRC *irc, const char* nick);
-int irc_join_chan(IRC *irc, const char* chan);
-int irc_leave_chan(IRC *irc, const char *chan);
-int irc_send(IRC *irc, const char *chan, const char *msg);
-IRCMsgType irc_recv(IRC *irc, IRCMsg *ircmsg);
-void irc_close(IRC *irc);
+int irc_connect(irc_t *irc, const char *server, const char *port);
+int irc_login(irc_t *irc, const char *nick);
+int irc_join_chan(irc_t *irc, const char *chan);
+int irc_leave_chan(irc_t *irc, const char *chan);
+int irc_send(irc_t *irc, const char *chan, const char *msg);
+irc_msg_type_t irc_recv(irc_t *irc, irc_msg_t *ircmsg);
+void irc_close(irc_t *irc);
 
 #endif /* __IRC_H */

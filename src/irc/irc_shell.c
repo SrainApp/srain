@@ -11,7 +11,7 @@
 #include "irc.h"
 #include "log.h"
 
-int irc_connect(IRC *irc, const char *server, const char *port){
+int irc_connect(irc_t *irc, const char *server, const char *port){
     int i;
 
     LOG_FR("connecting to %s:%s", server, port);
@@ -27,13 +27,13 @@ int irc_connect(IRC *irc, const char *server, const char *port){
     return 0;
 }
 
-int irc_login(IRC *irc, const char* nick){
+int irc_login(irc_t *irc, const char* nick){
     LOG_FR("attemping to login as %s", nick);
 
     return irc_reg(irc->fd, nick, "Srain", "EL PSY CONGROO");
 }
 
-int irc_join_chan(IRC *irc, const char* chan){
+int irc_join_chan(irc_t *irc, const char* chan){
     int i;
 
     LOG_FR("attemping to join %s", chan);
@@ -50,7 +50,7 @@ int irc_join_chan(IRC *irc, const char* chan){
     return -1;
 }
 
-int irc_leave_chan(IRC *irc, const char *chan){
+int irc_leave_chan(irc_t *irc, const char *chan){
     int i;
 
     for (i = 0; i < irc->nchan; i++){
@@ -68,25 +68,25 @@ int irc_leave_chan(IRC *irc, const char *chan){
     return -1;
 }
 
-int irc_send(IRC *irc, const char *chan, const char *msg){
+int irc_send(irc_t *irc, const char *chan, const char *msg){
     return irc_msg(irc->fd, chan, msg);
 }
 
-IRCMsgType irc_parse(IRC *irc, IRCMsg *ircmsg, int msgoff){
+irc_msg_type_t irc_parse(irc_t *irc, irc_msg_t *ircmsg, int msgoff){
     if (strncmp(irc->servbuf, "PING :", 6) == 0){
         LOG_FR("PING? PONG");
         irc_pong(irc->fd, &irc->servbuf[6]);
-        return IRCMSG_SRV_PING;
+        return IRCMSG_PING;
     } 
     else if (strncmp(irc->servbuf, "NOTICE AUTH :", 13) == 0 ){
         // Don't care
         LOG_FR("NOTICE: %s", irc->servbuf);
-        return IRCMSG_SRV_NOTICE;
+        return IRCMSG_NOTICE;
     }
     else if (strncmp(irc->servbuf, "ERROR :", 7) == 0 ){
         // Still don't care
         LOG_FR("ERROR %s", irc->servbuf);
-        return IRCMSG_SRV_ERROR;
+        return IRCMSG_ERROR;
     } else {
         /* This is a irc message
          * IRS protocol message format?
@@ -104,7 +104,7 @@ IRCMsgType irc_parse(IRC *irc, IRCMsg *ircmsg, int msgoff){
         trailing_ptr = strstr(middle_ptr, " :");
         if (!prefix_ptr || !command_ptr || !middle_ptr) goto bad;
         strncpy(ircmsg->command, command_ptr, COMMAND_LEN);
-        // LOG_FR("command: %s", ircmsg->command);
+        LOG_FR("command: %s", ircmsg->command);
 
         // <prefix> ::= <servername> | <nick> [ '!' <user> ] [ '@' <host> ]
         nick_ptr = strtok(prefix_ptr, "!");
@@ -124,86 +124,71 @@ IRCMsgType irc_parse(IRC *irc, IRCMsg *ircmsg, int msgoff){
         /* if no trailing */
         if (trailing_ptr){
             /* a message may be separated in different irc message */
-            strncpy(ircmsg->message + msgoff, trailing_ptr + 2, MSG_LEN - msgoff);
-            // LOG_FR("part of message: %s", ircmsg->message + msgoff);
+            strncpy(ircmsg->message, trailing_ptr + 2, MSG_LEN);
+            // LOG_FR("part of message: %s", ircmsg->message);
         }
 
-        if (msgoff == 0){
-            LOG_F("param: ");
-            middle_ptr = strtok(middle_ptr, " ");
-            do {
-                if (middle_ptr[0] == ':') break;
-                strncpy(ircmsg->param[ircmsg->nparam++], middle_ptr, PRARM_LEN);
-                LOG("%s ", ircmsg->param[ircmsg->nparam-1]);
-                if (ircmsg->nparam > PRARM_COUNT - 1){
-                    ERR_FR("too many params: %s", irc->servbuf);
-                    return IRCMSG_UNKNOWN;
-                }
-            } while ((middle_ptr = strtok(NULL, " ")) != NULL);
-            LOG("\n")
-        };
+        // LOG_F("param: ");
+        middle_ptr = strtok(middle_ptr, " ");
+        do {
+            if (middle_ptr[0] == ':') break;
+            strncpy(ircmsg->param[ircmsg->nparam++], middle_ptr, PRARM_LEN);
+            // LOG("%s(%d) ", ircmsg->param[ircmsg->nparam-1], ircmsg->nparam);
+            if (ircmsg->nparam > PRARM_COUNT - 1){
+                ERR_FR("too many params: %s", irc->servbuf);
+                return IRCMSG_UNKNOWN;
+            }
+        } while ((middle_ptr = strtok(NULL, " ")) != NULL);
+        // LOG("\n")
 
-        if (nick_ptr && user_ptr && host_ptr){
-            return IRCMSG_MSG_NORMAL;
-        } else {
-            return IRCMSG_MSG_SERVER;
-        }
+        return IRCMSG_MSG;
 bad:
         ERR_FR("unrecognized message: %s", irc->servbuf);
         return IRCMSG_UNKNOWN;
     }
 }
 
-IRCMsgType irc_recv(IRC *irc, IRCMsg *ircmsg){
-    char tmpbuf[BUF_LEN];
-    int rc, i;
+irc_msg_type_t irc_recv(irc_t *irc, irc_msg_t *ircmsg){
+    static int tmpbuf_ptr = 0;
+    static char tmpbuf[BUF_LEN];
+    static int rc;
+    int i;
 
-    if ((rc = sck_recv(irc->fd, tmpbuf, BUF_LEN -2)) <= 0 ){
-        ERR_FR("socket error");
-        return IRCMSG_UNKNOWN;
+    if (tmpbuf_ptr == 0){
+        if ((rc = sck_recv(irc->fd, tmpbuf, BUF_LEN -2)) <= 0 ){
+            ERR_FR("socket error");
+            return IRCMSG_UNKNOWN;
+        }
+        tmpbuf[rc] = '\0';
+        // LOG("{\n%s}\n", tmpbuf);
     }
 
-    tmpbuf[rc] = '\0';
-    // LOG("{ %s }", tmpbuf);
-
-    IRCMsgType res = IRCMSG_UNKNOWN;
-    int msgoff = 0;
-
-    for (i = 0; i < rc; ++i ){
+    // LOG_FR("tmpbuf_ptr = %d, rc = %d", tmpbuf_ptr, rc);
+    irc_msg_type_t res = IRCMSG_UNKNOWN;
+    for (i = tmpbuf_ptr; i < rc; i++){
         switch (tmpbuf[i]){
             /* a respone may include one or more \r\n */
             case '\r': break;
             case '\n': {
                            irc->servbuf[irc->bufptr] = '\0';
                            irc->bufptr = 0;
-                           res = irc_parse(irc, ircmsg, msgoff);
-                           if (res != IRCMSG_UNKNOWN){
-                               msgoff = strlen(ircmsg->message);
-                               ircmsg->message[msgoff] = '\n';
-                               ircmsg->message[++msgoff] = '\0';
-                               if (msgoff > MSG_LEN - 1){
-                                   ERR_FR("message to long");
-                                   return IRCMSG_UNKNOWN;
-                               }
-                               break;
-                           }
+                           res = irc_parse(irc, ircmsg, 0);
+                           tmpbuf_ptr = i + 1;
+                           return res;
                        }
             default: {
                          irc->servbuf[irc->bufptr] = tmpbuf[i];
-                         if (irc->bufptr >= (sizeof (irc->servbuf) - 1))
-                             // Overflow!
-                             ;
-                         else
-                             irc->bufptr++;
+                         if (irc->bufptr >= (sizeof(irc->servbuf) - 1)){
+                             ERR_FR("irc buffer overflow");
+                         } else irc->bufptr++;
                      }
         }
     }
 
-    msgoff = strlen(ircmsg->message);
-    if (ircmsg->message[msgoff-1] == '\n') ircmsg->message[msgoff-1] = '\0';
-    return res;
+    tmpbuf_ptr = 0;
+    return IRCMSG_UNKNOWN;
 }
 
-void irc_close(IRC *irc){
+void irc_close(irc_t *irc){
     close(irc->fd);
 }
