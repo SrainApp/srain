@@ -1,4 +1,5 @@
 #include <glib.h>
+#include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <time.h>
 #include <string.h>
@@ -124,4 +125,9 @@ void srain_recv(){
 int srain_listen(){
     g_thread_new(NULL, (void *)srain_recv, NULL);
     return 0;
+}
+
+void srain_close(){
+    gtk_main_quit();
+    irc_close(&irc);
 }

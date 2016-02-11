@@ -6,5 +6,6 @@ int srain_login(const char *name);
 int srain_join(const char *chan);
 int srain_send(const char *chan, const char *msg);
 int srain_listen();
+void srain_close();
 
 #endif /* __SRAIN_H */

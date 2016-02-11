@@ -1,6 +1,7 @@
 #include <gtk/gtk.h>
 #include <assert.h>
 #include "ui_common.h"
+#include "srain.h"
 
 GtkWidget *chat_panel_stack;
 
@@ -21,7 +22,7 @@ void ui_window_init(){
     UI_BUILDER_GET_WIDGET(builder, chat_panel_stack);
 
     gtk_builder_connect_signals(builder, NULL);
-    g_signal_connect(window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
+    g_signal_connect(window, "destroy", G_CALLBACK(srain_close), NULL);
 
     /* load style */
     provider = GTK_STYLE_PROVIDER(gtk_css_provider_new());

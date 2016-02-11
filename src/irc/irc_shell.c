@@ -191,4 +191,5 @@ irc_msg_type_t irc_recv(irc_t *irc, irc_msg_t *ircmsg){
 
 void irc_close(irc_t *irc){
     close(irc->fd);
+    LOG_FR("closed");
 }
