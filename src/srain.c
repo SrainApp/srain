@@ -58,21 +58,29 @@ int srain_send(const char *chan, const char *msg){
     return 0;
 }
 
+
 void srain_recv(){
     char timestr[32];
     int pool = 0;
-    bubble_msg_t bmsg_pool[10];
-    irc_msg_t imsg_pool[10];
     irc_msg_type_t type;
+    bubble_msg_t bmsg_pool[40];
+    irc_msg_t imsg_pool[40];
 
     bubble_msg_t *bmsg;
+
     irc_msg_t *imsg;
 
     LOG_FR("start listen in a new thread");
 
     for (;;){
-        imsg = &imsg_pool[(pool++)%9];
-        bmsg = &bmsg_pool[(pool++)%9];
+        imsg = &imsg_pool[(pool++)%39];
+        bmsg = &bmsg_pool[(pool++)%39];
+        LOG_FR("bmsg locked");
+
+        while (bmsg->locked);
+
+        LOG_FR("bmsg unlocked");
+
         memset(imsg, 0, sizeof(irc_msg_t));
         memset(bmsg, 0, sizeof(bubble_msg_t));
 
@@ -85,19 +93,25 @@ void srain_recv(){
                 bmsg->nick = imsg->nick;
                 bmsg->chan = imsg->param[0];
                 bmsg->msg = imsg->message;
-                g_idle_add((GSourceFunc)ui_msg_recv, bmsg);
+            }
+            else if (strcmp(imsg->command, "TOPIC") == 0
+                    || strcmp(imsg->command, RPL_TOPIC) == 0){
+
             }
             else if (strcmp(imsg->command, "NOTICE") == 0
                     || strcmp(imsg->command, RPL_WELCOME) == 0
                     || strcmp(imsg->command, RPL_YOURHOST) == 0
                     || strcmp(imsg->command, RPL_CREATED) == 0){
+                LOG_FR("NOTICE");
                 bmsg->nick = imsg->servername;
                 bmsg->chan = irc.alias;
                 bmsg->msg = imsg->message;
-                g_idle_add((GSourceFunc)ui_msg_recv, bmsg);
             }
             else if (strcmp(imsg->command, RPL_MYINFO) == 0
-                    || strcmp(imsg->command, RPL_BOUNCE) == 0){
+                    || strcmp(imsg->command, RPL_BOUNCE) == 0
+                    || strcmp(imsg->command, RPL_LUSEROP) == 0
+                    || strcmp(imsg->command, RPL_LUSERUNKNOWN) == 0
+                    || strcmp(imsg->command, RPL_LUSERCHANNELS) == 0){
                 int i;
                 char tmp[MSG_LEN];
                 memset(tmp, 0, MSG_LEN);
@@ -112,22 +126,24 @@ void srain_recv(){
                 strcat(tmp, imsg->message);
                 strncpy(imsg->message, tmp, MSG_LEN);
                 bmsg->msg = imsg->message;
-                g_idle_add((GSourceFunc)ui_msg_recv, bmsg);
+            } else {
+                bmsg->nick = imsg->servername;
+                bmsg->chan = irc.alias;
+                bmsg->msg = imsg->message;
             }
 
-        } else continue;
-
-        // gdk_threads_add_idle or gdk_idle_add ?
-        LOG_FR("idle added");
+            bmsg->locked = 1;
+            gdk_threads_add_idle((GSourceFunc)ui_msg_recv, bmsg);
+            LOG_FR("idle added");
+        }
     }
 }
+    int srain_listen(){
+        g_thread_new(NULL, (void *)srain_recv, NULL);
+        return 0;
+    }
 
-int srain_listen(){
-    g_thread_new(NULL, (void *)srain_recv, NULL);
-    return 0;
-}
-
-void srain_close(){
-    gtk_main_quit();
-    irc_close(&irc);
-}
+    void srain_close(){
+        gtk_main_quit();
+        irc_close(&irc);
+    }

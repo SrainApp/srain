@@ -97,7 +97,7 @@ int ui_msg_send(const bubble_msg_t *msg){
     return 0;
 }
 
-int ui_msg_recv(const bubble_msg_t *msg){
+int ui_msg_recv(bubble_msg_t *msg){
     GtkBuilder *builder;
     GtkWidget *recv_msg_bubble_box;
     GtkWidget *avatar_image;
@@ -111,7 +111,8 @@ int ui_msg_recv(const bubble_msg_t *msg){
     GtkWidget *chat_msg_listbox;
     GtkWidget *chat_panel_box;
 
-    LOG_FR("called");
+    LOG_FR("nick: %s, chan: %s, msg: %s", msg->nick, msg->chan, msg->msg);
+    assert(msg->locked);
 
     chat_panel_box = gtk_stack_get_child_by_name(GTK_STACK(chat_panel_stack), msg->chan);
     if (!chat_panel_box){
@@ -152,14 +153,18 @@ int ui_msg_recv(const bubble_msg_t *msg){
 
     g_object_unref(G_OBJECT(builder));
 
+    msg->locked = 0;
     return FALSE;
 }
 
-int ui_msg_sys(const bubble_msg_t *msg){
+int ui_msg_sys(bubble_msg_t *msg){
     GtkBuilder *builder;
     GtkWidget *sys_msg_label;
     GtkWidget *chat_msg_listbox;
     GtkWidget *chat_panel_box;
+
+    LOG_FR("chan: %s, msg: %s", msg->chan, msg->msg);
+    assert(msg->locked);
 
     chat_panel_box = gtk_stack_get_child_by_name(GTK_STACK(chat_panel_stack), msg->chan);
     if (!chat_panel_box){
@@ -178,5 +183,6 @@ int ui_msg_sys(const bubble_msg_t *msg){
 
     g_object_unref(G_OBJECT(builder));
 
+    msg->locked = 0;
     return FALSE;
 }
