@@ -175,6 +175,7 @@ int srain_send(const char *chan, const char *msg){
     bubble_msg_t bmsg;
 
     LOG_FR("send message %s to %s", msg, chan);
+    memset(&bmsg, 0, sizeof(bubble_msg_t));
 
     strncpy(bmsg.chan, chan, CHAN_LEN);
     strncpy(bmsg.msg, msg, MSG_LEN);
