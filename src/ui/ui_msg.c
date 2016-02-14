@@ -6,7 +6,7 @@
 #include "log.h"
 
 /* extern variable from ui_window.c */
-extern GtkWidget *session_panel_stack;
+extern GtkWidget *chan_panel_stack;
 
 static GtkWidget *msg_bubble_menu;
 
@@ -52,33 +52,33 @@ void ui_msg_init(){
     g_object_unref(builder);
 }
 
-int ui_msg_send(const bubble_msg_t *msg){
+int ui_msg_send(bubble_msg_t *msg){
     GtkBuilder *builder;
     GtkWidget *send_msg_bubble_box;
     GtkWidget *send_msg_label;
     GtkWidget *send_image;
     GtkWidget *send_image_eventbox;
     GtkWidget *send_time_label;
-    GtkWidget *session_msg_listbox;
-    GtkWidget *session_panel_box;
+    GtkWidget *chan_msg_listbox;
+    GtkWidget *chan_panel_box;
 
-    session_panel_box = gtk_stack_get_child_by_name(GTK_STACK(session_panel_stack), msg->chan);
-    if (!session_panel_box){
-        ERR_FR("session_panel %s not found", msg->chan);
+    chan_panel_box = gtk_stack_get_child_by_name(GTK_STACK(chan_panel_stack), msg->chan);
+    if (!chan_panel_box){
+        ERR_FR("chan_panel %s not found", msg->chan);
         return -1;
     }
 
-    session_msg_listbox = get_widget_by_name(session_panel_box, "session_msg_listbox");
-    assert(session_msg_listbox);
+    chan_msg_listbox = get_widget_by_name(chan_panel_box, "chan_msg_listbox");
+    assert(chan_msg_listbox);
     builder = gtk_builder_new_from_file( "../data/ui/msg_bubble.glade");
-    if (msg->img){
+    if (strlen(msg->img) != 0){
         UI_BUILDER_GET_WIDGET(builder, send_image);
         UI_BUILDER_GET_WIDGET(builder, send_image_eventbox);
     }
     UI_BUILDER_GET_WIDGET(builder, send_msg_bubble_box);
     UI_BUILDER_GET_WIDGET(builder, send_msg_label);
     UI_BUILDER_GET_WIDGET(builder, send_time_label);
-    if (msg->img){
+    if (strlen(msg->img) != 0){
         GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file_at_size (msg->img, 300, 300, NULL);
         gtk_image_set_from_pixbuf(GTK_IMAGE(send_image), pixbuf);
         g_object_unref (pixbuf);
@@ -90,14 +90,13 @@ int ui_msg_send(const bubble_msg_t *msg){
 
     g_signal_connect(send_msg_label, "button_press_event", G_CALLBACK(menu_popup), msg_bubble_menu);
 
-    gtk_container_add(GTK_CONTAINER(session_msg_listbox), send_msg_bubble_box);
+    gtk_container_add(GTK_CONTAINER(chan_msg_listbox), send_msg_bubble_box);
 
     g_object_unref(G_OBJECT(builder));
-
     return 0;
 }
 
-int ui_msg_recv(bubble_msg_t *msg){
+gboolean ui_msg_recv(bubble_msg_t *msg){
     GtkBuilder *builder;
     GtkWidget *recv_msg_bubble_box;
     GtkWidget *avatar_image;
@@ -108,23 +107,24 @@ int ui_msg_recv(bubble_msg_t *msg){
     GtkWidget *identify_label;
     GtkWidget *recv_msg_label;
     GtkWidget *recv_time_label;
-    GtkWidget *session_msg_listbox;
-    GtkWidget *session_panel_box;
+    GtkWidget *chan_msg_listbox;
+    GtkWidget *chan_panel_box;
 
+    assert(msg);
     LOG_FR("nick: %s, chan: %s, msg: %s", msg->nick, msg->chan, msg->msg);
-    assert(msg->locked);
 
-    session_panel_box = gtk_stack_get_child_by_name(GTK_STACK(session_panel_stack), msg->chan);
-    if (!session_panel_box){
-        ERR_FR("session_panel %s not found", msg->chan);
+    chan_panel_box = gtk_stack_get_child_by_name(GTK_STACK(chan_panel_stack), msg->chan);
+    if (!chan_panel_box){
+        ERR_FR("chan_panel %s not found", msg->chan);
         return FALSE;
     }
 
-    session_msg_listbox = get_widget_by_name(session_panel_box, "session_msg_listbox");
-    assert(session_msg_listbox);
+    chan_msg_listbox = get_widget_by_name(chan_panel_box, "chan_msg_listbox");
+    assert(chan_msg_listbox);
     builder = gtk_builder_new_from_file( "../data/ui/msg_bubble.glade");
-    if (msg->avatar) UI_BUILDER_GET_WIDGET(builder, avatar_image);
-    if (msg->img){
+
+    if (strlen(msg->avatar) != 0) UI_BUILDER_GET_WIDGET(builder, avatar_image);
+    if (strlen(msg->img) != 0){
         UI_BUILDER_GET_WIDGET(builder, recv_image);
         UI_BUILDER_GET_WIDGET(builder, recv_image_eventbox);
     }
@@ -139,7 +139,7 @@ int ui_msg_recv(bubble_msg_t *msg){
     gtk_label_set_text(GTK_LABEL(identify_label), msg->id);
     gtk_label_set_text(GTK_LABEL(recv_time_label), msg->time);
     gtk_label_set_text(GTK_LABEL(recv_msg_label), msg->msg);
-    if (msg->img){
+    if (strlen(msg->img) != 0){
         GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file_at_size (msg->img, 300, 300, NULL);
         gtk_image_set_from_pixbuf(GTK_IMAGE(recv_image), pixbuf);
         g_object_unref (pixbuf);
@@ -149,40 +149,38 @@ int ui_msg_recv(bubble_msg_t *msg){
     g_signal_connect(nick_button, "button_release_event", G_CALLBACK(nick_button_on_click), nick_label);
     g_signal_connect(recv_msg_label, "button_press_event", G_CALLBACK(menu_popup), G_OBJECT(msg_bubble_menu));
 
-    gtk_container_add(GTK_CONTAINER(session_msg_listbox), recv_msg_bubble_box);
+    gtk_container_add(GTK_CONTAINER(chan_msg_listbox), recv_msg_bubble_box);
 
     g_object_unref(G_OBJECT(builder));
-
-    msg->locked = 0;
+    free(msg);
     return FALSE;
 }
 
-int ui_msg_sys(bubble_msg_t *msg){
+gboolean ui_msg_sys(bubble_msg_t *msg){
     GtkBuilder *builder;
     GtkWidget *sys_msg_label;
-    GtkWidget *session_msg_listbox;
-    GtkWidget *session_panel_box;
+    GtkWidget *chan_msg_listbox;
+    GtkWidget *chan_panel_box;
 
+    assert(msg);
     LOG_FR("chan: %s, msg: %s", msg->chan, msg->msg);
-    assert(msg->locked);
 
-    session_panel_box = gtk_stack_get_child_by_name(GTK_STACK(session_panel_stack), msg->chan);
-    if (!session_panel_box){
-        ERR_FR("session_panel %s not found", msg->chan);
-        return -1;
+    chan_panel_box = gtk_stack_get_child_by_name(GTK_STACK(chan_panel_stack), msg->chan);
+    if (!chan_panel_box){
+        ERR_FR("chan_panel %s not found", msg->chan);
+        return FALSE;
     }
-    session_msg_listbox = get_widget_by_name(session_panel_box, "session_msg_listbox");
-    assert(session_msg_listbox);
+    chan_msg_listbox = get_widget_by_name(chan_panel_box, "chan_msg_listbox");
+    assert(chan_msg_listbox);
 
     builder = gtk_builder_new_from_file("../data/ui/msg_bubble.glade");
     UI_BUILDER_GET_WIDGET(builder, sys_msg_label);
 
     gtk_label_set_text(GTK_LABEL(sys_msg_label), msg->msg);
 
-    gtk_container_add(GTK_CONTAINER(session_msg_listbox), sys_msg_label);
+    gtk_container_add(GTK_CONTAINER(chan_msg_listbox), sys_msg_label);
 
     g_object_unref(G_OBJECT(builder));
-
-    msg->locked = 0;
+    free(msg);
     return FALSE;
 }

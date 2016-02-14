@@ -37,7 +37,7 @@
               <object class="GtkStackSidebar" id="chat_list_sidebar">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="stack">session_panel_stack</property>
+                <property name="stack">chan_panel_stack</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -58,7 +58,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkStack" id="session_panel_stack">
+              <object class="GtkStack" id="chan_panel_stack">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>

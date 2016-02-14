@@ -11,8 +11,8 @@
 #define USER_LEN    128 // unconfirm
 #define COMMAND_LEN 64  // unconfirm
 #define MSG_LEN     512
-#define PRARM_COUNT 64  // unconfirm
-#define PRARM_LEN   64  // unconfirm
+#define PARAM_COUNT 64  // unconfirm
+#define PARAM_LEN   64  // unconfirm
 
 typedef struct {
    int fd;
@@ -32,7 +32,7 @@ typedef struct {
 
     char command[COMMAND_LEN];
     int nparam;
-    char param[PRARM_COUNT][PRARM_LEN];  // middle
+    char param[PARAM_COUNT][PARAM_LEN];  // middle
     char message[MSG_LEN];  // trailing
 } irc_msg_t;
 

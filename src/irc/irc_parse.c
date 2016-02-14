@@ -61,9 +61,9 @@ irc_msg_type_t irc_parse(char *ircbuf, irc_msg_t *ircmsg, int msgoff){
         middle_ptr = strtok(middle_ptr, " ");
         do {
             if (middle_ptr[0] == ':') break;
-            strncpy(ircmsg->param[ircmsg->nparam++], middle_ptr, PRARM_LEN);
+            strncpy(ircmsg->param[ircmsg->nparam++], middle_ptr, PARAM_LEN);
             LOG("%s(%d) ", ircmsg->param[ircmsg->nparam-1], ircmsg->nparam);
-            if (ircmsg->nparam > PRARM_COUNT - 1){
+            if (ircmsg->nparam > PARAM_COUNT - 1){
                 ERR_FR("too many params: %s", ircbuf);
                 return IRCMSG_UNKNOWN;
             }
