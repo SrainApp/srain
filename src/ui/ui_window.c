@@ -3,7 +3,7 @@
 #include "ui_common.h"
 #include "srain.h"
 
-GtkWidget *chat_panel_stack;
+GtkWidget *session_panel_stack;
 
 static void apply_css(GtkWidget *widget, GtkStyleProvider *provider){
     gtk_style_context_add_provider(gtk_widget_get_style_context(widget), provider, G_MAXUINT);
@@ -19,7 +19,7 @@ void ui_window_init(){
 
     builder = gtk_builder_new_from_file( "../data/ui/window.glade");
     UI_BUILDER_GET_WIDGET(builder, window);
-    UI_BUILDER_GET_WIDGET(builder, chat_panel_stack);
+    UI_BUILDER_GET_WIDGET(builder, session_panel_stack);
 
     gtk_builder_connect_signals(builder, NULL);
     g_signal_connect(window, "destroy", G_CALLBACK(srain_close), NULL);
@@ -30,7 +30,7 @@ void ui_window_init(){
     apply_css(window, provider);
 
     /* transition effect */
-    gtk_stack_set_transition_type(GTK_STACK(chat_panel_stack), GTK_STACK_TRANSITION_TYPE_SLIDE_UP_DOWN);
+    gtk_stack_set_transition_type(GTK_STACK(session_panel_stack), GTK_STACK_TRANSITION_TYPE_SLIDE_UP_DOWN);
 
     /* display window */
     gtk_widget_show_all(window);

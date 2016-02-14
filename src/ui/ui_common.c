@@ -12,7 +12,7 @@ GtkWidget* get_widget_by_name(GtkWidget* widget, const gchar* name){
     const gchar *widget_name;
 
     widget_name = gtk_widget_get_name(GTK_WIDGET(widget));
-    if (strcmp(widget_name, (gchar*)name) == 0){
+    if (strcmp(widget_name, name) == 0){
         return widget;
     }
 

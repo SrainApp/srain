@@ -18,11 +18,11 @@ typedef struct {
 
 void ui_window_init();
 
-int ui_chat_add(const char *name, const char *topic);
-int ui_chat_rm(const char *name);
-int ui_chat_set_topic(const char *name, const char *topic);
-int ui_online_list_add(const char *chat_name, const char *nick);
-int ui_online_list_rm(const char *chat_name, const char *nick);
+int ui_session_add(const char *name);
+int ui_session_rm(const char *name);
+int ui_session_set_topic(const char *name, const char *topic);
+int ui_online_list_add(const char *session_name, const char *nick);
+int ui_online_list_rm(const char *session_name, const char *nick);
 
 void ui_msg_init();
 int ui_msg_send(const bubble_msg_t *msg);

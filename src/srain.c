@@ -22,7 +22,7 @@ int srain_connect(const char *server, const char *alias){
     irc.alias = (char *)alias;
     irc.server = (char *)server;
 
-    ui_chat_add(alias, server);
+    ui_session_add(alias);
     return irc_connect(&irc, server, "6666");
 }
 
@@ -31,7 +31,7 @@ int srain_login(const char *nick){
 }
 
 int srain_join(const char *chan){
-    if (ui_chat_add(chan, "") < 0){
+    if (ui_session_add(chan) < 0){
         return -1;
     }
     if (irc_join_chan(&irc, chan) < 0){

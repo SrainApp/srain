@@ -19,7 +19,8 @@ void detail_dialog_init(const char *name, const char *content){
         gtk_label_set_text(GTK_LABEL(detail_name_label), name);
         gtk_label_set_text(GTK_LABEL(detail_content_label), content);
 
-        g_signal_connect_swapped(detail_dialog, "close", G_CALLBACK(gtk_widget_destroy), detail_dialog); // why i should close for 2 times?
+        // why i should close for 2 times?
+        g_signal_connect_swapped(detail_dialog, "close", G_CALLBACK(gtk_widget_destroy), detail_dialog);
         g_signal_connect_swapped(detail_close_button, "clicked", G_CALLBACK(gtk_widget_destroy), detail_dialog);
 
         gtk_dialog_run(GTK_DIALOG(detail_dialog));
