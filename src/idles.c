@@ -6,6 +6,18 @@
 #include "log.h"
 #include "irc.h"
 
+void get_cur_time(char *timestr){
+    time_t curtime;
+
+    time(&curtime);
+    strftime(timestr, TIME_LEN, "%m-%d %H:%M", localtime(&curtime));
+    timestr[TIME_LEN-1] = '\0';
+}
+
+/* add_idle_xxx function receives various parameters and packs them in structure
+ * then call xxx funciont as a idle
+ */
+
 static void add_idle_ui_online_list_add(const char *chan, const char *nick){
     online_list_item_t *item; 
 
@@ -21,6 +33,7 @@ static void add_idle_ui_online_list_rm(const char *chan, const char *nick){
     online_list_item_t *item; 
 
     item = calloc(1, sizeof(online_list_item_t));
+
     strncpy(item->chan, chan, CHAN_LEN);
     strncpy(item->nick, nick, NICK_LEN);
     gdk_threads_add_idle((GSourceFunc)ui_online_list_rm, item);
@@ -28,122 +41,107 @@ static void add_idle_ui_online_list_rm(const char *chan, const char *nick){
     return;
 }
 
-void get_cur_time(char *timestr){
-    time_t curtime;
-
-    time(&curtime);
-    strftime(timestr, TIME_LEN, "%m-%d %H:%M", localtime(&curtime));
-    timestr[TIME_LEN-1] = '\0';
-}
-
-/* transfer a standard PRIVMSG message to bubble_msg_t,
- * then call `ui_msg_recv`
- */
-void add_idle_ui_msg_recv(const irc_msg_t *imsg){
+static void add_idle_ui_msg_recv(const char *nick, const char *chan, const char *msg,
+        const char *id, const char *img, const char *avatar){
     bubble_msg_t *bmsg;
 
+    bmsg = calloc(1, sizeof(bubble_msg_t));
+    get_cur_time(bmsg->time);
+    strncpy(bmsg->nick, nick, NICK_LEN);
+    strncpy(bmsg->chan, chan, CHAN_LEN);
+    strncpy(bmsg->msg, msg, MSG_LEN);
+
+    gdk_threads_add_idle((GSourceFunc)ui_msg_recv, bmsg);
+    LOG_FR("idle added");
+    return;
+}
+
+static void add_idle_ui_msg_sys(const char *chan, const char *msg){
+    bubble_msg_t *bmsg;
+
+    bmsg = calloc(1, sizeof(bubble_msg_t));
+
+    strncpy(bmsg->chan, chan, CHAN_LEN);
+    strncpy(bmsg->msg, msg, MSG_LEN);
+
+    gdk_threads_add_idle((GSourceFunc)ui_msg_sys, bmsg);
+
+    LOG_FR("idle added");
+    return;
+}
+
+void idles_msg_normal(irc_msg_t *imsg){
     if (imsg->nparam != 1){
         ERR_FR("wrong param");
         return;
     }
+    if (strncmp(imsg->message, "\1ACTION", 7) == 0){
+        /* `/me` process, TODO */
+        imsg->message[strlen(imsg->message) - 1] = '\0';
+        add_idle_ui_msg_recv(imsg->nick, imsg->param[0], imsg->message + 7, NULL, NULL, NULL);
+    } else {
+        add_idle_ui_msg_recv(imsg->nick, imsg->param[0], imsg->message, NULL, NULL, NULL);
+    }
 
-    bmsg = calloc(1, sizeof(bubble_msg_t));
-    get_cur_time(bmsg->time);
-    strncpy(bmsg->nick, imsg->nick, NICK_LEN);
-    strncpy(bmsg->chan, imsg->param[0], CHAN_LEN);
-    strncpy(bmsg->msg, imsg->message, MSG_LEN);
-
-    gdk_threads_add_idle((GSourceFunc)ui_msg_recv, bmsg);
     LOG_FR("idle added");
     return;
 }
 
-/* transfer a server message to bubble_msg_t,
- * let nick = servername
- *     msg = message
- *     chan = irc server's alias
- * then call `ui_msg_recv`
- */
-void add_idle_ui_msg_recv2(const char *chan, const irc_msg_t *imsg){
-    bubble_msg_t *bmsg;
-
-    bmsg = calloc(1, sizeof(bubble_msg_t));
-    get_cur_time(bmsg->time);
-    strncpy(bmsg->nick, imsg->servername, SERVER_LEN);
-    strncpy(bmsg->chan, chan, CHAN_LEN);
-    strncpy(bmsg->msg, imsg->message, MSG_LEN);
-
-    gdk_threads_add_idle((GSourceFunc)ui_msg_recv, bmsg);
-    LOG_FR("idle added");
-    return;
-}
-
-/* transfer a server message to bubble_msg_t,
+/* regard a server message as a PRVIMSG message
  * let nick = servername
  *     msg = param[1..n] + message
  *     chan = irc server's alias
- * then call `ui_msg_recv`
+ * then call `add_idle_ui_msg_recv`
  */
-void add_idle_ui_msg_recv3(const char *chan, const irc_msg_t *imsg){
+void idles_msg_server(const char *server_alias, const irc_msg_t *imsg){
     int i = 1;
-    bubble_msg_t *bmsg;
+    char tmp[MSG_LEN];
 
-    bmsg = calloc(1, sizeof(bubble_msg_t));
-    get_cur_time(bmsg->time);
-    strncpy(bmsg->nick, imsg->servername, SERVER_LEN);
-    strncpy(bmsg->chan, chan, CHAN_LEN);
-
+    memset(tmp, 0, MSG_LEN*sizeof(char));
     while (i < imsg->nparam){
-        strcat(bmsg->msg, imsg->param[i++]);
-        strcat(bmsg->msg, " ");
+        strcat(tmp, imsg->param[i++]);
+        strcat(tmp, " ");
     }
-    strcat(bmsg->msg, imsg->message);
-    if (strlen(bmsg->msg) >= MSG_LEN){
+    strcat(tmp, imsg->message);
+    if (strlen(tmp) >= MSG_LEN){
         ERR_FR("message too long");
-        goto bad;
+        return;
     }
 
-    gdk_threads_add_idle((GSourceFunc)ui_msg_recv, bmsg);
+    add_idle_ui_msg_recv(imsg->servername, server_alias, tmp, NULL, NULL, NULL);
     LOG_FR("idle added");
-    return;
-
-bad:
-    free(bmsg);
     return;
 }
 
-void add_idle_ui_msg_sys(const irc_msg_t *imsg){
-    bubble_msg_t *bmsg;
+void idles_join_part(const irc_msg_t *imsg){
+    char tmp[MSG_LEN];
 
-    bmsg = calloc(1, sizeof(bubble_msg_t));
-    if (strcmp(imsg->command, "JOIN") == 0
-            || strcmp(imsg->command, "PART") == 0){
-        if (imsg->nparam != 1){
-            ERR_FR("wrong param");
-            goto bad;
-        }
-        strncpy(bmsg->chan, imsg->param[0], CHAN_LEN);
-        sprintf(bmsg->msg, "%s %s %s %s", imsg->nick, imsg->command, imsg->param[0], imsg->message);
-
-        gdk_threads_add_idle((GSourceFunc)ui_msg_sys, bmsg);
-
-        if (strcmp(imsg->command, "JOIN") == 0){
-            add_idle_ui_online_list_add(imsg->param[0], imsg->nick);
+    if (strcmp(imsg->command, "QUIT") == 0){
+        snprintf(tmp, MSG_LEN, "%s %s: %s", imsg->nick, imsg->command, imsg->message);
+    } else {
+        if (strlen(imsg->message) == 0){
+            snprintf(tmp, MSG_LEN, "%s %s %s", imsg->nick, imsg->command, imsg->param[0]);
         } else {
-            add_idle_ui_online_list_rm(imsg->param[0], imsg->nick);
+            snprintf(tmp, MSG_LEN, "%s %s %s: %s", imsg->nick, imsg->command, imsg->param[0], imsg->message);
         }
-        LOG_FR("idle added");
     }
-    return;
-bad:
-    free(bmsg);
+
+    add_idle_ui_msg_sys(imsg->param[0], tmp);
+
+    if (strcmp(imsg->command, "JOIN") == 0){
+        add_idle_ui_online_list_add(imsg->param[0], imsg->nick);
+    } else {    // PART or QUIT
+        add_idle_ui_online_list_rm(imsg->param[0], imsg->nick);
+    }
+
+    LOG_FR("idle added");
     return;
 }
 
 /* transfer a TOPIC/RPL_TOPIC message to topic_t,
  * then call `ui_chan_set_topic`
  */
-void add_idle_ui_chan_set_topic(const irc_msg_t *imsg){
+void idles_topic(const irc_msg_t *imsg){
     topic_t *topic;
 
     topic = calloc(1, sizeof(topic_t));
@@ -170,7 +168,7 @@ void add_idle_ui_chan_set_topic(const irc_msg_t *imsg){
 /* separate a RPL_NAMREPLY message to mulitple nickname
  * then call `add_ui_online_list_add` for every nickname
  */
-void add_idle_ui_online_list_init(irc_msg_t *imsg){
+void idles_names(irc_msg_t *imsg){
     int i = 0;
     char *nickptr;
 
@@ -188,4 +186,3 @@ void add_idle_ui_online_list_init(irc_msg_t *imsg){
     LOG_FR("%d idle(s) added", i);
     return;
 }
-

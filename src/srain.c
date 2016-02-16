@@ -63,37 +63,40 @@ void srain_recv(){
     LOG_FR("start listening in a new thread");
 
     for (;;){
+        memset(&imsg, 0, sizeof(irc_msg_t));
         type = irc_recv(&irc, &imsg);
 
         if (type == IRCMSG_MSG){
             if (strcmp(imsg.command, "PRIVMSG") == 0){
-                add_idle_ui_msg_recv(&imsg);
+                idles_msg_normal(&imsg);
             }
             else if (strcmp(imsg.command, "TOPIC") == 0
                     || strcmp(imsg.command, RPL_TOPIC) == 0){
-                add_idle_ui_chan_set_topic(&imsg);
+                idles_topic(&imsg);
             }
             else if (strcmp(imsg.command, "JOIN") == 0
-                    || strcmp(imsg.command, "PART") == 0){
-                add_idle_ui_msg_sys(&imsg);
+                    || strcmp(imsg.command, "PART") == 0
+                    || strcmp(imsg.command, "QUIT") == 0){
+                /* we receive one QUIT messge when a people quit, but we should remove this people from
+                 * all channels he has join in, TODO
+                 */
+                idles_join_part(&imsg);
             }
             else if (strcmp(imsg.command, RPL_NAMREPLY) == 0){
-                add_idle_ui_online_list_init(&imsg);
+                idles_names(&imsg);
             }
             else if (strcmp(imsg.command, "NOTICE") == 0
                     || strcmp(imsg.command, RPL_WELCOME) == 0
                     || strcmp(imsg.command, RPL_YOURHOST) == 0
                     || strcmp(imsg.command, RPL_CREATED) == 0
                     || strcmp(imsg.command, RPL_MOTD) == 0
-                    || strcmp(imsg.command, RPL_ENDOFMOTD) == 0){
-                add_idle_ui_msg_recv2(irc.alias, &imsg);
-            }
-            else if (strcmp(imsg.command, RPL_MYINFO) == 0
+                    || strcmp(imsg.command, RPL_ENDOFMOTD) == 0
+                    || strcmp(imsg.command, RPL_MYINFO) == 0
                     || strcmp(imsg.command, RPL_BOUNCE) == 0
                     || strcmp(imsg.command, RPL_LUSEROP) == 0
                     || strcmp(imsg.command, RPL_LUSERUNKNOWN) == 0
                     || strcmp(imsg.command, RPL_LUSERCHANNELS) == 0){
-                add_idle_ui_msg_recv3(irc.alias, &imsg);
+                idles_msg_server(irc.alias, &imsg);
             } else {
 
             }
