@@ -113,7 +113,12 @@ gboolean ui_msg_recv(bubble_msg_t *msg){
     assert(msg);
     LOG_FR("nick: %s, chan: %s, msg: %s", msg->nick, msg->chan, msg->msg);
 
-    chan_panel_box = gtk_stack_get_child_by_name(GTK_STACK(chan_panel_stack), msg->chan);
+    if (strlen(msg->chan)){
+        chan_panel_box = gtk_stack_get_child_by_name(GTK_STACK(chan_panel_stack), msg->chan);
+    } else {
+        chan_panel_box = gtk_stack_get_visible_child(GTK_STACK(chan_panel_stack));
+    }
+
     if (!chan_panel_box){
         ERR_FR("chan_panel %s not found", msg->chan);
         return FALSE;
@@ -165,7 +170,12 @@ gboolean ui_msg_sys(bubble_msg_t *msg){
     assert(msg);
     LOG_FR("chan: %s, msg: %s", msg->chan, msg->msg);
 
-    chan_panel_box = gtk_stack_get_child_by_name(GTK_STACK(chan_panel_stack), msg->chan);
+    if (strlen(msg->chan)){
+        chan_panel_box = gtk_stack_get_child_by_name(GTK_STACK(chan_panel_stack), msg->chan);
+    } else {
+        chan_panel_box = gtk_stack_get_visible_child(GTK_STACK(chan_panel_stack));
+    }
+
     if (!chan_panel_box){
         ERR_FR("chan_panel %s not found", msg->chan);
         return FALSE;
