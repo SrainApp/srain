@@ -14,11 +14,11 @@ GTK3LIBS = $$(pkg-config --libs gtk+-3.0)
 TARGET = build/srain
 OBJS = build/main.o build/i18n.o build/ui_common.o build/ui_window.o 		\
 	   build/ui_chan.o build/ui_msg.o build/ui_detail.o build/ui_image.o	\
-	   build/irc_shell.o build/irc_core.o build/socket.o build/irc_parse.o	\
+	   build/irc_core.o build/socket.o build/irc_parse.o					\
 	   build/srain.o build/idles.o
 
 IRCTEST = build/irctest
-IRCTEST_OBJS = build/irc_core.o build/irc_shell.o build/irc_test.o build/socket.o \
+IRCTEST_OBJS = build/irc_core.o build/irc_test.o build/socket.o \
 			   build/irc_parse.o
 
 UITEST = build/uitest

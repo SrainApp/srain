@@ -19,9 +19,7 @@ int irc_connect(irc_t *irc, const char *server, const char *port){
     }
     irc->bufptr = 0;
     irc->nchan = 0;
-    for (i = 0; i < CHAN_NUM; i++){
-        irc->chans[i][0] = '\0';
-    }
+    memset(irc->chans, 0, sizeof(irc->chans));
 
     return 0;
 }
@@ -43,15 +41,22 @@ int irc_reg(irc_t *irc, const char *nick, const char *username, const char *full
 
 // irc_join: For joining a chan
 int irc_join(irc_t *irc, const char *chan){
-    int i;
+    int i, empty = -1;
 
-    LOG_FR("attemping to join %s", chan);
+    LOG_FR("join %s", chan);
     for (i = 0; i < CHAN_NUM; i++){
-        if (strlen(irc->chans[i]) == 0){
-            strncpy(irc->chans[i], chan, CHAN_LEN - 2);
-            irc->chans[i][CHAN_LEN-1] = '\0';
-
-            return sck_sendf(irc->fd, "JOIN %s\r\n", chan);
+        if (strncmp(irc->chans[i], chan, CHAN_LEN) == 0){
+            ERR_FR("channels already exist");
+            return -1;
+        }
+        if (strlen(irc->chans[i]) == 0)
+            empty = (empty != -1 && empty < i) ? empty : i;
+    }
+    if (empty != -1){
+        LOG_FR("empty %d", empty);
+        if (sck_sendf(irc->fd, "JOIN %s\r\n", chan) != -1){
+            strncpy(irc->chans[empty], chan, CHAN_LEN);
+            return 0;
         }
     }
 
@@ -64,13 +69,13 @@ int irc_part(irc_t *irc, const char *chan, const char *reason){
     int i;
     if (!reason) reason = "";
 
-    for (i = 0; i < irc->nchan; i++){
+    // reasion doesn't wrok TODO
+    LOG_FR("part %s reason %s", chan, reason);
+    for (i = 0; i < CHAN_NUM; i++){
         if (strncmp(irc->chans[i], chan, CHAN_LEN) == 0){
-            if (sck_sendf(irc->fd, "PART %s\r\n", reason) == 0){
+            if (sck_sendf(irc->fd, "PART %s :%s\r\n", chan, reason) != -1){
                 memset(irc->chans[i], 0, CHAN_LEN);
                 return 0;
-            } else {
-                return -1;
             }
         }
     }
@@ -86,6 +91,9 @@ int irc_nick(irc_t *irc, const char *nick){
 
 // irc_quit: For quitting IRC
 int irc_quit(irc_t *irc, const char *reason){
+    if (!reason) reason = "EL PSY CONGRO";
+    LOG_FR("quit with reason: %s", reason);
+
     return sck_sendf(irc->fd, "QUIT :%s\r\n", reason);
 }
 

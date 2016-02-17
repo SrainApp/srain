@@ -56,7 +56,7 @@ static void add_idle_ui_msg_recv(const char *nick, const char *chan, const char 
     return;
 }
 
-static void add_idle_ui_msg_sys(const char *chan, const char *msg){
+void add_idle_ui_msg_sys(const char *chan, const char *msg){
     bubble_msg_t *bmsg;
 
     bmsg = calloc(1, sizeof(bubble_msg_t));
@@ -130,7 +130,11 @@ void idles_join_part(const irc_msg_t *imsg){
 
     if (strcmp(imsg->command, "JOIN") == 0){
         add_idle_ui_online_list_add(imsg->param[0], imsg->nick);
-    } else {    // PART or QUIT
+    }
+    else if (strcmp(imsg->command, "PART") == 0){
+        add_idle_ui_online_list_rm(imsg->param[0], imsg->nick);
+    } else {
+        // TODO
         add_idle_ui_online_list_rm(imsg->param[0], imsg->nick);
     }
 

@@ -26,6 +26,7 @@ static gint online_listbox_on_dbclick(GtkWidget *widget, GdkEventButton *event){
 }
 
 static gint input_entry_on_enter(GtkWidget *widget, GdkEventKey *event){
+    int res = 0;
     const char *input;
     const char *panel;
 
@@ -34,7 +35,12 @@ static gint input_entry_on_enter(GtkWidget *widget, GdkEventKey *event){
         assert(panel);
         input = gtk_entry_get_text(GTK_ENTRY(widget));
         LOG_FR("panel = %s, text = \"%s\"", panel, input);
-        if (srain_send(panel, input) != -1){
+        if (input[0] == '/'){
+            res = srain_cmd(panel, input);
+        } else {
+            res = srain_send(panel, input);
+        }
+        if (res != -1){
             gtk_entry_set_text(GTK_ENTRY(widget), "");
         }
         return TRUE;
@@ -67,6 +73,7 @@ gboolean ui_chan_add(chan_name_t *chan){
     GtkWidget *chan_input_entry;
 
     assert(chan);
+    LOG_FR("add chan %s", chan->name);
 
     builder = gtk_builder_new_from_file("../data/ui/chan_panel.glade");
     UI_BUILDER_GET_WIDGET(builder, chan_panel_box);

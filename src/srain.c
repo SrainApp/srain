@@ -23,26 +23,38 @@ int srain_connect(const char *server, const char *alias){
 }
 
 int srain_login(const char *nick){
-    return irc_login(&irc, nick);
+    return irc_reg(&irc, nick, NULL, NULL);
 }
 
 int srain_join(const char *chan){
     chan_name_t *chan2;
 
-    chan2 = malloc(sizeof(chan_name_t));
+    chan2 = calloc(1, sizeof(chan_name_t));
     strncpy(chan2->name, chan, CHAN_LEN);
     ui_chan_add(chan2);
 
-    if (irc_join_chan(&irc, chan) < 0){
-        return -1;
+    return irc_join(&irc, chan);
+}
+
+int srain_part(const char *chan, const char *reason){
+    chan_name_t *chan2;
+    if (!reason) reason = "";
+
+    chan2 = calloc(1, sizeof(chan_name_t));
+    strncpy(chan2->name, chan, CHAN_LEN);
+
+    if (irc_part(&irc, chan, reason) != -1){
+        ui_chan_rm(chan2);
+        return 0;
     }
-    return 0;
+
+    return -1;
 }
 
 int srain_send(const char *chan, const char *msg){
     bubble_msg_t bmsg;
 
-    LOG_FR("send message %s to %s", msg, chan);
+    LOG_FR("send message \"%s\" to %s", msg, chan);
     memset(&bmsg, 0, sizeof(bubble_msg_t));
 
     strncpy(bmsg.chan, chan, CHAN_LEN);
@@ -50,7 +62,7 @@ int srain_send(const char *chan, const char *msg){
     get_cur_time(bmsg.time);
 
     ui_msg_send(&bmsg);
-    irc_send(&irc, chan, msg);
+    irc_msg(&irc, chan, msg);
 
     return 0;
 }
@@ -80,7 +92,9 @@ void srain_recv(){
                 /* we receive one QUIT messge when a people quit, but we should remove this people from
                  * all channels he has join in, TODO
                  */
-                idles_join_part(&imsg);
+                if (strncmp(imsg.nick, irc.nick, NICK_LEN) != 0){
+                    idles_join_part(&imsg);
+                }
             }
             else if (strcmp(imsg.command, RPL_NAMREPLY) == 0){
                 idles_names(&imsg);
@@ -97,8 +111,8 @@ void srain_recv(){
                     || strcmp(imsg.command, RPL_LUSERUNKNOWN) == 0
                     || strcmp(imsg.command, RPL_LUSERCHANNELS) == 0){
                 idles_msg_server(irc.alias, &imsg);
-            } else {
-
+            } else if (imsg.command[0] == '4'){
+                add_idle_ui_msg_sys("", imsg.message);
             }
         }
     }
@@ -107,6 +121,36 @@ void srain_recv(){
 int srain_listen(){
     g_thread_new(NULL, (void *)srain_recv, NULL);
     return 0;
+}
+
+
+int srain_cmd(const char *chan, char *cmd){
+    /* TODO
+     * me
+     * msg
+     * nick
+     * ping
+     * quit
+     * ignore
+     * whois
+     * help
+     * names
+     * */
+    if (strncmp(cmd, "/join", 5) == 0){
+        // TODO
+        char *jchan = strtok(cmd + 5, " ");
+        if (jchan) return srain_join(jchan);
+    } 
+    else if (strncmp(cmd, "/part", 5) == 0){
+        char *pchan = strtok(cmd + 5, " ");
+        if (pchan) return srain_part(pchan, "Srain 1.0");
+    } else {
+        add_idle_ui_msg_sys(chan, "unsupported command");
+        return -1;
+    }
+
+    add_idle_ui_msg_sys(chan, "missing channel");
+    return -1;
 }
 
 void srain_close(){
