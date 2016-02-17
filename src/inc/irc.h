@@ -46,11 +46,12 @@ typedef enum {
 } irc_msg_type_t;
 
 int irc_connect(irc_t *irc, const char *server, const char *port);
-int irc_login(irc_t *irc, const char *nick);
-int irc_join_chan(irc_t *irc, const char *chan);
-int irc_leave_chan(irc_t *irc, const char *chan);
-int irc_send(irc_t *irc, const char *chan, const char *msg);
+int irc_reg(irc_t *irc, const char *nick, const char *username, const char *fullname);
+int irc_join(irc_t *irc, const char *chan);
+int irc_leave(irc_t *irc, const char *chan);
+int irc_msg(irc_t *irc, const char *chan, const char *msg);
 irc_msg_type_t irc_recv(irc_t *irc, irc_msg_t *ircmsg);
+int irc_quit(irc_t *irc, const char *reason);
 void irc_close(irc_t *irc);
 
 #endif /* __IRC_H */
