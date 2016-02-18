@@ -1,5 +1,6 @@
 #include <gtk/gtk.h>
 #include <assert.h>
+#include <time.h>
 #include <string.h>
 #include "ui.h"
 #include "ui_common.h"
@@ -9,6 +10,14 @@
 extern GtkWidget *chan_panel_stack;
 
 static GtkWidget *msg_bubble_menu;
+
+static void get_cur_time(char *timestr){
+    time_t curtime;
+
+    time(&curtime);
+    strftime(timestr, 32, "%m-%d %H:%M", localtime(&curtime));
+    timestr[31] = '\0';
+}
 
 /* display bigger image */
 static void image_on_click(gchar *path, GdkEventButton *event){
@@ -52,7 +61,7 @@ void ui_msg_init(){
     g_object_unref(builder);
 }
 
-int ui_msg_send(bubble_msg_t *msg){
+int ui_msg_send(const char *chan, const char *msg, const char *img){
     GtkBuilder *builder;
     GtkWidget *send_msg_bubble_box;
     GtkWidget *send_msg_label;
@@ -62,31 +71,34 @@ int ui_msg_send(bubble_msg_t *msg){
     GtkWidget *chan_msg_listbox;
     GtkWidget *chan_panel_box;
 
-    chan_panel_box = gtk_stack_get_child_by_name(GTK_STACK(chan_panel_stack), msg->chan);
+    chan_panel_box = gtk_stack_get_child_by_name(GTK_STACK(chan_panel_stack), chan);
     if (!chan_panel_box){
-        ERR_FR("chan_panel %s not found", msg->chan);
+        ERR_FR("chan_panel %s not found", chan);
         return -1;
     }
 
     chan_msg_listbox = get_widget_by_name(chan_panel_box, "chan_msg_listbox");
     assert(chan_msg_listbox);
     builder = gtk_builder_new_from_file( "../data/ui/msg_bubble.glade");
-    if (strlen(msg->img) != 0){
+    if (img){
         UI_BUILDER_GET_WIDGET(builder, send_image);
         UI_BUILDER_GET_WIDGET(builder, send_image_eventbox);
     }
     UI_BUILDER_GET_WIDGET(builder, send_msg_bubble_box);
     UI_BUILDER_GET_WIDGET(builder, send_msg_label);
     UI_BUILDER_GET_WIDGET(builder, send_time_label);
-    if (strlen(msg->img) != 0){
-        GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file_at_size (msg->img, 300, 300, NULL);
+    if (img){
+        GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file_at_size (img, 300, 300, NULL);
         gtk_image_set_from_pixbuf(GTK_IMAGE(send_image), pixbuf);
         g_object_unref (pixbuf);
-        g_signal_connect_swapped(send_image_eventbox, "button_release_event", G_CALLBACK(image_on_click), msg->img);
+        g_signal_connect_swapped(send_image_eventbox, "button_release_event", G_CALLBACK(image_on_click), (char *)img);
     }
 
-    gtk_label_set_text(GTK_LABEL(send_msg_label), msg->msg);
-    gtk_label_set_text(GTK_LABEL(send_time_label), msg->time);
+    gtk_label_set_text(GTK_LABEL(send_msg_label), msg);
+
+    char time[32];
+    get_cur_time(time);
+    gtk_label_set_text(GTK_LABEL(send_time_label), time);
 
     g_signal_connect(send_msg_label, "button_press_event", G_CALLBACK(menu_popup), msg_bubble_menu);
 
@@ -96,7 +108,7 @@ int ui_msg_send(bubble_msg_t *msg){
     return 0;
 }
 
-gboolean ui_msg_recv(bubble_msg_t *msg){
+gboolean ui_msg_recv(recv_msg_t *msg){
     GtkBuilder *builder;
     GtkWidget *recv_msg_bubble_box;
     GtkWidget *avatar_image;
@@ -137,8 +149,12 @@ gboolean ui_msg_recv(bubble_msg_t *msg){
 
     gtk_label_set_text(GTK_LABEL(nick_label), msg->nick);
     gtk_label_set_text(GTK_LABEL(identify_label), msg->id);
-    gtk_label_set_text(GTK_LABEL(recv_time_label), msg->time);
     gtk_label_set_text(GTK_LABEL(recv_msg_label), msg->msg);
+
+    char time[32];
+    get_cur_time(time);
+    gtk_label_set_text(GTK_LABEL(recv_time_label), time);
+
     if (strlen(msg->img) != 0){
         GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file_at_size (msg->img, 300, 300, NULL);
         gtk_image_set_from_pixbuf(GTK_IMAGE(recv_image), pixbuf);
@@ -156,7 +172,7 @@ gboolean ui_msg_recv(bubble_msg_t *msg){
     return FALSE;
 }
 
-gboolean ui_msg_sys(bubble_msg_t *msg){
+gboolean ui_msg_sys(sys_msg_t *msg){
     GtkBuilder *builder;
     GtkWidget *sys_msg_label;
     GtkWidget *chan_msg_listbox;

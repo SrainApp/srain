@@ -93,6 +93,7 @@ int sck_recv(int fd, char *buffer, size_t size){
     rc = recv(fd, buffer, size, 0);
     if (rc <= 0){
         ERR_FR("socket error");
+        exit(-1);
         return -1;
     }
 

@@ -14,8 +14,6 @@ int irc_connect(irc_t *irc, const char *server, const char *port){
     if ((irc->fd =  get_socket(server, port)) < 0){
         return -1;
     }
-    irc->bufptr = 0;
-    memset(irc->chans, 0, sizeof(irc->chans));
 
     return 0;
 }
@@ -28,52 +26,23 @@ int irc_pong(irc_t *irc, const char *data){
 // irc_reg: For registering upon login
 int irc_reg(irc_t *irc, const char *nick, const char *username, const char *fullname){
     LOG_FR("attemping to login as %s", nick);
-    irc->nick = (char *)nick;
-    if (!username) username = "Srain";
-    if (!fullname) fullname = "EL PSY CONGRO";
 
     return sck_sendf(irc->fd, "NICK %s\r\nUSER %s localhost 0 :%s\r\n", nick, username, fullname);
 }
 
 // irc_join: For joining a chan
 int irc_join(irc_t *irc, const char *chan){
-    int i, empty = -1;
-
     LOG_FR("join %s", chan);
-    for (i = 0; i < CHAN_NUM; i++){
-        if (strncmp(irc->chans[i], chan, CHAN_LEN) == 0){
-            ERR_FR("channels already exist");
-            return -1;
-        }
-        if (strlen(irc->chans[i]) == 0)
-            empty = (empty != -1 && empty < i) ? empty : i;
-    }
-    if (empty != -1 && sck_sendf(irc->fd, "JOIN %s\r\n", chan) != -1){
-        strncpy(irc->chans[empty], chan, CHAN_LEN);
-        return 0;
-    }
 
-    ERR_FR("channels list is full");
-    return -1;
+    return sck_sendf(irc->fd, "JOIN %s\r\n", chan);
 }
 
 // irc_part: For leaving a chan
 int irc_part(irc_t *irc, const char *chan, const char *reason){
-    int i;
-
     LOG_FR("part %s reason %s", chan, reason);
 
     // reasion doesn't wrok TODO
-    for (i = 0; i < CHAN_NUM; i++){
-        if (strncmp(irc->chans[i], chan, CHAN_LEN) == 0
-                && sck_sendf(irc->fd, "PART %s :%s\r\n", chan, reason) != -1){
-            memset(irc->chans[i], 0, CHAN_LEN);
-            return 0;
-        }
-    }
-
-    ERR_FR("no such channel %s", chan);
-    return -1;
+    return sck_sendf(irc->fd, "PART %s :%s\r\n", chan, reason);
 }
 
 // irc_nick: For changing your nick

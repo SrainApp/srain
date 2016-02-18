@@ -16,9 +16,9 @@
 
 typedef struct {
     int fd;
-    char *nick;
-    char *server;
-    char *alias;
+    char nick[NICK_LEN];
+    char server[256];
+    char alias[CHAN_LEN];
 
     int nchan;
     char chans[CHAN_NUM][CHAN_LEN];

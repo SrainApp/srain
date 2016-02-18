@@ -2,6 +2,7 @@
 #define __UI_COMMON_H
 
 #include <gtk/gtk.h>
+#include "ui.h"
 
 #define UI_BUILDER_GET_WIDGET(builder, widget) \
     widget = GTK_WIDGET(gtk_builder_get_object(builder, ""#widget"")); \

@@ -4,67 +4,88 @@
 #include "ui.h"
 #include "irc.h"
 #include "irc_cmd.h"
+#include "async.h"
 #include "log.h"
-#include "idles.h"
 
 irc_t irc;
 
+int srain_listen();
 int srain_connect(const char *server, const char *alias){
-    chan_name_t *chan;
+    if (irc.fd){
+        async_call_ui_msg_sys(ui_chan_get_cur(), "you have connected");
+        return -1;
+    }
 
-    irc.alias = (char *)alias;
-    irc.server = (char *)server;
+    strncpy(irc.alias, alias, CHAN_LEN);
+    strncpy(irc.server, server, sizeof(irc.server) - 1);
 
-    chan = malloc(sizeof(chan_name_t));
-    strncpy(chan->name, alias, CHAN_LEN);
-    ui_chan_add(chan);
+    irc.bufptr = 0;
+    memset(irc.chans, 0, sizeof(irc.chans));
 
-    return irc_connect(&irc, server, "6666");
+    ui_chan_add(alias);
+    irc_connect(&irc, server, "6666");
+    srain_listen();
+    return 0;
 }
 
 int srain_login(const char *nick){
-    return irc_reg(&irc, nick, NULL, NULL);
+    if (!irc.fd){
+        async_call_ui_msg_sys(ui_chan_get_cur(), "you are no connect to any server");
+        return -1;
+    }
+    if (strlen(irc.nick) != 0){
+        async_call_ui_msg_sys(ui_chan_get_cur(), "you have logined");
+        return -1;
+    }
+    strncpy(irc.nick, nick, NICK_LEN);
+
+    return irc_reg(&irc, nick, "Srain", "EL PSY CONGRO");
 }
 
 int srain_join(const char *chan){
-    chan_name_t *chan2;
+    int i, empty = -1;
 
-    chan2 = calloc(1, sizeof(chan_name_t));
-    strncpy(chan2->name, chan, CHAN_LEN);
-    ui_chan_add(chan2);
-
-    return irc_join(&irc, chan);
-}
-
-int srain_part(const char *chan, const char *reason){
-    chan_name_t *chan2;
-    if (!reason) reason = "Srain";
-
-    chan2 = calloc(1, sizeof(chan_name_t));
-    strncpy(chan2->name, chan, CHAN_LEN);
-
-    if (irc_part(&irc, chan, reason) != -1){
-        ui_chan_rm(chan2);
+    for (i = 0; i < CHAN_NUM; i++){
+        if (strncmp(irc.chans[i], chan, CHAN_LEN) == 0){
+            ERR_FR("channels already exist");
+            return -1;
+        }
+        if (strlen(irc.chans[i]) == 0)
+            empty = (empty != -1 && empty < i) ? empty : i;
+    }
+    if (empty != -1){
+        irc_join(&irc, chan);
+        strncpy(irc.chans[empty], chan, CHAN_LEN);
+        ui_chan_add(chan);
         return 0;
     }
 
+    ERR_FR("channels list is full");
+    return -1;
+}
+
+int srain_part(const char *chan, const char *reason){
+    int i;
+    if (!reason) reason = "Srain";
+
+    for (i = 0; i < CHAN_NUM; i++){
+        if (strncmp(irc.chans[i], chan, CHAN_LEN) == 0){
+            irc_part(&irc, chan, reason);
+            ui_chan_rm(chan);
+            memset(irc.chans[i], 0, CHAN_LEN);
+            return 0;
+        }
+    }
+
+    ERR_FR("no such channel %s", chan);
     return -1;
 }
 
 int srain_send(const char *chan, const char *msg){
-    bubble_msg_t bmsg;
-
     LOG_FR("send message \"%s\" to %s", msg, chan);
-    memset(&bmsg, 0, sizeof(bubble_msg_t));
 
-    strncpy(bmsg.chan, chan, CHAN_LEN);
-    strncpy(bmsg.msg, msg, MSG_LEN);
-    get_cur_time(bmsg.time);
-
-    ui_msg_send(&bmsg);
-    irc_msg(&irc, chan, msg);
-
-    return 0;
+    ui_msg_send(chan, msg, NULL);
+    return irc_msg(&irc, chan, msg);
 }
 
 
@@ -80,11 +101,11 @@ void srain_recv(){
 
         if (type == IRCMSG_MSG){
             if (strcmp(imsg.command, "PRIVMSG") == 0){
-                idles_msg_normal(&imsg);
+                async_recv_msg_normal(&imsg);
             }
             else if (strcmp(imsg.command, "TOPIC") == 0
                     || strcmp(imsg.command, RPL_TOPIC) == 0){
-                idles_topic(&imsg);
+                async_set_topic(&imsg);
             }
             else if (strcmp(imsg.command, "JOIN") == 0
                     || strcmp(imsg.command, "PART") == 0
@@ -93,11 +114,11 @@ void srain_recv(){
                  * all channels he has join in, TODO
                  */
                 if (strncmp(imsg.nick, irc.nick, NICK_LEN) != 0){
-                    idles_join_part(&imsg);
+                    async_join_part(&imsg);
                 }
             }
             else if (strcmp(imsg.command, RPL_NAMREPLY) == 0){
-                idles_names(&imsg);
+                async_online_list_init(&imsg);
             }
             else if (strcmp(imsg.command, "NOTICE") == 0
                     || strcmp(imsg.command, RPL_WELCOME) == 0
@@ -110,10 +131,10 @@ void srain_recv(){
                     || strcmp(imsg.command, RPL_LUSEROP) == 0
                     || strcmp(imsg.command, RPL_LUSERUNKNOWN) == 0
                     || strcmp(imsg.command, RPL_LUSERCHANNELS) == 0){
-                idles_msg_server(irc.alias, &imsg);
+                async_recv_msg_server(irc.alias, &imsg);
             } else if (imsg.command[0] == '4'){
                 /* RPL_ERROR */
-                add_idle_ui_msg_sys(ui_chan_get_cur(), imsg.message);
+                async_call_ui_msg_sys(ui_chan_get_cur(), imsg.message);
             }
         }
     }
@@ -132,18 +153,24 @@ void srain_close(){
 
 int srain_cmd(const char *chan, char *cmd){
     /* TODO
-     * nick
-     * ping
-     * quit
      * ignore
      * whois
      * help
      * names
      * */
-    if (strncmp(cmd, "/join", 5) == 0){
+    if (strncmp(cmd, "/connect", 8) == 0){
+        char *server = strtok(cmd + 8, " ");
+        char *alias= strtok(NULL, " ");
+        if (server && alias) return srain_connect(server, alias);
+    }
+    else if (strncmp(cmd, "/login", 6) == 0){
+        char *nick = strtok(cmd + 6, " ");
+        if (nick) return srain_login(nick);
+    }
+    else if (strncmp(cmd, "/join", 5) == 0){
         char *jchan = strtok(cmd + 5, " ");
         if (jchan) return srain_join(jchan);
-    } 
+    }
     else if (strncmp(cmd, "/part", 5) == 0){
         char *pchan = strtok(cmd + 5, " ");
         if (pchan) return srain_part(pchan, NULL);
@@ -165,14 +192,16 @@ int srain_cmd(const char *chan, char *cmd){
         if (nick){
             return irc_nick(&irc, nick);
             // TODO null?
-            irc.nick =  nick;
+            strncpy(irc.nick, nick, NICK_LEN);
         }
     } else {
-        add_idle_ui_msg_sys(chan, "unsupported command");
+        async_call_ui_msg_sys(chan, "unsupported command");
         return -1;
     }
 
-    add_idle_ui_msg_sys(chan, "missing parameter");
+    char errmsg[128];
+    snprintf(errmsg, 127, "`%s` missing parameter", cmd);
+    async_call_ui_msg_sys(chan, errmsg);
     return -1;
 }
 

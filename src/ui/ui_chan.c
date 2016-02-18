@@ -63,7 +63,11 @@ static void send_button_on_click(GtkEntry *entry, GdkEventButton *event){
     }
 }
 
-gboolean ui_chan_add(chan_name_t *chan){
+const char* ui_chan_get_cur(){
+    return gtk_stack_get_visible_child_name(GTK_STACK(chan_panel_stack));
+}
+
+int ui_chan_add(const char *chan){
     GtkBuilder *builder;
     GtkWidget *chan_name_label;
     GtkWidget *chan_topic_label;
@@ -72,8 +76,7 @@ gboolean ui_chan_add(chan_name_t *chan){
     GtkWidget *chan_send_button;
     GtkWidget *chan_input_entry;
 
-    assert(chan);
-    LOG_FR("add chan %s", chan->name);
+    LOG_FR("add chan %s", chan);
 
     builder = gtk_builder_new_from_file("../data/ui/chan_panel.glade");
     UI_BUILDER_GET_WIDGET(builder, chan_panel_box);
@@ -83,42 +86,30 @@ gboolean ui_chan_add(chan_name_t *chan){
     UI_BUILDER_GET_WIDGET(builder, chan_send_button);
     UI_BUILDER_GET_WIDGET(builder, chan_input_entry);
 
-    gtk_label_set_text(GTK_LABEL(chan_name_label), chan->name);
-    gtk_stack_add_named(GTK_STACK(chan_panel_stack), chan_panel_box, chan->name);
-    gtk_container_child_set(GTK_CONTAINER(chan_panel_stack), chan_panel_box, "title", chan->name, NULL);
+    gtk_label_set_text(GTK_LABEL(chan_name_label), chan);
+    gtk_stack_add_named(GTK_STACK(chan_panel_stack), chan_panel_box, chan);
+    gtk_container_child_set(GTK_CONTAINER(chan_panel_stack), chan_panel_box, "title", chan, NULL);
 
     g_signal_connect(chan_online_listbox, "button_press_event", G_CALLBACK(online_listbox_on_dbclick), NULL);
     g_signal_connect(chan_input_entry, "key_press_event", G_CALLBACK(input_entry_on_enter), NULL);
     g_signal_connect_swapped(chan_send_button, "button_release_event", G_CALLBACK(send_button_on_click), chan_input_entry);
 
     g_object_unref(G_OBJECT(builder));
-    free(chan);
 
     return FALSE;
 }
 
-gboolean ui_chan_rm(chan_name_t *chan){
+int ui_chan_rm(const char *chan){
     GtkWidget *chan_panel_box;
 
-    assert(chan);
-
-    chan_panel_box = gtk_stack_get_child_by_name(GTK_STACK(chan_panel_stack), chan->name);
+    chan_panel_box = gtk_stack_get_child_by_name(GTK_STACK(chan_panel_stack), chan);
     if (!chan_panel_box){
-        ERR_FR("chan_panel %s no found", chan->name);
-        goto bad;
+        ERR_FR("chan_panel %s no found", chan);
+        return FALSE;
     }
     gtk_container_remove(GTK_CONTAINER(chan_panel_stack), chan_panel_box);
 
-    free(chan);
     return FALSE;
-
-bad:
-    free(chan);
-    return FALSE;
-}
-
-const char* ui_chan_get_cur(){
-    return gtk_stack_get_visible_child_name(GTK_STACK(chan_panel_stack));
 }
 
 gboolean ui_chan_set_topic(topic_t *topic){
