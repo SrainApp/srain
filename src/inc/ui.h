@@ -38,6 +38,7 @@ typedef struct {
 void ui_window_init();
 void ui_msg_init();
 int ui_msg_send(bubble_msg_t *msg);
+const char* ui_chan_get_cur();
 
 /* These function oftenly called as a idle, so thire type muse be:
  *      gboolean (*GSourceFunc) (gpointer user_data);

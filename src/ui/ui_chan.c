@@ -117,6 +117,10 @@ bad:
     return FALSE;
 }
 
+const char* ui_chan_get_cur(){
+    return gtk_stack_get_visible_child_name(GTK_STACK(chan_panel_stack));
+}
+
 gboolean ui_chan_set_topic(topic_t *topic){
     GtkWidget *chan_topic_label;
     GtkWidget *chan_panel_box;

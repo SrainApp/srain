@@ -10,15 +10,11 @@
 #include "log.h"
 
 int irc_connect(irc_t *irc, const char *server, const char *port){
-    int i;
-
     LOG_FR("connecting to %s:%s", server, port);
     if ((irc->fd =  get_socket(server, port)) < 0){
-        ERR_FR("failed to connect %s:%s", server, port);
         return -1;
     }
     irc->bufptr = 0;
-    irc->nchan = 0;
     memset(irc->chans, 0, sizeof(irc->chans));
 
     return 0;
@@ -36,7 +32,7 @@ int irc_reg(irc_t *irc, const char *nick, const char *username, const char *full
     if (!username) username = "Srain";
     if (!fullname) fullname = "EL PSY CONGRO";
 
-    return sck_sendf(irc->fd, "NICK %s\r\nUSER %s localhost 0 :%s\r\n", nick, "Srain", "EL PSY CONGRO");
+    return sck_sendf(irc->fd, "NICK %s\r\nUSER %s localhost 0 :%s\r\n", nick, username, fullname);
 }
 
 // irc_join: For joining a chan
@@ -52,12 +48,9 @@ int irc_join(irc_t *irc, const char *chan){
         if (strlen(irc->chans[i]) == 0)
             empty = (empty != -1 && empty < i) ? empty : i;
     }
-    if (empty != -1){
-        LOG_FR("empty %d", empty);
-        if (sck_sendf(irc->fd, "JOIN %s\r\n", chan) != -1){
-            strncpy(irc->chans[empty], chan, CHAN_LEN);
-            return 0;
-        }
+    if (empty != -1 && sck_sendf(irc->fd, "JOIN %s\r\n", chan) != -1){
+        strncpy(irc->chans[empty], chan, CHAN_LEN);
+        return 0;
     }
 
     ERR_FR("channels list is full");
@@ -67,16 +60,15 @@ int irc_join(irc_t *irc, const char *chan){
 // irc_part: For leaving a chan
 int irc_part(irc_t *irc, const char *chan, const char *reason){
     int i;
-    if (!reason) reason = "";
+
+    LOG_FR("part %s reason %s", chan, reason);
 
     // reasion doesn't wrok TODO
-    LOG_FR("part %s reason %s", chan, reason);
     for (i = 0; i < CHAN_NUM; i++){
-        if (strncmp(irc->chans[i], chan, CHAN_LEN) == 0){
-            if (sck_sendf(irc->fd, "PART %s :%s\r\n", chan, reason) != -1){
-                memset(irc->chans[i], 0, CHAN_LEN);
-                return 0;
-            }
+        if (strncmp(irc->chans[i], chan, CHAN_LEN) == 0
+                && sck_sendf(irc->fd, "PART %s :%s\r\n", chan, reason) != -1){
+            memset(irc->chans[i], 0, CHAN_LEN);
+            return 0;
         }
     }
 
@@ -86,63 +78,67 @@ int irc_part(irc_t *irc, const char *chan, const char *reason){
 
 // irc_nick: For changing your nick
 int irc_nick(irc_t *irc, const char *nick){
+    LOG_FR("nick %s", nick);
     return sck_sendf(irc->fd, "NICK %s\r\n", nick);
 }
 
 // irc_quit: For quitting IRC
 int irc_quit(irc_t *irc, const char *reason){
-    if (!reason) reason = "EL PSY CONGRO";
-    LOG_FR("quit with reason: %s", reason);
+    LOG_FR("reason: %s", reason);
 
     return sck_sendf(irc->fd, "QUIT :%s\r\n", reason);
 }
 
 // irc_quit: For closeing connection
 void irc_close(irc_t *irc){
-    irc_quit(irc, "EL PSY CONGRO");
     close(irc->fd);
-    LOG_FR("closed");
 }
 
 // irc_topic: For setting or removing a topic
 int irc_topic(irc_t *irc, const char *chan, const char *topic){
+    LOG_FR("chan %s topic %s", chan, topic);
+
     return sck_sendf(irc->fd, "TOPIC %s :%s\r\n", chan, topic);
 }
 
 // irc_action: For executing an action (.e.g /me is hungry)
 int irc_action(irc_t *irc, const char *chan, const char *msg){
+    LOG_FR("chan %s msg %s", chan, msg);
+
     return sck_sendf(irc->fd, "PRIVMSG %s :\001ACTION %s\001\r\n", chan, msg);
 }
 
 // irc_msg: For sending a chan message or a query
 int irc_msg(irc_t *irc, const char *chan, const char *msg){
+    LOG_FR("chan %s msg %s", chan, msg);
+
     return sck_sendf(irc->fd, "PRIVMSG %s :%s\r\n", chan, msg);
 }
 
 int irc_names(irc_t *irc, const char *chan){
+    LOG_FR("names %s", chan);
+
     return sck_sendf(irc->fd, "NAMES %s\r\n", chan);
 }
 
 int irc_whois(irc_t *irc, const char *who){
+    LOG_FR("whois %s", who);
+
     return sck_sendf(irc->fd, "WHOIS %s\r\n", who);
 }
 
 irc_msg_type_t irc_recv(irc_t *irc, irc_msg_t *ircmsg){
-    static int tmpbuf_ptr = 0;
-    static char tmpbuf[BUF_LEN];
-    static int rc;
     int i;
+    static int rc, tmpbuf_ptr = 0;
+    static char tmpbuf[BUF_LEN];
 
     if (tmpbuf_ptr == 0){
         if ((rc = sck_recv(irc->fd, tmpbuf, BUF_LEN -2)) <= 0 ){
-            ERR_FR("socket error");
             return IRCMSG_UNKNOWN;
         }
         tmpbuf[rc] = '\0';
         // LOG("{\n%s}\n", tmpbuf);
     }
-    memset(ircmsg, 0, sizeof(irc_msg_t));
-
     // LOG_FR("tmpbuf_ptr = %d, rc = %d", tmpbuf_ptr, rc);
     irc_msg_type_t res = IRCMSG_UNKNOWN;
     for (i = tmpbuf_ptr; i < rc; i++){

@@ -38,7 +38,7 @@ int srain_join(const char *chan){
 
 int srain_part(const char *chan, const char *reason){
     chan_name_t *chan2;
-    if (!reason) reason = "";
+    if (!reason) reason = "Srain";
 
     chan2 = calloc(1, sizeof(chan_name_t));
     strncpy(chan2->name, chan, CHAN_LEN);
@@ -112,7 +112,8 @@ void srain_recv(){
                     || strcmp(imsg.command, RPL_LUSERCHANNELS) == 0){
                 idles_msg_server(irc.alias, &imsg);
             } else if (imsg.command[0] == '4'){
-                add_idle_ui_msg_sys("", imsg.message);
+                /* RPL_ERROR */
+                add_idle_ui_msg_sys(ui_chan_get_cur(), imsg.message);
             }
         }
     }
@@ -123,11 +124,14 @@ int srain_listen(){
     return 0;
 }
 
+void srain_close(){
+    gtk_main_quit();
+    irc_quit(&irc, "EL PSY CONGRO");
+    irc_close(&irc);
+}
 
 int srain_cmd(const char *chan, char *cmd){
     /* TODO
-     * me
-     * msg
      * nick
      * ping
      * quit
@@ -137,23 +141,38 @@ int srain_cmd(const char *chan, char *cmd){
      * names
      * */
     if (strncmp(cmd, "/join", 5) == 0){
-        // TODO
         char *jchan = strtok(cmd + 5, " ");
         if (jchan) return srain_join(jchan);
     } 
     else if (strncmp(cmd, "/part", 5) == 0){
         char *pchan = strtok(cmd + 5, " ");
-        if (pchan) return srain_part(pchan, "Srain 1.0");
+        if (pchan) return srain_part(pchan, NULL);
+    }
+    else if (strncmp(cmd, "/quit", 5) == 0){
+        srain_close();
+    }
+    else if (strncmp(cmd, "/msg", 4) == 0){
+        char *to = strtok(cmd + 4, " ");
+        char *msg = strtok(NULL, " ");
+        if (to && msg) return srain_send(to, msg);
+    }
+    else if (strncmp(cmd, "/me", 3) == 0){
+        char *msg = strtok(cmd + 3, " ");
+        if (msg) return irc_action(&irc, ui_chan_get_cur(), msg);
+    }
+    else if (strncmp(cmd, "/nick", 5) == 0){
+        char *nick = strtok(cmd + 5, " ");
+        if (nick){
+            return irc_nick(&irc, nick);
+            // TODO null?
+            irc.nick =  nick;
+        }
     } else {
         add_idle_ui_msg_sys(chan, "unsupported command");
         return -1;
     }
 
-    add_idle_ui_msg_sys(chan, "missing channel");
+    add_idle_ui_msg_sys(chan, "missing parameter");
     return -1;
 }
 
-void srain_close(){
-    gtk_main_quit();
-    irc_close(&irc);
-}
