@@ -1,0 +1,3 @@
+/connect irc.freenode.net freenode
+/login srainbot
+/join #lasttest

@@ -6,6 +6,7 @@
 #include "log.h"
 #include "irc.h"
 #include "srain.h"
+#include "config.h"
 
 int main(int argc, char **argv){
     i18n_init();
@@ -15,10 +16,9 @@ int main(int argc, char **argv){
     ui_window_init();
     ui_msg_init();
 
-    srain_connect("irc.freenode.net", "Freenode");
-    srain_login("srainbot");
-    srain_join("#lasttest");
-    srain_listen();
+    ui_chan_add("*server*");
+    config_read();
+
     gtk_main();
 
     return 0;
