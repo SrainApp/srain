@@ -1,62 +1,30 @@
-# makefile
+# main makefile
+# make without any argument to generate `buile/srain`
+# make dgb debug app with cgdb
 
 .PHONY: init install run clean cleanobj
 .IGNORE: init
 
 MAKE = make -r
-CC = gcc
 DEL = rm -rf
-LD = ld
+CC = gcc
 CFLAGS = -Wall -Isrc/inc -ggdb -gstabs+
 GTK3FLAGS = $$(pkg-config --cflags gtk+-3.0)
 GTK3LIBS = $$(pkg-config --libs gtk+-3.0)
 
 TARGET = build/srain
-OBJS = build/main.o build/i18n.o build/ui_common.o build/ui_window.o 		\
-	   build/ui_chan.o build/ui_msg.o build/ui_detail.o build/ui_image.o	\
-	   build/irc_core.o build/socket.o build/irc_parse.o					\
-	   build/srain.o build/async.o build/config.o
+SRCS = $(wildcard src/*.c src/*/*.c build/resources.c)
+OBJS = $(patsubst %.c, build/%.o, $(notdir $(SRCS)))
 
-IRCTEST = build/irctest
-IRCTEST_OBJS = build/irc_core.o build/irc_test.o build/socket.o \
-			   build/irc_parse.o
-
-UITEST = build/uitest
-UITEST_OBJS = build/ui_test.o build/i18n.o build/ui_common.o build/ui_window.o	\
-	   build/ui_chan.o build/ui_msg.o build/ui_detail.o build/ui_image.o		\
-	   build/irc_shell.o build/irc_core.o build/socket.o						\
-	   build/srain.o build/async.o build/config.o
-
-build/%.o: src/%.c
-	$(CC) $(CFLAGS) -c $(GTK3FLAGS) $(GTK3LIBS) $^ -o $@
-
-build/%.o: src/*/%.c
-	$(CC) $(CFLAGS) -c $(GTK3FLAGS) $(GTK3LIBS) $^ -o $@
-
-$(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) $(GTK3FLAGS) $(GTK3LIBS) $^ -o $@
-
-$(IRCTEST): $(IRCTEST_OBJS)
-	$(CC) $(CFLAGS) $(GTK3FLAGS) $(GTK3LIBS) $^ -o $@
-	cd build && ./irctest
-
-$(UITEST): $(UITEST_OBJS)
-	$(CC) $(CFLAGS) $(GTK3FLAGS) $(GTK3LIBS) $^ -o $@
-	cd build && ./uitest
-
-po: $(OBJS)
-	xgettext --from-code=UTF-8 -o po/srain.pot -k_ -s $(OBJS)
-	cd po/ && msginit --no-translator -i srain.pot
-
-mo:
-	msgfmt po/zh_CN.po -o build/locale/zh_CN/LC_MESSAGES/srain.mo
+default: Makefile
+	echo $(OBJS)
+	cd src; $(MAKE)			# compile c code
+	cd data/ui; $(MAKE)		# compile resources
+	$(MAKE) $(TARGET)
 
 init:
 	mkdir -p build > /dev/null
 	mkdir -p build/locale/zh_CN/LC_MESSAGES > /dev/null
-
-default: Makefile
-	$(MAKE) $(TARGET)
 
 run: $(TARGET)
 	cp srainrc.example build/srainrc
@@ -70,3 +38,15 @@ clean:
 
 cleanobj:
 	$(DEL) build/*.o
+
+# target `po` and `mo` are no used recently, ignore them
+po: $(OBJS)
+	xgettext --from-code=UTF-8 -o po/srain.pot -k_ -s $(OBJS)
+	cd po/ && msginit --no-translator -i srain.pot
+
+mo:
+	msgfmt po/zh_CN.po -o build/locale/zh_CN/LC_MESSAGES/srain.mo
+
+# compile multiple object file to execute file
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) $(GTK3FLAGS) $(GTK3LIBS) $^ -o $@

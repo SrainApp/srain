@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="srain">
+      <file preprocess="xml-stripblanks">window.glade</file>
+      <file preprocess="xml-stripblanks">chan_panel.glade</file>
+      <file preprocess="xml-stripblanks">msg_bubble.glade</file>
+      <file preprocess="xml-stripblanks">detail_dialog.glade</file>
+      <file preprocess="xml-stripblanks">image_window.glade</file>
+  </gresource>
+</gresources>
