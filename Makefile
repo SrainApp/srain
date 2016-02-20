@@ -17,7 +17,6 @@ SRCS = $(wildcard src/*.c src/*/*.c build/resources.c)
 OBJS = $(patsubst %.c, build/%.o, $(notdir $(SRCS)))
 
 default: Makefile
-	echo $(OBJS)
 	cd src; $(MAKE)			# compile c code
 	cd data/ui; $(MAKE)		# compile resources
 	$(MAKE) $(TARGET)
@@ -26,7 +25,7 @@ init:
 	mkdir -p build > /dev/null
 	mkdir -p build/locale/zh_CN/LC_MESSAGES > /dev/null
 
-run: $(TARGET)
+run: default
 	cp srainrc.example build/srainrc
 	cd build/ && ./srain
 

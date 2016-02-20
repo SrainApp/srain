@@ -7,7 +7,7 @@
     <property name="can_focus">False</property>
     <property name="icon_name">gtk3-demo</property>
   </object>
-  <object class="GtkWindow" id="window">
+  <template class="SrainWindow" parent="GtkApplicationWindow">
     <property name="can_focus">False</property>
     <child>
       <object class="GtkBox" id="box1">
@@ -23,6 +23,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="action_name">win.about</property>
                 <property name="image">icon_image</property>
                 <property name="relief">none</property>
               </object>
@@ -56,11 +57,11 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <object class="GtkStackSidebar" id="chat_list_sidebar">
+              <object class="GtkStackSidebar" id="sidebar">
                 <property name="width_request">200</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="stack">chan_panel_stack</property>
+                <property name="stack">stack</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -81,9 +82,11 @@
               </packing>
             </child>
             <child>
-              <object class="GtkStack" id="chan_panel_stack">
+              <object class="GtkStack" id="stack">
+                <property name="name">stack</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="transition_type">slide-up-down</property>
                 <child>
                   <placeholder/>
                 </child>
@@ -103,5 +106,5 @@
         </child>
       </object>
     </child>
-  </object>
+  </template>
 </interface>
