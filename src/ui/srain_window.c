@@ -4,10 +4,12 @@
 #include "srain.h"
 #include "srain_app.h"
 #include "srain_window.h"
+#include "tray_icon.h"
 
 struct _SrainWindow {
     GtkApplicationWindow parent;
     GtkStack *stack;
+    GtkStatusIcon *tray_icon;
 };
 
 struct _SrainWindowClass {
@@ -48,14 +50,17 @@ static void srain_window_init(SrainWindow *win){
     GtkBuilder *builder;
 
     gtk_widget_init_template(GTK_WIDGET(win));
+
     g_action_map_add_action_entries(G_ACTION_MAP(win),
             win_entries, G_N_ELEMENTS(win_entries), win);
+    tray_icon_set_callback(win->tray_icon);
 }
 
 static void srain_window_class_init(SrainWindowClass *class){
     gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
             "/org/gtk/srain/window.glade");
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, stack);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, tray_icon);
 
     // gtk_widget_class_bind_template_child_private(GTK_WIDGET_CLASS(class), SrainAppWindow, stack);
     // gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), search_text_changed);
