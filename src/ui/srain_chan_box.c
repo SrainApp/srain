@@ -4,8 +4,46 @@
 #include "ui_common.h"
 #include "log.h"
 #include "srain.h"
+#include "srain_window.h"
+#include "srain_chan_box.h"
 
-/* extern variable from ui_window.c */
+struct _SrainChanBox {
+    GtkBox parent;
+    GtkWidget *name_label;
+    GtkWidget *topic_label;
+    GtkWidget *msg_listbox;
+    GtkWidget *online_listbox;
+    GtkWidget *send_button;
+    GtkWidget *input_entry;
+};
+
+struct _SrainChanBoxClass {
+    GtkBoxClass parent_class;
+};
+
+G_DEFINE_TYPE(SrainChanBox, srain_chan_box, GTK_TYPE_BOX);
+
+static void srain_chan_box_init(SrainChanBox *self){
+    gtk_widget_init_template(GTK_WIDGET(self));
+}
+
+static void srain_chan_box_class_init(SrainChanBoxClass *class){
+    gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
+            "/org/gtk/srain/chan_box.glade");
+
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChanBox, name_label);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChanBox, topic_label);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChanBox, msg_listbox);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChanBox, online_listbox);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChanBox, send_button);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChanBox, input_entry);
+}
+
+SrainChanBox* srain_chan_box_new(const char *name){
+    return g_object_new(SRAIN_TYPE_CHAN_BOX, NULL);
+}
+
+/* extern variable from ui_chanbox.c */
 extern GtkWidget *chan_panel_stack;
 
 static gint online_listbox_on_dbclick(GtkWidget *widget, GdkEventButton *event){
@@ -61,10 +99,6 @@ static void send_button_on_click(GtkEntry *entry, GdkEventButton *event){
             gtk_entry_set_text(entry, "");
         }
     }
-}
-
-const char* ui_chan_get_cur(){
-    return gtk_stack_get_visible_child_name(GTK_STACK(chan_panel_stack));
 }
 
 int ui_chan_add(const char *chan){
@@ -203,3 +237,8 @@ bad:
     free(item);
     return FALSE;
 }
+
+const char* ui_chan_get_cur(){
+    return gtk_stack_get_visible_child_name(GTK_STACK(chan_panel_stack));
+}
+

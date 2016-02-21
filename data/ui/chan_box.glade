@@ -2,14 +2,13 @@
 <!-- Generated with glade 3.19.0 -->
 <interface>
   <requires lib="gtk+" version="3.16"/>
-  <object class="GtkBox" id="chan_panel_box">
+  <template class="SrainChanBox" parent="GtkBox">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="orientation">vertical</property>
     <property name="spacing">1</property>
     <child>
-      <object class="GtkLabel" id="chan_name_label">
-        <property name="name">chan_name_label</property>
+      <object class="GtkLabel" id="name_label">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">#channel</property>
@@ -25,8 +24,7 @@
       </packing>
     </child>
     <child>
-      <object class="GtkLabel" id="chan_topic_label">
-        <property name="name">chan_topic_label</property>
+      <object class="GtkLabel" id="topic_label">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">topic or whois</property>
@@ -64,8 +62,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkListBox" id="chan_msg_listbox">
-                    <property name="name">chan_msg_listbox</property>
+                  <object class="GtkListBox" id="msg_listbox">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="selection_mode">none</property>
@@ -104,8 +101,7 @@
                 <property name="can_focus">False</property>
                 <property name="shadow_type">none</property>
                 <child>
-                  <object class="GtkListBox" id="chan_online_listbox">
-                    <property name="name">chan_online_listbox</property>
+                  <object class="GtkListBox" id="online_listbox">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                   </object>
@@ -142,8 +138,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <child>
-          <object class="GtkEntry" id="chan_input_entry">
-            <property name="name">chan_input_entry</property>
+          <object class="GtkEntry" id="input_entry">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="shadow_type">none</property>
@@ -155,9 +150,8 @@
           </packing>
         </child>
         <child>
-          <object class="GtkButton" id="chan_send_button">
+          <object class="GtkButton" id="send_button">
             <property name="label" translatable="yes">Send</property>
-            <property name="name">chan_send_button</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
@@ -177,5 +171,5 @@
         <property name="position">5</property>
       </packing>
     </child>
-  </object>
+  </template>
 </interface>
