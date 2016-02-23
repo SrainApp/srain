@@ -1,10 +1,11 @@
 #include <gtk/gtk.h>
-#include <assert.h>
 #include <time.h>
-#include <string.h>
-#include "ui.h"
+#include <assert.h>
 #include "ui_common.h"
+#include "srain_window.h"
 #include "srain_msg.h"
+#include "srain_detail_dialog.h"
+#include "srain_image_window.h"
 #include "log.h"
 
 static void get_cur_time(char *timestr){
@@ -16,14 +17,26 @@ static void get_cur_time(char *timestr){
 }
 
 /* display bigger image */
-static void image_on_click(char *path, GdkEventButton *event){
+static void image_on_click(gpointer *user_data , GdkEventButton *event){
+    char *path;
+    SrainImageWindow *win;
+
     if (event->button == 1){
-        image_window_init(path);
+        path = (char *)user_data;
+        win = srain_image_window_new(path);
+        gtk_window_present(GTK_WINDOW(win));
     }
 }
 
-static void nick_on_click(char *nick){
-    detail_dialog_init(nick, "");
+static void nick_on_click(GtkWidget *widget, gpointer *user_data){
+    char *nick;
+    SrainWindow* toplevel;
+    SrainDetailDialog *dlg;
+
+    nick = (char *)user_data;
+    toplevel = SRAIN_WINDOW(gtk_widget_get_toplevel(widget));
+    dlg = srain_detail_dialog_new(toplevel, nick, "");
+    gtk_window_present(GTK_WINDOW(dlg));
 }
 
 static gint menu_popup(GtkWidget *label, GdkEventButton *event, GtkWidget *menu){
@@ -161,7 +174,7 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *m
     gtk_label_set_text(smsg->msg_label, msg);
     gtk_label_set_text(smsg->nick_label, nick);
     gtk_label_set_text(smsg->identify_label, id);
-    g_signal_connect_swapped(smsg->nick_button, "clicked", G_CALLBACK(nick_on_click), (char *)nick);
+    g_signal_connect(smsg->nick_button, "clicked", G_CALLBACK(nick_on_click), (char *)nick);
     /*
     g_signal_connect_swapped(smsg->image_eventbox, "button_release_event",
             G_CALLBACK(image_on_click), (char *)"./img.png");

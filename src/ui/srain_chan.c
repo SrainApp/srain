@@ -1,12 +1,12 @@
 #include <gtk/gtk.h>
 #include <assert.h>
-#include "ui.h"
 #include "ui_common.h"
-#include "log.h"
-#include "srain.h"
 #include "srain_window.h"
 #include "srain_chan.h"
 #include "srain_msg.h"
+#include "srain_detail_dialog.h"
+#include "srain.h"
+#include "log.h"
 
 struct _SrainChan {
     GtkBox parent;
@@ -26,16 +26,20 @@ G_DEFINE_TYPE(SrainChan, srain_chan, GTK_TYPE_BOX);
 
 static gint online_listbox_on_dbclick(GtkWidget *widget, GdkEventButton *event){
     const char *nick;
-    GtkWidget *label;
+    GtkLabel *label;
     GtkListBoxRow *row;
+    SrainWindow *toplevel;
+    SrainDetailDialog *dlg;
 
+    toplevel = SRAIN_WINDOW(gtk_widget_get_toplevel(widget));
     if(event->button == 1 && event->type == GDK_2BUTTON_PRESS){
         row = gtk_list_box_get_selected_row(GTK_LIST_BOX(widget));
         if (row){
-            label = gtk_bin_get_child(GTK_BIN(row));
-            nick = gtk_label_get_text(GTK_LABEL(label));
-            detail_dialog_init(nick, "");
-            // replace it with a WHOIS function return TRUE;
+            label = GTK_LABEL(gtk_bin_get_child(GTK_BIN(row)));
+            nick = gtk_label_get_text(label);
+
+            dlg = srain_detail_dialog_new(toplevel, nick, "");
+            gtk_window_present(GTK_WINDOW(dlg));
         }
     }
     return FALSE;
@@ -64,7 +68,6 @@ static void srain_chan_init(SrainChan *self){
     g_signal_connect_swapped(self->input_entry, "activate", G_CALLBACK(on_send), self);
     g_signal_connect_swapped(self->send_button, "clicked", G_CALLBACK(on_send), self);
     g_signal_connect(self->online_listbox, "button_press_event", G_CALLBACK(online_listbox_on_dbclick), NULL);
-
 }
 
 static void srain_chan_class_init(SrainChanClass *class){
