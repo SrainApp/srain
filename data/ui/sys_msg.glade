@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.19.0 -->
+<interface>
+  <requires lib="gtk+" version="3.16"/>
+  <template class="SrainSysMsg" parent="GtkBox">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkLabel" id="msg_label">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="xpad">15</property>
+        <property name="ypad">15</property>
+        <property name="label" translatable="yes">system message.</property>
+      </object>
+      <packing>
+        <property name="expand">True</property>
+        <property name="fill">True</property>
+        <property name="position">0</property>
+      </packing>
+    </child>
+  </template>
+</interface>

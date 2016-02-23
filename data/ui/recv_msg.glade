@@ -2,26 +2,7 @@
 <!-- Generated with glade 3.19.0 -->
 <interface>
   <requires lib="gtk+" version="3.16"/>
-  <object class="GtkMenu" id="msg_bubble_menu">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <child>
-      <object class="GtkMenuItem" id="reply_menuitem">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Reply</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="chat_menuitem">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Chat with</property>
-        <property name="use_underline">True</property>
-      </object>
-    </child>
-  </object>
-  <object class="GtkBox" id="recv_msg_bubble_box">
+  <template class="SrainRecvMsg" parent="GtkBox">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <child>
@@ -102,7 +83,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="recv_msg_label">
+              <object class="GtkLabel" id="msg_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="halign">start</property>
@@ -128,12 +109,12 @@
                 <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkEventBox" id="recv_image_eventbox">
+                  <object class="GtkEventBox" id="image_eventbox">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="halign">start</property>
                     <child>
-                      <object class="GtkImage" id="recv_image">
+                      <object class="GtkImage" id="image">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="xpad">9</property>
@@ -148,7 +129,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="recv_time_label">
+                  <object class="GtkLabel" id="time_label">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="halign">end</property>
@@ -191,101 +172,5 @@
     <child>
       <placeholder/>
     </child>
-  </object>
-  <object class="GtkBox" id="send_msg_bubble_box">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <object class="GtkBox" id="box5">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="orientation">vertical</property>
-        <child>
-          <object class="GtkLabel" id="send_msg_label">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="halign">start</property>
-            <property name="xpad">9</property>
-            <property name="label" translatable="yes">sent message</property>
-            <property name="wrap">True</property>
-            <property name="selectable">True</property>
-            <property name="track_visited_links">False</property>
-          </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
-            <property name="padding">4</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkBox" id="box6">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="orientation">vertical</property>
-            <child>
-              <object class="GtkEventBox" id="send_image_eventbox">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="halign">start</property>
-                <child>
-                  <object class="GtkImage" id="send_image">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="xpad">9</property>
-                    <property name="icon_size">0</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="send_time_label">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="halign">end</property>
-                <property name="ypad">2</property>
-                <property name="label" translatable="yes">mm-dd HH:MM</property>
-                <style>
-                  <class name="dim-label"/>
-                </style>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="padding">4</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">2</property>
-          </packing>
-        </child>
-      </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="padding">10</property>
-        <property name="pack_type">end</property>
-        <property name="position">1</property>
-      </packing>
-    </child>
-  </object>
-  <object class="GtkLabel" id="sys_msg_label">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="xpad">15</property>
-    <property name="ypad">15</property>
-    <property name="label" translatable="yes">system message.</property>
-  </object>
+  </template>
 </interface>

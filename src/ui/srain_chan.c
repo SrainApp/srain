@@ -6,6 +6,7 @@
 #include "srain.h"
 #include "srain_window.h"
 #include "srain_chan.h"
+#include "srain_msg.h"
 
 struct _SrainChan {
     GtkBox parent;
@@ -79,11 +80,12 @@ static void srain_chan_class_init(SrainChanClass *class){
 }
 
 SrainChan* srain_chan_new(const char *name){
-    return g_object_new(SRAIN_TYPE_CHAN, NULL);
-}
+    SrainChan *chan;
 
-void srain_chan_set_name(SrainChan *chan, const char *name){
+    chan = g_object_new(SRAIN_TYPE_CHAN, NULL);
     gtk_label_set_text(chan->name_label, name);
+
+    return chan;
 }
 
 void srain_chan_set_topic(SrainChan *chan, const char *topic){
@@ -115,4 +117,28 @@ void srain_chan_online_list_rm(SrainChan *chan, const char *name){
         return;
     }
     gtk_container_remove(GTK_CONTAINER(chan->online_listbox), GTK_WIDGET(row));
+}
+
+void srain_chan_sys_msg_add(SrainChan *chan, const char *msg){
+    SrainSysMsg *smsg;
+
+    smsg = srain_sys_msg_new(msg);
+    gtk_widget_show(GTK_WIDGET(smsg));
+    gtk_container_add(GTK_CONTAINER(chan->msg_listbox), GTK_WIDGET(smsg));
+}
+
+void srain_chan_send_msg_add(SrainChan *chan, const char *msg){
+    SrainSendMsg *smsg;
+
+    smsg = srain_send_msg_new(msg);
+    gtk_widget_show(GTK_WIDGET(smsg));
+    gtk_container_add(GTK_CONTAINER(chan->msg_listbox), GTK_WIDGET(smsg));
+}
+
+void srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id, const char *msg){
+    SrainRecvMsg *smsg;
+
+    smsg = srain_recv_msg_new(nick, id, msg);
+    gtk_widget_show(GTK_WIDGET(smsg));
+    gtk_container_add(GTK_CONTAINER(chan->msg_listbox), GTK_WIDGET(smsg));
 }

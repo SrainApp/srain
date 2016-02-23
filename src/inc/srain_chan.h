@@ -12,10 +12,12 @@ typedef struct _SrainChanClass SrainChanClass;
 
 GType srain_chan_get_type(void);
 SrainChan *srain_chan_new(const char *name);
-void srain_chan_set_name(SrainChan *chan, const char *name);
 void srain_chan_set_topic(SrainChan *chan, const char *topic);
 void srain_chan_online_list_rm(SrainChan *chan, const char *name);
 void srain_chan_online_list_add(SrainChan *chan, const char *name);
+void srain_chan_sys_msg_add(SrainChan *chan, const char *msg);
+void srain_chan_send_msg_add(SrainChan *chan, const char *msg);
+void srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id, const char *msg);
 
 #endif /* __SRAIN_CHAN_H */
 
