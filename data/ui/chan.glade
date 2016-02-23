@@ -2,6 +2,11 @@
 <!-- Generated with glade 3.19.0 -->
 <interface>
   <requires lib="gtk+" version="3.16"/>
+  <object class="GtkImage" id="onelinelist_button_image">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="icon_name">go-previous</property>
+  </object>
   <template class="SrainChan" parent="GtkBox">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -20,8 +25,8 @@
               <object class="GtkLabel" id="name_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="halign">start</property>
                 <property name="label" translatable="yes">#channel</property>
-                <property name="justify">center</property>
                 <attributes>
                   <attribute name="weight" value="bold"/>
                 </attributes>
@@ -29,6 +34,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
+                <property name="padding">5</property>
                 <property name="position">0</property>
               </packing>
             </child>
@@ -36,6 +42,7 @@
               <object class="GtkLabel" id="topic_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="halign">start</property>
                 <property name="label" translatable="yes">topic or whois</property>
                 <property name="use_markup">True</property>
                 <property name="wrap">True</property>
@@ -44,26 +51,26 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
+                <property name="padding">5</property>
                 <property name="position">1</property>
               </packing>
             </child>
           </object>
           <packing>
-            <property name="expand">True</property>
+            <property name="expand">False</property>
             <property name="fill">True</property>
+            <property name="padding">10</property>
             <property name="position">0</property>
           </packing>
         </child>
         <child>
-          <object class="GtkMenuButton" id="chan_button">
+          <object class="GtkButton" id="onlinelist_button">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
+            <property name="image">onelinelist_button_image</property>
             <property name="relief">none</property>
-            <property name="xalign">0.49000000953674316</property>
-            <child>
-              <placeholder/>
-            </child>
+            <property name="xalign">0.47999998927116394</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -132,21 +139,20 @@
           </packing>
         </child>
         <child>
-          <object class="GtkScrolledWindow" id="scrolledwindow2">
-            <property name="width_request">150</property>
+          <object class="GtkRevealer" id="revealer">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
+            <property name="can_focus">False</property>
+            <property name="transition_type">slide-right</property>
             <child>
-              <object class="GtkViewport" id="viewport2">
+              <object class="GtkScrolledWindow" id="scrolledwindow2">
+                <property name="width_request">150</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="shadow_type">none</property>
+                <property name="can_focus">True</property>
                 <child>
-                  <object class="GtkRevealer" id="revealer1">
+                  <object class="GtkViewport" id="viewport2">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="transition_type">crossfade</property>
-                    <property name="reveal_child">True</property>
+                    <property name="shadow_type">none</property>
                     <child>
                       <object class="GtkListBox" id="online_listbox">
                         <property name="visible">True</property>
