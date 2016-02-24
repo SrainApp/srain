@@ -156,22 +156,23 @@ void srain_chan_sys_msg_add(SrainChan *chan, const char *msg){
     SrainSysMsg *smsg;
 
     smsg = srain_sys_msg_new(msg);
+
     gtk_widget_show(GTK_WIDGET(smsg));
     gtk_container_add(GTK_CONTAINER(chan->msg_listbox), GTK_WIDGET(smsg));
 }
 
-void srain_chan_send_msg_add(SrainChan *chan, const char *msg){
+void srain_chan_send_msg_add(SrainChan *chan, const char *msg, const char *img_path){
     SrainSendMsg *smsg;
 
-    smsg = srain_send_msg_new(msg);
+    smsg = srain_send_msg_new(msg, img_path);
     gtk_widget_show(GTK_WIDGET(smsg));
     gtk_container_add(GTK_CONTAINER(chan->msg_listbox), GTK_WIDGET(smsg));
 }
 
-void srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id, const char *msg){
+void srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id, const char *msg, const char *img_path){
     SrainRecvMsg *smsg;
 
-    smsg = srain_recv_msg_new(nick, id, msg);
+    smsg = srain_recv_msg_new(nick, id, msg, img_path);
     gtk_widget_show(GTK_WIDGET(smsg));
     gtk_container_add(GTK_CONTAINER(chan->msg_listbox), GTK_WIDGET(smsg));
 }

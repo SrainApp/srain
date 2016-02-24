@@ -3,6 +3,7 @@
 
 #include <glib.h>
 #include <irc.h>
+#include <srain_window.h>
 
 #define PATH_LEN 256
 
@@ -33,5 +34,14 @@ typedef struct {
     char chan[CHAN_LEN];
     char msg[MSG_LEN];
 } sys_msg_t;
+
+void ui_init(SrainWindow *swin);
+void ui_chan_add(const char *chan_name);
+void ui_chan_rm(const char *chan_name);
+void ui_msg_sys(const char *chan_name, const char *msg);
+void ui_msg_send(const char *chan_name, const char *msg);
+void ui_msg_recv(const char *chan_name, const char *nick, const char *id,
+        const char *msg);
+void ui_busy(gboolean is_busy);
 
 #endif /* __UI_H */

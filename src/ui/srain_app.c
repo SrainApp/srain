@@ -1,6 +1,8 @@
 #include <gtk/gtk.h>
+#include "ui.h"
 #include "srain_app.h"
 #include "srain_window.h"
+#include "config.h"
 
 struct _SrainApp {
     GtkApplication parent;
@@ -21,6 +23,11 @@ static void srain_app_activate(GApplication *app){
 
     win = srain_window_new(SRAIN_APP(app));
     gtk_window_present(GTK_WINDOW(win));
+
+    SrainChan *chan = srain_window_add_chan(win, "*server*");
+    srain_chan_set_topic(chan, "==== TOPIC ====");
+    ui_init(win);
+    config_read();
 }
 
 static void srain_app_class_init(SrainAppClass *class){

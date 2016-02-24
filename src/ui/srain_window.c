@@ -7,9 +7,11 @@
 #include "srain_chan.h"
 #include "tray_icon.h"
 #include "log.h"
+#include "config.h"
 
 struct _SrainWindow {
     GtkApplicationWindow parent;
+    GtkSpinner *spinner;
     GtkStack *stack;
     GtkStackSidebar *sidebar;
     GtkMenu *sidebar_menu;
@@ -73,12 +75,14 @@ static void srain_window_init(SrainWindow *self){
     gtk_window_set_title(GTK_WINDOW(self), "Srain");
 
     tray_icon_set_callback(self->tray_icon, self, self->tray_menu);
-    g_signal_connect(self->sidebar, "button_press_event", G_CALLBACK(sidebar_menu_popup), self->sidebar_menu);
+    g_signal_connect(self->sidebar, "button_press_event",
+            G_CALLBACK(sidebar_menu_popup), self->sidebar_menu);
 }
 
 static void srain_window_class_init(SrainWindowClass *class){
     gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
             "/org/gtk/srain/window.glade");
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, spinner);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, stack);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, tray_icon);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, tray_menu);
@@ -93,6 +97,11 @@ SrainWindow* srain_window_new(SrainApp *app){
 SrainChan* srain_window_add_chan(SrainWindow *win, const char *name){
     SrainChan *chan;
 
+    if (srain_window_get_chan_by_name(win, name)){
+        ERR_FR("chan'%s' alread exist", name);
+        return NULL;
+    }
+
     chan = srain_chan_new(name);
 
     gtk_stack_add_named(win->stack, GTK_WIDGET(chan), name);
@@ -101,13 +110,40 @@ SrainChan* srain_window_add_chan(SrainWindow *win, const char *name){
     return chan;
 }
 
-void srain_window_rm_chan(SrainWindow *win, const char *name){
+int srain_window_rm_chan(SrainWindow *win, const char *name){
     SrainChan *chan;
 
     chan = SRAIN_CHAN(gtk_stack_get_child_by_name(win->stack, name));
-    gtk_container_remove(GTK_CONTAINER(win->stack), GTK_WIDGET(chan));
+    if (chan) {
+        gtk_container_remove(GTK_CONTAINER(win->stack), GTK_WIDGET(chan));
+        return 0;
+    }
+
+    ERR_FR("no chan named '%s'", name);
+    return -1;
 }
 
-SrainChan *srain_window_cur_chan(SrainWindow *win){
-    return SRAIN_CHAN(gtk_stack_get_visible_child(win->stack));
+SrainChan *srain_window_get_cur_chan(SrainWindow *win){
+    SrainChan *chan;
+
+    chan = SRAIN_CHAN(gtk_stack_get_visible_child(win->stack));
+
+    if (chan) return chan;
+    ERR_FR("no visible chan");
+    return NULL;
+}
+
+SrainChan *srain_window_get_chan_by_name(SrainWindow *win, const char *name){
+    SrainChan *chan;
+
+    chan = SRAIN_CHAN(gtk_stack_get_child_by_name(win->stack, name));
+
+    if (chan) return chan;
+    return NULL;
+}
+
+void srain_window_spinner_toggle(SrainWindow *win, gboolean is_busy){
+   is_busy  
+        ? gtk_spinner_start(win->spinner)
+        : gtk_spinner_stop(win->spinner);
 }

@@ -1,3 +1,6 @@
+#ifndef __IRC_MAGIC_H
+#define __IRC_MAGIC_H
+
 #define RPL_WELCOME     "001"
 #define RPL_YOURHOST    "002"
 #define RPL_CREATED     "003"
@@ -84,3 +87,5 @@
 #define RPL_USERS           "393"
 #define RPL_ENDOFUSERS      "394"
 #define RPL_NOUSERS         "395"
+
+#endif /* __IRC_MAGIC_H */

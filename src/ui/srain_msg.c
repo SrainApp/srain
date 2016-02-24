@@ -106,7 +106,7 @@ static void srain_send_msg_class_init(SrainSendMsgClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainSendMsg, image);
 }
 
-SrainSendMsg* srain_send_msg_new(const char *msg){
+SrainSendMsg* srain_send_msg_new(const char *msg, const char *img_path){
     char timestr[32];
     SrainSendMsg *smsg;
 
@@ -115,14 +115,13 @@ SrainSendMsg* srain_send_msg_new(const char *msg){
     get_cur_time(timestr);
     gtk_label_set_text(smsg->time_label, timestr);
     gtk_label_set_text(smsg->msg_label, msg);
-    /*
-    g_signal_connect_swapped(smsg->image_eventbox, "button_release_event",
-            G_CALLBACK(image_on_click), (char *)"./img.png");
-
-    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file_at_size ("./img.png", 300, 300, NULL);
-    gtk_image_set_from_pixbuf(smsg->image, pixbuf);
-    g_object_unref (pixbuf);
-    */
+    if (img_path){
+        g_signal_connect_swapped(smsg->image_eventbox, "button_release_event",
+                G_CALLBACK(image_on_click), (char *)img_path);
+        GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file_at_size((char *)img_path, 300, 300, NULL);
+        gtk_image_set_from_pixbuf(smsg->image, pixbuf);
+        g_object_unref (pixbuf);
+    }
 
     return smsg;
 }
@@ -163,7 +162,7 @@ static void srain_recv_msg_class_init(SrainRecvMsgClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, nick_button);
 }
 
-SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *msg){
+SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *msg, const char *img_path){
     char timestr[32];
     SrainRecvMsg *smsg;
 
@@ -175,13 +174,13 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *m
     gtk_label_set_text(smsg->nick_label, nick);
     gtk_label_set_text(smsg->identify_label, id);
     g_signal_connect(smsg->nick_button, "clicked", G_CALLBACK(nick_on_click), (char *)nick);
-    /*
-    g_signal_connect_swapped(smsg->image_eventbox, "button_release_event",
-            G_CALLBACK(image_on_click), (char *)"./img.png");
+    if (img_path){
+        g_signal_connect_swapped(smsg->image_eventbox, "button_release_event",
+                G_CALLBACK(image_on_click), (char *)img_path);
+        GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file_at_size((char *)img_path, 300, 300, NULL);
+        gtk_image_set_from_pixbuf(smsg->image, pixbuf);
+        g_object_unref (pixbuf);
+    }
 
-    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file_at_size ("./img.png", 300, 300, NULL);
-    gtk_image_set_from_pixbuf(smsg->image, pixbuf);
-    g_object_unref (pixbuf);
-    */
     return smsg;
 }
