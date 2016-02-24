@@ -2,6 +2,24 @@
 <!-- Generated with glade 3.19.0 -->
 <interface>
   <requires lib="gtk+" version="3.16"/>
+  <object class="GtkMenu" id="msg_menu">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkMenuItem" id="reply_menuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Reply</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="quote_menuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Quote</property>
+      </object>
+    </child>
+  </object>
   <object class="GtkImage" id="onelinelist_button_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>

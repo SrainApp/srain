@@ -13,6 +13,7 @@ struct _SrainChan {
     GtkLabel* name_label;
     GtkLabel *topic_label;
     GtkListBox *msg_listbox;
+    GtkMenu *msg_menu;
     GtkRevealer *revealer;
     GtkButton *onlinelist_button;
     GtkListBox *online_listbox;
@@ -27,15 +28,16 @@ struct _SrainChanClass {
 G_DEFINE_TYPE(SrainChan, srain_chan, GTK_TYPE_BOX);
 
 static void onlinelist_button_on_click(GtkWidget *widget, gpointer *user_data){
-    static gboolean is_show = FALSE;
+    gboolean is_show;
     GtkImage *image;
     GtkRevealer *revealer;
 
     image = GTK_IMAGE(gtk_button_get_image(GTK_BUTTON(widget)));
     revealer = GTK_REVEALER(user_data);
+    is_show = gtk_revealer_get_reveal_child(revealer);
 
-    gtk_revealer_set_reveal_child(revealer, is_show = !is_show);
-    gtk_image_set_from_icon_name(image, is_show ? "go-next":"go-previous", GTK_ICON_SIZE_BUTTON);
+    gtk_revealer_set_reveal_child(revealer, !is_show);
+    gtk_image_set_from_icon_name(image, !is_show ? "go-next":"go-previous", GTK_ICON_SIZE_BUTTON);
 }
 
 static gint online_listbox_on_dbclick(GtkWidget *widget, GdkEventButton *event){
@@ -74,6 +76,17 @@ static void on_send(SrainChan *chan){
         gtk_entry_set_text(chan->input_entry, "");
 }
 
+static int msg_menu_popup(GtkWidget *widget, GdkEventButton *event, gpointer *user_data){
+    GtkMenu *menu;
+
+    menu = GTK_MENU(user_data);
+    if (event->button == 3){
+        gtk_menu_popup(menu, NULL, NULL, NULL, NULL, event->button, event->time);
+        return TRUE;
+    }
+    return FALSE;
+}
+
 static void srain_chan_init(SrainChan *self){
     gtk_widget_init_template(GTK_WIDGET(self));
 
@@ -81,6 +94,7 @@ static void srain_chan_init(SrainChan *self){
     g_signal_connect_swapped(self->send_button, "clicked", G_CALLBACK(on_send), self);
     g_signal_connect(self->onlinelist_button, "clicked", G_CALLBACK(onlinelist_button_on_click), self->revealer);
     g_signal_connect(self->online_listbox, "button_press_event", G_CALLBACK(online_listbox_on_dbclick), NULL);
+    g_signal_connect(self->msg_listbox, "button_press_event", G_CALLBACK(msg_menu_popup), self->msg_menu);
 }
 
 static void srain_chan_class_init(SrainChanClass *class){
@@ -90,6 +104,7 @@ static void srain_chan_class_init(SrainChanClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, name_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, topic_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, msg_listbox);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, msg_menu);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, revealer);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, onlinelist_button);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, online_listbox);

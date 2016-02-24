@@ -6,11 +6,15 @@
 #include "srain_window.h"
 #include "srain_chan.h"
 #include "tray_icon.h"
+#include "log.h"
 
 struct _SrainWindow {
     GtkApplicationWindow parent;
     GtkStack *stack;
+    GtkStackSidebar *sidebar;
+    GtkMenu *sidebar_menu;
     GtkStatusIcon *tray_icon;
+    GtkMenu *tray_menu;
 };
 
 struct _SrainWindowClass {
@@ -18,6 +22,19 @@ struct _SrainWindowClass {
 };
 
 G_DEFINE_TYPE(SrainWindow, srain_window, GTK_TYPE_APPLICATION_WINDOW);
+
+static gint sidebar_menu_popup(GtkWidget *widget, GdkEventButton *event, gpointer *user_data){
+  GtkMenu *menu;
+  GdkEventButton *event_button;
+
+  menu = GTK_MENU(user_data);
+
+  if (event->button == 3){
+      gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL, event->button, event->time);
+      return TRUE;
+  }
+  return FALSE;
+}
 
 static void activate_about(GSimpleAction *action, GVariant *parameter, gpointer user_data){
     GtkWidget *window = user_data;
@@ -45,7 +62,6 @@ static void activate_about(GSimpleAction *action, GVariant *parameter, gpointer 
 
 static GActionEntry win_entries[] = {
     { "about", activate_about, NULL, NULL, NULL },
-    // { "send", activate_about, NULL, NULL, NULL },
 };
 
 static void srain_window_init(SrainWindow *self){
@@ -55,13 +71,9 @@ static void srain_window_init(SrainWindow *self){
             win_entries, G_N_ELEMENTS(win_entries), self);
 
     gtk_window_set_title(GTK_WINDOW(self), "Srain");
-    tray_icon_set_callback(self->tray_icon, GTK_WIDGET(self));
 
-    srain_window_add_chan(self, "www");
-    SrainChan *chan = srain_window_add_chan(self, "lll");
-    srain_chan_set_topic(chan, "==== TOPIC ====");
-    srain_chan_online_list_add(chan, "LA1");
-    srain_chan_online_list_add(chan, "LA2");
+    tray_icon_set_callback(self->tray_icon, self, self->tray_menu);
+    g_signal_connect(self->sidebar, "button_press_event", G_CALLBACK(sidebar_menu_popup), self->sidebar_menu);
 }
 
 static void srain_window_class_init(SrainWindowClass *class){
@@ -69,6 +81,9 @@ static void srain_window_class_init(SrainWindowClass *class){
             "/org/gtk/srain/window.glade");
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, stack);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, tray_icon);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, tray_menu);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, sidebar);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, sidebar_menu);
 }
 
 SrainWindow* srain_window_new(SrainApp *app){
@@ -78,8 +93,7 @@ SrainWindow* srain_window_new(SrainApp *app){
 SrainChan* srain_window_add_chan(SrainWindow *win, const char *name){
     SrainChan *chan;
 
-    chan = g_object_new(SRAIN_TYPE_CHAN, NULL);
-    srain_chan_set_name(chan, name);
+    chan = srain_chan_new(name);
 
     gtk_stack_add_named(win->stack, GTK_WIDGET(chan), name);
     gtk_container_child_set(GTK_CONTAINER(win->stack), GTK_WIDGET(chan), "title", name, NULL);

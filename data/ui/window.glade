@@ -2,10 +2,15 @@
 <!-- Generated with glade 3.19.0 -->
 <interface>
   <requires lib="gtk+" version="3.16"/>
-  <object class="GtkImage" id="icon_image">
+  <object class="GtkImage" id="about_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="icon_name">gtk3-demo</property>
+  </object>
+  <object class="GtkImage" id="connect_image">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="icon_name">contact-new</property>
   </object>
   <template class="SrainWindow" parent="GtkApplicationWindow">
     <property name="can_focus">False</property>
@@ -24,13 +29,27 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="action_name">win.about</property>
-                <property name="image">icon_image</property>
+                <property name="image">about_image</property>
                 <property name="relief">none</property>
               </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="join_button">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="image">connect_image</property>
+                <property name="relief">none</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
               </packing>
             </child>
           </object>
@@ -107,9 +126,32 @@
       </object>
     </child>
   </template>
+  <object class="GtkMenu" id="sidebar_menu">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkMenuItem" id="leave_menuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Leave</property>
+      </object>
+    </child>
+  </object>
   <object class="GtkStatusIcon" id="tray_icon">
     <property name="icon_name">gtk3-demo</property>
     <property name="has_tooltip">True</property>
     <property name="tooltip_text" translatable="yes">Srain</property>
+  </object>
+  <object class="GtkMenu" id="tray_menu">
+    <property name="name">tray_menu</property>
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkMenuItem" id="quit_menuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Quit</property>
+      </object>
+    </child>
   </object>
 </interface>

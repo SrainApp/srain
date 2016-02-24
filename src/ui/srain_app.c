@@ -1,5 +1,4 @@
 #include <gtk/gtk.h>
-
 #include "srain_app.h"
 #include "srain_window.h"
 
@@ -21,7 +20,6 @@ static void srain_app_activate(GApplication *app){
     SrainWindow *win;
 
     win = srain_window_new(SRAIN_APP(app));
-    gtk_window_set_title(GTK_WINDOW(win), "Srain");
     gtk_window_present(GTK_WINDOW(win));
 }
 
