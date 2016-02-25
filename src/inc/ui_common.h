@@ -3,6 +3,8 @@
 
 #include <gtk/gtk.h>
 
+void apply_css(GtkWidget *widget, GtkStyleProvider *provider);
+void get_cur_time(char *timestr);
 GtkListBoxRow* get_list_item_by_name(GtkListBox *listbox, const gchar* name);
 
 #endif /** __UI_COMMON_H **/

@@ -1,5 +1,6 @@
 #include <gtk/gtk.h>
 #include <assert.h>
+#include <string.h>
 #include "ui_common.h"
 #include "srain_window.h"
 #include "srain_chan.h"
@@ -7,6 +8,7 @@
 #include "srain_detail_dialog.h"
 #include "srain.h"
 #include "log.h"
+#include "irc.h"
 
 struct _SrainChan {
     GtkBox parent;
@@ -19,6 +21,7 @@ struct _SrainChan {
     GtkListBox *online_listbox;
     GtkButton *send_button;
     GtkEntry *input_entry;
+    GtkWidget *last_msg;
 };
 
 struct _SrainChanClass {
@@ -64,13 +67,17 @@ static gint online_listbox_on_dbclick(GtkWidget *widget, GdkEventButton *event){
 static void on_send(SrainChan *chan){
     int res;
     const char *input;
+    const char *chan_name;
 
     input = gtk_entry_get_text(chan->input_entry);
-    LOG_FR("panel = %s, text = \"%s\"", gtk_widget_get_name(GTK_WIDGET(chan)), input);
+    chan_name = gtk_widget_get_name(GTK_WIDGET(chan));
+
+    LOG_FR("panel = %s, text = '%s'", chan_name, input);
+
     if (input[0] == '/'){
-        // res = srain_cmd(panel, input);
+        res = srain_cmd(chan_name, input);
     } else {
-        // res = srain_send(panel, input);
+        res = srain_send(chan_name, input);
     }
     if (res != -1)
         gtk_entry_set_text(chan->input_entry, "");
@@ -89,6 +96,8 @@ static int msg_menu_popup(GtkWidget *widget, GdkEventButton *event, gpointer *us
 
 static void srain_chan_init(SrainChan *self){
     gtk_widget_init_template(GTK_WIDGET(self));
+
+    self->last_msg = NULL;
 
     g_signal_connect_swapped(self->input_entry, "activate", G_CALLBACK(on_send), self);
     g_signal_connect_swapped(self->send_button, "clicked", G_CALLBACK(on_send), self);
@@ -117,6 +126,7 @@ SrainChan* srain_chan_new(const char *name){
 
     chan = g_object_new(SRAIN_TYPE_CHAN, NULL);
     gtk_label_set_text(chan->name_label, name);
+    gtk_widget_set_name(GTK_WIDGET(chan), name);
 
     return chan;
 }
@@ -159,6 +169,8 @@ void srain_chan_sys_msg_add(SrainChan *chan, const char *msg){
 
     gtk_widget_show(GTK_WIDGET(smsg));
     gtk_container_add(GTK_CONTAINER(chan->msg_listbox), GTK_WIDGET(smsg));
+
+    chan->last_msg = GTK_WIDGET(smsg);
 }
 
 void srain_chan_send_msg_add(SrainChan *chan, const char *msg, const char *img_path){
@@ -167,12 +179,48 @@ void srain_chan_send_msg_add(SrainChan *chan, const char *msg, const char *img_p
     smsg = srain_send_msg_new(msg, img_path);
     gtk_widget_show(GTK_WIDGET(smsg));
     gtk_container_add(GTK_CONTAINER(chan->msg_listbox), GTK_WIDGET(smsg));
+
+    chan->last_msg = GTK_WIDGET(smsg);
 }
 
-void srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id, const char *msg, const char *img_path){
+void _srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id, const char *msg, const char *img_path){
     SrainRecvMsg *smsg;
 
     smsg = srain_recv_msg_new(nick, id, msg, img_path);
     gtk_widget_show(GTK_WIDGET(smsg));
     gtk_container_add(GTK_CONTAINER(chan->msg_listbox), GTK_WIDGET(smsg));
+
+    chan->last_msg = GTK_WIDGET(smsg);
+}
+
+/* add a SrainRecvMsg into SrainChan, if its time is same to the last msg, combine them */
+void srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id, const char *msg, const char *img_path){
+    char timestr[32];
+    const char *old_timestr;
+    const char *old_nick;
+    const char *old_msg;
+    GString *new_msg;
+    SrainRecvMsg *last_recv_msg;
+
+    get_cur_time(timestr);
+    if (chan->last_msg && SRAIN_IS_RECV_MSG(chan->last_msg)){
+        last_recv_msg = SRAIN_RECV_MSG(chan->last_msg);
+        old_timestr = gtk_label_get_text(last_recv_msg->time_label);
+        old_nick = gtk_label_get_text(last_recv_msg->nick_label);
+
+        if (strncmp(timestr, old_timestr, 32) == 0
+                && strncmp(nick, old_nick, NICK_LEN) == 0){
+            old_msg = gtk_label_get_text(last_recv_msg->msg_label);
+            new_msg = g_string_new(old_msg);
+            g_string_append(new_msg, "\n\n");
+            g_string_append(new_msg, msg);
+
+            gtk_label_set_text(last_recv_msg->msg_label, new_msg->str);
+
+            g_string_free(new_msg, TRUE);
+            return;
+        }
+    }
+
+    _srain_chan_recv_msg_add(chan, nick, id, msg, img_path);
 }

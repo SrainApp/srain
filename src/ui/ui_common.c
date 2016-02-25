@@ -2,6 +2,15 @@
 #include <gtk/gtk.h>
 #include <assert.h>
 
+/* */
+void get_cur_time(char *timestr){
+    time_t curtime;
+
+    time(&curtime);
+    strftime(timestr, 32, "%m-%d %H:%M", localtime(&curtime));
+    timestr[31] = '\0';
+}
+
 /* get a non-internal child widget by `name` in GtkListBox `widget`
  * return a GtkListBoxRow
  */
@@ -21,7 +30,7 @@ GtkListBoxRow* get_list_item_by_name(GtkListBox *listbox, const char* name){
     return NULL;
 }
 
-static void apply_css(GtkWidget *widget, GtkStyleProvider *provider){
+void apply_css(GtkWidget *widget, GtkStyleProvider *provider){
     //  gtk_style_context_add_provider(gtk_widget_get_style_context(widget), provider, G_MAXUINT);
 
     if(GTK_IS_CONTAINER(widget))

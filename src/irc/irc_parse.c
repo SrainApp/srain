@@ -2,7 +2,7 @@
 #include "irc.h"
 #include "log.h"
 
-irc_msg_type_t irc_parse(char *ircbuf, irc_msg_t *ircmsg, int msgoff){
+irc_msg_type_t irc_parse(char *ircbuf, irc_msg_t *ircmsg){
     if (strncmp(ircbuf, "PING :", 6) == 0){
         LOG_FR("PING? PONG");
         return IRCMSG_PING;

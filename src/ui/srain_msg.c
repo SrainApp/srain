@@ -8,14 +8,6 @@
 #include "srain_image_window.h"
 #include "log.h"
 
-static void get_cur_time(char *timestr){
-    time_t curtime;
-
-    time(&curtime);
-    strftime(timestr, 32, "%m-%d %H:%M", localtime(&curtime));
-    timestr[31] = '\0';
-}
-
 /* display bigger image */
 static void image_on_click(gpointer *user_data , GdkEventButton *event){
     char *path;
@@ -48,15 +40,6 @@ static gint menu_popup(GtkWidget *label, GdkEventButton *event, GtkWidget *menu)
 }
 
 /* ================ SRAIN_SYS_MSG ================ */
-struct _SrainSysMsg {
-    GtkBox parent;
-    GtkLabel *msg_label;
-};
-
-struct _SrainSysMsgClass {
-    GtkBoxClass parent_class;
-};
-
 G_DEFINE_TYPE(SrainSysMsg, srain_sys_msg, GTK_TYPE_BOX);
 
 static void srain_sys_msg_init(SrainSysMsg *self){
@@ -79,18 +62,6 @@ SrainSysMsg* srain_sys_msg_new(const char *msg){
 }
 
 /* ================ SRAIN_SEND_MSG ================ */
-struct _SrainSendMsg {
-    GtkBox parent;
-    GtkLabel *msg_label;
-    GtkLabel *time_label;
-    GtkEventBox *image_eventbox;
-    GtkImage *image;
-};
-
-struct _SrainSendMsgClass {
-    GtkBoxClass parent_class;
-};
-
 G_DEFINE_TYPE(SrainSendMsg, srain_send_msg, GTK_TYPE_BOX);
 
 static void srain_send_msg_init(SrainSendMsg *self){
@@ -127,22 +98,6 @@ SrainSendMsg* srain_send_msg_new(const char *msg, const char *img_path){
 }
 
 /* ================ SRAIN_RECV_MSG ================ */
-struct _SrainRecvMsg {
-    GtkBox parent;
-    GtkLabel *msg_label;
-    GtkLabel *time_label;
-    GtkImage *image;
-    GtkEventBox *image_eventbox;
-    GtkImage *avatar_image;
-    GtkLabel *nick_label;
-    GtkLabel *identify_label;
-    GtkButton *nick_button;
-};
-
-struct _SrainRecvMsgClass {
-    GtkBoxClass parent_class;
-};
-
 G_DEFINE_TYPE(SrainRecvMsg, srain_recv_msg, GTK_TYPE_BOX);
 
 static void srain_recv_msg_init(SrainRecvMsg *self){

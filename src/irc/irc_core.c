@@ -117,7 +117,7 @@ irc_msg_type_t irc_recv(irc_t *irc, irc_msg_t *ircmsg){
             case '\n': {
                            irc->servbuf[irc->bufptr] = '\0';
                            irc->bufptr = 0;
-                           res = irc_parse(irc->servbuf, ircmsg, 0);
+                           res = irc_parse(irc->servbuf, ircmsg);
                            switch (res){
                                case IRCMSG_PING:
                                    irc_pong(irc, irc->servbuf);
