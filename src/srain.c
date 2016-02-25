@@ -41,9 +41,8 @@ int srain_connect(const char *server){
 
     if (!thread) {
         thread = g_thread_new(NULL, (GThreadFunc)_srain_connect, (char *)server);
-        while (stat != SRAIN_CONNECTED){
+        while (stat != SRAIN_CONNECTED)
             while (gtk_events_pending()) gtk_main_iteration();
-        }
         RET(0);
     } else
         RET(-1);
@@ -88,7 +87,6 @@ int srain_join(const char *chan){
     if (empty != -1){
         irc_join(&irc, chan);
         strncpy(irc.chans[empty], chan, CHAN_LEN);
-        ui_chan_add(chan);
         RET(0);
     }
 
@@ -105,7 +103,6 @@ int srain_part(const char *chan, const char *reason){
     for (i = 0; i < CHAN_NUM; i++){
         if (strncmp(irc.chans[i], chan, CHAN_LEN) == 0){
             irc_part(&irc, chan, reason);
-            ui_chan_rm(chan);
             memset(irc.chans[i], 0, CHAN_LEN);
             RET(0);
         }
@@ -123,29 +120,59 @@ int srain_send(const char *chan, const char *msg){
     RET(irc_msg(&irc, chan, msg));
 }
 
-
 /* GSourceFunc */
 gboolean srain_idles(irc_msg_t *imsg){
+    /* Message */
     if (strcmp(imsg->command, "PRIVMSG") == 0){
         if (imsg->nparam != 1) goto bad;
         ui_msg_recv(imsg->param[0], imsg->nick, imsg->nick, imsg->message);
     }
-    else if (strcmp(imsg->command, "TOPIC") == 0
-            || strcmp(imsg->command, RPL_TOPIC) == 0){
-        // async_set_topic(&imsg);
+
+    /* Topic */
+    else if (strcmp(imsg->command, "TOPIC") == 0){
+        if (imsg->nparam != 1) goto bad;
+        ui_chan_set_topic(imsg->param[0], imsg->message);
     }
-    else if (strcmp(imsg->command, "JOIN") == 0
-            || strcmp(imsg->command, "PART") == 0
-            || strcmp(imsg->command, "QUIT") == 0){
-        /* we receive one QUIT messge when a people quit, but we should remove this people from
-         * all channels he has join in, TODO
-         */
-        if (strncmp(imsg->nick, irc.nick, NICK_LEN) != 0){
-            // async_join_part(&imsg);
-        }
+    else if (strcmp(imsg->command, RPL_TOPIC) == 0){
+        if (imsg->nparam == 2) ui_chan_set_topic(imsg->param[1], imsg->message);
     }
+
+    /* JOIN & PART */
+    else if (strcmp(imsg->command, "JOIN") == 0){
+        if (imsg->nparam != 1) goto bad;
+        if (strncmp(imsg->nick, irc.nick, NICK_LEN) == 0)
+            ui_chan_add(imsg->param[0]);
+        else ui_chan_online_list_add(imsg->param[0], imsg->nick);
+        ui_msg_sysf(imsg->param[0], "%s join %s", imsg->nick, imsg->param[0]);
+    }
+    else if (strcmp(imsg->command, "PART") == 0){
+        if (strncmp(imsg->nick, irc.nick, NICK_LEN) == 0)
+            ui_chan_rm(imsg->param[0]);
+        else ui_chan_online_list_rm(imsg->param[0], imsg->nick);
+        ui_msg_sysf(imsg->param[0], "%s leave %s", imsg->nick, imsg->param[0]);
+    }
+    else if (strcmp(imsg->command, "QUIT") == 0){
+        // if (imsg->nparam == 1) ui_chan_onlinelist_add(imsg->param[0], imsg->nick);
+    }
+
+    /* NICK (someone change his name) */
+    else if (strcmp(imsg->command, "NICK") == 0){
+        if (imsg->nparam != 0) goto bad;
+        ui_msg_sysf(NULL, "%s is now known as %s", irc.nick, imsg->message);
+        // ui_chan_onlinelist_rm("*", irc->nick);
+        // ui_chan_onlinelist_add("*", irc->nick);
+        if (strncmp(irc.nick, imsg->nick, NICK_LEN) == 0)
+            strncpy(irc.nick, imsg->message, NICK_LEN);
+    }
+
+    /* Names (Channel name list) */
     else if (strcmp(imsg->command, RPL_NAMREPLY) == 0){
-        // async_online_list_init(&imsg);
+        if (imsg->nparam != 3) goto bad;
+        char *nickptr = strtok(imsg->message, " ");
+        while (nickptr){
+            ui_chan_online_list_add(imsg->param[2], nickptr);
+            nickptr = strtok(NULL, " ");
+        }
     }
     else if (strcmp(imsg->command, "NOTICE") == 0
             || strcmp(imsg->command, RPL_WELCOME) == 0
@@ -158,6 +185,12 @@ gboolean srain_idles(irc_msg_t *imsg){
             || strcmp(imsg->command, RPL_LUSEROP) == 0
             || strcmp(imsg->command, RPL_LUSERUNKNOWN) == 0
             || strcmp(imsg->command, RPL_LUSERCHANNELS) == 0){
+        /* regard a server message as a PRVIMSG message
+         * let nick = servername
+         *     msg = param[1..n] + message
+         *     chan = irc server's alias
+         * then call `async_call_ui_msg_recv`
+         */
         int i = 1;
         char tmp[MSG_LEN];
         memset(tmp, 0, sizeof(tmp));
@@ -173,12 +206,16 @@ gboolean srain_idles(irc_msg_t *imsg){
         ui_msg_recv("*server*", imsg->servername, irc.server, tmp);
     } else if (imsg->command[0] == '4'){
         /* RPL_ERROR */
-        // async_call_ui_msg_sys(ui_chan_get_cur(), imsg->message);
+        ui_msg_sys(NULL, imsg->message);
     } else {
         ERR_FR("unsupported message");
     }
 
+    free(imsg);
+    return FALSE;   // you must return FALSE when execute normally
+
 bad:
+    ERR_FR("wrong paramater count");
     free(imsg);
     return FALSE;   // you must return FALSE when execute normally
 }
@@ -210,16 +247,18 @@ void srain_close(){
 }
 
 int srain_cmd(const char *chan, char *cmd){
-    ui_busy(TRUE);
+    // ui_busy(TRUE);
     /* TODO
      * ignore
      * whois
      * help
      * names
      * */
+    ui_msg_sysf(chan, "command: %s", cmd);
+
     if (strncmp(cmd, "/connect", 8) == 0){
         char *server = strtok(cmd + 8, " ");
-        if (server) srain_connect(server);
+        if (server) return srain_connect(server);
     }
     else if (strncmp(cmd, "/login", 6) == 0){
         char *nick = strtok(cmd + 6, " ");
@@ -243,22 +282,23 @@ int srain_cmd(const char *chan, char *cmd){
     }
     else if (strncmp(cmd, "/me", 3) == 0){
         char *msg = strtok(cmd + 3, " ");
-        // if (msg) return irc_action(&irc, ui_chan_get_cur(), msg);
+        if (msg){
+            ui_msg_send(NULL, msg);
+            return irc_action(&irc, ui_chan_get_cur_name(), msg);
+        }
     }
     else if (strncmp(cmd, "/nick", 5) == 0){
         char *nick = strtok(cmd + 5, " ");
         if (nick){
+            /* irc->nick will be modified when recv
+             * NICK command from server */
             return irc_nick(&irc, nick);
-            // TODO null?
-            strncpy(irc.nick, nick, NICK_LEN);
         }
     } else {
-        // async_call_ui_msg_sys(chan, "unsupported command");
+        ui_msg_sysf(chan, "%s: unsupported command", cmd);
         return -1;
     }
 
-    char errmsg[128];
-    // snprintf(errmsg, 127, "`%s` missing parameter", cmd);
-    // async_call_ui_msg_sys(chan, errmsg);
-    RET(-1);
+    ui_msg_sysf(chan, "missing parameter");
+    return -1;
 }

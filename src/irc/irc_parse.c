@@ -31,6 +31,7 @@ irc_msg_type_t irc_parse(char *ircbuf, irc_msg_t *ircmsg){
         command_ptr = strtok(NULL, " ");
         middle_ptr = strtok(NULL, "");
         trailing_ptr = strstr(middle_ptr, " :");
+
         if (!prefix_ptr || !command_ptr || !middle_ptr) goto bad;
         strncpy(ircmsg->command, command_ptr, COMMAND_LEN);
         LOG_FR("command: {%s}", ircmsg->command);
@@ -55,6 +56,9 @@ irc_msg_type_t irc_parse(char *ircbuf, irc_msg_t *ircmsg){
             /* a message may be separated in different irc message */
             strncpy(ircmsg->message, trailing_ptr + 2, MSG_LEN);
             LOG_FR("message: %s", ircmsg->message);
+        } else if (middle_ptr[0] == ':'){
+            strncpy(ircmsg->message, middle_ptr + 1, MSG_LEN);
+            LOG_FR("message(no param): %s", ircmsg->message);
         }
 
         LOG_F("param: ");
