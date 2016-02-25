@@ -4,7 +4,6 @@
 #include "irc_magic.h"
 #include "ui.h"
 #include "srain_window.h"
-#include "async.h"
 #include "log.h"
 
 // return and stop spinner: call ui_busy(FALSE)
@@ -21,10 +20,10 @@ enum {
 } stat = SRAIN_UNCONNECTED;
 
 void srain_recv();
-int _srain_connect(const char *server){
+void _srain_connect(const char *server){
     if (stat != SRAIN_UNCONNECTED){
         ERR_FR("you have connected");
-        return -1;
+        return;
     }
 
     memset(&irc, 0, sizeof(irc_t));
@@ -34,8 +33,7 @@ int _srain_connect(const char *server){
     stat = SRAIN_CONNECTING;
     irc_connect(&irc, server, "6666");
     stat = SRAIN_CONNECTED;
-    srain_recv();
-    return 0;
+    srain_recv();   // dead loop
 }
 
 int srain_connect(const char *server){
@@ -43,7 +41,7 @@ int srain_connect(const char *server){
 
     if (!thread) {
         thread = g_thread_new(NULL, (GThreadFunc)_srain_connect, (char *)server);
-        while (stat == SRAIN_UNCONNECTED){
+        while (stat != SRAIN_CONNECTED){
             while (gtk_events_pending()) gtk_main_iteration();
         }
         RET(0);
@@ -54,14 +52,14 @@ int srain_connect(const char *server){
 int srain_login(const char *nick){
     ui_busy(TRUE);
 
-    while (stat != SRAIN_CONNECTED){
-        // ERR_FR("NO SRAIN_CONNECTED");
-        // RET(-1);
+    if (stat != SRAIN_CONNECTED){
+        ERR_FR("NO SRAIN_CONNECTED");
+        RET(-1);
     }
 
     strncpy(irc.nick, nick, NICK_LEN);
 
-    if (irc_reg(&irc, nick, "Srain", "EL PSY CONGRO") == 0){
+    if (irc_reg(&irc, nick, "Srain", "EL PSY CONGRO") >= 0){
         stat = SRAIN_LOGINED;
         RET(0);
     }
@@ -76,7 +74,7 @@ int srain_join(const char *chan){
 
     if (stat != SRAIN_LOGINED){
         ERR_FR("NO SRAIN_LOGINED");
-        // RET(-1);
+        RET(-1);
     }
 
     for (i = 0; i < CHAN_NUM; i++){
@@ -119,61 +117,87 @@ int srain_part(const char *chan, const char *reason){
 
 int srain_send(const char *chan, const char *msg){
     ui_busy(TRUE);
-    LOG_FR("send message \"%s\" to %s", msg, chan);
+    LOG_FR("send message '%s' to %s", msg, chan);
 
     ui_msg_send(chan, msg);
     RET(irc_msg(&irc, chan, msg));
 }
 
 
+gboolean srain_idles(irc_msg_t *imsg){
+    if (strcmp(imsg->command, "PRIVMSG") == 0){
+        if (imsg->nparam != 1) goto bad;
+        ui_msg_recv(imsg->param[0], imsg->nick, imsg->nick, imsg->message);
+    }
+    else if (strcmp(imsg->command, "TOPIC") == 0
+            || strcmp(imsg->command, RPL_TOPIC) == 0){
+        // async_set_topic(&imsg);
+    }
+    else if (strcmp(imsg->command, "JOIN") == 0
+            || strcmp(imsg->command, "PART") == 0
+            || strcmp(imsg->command, "QUIT") == 0){
+        /* we receive one QUIT messge when a people quit, but we should remove this people from
+         * all channels he has join in, TODO
+         */
+        if (strncmp(imsg->nick, irc.nick, NICK_LEN) != 0){
+            // async_join_part(&imsg);
+        }
+    }
+    else if (strcmp(imsg->command, RPL_NAMREPLY) == 0){
+        // async_online_list_init(&imsg);
+    }
+    else if (strcmp(imsg->command, "NOTICE") == 0
+            || strcmp(imsg->command, RPL_WELCOME) == 0
+            || strcmp(imsg->command, RPL_YOURHOST) == 0
+            || strcmp(imsg->command, RPL_CREATED) == 0
+            || strcmp(imsg->command, RPL_MOTD) == 0
+            || strcmp(imsg->command, RPL_ENDOFMOTD) == 0
+            || strcmp(imsg->command, RPL_MYINFO) == 0
+            || strcmp(imsg->command, RPL_BOUNCE) == 0
+            || strcmp(imsg->command, RPL_LUSEROP) == 0
+            || strcmp(imsg->command, RPL_LUSERUNKNOWN) == 0
+            || strcmp(imsg->command, RPL_LUSERCHANNELS) == 0){
+        int i = 1;
+        char tmp[MSG_LEN];
+        memset(tmp, 0, sizeof(tmp));
+        while (i < imsg->nparam){
+            strcat(tmp, imsg->param[i++]);
+            strcat(tmp, " ");
+        }
+        strcat(tmp, imsg->message);
+        if (strlen(tmp) >= MSG_LEN){
+            ERR_FR("message too long");
+            goto bad;
+        }
+        ui_msg_recv("*server*", imsg->servername, irc.server, tmp);
+    } else if (imsg->command[0] == '4'){
+        /* RPL_ERROR */
+        // async_call_ui_msg_sys(ui_chan_get_cur(), imsg->message);
+    } else {
+        ERR_FR("unsupported message");
+    }
+
+bad:
+    free(imsg);
+    return FALSE;   // you must return FALSE when execute normally
+}
+
 /* this function work in listening thread */
 void srain_recv(){
-    irc_msg_t imsg;
+    irc_msg_t *imsg;
     irc_msg_type_t type;
 
     LOG_FR("start listening in a new thread");
 
     for (;;){
-        memset(&imsg, 0, sizeof(irc_msg_t));
-        type = irc_recv(&irc, &imsg);
+        imsg = calloc(1, sizeof(irc_msg_t));
+        type = irc_recv(&irc, imsg);
 
         if (type == IRCMSG_MSG){
-            if (strcmp(imsg.command, "PRIVMSG") == 0){
-                // async_recv_msg_normal(&imsg);
-            }
-            else if (strcmp(imsg.command, "TOPIC") == 0
-                    || strcmp(imsg.command, RPL_TOPIC) == 0){
-                // async_set_topic(&imsg);
-            }
-            else if (strcmp(imsg.command, "JOIN") == 0
-                    || strcmp(imsg.command, "PART") == 0
-                    || strcmp(imsg.command, "QUIT") == 0){
-                /* we receive one QUIT messge when a people quit, but we should remove this people from
-                 * all channels he has join in, TODO
-                 */
-                if (strncmp(imsg.nick, irc.nick, NICK_LEN) != 0){
-                    // async_join_part(&imsg);
-                }
-            }
-            else if (strcmp(imsg.command, RPL_NAMREPLY) == 0){
-                // async_online_list_init(&imsg);
-            }
-            else if (strcmp(imsg.command, "NOTICE") == 0
-                    || strcmp(imsg.command, RPL_WELCOME) == 0
-                    || strcmp(imsg.command, RPL_YOURHOST) == 0
-                    || strcmp(imsg.command, RPL_CREATED) == 0
-                    || strcmp(imsg.command, RPL_MOTD) == 0
-                    || strcmp(imsg.command, RPL_ENDOFMOTD) == 0
-                    || strcmp(imsg.command, RPL_MYINFO) == 0
-                    || strcmp(imsg.command, RPL_BOUNCE) == 0
-                    || strcmp(imsg.command, RPL_LUSEROP) == 0
-                    || strcmp(imsg.command, RPL_LUSERUNKNOWN) == 0
-                    || strcmp(imsg.command, RPL_LUSERCHANNELS) == 0){
-                // async_recv_msg_server(irc.alias, &imsg);
-            } else if (imsg.command[0] == '4'){
-                /* RPL_ERROR */
-                // async_call_ui_msg_sys(ui_chan_get_cur(), imsg.message);
-            }
+            // let main loop process data
+            gdk_threads_add_idle((GSourceFunc)srain_idles, imsg);
+        } else {
+            free(imsg);
         }
     }
 }
@@ -194,9 +218,7 @@ int srain_cmd(const char *chan, char *cmd){
      * */
     if (strncmp(cmd, "/connect", 8) == 0){
         char *server = strtok(cmd + 8, " ");
-        if (server){
-            srain_connect(server);
-        }
+        if (server) srain_connect(server);
     }
     else if (strncmp(cmd, "/login", 6) == 0){
         char *nick = strtok(cmd + 6, " ");
@@ -220,7 +242,7 @@ int srain_cmd(const char *chan, char *cmd){
     }
     else if (strncmp(cmd, "/me", 3) == 0){
         char *msg = strtok(cmd + 3, " ");
-        // if (msg) return irc_action(&irc,// ui_chan_get_cur(), msg);
+        // if (msg) return irc_action(&irc, ui_chan_get_cur(), msg);
     }
     else if (strncmp(cmd, "/nick", 5) == 0){
         char *nick = strtok(cmd + 5, " ");

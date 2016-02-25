@@ -3,6 +3,6 @@
 
 #include "irc.h"
 
-irc_msg_type_t irc_parse(char *ircbuf, irc_msg_t *ircmsg, int msgoff);
+irc_msg_type_t irc_parse(char *ircbuf, irc_msg_t *ircmsg);
 
 #endif /* __IFC_PARSE_H */
