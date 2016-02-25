@@ -124,6 +124,7 @@ int srain_send(const char *chan, const char *msg){
 }
 
 
+/* GSourceFunc */
 gboolean srain_idles(irc_msg_t *imsg){
     if (strcmp(imsg->command, "PRIVMSG") == 0){
         if (imsg->nparam != 1) goto bad;

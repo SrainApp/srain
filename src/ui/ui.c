@@ -39,7 +39,10 @@ void ui_msg_recv(const char *chan_name, const char *nick, const char *id,
         const char *msg){
     SrainChan *chan;
 
-    chan = srain_window_get_chan_by_name(win, chan_name);
+    if (chan_name)
+        chan = srain_window_get_chan_by_name(win, chan_name);
+    else
+        chan = srain_window_get_cur_chan(win);
     if (chan){
         srain_chan_recv_msg_add(chan, nick, id, msg, NULL);
     }
