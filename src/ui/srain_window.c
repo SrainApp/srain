@@ -1,6 +1,7 @@
 #include <gtk/gtk.h>
 #include <assert.h>
 #include "ui_common.h"
+#include "theme.h"
 #include "srain.h"
 #include "srain_app.h"
 #include "srain_window.h"
@@ -27,7 +28,6 @@ G_DEFINE_TYPE(SrainWindow, srain_window, GTK_TYPE_APPLICATION_WINDOW);
 
 static gint sidebar_menu_popup(GtkWidget *widget, GdkEventButton *event, gpointer *user_data){
   GtkMenu *menu;
-  GdkEventButton *event_button;
 
   menu = GTK_MENU(user_data);
 
@@ -106,6 +106,7 @@ SrainChan* srain_window_add_chan(SrainWindow *win, const char *name){
 
     gtk_stack_add_named(win->stack, GTK_WIDGET(chan), name);
     gtk_container_child_set(GTK_CONTAINER(win->stack), GTK_WIDGET(chan), "title", name, NULL);
+    theme_apply(GTK_WIDGET(win));
 
     return chan;
 }
@@ -136,7 +137,10 @@ SrainChan *srain_window_get_cur_chan(SrainWindow *win){
 SrainChan *srain_window_get_chan_by_name(SrainWindow *win, const char *name){
     SrainChan *chan;
 
-    chan = SRAIN_CHAN(gtk_stack_get_child_by_name(win->stack, name));
+    if (name)
+        chan = SRAIN_CHAN(gtk_stack_get_child_by_name(win->stack, name));
+    else
+        chan = srain_window_get_cur_chan(win);
 
     if (chan) return chan;
     return NULL;

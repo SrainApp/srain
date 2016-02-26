@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <string.h>
 #include "ui_common.h"
+#include "theme.h"
 #include "srain_window.h"
 #include "srain_chan.h"
 #include "srain_msg.h"
@@ -148,6 +149,7 @@ void srain_chan_online_list_add(SrainChan *chan, const char *name){
     gtk_widget_set_name(label, name);
 
     gtk_container_add(GTK_CONTAINER(chan->online_listbox), label);
+    theme_apply(GTK_WIDGET(chan));
     gtk_widget_show(label);
 }
 
@@ -169,6 +171,8 @@ void srain_chan_sys_msg_add(SrainChan *chan, const char *msg){
 
     gtk_widget_show(GTK_WIDGET(smsg));
     gtk_container_add(GTK_CONTAINER(chan->msg_listbox), GTK_WIDGET(smsg));
+    theme_apply(GTK_WIDGET(chan));
+
 
     chan->last_msg = GTK_WIDGET(smsg);
 }
@@ -179,6 +183,7 @@ void srain_chan_send_msg_add(SrainChan *chan, const char *msg, const char *img_p
     smsg = srain_send_msg_new(msg, img_path);
     gtk_widget_show(GTK_WIDGET(smsg));
     gtk_container_add(GTK_CONTAINER(chan->msg_listbox), GTK_WIDGET(smsg));
+    theme_apply(GTK_WIDGET(chan));
 
     chan->last_msg = GTK_WIDGET(smsg);
 }
@@ -189,6 +194,7 @@ void _srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id,
     smsg = srain_recv_msg_new(nick, id, msg, img_path);
     gtk_widget_show(GTK_WIDGET(smsg));
     gtk_container_add(GTK_CONTAINER(chan->msg_listbox), GTK_WIDGET(smsg));
+    theme_apply(GTK_WIDGET(chan));
 
     chan->last_msg = GTK_WIDGET(smsg);
 }

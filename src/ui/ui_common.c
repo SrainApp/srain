@@ -29,10 +29,3 @@ GtkListBoxRow* get_list_item_by_name(GtkListBox *listbox, const char* name){
     }
     return NULL;
 }
-
-void apply_css(GtkWidget *widget, GtkStyleProvider *provider){
-    //  gtk_style_context_add_provider(gtk_widget_get_style_context(widget), provider, G_MAXUINT);
-
-    if(GTK_IS_CONTAINER(widget))
-        gtk_container_forall(GTK_CONTAINER(widget),(GtkCallback)apply_css, provider);
-}

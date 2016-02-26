@@ -27,6 +27,7 @@ init:
 
 run: default
 	cp srainrc.example build/srainrc
+	cp data/theme/*.css build/
 	cd build/ && ./srain
 
 dbg: $(TARGET)

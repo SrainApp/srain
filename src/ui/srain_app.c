@@ -1,5 +1,6 @@
 #include <gtk/gtk.h>
 #include "ui.h"
+#include "theme.h"
 #include "srain_app.h"
 #include "srain_window.h"
 #include "config.h"
@@ -21,7 +22,11 @@ static void srain_app_init(SrainApp *app){
 static void srain_app_activate(GApplication *app){
     SrainWindow *win;
 
+    theme_init();
+
     win = srain_window_new(SRAIN_APP(app));
+
+    theme_apply(GTK_WIDGET(win));
     gtk_window_present(GTK_WINDOW(win));
 
     SrainChan *chan = srain_window_add_chan(win, "*server*");
