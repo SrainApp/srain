@@ -39,20 +39,19 @@ void ui_chan_online_list_rm(const char *chan_name, const char *name){
     srain_chan_online_list_rm(chan, name);
 }
 
-const char * ui_chan_get_cur_name(){
+const char* ui_chan_get_cur_name(){
     SrainChan *chan;
 
     chan = srain_window_get_cur_chan(win);
-    return gtk_widget_get_name(GTK_WIDGET(chan));
+
+    if (chan) return gtk_widget_get_name(GTK_WIDGET(chan));
+    return NULL;
 }
 
 void ui_msg_sys(const char *chan_name, const char *msg){
     SrainChan *chan;
 
-    if (chan_name)
-        chan = srain_window_get_chan_by_name(win, chan_name);
-    else
-        chan = srain_window_get_cur_chan(win);
+    chan = srain_window_get_chan_by_name(win, chan_name);
 
     if (chan){
         srain_chan_sys_msg_add(chan, msg);
@@ -73,6 +72,13 @@ void ui_msg_sysf(const char *chan_name, const char *fmt, ...){
     }
 }
 
+void ui_msg_sys_broadcast(GList *chan_list, const char *msg){
+    while (chan_list){
+        ui_msg_sys(chan_list->data, msg);
+        chan_list = chan_list->next;
+    }
+}
+
 void ui_msg_send(const char *chan_name, const char *msg){
     SrainChan *chan;
 
@@ -86,15 +92,19 @@ void ui_msg_recv(const char *chan_name, const char *nick, const char *id,
         const char *msg){
     SrainChan *chan;
 
-    if (chan_name)
-        chan = srain_window_get_chan_by_name(win, chan_name);
-    else
-        chan = srain_window_get_cur_chan(win);
+    chan = srain_window_get_chan_by_name(win, chan_name);
     if (chan){
         srain_chan_recv_msg_add(chan, nick, id, msg, NULL);
     }
 }
 
+void ui_msg_recv_broadcast(GList *chan_list, const char *nick, const char *id,
+        const char *msg){
+    while (chan_list){
+        ui_msg_recv(chan_list->data, nick, id, msg);
+        chan_list = chan_list->next;
+    }
+}
 void ui_busy(gboolean is_busy){
     srain_window_spinner_toggle(win, is_busy);
 }

@@ -10,6 +10,7 @@
 #define RET(x) while(1){ int tmp = x; ui_busy(FALSE); return tmp; }
 
 irc_t irc;
+GList *chan_list = NULL;    // list of GString
 GThread *thread = NULL;
 
 enum {
@@ -56,6 +57,7 @@ int srain_login(const char *nick){
         RET(-1);
     }
 
+    chan_list = g_list_append(chan_list, "*server*");
     strncpy(irc.nick, nick, NICK_LEN);
 
     if (irc_reg(&irc, nick, "Srain", "EL PSY CONGRO") >= 0){
@@ -67,7 +69,7 @@ int srain_login(const char *nick){
 }
 
 int srain_join(const char *chan){
-    int i, empty = -1;
+    GList *tmp;
 
     ui_busy(TRUE);
 
@@ -76,39 +78,35 @@ int srain_join(const char *chan){
         RET(-1);
     }
 
-    for (i = 0; i < CHAN_NUM; i++){
-        if (strncmp(irc.chans[i], chan, CHAN_LEN) == 0){
-            ERR_FR("channels already exist");
+    tmp = chan_list;
+    while (tmp){
+        if (strncmp(tmp->data, chan, CHAN_LEN) == 0){
+            ERR_FR("channel already exist");
             RET(-1);
         }
-        if (strlen(irc.chans[i]) == 0)
-            empty = (empty != -1 && empty < i) ? empty : i;
-    }
-    if (empty != -1){
-        irc_join(&irc, chan);
-        strncpy(irc.chans[empty], chan, CHAN_LEN);
-        RET(0);
+        tmp = tmp->next;
     }
 
-    ERR_FR("channels list is full");
-    RET(-1);
+    irc_join(&irc, chan);
+    RET(0);
 }
 
 int srain_part(const char *chan, const char *reason){
-    int i;
-    if (!reason) reason = "Srain";
+    GList *tmp;
 
     ui_busy(TRUE);
+    if (!reason) reason = "Srain";
 
-    for (i = 0; i < CHAN_NUM; i++){
-        if (strncmp(irc.chans[i], chan, CHAN_LEN) == 0){
+    tmp = chan_list;
+    while (tmp){
+        if (strncmp(tmp->data, chan, CHAN_LEN) == 0){
             irc_part(&irc, chan, reason);
-            memset(irc.chans[i], 0, CHAN_LEN);
             RET(0);
         }
+        tmp = tmp->next;
     }
 
-    ERR_FR("no such channel %s", chan);
+    ERR_FR("no such channel");
     RET(-1);
 }
 
@@ -140,16 +138,30 @@ gboolean srain_idles(irc_msg_t *imsg){
     /* JOIN & PART */
     else if (strcmp(imsg->command, "JOIN") == 0){
         if (imsg->nparam != 1) goto bad;
-        if (strncmp(imsg->nick, irc.nick, NICK_LEN) == 0)
+        if (strncmp(imsg->nick, irc.nick, NICK_LEN) == 0){
             ui_chan_add(imsg->param[0]);
+            chan_list = g_list_append(chan_list, strdup(imsg->param[0]));
+        }
         else ui_chan_online_list_add(imsg->param[0], imsg->nick);
         ui_msg_sysf(imsg->param[0], "%s join %s", imsg->nick, imsg->param[0]);
     }
     else if (strcmp(imsg->command, "PART") == 0){
-        if (strncmp(imsg->nick, irc.nick, NICK_LEN) == 0)
-            ui_chan_rm(imsg->param[0]);
-        else ui_chan_online_list_rm(imsg->param[0], imsg->nick);
-        ui_msg_sysf(imsg->param[0], "%s leave %s", imsg->nick, imsg->param[0]);
+        if (strncmp(imsg->nick, irc.nick, NICK_LEN) == 0){
+            GList *tmp = chan_list;
+            while (tmp){
+                if (strncmp(imsg->param[0], tmp->data, CHAN_LEN) == 0){
+                    LOG_FR("PART %s - %s", imsg->param[0], tmp->data);
+                    free(tmp->data);
+                    chan_list = g_list_remove(chan_list, tmp->data);
+                    ui_chan_rm(imsg->param[0]);
+                }
+                tmp = tmp->next;
+            }
+        }
+        else{
+            ui_chan_online_list_rm(imsg->param[0], imsg->nick);
+            ui_msg_sysf(imsg->param[0], "%s leave %s", imsg->nick, imsg->param[0]);
+        }
     }
     else if (strcmp(imsg->command, "QUIT") == 0){
         // if (imsg->nparam == 1) ui_chan_onlinelist_add(imsg->param[0], imsg->nick);
@@ -158,7 +170,7 @@ gboolean srain_idles(irc_msg_t *imsg){
     /* NICK (someone change his name) */
     else if (strcmp(imsg->command, "NICK") == 0){
         if (imsg->nparam != 0) goto bad;
-        ui_msg_sysf(NULL, "%s is now known as %s", irc.nick, imsg->message);
+        ui_msg_sysf(NULL, "%s is now known as %s", imsg->nick, imsg->message);
         // ui_chan_onlinelist_rm("*", irc->nick);
         // ui_chan_onlinelist_add("*", irc->nick);
         if (strncmp(irc.nick, imsg->nick, NICK_LEN) == 0)
@@ -174,8 +186,18 @@ gboolean srain_idles(irc_msg_t *imsg){
             nickptr = strtok(NULL, " ");
         }
     }
-    else if (strcmp(imsg->command, "NOTICE") == 0
-            || strcmp(imsg->command, RPL_WELCOME) == 0
+
+    /* NOTICE */
+    else if (strcmp(imsg->command, "NOTICE") == 0){
+        if (imsg->nparam != 1) goto bad;
+        if (strcmp(imsg->param[0], "*") == 0)
+            ui_msg_recv_broadcast(chan_list, imsg->servername, irc.server, imsg->message);
+        else
+            ui_msg_recv(imsg->param[0], imsg->servername, irc.server, imsg->message);
+    }
+
+    /* Other Server Mesage (receive when login) */
+    else if (strcmp(imsg->command, RPL_WELCOME) == 0
             || strcmp(imsg->command, RPL_YOURHOST) == 0
             || strcmp(imsg->command, RPL_CREATED) == 0
             || strcmp(imsg->command, RPL_MOTD) == 0
@@ -188,8 +210,6 @@ gboolean srain_idles(irc_msg_t *imsg){
         /* regard a server message as a PRVIMSG message
          * let nick = servername
          *     msg = param[1..n] + message
-         *     chan = irc server's alias
-         * then call `async_call_ui_msg_recv`
          */
         int i = 1;
         char tmp[MSG_LEN];
@@ -204,11 +224,18 @@ gboolean srain_idles(irc_msg_t *imsg){
             goto bad;
         }
         ui_msg_recv("*server*", imsg->servername, irc.server, tmp);
-    } else if (imsg->command[0] == '4'){
-        /* RPL_ERROR */
+    }
+
+    /* RPL_ERROR */
+    else if (imsg->command[0] == '4'){
         ui_msg_sys(NULL, imsg->message);
-    } else {
+    }
+
+    /* unsupported message */
+    else {
         ERR_FR("unsupported message");
+        LOG("\tcommand: %s\n", imsg->command);
+        LOG("\tmessage: %s\n", imsg->message);
     }
 
     free(imsg);
@@ -231,6 +258,11 @@ void srain_recv(){
         imsg = calloc(1, sizeof(irc_msg_t));
         type = irc_recv(&irc, imsg);
 
+        if (type == IRCMSG_SCKERR){
+            ERR_FR("socket error, listen thread stop, connection close");
+            irc_close(&irc);
+            return;
+        }
         if (type == IRCMSG_MSG){
             // let main loop process data
             gdk_threads_add_idle((GSourceFunc)srain_idles, imsg);
@@ -271,6 +303,7 @@ int srain_cmd(const char *chan, char *cmd){
     else if (strncmp(cmd, "/part", 5) == 0){
         char *pchan = strtok(cmd + 5, " ");
         if (pchan) return srain_part(pchan, NULL);
+        else return srain_part(ui_chan_get_cur_name(), NULL);
     }
     else if (strncmp(cmd, "/quit", 5) == 0){
         srain_close();

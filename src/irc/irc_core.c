@@ -103,7 +103,7 @@ irc_msg_type_t irc_recv(irc_t *irc, irc_msg_t *ircmsg){
 
     if (tmpbuf_ptr == 0){
         if ((rc = sck_recv(irc->fd, tmpbuf, BUF_LEN -2)) <= 0 ){
-            return IRCMSG_UNKNOWN;
+            return IRCMSG_SCKERR;
         }
         tmpbuf[rc] = '\0';
         // LOG("{\n%s}\n", tmpbuf);

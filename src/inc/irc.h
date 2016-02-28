@@ -1,7 +1,6 @@
 #ifndef __IRC_H
 #define __IRC_H
 
-#define CHAN_NUM    50
 #define BUF_LEN     512
 
 #define SERVER_LEN  64  // unconfirm
@@ -19,9 +18,6 @@ typedef struct {
     char nick[NICK_LEN];
     char server[256];
     char alias[CHAN_LEN];
-
-    int nchan;
-    char chans[CHAN_NUM][CHAN_LEN];
     char servbuf[BUF_LEN];
     int bufptr;
 } irc_t;
@@ -42,7 +38,8 @@ typedef enum {
     IRCMSG_ERROR,
 
     IRCMSG_MSG,
-    IRCMSG_UNKNOWN
+    IRCMSG_UNKNOWN,
+    IRCMSG_SCKERR
 } irc_msg_type_t;
 
 int irc_connect(irc_t *irc, const char *server, const char *port);
