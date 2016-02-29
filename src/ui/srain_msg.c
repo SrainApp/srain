@@ -128,7 +128,8 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *m
     gtk_label_set_text(smsg->msg_label, msg);
     gtk_label_set_text(smsg->nick_label, nick);
     gtk_label_set_text(smsg->identify_label, id);
-    g_signal_connect(smsg->nick_button, "clicked", G_CALLBACK(nick_on_click), (char *)nick);
+    g_signal_connect(smsg->nick_button, "clicked", G_CALLBACK(nick_on_click),
+            (char *)gtk_label_get_text(smsg->nick_label));
     if (img_path){
         g_signal_connect_swapped(smsg->image_eventbox, "button_release_event",
                 G_CALLBACK(image_on_click), (char *)img_path);
