@@ -1,3 +1,11 @@
+/**
+ * @file srain_image_window.c
+ * @brief a popup windows used to display image in message
+ * @author LastAvengers <lastavengers@outlook.com>
+ * @version 1.0
+ * @date 2016-03-01
+ */
+
 #include <gtk/gtk.h>
 #include <assert.h>
 #include "ui_common.h"

@@ -1,3 +1,11 @@
+/**
+ * @file srain_detail_dialog.c
+ * @brief dialog used to show user/channel's detail
+ * @author LastAvengers <lastavengers@outlook.com>
+ * @version 1.0
+ * @date 2016-03-01
+ */
+
 #include <gtk/gtk.h>
 #include <assert.h>
 #include "ui_common.h"

@@ -1,3 +1,17 @@
+/**
+ * @file srain.c
+ * @brief logic control layer of the whole application
+ * @author LastAvengers <lastavengers@outlook.com>
+ * @version 1.0
+ * @date 2016-03-01
+ *
+ * This file gules UI module and IRC module together
+ * and provides some abstract operations of a IRC client:
+ *      connect to server, login as someone, join a channel,
+ *      part from a channel, send message, receive message and etc.
+ *
+ */
+
 #include <string.h>
 #include <gtk/gtk.h>
 #include "irc.h"

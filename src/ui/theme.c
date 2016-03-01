@@ -1,3 +1,11 @@
+/**
+ * @file theme.c
+ * @brief theme
+ * @author LastAvengers <lastavengers@outlook.com>
+ * @version 1.0
+ * @date 2016-03-01
+ */
+
 #include <gtk/gtk.h>
 
 GtkStyleProvider *provider;

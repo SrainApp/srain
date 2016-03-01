@@ -1,3 +1,13 @@
+/**
+ * @file config.c
+ * @brief auto command config reader
+ * @author LastAvengers <lastavengers@outlook.com>
+ * @version 1.0
+ * @date 2016-03-01
+ *
+ * read $XDG_CONFIG_HOME/srain/srainrc, call `srain_cmd` for every line
+ */
+
 #include <stdio.h>
 #include <string.h>
 #include "log.h"

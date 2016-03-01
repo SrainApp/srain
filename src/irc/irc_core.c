@@ -1,5 +1,13 @@
-/* irc_core.c
- * This file is modified from <https://github.com/Themaister/simple-irc-bot>
+/**
+ * @file irc_core.c
+ * @brief simple implement of irc client protocol
+ * @author LastAvengers <lastavengers@outlook.com>
+ * @version 1.0
+ * @date 2016-03-01
+ *
+ * simple implement of irc client protocol, the original edition is
+ * copide from * <https://github.com/Themaister/simple-irc-bot>
+ *
  */
 
 #include <string.h>

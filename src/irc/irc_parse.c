@@ -1,7 +1,28 @@
+ /**
+ * @file irc_parse.c
+ * @brief provide function for parsing raw IRC data
+ * @author LastAvengers <lastavengers@outlook.com>
+ * @version 1.0
+ * @date 2016-03-01
+ *
+ */
+
 #include <string.h>
 #include "irc.h"
 #include "log.h"
 
+/**
+ * @brief parsing IRC raw data
+ *
+ * @param ircbuf a buffer contains ONE IRC raw message (end with "\n\r")
+ * @param ircmsg a pointer points to a irc_msg_t strcture, used to store parsing result
+ *
+ * @return message type,
+ *      - IRCMSG_MSG: recv a normal message
+ *      - IRCMSG_PING/NOTICE/ERROR: serve message that do not need to care by IRC user
+ *        (after you recv IRCMSG_ERROR, connection maybe closed by server)
+ *      - IRCMSG_UNKNOWN: unrecognized
+ */
 irc_msg_type_t irc_parse(char *ircbuf, irc_msg_t *ircmsg){
     if (strncmp(ircbuf, "PING :", 6) == 0){
         LOG_FR("PING? PONG");

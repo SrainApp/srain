@@ -1,3 +1,11 @@
+/**
+ * @file ui.c
+ * @brief UI module interface
+ * @author LastAvengers <lastavengers@outlook.com>
+ * @version 1.0
+ * @date 2016-03-01
+ */
+
 #include <gtk/gtk.h>
 #include <string.h>
 #include "srain_window.h"

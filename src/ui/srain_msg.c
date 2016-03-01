@@ -1,3 +1,11 @@
+/**
+ * @file srain_msg.c
+ * @brief GtkWidget subclass used to display message
+ * @author LastAvengers <lastavengers@outlook.com>
+ * @version 1.0
+ * @date 2016-03-01
+ */
+
 #include <gtk/gtk.h>
 #include <time.h>
 #include <assert.h>

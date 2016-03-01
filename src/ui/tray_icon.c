@@ -1,3 +1,16 @@
+/**
+ * @file tray_icon.c
+ * @brief system tray's callback functions
+ * @author LastAvengers <lastavengers@outlook.com>
+ * @version 1.0
+ * @date 2016-03-01
+ *
+ * system tray is defined in data/ui/window.glade,
+ * and binded in src/ui/srain_window.c::srain_window_class_init()
+ * so only callback functions are provided here.
+ *
+ */
+
 #include <gtk/gtk.h>
 #include "srain_window.h"
 #include "log.h"
@@ -10,7 +23,7 @@ static void tray_icon_on_click(GtkStatusIcon *status_icon, gpointer user_data){
 
     if (is_visible)
         gtk_widget_hide(win);
-    else 
+    else
         gtk_widget_show(win);
 
     LOG_FR("%s", is_visible?"hide":"show");

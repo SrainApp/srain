@@ -1,8 +1,20 @@
+/**
+ * @file ui_common.c
+ * @brief useful functions required by UI module
+ * @author LastAvengers <lastavengers@outlook.com>
+ * @version 1.0
+ * @date 2016-03-01
+ */
+
 #include <string.h>
 #include <gtk/gtk.h>
 #include <assert.h>
 
-/* */
+/**
+ * @brief get current time
+ *
+ * @param a pointer to store time string
+ */
 void get_cur_time(char *timestr){
     time_t curtime;
 
@@ -11,8 +23,13 @@ void get_cur_time(char *timestr){
     timestr[31] = '\0';
 }
 
-/* get a non-internal child widget by `name` in GtkListBox `widget`
- * return a GtkListBoxRow
+/**
+ * @brief get a non-internal child widget by `name` in GtkListBox `widget`
+ *
+ * @param listbox a GtkListBox
+ * @param name the name of child widget that you want to find
+ *
+ * @return a GtkListRow if found, or return NULL
  */
 GtkListBoxRow* get_list_item_by_name(GtkListBox *listbox, const char* name){
     const char *widget_name;

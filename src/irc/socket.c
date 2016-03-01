@@ -1,5 +1,13 @@
-/* socket.c
- * This file is modified from <https://github.com/Themaister/simple-irc-bot>
+ /**
+ * @file socket.c
+ * @brief simple packing of socket libaray functions
+ * @author LastAvengers <lastavengers@outlook.com>
+ * @version 1.0
+ * @date 2016-03-01
+ *
+ * simple packing of socket libaray functions, the original edition is
+ * copide from <https://github.com/Themaister/simple-irc-bot>
+ *
  */
 
 #include <stdio.h>

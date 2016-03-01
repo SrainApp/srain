@@ -1,3 +1,11 @@
+/**
+ * @file srain_app.c
+ * @brief Srain's application class implement
+ * @author LastAvengers <lastavengers@outlook.com>
+ * @version 1.0
+ * @date 2016-03-01
+ */
+
 #include <gtk/gtk.h>
 #include "ui.h"
 #include "theme.h"
