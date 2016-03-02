@@ -6,6 +6,8 @@
  * @date 2016-03-01
  */
 
+#define __LOG_ON 1
+
 #include <gtk/gtk.h>
 #include <assert.h>
 #include <string.h>
@@ -23,6 +25,7 @@ struct _SrainChan {
     GtkBox parent;
     GtkLabel* name_label;
     GtkLabel *topic_label;
+    GtkScrolledWindow *msg_scrolledwindow;
     GtkListBox *msg_listbox;
     GtkMenu *msg_menu;
     GtkRevealer *revealer;
@@ -38,6 +41,18 @@ struct _SrainChanClass {
 };
 
 G_DEFINE_TYPE(SrainChan, srain_chan, GTK_TYPE_BOX);
+
+// TODO not work
+static void scroll_to_bottom(SrainChan *chan){
+    GtkAdjustment *adj;
+
+    adj = gtk_scrolled_window_get_vadjustment(chan->msg_scrolledwindow);
+    gtk_adjustment_set_value(adj, gtk_adjustment_get_upper(adj) -
+            gtk_adjustment_get_page_size(adj));
+    gtk_scrolled_window_set_vadjustment(chan->msg_scrolledwindow, adj);
+
+    while (gtk_events_pending()) gtk_main_iteration();
+}
 
 static void onlinelist_button_on_click(GtkWidget *widget, gpointer *user_data){
     gboolean is_show;
@@ -121,6 +136,7 @@ static void srain_chan_class_init(SrainChanClass *class){
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, name_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, topic_label);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, msg_scrolledwindow);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, msg_listbox);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, msg_menu);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, revealer);
@@ -183,6 +199,8 @@ void srain_chan_sys_msg_add(SrainChan *chan, const char *msg){
 
 
     chan->last_msg = GTK_WIDGET(smsg);
+
+    scroll_to_bottom(chan);
 }
 
 void srain_chan_send_msg_add(SrainChan *chan, const char *msg, const char *img_path){
@@ -194,6 +212,8 @@ void srain_chan_send_msg_add(SrainChan *chan, const char *msg, const char *img_p
     theme_apply(GTK_WIDGET(chan));
 
     chan->last_msg = GTK_WIDGET(smsg);
+
+    scroll_to_bottom(chan);
 }
 
 void _srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id, const char *msg, const char *img_path){
@@ -232,9 +252,12 @@ void srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id, 
             gtk_label_set_text(last_recv_msg->msg_label, new_msg->str);
 
             g_string_free(new_msg, TRUE);
+
+            scroll_to_bottom(chan);
             return;
         }
     }
 
     _srain_chan_recv_msg_add(chan, nick, id, msg, img_path);
+    scroll_to_bottom(chan);
 }

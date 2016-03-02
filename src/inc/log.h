@@ -5,24 +5,36 @@
 #include <glib.h>
 
 // log macro with Line number, Fucntion name and Return
-#define LOG_LFR(...)                                \
+#ifdef __LOG_ON
+    #define LOG_LFR(...) _LOG_LFR(__VA_ARGS__)
+    #define LOG_FR(...) _LOG_FR(__VA_ARGS__)
+    #define LOG_F(...) _LOG_F(__VA_ARGS__)
+    #define LOG(...) _LOG(__VA_ARGS__)
+#else
+    #define LOG_LFR(...) ;
+    #define LOG_FR(...) ;
+    #define LOG_F(...) ;
+    #define LOG(...) ;
+#endif
+
+#define _LOG_LFR(...)                                \
     g_print("%d: [%s]: ", __LINE__, __FUNCTION__);  \
     g_print(__VA_ARGS__);                           \
     g_print("\n")
 
 // log macro with Fucntion name and Return
-#define LOG_FR(...)                     \
+#define _LOG_FR(...)                     \
     g_print("[%s]: ",  __FUNCTION__);   \
     g_print(__VA_ARGS__);               \
     g_print("\n")
 
 // log macro with Fucntion name
-#define LOG_F(...)                     \
+#define _LOG_F(...)                     \
     g_print("[%s]: ",  __FUNCTION__);   \
     g_print(__VA_ARGS__);
 
 // log macro, equal to g_print
-#define LOG(...)            \
+#define _LOG(...)            \
     g_print(__VA_ARGS__);   \
 
 // printerr macro with Line number, Fucntion name and Return

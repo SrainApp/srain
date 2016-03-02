@@ -12,6 +12,8 @@
  *
  */
 
+#define __LOG_ON 1
+
 #include <string.h>
 #include <gtk/gtk.h>
 #include "irc.h"
