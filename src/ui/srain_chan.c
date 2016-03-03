@@ -107,7 +107,7 @@ static void on_send(SrainChan *chan){
         gtk_entry_set_text(chan->input_entry, "");
 }
 
-static int msg_menu_popup(GtkWidget *widget, GdkEventButton *event, gpointer *user_data){
+static int msg_list_box_popup(GtkWidget *widget, GdkEventButton *event, gpointer *user_data){
     GtkMenu *menu;
 
     menu = GTK_MENU(user_data);
@@ -116,6 +116,18 @@ static int msg_menu_popup(GtkWidget *widget, GdkEventButton *event, gpointer *us
         return TRUE;
     }
     return FALSE;
+}
+
+static int msg_list_box_on_click(GtkWidget *widget, GdkEventButton *event, gpointer *user_data){
+    GtkEntry *entry;
+
+    /* NB: GtkListBox will grab focus when his row is clicked (even if it is
+     * unselectable), so return the focus to GtkEntry pls. :)
+     */
+    entry = GTK_ENTRY(user_data);
+    gtk_widget_grab_focus(GTK_WIDGET(entry));
+
+    return TRUE;
 }
 
 static void srain_chan_sys_msg_addf(SrainChan *chan, const char *fmt, ...){
@@ -141,7 +153,8 @@ static void srain_chan_init(SrainChan *self){
     g_signal_connect_swapped(self->send_button, "clicked", G_CALLBACK(on_send), self);
     g_signal_connect(self->onlinelist_button, "clicked", G_CALLBACK(onlinelist_button_on_click), self->revealer);
     g_signal_connect(self->online_listbox, "button_press_event", G_CALLBACK(online_listbox_on_dbclick), NULL);
-    g_signal_connect(self->msg_listbox, "button_press_event", G_CALLBACK(msg_menu_popup), self->msg_menu);
+    g_signal_connect(self->msg_listbox, "button_press_event", G_CALLBACK(msg_list_box_popup), self->msg_menu);
+    g_signal_connect(self->msg_listbox, "button_press_event", G_CALLBACK(msg_list_box_on_click), self->input_entry);
 }
 
 static void srain_chan_class_init(SrainChanClass *class){

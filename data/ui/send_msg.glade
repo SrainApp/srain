@@ -19,10 +19,14 @@
             <property name="can_focus">False</property>
             <property name="halign">start</property>
             <property name="xpad">9</property>
-            <property name="label" translatable="yes">sent message</property>
+            <property name="label" translatable="yes">sent message.
+&lt;a href="http://www.google.com"&gt;Link Test&lt;/a&gt;</property>
+            <property name="use_markup">True</property>
             <property name="wrap">True</property>
             <property name="selectable">True</property>
-            <property name="track_visited_links">False</property>
+            <attributes>
+                <attribute name="weight" value="normal"/>
+            </attributes>
           </object>
           <packing>
             <property name="expand">True</property>

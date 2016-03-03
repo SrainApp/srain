@@ -12,6 +12,10 @@
         <property name="xpad">15</property>
         <property name="ypad">15</property>
         <property name="label" translatable="yes">system message.</property>
+        <property name="selectable">True</property>
+        <attributes>
+          <attribute name="weight" value="normal"/>
+        </attributes>
       </object>
       <packing>
         <property name="expand">True</property>
