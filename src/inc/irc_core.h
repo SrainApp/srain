@@ -5,7 +5,7 @@
 int irc_pong(int fd, const char *pong);
 int irc_reg(int fd, const char *nick, const char *user_name, const char *full_name);
 int irc_join(int fd, const char *chan);
-int irc_part(int fd, const char *chan);
+int irc_part(int fd, const char *chan, const char *reason);
 int irc_nick(int fd, const char *nick);
 int irc_quit(int fd, const char *reason);
 int irc_topic(int fd, const char *chan, const char *topic);

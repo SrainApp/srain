@@ -1,6 +1,8 @@
 #ifndef __IRC_H
 #define __IRC_H
 
+#include <glib.h>
+
 #define BUF_LEN     512
 
 #define SERVER_LEN  64  // unconfirm
@@ -18,8 +20,10 @@ typedef struct {
     char nick[NICK_LEN];
     char server[256];
     char alias[CHAN_LEN];
-    char servbuf[BUF_LEN];
     int bufptr;
+    char servbuf[BUF_LEN];
+
+    GList *chans;
 } irc_t;
 
 typedef struct {
@@ -42,20 +46,25 @@ typedef enum {
     IRCMSG_SCKERR
 } irc_msg_type_t;
 
-int irc_connect(irc_t *irc, const char *server, const char *port);
-void irc_close(irc_t *irc);
-irc_msg_type_t irc_recv(irc_t *irc, irc_msg_t *ircmsg);
+typedef enum {
+    SEND_MSG,
+    SEND_ME
+} send_type_t;
 
-/* irc protocol */
-int irc_reg(irc_t *irc, const char *nick, const char *username, const char *fullname);
-int irc_join(irc_t *irc, const char *chan);
-int irc_part(irc_t *irc, const char *chan, const char *reason);
-int irc_msg(irc_t *irc, const char *chan, const char *msg);
-int irc_action(irc_t *irc, const char *who, const char *action);
-int irc_pong(irc_t *irc, const char *pong);
-int irc_quit(irc_t *irc, const char *reason);
-int irc_whois(irc_t *irc, const char *who);
-int irc_names(irc_t *irc, const char *chan);
-int irc_nick(irc_t *irc, const char *nick);
+int irc_connect(irc_t *irc, const char *server, const char *port);
+int irc_login(irc_t *irc, const char *nick);
+void irc_close(irc_t *irc);
+void irc_quit_req(irc_t *irc, const char *reason);
+
+int irc_join_req(irc_t *irc, const char *chan);
+int irc_part_req(irc_t *irc, const char *chan, const char *reason);
+void irc_join_ack(irc_t *irc, const char *chan);
+void irc_part_ack(irc_t *irc, const char *chan, const char *reason);
+
+int irc_nick_req(irc_t *irc, const char *nick);
+void irc_nick_ack(irc_t *irc, const char *nick);
+
+int irc_send(irc_t *irc, const char *chan, const char *msg, int is_me);
+irc_msg_type_t irc_recv(irc_t *irc, irc_msg_t *ircmsg);
 
 #endif /* __IRC_H */

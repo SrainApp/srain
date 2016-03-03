@@ -36,21 +36,29 @@ typedef struct {
 } sys_msg_t;
 
 void ui_init(SrainWindow *swin);
+
 void ui_chan_add(const char *chan_name);
 void ui_chan_rm(const char *chan_name);
+
 void ui_msg_sys(const char *chan_name, const char *msg);
-void ui_msg_sys_broadcast(GList *chan_list, const char *msg);
 void ui_msg_sysf(const char *chan_name, const char *fmt, ...);
+void ui_msg_sysf(const char *chan_name, const char *fmt, ...);
+void ui_msg_sysf_broadcast(GList *chans, const char *fmt, ...);
+
 void ui_msg_send(const char *chan_name, const char *msg);
-void ui_msg_recv(const char *chan_name, const char *nick, const char *id,
-        const char *msg);
-void ui_msg_recv_broadcast(GList *chan_list, const char *nick, const char *id,
-        const char *msg);
-const char* ui_chan_get_cur_name();
-void ui_chan_set_topic(const char *chan_name, const char *topic);
+
+void ui_msg_recv(const char *chan_name, const char *nick,
+        const char *id, const char *msg);
+void ui_msg_recv_broadcast(GList *chans, const char *nick,
+        const char *id, const char *msg);
+
 void ui_chan_online_list_add(const char *chan_name, const char *name);
+void ui_chan_online_list_add_broadcast(GList *chans, const char *name);
 void ui_chan_online_list_rm(const char *chan_name, const char *name);
-void ui_msg_sysf(const char *chan_name, const char *fmt, ...);
+void ui_chan_online_list_rm_broadcast(GList *chans, const char *name);
+
+const char* ui_chan_get_cur_name();
 void ui_busy(gboolean is_busy);
+void ui_chan_set_topic(const char *chan_name, const char *topic);
 
 #endif /* __UI_H */

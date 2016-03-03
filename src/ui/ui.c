@@ -40,11 +40,25 @@ void ui_chan_online_list_add(const char *chan_name, const char *name){
     srain_chan_online_list_add(chan, name);
 }
 
+void ui_chan_online_list_add_broadcast(GList *chans, const char *name){
+    while (chans){
+        ui_chan_online_list_add(chans->data, name);
+        chans = chans->next;
+    }
+}
+
 void ui_chan_online_list_rm(const char *chan_name, const char *name){
     SrainChan *chan;
 
     chan = srain_window_get_chan_by_name(win, chan_name);
     srain_chan_online_list_rm(chan, name);
+}
+
+void ui_chan_online_list_rm_broadcast(GList *chans, const char *name){
+    while (chans){
+        ui_chan_online_list_rm(chans->data, name);
+        chans = chans->next;
+    }
 }
 
 const char* ui_chan_get_cur_name(){
@@ -80,10 +94,20 @@ void ui_msg_sysf(const char *chan_name, const char *fmt, ...){
     }
 }
 
-void ui_msg_sys_broadcast(GList *chan_list, const char *msg){
-    while (chan_list){
-        ui_msg_sys(chan_list->data, msg);
-        chan_list = chan_list->next;
+void ui_msg_sysf_broadcast(GList *chans, const char *fmt, ...){
+    char msg[512];
+    va_list args;
+
+    if (strlen(fmt) != 0 ){
+        // Format the data
+        va_start(args, fmt);
+        vsnprintf(msg, sizeof(msg), fmt, args);
+        va_end(args);
+    }
+
+    while (chans){
+        ui_msg_sys(chans->data, msg);
+        chans = chans->next;
     }
 }
 
@@ -106,13 +130,14 @@ void ui_msg_recv(const char *chan_name, const char *nick, const char *id,
     }
 }
 
-void ui_msg_recv_broadcast(GList *chan_list, const char *nick, const char *id,
+void ui_msg_recv_broadcast(GList *chans, const char *nick, const char *id,
         const char *msg){
-    while (chan_list){
-        ui_msg_recv(chan_list->data, nick, id, msg);
-        chan_list = chan_list->next;
+    while (chans){
+        ui_msg_recv(chans->data, nick, id, msg);
+        chans = chans->next;
     }
 }
+
 void ui_busy(gboolean is_busy){
     srain_window_spinner_toggle(win, is_busy);
 }

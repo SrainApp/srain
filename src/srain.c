@@ -26,7 +26,6 @@
 #define RET(x) while(1){ int tmp = x; ui_busy(FALSE); return tmp; }
 
 irc_t irc;
-GList *chan_list = NULL;    // list of GString
 GThread *thread = NULL;
 
 enum {
@@ -43,14 +42,10 @@ void _srain_connect(const char *server){
         return;
     }
 
-    memset(&irc, 0, sizeof(irc_t));
-    strncpy(irc.alias, server, CHAN_LEN);
-    strncpy(irc.server, server, sizeof(irc.server) - 1);
-
     stat = SRAIN_CONNECTING;
     irc_connect(&irc, server, "6666");
     stat = SRAIN_CONNECTED;
-    srain_recv();   // dead loop
+    srain_recv();   // endless loop
 }
 
 int srain_connect(const char *server){
@@ -73,10 +68,7 @@ int srain_login(const char *nick){
         RET(-1);
     }
 
-    chan_list = g_list_append(chan_list, "*server*");
-    strncpy(irc.nick, nick, NICK_LEN);
-
-    if (irc_reg(&irc, nick, "Srain", "EL PSY CONGRO") >= 0){
+    if (irc_login(&irc, nick) >= 0){
         stat = SRAIN_LOGINED;
         RET(0);
     }
@@ -85,8 +77,6 @@ int srain_login(const char *nick){
 }
 
 int srain_join(const char *chan){
-    GList *tmp;
-
     ui_busy(TRUE);
 
     if (stat != SRAIN_LOGINED){
@@ -94,44 +84,25 @@ int srain_join(const char *chan){
         RET(-1);
     }
 
-    tmp = chan_list;
-    while (tmp){
-        if (strncmp(tmp->data, chan, CHAN_LEN) == 0){
-            ERR_FR("channel already exist");
-            RET(-1);
-        }
-        tmp = tmp->next;
-    }
-
-    irc_join(&irc, chan);
-    RET(0);
+    RET(irc_join_req(&irc, chan));
 }
 
 int srain_part(const char *chan, const char *reason){
-    GList *tmp;
-
     ui_busy(TRUE);
+
     if (!reason) reason = "Srain";
 
-    tmp = chan_list;
-    while (tmp){
-        if (strncmp(tmp->data, chan, CHAN_LEN) == 0){
-            irc_part(&irc, chan, reason);
-            RET(0);
-        }
-        tmp = tmp->next;
-    }
-
-    ERR_FR("no such channel");
-    RET(-1);
+    RET(irc_part_req(&irc, chan, reason));
 }
 
 int srain_send(const char *chan, const char *msg){
     ui_busy(TRUE);
+
     LOG_FR("send message '%s' to %s", msg, chan);
 
     ui_msg_send(chan, msg);
-    RET(irc_msg(&irc, chan, msg));
+
+    RET(irc_send(&irc, chan, msg, 0));
 }
 
 /* GSourceFunc */
@@ -151,28 +122,20 @@ gboolean srain_idles(irc_msg_t *imsg){
         if (imsg->nparam == 2) ui_chan_set_topic(imsg->param[1], imsg->message);
     }
 
-    /* JOIN & PART */
+    /* JOIN & PART & QUIT */
     else if (strcmp(imsg->command, "JOIN") == 0){
         if (imsg->nparam != 1) goto bad;
         if (strncmp(imsg->nick, irc.nick, NICK_LEN) == 0){
             ui_chan_add(imsg->param[0]);
-            chan_list = g_list_append(chan_list, strdup(imsg->param[0]));
+            irc_join_ack(&irc, imsg->param[0]);
         }
         else ui_chan_online_list_add(imsg->param[0], imsg->nick);
         ui_msg_sysf(imsg->param[0], "%s join %s", imsg->nick, imsg->param[0]);
     }
     else if (strcmp(imsg->command, "PART") == 0){
         if (strncmp(imsg->nick, irc.nick, NICK_LEN) == 0){
-            GList *tmp = chan_list;
-            while (tmp){
-                if (strncmp(imsg->param[0], tmp->data, CHAN_LEN) == 0){
-                    LOG_FR("PART %s - %s", imsg->param[0], tmp->data);
-                    free(tmp->data);
-                    chan_list = g_list_remove(chan_list, tmp->data);
-                    ui_chan_rm(imsg->param[0]);
-                }
-                tmp = tmp->next;
-            }
+            irc_part_ack(&irc, imsg->param[0], imsg->message);
+            ui_chan_rm(imsg->param[0]);
         }
         else{
             ui_chan_online_list_rm(imsg->param[0], imsg->nick);
@@ -180,21 +143,29 @@ gboolean srain_idles(irc_msg_t *imsg){
         }
     }
     else if (strcmp(imsg->command, "QUIT") == 0){
-        // if (imsg->nparam == 1) ui_chan_onlinelist_add(imsg->param[0], imsg->nick);
+        if (imsg->nparam != 1) goto bad;
+        // TODO
+        ui_msg_sysf(NULL, "%s quit: %s", imsg->nick, imsg->message);
+        ui_chan_online_list_rm_broadcast(irc.chans, imsg->message);
     }
 
     /* NICK (someone change his name) */
     else if (strcmp(imsg->command, "NICK") == 0){
         if (imsg->nparam != 0) goto bad;
+
+        // TODO
         ui_msg_sysf(NULL, "%s is now known as %s", imsg->nick, imsg->message);
-        // ui_chan_onlinelist_rm("*", irc->nick);
-        // ui_chan_onlinelist_add("*", irc->nick);
+
+        ui_chan_online_list_rm_broadcast(irc.chans, irc.nick);
+        ui_chan_online_list_add_broadcast(irc.chans, imsg->message);
+
         if (strncmp(irc.nick, imsg->nick, NICK_LEN) == 0)
-            strncpy(irc.nick, imsg->message, NICK_LEN);
+            irc_nick_ack(&irc, imsg->nick);
     }
 
     /* Names (Channel name list) */
     else if (strcmp(imsg->command, RPL_NAMREPLY) == 0){
+
         if (imsg->nparam != 3) goto bad;
         char *nickptr = strtok(imsg->message, " ");
         while (nickptr){
@@ -207,25 +178,39 @@ gboolean srain_idles(irc_msg_t *imsg){
     else if (strcmp(imsg->command, "NOTICE") == 0){
         if (imsg->nparam != 1) goto bad;
         if (strcmp(imsg->param[0], "*") == 0)
-            ui_msg_recv_broadcast(chan_list, imsg->servername, irc.server, imsg->message);
+            ui_msg_recv_broadcast(irc.chans, imsg->servername, irc.server, imsg->message);
         else
             ui_msg_recv(imsg->param[0], imsg->servername, irc.server, imsg->message);
+    }
+
+    /* MODE TODO */
+    else if (strcmp(imsg->command, "MODE") == 0){
+        if (imsg->nparam != 1) goto bad;
+        ui_msg_sysf_broadcast(irc.chans, "%s MODE %s by %s",
+                imsg->param[0], imsg->message, imsg->servername);
     }
 
     /* Other Server Mesage (receive when login) */
     else if (strcmp(imsg->command, RPL_WELCOME) == 0
             || strcmp(imsg->command, RPL_YOURHOST) == 0
             || strcmp(imsg->command, RPL_CREATED) == 0
+            || strcmp(imsg->command, RPL_MOTDSTART) == 0
             || strcmp(imsg->command, RPL_MOTD) == 0
             || strcmp(imsg->command, RPL_ENDOFMOTD) == 0
             || strcmp(imsg->command, RPL_MYINFO) == 0
             || strcmp(imsg->command, RPL_BOUNCE) == 0
             || strcmp(imsg->command, RPL_LUSEROP) == 0
             || strcmp(imsg->command, RPL_LUSERUNKNOWN) == 0
-            || strcmp(imsg->command, RPL_LUSERCHANNELS) == 0){
+            || strcmp(imsg->command, RPL_LUSERCHANNELS) == 0
+            || strcmp(imsg->command, RPL_LUSERCLIENT) == 0
+            || strcmp(imsg->command, RPL_LUSERME) == 0
+            || strcmp(imsg->command, RPL_ADMINME) == 0
+            // 266, 250, 265 
+            ){
         /* regard a server message as a PRVIMSG message
          * let nick = servername
          *     msg = param[1..n] + message
+         *     param[0] is you nick
          */
         int i = 1;
         char tmp[MSG_LEN];
@@ -242,6 +227,11 @@ gboolean srain_idles(irc_msg_t *imsg){
         ui_msg_recv("*server*", imsg->servername, irc.server, tmp);
     }
 
+    // IGNORE
+    else if (strcmp(imsg->command, RPL_ENDOFNAMES) == 0){
+        // pass
+    }
+
     /* RPL_ERROR */
     else if (imsg->command[0] == '4'){
         ui_msg_sys(NULL, imsg->message);
@@ -250,15 +240,24 @@ gboolean srain_idles(irc_msg_t *imsg){
     /* unsupported message */
     else {
         ERR_FR("unsupported message");
-        LOG("\tcommand: %s\n", imsg->command);
-        LOG("\tmessage: %s\n", imsg->message);
+        goto bad;
     }
 
     free(imsg);
     return FALSE;   // you must return FALSE when execute normally
 
 bad:
-    ERR_FR("wrong paramater count");
+    ERR_FR("bad message:");
+    LOG("\tnick: %s\n", imsg->nick);
+    LOG("\tservername: %s\n", imsg->servername);
+    LOG("\tnparam: %d\n", imsg->nparam);
+    LOG("\tparam: ");
+    int i = imsg->nparam;
+    while (i--) LOG("%s(%d) ", imsg->param[i], i);
+    LOG("\n");
+    LOG("\tcommand: %s\n", imsg->command);
+    LOG("\tmessage: %s\n", imsg->message);
+
     free(imsg);
     return FALSE;   // you must return FALSE when execute normally
 }
@@ -290,7 +289,7 @@ void srain_recv(){
 
 void srain_close(){
     gtk_main_quit();
-    irc_quit(&irc, "EL PSY CONGRO");
+    irc_quit_req(&irc, "EL PSY CONGRO");
     irc_close(&irc);
 }
 
@@ -332,8 +331,8 @@ int srain_cmd(const char *chan, char *cmd){
     else if (strncmp(cmd, "/me", 3) == 0){
         char *msg = strtok(cmd + 3, " ");
         if (msg){
-            ui_msg_send(NULL, msg);
-            return irc_action(&irc, ui_chan_get_cur_name(), msg);
+            ui_msg_send(chan, msg);
+            return irc_send(&irc, chan, msg, 1);
         }
     }
     else if (strncmp(cmd, "/nick", 5) == 0){
@@ -341,7 +340,7 @@ int srain_cmd(const char *chan, char *cmd){
         if (nick){
             /* irc->nick will be modified when recv
              * NICK command from server */
-            return irc_nick(&irc, nick);
+            return irc_nick_req(&irc, nick);
         }
     } else {
         ui_msg_sysf(chan, "%s: unsupported command", cmd);
