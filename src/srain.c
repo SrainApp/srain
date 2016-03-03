@@ -122,42 +122,37 @@ gboolean srain_idles(irc_msg_t *imsg){
         if (imsg->nparam == 2) ui_chan_set_topic(imsg->param[1], imsg->message);
     }
 
-    /* JOIN & PART & QUIT */
+    /* JOIN & PART & QUIT
+     *
+     * sys message "xxx has join/leave #yyy" are sent
+     * by ui_chan_online_list_{add,rm}()
+     */
     else if (strcmp(imsg->command, "JOIN") == 0){
         if (imsg->nparam != 1) goto bad;
         if (strncmp(imsg->nick, irc.nick, NICK_LEN) == 0){
             ui_chan_add(imsg->param[0]);
             irc_join_ack(&irc, imsg->param[0]);
         }
-        else ui_chan_online_list_add(imsg->param[0], imsg->nick);
-        ui_msg_sysf(imsg->param[0], "%s join %s", imsg->nick, imsg->param[0]);
+        ui_chan_online_list_add(imsg->param[0], imsg->nick, 0);
     }
     else if (strcmp(imsg->command, "PART") == 0){
+        if (imsg->nparam != 1) goto bad;
+        ui_chan_online_list_rm(imsg->param[0], imsg->nick, imsg->message);
         if (strncmp(imsg->nick, irc.nick, NICK_LEN) == 0){
-            irc_part_ack(&irc, imsg->param[0], imsg->message);
+            irc_part_ack(&irc, imsg->param[0]);
             ui_chan_rm(imsg->param[0]);
-        }
-        else{
-            ui_chan_online_list_rm(imsg->param[0], imsg->nick);
-            ui_msg_sysf(imsg->param[0], "%s leave %s", imsg->nick, imsg->param[0]);
         }
     }
     else if (strcmp(imsg->command, "QUIT") == 0){
-        if (imsg->nparam != 1) goto bad;
-        // TODO
-        ui_msg_sysf(NULL, "%s quit: %s", imsg->nick, imsg->message);
-        ui_chan_online_list_rm_broadcast(irc.chans, imsg->message);
+        if (imsg->nparam != 0) goto bad;
+        ui_chan_online_list_rm_broadcast(irc.chans, imsg->nick, imsg->message);
     }
 
     /* NICK (someone change his name) */
     else if (strcmp(imsg->command, "NICK") == 0){
         if (imsg->nparam != 0) goto bad;
 
-        // TODO
-        ui_msg_sysf(NULL, "%s is now known as %s", imsg->nick, imsg->message);
-
-        ui_chan_online_list_rm_broadcast(irc.chans, irc.nick);
-        ui_chan_online_list_add_broadcast(irc.chans, imsg->message);
+        ui_chan_online_list_rename_broadcast(irc.chans, imsg->nick, imsg->message);
 
         if (strncmp(irc.nick, imsg->nick, NICK_LEN) == 0)
             irc_nick_ack(&irc, imsg->nick);
@@ -169,7 +164,7 @@ gboolean srain_idles(irc_msg_t *imsg){
         if (imsg->nparam != 3) goto bad;
         char *nickptr = strtok(imsg->message, " ");
         while (nickptr){
-            ui_chan_online_list_add(imsg->param[2], nickptr);
+            ui_chan_online_list_add(imsg->param[2], nickptr, 1);
             nickptr = strtok(NULL, " ");
         }
     }

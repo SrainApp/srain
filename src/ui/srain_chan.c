@@ -118,6 +118,20 @@ static int msg_menu_popup(GtkWidget *widget, GdkEventButton *event, gpointer *us
     return FALSE;
 }
 
+static void srain_chan_sys_msg_addf(SrainChan *chan, const char *fmt, ...){
+    char msg[512];
+    va_list args;
+
+    if (strlen(fmt) != 0 ){
+        // Format the data
+        va_start(args, fmt);
+        vsnprintf(msg, sizeof (msg), fmt, args);
+        va_end(args);
+
+        srain_chan_sys_msg_add(chan, msg);
+    }
+}
+
 static void srain_chan_init(SrainChan *self){
     gtk_widget_init_template(GTK_WIDGET(self));
 
@@ -160,13 +174,22 @@ void srain_chan_set_topic(SrainChan *chan, const char *topic){
     gtk_label_set_text(chan->topic_label, topic);
 }
 
-void srain_chan_online_list_add(SrainChan *chan, const char *name){
+/**
+ * @brief srain_chan_online_list_add 
+ *
+ * @param chan
+ * @param name
+ * @param is_init if is_init = 1, sys msg will not be sent
+ */
+void srain_chan_online_list_add(SrainChan *chan, const char *name, int is_init){
+    const char *chan_name;
     GtkWidget *label;
     GtkListBoxRow *row;
 
+    chan_name =gtk_widget_get_name(GTK_WIDGET(chan));
     row = get_list_item_by_name(chan->online_listbox, name);
     if (row){
-        ERR_FR("GtkListBoxRow %s already exist", name);
+        ERR_FR("GtkListBoxRow %s already exist in %s", name, chan_name);
         return;
     }
     label = gtk_label_new(name);
@@ -175,17 +198,42 @@ void srain_chan_online_list_add(SrainChan *chan, const char *name){
     gtk_container_add(GTK_CONTAINER(chan->online_listbox), label);
     theme_apply(GTK_WIDGET(chan));
     gtk_widget_show(label);
+
+    if (!is_init)
+        srain_chan_sys_msg_addf(chan, "%s has joined %s", name, chan_name);
 }
 
-void srain_chan_online_list_rm(SrainChan *chan, const char *name){
+void srain_chan_online_list_rm(SrainChan *chan, const char *name, const char *reason){
+    const char *chan_name;
     GtkListBoxRow *row;
 
+    chan_name =gtk_widget_get_name(GTK_WIDGET(chan));
     row = get_list_item_by_name(chan->online_listbox, name);
     if (!row){
-        ERR_FR("GtkListBoxRow %s no found", name);
+        ERR_FR("GtkListBoxRow %s no found in %s", name, chan_name);
         return;
     }
     gtk_container_remove(GTK_CONTAINER(chan->online_listbox), GTK_WIDGET(row));
+
+    srain_chan_sys_msg_addf(chan, "%s has left %s: %s", name, chan_name, reason);
+}
+
+void srain_chan_online_list_rename(SrainChan *chan, const char *old_name, const char *new_name){
+    const char *chan_name;
+    GtkLabel *label;
+    GtkListBoxRow *row;
+
+    chan_name =gtk_widget_get_name(GTK_WIDGET(chan));
+    row = get_list_item_by_name(chan->online_listbox, old_name);
+    if (!row){
+        ERR_FR("GtkListBoxRow %s no found in %s", old_name, chan_name);
+        return;
+    }
+
+    label = GTK_LABEL(gtk_bin_get_child(GTK_BIN(row)));
+    gtk_label_set_text(label, new_name);
+
+    srain_chan_sys_msg_addf(chan, "%s is now known as %s", old_name, new_name);
 }
 
 void srain_chan_sys_msg_add(SrainChan *chan, const char *msg){
@@ -197,11 +245,11 @@ void srain_chan_sys_msg_add(SrainChan *chan, const char *msg){
     gtk_container_add(GTK_CONTAINER(chan->msg_listbox), GTK_WIDGET(smsg));
     theme_apply(GTK_WIDGET(chan));
 
-
     chan->last_msg = GTK_WIDGET(smsg);
 
     scroll_to_bottom(chan);
 }
+
 
 void srain_chan_send_msg_add(SrainChan *chan, const char *msg, const char *img_path){
     SrainSendMsg *smsg;

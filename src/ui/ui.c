@@ -33,30 +33,43 @@ void ui_chan_set_topic(const char *chan_name, const char *topic){
     srain_chan_set_topic(chan, topic);
 }
 
-void ui_chan_online_list_add(const char *chan_name, const char *name){
+void ui_chan_online_list_add(const char *chan_name, const char *name, int is_init){
     SrainChan *chan;
 
     chan = srain_window_get_chan_by_name(win, chan_name);
-    srain_chan_online_list_add(chan, name);
+    srain_chan_online_list_add(chan, name, is_init);
 }
 
-void ui_chan_online_list_add_broadcast(GList *chans, const char *name){
+void ui_chan_online_list_rm(const char *chan_name, const char *name, const char *resaon){
+    SrainChan *chan;
+
+    chan = srain_window_get_chan_by_name(win, chan_name);
+    srain_chan_online_list_rm(chan, name, resaon);
+}
+
+
+/**
+ * @brief ui_chan_online_list_rm_broadcast
+ *
+ * called when recvied QUIT message
+ *
+ * @param chans
+ * @param name
+ * @param resaon
+ */
+void ui_chan_online_list_rm_broadcast(GList *chans, const char *name, const char *reason){
     while (chans){
-        ui_chan_online_list_add(chans->data, name);
+        ui_chan_online_list_rm(chans->data, name, reason);
         chans = chans->next;
     }
 }
 
-void ui_chan_online_list_rm(const char *chan_name, const char *name){
+void ui_chan_online_list_rename_broadcast(GList *chans, const char *old_name, const char *new_name){
     SrainChan *chan;
 
-    chan = srain_window_get_chan_by_name(win, chan_name);
-    srain_chan_online_list_rm(chan, name);
-}
-
-void ui_chan_online_list_rm_broadcast(GList *chans, const char *name){
     while (chans){
-        ui_chan_online_list_rm(chans->data, name);
+        chan = srain_window_get_chan_by_name(win, chans->data);
+        srain_chan_online_list_rename(chan, old_name, new_name);
         chans = chans->next;
     }
 }

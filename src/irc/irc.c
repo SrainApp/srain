@@ -90,7 +90,7 @@ void irc_join_ack(irc_t *irc, const char *chan){
     irc->chans = g_list_append(irc->chans, strdup(chan));
 }
 
-void irc_part_ack(irc_t *irc, const char *chan, const char *reason){
+void irc_part_ack(irc_t *irc, const char *chan){
     GList *tmp;
 
     tmp = irc->chans;

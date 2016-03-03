@@ -47,15 +47,13 @@ void ui_msg_sysf_broadcast(GList *chans, const char *fmt, ...);
 
 void ui_msg_send(const char *chan_name, const char *msg);
 
-void ui_msg_recv(const char *chan_name, const char *nick,
-        const char *id, const char *msg);
-void ui_msg_recv_broadcast(GList *chans, const char *nick,
-        const char *id, const char *msg);
+void ui_msg_recv(const char *chan_name, const char *nick, const char *id, const char *msg);
+void ui_msg_recv_broadcast(GList *chans, const char *nick, const char *id, const char *msg);
 
-void ui_chan_online_list_add(const char *chan_name, const char *name);
-void ui_chan_online_list_add_broadcast(GList *chans, const char *name);
-void ui_chan_online_list_rm(const char *chan_name, const char *name);
-void ui_chan_online_list_rm_broadcast(GList *chans, const char *name);
+void ui_chan_online_list_add(const char *chan_name, const char *name, int is_init);
+void ui_chan_online_list_rm(const char *chan_name, const char *name, const char *reason);
+void ui_chan_online_list_rm_broadcast(GList *chans, const char *name, const char *reason);
+void ui_chan_online_list_rename_broadcast(GList *chans, const char *old_name, const char *new_name);
 
 const char* ui_chan_get_cur_name();
 void ui_busy(gboolean is_busy);
