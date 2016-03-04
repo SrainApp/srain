@@ -1,6 +1,12 @@
-@define-color bg_color #ffffff;
+@define-color bg_color                  #ffffff;
+@define-color gray_color                #d3d3d3;
 
-@define-color text_color #000000;
+
+@define-color text_color                #000000;
+@define-color selected_text_color       #b0c4de;
+
+@define-color hover_color               #b0c4de;
+@define-color active_color              #4682b4;
 
 @define-color window_header_box_color   #8db6cd;
 

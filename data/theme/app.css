@@ -1,52 +1,113 @@
-/* @import url("./reset.css"); */
+@import url("./reset.css");
 
+* {
+    color: @text_color;
+}
+
+GtkWindow, GtkBox {
+    background-color: @bg_color;
+}
+
+GtkButton * {
+    background-color: transparent;
+}
+
+GtkButton {
+    padding: 10px;
+}
+
+GtkSeparator {
+    color: @gray_color;
+}
+
+GtkStackSidebar GtkListBoxRow {
+    padding: 14px;
+}
+
+GtkStackSidebar GtkSeparator {
+    color: transparent;
+}
+
+GtkStackSidebar GtkListBoxRow:focus ,
+GtkStackSidebar GtkListBoxRow:hover {
+    background-color: alpha(@hover_color, 0.5);
+    transition: 350ms ease-in-out;
+}
+
+GtkStackSidebar GtkListBoxRow:active {
+    background-color: alpha(@hover_color, 1);
+    transition: 200ms ease-in-out;
+}
+
+GtkEntry {
+    margin: 10px;
+    padding: 10px;
+}
+
+GtkButton:hover{
+    background-color: alpha(@hover_color, 0.5);
+    transition: 200ms ease-in-out;
+}
+
+GtkButton:active{
+    background-color: alpha(@hover_color, 1);
+    transition: 200ms ease-in-out;
+}
+
+/* window {{*/
 #window_header_box {
     background-color: alpha (@window_header_box_color, 1);
+}
+
+#window_header_box_color GtkButton{
+    background-color: alpha (@window_header_box_color, 1);
+}
+
+#about_button:hover {
+    border-width: 1px;
+    border-radius: 30px;
+    border-image: -gtk-gradient (linear,
+        left top,
+        left bottom,
+        from (@focus_color),
+        to (@focus_color));
+}
+/* }} */
+
+/* msg_box {{ */
+#normal_sys_msg_box #msg_label {
+    color: @sys_msg_text_color;
+    background-color: alpha(@normal_sys_msg_color, 0.3);
+    border-radius: 4px;
+}
+
+#normal_send_msg_box #padding_box,
+#normal_recv_msg_box #padding_box {
+    background-color: alpha(@normal_recv_msg_color, 1);
+    border-radius: 4px;
+    box-shadow: alpha(black, 0.2) 2px 2px;
+}
+
+#msg_scrolledwindow  GtkBox {
+    background-color: transparent;
 }
 
 #msg_scrolledwindow {
     background-image: url("./bg.jpg");
 }
 
-#normal_sys_msg_box #msg_label {
-    color: @sys_msg_text_color;
-    background-color: alpha (@normal_sys_msg_color, 0.3);
-    border-radius: 4px;
+#avatar_image {
+    border-radius: 20px;
 }
 
-#normal_send_msg_box #padding_box,
-#normal_recv_msg_box #padding_box {
-    background-color: alpha (@normal_recv_msg_color, 1);
-    border-radius: 4px;
-    box-shadow: alpha(black, 0.2) 2px 2px;
+/* }} */
+
+GtkMenuItem:hover,
+GtkListBoxRow:hover {
+    background-color: alpha(@hover_color, 0.5);
 }
 
-
-GtkEntry,
-GtkEntry:focus,
-GtkButton,
-GtkImage {
-	border: none;
-	border-width: 0;
-	border-image: none;
-	border-style: none;
-	border-radius: 0;
-}
-
-
-GtkMenu {
-  background: @ui_darker;
-  border: none;
-  border-width: 0;
-  border-image: none;
-  border-image-width: 0;
-  border-style: none;
-  border-radius: 0;
-
-  box-shadow: none;
-  text-shadow: none;
-  padding: 0;
-}
-
-GtkMenu GtkMenuItem {
+GtkEntry:selected,
+GtkLabel:selected {
+    background-color: alpha(@selected_text_color, 0.5);
 }

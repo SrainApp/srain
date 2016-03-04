@@ -26,7 +26,7 @@ struct _SrainChan {
     GtkLabel* name_label;
     GtkLabel *topic_label;
     GtkScrolledWindow *msg_scrolledwindow;
-    GtkListBox *msg_box;
+    GtkBox *msg_box;
     GtkMenu *msg_menu;
     GtkRevealer *revealer;
     GtkButton *onlinelist_button;
