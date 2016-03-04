@@ -6,6 +6,8 @@
  * @date 2016-03-01
  */
 
+#define __LOG_ON 1
+
 #include <gtk/gtk.h>
 #include <assert.h>
 #include "ui_common.h"
@@ -115,6 +117,8 @@ SrainChan* srain_window_add_chan(SrainWindow *win, const char *name){
     gtk_stack_add_named(win->stack, GTK_WIDGET(chan), name);
     gtk_container_child_set(GTK_CONTAINER(win->stack), GTK_WIDGET(chan), "title", name, NULL);
     theme_apply(GTK_WIDGET(win));
+
+    gtk_stack_set_visible_child (win->stack, GTK_WIDGET(chan));
 
     return chan;
 }

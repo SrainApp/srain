@@ -6,7 +6,20 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <child>
-      <placeholder/>
+      <object class="GtkLabel" id="label1">
+        <property name="width_request">100</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="selectable">True</property>
+        <attributes>
+          <attribute name="weight" value="normal"/>
+        </attributes>
+      </object>
+      <packing>
+        <property name="expand">True</property>
+        <property name="fill">True</property>
+        <property name="position">0</property>
+      </packing>
     </child>
     <child>
       <object class="GtkBox" id="box1">
@@ -25,13 +38,12 @@
             <property name="wrap">True</property>
             <property name="selectable">True</property>
             <attributes>
-                <attribute name="weight" value="normal"/>
+              <attribute name="weight" value="normal"/>
             </attributes>
           </object>
           <packing>
             <property name="expand">True</property>
             <property name="fill">True</property>
-            <property name="padding">4</property>
             <property name="position">1</property>
           </packing>
         </child>
