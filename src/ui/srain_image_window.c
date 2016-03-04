@@ -9,6 +9,7 @@
 #include <gtk/gtk.h>
 #include <assert.h>
 #include "ui_common.h"
+#include "theme.h"
 #include "srain_image_window.h"
 #include "log.h"
 
@@ -53,6 +54,7 @@ SrainImageWindow* srain_image_window_new(const char *path){
 
     g_object_unref(pixbuf);
 
+    theme_apply(GTK_WIDGET(win));
     // TODO 为什么现在的 image window 可以 resize 了？ 这不是理想中的效果
     return win;
 }

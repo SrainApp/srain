@@ -84,6 +84,10 @@ static void srain_window_init(SrainWindow *self){
 
     gtk_window_set_title(GTK_WINDOW(self), "Srain");
 
+    theme_apply(GTK_WIDGET(self));
+    theme_apply(GTK_WIDGET(self->tray_menu));
+    theme_apply(GTK_WIDGET(self->sidebar_menu));
+
     tray_icon_set_callback(self->tray_icon, self, self->tray_menu);
     g_signal_connect(self->sidebar, "button_press_event",
             G_CALLBACK(sidebar_menu_popup), self->sidebar_menu);

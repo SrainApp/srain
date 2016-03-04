@@ -1,0 +1,21 @@
+@define-color bg_color #ffffff;
+@define-color fcous_color #87ceff;
+
+@define-color text_color #000000;
+@define-color text_color_hover #aca8a8;
+@define-color text_copy #7a7a7a;
+
+@define-color msg_box #343434;
+
+@define-color ui_darker #E0E0E0;
+@define-color ui_dark   #F0F0F0;
+@define-color ui_main   #FFFFFF;
+@define-color ui_text   #000000;
+@define-color selected_text_color #5688F9;
+
+@import url("app.css");
+
+GtkEntry, GtkButton, Gtklable {
+  color: @ui_text;
+}
+

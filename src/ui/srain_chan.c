@@ -26,7 +26,7 @@ struct _SrainChan {
     GtkLabel* name_label;
     GtkLabel *topic_label;
     GtkScrolledWindow *msg_scrolledwindow;
-    GtkListBox *msg_listbox;
+    GtkListBox *msg_box;
     GtkMenu *msg_menu;
     GtkRevealer *revealer;
     GtkButton *onlinelist_button;
@@ -118,18 +118,6 @@ static int msg_list_box_popup(GtkWidget *widget, GdkEventButton *event, gpointer
     return FALSE;
 }
 
-static int msg_list_box_on_click(GtkWidget *widget, GdkEventButton *event, gpointer *user_data){
-    GtkEntry *entry;
-
-    /* NB: GtkListBox will grab focus when his row is clicked (even if it is
-     * unselectable), so return the focus to GtkEntry pls. :)
-     */
-    entry = GTK_ENTRY(user_data);
-    gtk_widget_grab_focus(GTK_WIDGET(entry));
-
-    return TRUE;
-}
-
 static void srain_chan_sys_msg_addf(SrainChan *chan, const char *fmt, ...){
     char msg[512];
     va_list args;
@@ -148,13 +136,13 @@ static void srain_chan_init(SrainChan *self){
     gtk_widget_init_template(GTK_WIDGET(self));
 
     self->last_msg = NULL;
+    theme_apply(GTK_WIDGET(self->msg_menu));
 
     g_signal_connect_swapped(self->input_entry, "activate", G_CALLBACK(on_send), self);
     g_signal_connect_swapped(self->send_button, "clicked", G_CALLBACK(on_send), self);
     g_signal_connect(self->onlinelist_button, "clicked", G_CALLBACK(onlinelist_button_on_click), self->revealer);
     g_signal_connect(self->online_listbox, "button_press_event", G_CALLBACK(online_listbox_on_dbclick), NULL);
-    g_signal_connect(self->msg_listbox, "button_press_event", G_CALLBACK(msg_list_box_popup), self->msg_menu);
-    g_signal_connect(self->msg_listbox, "button_press_event", G_CALLBACK(msg_list_box_on_click), self->input_entry);
+    g_signal_connect(self->msg_box, "button_press_event", G_CALLBACK(msg_list_box_popup), self->msg_menu);
 }
 
 static void srain_chan_class_init(SrainChanClass *class){
@@ -164,7 +152,7 @@ static void srain_chan_class_init(SrainChanClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, name_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, topic_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, msg_scrolledwindow);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, msg_listbox);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, msg_box);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, msg_menu);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, revealer);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, onlinelist_button);
@@ -209,7 +197,7 @@ void srain_chan_online_list_add(SrainChan *chan, const char *name, int is_init){
     gtk_widget_set_name(label, name);
 
     gtk_container_add(GTK_CONTAINER(chan->online_listbox), label);
-    theme_apply(GTK_WIDGET(chan));
+    theme_apply(GTK_WIDGET(chan->online_listbox));
     gtk_widget_show(label);
 
     if (!is_init)
@@ -255,8 +243,8 @@ void srain_chan_sys_msg_add(SrainChan *chan, const char *msg){
     smsg = srain_sys_msg_new(msg);
 
     gtk_widget_show(GTK_WIDGET(smsg));
-    gtk_container_add(GTK_CONTAINER(chan->msg_listbox), GTK_WIDGET(smsg));
-    theme_apply(GTK_WIDGET(chan));
+    gtk_container_add(GTK_CONTAINER(chan->msg_box), GTK_WIDGET(smsg));
+    theme_apply(GTK_WIDGET(chan->msg_box));
 
     chan->last_msg = GTK_WIDGET(smsg);
 
@@ -269,8 +257,8 @@ void srain_chan_send_msg_add(SrainChan *chan, const char *msg, const char *img_p
 
     smsg = srain_send_msg_new(msg, img_path);
     gtk_widget_show(GTK_WIDGET(smsg));
-    gtk_container_add(GTK_CONTAINER(chan->msg_listbox), GTK_WIDGET(smsg));
-    theme_apply(GTK_WIDGET(chan));
+    gtk_container_add(GTK_CONTAINER(chan->msg_box), GTK_WIDGET(smsg));
+    theme_apply(GTK_WIDGET(chan->msg_box));
 
     chan->last_msg = GTK_WIDGET(smsg);
 
@@ -282,8 +270,8 @@ void _srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id,
 
     smsg = srain_recv_msg_new(nick, id, msg, img_path);
     gtk_widget_show(GTK_WIDGET(smsg));
-    gtk_container_add(GTK_CONTAINER(chan->msg_listbox), GTK_WIDGET(smsg));
-    theme_apply(GTK_WIDGET(chan));
+    gtk_container_add(GTK_CONTAINER(chan->msg_box), GTK_WIDGET(smsg));
+    theme_apply(GTK_WIDGET(chan->msg_box));
 
     chan->last_msg = GTK_WIDGET(smsg);
 }

@@ -9,6 +9,7 @@
 #include <gtk/gtk.h>
 #include <assert.h>
 #include "ui_common.h"
+#include "theme.h"
 #include "srain_window.h"
 #include "srain_detail_dialog.h"
 
@@ -49,6 +50,8 @@ SrainDetailDialog* srain_detail_dialog_new(SrainWindow *win, const char *name, c
 
     g_signal_connect_swapped(dlg, "close", G_CALLBACK(gtk_widget_destroy), dlg);
     g_signal_connect_swapped(dlg->close_button, "clicked", G_CALLBACK(gtk_widget_destroy), dlg);
+
+    theme_apply(GTK_WIDGET(dlg));
 
     return dlg;
 }

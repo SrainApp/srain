@@ -1,0 +1,51 @@
+/* @import url("./reset.css"); */
+
+/*
+* {
+    color: @text_color;
+    background-color: @bg_color;
+}
+
+*/
+
+#sys_msg_box GtkLabel {
+    background-color: #bebebe;
+   /* #96cdcd; */
+}
+
+#msg_listbox {
+    background-image: url("./bg.jpg");
+}
+
+GtkEntry,
+GtkEntry:focus,
+GtkButton,
+GtkImage {
+	border: none;
+	border-width: 0;
+	border-image: none;
+	border-style: none;
+	border-radius: 0;
+
+	box-shadow: none;
+	text-shadow: none;
+}
+
+
+GtkMenu {
+  background: @ui_darker;
+  border: none;
+  border-width: 0;
+  border-image: none;
+  border-image-width: 0;
+  border-style: none;
+  border-radius: 0;
+
+  box-shadow: none;
+  text-shadow: none;
+  padding: 0;
+}
+
+GtkMenu GtkMenuItem {
+  color: @ui_text;
+}
