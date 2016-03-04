@@ -3,14 +3,20 @@
 <interface>
   <requires lib="gtk+" version="3.16"/>
   <template class="SrainSysMsg" parent="GtkBox">
+    <property name="name">normal_sys_msg_box</property>
     <property name="visible">True</property>
     <property name="can_focus">False</property>
+    <property name="margin_top">6</property>
+    <property name="margin_bottom">6</property>
     <child>
       <object class="GtkLabel" id="msg_label">
+        <property name="name">msg_label</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="xpad">15</property>
-        <property name="ypad">15</property>
+        <property name="halign">center</property>
+        <property name="valign">center</property>
+        <property name="xpad">6</property>
+        <property name="ypad">6</property>
         <property name="label" translatable="yes">system message.</property>
         <property name="selectable">True</property>
         <attributes>

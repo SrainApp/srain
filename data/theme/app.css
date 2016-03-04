@@ -1,21 +1,26 @@
 /* @import url("./reset.css"); */
 
-/*
-* {
-    color: @text_color;
-    background-color: @bg_color;
+#window_header_box {
+    background-color: alpha (@window_header_box_color, 1);
 }
 
-*/
-
-#sys_msg_box GtkLabel {
-    background-color: #bebebe;
-   /* #96cdcd; */
-}
-
-#msg_listbox {
+#msg_scrolledwindow {
     background-image: url("./bg.jpg");
 }
+
+#normal_sys_msg_box #msg_label {
+    color: @sys_msg_text_color;
+    background-color: alpha (@normal_sys_msg_color, 0.3);
+    border-radius: 4px;
+}
+
+#normal_send_msg_box #padding_box,
+#normal_recv_msg_box #padding_box {
+    background-color: alpha (@normal_recv_msg_color, 1);
+    border-radius: 4px;
+    box-shadow: alpha(black, 0.2) 2px 2px;
+}
+
 
 GtkEntry,
 GtkEntry:focus,
@@ -26,9 +31,6 @@ GtkImage {
 	border-image: none;
 	border-style: none;
 	border-radius: 0;
-
-	box-shadow: none;
-	text-shadow: none;
 }
 
 
@@ -47,5 +49,4 @@ GtkMenu {
 }
 
 GtkMenu GtkMenuItem {
-  color: @ui_text;
 }

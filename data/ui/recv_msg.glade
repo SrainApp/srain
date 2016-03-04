@@ -3,34 +3,47 @@
 <interface>
   <requires lib="gtk+" version="3.16"/>
   <template class="SrainRecvMsg" parent="GtkBox">
+    <property name="name">normal_recv_msg_box</property>
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <child>
-      <object class="GtkBox" id="box1">
+      <object class="GtkImage" id="avatar_image">
+        <property name="width_request">36</property>
+        <property name="height_request">36</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="valign">start</property>
+        <property name="margin_left">20</property>
+        <property name="margin_top">6</property>
+        <property name="margin_bottom">6</property>
+        <property name="pixbuf">avatar.png</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkBox" id="padding_box">
+        <property name="name">padding_box</property>
+        <property name="width_request">100</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="margin_right">100</property>
+        <property name="border_width">6</property>
+        <property name="orientation">vertical</property>
         <child>
-          <object class="GtkImage" id="avatar_image">
-            <property name="width_request">36</property>
-            <property name="height_request">36</property>
+          <object class="GtkBox" id="msg_box">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="valign">start</property>
-            <property name="icon_name">user-online</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkBox" id="box2">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="margin_left">6</property>
+            <property name="margin_right">6</property>
+            <property name="margin_top">6</property>
+            <property name="margin_bottom">6</property>
             <property name="orientation">vertical</property>
             <child>
-              <object class="GtkBox" id="box3">
+              <object class="GtkBox" id="nick_box">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
@@ -61,9 +74,8 @@
                   <object class="GtkLabel" id="identify_label">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="opacity">0.96862745098039216</property>
-                    <property name="valign">baseline</property>
                     <property name="label" translatable="yes">via relaybot</property>
+                    <property name="use_underline">True</property>
                     <property name="selectable">True</property>
                     <attributes>
                       <attribute name="weight" value="normal"/>
@@ -90,7 +102,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="halign">start</property>
-                <property name="xpad">9</property>
+                <property name="xpad">8</property>
                 <property name="label" translatable="yes">received message.
 &lt;a href="http://www.google.com"&gt;Link Test&lt;/a&gt;</property>
                 <property name="use_markup">True</property>
@@ -109,7 +121,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="box4">
+              <object class="GtkBox" id="footer_box">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
@@ -161,29 +173,12 @@
           <packing>
             <property name="expand">True</property>
             <property name="fill">True</property>
-            <property name="position">1</property>
+            <property name="position">0</property>
           </packing>
         </child>
       </object>
       <packing>
         <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="padding">10</property>
-        <property name="position">0</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkLabel" id="label1">
-        <property name="width_request">100</property>
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="selectable">True</property>
-        <attributes>
-          <attribute name="weight" value="normal"/>
-        </attributes>
-      </object>
-      <packing>
-        <property name="expand">True</property>
         <property name="fill">True</property>
         <property name="position">1</property>
       </packing>

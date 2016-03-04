@@ -17,10 +17,18 @@ void theme_init(){
 }
 
 #define _G_MAXUINT -1   // YCM can not found the defintion of G_MAXUINT, help him
-void theme_apply(GtkWidget *widget){
+static void _theme_apply(GtkWidget *widget){
     gtk_style_context_add_provider(
             gtk_widget_get_style_context(widget), provider, _G_MAXUINT);
 
     if(GTK_IS_CONTAINER(widget))
-        gtk_container_forall(GTK_CONTAINER(widget), (GtkCallback)theme_apply, NULL);
+        gtk_container_forall(GTK_CONTAINER(widget), (GtkCallback)_theme_apply, NULL);
+
+}
+
+void theme_apply(GtkWidget *widget){
+    _theme_apply(widget);
+
+    // TODO
+    gtk_widget_queue_draw(widget);
 }

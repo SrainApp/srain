@@ -19,7 +19,7 @@ void get_cur_time(char *timestr){
     time_t curtime;
 
     time(&curtime);
-    strftime(timestr, 32, "%m-%d %H:%M", localtime(&curtime));
+    strftime(timestr, 32, "%H:%M", localtime(&curtime));
     timestr[31] = '\0';
 }
 
