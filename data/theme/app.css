@@ -20,6 +20,7 @@ GtkSeparator {
     color: @gray_color;
 }
 
+/* sidebar {{ */
 GtkStackSidebar GtkListBoxRow {
     padding: 14px;
 }
@@ -28,14 +29,16 @@ GtkStackSidebar GtkSeparator {
     color: transparent;
 }
 
+/* }} */
+
 GtkStackSidebar GtkListBoxRow:focus ,
 GtkStackSidebar GtkListBoxRow:hover {
-    background-color: alpha(@hover_color, 0.5);
-    transition: 350ms ease-in-out;
+    background-color: @hover_color;
+    transition: 200ms ease-in-out;
 }
 
 GtkStackSidebar GtkListBoxRow:active {
-    background-color: alpha(@hover_color, 1);
+    background-color: @active_color;
     transition: 200ms ease-in-out;
 }
 
@@ -45,51 +48,73 @@ GtkEntry {
 }
 
 GtkButton:hover{
-    background-color: alpha(@hover_color, 0.5);
+    background-color: @hover_color;
     transition: 200ms ease-in-out;
 }
 
 GtkButton:active{
-    background-color: alpha(@hover_color, 1);
+    background-color: @active_color;
     transition: 200ms ease-in-out;
 }
 
 /* window {{*/
 #window_header_box {
-    background-color: alpha (@window_header_box_color, 1);
+    background-color: @window_header_box_color;
 }
 
-#window_header_box_color GtkButton{
-    background-color: alpha (@window_header_box_color, 1);
+#window_header_box GtkButton,
+#window_header_box GtkButton:hover{
+    background-color: @window_header_box_color;
 }
 
-#about_button:hover {
-    border-width: 1px;
-    border-radius: 30px;
-    border-image: -gtk-gradient (linear,
-        left top,
-        left bottom,
-        from (@focus_color),
-        to (@focus_color));
+#window_header_box GtkButton:active{
+    background-color: darker(@window_header_box_color);
 }
+
 /* }} */
 
 /* msg_box {{ */
 #normal_sys_msg_box #msg_label {
     color: @sys_msg_text_color;
-    background-color: alpha(@normal_sys_msg_color, 0.3);
+    background-color: @normal_sys_msg_color;
+    border-radius: 4px;
+}
+
+#error_sys_msg_box #msg_label {
+    color: @sys_msg_text_color;
+    background-color: @error_sys_msg_color;
+    border-radius: 4px;
+}
+
+#command_sys_msg_box #msg_label {
+    color: @sys_msg_text_color;
+    background-color: @command_sys_msg_color;
+    border-radius: 4px;
+}
+
+#action_sys_msg_box #msg_label {
+    color: @sys_msg_text_color;
+    background-color: @action_sys_msg_color;
     border-radius: 4px;
 }
 
 #normal_send_msg_box #padding_box,
 #normal_recv_msg_box #padding_box {
-    background-color: alpha(@normal_recv_msg_color, 1);
+    background-color: @normal_recv_msg_color;
     border-radius: 4px;
     box-shadow: alpha(black, 0.2) 2px 2px;
 }
 
 #msg_scrolledwindow  GtkBox {
     background-color: transparent;
+}
+
+#msg_scrolledwindow GtkButton {
+    padding: 6px;
+}
+
+#msg_scrolledwindow GtkButton:hover{
+
 }
 
 #msg_scrolledwindow {
@@ -102,12 +127,19 @@ GtkButton:active{
 
 /* }} */
 
-GtkMenuItem:hover,
+GtkMenuItem {
+    padding: 8px;
+}
+
+GtkMenuItem:hover {
+    background-color: @hover_color;
+}
+
 GtkListBoxRow:hover {
-    background-color: alpha(@hover_color, 0.5);
+    background-color: @hover_color;
 }
 
 GtkEntry:selected,
 GtkLabel:selected {
-    background-color: alpha(@selected_text_color, 0.5);
+    background-color: @selected_text_color;
 }

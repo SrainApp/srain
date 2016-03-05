@@ -5,7 +5,6 @@
 #include "srain_app.h"
 #include "srain_chan.h"
 
-
 #define SRAIN_TYPE_WINDOW (srain_window_get_type())
 #define SRAIN_WINDOW(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SRAIN_TYPE_WINDOW, SrainWindow))
 #define SRAIN_IS_WINDOW(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), SRAIN_TYPE_WINDOW))

@@ -8,6 +8,7 @@
 
 #include <gtk/gtk.h>
 #include <string.h>
+#include "ui.h"
 #include "srain_window.h"
 #include "srain_chan.h"
 #include "srain_msg.h"
@@ -83,17 +84,17 @@ const char* ui_chan_get_cur_name(){
     return NULL;
 }
 
-void ui_msg_sys(const char *chan_name, const char *msg){
+void ui_msg_sys(const char *chan_name, sys_msg_type_t type, const char *msg){
     SrainChan *chan;
 
     chan = srain_window_get_chan_by_name(win, chan_name);
 
     if (chan){
-        srain_chan_sys_msg_add(chan, msg);
+        srain_chan_sys_msg_add(chan, type, msg);
     }
 }
 
-void ui_msg_sysf(const char *chan_name, const char *fmt, ...){
+void ui_msg_sysf(const char *chan_name, sys_msg_type_t type, const char *fmt, ...){
     char msg[512];
     va_list args;
 
@@ -103,11 +104,11 @@ void ui_msg_sysf(const char *chan_name, const char *fmt, ...){
         vsnprintf(msg, sizeof (msg), fmt, args);
         va_end(args);
 
-        ui_msg_sys(chan_name, msg);
+        ui_msg_sys(chan_name, type, msg);
     }
 }
 
-void ui_msg_sysf_broadcast(GList *chans, const char *fmt, ...){
+void ui_msg_sysf_broadcast(GList *chans, sys_msg_type_t type, const char *fmt, ...){
     char msg[512];
     va_list args;
 
@@ -119,7 +120,7 @@ void ui_msg_sysf_broadcast(GList *chans, const char *fmt, ...){
     }
 
     while (chans){
-        ui_msg_sys(chans->data, msg);
+        ui_msg_sys(chans->data, type, msg);
         chans = chans->next;
     }
 }

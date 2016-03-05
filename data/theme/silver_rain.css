@@ -1,20 +1,19 @@
 @define-color bg_color                  #ffffff;
 @define-color gray_color                #d3d3d3;
 
-
 @define-color text_color                #000000;
-@define-color selected_text_color       #b0c4de;
+@define-color selected_text_color       alpha(#b0c4de, 0.5);
 
-@define-color hover_color               #b0c4de;
-@define-color active_color              #4682b4;
+@define-color hover_color               alpha(#b0c4de, 0.5);
+@define-color active_color              alpha(#b0c4de, 1);
 
 @define-color window_header_box_color   #8db6cd;
 
 @define-color sys_msg_text_color        #ffffff;
-@define-color normal_sys_msg_color      #696969;
-@define-color command_sys_msg_color     #696969;
-@define-color error_sys_msg_color       #696969;
-@define-color action_sys_msg_color      #696969;
+@define-color normal_sys_msg_color      alpha(#696969, 0.5);
+@define-color command_sys_msg_color     @normal_sys_msg_color;
+@define-color error_sys_msg_color       alpha(#ff0000, 0.5);
+@define-color action_sys_msg_color      alpha(#63B8FF, 0.5);
 
 @define-color normal_recv_msg_color     #ffffff;
 

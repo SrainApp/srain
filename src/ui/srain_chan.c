@@ -6,11 +6,12 @@
  * @date 2016-03-01
  */
 
-#define __LOG_ON 1
+#define __LOG_ON
 
 #include <gtk/gtk.h>
 #include <assert.h>
 #include <string.h>
+#include "ui.h"
 #include "ui_common.h"
 #include "theme.h"
 #include "srain_window.h"
@@ -118,7 +119,7 @@ static int msg_list_box_popup(GtkWidget *widget, GdkEventButton *event, gpointer
     return FALSE;
 }
 
-static void srain_chan_sys_msg_addf(SrainChan *chan, const char *fmt, ...){
+static void srain_chan_sys_msg_addf(SrainChan *chan, sys_msg_type_t type, const char *fmt, ...){
     char msg[512];
     va_list args;
 
@@ -128,7 +129,7 @@ static void srain_chan_sys_msg_addf(SrainChan *chan, const char *fmt, ...){
         vsnprintf(msg, sizeof (msg), fmt, args);
         va_end(args);
 
-        srain_chan_sys_msg_add(chan, msg);
+        srain_chan_sys_msg_add(chan, type, msg);
     }
 }
 
@@ -201,7 +202,7 @@ void srain_chan_online_list_add(SrainChan *chan, const char *name, int is_init){
     gtk_widget_show(label);
 
     if (!is_init)
-        srain_chan_sys_msg_addf(chan, "%s has joined %s", name, chan_name);
+        srain_chan_sys_msg_addf(chan, SYS_MSG_NORMAL, "%s has joined %s", name, chan_name);
 }
 
 void srain_chan_online_list_rm(SrainChan *chan, const char *name, const char *reason){
@@ -216,7 +217,7 @@ void srain_chan_online_list_rm(SrainChan *chan, const char *name, const char *re
     }
     gtk_container_remove(GTK_CONTAINER(chan->online_listbox), GTK_WIDGET(row));
 
-    srain_chan_sys_msg_addf(chan, "%s has left %s: %s", name, chan_name, reason);
+    srain_chan_sys_msg_addf(chan, SYS_MSG_NORMAL, "%s has left %s: %s", name, chan_name, reason);
 }
 
 void srain_chan_online_list_rename(SrainChan *chan, const char *old_name, const char *new_name){
@@ -234,13 +235,13 @@ void srain_chan_online_list_rename(SrainChan *chan, const char *old_name, const 
     label = GTK_LABEL(gtk_bin_get_child(GTK_BIN(row)));
     gtk_label_set_text(label, new_name);
 
-    srain_chan_sys_msg_addf(chan, "%s is now known as %s", old_name, new_name);
+    srain_chan_sys_msg_addf(chan, SYS_MSG_NORMAL, "%s is now known as %s", old_name, new_name);
 }
 
-void srain_chan_sys_msg_add(SrainChan *chan, const char *msg){
+void srain_chan_sys_msg_add(SrainChan *chan, sys_msg_type_t type, const char *msg){
     SrainSysMsg *smsg;
 
-    smsg = srain_sys_msg_new(msg);
+    smsg = srain_sys_msg_new(type, msg);
 
     gtk_container_add(GTK_CONTAINER(chan->msg_box), GTK_WIDGET(smsg));
     theme_apply(GTK_WIDGET(chan->msg_box));
