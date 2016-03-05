@@ -108,7 +108,7 @@ static void on_send(SrainChan *chan){
         gtk_entry_set_text(chan->input_entry, "");
 }
 
-static int msg_list_box_popup(GtkWidget *widget, GdkEventButton *event, gpointer *user_data){
+static int msg_box_popup(GtkWidget *widget, GdkEventButton *event, gpointer *user_data){
     GtkMenu *menu;
 
     menu = GTK_MENU(user_data);
@@ -143,7 +143,7 @@ static void srain_chan_init(SrainChan *self){
     g_signal_connect_swapped(self->send_button, "clicked", G_CALLBACK(on_send), self);
     g_signal_connect(self->onlinelist_button, "clicked", G_CALLBACK(onlinelist_button_on_click), self->revealer);
     g_signal_connect(self->online_listbox, "button_press_event", G_CALLBACK(online_listbox_on_dbclick), NULL);
-    g_signal_connect(self->msg_box, "button_press_event", G_CALLBACK(msg_list_box_popup), self->msg_menu);
+    g_signal_connect(self->msg_box, "button_press_event", G_CALLBACK(msg_box_popup), self->msg_menu);
 }
 
 static void srain_chan_class_init(SrainChanClass *class){
