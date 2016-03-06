@@ -65,6 +65,7 @@ int srain_login(const char *nick){
     ui_busy(TRUE);
 
     if (stat != SRAIN_CONNECTED){
+        ui_msg_sys(NULL, SYS_MSG_ERROR, "no connected");
         ERR_FR("NO SRAIN_CONNECTED");
         RET(-1);
     }
@@ -81,6 +82,7 @@ int srain_join(const char *chan){
     ui_busy(TRUE);
 
     if (stat != SRAIN_LOGINED){
+        ui_msg_sys(NULL, SYS_MSG_ERROR, "no logged in");
         ERR_FR("NO SRAIN_LOGINED");
         RET(-1);
     }
@@ -103,7 +105,12 @@ int srain_send(const char *chan, const char *msg){
 
     ui_msg_send(chan, msg);
 
-    RET(irc_send(&irc, chan, msg, 0));
+    if (irc_send(&irc, chan, msg, 0) <= 0){
+        ui_msg_sysf(NULL, SYS_MSG_ERROR, "faild to send message \"%.8s...\"", msg);
+        RET(-1);
+    }
+
+    RET(0);
 }
 
 /* GSourceFunc */

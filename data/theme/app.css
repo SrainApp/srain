@@ -21,27 +21,27 @@ GtkSeparator {
 }
 
 /* sidebar {{ */
-GtkStackSidebar GtkListBoxRow {
+SrainStackSidebar GtkListBoxRow {
     padding: 14px;
 }
 
-GtkStackSidebar GtkSeparator {
+SrainStackSidebar GtkSeparator {
     color: transparent;
 }
 
-/* }} */
-
-GtkStackSidebar GtkListBoxRow:focus ,
-GtkStackSidebar GtkListBoxRow:hover {
+SrainStackSidebar GtkListBoxRow:selected,
+SrainStackSidebar GtkListBoxRow:focus,
+SrainStackSidebar GtkListBoxRow:hover {
     background-color: @hover_color;
     transition: 200ms ease-in-out;
 }
 
-GtkStackSidebar GtkListBoxRow:active {
+SrainStackSidebar GtkListBoxRow:active {
     background-color: @active_color;
     transition: 200ms ease-in-out;
 }
 
+/* }} */
 GtkEntry {
     margin: 10px;
     padding: 10px;
