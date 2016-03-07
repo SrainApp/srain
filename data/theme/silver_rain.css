@@ -1,5 +1,7 @@
 @define-color bg_color                  #ffffff;
 @define-color gray_color                #d3d3d3;
+@define-color white_color               #ffffff;
+@define-color red_color                 alpha(#ff0000, 0.6);
 
 @define-color text_color                #000000;
 @define-color selected_text_color       alpha(#b0c4de, 0.5);

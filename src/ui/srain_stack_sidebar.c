@@ -30,8 +30,12 @@
  *      Ikey Doherty <michael.i.doherty@intel.com>
  */
 
+#define __LOG_ON
+
 #include <gtk/gtk.h>
 #include "srain_stack_sidebar.h"
+#include "srain_stack_sidebar_item.h"
+#include "log.h"
 
 struct _SrainStackSidebar {
     GtkBin parent;
@@ -87,19 +91,19 @@ static void srain_stack_sidebar_init(SrainStackSidebar *self){
 
 static void add_child(GtkWidget *child, SrainStackSidebar *sidebar){
     const char *name;
-    GtkWidget *item;
+    SrainStackSidebarItem *item;
     GtkWidget *row;
 
     if (g_hash_table_lookup(sidebar->rows, child))
         return;
 
-    name = gtk_widget_get_name(child);
     // TODO
-    item = gtk_label_new(name);
-    gtk_widget_set_halign(item, GTK_ALIGN_START);
-    gtk_widget_set_valign(item, GTK_ALIGN_CENTER);
+    name = gtk_widget_get_name(child);
+    item = srain_stack_sidebar_item_new(name);
+    // gtk_widget_set_halign(item, GTK_ALIGN_START);
+    // gtk_widget_set_valign(item, GTK_ALIGN_CENTER);
     row = gtk_list_box_row_new();
-    gtk_container_add(GTK_CONTAINER(row), item);
+    gtk_container_add(GTK_CONTAINER(row), GTK_WIDGET(item));
     gtk_widget_show_all(row);
 
     g_object_set_data(G_OBJECT(item), "stack-child", child);
