@@ -25,6 +25,11 @@
     <property name="can_focus">False</property>
     <property name="icon_name">go-previous</property>
   </object>
+  <object class="GtkImage" id="send_buton_image">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">send_icon.png</property>
+  </object>
   <template class="SrainChan" parent="GtkBox">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -255,11 +260,11 @@
         </child>
         <child>
           <object class="GtkButton" id="send_button">
-            <property name="label" translatable="yes">Send</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
             <property name="has_tooltip">True</property>
+            <property name="image">send_buton_image</property>
             <property name="relief">none</property>
           </object>
           <packing>

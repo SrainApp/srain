@@ -71,6 +71,7 @@
             <property name="name">lastmsg_label</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="halign">start</property>
             <property name="margin_left">4</property>
             <property name="margin_right">4</property>
             <property name="label" translatable="yes">quininer: 求培养素材</property>
