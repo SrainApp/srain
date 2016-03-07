@@ -1,0 +1,13 @@
+data/img/server_icon.png:
+- 16x16 png
+- license: https://icons8.com/license/
+- url: http://www.iconarchive.com/show/outline-icons-by-iconsmind/Servers-icon.html
+
+data/img/chan_icon.png:
+- 16x16 png
+- license: https://icons8.com/license/
+- url: http://www.iconarchive.com/show/ios7-icons-by-icons8/Users-Group-icon.html
+
+data/img/user_icon.png:
+- 16x16 png
+- modified from data/img/chan_icon.png
