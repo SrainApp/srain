@@ -6,7 +6,7 @@
  * @date 2016-03-01
  */
 
-#define __LOG_ON 1
+#define __LOG_ON
 
 #include <gtk/gtk.h>
 #include <assert.h>

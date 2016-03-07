@@ -41,7 +41,6 @@
             <property name="margin_left">6</property>
             <property name="margin_right">6</property>
             <property name="margin_top">6</property>
-            <property name="margin_bottom">6</property>
             <property name="orientation">vertical</property>
             <child>
               <object class="GtkBox" id="nick_box">
@@ -150,7 +149,7 @@
                     <property name="can_focus">False</property>
                     <property name="halign">end</property>
                     <property name="ypad">2</property>
-                    <property name="label" translatable="yes">mm-dd HH:MM</property>
+                    <property name="label" translatable="yes">HH:MM</property>
                     <style>
                       <class name="dim-label"/>
                     </style>
@@ -158,7 +157,6 @@
                   <packing>
                     <property name="expand">True</property>
                     <property name="fill">True</property>
-                    <property name="padding">4</property>
                     <property name="position">1</property>
                   </packing>
                 </child>

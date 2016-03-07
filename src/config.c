@@ -8,7 +8,7 @@
  * read $XDG_CONFIG_HOME/srain/srainrc, call `srain_cmd` for every line
  */
 
-#define __LOG_ON 1
+#define __LOG_ON
 
 #include <stdio.h>
 #include <string.h>
