@@ -6,7 +6,7 @@
  * @date 2016-03-01
  */
 
-#define __LOG_ON 1
+#define __LOG_ON
 
 #include <gtk/gtk.h>
 #include <assert.h>
@@ -16,6 +16,7 @@
 #include "srain_app.h"
 #include "srain_window.h"
 #include "srain_chan.h"
+#include "srain_stack_sidebar.h"
 #include "tray_icon.h"
 #include "log.h"
 #include "config.h"
@@ -23,8 +24,9 @@
 struct _SrainWindow {
     GtkApplicationWindow parent;
     GtkSpinner *spinner;
+    GtkBox *sidebar_box;
+    SrainStackSidebar *sidebar;
     GtkStack *stack;
-    GtkStackSidebar *sidebar;
     GtkMenu *sidebar_menu;
     GtkStatusIcon *tray_icon;
     GtkMenu *tray_menu;
@@ -84,6 +86,11 @@ static void srain_window_init(SrainWindow *self){
 
     gtk_window_set_title(GTK_WINDOW(self), "Srain");
 
+    self->sidebar = srain_stack_sidebar_new();
+    gtk_widget_show(GTK_WIDGET(self->sidebar));
+    gtk_box_pack_start(self->sidebar_box, GTK_WIDGET(self->sidebar), TRUE, TRUE, 0);
+    srain_stack_sidebar_set_stack(self->sidebar, self->stack);
+
     theme_apply(GTK_WIDGET(self));
     theme_apply(GTK_WIDGET(self->tray_menu));
     theme_apply(GTK_WIDGET(self->sidebar_menu));
@@ -100,7 +107,7 @@ static void srain_window_class_init(SrainWindowClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, stack);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, tray_icon);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, tray_menu);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, sidebar);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, sidebar_box);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, sidebar_menu);
 }
 
@@ -119,7 +126,7 @@ SrainChan* srain_window_add_chan(SrainWindow *win, const char *name){
     chan = srain_chan_new(name);
 
     gtk_stack_add_named(win->stack, GTK_WIDGET(chan), name);
-    gtk_container_child_set(GTK_CONTAINER(win->stack), GTK_WIDGET(chan), "title", name, NULL);
+    // gtk_container_child_set(GTK_CONTAINER(win->stack), GTK_WIDGET(chan), "title", name, NULL);
     theme_apply(GTK_WIDGET(win));
 
     gtk_stack_set_visible_child (win->stack, GTK_WIDGET(chan));

@@ -1,7 +1,8 @@
-#ifndef __SRAIN_CHANBOX_H
-#define __SRAIN_CHANBOX_H
+#ifndef __SRAIN_CHAN_H
+#define __SRAIN_CHAN_H
 
 #include <gtk/gtk.h>
+#include "srain_msg.h"
 
 #define SRAIN_TYPE_CHAN (srain_chan_get_type())
 #define SRAIN_CHAN(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SRAIN_TYPE_CHAN, SrainChan))
@@ -17,7 +18,7 @@ void srain_chan_online_list_rm(SrainChan *chan, const char *name, const char *re
 void srain_chan_online_list_add(SrainChan *chan, const char *name, int is_init);
 void srain_chan_online_list_rename(SrainChan *chan, const char *old_name, const char *new_name);
 
-void srain_chan_sys_msg_add(SrainChan *chan, const char *msg);
+void srain_chan_sys_msg_add(SrainChan *chan, sys_msg_type_t type, const char *msg);
 void srain_chan_send_msg_add(SrainChan *chan, const char *msg, const char *img_path);
 void srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id, const char *msg, const char *img_path);
 

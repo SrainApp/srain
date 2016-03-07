@@ -9,6 +9,7 @@
 #include <gtk/gtk.h>
 #include <time.h>
 #include <assert.h>
+#include "ui.h"
 #include "ui_common.h"
 #include "srain_window.h"
 #include "srain_msg.h"
@@ -60,10 +61,26 @@ static void srain_sys_msg_class_init(SrainSysMsgClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainSysMsg, msg_label);
 }
 
-SrainSysMsg* srain_sys_msg_new(const char *msg){
+SrainSysMsg* srain_sys_msg_new(sys_msg_type_t type, const char *msg){
     SrainSysMsg *smsg;
 
     smsg = g_object_new(SRAIN_TYPE_SYS_MSG, NULL);
+    switch (type){
+        case SYS_MSG_NORMAL:
+            gtk_widget_set_name(GTK_WIDGET(smsg), "normal_sys_msg_box");
+            break;
+        case SYS_MSG_ERROR:
+            gtk_widget_set_name(GTK_WIDGET(smsg), "error_sys_msg_box");
+            break;
+        case SYS_MSG_COMMAND:
+            gtk_widget_set_name(GTK_WIDGET(smsg), "command_sys_msg_box");
+            break;
+        case SYS_MSG_ACTION:
+            gtk_widget_set_name(GTK_WIDGET(smsg), "action_sys_msg_box");
+            break;
+        default:
+            ERR_FR("unkown sys_msg_type_t");
+    }
     gtk_label_set_text(smsg->msg_label, msg);
 
     return smsg;

@@ -20,6 +20,7 @@
 #include "irc_magic.h"
 #include "ui.h"
 #include "srain_window.h"
+#include "srain_msg.h"
 #include "log.h"
 
 // return and stop spinner: call ui_busy(FALSE)
@@ -64,6 +65,7 @@ int srain_login(const char *nick){
     ui_busy(TRUE);
 
     if (stat != SRAIN_CONNECTED){
+        ui_msg_sys(NULL, SYS_MSG_ERROR, "no connected");
         ERR_FR("NO SRAIN_CONNECTED");
         RET(-1);
     }
@@ -80,6 +82,7 @@ int srain_join(const char *chan){
     ui_busy(TRUE);
 
     if (stat != SRAIN_LOGINED){
+        ui_msg_sys(NULL, SYS_MSG_ERROR, "no logged in");
         ERR_FR("NO SRAIN_LOGINED");
         RET(-1);
     }
@@ -102,7 +105,12 @@ int srain_send(const char *chan, const char *msg){
 
     ui_msg_send(chan, msg);
 
-    RET(irc_send(&irc, chan, msg, 0));
+    if (irc_send(&irc, chan, msg, 0) <= 0){
+        ui_msg_sysf(NULL, SYS_MSG_ERROR, "faild to send message \"%.8s...\"", msg);
+        RET(-1);
+    }
+
+    RET(0);
 }
 
 /* GSourceFunc */
@@ -181,7 +189,7 @@ gboolean srain_idles(irc_msg_t *imsg){
     /* MODE TODO */
     else if (strcmp(imsg->command, "MODE") == 0){
         if (imsg->nparam != 1) goto bad;
-        ui_msg_sysf_broadcast(irc.chans, "%s MODE %s by %s",
+        ui_msg_sysf_broadcast(irc.chans, SYS_MSG_NORMAL, "%s MODE %s by %s",
                 imsg->param[0], imsg->message, imsg->servername);
     }
 
@@ -229,7 +237,7 @@ gboolean srain_idles(irc_msg_t *imsg){
 
     /* RPL_ERROR */
     else if (imsg->command[0] == '4'){
-        ui_msg_sys(NULL, imsg->message);
+        ui_msg_sys(NULL, SYS_MSG_ERROR, imsg->message);
     }
 
     /* unsupported message */
@@ -296,7 +304,7 @@ int srain_cmd(const char *chan, char *cmd){
      * help
      * names
      * */
-    ui_msg_sysf(chan, "command: %s", cmd);
+    ui_msg_sysf(chan, SYS_MSG_COMMAND, "command: %s", cmd);
 
     if (strncmp(cmd, "/connect", 8) == 0){
         char *server = strtok(cmd + 8, " ");
@@ -338,10 +346,10 @@ int srain_cmd(const char *chan, char *cmd){
             return irc_nick_req(&irc, nick);
         }
     } else {
-        ui_msg_sysf(chan, "%s: unsupported command", cmd);
+        ui_msg_sysf(chan, SYS_MSG_ERROR, "%s: unsupported command", cmd);
         return -1;
     }
 
-    ui_msg_sysf(chan, "missing parameter");
+    ui_msg_sysf(chan, SYS_MSG_ERROR, "missing parameter");
     return -1;
 }

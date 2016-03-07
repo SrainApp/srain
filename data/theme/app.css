@@ -1,51 +1,159 @@
-/* @import url("./reset.css"); */
+@import url("./reset.css");
 
-/*
 * {
     color: @text_color;
+}
+
+GtkWindow, GtkBox {
     background-color: @bg_color;
 }
 
-*/
-
-#sys_msg_box GtkLabel {
-    background-color: #bebebe;
-   /* #96cdcd; */
+GtkButton * {
+    background-color: transparent;
 }
 
-#msg_listbox {
+GtkButton {
+    padding: 10px;
+}
+
+GtkSeparator {
+    color: @gray_color;
+}
+
+/* sidebar {{ */
+SrainStackSidebar GtkListBoxRow {
+    padding: 14px;
+}
+
+SrainStackSidebar GtkSeparator {
+    color: transparent;
+}
+
+SrainStackSidebar GtkListBoxRow:focus,
+SrainStackSidebar GtkListBoxRow:hover {
+    background-color: @hover_color;
+    transition: 200ms ease-in-out;
+}
+
+SrainStackSidebar GtkListBoxRow:selected,
+SrainStackSidebar GtkListBoxRow:active {
+    background-color: @active_color;
+    transition: 200ms ease-in-out;
+}
+
+SrainStackSidebarItem,
+SrainStackSidebarItem * {
+    background-color: transparent;
+}
+
+SrainStackSidebarItem #count_label {
+    padding: 2px;
+    color: @white_color;
+    background-color: @red_color;
+    border-radius: 4px;
+}
+
+/* }} */
+
+GtkEntry {
+    margin: 10px;
+    padding: 10px;
+}
+
+GtkButton:hover{
+    background-color: @hover_color;
+    transition: 200ms ease-in-out;
+}
+
+GtkButton:active{
+    background-color: @active_color;
+    transition: 200ms ease-in-out;
+}
+
+/* window {{*/
+#window_header_box {
+    background-color: @window_header_box_color;
+}
+
+#window_header_box GtkButton,
+#window_header_box GtkButton:hover{
+    background-color: @window_header_box_color;
+}
+
+#window_header_box GtkButton:active{
+    background-color: darker(@window_header_box_color);
+}
+
+/* }} */
+
+/* msg_box {{ */
+#normal_sys_msg_box #msg_label {
+    color: @sys_msg_text_color;
+    background-color: @normal_sys_msg_color;
+    border-radius: 4px;
+}
+
+#error_sys_msg_box #msg_label {
+    color: @sys_msg_text_color;
+    background-color: @error_sys_msg_color;
+    border-radius: 4px;
+}
+
+#command_sys_msg_box #msg_label {
+    color: @sys_msg_text_color;
+    background-color: @command_sys_msg_color;
+    border-radius: 4px;
+}
+
+#action_sys_msg_box #msg_label {
+    color: @sys_msg_text_color;
+    background-color: @action_sys_msg_color;
+    border-radius: 4px;
+}
+
+#normal_send_msg_box #padding_box,
+#normal_recv_msg_box #padding_box {
+    background-color: @normal_recv_msg_color;
+    border-radius: 4px;
+    box-shadow: alpha(black, 0.2) 2px 2px;
+}
+
+#msg_scrolledwindow  GtkBox {
+    background-color: transparent;
+}
+
+#msg_scrolledwindow GtkButton {
+    padding: 4px;
+}
+
+#msg_scrolledwindow GtkButton:hover{
+
+}
+
+#msg_scrolledwindow {
     background-image: url("./bg.jpg");
 }
 
-GtkEntry,
-GtkEntry:focus,
-GtkButton,
-GtkImage {
-	border: none;
-	border-width: 0;
-	border-image: none;
-	border-style: none;
-	border-radius: 0;
-
-	box-shadow: none;
-	text-shadow: none;
+#avatar_image {
+    border-radius: 20px;
 }
 
+/* }} */
 
-GtkMenu {
-  background: @ui_darker;
-  border: none;
-  border-width: 0;
-  border-image: none;
-  border-image-width: 0;
-  border-style: none;
-  border-radius: 0;
-
-  box-shadow: none;
-  text-shadow: none;
-  padding: 0;
+GtkMenuItem {
+    padding: 8px;
+    background-color: @bg_color;
 }
 
-GtkMenu GtkMenuItem {
-  color: @ui_text;
+GtkMenuItem:hover {
+    background-color: @hover_color;
+}
+
+GtkListBoxRow:hover {
+    background-color: @hover_color;
+}
+
+GtkEntry:selected,
+GtkLabel:selected {
+    background-color: @selected_text_color;
 }

@@ -2,18 +2,9 @@
 #define __IRC_H
 
 #include <glib.h>
+#include "irc_magic.h"
 
 #define BUF_LEN     512
-
-#define SERVER_LEN  64  // unconfirm
-#define HOST_LEN    64
-#define CHAN_LEN    200
-#define NICK_LEN    128 // unconfirm
-#define USER_LEN    128 // unconfirm
-#define COMMAND_LEN 64  // unconfirm
-#define MSG_LEN     512
-#define PARAM_COUNT 64  // unconfirm
-#define PARAM_LEN   64  // unconfirm
 
 typedef struct {
     int fd;
