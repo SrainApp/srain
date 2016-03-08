@@ -130,7 +130,6 @@ SrainChan* srain_window_add_chan(SrainWindow *win, const char *name){
     theme_apply(GTK_WIDGET(win));
 
     gtk_stack_set_visible_child (win->stack, GTK_WIDGET(chan));
-
     return chan;
 }
 

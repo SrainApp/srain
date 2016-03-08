@@ -105,6 +105,7 @@
             <property name="receives_default">True</property>
             <property name="image">onlinelist_button_image</property>
             <property name="relief">none</property>
+            <property name="focus_on_click">False</property>
             <property name="xalign">0.47999998927116394</property>
           </object>
           <packing>
@@ -266,6 +267,7 @@
             <property name="has_tooltip">True</property>
             <property name="image">send_buton_image</property>
             <property name="relief">none</property>
+            <property name="focus_on_click">False</property>
           </object>
           <packing>
             <property name="expand">False</property>

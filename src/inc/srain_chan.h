@@ -13,6 +13,8 @@ typedef struct _SrainChanClass SrainChanClass;
 
 GType srain_chan_get_type(void);
 SrainChan *srain_chan_new(const char *name);
+void srain_chan_fcous_entry(SrainChan *chan);
+
 void srain_chan_set_topic(SrainChan *chan, const char *topic);
 void srain_chan_online_list_rm(SrainChan *chan, const char *name, const char *reason);
 void srain_chan_online_list_add(SrainChan *chan, const char *name, int is_init);

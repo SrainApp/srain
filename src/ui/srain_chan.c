@@ -89,6 +89,15 @@ static gint online_listbox_on_dbclick(GtkWidget *widget, GdkEventButton *event){
     return FALSE;
 }
 
+static int is_blank(const char *str){
+    while (*str){
+        if (*str != '\t' && *str != ' ')
+            return 0;
+        str++;
+    }
+    return 1;
+}
+
 static void on_send(SrainChan *chan){
     int res;
     const char *input;
@@ -97,20 +106,25 @@ static void on_send(SrainChan *chan){
     input = gtk_entry_get_text(chan->input_entry);
     chan_name = gtk_widget_get_name(GTK_WIDGET(chan));
 
+    if (is_blank(input)) goto ret;
+
     LOG_FR("panel = %s, text = '%s'", chan_name, input);
 
     if (input[0] == '/'){
-        res = srain_cmd(chan_name, input);
+        srain_cmd(chan_name, input);
     } else {
-        res = srain_send(chan_name, input);
+        srain_send(chan_name, input);
     }
-    if (res != -1)
-        gtk_entry_set_text(chan->input_entry, "");
+
+ret:
+    gtk_entry_set_text(chan->input_entry, "");
+    return;
 }
 
 static int msg_box_popup(GtkWidget *widget, GdkEventButton *event, gpointer *user_data){
     GtkMenu *menu;
 
+    LOG_FR("");
     menu = GTK_MENU(user_data);
     if (event->button == 3){
         gtk_menu_popup(menu, NULL, NULL, NULL, NULL, event->button, event->time);
@@ -124,9 +138,8 @@ static void srain_chan_sys_msg_addf(SrainChan *chan, sys_msg_type_t type, const 
     va_list args;
 
     if (strlen(fmt) != 0 ){
-        // Format the data
         va_start(args, fmt);
-        vsnprintf(msg, sizeof (msg), fmt, args);
+        vsnprintf(msg, sizeof(msg), fmt, args);
         va_end(args);
 
         srain_chan_sys_msg_add(chan, type, msg);
@@ -310,4 +323,8 @@ void srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id, 
 
     _srain_chan_recv_msg_add(chan, nick, id, msg, img_path);
     scroll_to_bottom(chan);
+}
+
+void srain_chan_fcous_entry(SrainChan *chan){
+    gtk_widget_grab_focus(GTK_WIDGET(chan->input_entry));
 }

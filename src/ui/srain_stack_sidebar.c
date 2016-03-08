@@ -35,6 +35,7 @@
 #include <gtk/gtk.h>
 #include "srain_stack_sidebar.h"
 #include "srain_stack_sidebar_item.h"
+#include "srain_chan.h"
 #include "log.h"
 
 struct _SrainStackSidebar {
@@ -53,16 +54,19 @@ G_DEFINE_TYPE(SrainStackSidebar, srain_stack_sidebar, GTK_TYPE_BIN)
 
 static void srain_stack_sidebar_row_selected(GtkListBox *box, GtkListBoxRow *row, gpointer user_data){
     SrainStackSidebar *sidebar;
-    GtkWidget *item;
+    SrainStackSidebarItem *item;
     GtkWidget *child;
 
     sidebar = SRAIN_STACK_SIDEBAR(user_data); 
 
     if (!row) return;
 
-    item = gtk_bin_get_child(GTK_BIN(row));
+    item = SRAIN_STACK_SIDEBAR_ITEM(gtk_bin_get_child(GTK_BIN(row)));
     child = g_object_get_data(G_OBJECT(item), "stack-child");
     gtk_stack_set_visible_child(sidebar->stack, child);
+
+    srain_stack_sidebar_item_count_clear(item);
+    srain_chan_fcous_entry(SRAIN_CHAN(child));
 }
 
 static void srain_stack_sidebar_init(SrainStackSidebar *self){
@@ -103,6 +107,7 @@ static void add_child(GtkWidget *child, SrainStackSidebar *sidebar){
     // gtk_widget_set_halign(item, GTK_ALIGN_START);
     // gtk_widget_set_valign(item, GTK_ALIGN_CENTER);
     row = gtk_list_box_row_new();
+    gtk_widget_set_can_focus(row, FALSE);
     gtk_container_add(GTK_CONTAINER(row), GTK_WIDGET(item));
     gtk_widget_show_all(row);
 
