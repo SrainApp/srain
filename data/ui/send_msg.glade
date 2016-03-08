@@ -18,7 +18,6 @@
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkBox" id="msg_box">
-            <property name="name">msg_box</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="margin_left">6</property>

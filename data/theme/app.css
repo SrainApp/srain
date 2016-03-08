@@ -54,7 +54,6 @@ SrainStackSidebarItem #count_label {
 }
 
 /* }} */
-
 GtkEntry {
     margin: 10px;
     padding: 10px;
@@ -118,7 +117,7 @@ GtkButton:active{
     box-shadow: alpha(black, 0.2) 2px 2px;
 }
 
-#msg_scrolledwindow  GtkBox {
+#msg_scrolledwindow GtkBox {
     background-color: transparent;
 }
 
@@ -130,7 +129,7 @@ GtkButton:active{
 
 }
 
-#msg_scrolledwindow {
+#msg_scrolledwindow #msg_box {
     background-image: url("./bg.jpg");
 }
 
@@ -156,4 +155,17 @@ GtkListBoxRow:hover {
 GtkEntry:selected,
 GtkLabel:selected {
     background-color: @selected_text_color;
+}
+
+.scrollbar .slider {
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 10px;
+    border-color: transparent;
+    background-clip: padding-box;
+    background-color: alpha(#696969, 0.5);
+}
+
+.scrollbar.slider:prelight {
+    background-color: alpha(#696969, 0.8);
 }
