@@ -24,6 +24,7 @@
 
 #include <gtk/gtkbin.h>
 #include <gtk/gtkstack.h>
+#include <srain_chan.h>
 
 #define SRAIN_TYPE_STACK_SIDEBAR           (srain_stack_sidebar_get_type())
 #define SRAIN_STACK_SIDEBAR(obj)           (G_TYPE_CHECK_INSTANCE_CAST((obj), SRAIN_TYPE_STACK_SIDEBAR, SrainStackSidebar))
@@ -36,5 +37,6 @@ GType srain_stack_sidebar_get_type();
 SrainStackSidebar* srain_stack_sidebar_new();
 void srain_stack_sidebar_set_stack(SrainStackSidebar *sidebar, GtkStack *stack);
 GtkStack *srain_stack_sidebar_get_stack(SrainStackSidebar *sidebar);
+void srain_stack_sidebar_update(SrainStackSidebar *sidebar, SrainChan *chan, const char *nick, const char *msg, int is_visible);
 
 #endif /* __SRAIN_STACK_SIDEBAR_H__ */

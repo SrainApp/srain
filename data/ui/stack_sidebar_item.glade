@@ -31,11 +31,27 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="label" translatable="yes">#archlinux-cn</property>
+            <property name="max_width_chars">32</property>
           </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="time_label">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <style>
+              <class name="dim-label"/>
+            </style>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="pack_type">end</property>
+            <property name="position">2</property>
           </packing>
         </child>
       </object>
@@ -50,32 +66,16 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <child>
-          <object class="GtkLabel" id="count_label">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="margin_left">4</property>
-            <property name="margin_right">4</property>
-            <attributes>
-              <attribute name="weight" value="semibold"/>
-            </attributes>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="pack_type">end</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="lastmsg_label">
-            <property name="name">lastmsg_label</property>
+          <object class="GtkLabel" id="recentmsg_label">
+            <property name="name">recentmsg_label</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="halign">start</property>
             <property name="margin_left">4</property>
             <property name="margin_right">4</property>
-            <property name="label" translatable="yes">quininer: 求培养素材</property>
             <property name="ellipsize">end</property>
+            <property name="width_chars">32</property>
+            <property name="max_width_chars">32</property>
             <style>
               <class name="dim-label"/>
             </style>
@@ -83,7 +83,25 @@
           <packing>
             <property name="expand">True</property>
             <property name="fill">True</property>
-            <property name="position">1</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="count_label">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="margin_left">4</property>
+            <property name="margin_right">4</property>
+            <property name="width_chars">3</property>
+            <property name="max_width_chars">3</property>
+            <attributes>
+              <attribute name="weight" value="semibold"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
           </packing>
         </child>
       </object>

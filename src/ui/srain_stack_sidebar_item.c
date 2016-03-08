@@ -18,7 +18,8 @@ struct _SrainStackSidebarItem {
     GtkBox parent;
     GtkImage *image;
     GtkLabel *name_label;
-    GtkLabel *lastmsg_label;
+    GtkLabel *recentmsg_label;
+    GtkLabel *time_label;
     GtkLabel *count_label;
 };
 
@@ -37,7 +38,8 @@ static void srain_stack_sidebar_item_class_init(SrainStackSidebarItemClass *clas
             "/org/gtk/srain/stack_sidebar_item.glade");
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainStackSidebarItem, image);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainStackSidebarItem, name_label);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainStackSidebarItem, lastmsg_label);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainStackSidebarItem, recentmsg_label);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainStackSidebarItem, time_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainStackSidebarItem, count_label);
 }
 
@@ -61,21 +63,21 @@ SrainStackSidebarItem *srain_stack_sidebar_item_new(const char *name){
     return item;
 }
 
-void srain_stack_sidebar_item_lastmsg_update(SrainStackSidebarItem *item, const char *nick, const char *msg){
+void srain_stack_sidebar_item_recentmsg_update(SrainStackSidebarItem *item, const char *nick, const char *msg){
     char buf[64];
+
     snprintf(buf, 64, "%s: %s", nick, msg);
-    gtk_label_set_text(item->lastmsg_label, buf);
+    gtk_label_set_text(item->recentmsg_label, buf);
 }
 
-void srain_stack_sidebar_item_count_inc(SrainStackSidebarItem *item, int inc){
+void srain_stack_sidebar_item_count_inc(SrainStackSidebarItem *item){
     int count;
     char buf[32];
-    if (inc == 0) return;
 
     if ((count = atoi(gtk_label_get_text(item->count_label))) == 0){
         gtk_widget_set_name(GTK_WIDGET(item->count_label), "count_label");
     }
-    snprintf(buf, 32, "%d", count + inc);
+    snprintf(buf, 32, "%d", count + 1);
 
     gtk_label_set_text(item->count_label, buf);
 }

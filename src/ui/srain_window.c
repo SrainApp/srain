@@ -173,3 +173,12 @@ void srain_window_spinner_toggle(SrainWindow *win, gboolean is_busy){
         ? gtk_spinner_start(win->spinner)
         : gtk_spinner_stop(win->spinner);
 }
+
+void srain_window_stack_sidebar_update(SrainWindow *win, SrainChan *chan, const char *nick, const char *msg){
+    if (SRAIN_CHAN(gtk_stack_get_visible_child(win->stack)) != chan){
+        srain_stack_sidebar_update(win->sidebar, chan, nick, msg, 0);
+    } else {
+        srain_stack_sidebar_update(win->sidebar, chan, nick, msg, 1);
+    }
+
+}

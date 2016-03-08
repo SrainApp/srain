@@ -99,7 +99,6 @@ static int is_blank(const char *str){
 }
 
 static void on_send(SrainChan *chan){
-    int res;
     const char *input;
     const char *chan_name;
 
@@ -124,7 +123,6 @@ ret:
 static int msg_box_popup(GtkWidget *widget, GdkEventButton *event, gpointer *user_data){
     GtkMenu *menu;
 
-    LOG_FR("");
     menu = GTK_MENU(user_data);
     if (event->button == 3){
         gtk_menu_popup(menu, NULL, NULL, NULL, NULL, event->button, event->time);
@@ -309,7 +307,7 @@ void srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id, 
                 && strncmp(nick, old_nick, NICK_LEN) == 0){
             old_msg = gtk_label_get_text(last_recv_msg->msg_label);
             new_msg = g_string_new(old_msg);
-            g_string_append(new_msg, "\n\n");
+            g_string_append(new_msg, "\n");
             g_string_append(new_msg, msg);
 
             gtk_label_set_text(last_recv_msg->msg_label, new_msg->str);
@@ -322,6 +320,7 @@ void srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id, 
     }
 
     _srain_chan_recv_msg_add(chan, nick, id, msg, img_path);
+
     scroll_to_bottom(chan);
 }
 

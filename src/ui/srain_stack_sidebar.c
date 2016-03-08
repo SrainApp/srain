@@ -141,7 +141,7 @@ static void populate_sidebar(SrainStackSidebar *sidebar){
 }
 
 static void clear_sidebar(SrainStackSidebar *sidebar){
-    gtk_container_foreach(GTK_CONTAINER(sidebar->stack),(GtkCallback)remove_child, sidebar);
+    gtk_container_foreach(GTK_CONTAINER(sidebar->stack), (GtkCallback)remove_child, sidebar);
 }
 
 static void on_child_changed(GtkWidget *widget, GParamSpec *pspec, SrainStackSidebar *sidebar){
@@ -221,4 +221,19 @@ GtkStack *srain_stack_sidebar_get_stack(SrainStackSidebar *sidebar){
     g_return_val_if_fail(GTK_IS_STACK_SIDEBAR(sidebar), NULL);
 
     return GTK_STACK(sidebar->stack);
+}
+
+void srain_stack_sidebar_update(SrainStackSidebar *sidebar, SrainChan *chan, const char *nick, const char *msg, int is_visible){
+    GtkListBoxRow *row;
+    SrainStackSidebarItem *item;
+
+    row = g_hash_table_lookup(sidebar->rows, chan);
+    if (!row) return;
+
+    item = SRAIN_STACK_SIDEBAR_ITEM(gtk_bin_get_child(GTK_BIN(row)));
+    srain_stack_sidebar_item_recentmsg_update(item, nick, msg);
+
+    if (!is_visible){
+        srain_stack_sidebar_item_count_inc(item);
+    }
 }

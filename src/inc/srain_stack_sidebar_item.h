@@ -13,8 +13,8 @@ typedef struct _SrainStackSidebarItemClass SrainStackSidebarItemClass;
 GType srain_stack_sidebar_item_get_type(void);
 SrainStackSidebarItem *srain_stack_sidebar_item_new(const char *name);
 void srain_stack_sidebar_item_count_clear(SrainStackSidebarItem *item);
-void srain_stack_sidebar_item_count_inc(SrainStackSidebarItem *item, int inc);
-void srain_stack_sidebar_item_lastmsg_update(SrainStackSidebarItem *item, const char *nick, const char *msg);
+void srain_stack_sidebar_item_count_inc(SrainStackSidebarItem *item);
+void srain_stack_sidebar_item_recentmsg_update(SrainStackSidebarItem *item, const char *nick, const char *msg);
 
 #endif /* __SRAIN_STACK_SIDEBAR_ITEM_H */
 
