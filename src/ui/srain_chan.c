@@ -43,8 +43,7 @@ struct _SrainChanClass {
 
 G_DEFINE_TYPE(SrainChan, srain_chan, GTK_TYPE_BOX);
 
-// TODO not work
-static void scroll_to_bottom(SrainChan *chan){
+static gboolean scroll_to_bottom(SrainChan *chan){
     GtkAdjustment *adj;
 
     adj = gtk_scrolled_window_get_vadjustment(chan->msg_scrolledwindow);
@@ -53,6 +52,8 @@ static void scroll_to_bottom(SrainChan *chan){
     gtk_scrolled_window_set_vadjustment(chan->msg_scrolledwindow, adj);
 
     while (gtk_events_pending()) gtk_main_iteration();
+
+    return FALSE;
 }
 
 static void onlinelist_button_on_click(GtkWidget *widget, gpointer *user_data){
@@ -260,7 +261,7 @@ void srain_chan_sys_msg_add(SrainChan *chan, sys_msg_type_t type, const char *ms
 
     chan->last_msg = GTK_WIDGET(smsg);
 
-    scroll_to_bottom(chan);
+    gdk_threads_add_idle((GSourceFunc)scroll_to_bottom, chan);
 }
 
 
@@ -274,7 +275,7 @@ void srain_chan_send_msg_add(SrainChan *chan, const char *msg, const char *img_p
 
     chan->last_msg = GTK_WIDGET(smsg);
 
-    scroll_to_bottom(chan);
+    gdk_threads_add_idle((GSourceFunc)scroll_to_bottom, chan);
 }
 
 void _srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id, const char *msg, const char *img_path){
@@ -300,28 +301,36 @@ void srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id, 
     get_cur_time(timestr);
     if (chan->last_msg && SRAIN_IS_RECV_MSG(chan->last_msg)){
         last_recv_msg = SRAIN_RECV_MSG(chan->last_msg);
+        old_msg = gtk_label_get_text(last_recv_msg->msg_label);
         old_timestr = gtk_label_get_text(last_recv_msg->time_label);
         old_nick = gtk_label_get_text(last_recv_msg->nick_label);
 
+        /* a message that
+         *  - send by the same people
+         *  - send in same minute
+         *  - less then 512 char
+         * can be combine
+         */
         if (strncmp(timestr, old_timestr, 32) == 0
-                && strncmp(nick, old_nick, NICK_LEN) == 0){
-            old_msg = gtk_label_get_text(last_recv_msg->msg_label);
+                && strncmp(nick, old_nick, NICK_LEN) == 0
+                && strlen(old_msg) < 512){
             new_msg = g_string_new(old_msg);
             g_string_append(new_msg, "\n");
             g_string_append(new_msg, msg);
 
             gtk_label_set_text(last_recv_msg->msg_label, new_msg->str);
+            gtk_widget_queue_draw(GTK_WIDGET(last_recv_msg));
 
             g_string_free(new_msg, TRUE);
+            gdk_threads_add_idle((GSourceFunc)scroll_to_bottom, chan);
 
-            scroll_to_bottom(chan);
             return;
         }
     }
 
     _srain_chan_recv_msg_add(chan, nick, id, msg, img_path);
 
-    scroll_to_bottom(chan);
+    gdk_threads_add_idle((GSourceFunc)scroll_to_bottom, chan);
 }
 
 void srain_chan_fcous_entry(SrainChan *chan){
