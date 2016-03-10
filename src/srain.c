@@ -12,7 +12,7 @@
  *
  */
 
-#define __LOG_ON 1
+#define __LOG_ON
 
 #include <string.h>
 #include <gtk/gtk.h>
@@ -24,7 +24,7 @@
 #include "log.h"
 
 // return and stop spinner: call ui_busy(FALSE)
-#define RET(x) while(1){ int tmp = x; ui_busy(FALSE); return tmp; }
+#define RET(x) do { int tmp = x; ui_busy(FALSE); return tmp; } while (0)
 
 irc_t irc;
 GThread *thread = NULL;

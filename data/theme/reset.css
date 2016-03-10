@@ -57,4 +57,11 @@
   -GtkWidget-focus-line-width: 0;
   -GtkWidget-focus-padding: 0;
   -GtkNotebook-initial-gap: 0;
+
+  /*
+  background-repeat: initial;
+  background-size: initial;
+  background-position: initial;
+  */
+
 }

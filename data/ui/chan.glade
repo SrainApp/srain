@@ -103,6 +103,7 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
+            <property name="valign">center</property>
             <property name="image">onlinelist_button_image</property>
             <property name="relief">none</property>
             <property name="focus_on_click">False</property>
@@ -123,7 +124,8 @@
       </packing>
     </child>
     <child>
-      <object class="GtkBox" id="msg_and_online_box">
+      <object class="GtkBox" id="chan_box">
+        <property name="name">chan_box</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <child>
@@ -138,7 +140,6 @@
                 <property name="shadow_type">none</property>
                 <child>
                   <object class="GtkBox" id="msg_box">
-                    <property name="name">msg_box</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="orientation">vertical</property>
@@ -157,27 +158,27 @@
           </packing>
         </child>
         <child>
-          <object class="GtkRevealer" id="revealer">
+          <object class="GtkRevealer" id="onlinelist_revealer">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="transition_type">slide-right</property>
             <child>
-              <object class="GtkScrolledWindow" id="online_listbox_scrolledwindow">
+              <object class="GtkScrolledWindow" id="onlinelist_scrolledwindow">
                 <property name="width_request">150</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkViewport" id="online_listbox_viewport">
+                  <object class="GtkViewport" id="onlinelist_viewport">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="shadow_type">none</property>
                     <child>
-                      <object class="GtkBox" id="online_listbox_box">
+                      <object class="GtkBox" id="onlinelist_box">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="orientation">vertical</property>
                         <child>
-                          <object class="GtkSeparator" id="online_listbox_separator1">
+                          <object class="GtkSeparator" id="onlinelist_separator1">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                           </object>
@@ -188,7 +189,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkListBox" id="online_listbox">
+                          <object class="GtkListBox" id="onlinelist_listbox">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                           </object>
@@ -199,7 +200,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkSeparator" id="online_listbox_separator2">
+                          <object class="GtkSeparator" id="onlinelist_separator2">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                           </object>

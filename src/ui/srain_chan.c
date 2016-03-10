@@ -29,9 +29,9 @@ struct _SrainChan {
     GtkScrolledWindow *msg_scrolledwindow;
     GtkBox *msg_box;
     GtkMenu *msg_menu;
-    GtkRevealer *revealer;
+    GtkRevealer *onlinelist_revealer;
     GtkButton *onlinelist_button;
-    GtkListBox *online_listbox;
+    GtkListBox *onlinelist_listbox;
     GtkButton *send_button;
     GtkEntry *input_entry;
     GtkWidget *last_msg;
@@ -153,8 +153,8 @@ static void srain_chan_init(SrainChan *self){
 
     g_signal_connect_swapped(self->input_entry, "activate", G_CALLBACK(on_send), self);
     g_signal_connect_swapped(self->send_button, "clicked", G_CALLBACK(on_send), self);
-    g_signal_connect(self->onlinelist_button, "clicked", G_CALLBACK(onlinelist_button_on_click), self->revealer);
-    g_signal_connect(self->online_listbox, "button_press_event", G_CALLBACK(online_listbox_on_dbclick), NULL);
+    g_signal_connect(self->onlinelist_button, "clicked", G_CALLBACK(onlinelist_button_on_click), self->onlinelist_revealer);
+    g_signal_connect(self->onlinelist_listbox, "button_press_event", G_CALLBACK(online_listbox_on_dbclick), NULL);
     g_signal_connect(self->msg_box, "button_press_event", G_CALLBACK(msg_box_popup), self->msg_menu);
 }
 
@@ -167,9 +167,9 @@ static void srain_chan_class_init(SrainChanClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, msg_scrolledwindow);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, msg_box);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, msg_menu);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, revealer);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, onlinelist_revealer);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, onlinelist_button);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, online_listbox);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, onlinelist_listbox);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, send_button);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, input_entry);
 }
@@ -201,7 +201,7 @@ void srain_chan_online_list_add(SrainChan *chan, const char *name, int is_init){
     GtkListBoxRow *row;
 
     chan_name =gtk_widget_get_name(GTK_WIDGET(chan));
-    row = get_list_item_by_name(chan->online_listbox, name);
+    row = get_list_item_by_name(chan->onlinelist_listbox, name);
     if (row){
         ERR_FR("GtkListBoxRow %s already exist in %s", name, chan_name);
         return;
@@ -209,8 +209,8 @@ void srain_chan_online_list_add(SrainChan *chan, const char *name, int is_init){
     label = gtk_label_new(name);
     gtk_widget_set_name(label, name);
 
-    gtk_container_add(GTK_CONTAINER(chan->online_listbox), label);
-    theme_apply(GTK_WIDGET(chan->online_listbox));
+    gtk_container_add(GTK_CONTAINER(chan->onlinelist_listbox), label);
+    theme_apply(GTK_WIDGET(chan->onlinelist_listbox));
     gtk_widget_show(label);
 
     if (!is_init)
@@ -222,12 +222,12 @@ void srain_chan_online_list_rm(SrainChan *chan, const char *name, const char *re
     GtkListBoxRow *row;
 
     chan_name =gtk_widget_get_name(GTK_WIDGET(chan));
-    row = get_list_item_by_name(chan->online_listbox, name);
+    row = get_list_item_by_name(chan->onlinelist_listbox, name);
     if (!row){
         ERR_FR("GtkListBoxRow %s no found in %s", name, chan_name);
         return;
     }
-    gtk_container_remove(GTK_CONTAINER(chan->online_listbox), GTK_WIDGET(row));
+    gtk_container_remove(GTK_CONTAINER(chan->onlinelist_listbox), GTK_WIDGET(row));
 
     srain_chan_sys_msg_addf(chan, SYS_MSG_NORMAL, "%s has left %s: %s", name, chan_name, reason);
 }
@@ -238,7 +238,7 @@ void srain_chan_online_list_rename(SrainChan *chan, const char *old_name, const 
     GtkListBoxRow *row;
 
     chan_name =gtk_widget_get_name(GTK_WIDGET(chan));
-    row = get_list_item_by_name(chan->online_listbox, old_name);
+    row = get_list_item_by_name(chan->onlinelist_listbox, old_name);
     if (!row){
         ERR_FR("GtkListBoxRow %s no found in %s", old_name, chan_name);
         return;
