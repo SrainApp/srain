@@ -16,9 +16,11 @@
 
 #include <string.h>
 #include <gtk/gtk.h>
+#include "i18n.h"
 #include "irc.h"
 #include "irc_magic.h"
 #include "ui.h"
+#include "srain_magic.h"
 #include "srain_window.h"
 #include "srain_msg.h"
 #include "log.h"
@@ -50,15 +52,23 @@ void _srain_connect(const char *server){
 }
 
 int srain_connect(const char *server){
+    char buf[512];
+
     ui_busy(TRUE);
 
     if (!thread) {
         thread = g_thread_new(NULL, (GThreadFunc)_srain_connect, (char *)server);
+        ui_chan_set_topic(SERVER, _("connecting..."));
+
         while (stat != SRAIN_CONNECTED)
             while (gtk_events_pending()) gtk_main_iteration();
+
+        ui_chan_set_topic(SERVER, server);
         RET(0);
-    } else
+    } else {
+        ui_chan_set_topic(SERVER, _("connection failed"));
         RET(-1);
+    }
 }
 
 int srain_login(const char *nick){
@@ -227,7 +237,7 @@ gboolean srain_idles(irc_msg_t *imsg){
             ERR_FR("message too long");
             goto bad;
         }
-        ui_msg_recv("*server*", imsg->servername, irc.server, tmp);
+        ui_msg_recv(SERVER, imsg->servername, irc.server, tmp);
     }
 
     // IGNORE
@@ -237,7 +247,7 @@ gboolean srain_idles(irc_msg_t *imsg){
 
     /* RPL_ERROR */
     else if (imsg->command[0] == '4'){
-        ui_msg_sys(NULL, SYS_MSG_ERROR, imsg->message);
+        ui_msg_sysf(NULL, SYS_MSG_ERROR, "ERROR [%s]: %s", imsg->command, imsg->message);
     }
 
     /* unsupported message */

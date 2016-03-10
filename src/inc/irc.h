@@ -2,7 +2,7 @@
 #define __IRC_H
 
 #include <glib.h>
-#include "irc_magic.h"
+#include "srain_magic.h"
 
 #define BUF_LEN     512
 

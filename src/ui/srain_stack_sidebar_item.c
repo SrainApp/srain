@@ -10,6 +10,7 @@
 
 #include <gtk/gtk.h>
 #include <string.h>
+#include "srain_magic.h"
 #include "srain_stack_sidebar_item.h"
 #include "irc_magic.h"
 #include "log.h"
@@ -53,10 +54,14 @@ SrainStackSidebarItem *srain_stack_sidebar_item_new(const char *name){
     gtk_label_set_text(item->name_label, name);
 
     // is a channel
-    // TODO server
     if (name[0] == CHAN_PREFIX1 || name[0] == CHAN_PREFIX2){
         gtk_image_set_from_file(item->image, "chan_icon.png");
+    }
+    else if (strcmp(name, SERVER) == 0){
+        // is a server
+        gtk_image_set_from_file(item->image, "server_icon.png");
     } else {
+        // is a normal user
         gtk_image_set_from_file(item->image, "user_icon.png");
     }
 

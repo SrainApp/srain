@@ -17,6 +17,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "socket.h"
+#include "srain_magic.h"
 #include "irc_core.h"
 #include "irc_parse.h"
 #include "log.h"
@@ -35,7 +36,7 @@ int irc_connect(irc_t *irc, const char *server, const char *port){
     }
 
     LOG_FR("connected");
-    irc->chans = g_list_append(irc->chans, "*server*");
+    irc->chans = g_list_append(irc->chans, SERVER);
     return 0;
 }
 
