@@ -24,6 +24,7 @@
 #include "srain_window.h"
 #include "srain_msg.h"
 #include "log.h"
+#include "filter.h"
 
 // return and stop spinner: call ui_busy(FALSE)
 #define RET(x) do { int tmp = x; ui_busy(FALSE); return tmp; } while (0)
@@ -52,8 +53,6 @@ void _srain_connect(const char *server){
 }
 
 int srain_connect(const char *server){
-    char buf[512];
-
     ui_busy(TRUE);
 
     if (!thread) {
@@ -128,7 +127,10 @@ gboolean srain_idles(irc_msg_t *imsg){
     /* Message */
     if (strcmp(imsg->command, "PRIVMSG") == 0){
         if (imsg->nparam != 1) goto bad;
-        ui_msg_recv(imsg->param[0], imsg->nick, imsg->nick, imsg->message);
+        memset(imsg->servername, 0, SERVER_LEN);
+        if (filter(imsg)){
+            ui_msg_recv(imsg->param[0], imsg->nick, imsg->servername, imsg->message);
+        }
     }
 
     /* Topic */
@@ -309,7 +311,6 @@ void srain_close(){
 int srain_cmd(const char *chan, char *cmd){
     // ui_busy(TRUE);
     /* TODO
-     * ignore
      * whois
      * help
      * names
@@ -324,6 +325,25 @@ int srain_cmd(const char *chan, char *cmd){
         char *nick = strtok(cmd + 6, " ");
         if (nick) return srain_login(nick);
     }
+    /* NB: relaybot parameters separated by '|' */
+    else if (strncmp(cmd, "/relaybot", 9) == 0){
+        char *bot = strtok(cmd + 9, " |");
+        if (bot){
+            char *ldelim = strtok(NULL, "|");
+            if (ldelim){
+                char *rdelim = strtok(NULL, "|");
+                if (rdelim){
+                    return filter_relaybot_list_add(bot, ldelim, rdelim);
+                }
+            }
+        }
+    }
+    else if (strncmp(cmd, "/ignore", 7) == 0){
+        char *nick = strtok(cmd + 7, " ");
+        if (nick) return filter_ignore_list_add(nick);
+    }
+
+    /**************************************/
     else if (strncmp(cmd, "/join", 5) == 0){
         char *jchan = strtok(cmd + 5, " ");
         if (jchan) return srain_join(jchan);
@@ -335,6 +355,7 @@ int srain_cmd(const char *chan, char *cmd){
     }
     else if (strncmp(cmd, "/quit", 5) == 0){
         srain_close();
+        return 0;
     }
     else if (strncmp(cmd, "/msg", 4) == 0){
         char *to = strtok(cmd + 4, " ");
