@@ -6,7 +6,7 @@ import requests
 
 url = 'http://img.vim-cn.com'
 
-def upimg(img):
+def upload(img):
     with open(img,'rb') as f:
         res = requests.post(url, files = {'name': f})
         return res.text
