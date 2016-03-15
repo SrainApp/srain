@@ -11,7 +11,7 @@
  *
  */
 
-#define __LOG_ON 1
+#define __LOG_ON
 
 #include <glib.h>
 #include <string.h>

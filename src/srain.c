@@ -181,7 +181,7 @@ gboolean srain_idles(irc_msg_t *imsg){
         ui_chan_online_list_rename_broadcast(irc.chans, imsg->nick, imsg->message);
 
         if (strncmp(irc.nick, imsg->nick, NICK_LEN) == 0)
-            irc_nick_ack(&irc, imsg->nick);
+            irc_nick_ack(&irc, imsg->message);
     }
 
     /* Names (Channel name list) */
