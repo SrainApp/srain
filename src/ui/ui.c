@@ -93,6 +93,9 @@ void ui_msg_sys(const char *chan_name, sys_msg_type_t type, const char *msg){
     if (chan){
         srain_chan_sys_msg_add(chan, type, msg);
     }
+    if (type == SYS_MSG_ACTION){
+        srain_window_stack_sidebar_update(win, chan, "", msg);
+    }
 }
 
 void ui_msg_sysf(const char *chan_name, sys_msg_type_t type, const char *fmt, ...){

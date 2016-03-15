@@ -128,7 +128,13 @@ gboolean srain_idles(irc_msg_t *imsg){
     if (strcmp(imsg->command, "PRIVMSG") == 0){
         if (imsg->nparam != 1) goto bad;
         memset(imsg->servername, 0, SERVER_LEN);
-        if (filter(imsg)){
+        if (strcmp(imsg->message, "\1ACTION")
+                && imsg->message[strlen(imsg->message) - 1] == '\1'){
+            imsg->message[strlen(imsg->message) - 1] = '\0';
+            ui_msg_sysf(imsg->param[0], SYS_MSG_ACTION, "*** %s %s ***",
+                    imsg->nick, imsg->message + strlen("\1ACTION"));
+        }
+        else if (filter(imsg)){
             ui_msg_recv(imsg->param[0], imsg->nick, imsg->servername, imsg->message);
         }
     }
@@ -365,7 +371,7 @@ int srain_cmd(const char *chan, char *cmd){
     else if (strncmp(cmd, "/me", 3) == 0){
         char *msg = strtok(cmd + 3, " ");
         if (msg){
-            ui_msg_send(chan, msg);
+            ui_msg_sysf(chan, SYS_MSG_ACTION, "*** %s %s ***", irc.nick, msg);
             return irc_send(&irc, chan, msg, 1);
         }
     }

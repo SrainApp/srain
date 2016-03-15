@@ -15,7 +15,7 @@
 @define-color normal_sys_msg_color      alpha(#696969, 0.5);
 @define-color command_sys_msg_color     @normal_sys_msg_color;
 @define-color error_sys_msg_color       alpha(#ff0000, 0.5);
-@define-color action_sys_msg_color      alpha(#63B8FF, 0.5);
+@define-color action_sys_msg_color      darker(alpha(#63B8FF, 0.5));
 
 @define-color normal_recv_msg_color     #ffffff;
 

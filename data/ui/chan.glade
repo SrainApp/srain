@@ -63,7 +63,7 @@
                 <property name="halign">start</property>
                 <property name="label" translatable="yes">#channel</property>
                 <attributes>
-                  <attribute name="weight" value="bold"/>
+                  <attribute name="weight" value="semibold"/>
                 </attributes>
               </object>
               <packing>

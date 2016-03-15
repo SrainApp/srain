@@ -14,7 +14,7 @@
         <property name="can_focus">False</property>
         <property name="margin_left">100</property>
         <property name="margin_right">20</property>
-        <property name="border_width">6</property>
+        <property name="border_width">4</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkBox" id="msg_box">
@@ -30,11 +30,12 @@
                 <property name="can_focus">False</property>
                 <property name="opacity">0.99000000022351742</property>
                 <property name="halign">start</property>
-                <property name="xpad">8</property>
+                <property name="xpad">4</property>
                 <property name="label" translatable="yes">sent message.
 &lt;a href="http://www.google.com"&gt;Link Test&lt;/a&gt;</property>
                 <property name="use_markup">True</property>
                 <property name="wrap">True</property>
+                <property name="wrap_mode">word-char</property>
                 <property name="selectable">True</property>
                 <attributes>
                   <attribute name="weight" value="normal"/>
