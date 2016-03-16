@@ -19,6 +19,7 @@
 #include "srain_msg.h"
 #include "srain_detail_dialog.h"
 #include "srain.h"
+#include "markup.h"
 #include "log.h"
 #include "irc.h"
 
@@ -292,6 +293,7 @@ void _srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id,
 /* add a SrainRecvMsg into SrainChan, if its time is same to the last msg, combine them */
 void srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id, const char *msg, const char *img_path){
     char timestr[32];
+    char markuped_msg[1024];
     const char *old_timestr;
     const char *old_nick;
     const char *old_msg;
@@ -299,6 +301,7 @@ void srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id, 
     SrainRecvMsg *last_recv_msg;
 
     get_cur_time(timestr);
+
     if (chan->last_msg && SRAIN_IS_RECV_MSG(chan->last_msg)){
         last_recv_msg = SRAIN_RECV_MSG(chan->last_msg);
         old_msg = gtk_label_get_text(last_recv_msg->msg_label);
@@ -318,7 +321,8 @@ void srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id, 
             g_string_append(new_msg, "\n");
             g_string_append(new_msg, msg);
 
-            gtk_label_set_text(last_recv_msg->msg_label, new_msg->str);
+            markup(new_msg->str, markuped_msg, 1024);
+            gtk_label_set_markup(last_recv_msg->msg_label, markuped_msg);
             gtk_widget_queue_draw(GTK_WIDGET(last_recv_msg));
 
             g_string_free(new_msg, TRUE);

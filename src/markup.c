@@ -1,6 +1,6 @@
 /**
  * @file markup.c
- * @brief 
+ * @brief match url and add html tags in string
  * @author LastAvengers <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-03-16
@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <regex.h>
 #include <string.h>
+#include "srain_magic.h"
 #include "log.h"
 
 #define MAX_ERROR_MSG 0x1000
@@ -24,29 +25,32 @@ static int compile_regex(regex_t *r, const char *pattern)
     if (stat!= 0) {
         regerror(stat, r, err_msg, MAX_ERROR_MSG);
         ERR_FR("'%s': %s\n", pattern, err_msg);
-        return 1;
+        return -1;
     }
 
     return 0;
 }
 
-void markup(const char *msg){
+// TODO return a GString?
+void markup(const char *msg, char *markuped_msg, int len){
     int n = 10;
     int stat, start, end;
     char *buf_ptr;
     const char *msg_ptr;
-    char buf[512];
     char url[200];
     char url_buf[512];
-    char pattern[] = "((http)|(https))://(www)?.[.-_[:alnum:]]+";   // TODO
+    /* dead simple regex pattern to match url TODO */
+    char pattern[] = "((http)|(https))://(www)?[[:punct:][:alnum:]]+";
     regex_t re;
     regmatch_t match[n];
 
-    compile_regex(&re, pattern);
+    if (compile_regex(&re, pattern) == -1){
+        return;
+    }
 
     msg_ptr = msg;
-    buf_ptr = buf;
-    memset(buf, 0, sizeof(buf));
+    buf_ptr = markuped_msg;
+    memset(markuped_msg, 0, len);
     while (1){
         int no_match = regexec(&re, msg_ptr, n, match, 0);
 
@@ -70,17 +74,21 @@ void markup(const char *msg){
         memset(url_buf, 0, sizeof(url_buf));
         snprintf(url_buf, 512, "<a href=\"%s\">%s</a>", url, url);
 
-        strcat(buf_ptr, url_buf);
+        if (buf_ptr + strlen(url_buf) - markuped_msg >= len){
+            ERR_FR("buffer full");
+            return;
+        }
+
+        strncat(buf_ptr, url_buf, markuped_msg + len - buf_ptr);
+        buf_ptr += strlen(buf_ptr);
 
         LOG_FR("'%.*s' (bytes %d:%d)", (end - start), msg + start, start, end);
 
-        buf_ptr += strlen(buf_ptr);
-        if (buf_ptr - buf > sizeof(buf)){
-            ERR_FR("buffer overflow");
-            return;
-        }
         msg_ptr += match[0].rm_eo;
     }
 
-    LOG_FR("BUF: %s", buf);
+    strncpy(buf_ptr, msg_ptr, markuped_msg + len - buf_ptr);
+
+    LOG_FR("markuped: '%s'", markuped_msg);
+    return;
 }

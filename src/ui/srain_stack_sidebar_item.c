@@ -69,9 +69,9 @@ SrainStackSidebarItem *srain_stack_sidebar_item_new(const char *name){
 }
 
 void srain_stack_sidebar_item_recentmsg_update(SrainStackSidebarItem *item, const char *nick, const char *msg){
-    char buf[64];
+    char buf[MSG_LEN];
 
-    snprintf(buf, 64, "%s: %s", nick, msg);
+    snprintf(buf, MSG_LEN, "%s: %s", nick, msg);
     gtk_label_set_text(item->recentmsg_label, buf);
 }
 

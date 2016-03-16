@@ -6,6 +6,8 @@
  * @date 2016-03-01
  */
 
+#define __LOG_ON
+
 #include <gtk/gtk.h>
 #include <time.h>
 #include <assert.h>
@@ -15,6 +17,7 @@
 #include "srain_msg.h"
 #include "srain_detail_dialog.h"
 #include "srain_image_window.h"
+#include "markup.h"
 #include "log.h"
 
 /* display bigger image */
@@ -104,13 +107,17 @@ static void srain_send_msg_class_init(SrainSendMsgClass *class){
 
 SrainSendMsg* srain_send_msg_new(const char *msg, const char *img_path){
     char timestr[32];
+    char markuped_msg[512];
     SrainSendMsg *smsg;
 
     smsg = g_object_new(SRAIN_TYPE_SEND_MSG, NULL);
 
     get_cur_time(timestr);
     gtk_label_set_text(smsg->time_label, timestr);
-    gtk_label_set_text(smsg->msg_label, msg);
+
+    markup(msg, markuped_msg, 512);
+    gtk_label_set_markup(smsg->msg_label, markuped_msg); // TODO
+
     if (img_path){
         g_signal_connect_swapped(smsg->image_eventbox, "button_release_event",
                 G_CALLBACK(image_on_click), (char *)img_path);
@@ -144,15 +151,19 @@ static void srain_recv_msg_class_init(SrainRecvMsgClass *class){
 
 SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *msg, const char *img_path){
     char timestr[32];
+    char markuped_msg[512];
     SrainRecvMsg *smsg;
 
     smsg = g_object_new(SRAIN_TYPE_RECV_MSG, NULL);
 
     get_cur_time(timestr);
     gtk_label_set_text(smsg->time_label, timestr);
-    gtk_label_set_text(smsg->msg_label, msg);
     gtk_label_set_text(smsg->nick_label, nick);
     gtk_label_set_text(smsg->identify_label, id);
+
+    markup(msg, markuped_msg, 512);
+    gtk_label_set_markup(smsg->msg_label, markuped_msg); // TODO
+
     g_signal_connect(smsg->nick_button, "clicked", G_CALLBACK(nick_on_click),
             (char *)gtk_label_get_text(smsg->nick_label));
     if (img_path){
@@ -160,7 +171,7 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *m
                 G_CALLBACK(image_on_click), (char *)img_path);
         GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file_at_size((char *)img_path, 300, 300, NULL);
         gtk_image_set_from_pixbuf(smsg->image, pixbuf);
-        g_object_unref (pixbuf);
+        g_object_unref(pixbuf);
     }
 
     return smsg;
