@@ -107,7 +107,7 @@ static void srain_send_msg_class_init(SrainSendMsgClass *class){
 
 SrainSendMsg* srain_send_msg_new(const char *msg, const char *img_path){
     char timestr[32];
-    char markuped_msg[512];
+    GString *markuped_msg;
     SrainSendMsg *smsg;
 
     smsg = g_object_new(SRAIN_TYPE_SEND_MSG, NULL);
@@ -115,8 +115,13 @@ SrainSendMsg* srain_send_msg_new(const char *msg, const char *img_path){
     get_cur_time(timestr);
     gtk_label_set_text(smsg->time_label, timestr);
 
-    markup(msg, markuped_msg, 512);
-    gtk_label_set_markup(smsg->msg_label, markuped_msg); // TODO
+    markuped_msg = markup(msg);
+    if (markuped_msg){
+        gtk_label_set_markup(smsg->msg_label, markuped_msg->str);
+        g_string_free(markuped_msg, TRUE);
+    } else {
+        gtk_label_set_text(smsg->msg_label, msg);
+    }
 
     if (img_path){
         g_signal_connect_swapped(smsg->image_eventbox, "button_release_event",
@@ -151,7 +156,7 @@ static void srain_recv_msg_class_init(SrainRecvMsgClass *class){
 
 SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *msg, const char *img_path){
     char timestr[32];
-    char markuped_msg[512];
+    GString *markuped_msg;
     SrainRecvMsg *smsg;
 
     smsg = g_object_new(SRAIN_TYPE_RECV_MSG, NULL);
@@ -161,8 +166,13 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *m
     gtk_label_set_text(smsg->nick_label, nick);
     gtk_label_set_text(smsg->identify_label, id);
 
-    markup(msg, markuped_msg, 512);
-    gtk_label_set_markup(smsg->msg_label, markuped_msg); // TODO
+    markuped_msg = markup(msg);
+    if (markuped_msg){
+        gtk_label_set_markup(smsg->msg_label, markuped_msg->str);
+        g_string_free(markuped_msg, TRUE);
+    } else {
+        gtk_label_set_text(smsg->msg_label, msg);
+    }
 
     g_signal_connect(smsg->nick_button, "clicked", G_CALLBACK(nick_on_click),
             (char *)gtk_label_get_text(smsg->nick_label));

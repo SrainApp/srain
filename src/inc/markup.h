@@ -1,7 +1,9 @@
 #ifndef __MAKRUP_H
 #define __MAKRUP_H
 
-int markup(const char *msg, char *markuped_msg, int len);
+#include <glib.h>
+
+GString* markup(const char *msg);
 
 #endif /* __MAKRUP_H */
 

@@ -28,7 +28,7 @@
   <object class="GtkImage" id="send_buton_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">send_icon.png</property>
+    <property name="pixbuf">avatar.png</property>
   </object>
   <template class="SrainChan" parent="GtkBox">
     <property name="visible">True</property>
@@ -78,10 +78,13 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="halign">start</property>
-                <property name="label" translatable="yes">topic or whois</property>
                 <property name="use_markup">True</property>
                 <property name="wrap">True</property>
                 <property name="wrap_mode">word-char</property>
+                <property name="selectable">True</property>
+                <attributes>
+                    <attribute name="weight" value="normal"/>
+                </attributes>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -103,7 +106,6 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <property name="valign">center</property>
             <property name="image">onlinelist_button_image</property>
             <property name="relief">none</property>
             <property name="focus_on_click">False</property>

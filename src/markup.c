@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <regex.h>
 #include <string.h>
+#include <glib.h>
 #include "srain_magic.h"
 #include "log.h"
 
@@ -31,26 +32,23 @@ static int compile_regex(regex_t *r, const char *pattern)
     return 0;
 }
 
-// TODO return a GString?
-void markup(const char *msg, char *markuped_msg, int len){
+GString* markup(const char *msg){
     int n = 10;
-    int stat, start, end;
-    char *buf_ptr;
+    int start, end;
     const char *msg_ptr;
-    char url[200];
-    char url_buf[512];
-    /* dead simple regex pattern to match url TODO */
-    char pattern[] = "((http)|(https))://(www)?[[:punct:][:alnum:]]+";
+    /* if `-` is contained in pattern,
+     * regcomp() return ERROR "不适用的范围结束"  TODO*/
+    char pattern[] = "((http)|(https))://(www)?[./;?:@&=+$,_!~*'[:alnum:]]+";
     regex_t re;
     regmatch_t match[n];
+    GString *str;
 
     if (compile_regex(&re, pattern) == -1){
-        return;
+        return NULL;
     }
 
     msg_ptr = msg;
-    buf_ptr = markuped_msg;
-    memset(markuped_msg, 0, len);
+    str = g_string_new(NULL);
     while (1){
         int no_match = regexec(&re, msg_ptr, n, match, 0);
 
@@ -66,29 +64,16 @@ void markup(const char *msg, char *markuped_msg, int len){
         start = match[0].rm_so + (msg_ptr - msg);
         end = match[0].rm_eo + (msg_ptr - msg);
 
-        strncpy(buf_ptr, msg_ptr, msg + start - msg_ptr);
+        str = g_string_append_len(str, msg_ptr, msg + start - msg_ptr);
+        g_string_append_printf(str, "<a href=\"%.*s\">%.*s</a>",
+                end - start, msg + start, end -start, msg + start);
 
-        memset(url, 0, sizeof(url));
-        strncpy(url, msg + start, end - start);
-
-        memset(url_buf, 0, sizeof(url_buf));
-        snprintf(url_buf, 512, "<a href=\"%s\">%s</a>", url, url);
-
-        if (buf_ptr + strlen(url_buf) - markuped_msg >= len){
-            ERR_FR("buffer full");
-            return;
-        }
-
-        strncat(buf_ptr, url_buf, markuped_msg + len - buf_ptr);
-        buf_ptr += strlen(buf_ptr);
-
-        LOG_FR("'%.*s' (bytes %d:%d)", (end - start), msg + start, start, end);
+        LOG_FR("match '%.*s' (%d:%d)", (end - start), msg + start, start, end);
 
         msg_ptr += match[0].rm_eo;
     }
 
-    strncpy(buf_ptr, msg_ptr, markuped_msg + len - buf_ptr);
+    str = g_string_append(str, msg_ptr);
 
-    LOG_FR("markuped: '%s'", markuped_msg);
-    return;
+    return str;
 }
