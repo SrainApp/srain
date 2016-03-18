@@ -6,7 +6,7 @@
 @define-color text_color                #000000;
 @define-color selected_text_color       alpha(#b0c4de, 0.5);
 
-@define-color hover_color               alpha(#b0c4de, 0.5);
+@define-color hover_color               alpha(#b0c4de, 0.4);
 @define-color active_color              alpha(#b0c4de, 1);
 
 @define-color window_header_box_color   #8db6cd;
