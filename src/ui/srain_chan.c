@@ -188,7 +188,7 @@ SrainChan* srain_chan_new(const char *name){
 void srain_chan_set_topic(SrainChan *chan, const char *topic){
     GString *markuped_topic;
 
-    markuped_topic = markup(topic);
+    markuped_topic = markup(topic, NULL);
     if (markuped_topic){
         gtk_label_set_markup(chan->topic_label, markuped_topic->str);
         g_string_free(markuped_topic, TRUE);
@@ -299,7 +299,11 @@ void _srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id,
 }
 
 /* add a SrainRecvMsg into SrainChan, if its time is same to the last msg, combine them */
-void srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id, const char *msg, const char *img_path){
+void srain_chan_recv_msg_add(SrainChan *chan,
+                             const char *nick,
+                             const char *id,
+                             const char *msg,
+                             const char *img_path){
     char timestr[32];
     const char *old_timestr;
     const char *old_nick;
@@ -329,7 +333,7 @@ void srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id, 
             g_string_append(new_msg, "\n");
             g_string_append(new_msg, msg);
 
-            markuped_msg = markup(new_msg->str);
+            markuped_msg = markup(new_msg->str, NULL);
             if (markuped_msg){
                 gtk_label_set_markup(last_recv_msg->msg_label, markuped_msg->str);
                 g_string_free(markuped_msg, TRUE);
