@@ -1,7 +1,7 @@
 srain
 -----
 
-it does not look like a irc client :)
+it does not look like a irc client :-)
 
 **W I P**
 

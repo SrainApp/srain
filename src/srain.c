@@ -127,15 +127,24 @@ gboolean srain_idles(irc_msg_t *imsg){
     /* Message */
     if (strcmp(imsg->command, "PRIVMSG") == 0){
         if (imsg->nparam != 1) goto bad;
+
         memset(imsg->servername, 0, SERVER_LEN);
         if (strcmp(imsg->message, "\1ACTION")
                 && imsg->message[strlen(imsg->message) - 1] == '\1'){
+
             imsg->message[strlen(imsg->message) - 1] = '\0';
             ui_msg_sysf(imsg->param[0], SYS_MSG_ACTION, "*** %s %s ***",
                     imsg->nick, imsg->message + strlen("\1ACTION"));
         }
         else if (filter(imsg)){
-            ui_msg_recv(imsg->param[0], imsg->nick, imsg->servername, imsg->message);
+            if (strstr(imsg->message, irc.nick)){
+                // mentioned
+                // TODO
+                ui_msg_recv(imsg->param[0], imsg->nick, imsg->servername, imsg->message);
+            } else {
+                ui_msg_recv(imsg->param[0], imsg->nick, imsg->servername, imsg->message);
+            }
+
         }
     }
 

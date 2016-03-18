@@ -35,8 +35,9 @@ struct _SrainSendMsg {
     GtkBox parent;
     GtkLabel *msg_label;
     GtkLabel *time_label;
-    GtkEventBox *image_eventbox;
     GtkImage *image;
+    GString *image_path;
+    GtkEventBox *image_eventbox;
 };
 
 struct _SrainSendMsgClass {
@@ -59,6 +60,7 @@ struct _SrainRecvMsg {
     GtkLabel *msg_label;
     GtkLabel *time_label;
     GtkImage *image;
+    GString *image_path;
     GtkEventBox *image_eventbox;
     GtkImage *avatar_image;
     GtkLabel *nick_label;

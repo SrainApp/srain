@@ -11,6 +11,9 @@ CC = gcc
 CFLAGS = -Wall -Isrc/inc -ggdb -gstabs+
 GTK3FLAGS = $$(pkg-config --cflags gtk+-3.0)
 GTK3LIBS = $$(pkg-config --libs gtk+-3.0)
+PY3FLAGS = $$(pkg-config --cflags python3)
+PY3LIBS = $$(pkg-config --libs python3)
+CURLLIBS = $$(pkg-config --libs libcurl)
 
 TARGET = build/srain
 SRCS = $(wildcard src/*.c src/*/*.c build/resources.c)
@@ -29,6 +32,7 @@ run: default
 	cp srainrc.example build/srainrc
 	cp data/theme/*.css build/
 	cp data/img/*.png build/
+	cp plugin/*.py build/
 	cd build/ && ./srain
 
 dbg: $(TARGET)
@@ -50,4 +54,4 @@ mo:
 
 # compile multiple object file to execute file
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) $(GTK3FLAGS) $(GTK3LIBS) $^ -o $@
+	$(CC) $(CFLAGS) $(GTK3FLAGS) $(GTK3LIBS) $(PY3FLAGS) $(PY3LIBS) $(CURLLIBS) $^ -o $@

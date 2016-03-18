@@ -29,7 +29,7 @@ typedef struct {
  *
  * example:
  * when "xmppbot" is a relaybot and ldeilm = "[", rdelim = "[ "
- *  before:
+ * before:
  *      nickname = "xmppbot"
  *      servername = ""
  *      message = "[Lisa] SilverRain: 没有回忆就去创造回忆，没有道路就去开辟道路"
