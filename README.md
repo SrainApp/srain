@@ -1,5 +1,6 @@
 srain
 -----
+[![Build Status](https://travis-ci.org/LastAvenger/srain.svg?branch=master)](https://travis-ci.org/LastAvenger/srain)
 
 it does not look like a irc client :-)
 

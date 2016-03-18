@@ -54,4 +54,4 @@ mo:
 
 # compile multiple object file to execute file
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) $(GTK3FLAGS) $(GTK3LIBS) $(PY3FLAGS) $(PY3LIBS) $(CURLLIBS) $^ -o $@
+	$(CC) $(CFLAGS) $(GTK3FLAGS) $(PY3FLAGS) $^ -o $@ $(GTK3LIBS) $(PY3LIBS) $(CURLLIBS)

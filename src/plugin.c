@@ -8,7 +8,6 @@ void plugin_upload(const char *path){
 
     PyObject *py_module;
     PyObject *py_func;
-    PyObject *py_path;
     PyObject *py_args;
     PyObject *py_url;
 

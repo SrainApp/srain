@@ -19,7 +19,7 @@ default:
 	make $(OBJS)
 
 ../build/%.o: %.c
-	$(CC) $(CFLAGS) -c $(GTK3FLAGS) $(GTK3LIBS) $(PY3FLAGS) $(PY3LIBS) $(CURLLIBS) $^ -o $@
+	$(CC) $(CFLAGS) -c $(GTK3FLAGS) $(PY3FLAGS) $^ -o $@ $(GTK3LIBS) $(PY3LIBS) $(CURLLIBS)
 
 ../build/%.o: */%.c
-	$(CC) $(CFLAGS) -c $(GTK3FLAGS) $(GTK3LIBS) $^ -o $@
+	$(CC) $(CFLAGS) -c $(GTK3FLAGS) $(PY3FLAGS) $^ -o $@ $(GTK3LIBS) $(PY3LIBS) $(CURLLIBS)
