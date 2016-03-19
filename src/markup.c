@@ -42,6 +42,7 @@ GString* markup(const char *msg, GString **img_url){
     int start, end;
     const char *msg_ptr;
     /* if `-` is contained in pattern,
+     * &
      * regcomp() return ERROR "不适用的范围结束"  TODO*/
     char pattern[] = "((http)|(https))://(www)?[-./;?:@&=+$,_!~*'[:alnum:]]+";
     regex_t re;

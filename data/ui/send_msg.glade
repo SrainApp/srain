@@ -9,7 +9,6 @@
     <child>
       <object class="GtkBox" id="padding_box">
         <property name="name">padding_box</property>
-        <property name="width_request">100</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="margin_left">100</property>
@@ -37,6 +36,7 @@
                 <property name="wrap">True</property>
                 <property name="wrap_mode">word-char</property>
                 <property name="selectable">True</property>
+                <property name="max_width_chars">72</property>
                 <attributes>
                   <attribute name="weight" value="normal"/>
                 </attributes>

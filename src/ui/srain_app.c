@@ -37,7 +37,7 @@ static void srain_app_activate(GApplication *app){
 
     gtk_window_present(GTK_WINDOW(win));
 
-    SrainChan *chan = srain_window_add_chan(win, SERVER);
+    srain_window_add_chan(win, SERVER);
     ui_init(win);
     config_read();
 }

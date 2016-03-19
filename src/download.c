@@ -33,7 +33,6 @@ static GString* gen_path(const char *ext, int len){
     }
 
     path = g_string_append(path, ext);
-    LOG_FR("'%s'",path->str);
 
     return path;
 }
@@ -77,5 +76,6 @@ GString *download(const char *url){
         return NULL;
     }
 
+    LOG_FR("'%s'",path->str);
     return path;
 }
