@@ -24,8 +24,10 @@ typedef struct {
 } relaybot_info_t;
 
 /* if imsg->nick exist in relaybot_list,
- * and imsg->nick d
+ * and imsg->message starts with "<ldeilm><human's nick><rdelim>"
  * let imsg->servername = imsg->nick
+ *     imsg->nick = human's nick
+ *     remove human's nick from imsg->message
  *
  * example:
  * when "xmppbot" is a relaybot and ldeilm = "[", rdelim = "[ "
@@ -41,7 +43,7 @@ typedef struct {
  *  
  *  if {nick,ldelim,rdelim} no matched, nothing will be changed.
  */
-static void relaybot_trans(irc_msg_t *imsg){
+void filter_relaybot_trans(irc_msg_t *imsg){
     int nick_len;
     int max_msg_len;
     char *rdelim_ptr;
@@ -88,10 +90,12 @@ static void relaybot_trans(irc_msg_t *imsg){
 
 /**
  * @brief is_ignore 
+ *
  * @param nick
+ *
  * @return if return 1, ignore this message
  */
-static int is_ignore(const char *nick){
+int filter_is_ignore(const char *nick){
     GList *lst;
 
     lst = ignore_list;
@@ -102,10 +106,6 @@ static int is_ignore(const char *nick){
         lst = lst->next;
     }
     return 0;
-}
-
-void filter_init(){
-
 }
 
 int filter_ignore_list_add(const char *nick){
@@ -191,22 +191,4 @@ int filter_relaybot_list_rm(const char *nick){
 
     ERR_FR("%s no found", nick);
     return -1;
-}
-
-/**
- * @brief filter 
- * @param imsg a PRIVMSG message
- * @return if return 0, ignore this message in srain_idle().
- *
- * a PRIVMSG message must process via `filter()`,
- * the reslut determines whether the message is ignored
- * and do some transfromation for relaybot message
- *
- * see comments of relaybot_trans() & is_ignore()
- */
-int filter(irc_msg_t *imsg){
-    relaybot_trans(imsg);
-
-    return !is_ignore(imsg->nick);
-    // :(
 }

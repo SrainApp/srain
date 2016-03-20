@@ -24,6 +24,7 @@
 #include "srain_window.h"
 #include "srain_msg.h"
 #include "log.h"
+#include "markup.h"
 #include "filter.h"
 
 // return and stop spinner: call ui_busy(FALSE)
@@ -122,29 +123,94 @@ int srain_send(const char *chan, const char *msg){
     RET(0);
 }
 
+/* strip unprintable char and irc color code */
+static void strip(char *str){
+    int i;
+    int j;
+    int len;
+    int left;
+
+    LOG_FR("");
+
+    j = 0;
+    left = 1;
+    len = strlen(str);
+
+    for (i = 0; i < len; i++){
+        switch (str[i]){
+            case '\2':
+            case '\f':
+            case '\x16':
+            case '\x1d':
+            case '\x1f':
+                break;
+            case '\3':  // irc color code
+                LOG_FR("0x3 found");
+                if (left){
+                    while (++i < len){
+                        if (str[i] >= '0' && str[i] <= '9'){
+                            continue;
+                        }
+                        left = 0;
+                        i--;
+                        break;
+                    }
+                } else {
+                    left = 1;
+                }
+                break;
+            default:
+                str[j++] = str[i];
+        }
+    }
+
+    str[j] = '\0';
+}
+
 /* GSourceFunc */
 gboolean srain_idles(irc_msg_t *imsg){
     /* Message */
     if (strcmp(imsg->command, "PRIVMSG") == 0){
+        int is_action = 0;
+        int imsg_len;
+
         if (imsg->nparam != 1) goto bad;
 
-        memset(imsg->servername, 0, SERVER_LEN);
+        imsg_len = strlen(imsg->message);
+
+        /* strip \x1ACTION ... \x1 */
         if (strcmp(imsg->message, "\1ACTION")
-                && imsg->message[strlen(imsg->message) - 1] == '\1'){
+                && imsg->message[imsg_len - 1] == '\1'){
+            char tmp_msg[MSG_LEN];
 
-            imsg->message[strlen(imsg->message) - 1] = '\0';
-            ui_msg_sysf(imsg->param[0], SYS_MSG_ACTION, "*** %s %s ***",
-                    imsg->nick, imsg->message + strlen("\1ACTION"));
+            is_action = 1;
+            imsg->message[imsg_len - 1] = '\0';
+
+            strncpy(tmp_msg, imsg->message + strlen("\1ACTION"),
+                    MSG_LEN - strlen("\1ACTION"));
+            memset(imsg->message, 0, MSG_LEN);
+            strncpy(imsg->message, tmp_msg, MSG_LEN);
         }
-        else if (filter(imsg)){
-            if (strstr(imsg->message, irc.nick)){
-                // mentioned
-                // TODO
-                ui_msg_recv(imsg->param[0], imsg->nick, imsg->servername, imsg->message);
-            } else {
-                ui_msg_recv(imsg->param[0], imsg->nick, imsg->servername, imsg->message);
-            }
 
+        strip(imsg->message);
+        memset(imsg->servername, 0, SERVER_LEN);
+        filter_relaybot_trans(imsg);
+
+        if (filter_is_ignore(imsg->nick)){
+            free(imsg);
+            return FALSE;
+        }
+
+        if (is_action){
+            if (strlen(imsg->message) > 0){
+                ui_msg_sysf(imsg->param[0], SYS_MSG_ACTION, "*** %s %s ***",
+                        imsg->servername, imsg->message);
+            } else {
+                ui_msg_sysf(imsg->param[0], SYS_MSG_ACTION, "*** %s %s ***",
+                        imsg->nick, imsg->message);
+            }
+        } else {
+            ui_msg_recv(imsg->param[0], imsg->nick, imsg->servername, imsg->message);
         }
     }
 
@@ -330,8 +396,6 @@ int srain_cmd(const char *chan, char *cmd){
      * help
      * names
      * */
-    ui_msg_sysf(chan, SYS_MSG_COMMAND, "command: %s", cmd);
-
     if (strncmp(cmd, "/connect", 8) == 0){
         char *server = strtok(cmd + 8, " ");
         if (server) return srain_connect(server);
