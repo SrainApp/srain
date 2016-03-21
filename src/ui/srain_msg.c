@@ -106,8 +106,40 @@ static void srain_send_msg_class_init(SrainSendMsgClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainSendMsg, image);
 }
 
+static gboolean srain_send_msg_set_image(SrainSendMsg *msg){
+    GdkPixbuf *pixbuf;
+
+    LOG_FR("%s", msg->image_path->str);
+
+    if (msg->image_path){
+        g_signal_connect_swapped(msg->image_eventbox,
+                                 "button_release_event",
+                                 G_CALLBACK(image_on_click),
+                                 msg->image_path->str);
+        pixbuf = gdk_pixbuf_new_from_file_at_size(msg->image_path->str, 300, 300, NULL);
+        gtk_image_set_from_pixbuf(msg->image, pixbuf);
+        g_object_unref(pixbuf);
+    }
+
+    return FALSE;
+}
+
+static void srain_send_msg_set_image_async(SrainSendMsg *msg){
+    GString *path;
+
+    LOG_FR("%s", msg->image_path->str);
+
+    path = download(msg->image_path->str);
+    if (path){
+        g_string_free(msg->image_path, TRUE);
+        msg->image_path = path;
+        gdk_threads_add_idle((GSourceFunc)srain_send_msg_set_image, msg);
+    }
+}
+
 SrainSendMsg* srain_send_msg_new(const char *msg, const char *img_path){
     char timestr[32];
+    GString *img_url;
     GString *markuped_msg;
     SrainSendMsg *smsg;
 
@@ -116,8 +148,7 @@ SrainSendMsg* srain_send_msg_new(const char *msg, const char *img_path){
     get_cur_time(timestr);
     gtk_label_set_text(smsg->time_label, timestr);
 
-    // TODO
-    markuped_msg = markup(msg, NULL);
+    markuped_msg = markup(msg, &img_url);
     if (markuped_msg){
         gtk_label_set_markup(smsg->msg_label, markuped_msg->str);
         g_string_free(markuped_msg, TRUE);
@@ -125,12 +156,9 @@ SrainSendMsg* srain_send_msg_new(const char *msg, const char *img_path){
         gtk_label_set_text(smsg->msg_label, msg);
     }
 
-    if (img_path){
-        g_signal_connect_swapped(smsg->image_eventbox, "button_release_event",
-                G_CALLBACK(image_on_click), (char *)img_path);
-        GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file_at_size((char *)img_path, 300, 300, NULL);
-        gtk_image_set_from_pixbuf(smsg->image, pixbuf);
-        g_object_unref(pixbuf);
+    if (img_url){
+        smsg->image_path = img_url;
+        g_thread_new(NULL, (GThreadFunc)srain_send_msg_set_image_async, smsg);
     }
 
     return smsg;
@@ -156,7 +184,7 @@ static void srain_recv_msg_class_init(SrainRecvMsgClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, nick_button);
 }
 
-gboolean srain_recv_msg_set_image(SrainRecvMsg *msg){
+static gboolean srain_recv_msg_set_image(SrainRecvMsg *msg){
     GdkPixbuf *pixbuf;
 
     LOG_FR("%s", msg->image_path->str);
@@ -174,7 +202,7 @@ gboolean srain_recv_msg_set_image(SrainRecvMsg *msg){
     return FALSE;
 }
 
-void srain_recv_msg_set_image_async(SrainRecvMsg *msg){
+static void srain_recv_msg_set_image_async(SrainRecvMsg *msg){
     GString *path;
 
     LOG_FR("%s", msg->image_path->str);

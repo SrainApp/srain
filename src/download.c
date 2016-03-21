@@ -14,6 +14,7 @@
 #include <string.h>
 #include "log.h"
 
+/* TODO: using hash is better */
 static GString* gen_path(const char *ext, int len){
     int idx;
     static int is_init = 0;
@@ -76,6 +77,6 @@ GString *download(const char *url){
         return NULL;
     }
 
-    LOG_FR("'%s'",path->str);
+    LOG_FR("saved as '%s'",path->str);
     return path;
 }
