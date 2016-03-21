@@ -11,24 +11,21 @@
         <property name="name">padding_box</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="margin_left">100</property>
-        <property name="margin_right">20</property>
+        <property name="margin_left">10</property>
+        <property name="margin_right">10</property>
         <property name="border_width">4</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkBox" id="msg_box">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="margin_left">6</property>
-            <property name="margin_right">6</property>
-            <property name="margin_top">6</property>
-            <property name="orientation">vertical</property>
+            <property name="border_width">4</property>
             <child>
               <object class="GtkLabel" id="msg_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="opacity">0.99000000022351742</property>
                 <property name="halign">start</property>
+                <property name="margin_bottom">4</property>
                 <property name="xpad">4</property>
                 <property name="label" translatable="yes">sent message.
 &lt;a href="http://www.google.com"&gt;Link Test&lt;/a&gt;</property>
@@ -44,63 +41,51 @@
               <packing>
                 <property name="expand">True</property>
                 <property name="fill">True</property>
-                <property name="position">1</property>
+                <property name="position">0</property>
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="footer_box">
+              <object class="GtkLabel" id="time_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="orientation">vertical</property>
-                <child>
-                  <object class="GtkEventBox" id="image_eventbox">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="halign">start</property>
-                    <child>
-                      <object class="GtkImage" id="image">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="xpad">9</property>
-                        <property name="icon_size">0</property>
-                      </object>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="time_label">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="halign">end</property>
-                    <property name="label" translatable="yes">HH:MM</property>
-                    <style>
-                      <class name="dim-label"/>
-                    </style>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
+                <property name="halign">end</property>
+                <property name="valign">end</property>
+                <property name="label" translatable="yes">HH:MM</property>
+                <style>
+                  <class name="dim-label"/>
+                </style>
               </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">2</property>
+                <property name="position">1</property>
               </packing>
             </child>
           </object>
           <packing>
             <property name="expand">True</property>
             <property name="fill">True</property>
-            <property name="pack_type">end</property>
             <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkEventBox" id="image_eventbox">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">start</property>
+            <child>
+              <object class="GtkImage" id="image">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="xpad">9</property>
+                <property name="icon_size">0</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
           </packing>
         </child>
       </object>

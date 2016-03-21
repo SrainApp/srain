@@ -33,7 +33,7 @@ static void image_on_click(gpointer *user_data , GdkEventButton *event){
     }
 }
 
-static void nick_on_click(GtkWidget *widget, gpointer *user_data){
+static void nick_button_on_click(GtkWidget *widget, gpointer *user_data){
     char *nick;
     SrainWindow* toplevel;
     SrainDetailDialog *dlg;
@@ -245,7 +245,7 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick,
         g_thread_new(NULL, (GThreadFunc)srain_recv_msg_set_image_async, smsg);
     }
 
-    g_signal_connect(smsg->nick_button, "clicked", G_CALLBACK(nick_on_click),
+    g_signal_connect(smsg->nick_button, "clicked", G_CALLBACK(nick_button_on_click),
             (char *)gtk_label_get_text(smsg->nick_label));
 
     return smsg;

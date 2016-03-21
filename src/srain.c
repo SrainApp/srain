@@ -40,6 +40,49 @@ enum {
     SRAIN_LOGINED
 } stat = SRAIN_UNCONNECTED;
 
+/* strip unprintable char and irc color code */
+static void strip(char *str){
+    int i;
+    int j;
+    int len;
+    int left;
+
+    LOG_FR("");
+
+    j = 0;
+    left = 1;
+    len = strlen(str);
+
+    for (i = 0; i < len; i++){
+        switch (str[i]){
+            case 2:
+            case 0xf:
+            case 0x16:
+            case 0x1d:
+            case 0x1f:
+                break;
+            case 3:  // irc color code
+                if (left){
+                    while (++i < len){
+                        if (str[i] >= '0' && str[i] <= '9'){
+                            continue;
+                        }
+                        left = 0;
+                        i--;
+                        break;
+                    }
+                } else {
+                    left = 1;
+                }
+                break;
+            default:
+                str[j++] = str[i];
+        }
+    }
+
+    str[j] = '\0';
+}
+
 void srain_recv();
 void _srain_connect(const char *server){
     if (stat != SRAIN_UNCONNECTED){
@@ -108,10 +151,12 @@ int srain_part(const char *chan, const char *reason){
     RET(irc_part_req(&irc, chan, reason));
 }
 
-int srain_send(const char *chan, const char *msg){
+int srain_send(const char *chan, char *msg){
     ui_busy(TRUE);
 
     LOG_FR("send message '%s' to %s", msg, chan);
+
+    strip(msg);
 
     ui_msg_send(chan, msg);
 
@@ -121,50 +166,6 @@ int srain_send(const char *chan, const char *msg){
     }
 
     RET(0);
-}
-
-/* strip unprintable char and irc color code */
-static void strip(char *str){
-    int i;
-    int j;
-    int len;
-    int left;
-
-    LOG_FR("");
-
-    j = 0;
-    left = 1;
-    len = strlen(str);
-
-    for (i = 0; i < len; i++){
-        switch (str[i]){
-            case '\2':
-            case '\f':
-            case '\x16':
-            case '\x1d':
-            case '\x1f':
-                break;
-            case '\3':  // irc color code
-                LOG_FR("0x3 found");
-                if (left){
-                    while (++i < len){
-                        if (str[i] >= '0' && str[i] <= '9'){
-                            continue;
-                        }
-                        left = 0;
-                        i--;
-                        break;
-                    }
-                } else {
-                    left = 1;
-                }
-                break;
-            default:
-                str[j++] = str[i];
-        }
-    }
-
-    str[j] = '\0';
 }
 
 /* GSourceFunc */
