@@ -16,3 +16,8 @@ data/img/user_icon.png:
 - 24x24 png
 - license: https://icons8.com/license/
 - url: http://www.iconarchive.com/show/ios7-icons-by-icons8/Messaging-Message-icon.html
+
+data/img/default_avatar.png:
+- 36x36 png
+- license: unknown
+- url: search from google

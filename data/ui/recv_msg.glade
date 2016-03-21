@@ -17,7 +17,7 @@
         <property name="margin_left">10</property>
         <property name="margin_top">6</property>
         <property name="margin_bottom">6</property>
-        <property name="pixbuf">avatar.png</property>
+        <property name="pixbuf">default_avatar.png</property>
       </object>
       <packing>
         <property name="expand">False</property>
@@ -95,7 +95,7 @@
           <object class="GtkBox" id="msg_box">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="border_width">4</property>
+            <property name="border_width">2</property>
             <child>
               <object class="GtkLabel" id="msg_label">
                 <property name="visible">True</property>
