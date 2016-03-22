@@ -52,7 +52,7 @@ typedef struct _SrainSendMsg SrainSendMsg;
 typedef struct _SrainSendMsgClass SrainSendMsgClass;
 
 GType srain_send_msg_get_type(void);
-SrainSendMsg *srain_send_msg_new(const char *msg, const char *img_path);
+SrainSendMsg *srain_send_msg_new(const char *msg);
 
 /* ================ SRAIN_RECV_MSG ================ */
 struct _SrainRecvMsg {
@@ -80,6 +80,6 @@ typedef struct _SrainRecvMsg SrainRecvMsg;
 typedef struct _SrainRecvMsgClass SrainRecvMsgClass;
 
 GType srain_recv_msg_get_type(void);
-SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *msg, const char *img_path);
+SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *msg);
 
 #endif /* __SRAIN_MSG_H */

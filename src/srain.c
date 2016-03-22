@@ -47,8 +47,6 @@ static void strip(char *str){
     int len;
     int left;
 
-    LOG_FR("");
-
     j = 0;
     left = 1;
     len = strlen(str);
@@ -275,9 +273,11 @@ gboolean srain_idles(irc_msg_t *imsg){
     else if (strcmp(imsg->command, "NOTICE") == 0){
         if (imsg->nparam != 1) goto bad;
         if (strcmp(imsg->param[0], "*") == 0)
-            ui_msg_recv_broadcast(irc.chans, imsg->servername, irc.server, imsg->message);
+            ui_msg_recv_broadcast(irc.chans, imsg->servername,
+                    irc.server, imsg->message);
         else
-            ui_msg_recv(imsg->param[0], imsg->servername, irc.server, imsg->message);
+            ui_msg_recv(imsg->param[0], imsg->servername,
+                    irc.server, imsg->message);
     }
 
     /* MODE TODO */
@@ -286,6 +286,56 @@ gboolean srain_idles(irc_msg_t *imsg){
         ui_msg_sysf_broadcast(irc.chans, SYS_MSG_NORMAL, "%s MODE %s by %s",
                 imsg->param[0], imsg->message, imsg->servername);
     }
+
+    /* WHOIS TODO */
+    else if (strcmp(imsg->command, RPL_WHOISUSER) == 0
+            || strcmp(imsg->command, RPL_WHOISCHANNELS) == 0
+            || strcmp(imsg->command, RPL_WHOISSERVER) == 0
+            // || strcmp(imsg->command, RPL_WHOISIDLE) == 0
+            || strcmp(imsg->command, RPL_ENDOFWHOIS) == 0){
+        static GString *whois_buf = NULL;
+
+        /* first whois message */
+        if (strcmp(imsg->command, RPL_WHOISUSER) == 0){
+            if (imsg->nparam != 5) goto bad;
+            if (whois_buf != NULL) {
+                /* giveup the previous message */
+                ERR_FR("recv the second RPL_WWHOISUSER before RPL_ENDOFWHOIS");
+                g_string_free(whois_buf, TRUE);
+                whois_buf = NULL;
+            }
+            whois_buf = g_string_new(NULL);
+            g_string_printf(whois_buf, "%s <%s@%s> %s\n",
+                    imsg->param[1], imsg->param[2],
+                    imsg->param[3], imsg->message);
+        } else {
+            if (whois_buf == NULL) {
+                ERR_FR("whois_buf is NULL, when recv WHOIS message");
+                goto bad;
+            }
+
+            if (strcmp(imsg->command, RPL_WHOISCHANNELS) == 0){
+                if (imsg->nparam != 2) goto bad;
+                g_string_append_printf(whois_buf, "%s is member of %s\n",
+                        imsg->param[1], imsg->message);
+            }
+            else if (strcmp(imsg->command, RPL_WHOISSERVER) == 0){
+                if (imsg->nparam != 3) goto bad;
+                g_string_append_printf(whois_buf, "%s is attacht to %s at \"%s\"\n",
+                        imsg->param[1], imsg->param[2], imsg->message);
+            }
+            /* last whois message */
+            else if (strcmp(imsg->command, RPL_ENDOFWHOIS) == 0){
+                if (whois_buf->str[whois_buf->len - 1] == '\n'){
+                   g_string_truncate(whois_buf, whois_buf->len - 1);
+                }
+                ui_msg_sys(NULL, SYS_MSG_NORMAL, whois_buf->str);
+                g_string_free(whois_buf, TRUE);
+                whois_buf = NULL;
+            }
+        }
+    }
+    // RPL_WHOISIDLE
 
     /* Other Server Mesage (receive when login) */
     else if (strcmp(imsg->command, RPL_WELCOME) == 0
@@ -310,18 +360,14 @@ gboolean srain_idles(irc_msg_t *imsg){
          *     param[0] is you nick
          */
         int i = 1;
-        char tmp[MSG_LEN];
-        memset(tmp, 0, sizeof(tmp));
+        GString *buf = g_string_new(NULL);
         while (i < imsg->nparam){
-            strcat(tmp, imsg->param[i++]);
-            strcat(tmp, " ");
+            g_string_append_printf(buf, "%s ", imsg->param[i++]);
         }
-        strcat(tmp, imsg->message);
-        if (strlen(tmp) >= MSG_LEN){
-            ERR_FR("message too long");
-            goto bad;
-        }
-        ui_msg_recv(SERVER, imsg->servername, irc.server, tmp);
+        strip(imsg->message);
+        buf = g_string_append(buf, imsg->message);
+        ui_msg_recv(SERVER, imsg->servername, irc.server, buf->str);
+        g_string_free(buf, TRUE);
     }
 
     // IGNORE
@@ -455,6 +501,12 @@ int srain_cmd(const char *chan, char *cmd){
             /* irc->nick will be modified when recv
              * NICK command from server */
             return irc_nick_req(&irc, nick);
+        }
+    }
+    else if (strncmp(cmd, "/whois", 6) == 0){
+        char *nick = strtok(cmd + 6, " ");
+        if (nick){
+            return irc_whois(&irc, nick);
         }
     } else {
         ui_msg_sysf(chan, SYS_MSG_ERROR, "%s: unsupported command", cmd);

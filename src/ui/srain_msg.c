@@ -15,7 +15,7 @@
 #include "ui_common.h"
 #include "srain_window.h"
 #include "srain_msg.h"
-#include "srain_detail_dialog.h"
+#include "srain.h"
 #include "srain_image_window.h"
 #include "markup.h"
 #include "download.h"
@@ -34,19 +34,19 @@ static void image_on_click(gpointer *user_data , GdkEventButton *event){
 }
 
 static void nick_button_on_click(GtkWidget *widget, gpointer *user_data){
-    char *nick;
-    SrainWindow* toplevel;
-    SrainDetailDialog *dlg;
+    GString *cmd;
 
-    nick = (char *)user_data;
-    toplevel = SRAIN_WINDOW(gtk_widget_get_toplevel(widget));
-    dlg = srain_detail_dialog_new(toplevel, nick, "");
-    gtk_window_present(GTK_WINDOW(dlg));
+    cmd = g_string_new(NULL);
+    g_string_printf(cmd, "/whois %s", (char *)user_data);
+    srain_cmd(NULL, cmd->str);
+    g_string_free(cmd, TRUE);
 }
 
 static gint menu_popup(GtkWidget *label, GdkEventButton *event, GtkWidget *menu){
-    if (event->button == 3 && !gtk_label_get_selection_bounds(GTK_LABEL(label), NULL, NULL)){
-        gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL, event->button, event->time);
+    if (event->button == 3
+            && !gtk_label_get_selection_bounds(GTK_LABEL(label), NULL, NULL)){
+        gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL,
+                event->button, event->time);
         return TRUE;
     }
     return FALSE;
@@ -137,7 +137,7 @@ static void srain_send_msg_set_image_async(SrainSendMsg *msg){
     }
 }
 
-SrainSendMsg* srain_send_msg_new(const char *msg, const char *img_path){
+SrainSendMsg* srain_send_msg_new(const char *msg){
     char timestr[32];
     GString *img_url;
     GString *markuped_msg;
@@ -217,8 +217,7 @@ static void srain_recv_msg_set_image_async(SrainRecvMsg *msg){
 
 SrainRecvMsg *srain_recv_msg_new(const char *nick,
                                  const char *id,
-                                 const char *msg,
-                                 const char *img_path){
+                                 const char *msg){
     char timestr[32];
     GString *markuped_msg;
     GString *img_url;

@@ -45,7 +45,7 @@ int irc_login(irc_t *irc, const char *nick){
 
     strncpy(irc->nick, nick, NICK_LEN);
 
-    return irc_reg(irc->fd, nick, "Srain", "EL PSY CONGRO");
+    return irc_core_reg(irc->fd, nick, "Srain", "EL PSY CONGRO");
 }
 
 // irc_quit: For closeing connection
@@ -54,7 +54,7 @@ void irc_close(irc_t *irc){
 }
 
 void irc_quit_req(irc_t *irc, const char *reason){
-    irc_quit(irc->fd, reason);
+    irc_core_quit(irc->fd, reason);
 }
 
 int irc_join_req(irc_t *irc, const char *chan){
@@ -69,7 +69,7 @@ int irc_join_req(irc_t *irc, const char *chan){
         tmp = tmp->next;
     }
 
-    return irc_join(irc->fd, chan);
+    return irc_core_join(irc->fd, chan);
 }
 
 int irc_part_req(irc_t *irc, const char *chan, const char *reason){
@@ -78,7 +78,7 @@ int irc_part_req(irc_t *irc, const char *chan, const char *reason){
     tmp = irc->chans;
     while (tmp){
         if (strncmp(tmp->data, chan, CHAN_LEN) == 0){
-            return irc_part(irc->fd, chan, reason);
+            return irc_core_part(irc->fd, chan, reason);
         }
         tmp = tmp->next;
     }
@@ -110,7 +110,7 @@ void irc_part_ack(irc_t *irc, const char *chan){
 }
 
 int irc_nick_req(irc_t *irc, const char *nick){
-    return irc_nick(irc->fd, nick);
+    return irc_core_nick(irc->fd, nick);
 }
 
 void irc_nick_ack(irc_t *irc, const char *nick){
@@ -119,10 +119,14 @@ void irc_nick_ack(irc_t *irc, const char *nick){
 
 int irc_send(irc_t *irc, const char *chan, const char *msg, int is_me){
     if (is_me){
-        return irc_action(irc->fd, chan, msg);
+        return irc_core_action(irc->fd, chan, msg);
     } else {
-        return irc_msg(irc->fd, chan, msg);
+        return irc_core_msg(irc->fd, chan, msg);
     }
+}
+
+int irc_whois(irc_t *irc, const char *nick){
+    return irc_core_whois(irc->fd, nick);
 }
 
 irc_msg_type_t irc_recv(irc_t *irc, irc_msg_t *ircmsg){
@@ -151,7 +155,7 @@ irc_msg_type_t irc_recv(irc_t *irc, irc_msg_t *ircmsg){
                            res = irc_parse(irc->servbuf, ircmsg);
                            switch (res){
                                case IRCMSG_PING:
-                                   irc_pong(irc->fd, irc->servbuf);
+                                   irc_core_pong(irc->fd, irc->servbuf);
                                    break;
                                default:
                                    break;

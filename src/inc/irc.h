@@ -55,6 +55,7 @@ void irc_part_ack(irc_t *irc, const char *chan);
 int irc_nick_req(irc_t *irc, const char *nick);
 void irc_nick_ack(irc_t *irc, const char *nick);
 
+int irc_whois(irc_t *irc, const char *nick);
 int irc_send(irc_t *irc, const char *chan, const char *msg, int is_me);
 irc_msg_type_t irc_recv(irc_t *irc, irc_msg_t *ircmsg);
 

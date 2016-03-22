@@ -17,7 +17,6 @@
 #include "srain_window.h"
 #include "srain_chan.h"
 #include "srain_msg.h"
-#include "srain_detail_dialog.h"
 #include "srain.h"
 #include "markup.h"
 #include "log.h"
@@ -26,6 +25,7 @@
 struct _SrainChan {
     GtkBox parent;
     GtkLabel* name_label;
+    GtkRevealer *topic_revealer;
     GtkLabel *topic_label;
     GtkScrolledWindow *msg_scrolledwindow;
     GtkBox *msg_box;
@@ -57,7 +57,7 @@ static gboolean scroll_to_bottom(SrainChan *chan){
     return FALSE;
 }
 
-static void onlinelist_button_on_click(GtkWidget *widget, gpointer *user_data){
+static void onlinelist_button_on_click(GtkWidget *widget, gpointer user_data){
     gboolean is_show;
     GtkImage *image;
     GtkRevealer *revealer;
@@ -71,21 +71,19 @@ static void onlinelist_button_on_click(GtkWidget *widget, gpointer *user_data){
 }
 
 static gint online_listbox_on_dbclick(GtkWidget *widget, GdkEventButton *event){
-    const char *nick;
+    GString *cmd;
     GtkLabel *label;
     GtkListBoxRow *row;
-    SrainWindow *toplevel;
-    SrainDetailDialog *dlg;
 
-    toplevel = SRAIN_WINDOW(gtk_widget_get_toplevel(widget));
     if(event->button == 1 && event->type == GDK_2BUTTON_PRESS){
         row = gtk_list_box_get_selected_row(GTK_LIST_BOX(widget));
         if (row){
             label = GTK_LABEL(gtk_bin_get_child(GTK_BIN(row)));
-            nick = gtk_label_get_text(label);
+            cmd = g_string_new(NULL);
 
-            dlg = srain_detail_dialog_new(toplevel, nick, "");
-            gtk_window_present(GTK_WINDOW(dlg));
+            g_string_printf(cmd, "/whois %s", gtk_label_get_text(label));
+            srain_cmd(NULL, cmd->str);
+            g_string_free(cmd, TRUE);
         }
     }
     return FALSE;
@@ -101,10 +99,10 @@ static int is_blank(const char *str){
 }
 
 static void on_send(SrainChan *chan){
-    const char *input;
+    char *input;
     const char *chan_name;
 
-    input = gtk_entry_get_text(chan->input_entry);
+    input = strdup(gtk_entry_get_text(chan->input_entry));
     chan_name = gtk_widget_get_name(GTK_WIDGET(chan));
 
     if (is_blank(input)) goto ret;
@@ -119,6 +117,7 @@ static void on_send(SrainChan *chan){
 
 ret:
     gtk_entry_set_text(chan->input_entry, "");
+    free(input);
     return;
 }
 
@@ -155,6 +154,8 @@ static void srain_chan_init(SrainChan *self){
     g_signal_connect_swapped(self->input_entry, "activate", G_CALLBACK(on_send), self);
     g_signal_connect_swapped(self->send_button, "clicked", G_CALLBACK(on_send), self);
     g_signal_connect(self->onlinelist_button, "clicked", G_CALLBACK(onlinelist_button_on_click), self->onlinelist_revealer);
+    g_signal_connect(self->onlinelist_button, "clicked", G_CALLBACK(onlinelist_button_on_click), self->topic_revealer);
+
     g_signal_connect(self->onlinelist_listbox, "button_press_event", G_CALLBACK(online_listbox_on_dbclick), NULL);
     g_signal_connect(self->msg_box, "button_press_event", G_CALLBACK(msg_box_popup), self->msg_menu);
 }
@@ -164,6 +165,7 @@ static void srain_chan_class_init(SrainChanClass *class){
             "/org/gtk/srain/chan.glade");
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, name_label);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, topic_revealer);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, topic_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, msg_scrolledwindow);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, msg_box);
@@ -218,9 +220,15 @@ void srain_chan_online_list_add(SrainChan *chan, const char *name, int is_init){
     label = gtk_label_new(name);
     gtk_widget_set_name(label, name);
 
-    gtk_container_add(GTK_CONTAINER(chan->onlinelist_listbox), label);
+    row = GTK_LIST_BOX_ROW(gtk_list_box_row_new());
+    gtk_widget_set_can_focus(GTK_WIDGET(row), FALSE);
+
+    gtk_container_add(GTK_CONTAINER(row), label);
+    gtk_container_add(GTK_CONTAINER(chan->onlinelist_listbox), GTK_WIDGET(row));
+
     theme_apply(GTK_WIDGET(chan->onlinelist_listbox));
-    gtk_widget_show(label);
+
+    gtk_widget_show_all(GTK_WIDGET(row));
 
     if (!is_init)
         srain_chan_sys_msg_addf(chan, SYS_MSG_NORMAL, "%s has joined %s", name, chan_name);
@@ -274,10 +282,10 @@ void srain_chan_sys_msg_add(SrainChan *chan, sys_msg_type_t type, const char *ms
 }
 
 
-void srain_chan_send_msg_add(SrainChan *chan, const char *msg, const char *img_path){
+void srain_chan_send_msg_add(SrainChan *chan, const char *msg){
     SrainSendMsg *smsg;
 
-    smsg = srain_send_msg_new(msg, img_path);
+    smsg = srain_send_msg_new(msg);
     gtk_container_add(GTK_CONTAINER(chan->msg_box), GTK_WIDGET(smsg));
     theme_apply(GTK_WIDGET(chan->msg_box));
     gtk_widget_show(GTK_WIDGET(smsg));
@@ -287,10 +295,10 @@ void srain_chan_send_msg_add(SrainChan *chan, const char *msg, const char *img_p
     gdk_threads_add_idle((GSourceFunc)scroll_to_bottom, chan);
 }
 
-void _srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id, const char *msg, const char *img_path){
+void _srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id, const char *msg){
     SrainRecvMsg *smsg;
 
-    smsg = srain_recv_msg_new(nick, id, msg, img_path);
+    smsg = srain_recv_msg_new(nick, id, msg);
     gtk_container_add(GTK_CONTAINER(chan->msg_box), GTK_WIDGET(smsg));
     theme_apply(GTK_WIDGET(chan->msg_box));
     gtk_widget_show(GTK_WIDGET(smsg));
@@ -302,8 +310,7 @@ void _srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id,
 void srain_chan_recv_msg_add(SrainChan *chan,
                              const char *nick,
                              const char *id,
-                             const char *msg,
-                             const char *img_path){
+                             const char *msg){
     char timestr[32];
     const char *old_timestr;
     const char *old_nick;
@@ -350,7 +357,7 @@ void srain_chan_recv_msg_add(SrainChan *chan,
         }
     }
 
-    _srain_chan_recv_msg_add(chan, nick, id, msg, img_path);
+    _srain_chan_recv_msg_add(chan, nick, id, msg);
 
     gdk_threads_add_idle((GSourceFunc)scroll_to_bottom, chan);
 }

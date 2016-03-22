@@ -21,8 +21,8 @@ void srain_chan_online_list_add(SrainChan *chan, const char *name, int is_init);
 void srain_chan_online_list_rename(SrainChan *chan, const char *old_name, const char *new_name);
 
 void srain_chan_sys_msg_add(SrainChan *chan, sys_msg_type_t type, const char *msg);
-void srain_chan_send_msg_add(SrainChan *chan, const char *msg, const char *img_path);
-void srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id, const char *msg, const char *img_path);
+void srain_chan_send_msg_add(SrainChan *chan, const char *msg);
+void srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id, const char *msg);
 
 #endif /* __SRAIN_CHAN_H */
 
