@@ -62,23 +62,44 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="topic_label">
+              <object class="GtkLabel" id="attr_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="halign">start</property>
-                <property name="use_markup">True</property>
-                <property name="wrap">True</property>
-                <property name="wrap_mode">word-char</property>
-                <property name="selectable">True</property>
-                <attributes>
-                  <attribute name="weight" value="normal"/>
-                </attributes>
+                <property name="label" translatable="yes">10 peoples +ns</property>
+                <style>
+                  <class name="dim-label"/>
+                </style>
               </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="padding">5</property>
                 <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkRevealer" id="topic_revealer">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkLabel" id="topic_label">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="use_markup">True</property>
+                    <property name="wrap">True</property>
+                    <property name="wrap_mode">word-char</property>
+                    <property name="selectable">True</property>
+                    <attributes>
+                      <attribute name="weight" value="normal"/>
+                    </attributes>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
               </packing>
             </child>
           </object>
