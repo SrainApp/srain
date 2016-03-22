@@ -6,7 +6,6 @@
       <file preprocess="xml-stripblanks">sys_msg.glade</file>
       <file preprocess="xml-stripblanks">send_msg.glade</file>
       <file preprocess="xml-stripblanks">recv_msg.glade</file>
-      <file preprocess="xml-stripblanks">detail_dialog.glade</file>
       <file preprocess="xml-stripblanks">image_window.glade</file>
       <file preprocess="xml-stripblanks">stack_sidebar_item.glade</file>
   </gresource>

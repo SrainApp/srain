@@ -190,10 +190,8 @@ static gboolean srain_recv_msg_set_image(SrainRecvMsg *msg){
     LOG_FR("%s", msg->image_path->str);
 
     if (msg->image_path){
-        g_signal_connect_swapped(msg->image_eventbox,
-                                 "button_release_event",
-                                 G_CALLBACK(image_on_click),
-                                 msg->image_path->str);
+        g_signal_connect_swapped(msg->image_eventbox, "button_release_event",
+                G_CALLBACK(image_on_click), msg->image_path->str);
         pixbuf = gdk_pixbuf_new_from_file_at_size(msg->image_path->str, 300, 300, NULL);
         gtk_image_set_from_pixbuf(msg->image, pixbuf);
         g_object_unref(pixbuf);
@@ -215,9 +213,7 @@ static void srain_recv_msg_set_image_async(SrainRecvMsg *msg){
     }
 }
 
-SrainRecvMsg *srain_recv_msg_new(const char *nick,
-                                 const char *id,
-                                 const char *msg){
+SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *msg){
     char timestr[32];
     GString *markuped_msg;
     GString *img_url;
@@ -244,8 +240,8 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick,
         g_thread_new(NULL, (GThreadFunc)srain_recv_msg_set_image_async, smsg);
     }
 
-    g_signal_connect(smsg->nick_button, "clicked", G_CALLBACK(nick_button_on_click),
-            (char *)gtk_label_get_text(smsg->nick_label));
+    g_signal_connect(smsg->nick_button, "clicked",
+            G_CALLBACK(nick_button_on_click), (char *)gtk_label_get_text(smsg->nick_label));
 
     return smsg;
 }
