@@ -129,6 +129,18 @@ int irc_whois(irc_t *irc, const char *nick){
     return irc_core_whois(irc->fd, nick);
 }
 
+int irc_invite(irc_t *irc, const char *nick, const char *chan){
+    return irc_core_invite(irc->fd, nick, chan);
+}
+
+int irc_kick(irc_t *irc, const char *nick, const char *chan, const char *reason){
+    return irc_core_kick(irc->fd, nick, chan, reason);
+}
+
+int irc_mode(irc_t *irc, const char *target, const char *mode){
+    return irc_core_mode(irc->fd, target, mode);
+}
+
 irc_msg_type_t irc_recv(irc_t *irc, irc_msg_t *ircmsg){
     int i;
     static int rc, tmpbuf_ptr = 0;

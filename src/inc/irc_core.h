@@ -13,5 +13,8 @@ int irc_core_action(int fd, const char *who, const char *action);
 int irc_core_msg(int fd, const char *who, const char *msg);
 int irc_core_whois(int fd, const char *who);
 int irc_core_names(int fd, const char *chan);
+int irc_core_invite(int fd, const char *nick, const char *chan);
+int irc_core_kick(int fd, const char *nick, const char *chan, const char *reason);
+int irc_core_mode(int fd, const char *target, const char *mode);
 
 #endif /* __IRC_CORE_H */

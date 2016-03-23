@@ -49,8 +49,6 @@ static void strip(char *str){
     j = 0;
     len = strlen(str);
 
-    LOG_FR("%s", str);
-
     for (i = 0; i < len; i++){
         switch (str[i]){
             case 2:
@@ -243,6 +241,19 @@ gboolean srain_idles(irc_msg_t *imsg){
         ui_chan_online_list_rm_broadcast(irc.chans, imsg->nick, imsg->message);
     }
 
+    /* INVITE & KICK */
+    else if (strcmp(imsg->command, "INVITE") == 0){
+        if (imsg->nparam != 1) goto bad;
+        ui_msg_sysf(NULL, SYS_MSG_NORMAL, "%s invites you into %s",
+                imsg->nick, imsg->message);
+        goto bad;
+    }
+    else if (strcmp(imsg->command, "KICK") == 0){
+        if (imsg->nparam != 2) goto bad;
+        ui_msg_sysf(imsg->param[0], SYS_MSG_ERROR, "%s are kicked from %s by %s",
+                imsg->param[1], imsg->param[0], imsg->nick);
+    }
+
     /* NICK (someone change his name) */
     else if (strcmp(imsg->command, "NICK") == 0){
         if (imsg->nparam != 0) goto bad;
@@ -275,11 +286,30 @@ gboolean srain_idles(irc_msg_t *imsg){
                     irc.server, imsg->message);
     }
 
-    /* MODE TODO */
+    /* MODE */
+    /* TODO: no sure it is a correct way */
     else if (strcmp(imsg->command, "MODE") == 0){
-        if (imsg->nparam != 1) goto bad;
-        ui_msg_sysf_broadcast(irc.chans, SYS_MSG_NORMAL, "%s MODE %s by %s",
-                imsg->param[0], imsg->message, imsg->servername);
+        /* User modes */
+        if (strlen(imsg->message) != 0){
+            if (imsg->nparam != 1) goto bad;
+            ui_msg_sysf_broadcast(irc.chans, SYS_MSG_NORMAL, "mode %s %s by %s",
+                    imsg->param[0], imsg->message, imsg->servername);
+        }
+        /* Channel modes */
+        else {
+            int i = 0;
+            GString *buf = g_string_new(NULL);
+            while (i < imsg->nparam){
+                g_string_append_printf(buf, "%s ", imsg->param[i++]);
+            }
+            ui_msg_sysf(imsg->param[0] ,SYS_MSG_NORMAL, "mode %s by %s",
+                    buf->str, strlen(imsg->nick) == 0
+                    ? imsg->servername
+                    : imsg->nick);
+
+            g_string_free(buf, TRUE);
+        }
+        goto bad;
     }
 
     /* WHOIS TODO */
@@ -329,7 +359,6 @@ gboolean srain_idles(irc_msg_t *imsg){
             }
         }
     }
-    // RPL_WHOISIDLE
 
     /* Other Server Mesage (receive when login) */
     else if (strcmp(imsg->command, RPL_WELCOME) == 0
@@ -372,6 +401,8 @@ gboolean srain_idles(irc_msg_t *imsg){
     /* RPL_ERROR */
     else if (imsg->command[0] == '4'){
         ui_msg_sysf(NULL, SYS_MSG_ERROR, "ERROR [%s]: %s", imsg->command, imsg->message);
+        ERR_FR("error message:");
+        goto bad;
     }
 
     /* unsupported message */
@@ -466,10 +497,10 @@ int srain_cmd(const char *chan, char *cmd){
         char *jchan = strtok(cmd + 6, " ");
         if (jchan) return srain_join(jchan);
     }
-    else if (strncmp(cmd, "/part ", 6) == 0){
-        char *pchan = strtok(cmd + 6, " ");
-        if (pchan) return srain_part(pchan, NULL);
-        else return srain_part(ui_chan_get_cur_name(), NULL);
+    else if (strncmp(cmd, "/part", 5) == 0){
+        char *pchan = strtok(cmd + 5, " ");
+        if (pchan == NULL) pchan = (char *)ui_chan_get_cur_name();
+        return srain_part(pchan, NULL);
     }
     else if (strncmp(cmd, "/quit", 5) == 0){
         srain_close();
@@ -499,6 +530,33 @@ int srain_cmd(const char *chan, char *cmd){
         char *nick = strtok(cmd + 7, " ");
         if (nick){
             return irc_whois(&irc, nick);
+        }
+    }
+    else if (strncmp(cmd, "/invite ", 8) == 0){
+        char *nick = strtok(cmd + 8, " ");
+        char *ichan = strtok(NULL, " ");
+        if (nick){
+            if (ichan == NULL) ichan = (char *)ui_chan_get_cur_name();
+            ui_msg_sysf(chan, SYS_MSG_NORMAL, "You have invited %s to %s",
+                    nick, ichan);
+            return irc_invite(&irc, nick, ichan);
+        }
+    }
+    else if (strncmp(cmd, "/kick ", 6) == 0){
+        char *nick = strtok(cmd + 6, " ");
+        char *kchan = strtok(NULL, " ");
+        char *reason = strtok(NULL, "");
+        if (nick){
+            if (kchan == NULL) kchan = (char *)ui_chan_get_cur_name();
+            if (reason == NULL) reason = "";
+            return irc_kick(&irc, nick, chan, reason);
+        }
+    }
+    else if (strncmp(cmd, "/mode ", 6) == 0){
+        char *target = strtok(cmd + 6, " ");
+        char *mode = strtok(NULL, "");
+        if (target && mode){
+            return irc_mode(&irc, target, mode);
         }
     } else {
         ui_msg_sysf(chan, SYS_MSG_ERROR, "%s: unsupported command", cmd);

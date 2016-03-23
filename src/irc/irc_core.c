@@ -23,10 +23,12 @@ int irc_core_pong(int fd, const char *data){
 }
 
 // irc_core_reg: For registering upon login
-int irc_core_reg(int fd, const char *nick, const char *username, const char *fullname){
+int irc_core_reg(int fd, const char *nick, const char *username,
+        const char *fullname){
     LOG_FR("attemping to login as %s", nick);
 
-    return sck_sendf(fd, "NICK %s\r\nUSER %s localhost 0 :%s\r\n", nick, username, fullname);
+    return sck_sendf(fd, "NICK %s\r\nUSER %s localhost 0 :%s\r\n",
+            nick, username, fullname);
 }
 
 // irc_core_join: For joining a chan
@@ -89,4 +91,23 @@ int irc_core_whois(int fd, const char *who){
     LOG_FR("whois %s", who);
 
     return sck_sendf(fd, "WHOIS %s\r\n", who);
+}
+
+int irc_core_invite(int fd, const char *nick, const char *chan){
+    LOG_FR("invite %s %s", nick, chan);
+
+    return sck_sendf(fd, "INVITE %s %s\r\n", nick, chan);
+}
+
+int irc_core_kick(int fd, const char *nick, const char *chan,
+        const char *reason){
+    LOG_FR("nick %s chan %s reason %s", nick, chan, reason);
+
+    return sck_sendf(fd, "KICK %s %s :%s\r\n", chan, nick, reason);
+}
+
+int irc_core_mode(int fd, const char *target, const char *mode){
+    LOG_FR("target %s mode %s", target, mode);
+
+    return sck_sendf(fd, "MODE %s %s\r\n", target, mode);
 }
