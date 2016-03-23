@@ -326,10 +326,9 @@ gboolean srain_idles(irc_msg_t *imsg){
             }
             /* last whois message */
             else if (strcmp(imsg->command, RPL_ENDOFWHOIS) == 0){
-                if (whois_buf->str[whois_buf->len - 1] == '\n'){
-                   g_string_truncate(whois_buf, whois_buf->len - 1);
-                }
+                g_string_append(whois_buf, imsg->message);
                 ui_msg_sys(NULL, SYS_MSG_NORMAL, whois_buf->str);
+
                 g_string_free(whois_buf, TRUE);
                 whois_buf = NULL;
             }
@@ -437,9 +436,7 @@ void srain_close(){
 }
 
 int srain_cmd(const char *chan, char *cmd){
-    // ui_busy(TRUE);
     /* TODO
-     * whois
      * help
      * names
      * */

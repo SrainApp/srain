@@ -11,6 +11,7 @@
 #include <gtk/gtk.h>
 #include <time.h>
 #include <assert.h>
+#include <string.h>
 #include "ui.h"
 #include "ui_common.h"
 #include "srain_window.h"
@@ -240,8 +241,13 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *m
         g_thread_new(NULL, (GThreadFunc)srain_recv_msg_set_image_async, smsg);
     }
 
-    g_signal_connect(smsg->nick_button, "clicked",
-            G_CALLBACK(nick_button_on_click), (char *)gtk_label_get_text(smsg->nick_label));
+    if (strlen(gtk_label_get_text(smsg->identify_label)) != 0){
+        g_signal_connect(smsg->nick_button, "clicked",
+                G_CALLBACK(nick_button_on_click), (char *)gtk_label_get_text(smsg->identify_label));
+    } else {
+        g_signal_connect(smsg->nick_button, "clicked",
+                G_CALLBACK(nick_button_on_click), (char *)gtk_label_get_text(smsg->nick_label));
+    }
 
     return smsg;
 }
