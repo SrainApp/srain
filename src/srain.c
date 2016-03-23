@@ -45,11 +45,11 @@ static void strip(char *str){
     int i;
     int j;
     int len;
-    int left;
 
     j = 0;
-    left = 1;
     len = strlen(str);
+
+    LOG_FR("%s", str);
 
     for (i = 0; i < len; i++){
         switch (str[i]){
@@ -60,17 +60,12 @@ static void strip(char *str){
             case 0x1f:
                 break;
             case 3:  // irc color code
-                if (left){
-                    while (++i < len){
-                        if (str[i] >= '0' && str[i] <= '9'){
-                            continue;
-                        }
-                        left = 0;
-                        i--;
-                        break;
+                if (str[i+1] >= '0' && str[i+1] <= '9'){
+                    if (str[i+2] >= '0' && str[i+2] <= '9'){
+                        i += 2;
+                    } else {
+                        i += 1;
                     }
-                } else {
-                    left = 1;
                 }
                 break;
             default:
@@ -440,17 +435,17 @@ int srain_cmd(const char *chan, char *cmd){
      * help
      * names
      * */
-    if (strncmp(cmd, "/connect", 8) == 0){
-        char *server = strtok(cmd + 8, " ");
+    if (strncmp(cmd, "/connect ", 9) == 0){
+        char *server = strtok(cmd + 9, " ");
         if (server) return srain_connect(server);
     }
-    else if (strncmp(cmd, "/login", 6) == 0){
-        char *nick = strtok(cmd + 6, " ");
+    else if (strncmp(cmd, "/login ", 7) == 0){
+        char *nick = strtok(cmd + 7, " ");
         if (nick) return srain_login(nick);
     }
     /* NB: relaybot parameters separated by '|' */
-    else if (strncmp(cmd, "/relaybot", 9) == 0){
-        char *bot = strtok(cmd + 9, " |");
+    else if (strncmp(cmd, "/relaybot ", 10) == 0){
+        char *bot = strtok(cmd + 10, " |");
         if (bot){
             char *ldelim = strtok(NULL, "|");
             if (ldelim){
@@ -461,18 +456,18 @@ int srain_cmd(const char *chan, char *cmd){
             }
         }
     }
-    else if (strncmp(cmd, "/ignore", 7) == 0){
-        char *nick = strtok(cmd + 7, " ");
+    else if (strncmp(cmd, "/ignore ", 8) == 0){
+        char *nick = strtok(cmd + 8, " ");
         if (nick) return filter_ignore_list_add(nick);
     }
 
     /**************************************/
-    else if (strncmp(cmd, "/join", 5) == 0){
-        char *jchan = strtok(cmd + 5, " ");
+    else if (strncmp(cmd, "/join ", 6) == 0){
+        char *jchan = strtok(cmd + 6, " ");
         if (jchan) return srain_join(jchan);
     }
-    else if (strncmp(cmd, "/part", 5) == 0){
-        char *pchan = strtok(cmd + 5, " ");
+    else if (strncmp(cmd, "/part ", 6) == 0){
+        char *pchan = strtok(cmd + 6, " ");
         if (pchan) return srain_part(pchan, NULL);
         else return srain_part(ui_chan_get_cur_name(), NULL);
     }
@@ -480,28 +475,28 @@ int srain_cmd(const char *chan, char *cmd){
         srain_close();
         return 0;
     }
-    else if (strncmp(cmd, "/msg", 4) == 0){
-        char *to = strtok(cmd + 4, " ");
-        char *msg = strtok(NULL, " ");
+    else if (strncmp(cmd, "/msg ", 5) == 0){
+        char *to = strtok(cmd + 5, " ");
+        char *msg = strtok(NULL, "");
         if (to && msg) return srain_send(to, msg);
     }
-    else if (strncmp(cmd, "/me", 3) == 0){
-        char *msg = strtok(cmd + 3, " ");
+    else if (strncmp(cmd, "/me ", 4) == 0){
+        char *msg = cmd + 4;
         if (msg){
             ui_msg_sysf(chan, SYS_MSG_ACTION, "*** %s %s ***", irc.nick, msg);
             return irc_send(&irc, chan, msg, 1);
         }
     }
-    else if (strncmp(cmd, "/nick", 5) == 0){
-        char *nick = strtok(cmd + 5, " ");
+    else if (strncmp(cmd, "/nick ", 6) == 0){
+        char *nick = strtok(cmd + 6, " ");
         if (nick){
             /* irc->nick will be modified when recv
              * NICK command from server */
             return irc_nick_req(&irc, nick);
         }
     }
-    else if (strncmp(cmd, "/whois", 6) == 0){
-        char *nick = strtok(cmd + 6, " ");
+    else if (strncmp(cmd, "/whois ", 7) == 0){
+        char *nick = strtok(cmd + 7, " ");
         if (nick){
             return irc_whois(&irc, nick);
         }

@@ -7,7 +7,7 @@
  * @date 2016-03-16
  */
 
-#define __LOG_ON
+// #define __LOG_ON
 
 #include <stdio.h>
 #include <regex.h>
