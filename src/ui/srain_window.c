@@ -55,7 +55,35 @@ static gint sidebar_menu_popup(GtkWidget *widget, GdkEventButton *event, gpointe
 static void about_button_on_click(GtkWidget *widget, gpointer user_data){
 }
 
+static gboolean CTRL_J_K_on_press(GtkAccelGroup *group, GObject *obj, guint keyval,
+        GdkModifierType mod, gpointer user_data){
+    SrainStackSidebar *sidebar;
+
+    if (mod != GDK_CONTROL_MASK) return FALSE;
+
+    sidebar = user_data;
+    switch (keyval){
+        case GDK_KEY_k:
+            LOG_FR("<C-k>");
+            srain_stack_sidebar_prev(sidebar);
+            break;
+        case GDK_KEY_j:
+            LOG_FR("<C-j>");
+            srain_stack_sidebar_next(sidebar);
+            break;
+        default:
+            ERR_FR("unknown keyval %d", keyval);
+            return FALSE;
+    }
+
+    return TRUE;
+}
+
 static void srain_window_init(SrainWindow *self){
+    GClosure *closure_j;
+    GClosure *closure_k;
+    GtkAccelGroup *accel;
+
     gtk_widget_init_template(GTK_WIDGET(self));
 
     gtk_window_set_title(GTK_WINDOW(self), "Srain");
@@ -74,6 +102,21 @@ static void srain_window_init(SrainWindow *self){
             G_CALLBACK(sidebar_menu_popup), self->sidebar_menu);
     g_signal_connect(self->about_button, "clicked",
             G_CALLBACK(about_button_on_click), self);
+
+    accel = gtk_accel_group_new();
+
+    closure_j = g_cclosure_new(G_CALLBACK(CTRL_J_K_on_press), self->sidebar, NULL);
+    closure_k = g_cclosure_new(G_CALLBACK(CTRL_J_K_on_press), self->sidebar, NULL);
+
+    gtk_accel_group_connect(accel, GDK_KEY_j, GDK_CONTROL_MASK,
+            GTK_ACCEL_VISIBLE, closure_j);
+    gtk_accel_group_connect(accel, GDK_KEY_k, GDK_CONTROL_MASK,
+            GTK_ACCEL_VISIBLE, closure_k);
+
+    gtk_window_add_accel_group(GTK_WINDOW(self), accel);
+
+    g_closure_unref(closure_j);
+    g_closure_unref(closure_k);
 }
 
 static void srain_window_class_init(SrainWindowClass *class){
@@ -152,7 +195,8 @@ void srain_window_spinner_toggle(SrainWindow *win, gboolean is_busy){
         : gtk_spinner_stop(win->spinner);
 }
 
-void srain_window_stack_sidebar_update(SrainWindow *win, SrainChan *chan, const char *nick, const char *msg){
+void srain_window_stack_sidebar_update(SrainWindow *win, SrainChan *chan,
+        const char *nick, const char *msg){
     if (SRAIN_CHAN(gtk_stack_get_visible_child(win->stack)) != chan){
         srain_stack_sidebar_update(win->sidebar, chan, nick, msg, 0);
     } else {

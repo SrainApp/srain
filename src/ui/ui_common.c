@@ -31,7 +31,7 @@ void get_cur_time(char *timestr){
  *
  * @return a GtkListRow if found, or return NULL
  */
-GtkListBoxRow* get_list_item_by_name(GtkListBox *listbox, const char* name){
+GtkListBoxRow* get_list_item_by_name(GtkListBox *listbox, const char *name){
     const char *widget_name;
     GtkWidget *item;
     GList *row = gtk_container_get_children(GTK_CONTAINER(listbox));

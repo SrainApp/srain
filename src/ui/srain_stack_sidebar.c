@@ -237,3 +237,55 @@ void srain_stack_sidebar_update(SrainStackSidebar *sidebar, SrainChan *chan, con
         srain_stack_sidebar_item_count_inc(item);
     }
 }
+
+void srain_stack_sidebar_prev(SrainStackSidebar *sidebar){
+    GList *rows;
+    GtkListBoxRow *tail, *cur_row;
+
+    cur_row = gtk_list_box_get_selected_row(sidebar->list);
+
+    rows = gtk_container_get_children(GTK_CONTAINER(sidebar->list));
+
+    while (rows){
+        if (rows->data == cur_row){
+            if (rows->prev){
+                gtk_list_box_select_row(sidebar->list,
+                        GTK_LIST_BOX_ROW(rows->prev->data));
+            } else {
+                while (rows->next){
+                    rows = rows->next;
+                }
+                tail = rows->data;
+                gtk_list_box_select_row(sidebar->list,
+                        GTK_LIST_BOX_ROW(tail));
+                return;
+            }
+        }
+        rows = rows->next;
+    }
+}
+
+void srain_stack_sidebar_next(SrainStackSidebar *sidebar){
+    GList *rows;
+    GtkListBoxRow *head, *cur_row;
+
+    cur_row = gtk_list_box_get_selected_row(sidebar->list);
+
+    rows = gtk_container_get_children(GTK_CONTAINER(sidebar->list));
+    if (rows){
+        head = GTK_LIST_BOX_ROW(rows->data);
+    }
+
+    while (rows){
+        if (rows->data == cur_row){
+            if (rows->next){
+                gtk_list_box_select_row(sidebar->list,
+                        GTK_LIST_BOX_ROW(rows->next->data));
+            } else {
+                gtk_list_box_select_row(sidebar->list,
+                        GTK_LIST_BOX_ROW(head));
+            }
+        }
+        rows = rows->next;
+    }
+}

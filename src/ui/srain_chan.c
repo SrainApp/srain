@@ -44,6 +44,26 @@ struct _SrainChanClass {
 
 G_DEFINE_TYPE(SrainChan, srain_chan, GTK_TYPE_BOX);
 
+static void srain_chan_scroll_up(SrainChan *chan){
+    GtkAdjustment *adj;
+
+    adj = gtk_scrolled_window_get_vadjustment(chan->msg_scrolledwindow);
+    gtk_adjustment_set_value(adj, gtk_adjustment_get_value(adj) - 30);
+    gtk_scrolled_window_set_vadjustment(chan->msg_scrolledwindow, adj);
+
+    while (gtk_events_pending()) gtk_main_iteration();
+}
+
+static void srain_chan_scroll_down(SrainChan *chan){
+    GtkAdjustment *adj;
+
+    adj = gtk_scrolled_window_get_vadjustment(chan->msg_scrolledwindow);
+    gtk_adjustment_set_value(adj, gtk_adjustment_get_value(adj) + 30);
+    gtk_scrolled_window_set_vadjustment(chan->msg_scrolledwindow, adj);
+
+    while (gtk_events_pending()) gtk_main_iteration();
+}
+
 static gboolean scroll_to_bottom(SrainChan *chan){
     GtkAdjustment *adj;
 
@@ -55,6 +75,24 @@ static gboolean scroll_to_bottom(SrainChan *chan){
     while (gtk_events_pending()) gtk_main_iteration();
 
     return FALSE;
+}
+
+static gboolean entry_on_key_press(gpointer user_data, GdkEventKey *event){
+    SrainChan *chan;
+
+    chan = user_data;
+    switch (event->keyval){
+        case GDK_KEY_Down:
+            srain_chan_scroll_down(chan);
+            break;
+        case GDK_KEY_Up:
+            srain_chan_scroll_up(chan);
+            break;
+        default:
+            return FALSE;
+    }
+
+    return TRUE;
 }
 
 static void onlinelist_button_on_click(GtkWidget *widget, gpointer user_data){
@@ -121,7 +159,7 @@ ret:
     return;
 }
 
-static int msg_box_popup(GtkWidget *widget, GdkEventButton *event, gpointer *user_data){
+static gboolean msg_box_popup(GtkWidget *widget, GdkEventButton *event, gpointer *user_data){
     GtkMenu *menu;
 
     menu = GTK_MENU(user_data);
@@ -155,6 +193,8 @@ static void srain_chan_init(SrainChan *self){
     g_signal_connect_swapped(self->send_button, "clicked", G_CALLBACK(on_send), self);
     g_signal_connect(self->onlinelist_button, "clicked", G_CALLBACK(onlinelist_button_on_click), self->onlinelist_revealer);
     g_signal_connect(self->onlinelist_button, "clicked", G_CALLBACK(onlinelist_button_on_click), self->topic_revealer);
+
+    g_signal_connect_swapped(self->input_entry, "key_press_event", G_CALLBACK(entry_on_key_press), self);
 
     g_signal_connect(self->onlinelist_listbox, "button_press_event", G_CALLBACK(online_listbox_on_dbclick), NULL);
     g_signal_connect(self->msg_box, "button_press_event", G_CALLBACK(msg_box_popup), self->msg_menu);
@@ -307,10 +347,8 @@ void _srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id,
 }
 
 /* add a SrainRecvMsg into SrainChan, if its time is same to the last msg, combine them */
-void srain_chan_recv_msg_add(SrainChan *chan,
-                             const char *nick,
-                             const char *id,
-                             const char *msg){
+void srain_chan_recv_msg_add(SrainChan *chan, const char *nick,
+        const char *id, const char *msg){
     char timestr[32];
     const char *old_timestr;
     const char *old_nick;

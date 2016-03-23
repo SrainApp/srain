@@ -38,5 +38,7 @@ SrainStackSidebar* srain_stack_sidebar_new();
 void srain_stack_sidebar_set_stack(SrainStackSidebar *sidebar, GtkStack *stack);
 GtkStack *srain_stack_sidebar_get_stack(SrainStackSidebar *sidebar);
 void srain_stack_sidebar_update(SrainStackSidebar *sidebar, SrainChan *chan, const char *nick, const char *msg, int is_visible);
+void srain_stack_sidebar_prev(SrainStackSidebar *sidebar);
+void srain_stack_sidebar_next(SrainStackSidebar *sidebar);
 
 #endif /* __SRAIN_STACK_SIDEBAR_H__ */
