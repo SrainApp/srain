@@ -14,7 +14,7 @@
 #include <string.h>
 #include "log.h"
 #include "srain.h"
-#include "srain_magic.h"
+#include "meta.h"
 
 int config_read(){
     FILE *fp;
@@ -31,7 +31,7 @@ int config_read(){
         if (line){
             strtok(line, "\n");
             LOG_FR("read: %s", line);
-            srain_cmd(SERVER, line);
+            srain_cmd(META_SERVER, line);
         }
     }
 

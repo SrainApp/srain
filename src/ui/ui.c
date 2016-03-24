@@ -1,18 +1,34 @@
 /**
  * @file ui.c
- * @brief UI module interface
+ * @brief UI module's interface
  * @author LastAvengers <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-03-01
+ *
+ * this file offter some funcions to control/update
+ * UI, you must invoke ui_init() firstly to get it knows
+ * which SrainWindow to control.
+ *
+ * other module control UI module via this file, DO NOT
+ * call any funcion in ui/xxx.c directly (of course apart
+ * from this file)
+ *
+ * most UI operations return nothing and DO NO deal
+ * with any exception, so functions in this file do it.
+ *
  */
+
+#define __LOG_ON
 
 #include <gtk/gtk.h>
 #include <string.h>
+#include "meta.h"
 #include "ui.h"
 #include "srain_window.h"
 #include "srain_chan.h"
 #include "srain_msg.h"
 #include "srain_stack_sidebar.h"
+#include "log.h"
 
 SrainWindow *win;
 
@@ -93,13 +109,24 @@ const char* ui_chan_get_cur_name(){
     return NULL;
 }
 
+ /* if `chan_name` doesn't exist, send this msg to current SrainChan */
 void ui_msg_sys(const char *chan_name, sys_msg_type_t type, const char *msg){
     SrainChan *chan;
 
+    LOG_FR("chan_name %s msg %s", chan_name, msg);
+
     chan = srain_window_get_chan_by_name(win, chan_name);
-    if (chan){
-        srain_chan_sys_msg_add(chan, type, msg);
+    if (!chan){
+        ERR_FR("no such chan %s", chan_name);
+        chan = srain_window_get_cur_chan(win);
+        if (!chan) {
+            ERR_FR("no current chan");
+            return;
+        }
     }
+
+    srain_chan_sys_msg_add(chan, type, msg);
+
     if (type == SYS_MSG_ACTION){
         srain_window_stack_sidebar_update(win, chan, "", msg);
     }
@@ -146,15 +173,21 @@ void ui_msg_send(const char *chan_name, const char *msg){
     }
 }
 
+ /* if `chan_name` doesn't exist, send this msg to a
+ * special SrainChan named `META_SERVER`
+ */
 void ui_msg_recv(const char *chan_name, const char *nick, const char *id,
         const char *msg){
     SrainChan *chan;
 
     chan = srain_window_get_chan_by_name(win, chan_name);
-    if (chan){
-        srain_chan_recv_msg_add(chan, nick, id, msg);
-        srain_window_stack_sidebar_update(win, chan, nick, msg);
+    if (!chan){
+        ERR_FR("no such chan %s", chan_name);
+        chan = srain_window_get_chan_by_name(win, META_SERVER);
     }
+
+    srain_chan_recv_msg_add(chan, nick, id, msg);
+    srain_window_stack_sidebar_update(win, chan, nick, msg);
 }
 
 void ui_msg_recv_broadcast(GList *chans, const char *nick, const char *id,

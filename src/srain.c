@@ -16,11 +16,11 @@
 
 #include <string.h>
 #include <gtk/gtk.h>
+#include "meta.h"
 #include "i18n.h"
 #include "irc.h"
 #include "irc_magic.h"
 #include "ui.h"
-#include "srain_magic.h"
 #include "srain_window.h"
 #include "srain_msg.h"
 #include "log.h"
@@ -40,40 +40,6 @@ enum {
     SRAIN_LOGINED
 } stat = SRAIN_UNCONNECTED;
 
-/* strip unprintable char and irc color code */
-static void strip(char *str){
-    int i;
-    int j;
-    int len;
-
-    j = 0;
-    len = strlen(str);
-
-    for (i = 0; i < len; i++){
-        switch (str[i]){
-            case 2:
-            case 0xf:
-            case 0x16:
-            case 0x1d:
-            case 0x1f:
-                break;
-            case 3:  // irc color code
-                if (str[i+1] >= '0' && str[i+1] <= '9'){
-                    if (str[i+2] >= '0' && str[i+2] <= '9'){
-                        i += 2;
-                    } else {
-                        i += 1;
-                    }
-                }
-                break;
-            default:
-                str[j++] = str[i];
-        }
-    }
-
-    str[j] = '\0';
-}
-
 void srain_recv();
 void _srain_connect(const char *server){
     if (stat != SRAIN_UNCONNECTED){
@@ -92,15 +58,15 @@ int srain_connect(const char *server){
 
     if (!thread) {
         thread = g_thread_new(NULL, (GThreadFunc)_srain_connect, (char *)server);
-        ui_chan_set_topic(SERVER, _("connecting..."));
+        ui_chan_set_topic(META_SERVER, _("connecting..."));
 
         while (stat != SRAIN_CONNECTED)
             while (gtk_events_pending()) gtk_main_iteration();
 
-        ui_chan_set_topic(SERVER, server);
+        ui_chan_set_topic(META_SERVER, server);
         RET(0);
     } else {
-        ui_chan_set_topic(SERVER, _("connection failed"));
+        ui_chan_set_topic(META_SERVER, _("connection failed"));
         RET(-1);
     }
 }
@@ -137,7 +103,7 @@ int srain_join(const char *chan){
 int srain_part(const char *chan, const char *reason){
     ui_busy(TRUE);
 
-    if (!reason) reason = "Srain";
+    if (!reason) reason = "Srain"; // TODO: replace with version
 
     RET(irc_part_req(&irc, chan, reason));
 }
@@ -147,7 +113,6 @@ int srain_send(const char *chan, char *msg){
 
     LOG_FR("send message '%s' to %s", msg, chan);
 
-    strip(msg);
 
     ui_msg_send(chan, msg);
 
@@ -184,7 +149,6 @@ gboolean srain_idles(irc_msg_t *imsg){
             strncpy(imsg->message, tmp_msg, MSG_LEN);
         }
 
-        strip(imsg->message);
         memset(imsg->servername, 0, SERVER_LEN);
         filter_relaybot_trans(imsg);
 
@@ -194,13 +158,8 @@ gboolean srain_idles(irc_msg_t *imsg){
         }
 
         if (is_action){
-            if (strlen(imsg->message) > 0){
-                ui_msg_sysf(imsg->param[0], SYS_MSG_ACTION, "*** %s %s ***",
-                        imsg->servername, imsg->message);
-            } else {
-                ui_msg_sysf(imsg->param[0], SYS_MSG_ACTION, "*** %s %s ***",
-                        imsg->nick, imsg->message);
-            }
+            ui_msg_sysf(imsg->param[0], SYS_MSG_ACTION, "*** %s %s ***",
+                    strlen(imsg->nick) ? imsg->nick :imsg->servername, imsg->message);
         } else {
             ui_msg_recv(imsg->param[0], imsg->nick, imsg->servername, imsg->message);
         }
@@ -278,12 +237,18 @@ gboolean srain_idles(irc_msg_t *imsg){
     /* NOTICE */
     else if (strcmp(imsg->command, "NOTICE") == 0){
         if (imsg->nparam != 1) goto bad;
-        if (strcmp(imsg->param[0], "*") == 0)
-            ui_msg_recv_broadcast(irc.chans, imsg->servername,
-                    irc.server, imsg->message);
-        else
-            ui_msg_recv(imsg->param[0], imsg->servername,
-                    irc.server, imsg->message);
+        if (strcmp(imsg->param[0], "*") == 0) {
+            ui_msg_recv_broadcast(irc.chans,
+                    strlen(imsg->nick) ? imsg->nick : imsg->servername,
+                    "", imsg->message);
+        }
+        else if (strcmp(imsg->param[0], irc.nick) == 0) {
+            ui_msg_recv(META_SERVER, strlen(imsg->nick) ? imsg->nick : imsg->servername,
+                    "", imsg->message);
+        } else {
+            ui_msg_recv(imsg->param[0], strlen(imsg->nick) ? imsg->nick : imsg->servername,
+                    "", imsg->message);
+        }
     }
 
     /* MODE */
@@ -303,20 +268,31 @@ gboolean srain_idles(irc_msg_t *imsg){
                 g_string_append_printf(buf, "%s ", imsg->param[i++]);
             }
             ui_msg_sysf(imsg->param[0] ,SYS_MSG_NORMAL, "mode %s by %s",
-                    buf->str, strlen(imsg->nick) == 0
-                    ? imsg->servername
-                    : imsg->nick);
-
+                    buf->str, strlen(imsg->nick) ? imsg->nick : imsg->servername);
             g_string_free(buf, TRUE);
         }
-        goto bad;
+    }
+    else if (strcmp(imsg->command, RPL_CHANNELMODEIS) == 0){
+        if (imsg->nparam != 3) goto bad;
+        ui_msg_sysf(imsg->param[1], SYS_MSG_NORMAL, "mode %s %s by %s",
+           imsg->param[1], imsg->param[2],
+           strlen(imsg->nick) ? imsg->nick : imsg->servername);
+    }
+    else if (strcmp(imsg->command, RPL_UMODEIS) == 0){
+        if (imsg->nparam != 2) goto bad;
+        ui_msg_sysf(NULL, SYS_MSG_NORMAL, "mode %s %s by %s",
+           imsg->param[0], imsg->param[1],
+           strlen(imsg->nick) ? imsg->nick : imsg->servername);
     }
 
     /* WHOIS TODO */
     else if (strcmp(imsg->command, RPL_WHOISUSER) == 0
             || strcmp(imsg->command, RPL_WHOISCHANNELS) == 0
             || strcmp(imsg->command, RPL_WHOISSERVER) == 0
-            // || strcmp(imsg->command, RPL_WHOISIDLE) == 0
+            || strcmp(imsg->command, RPL_WHOISIDLE) == 0
+            || strcmp(imsg->command, "378") == 0
+            || strcmp(imsg->command, "330") == 0
+            || strcmp(imsg->command, "671") == 0
             || strcmp(imsg->command, RPL_ENDOFWHOIS) == 0){
         static GString *whois_buf = NULL;
 
@@ -349,7 +325,23 @@ gboolean srain_idles(irc_msg_t *imsg){
                 g_string_append_printf(whois_buf, "%s is attacht to %s at \"%s\"\n",
                         imsg->param[1], imsg->param[2], imsg->message);
             }
-            /* last whois message */
+            else if (strcmp(imsg->command, RPL_WHOISIDLE) == 0){
+                if (imsg->nparam != 4) goto bad;
+                g_string_append_printf(whois_buf, "%s is idle for %s seconds since %s\n",
+                        imsg->param[1], imsg->param[2], imsg->param[3]);
+            }
+            else if (strcmp(imsg->command, "330") == 0){
+                if (imsg->nparam != 3) goto bad;
+                g_string_append_printf(whois_buf, "%s %s %s\n",
+                        imsg->param[1], imsg->message, imsg->param[2]);
+            }
+            else if (strcmp(imsg->command, "378") == 0
+                    || strcmp(imsg->command, "671") == 0){
+                if (imsg->nparam != 2) goto bad;
+                g_string_append_printf(whois_buf, "%s %s\n",
+                        imsg->param[1], imsg->message);
+            }
+            /* end of whois message */
             else if (strcmp(imsg->command, RPL_ENDOFWHOIS) == 0){
                 g_string_append(whois_buf, imsg->message);
                 ui_msg_sys(NULL, SYS_MSG_NORMAL, whois_buf->str);
@@ -375,7 +367,9 @@ gboolean srain_idles(irc_msg_t *imsg){
             || strcmp(imsg->command, RPL_LUSERCLIENT) == 0
             || strcmp(imsg->command, RPL_LUSERME) == 0
             || strcmp(imsg->command, RPL_ADMINME) == 0
-            // 266, 250, 265 
+            || strcmp(imsg->command, "250") == 0
+            || strcmp(imsg->command, "265") == 0
+            || strcmp(imsg->command, "266") == 0
             ){
         /* regard a server message as a PRVIMSG message
          * let nick = servername
@@ -387,9 +381,8 @@ gboolean srain_idles(irc_msg_t *imsg){
         while (i < imsg->nparam){
             g_string_append_printf(buf, "%s ", imsg->param[i++]);
         }
-        strip(imsg->message);
         buf = g_string_append(buf, imsg->message);
-        ui_msg_recv(SERVER, imsg->servername, irc.server, buf->str);
+        ui_msg_recv(META_SERVER, imsg->servername, irc.server, buf->str);
         g_string_free(buf, TRUE);
     }
 
@@ -399,7 +392,8 @@ gboolean srain_idles(irc_msg_t *imsg){
     }
 
     /* RPL_ERROR */
-    else if (imsg->command[0] == '4'){
+    else if (imsg->command[0] == '4'
+            || imsg->command[0] == '5'){
         ui_msg_sysf(NULL, SYS_MSG_ERROR, "ERROR [%s]: %s", imsg->command, imsg->message);
         ERR_FR("error message:");
         goto bad;
@@ -462,11 +456,13 @@ void srain_close(){
 }
 
 int srain_cmd(const char *chan, char *cmd){
-    /* TODO
-     * help
-     * names
-     * */
-    if (strncmp(cmd, "/connect ", 9) == 0){
+    if (strncmp(cmd, "/help", 5) == 0){
+        static char help[] = META_CMD_HELP;
+
+        ui_msg_sys(NULL, SYS_MSG_NORMAL, help);
+        return 0;
+    }
+    else if (strncmp(cmd, "/connect ", 9) == 0){
         char *server = strtok(cmd + 9, " ");
         if (server) return srain_connect(server);
     }
@@ -555,7 +551,8 @@ int srain_cmd(const char *chan, char *cmd){
     else if (strncmp(cmd, "/mode ", 6) == 0){
         char *target = strtok(cmd + 6, " ");
         char *mode = strtok(NULL, "");
-        if (target && mode){
+        if (target){
+            if (mode == NULL) mode = "";
             return irc_mode(&irc, target, mode);
         }
     } else {

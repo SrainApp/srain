@@ -6,11 +6,11 @@
  * @date 2016-03-10
  */
 
-#define __LOG_ON
+// #define __LOG_ON
 
 #include <string.h>
 #include <glib.h>
-#include "srain_magic.h"
+#include "meta.h"
 #include "irc.h"
 #include "log.h"
 

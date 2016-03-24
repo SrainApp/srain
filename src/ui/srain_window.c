@@ -168,25 +168,24 @@ int srain_window_rm_chan(SrainWindow *win, const char *name){
 }
 
 SrainChan *srain_window_get_cur_chan(SrainWindow *win){
-    SrainChan *chan;
+    SrainChan *chan = NULL;
 
     chan = SRAIN_CHAN(gtk_stack_get_visible_child(win->stack));
 
-    if (chan) return chan;
-    ERR_FR("no visible chan");
-    return NULL;
+    if (!chan) ERR_FR("no visible chan");
+
+    return chan;
 }
 
 SrainChan *srain_window_get_chan_by_name(SrainWindow *win, const char *name){
-    SrainChan *chan;
+    SrainChan *chan = NULL;
 
     if (name)
         chan = SRAIN_CHAN(gtk_stack_get_child_by_name(win->stack, name));
     else
         chan = srain_window_get_cur_chan(win);
 
-    if (chan) return chan;
-    return NULL;
+    return chan;
 }
 
 void srain_window_spinner_toggle(SrainWindow *win, gboolean is_busy){

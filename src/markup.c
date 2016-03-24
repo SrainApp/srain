@@ -13,7 +13,7 @@
 #include <regex.h>
 #include <string.h>
 #include <glib.h>
-#include "srain_magic.h"
+#include "irc_magic.h"
 #include "log.h"
 
 #define MAX_ERROR_MSG 0x1000
