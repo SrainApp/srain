@@ -2,6 +2,12 @@
 <!-- Generated with glade 3.19.0 -->
 <interface>
   <requires lib="gtk+" version="3.16"/>
+  <object class="GtkEntryCompletion" id="entrycompletion">
+    <property name="text_column">0</property>
+    <property name="popup_completion">False</property>
+    <property name="popup_set_width">False</property>
+    <property name="popup_single_match">False</property>
+  </object>
   <object class="GtkMenu" id="msg_menu">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -243,6 +249,7 @@
             <property name="margin_top">2</property>
             <property name="margin_bottom">2</property>
             <property name="shadow_type">none</property>
+            <property name="completion">entrycompletion</property>
           </object>
           <packing>
             <property name="expand">True</property>

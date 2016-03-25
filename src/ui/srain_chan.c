@@ -6,7 +6,7 @@
  * @date 2016-03-01
  */
 
-// #define __LOG_ON
+#define __LOG_ON
 
 #include <gtk/gtk.h>
 #include <assert.h>
@@ -35,6 +35,8 @@ struct _SrainChan {
     GtkListBox *onlinelist_listbox;
     GtkButton *send_button;
     GtkEntry *input_entry;
+    GtkEntryCompletion *entrycompletion;
+    GtkListStore *completion_list;
     GtkWidget *last_msg;
 };
 
@@ -77,6 +79,53 @@ static gboolean scroll_to_bottom(SrainChan *chan){
     return FALSE;
 }
 
+/* Creates a tree model containing the completions */
+void completion_list_add(GtkListStore *store, const char *word){
+  GtkTreeIter iter;
+
+  gtk_list_store_append(store, &iter);
+  gtk_list_store_set(store, &iter, 0, word, -1);
+}
+
+static void entry_auto_completion(GtkEntry *entry){
+    int cur_pos;
+    const char *word_ptr;
+    const char *text;
+    const char *word;
+    const char *prefix;
+    GtkEntryBuffer *buf;
+    GtkEntryCompletion *comp;
+
+    comp = gtk_entry_get_completion(entry);
+    buf = gtk_entry_get_buffer(entry);
+    text = gtk_entry_get_text(entry);
+
+    cur_pos = gtk_editable_get_position(GTK_EDITABLE(entry));
+    LOG_FR("current position %d", cur_pos);
+    word_ptr = text + cur_pos;
+
+    while (word_ptr > text){
+        word_ptr = g_utf8_prev_char(word_ptr);
+        if (*word_ptr == ' '){
+            word_ptr++;
+            break;
+        }
+    }
+    word = strndup(word_ptr, text + cur_pos - word_ptr);
+    LOG_FR("word '%s'", word);
+    // TODO: 中文处理有问题
+
+    prefix = gtk_entry_completion_compute_prefix(comp, word);
+    LOG_FR("prefix '%s'", prefix);
+    if (prefix) {
+        gtk_entry_buffer_insert_text(buf, cur_pos, prefix + strlen(word), -1);
+        gtk_editable_set_position(GTK_EDITABLE(entry),
+                cur_pos + strlen(prefix) - strlen(word));
+        gtk_editable_select_region(GTK_EDITABLE(entry),
+                cur_pos, cur_pos + strlen(prefix) - strlen(word));
+    }
+}
+
 static gboolean entry_on_key_press(gpointer user_data, GdkEventKey *event){
     SrainChan *chan;
 
@@ -88,6 +137,14 @@ static gboolean entry_on_key_press(gpointer user_data, GdkEventKey *event){
         case GDK_KEY_Up:
             srain_chan_scroll_up(chan);
             break;
+        case GDK_KEY_Tab:
+            entry_auto_completion(chan->input_entry);
+            break;
+        case GDK_KEY_n:
+            if (event->state & GDK_CONTROL_MASK){
+                entry_auto_completion(chan->input_entry);
+                break;
+            }
         default:
             return FALSE;
     }
@@ -159,18 +216,21 @@ ret:
     return;
 }
 
-static gboolean msg_box_popup(GtkWidget *widget, GdkEventButton *event, gpointer *user_data){
+static gboolean msg_box_popup(GtkWidget *widget,
+        GdkEventButton *event, gpointer *user_data){
     GtkMenu *menu;
 
     menu = GTK_MENU(user_data);
     if (event->button == 3){
-        gtk_menu_popup(menu, NULL, NULL, NULL, NULL, event->button, event->time);
+        gtk_menu_popup(menu, NULL, NULL, NULL, NULL,
+                event->button, event->time);
         return TRUE;
     }
     return FALSE;
 }
 
-static void srain_chan_sys_msg_addf(SrainChan *chan, sys_msg_type_t type, const char *fmt, ...){
+static void srain_chan_sys_msg_addf(SrainChan *chan,
+        sys_msg_type_t type, const char *fmt, ...){
     char msg[512];
     va_list args;
 
@@ -185,19 +245,32 @@ static void srain_chan_sys_msg_addf(SrainChan *chan, sys_msg_type_t type, const 
 
 static void srain_chan_init(SrainChan *self){
     gtk_widget_init_template(GTK_WIDGET(self));
+    self->completion_list = gtk_list_store_new(1, G_TYPE_STRING);
 
     self->last_msg = NULL;
     theme_apply(GTK_WIDGET(self->msg_menu));
 
-    g_signal_connect_swapped(self->input_entry, "activate", G_CALLBACK(on_send), self);
-    g_signal_connect_swapped(self->send_button, "clicked", G_CALLBACK(on_send), self);
-    g_signal_connect(self->onlinelist_button, "clicked", G_CALLBACK(onlinelist_button_on_click), self->onlinelist_revealer);
-    g_signal_connect(self->onlinelist_button, "clicked", G_CALLBACK(onlinelist_button_on_click), self->topic_revealer);
+    g_signal_connect_swapped(self->input_entry, "activate",
+            G_CALLBACK(on_send), self);
+    g_signal_connect_swapped(self->send_button, "clicked",
+            G_CALLBACK(on_send), self);
+    g_signal_connect(self->onlinelist_button, "clicked",
+            G_CALLBACK(onlinelist_button_on_click), self->onlinelist_revealer);
+    g_signal_connect(self->onlinelist_button, "clicked",
+            G_CALLBACK(onlinelist_button_on_click), self->topic_revealer);
+    g_signal_connect_swapped(self->input_entry, "key_press_event",
+            G_CALLBACK(entry_on_key_press), self);
+    g_signal_connect(self->onlinelist_listbox, "button_press_event",
+            G_CALLBACK(online_listbox_on_dbclick), NULL);
+    g_signal_connect(self->msg_box, "button_press_event",
+            G_CALLBACK(msg_box_popup), self->msg_menu);
 
-    g_signal_connect_swapped(self->input_entry, "key_press_event", G_CALLBACK(entry_on_key_press), self);
-
-    g_signal_connect(self->onlinelist_listbox, "button_press_event", G_CALLBACK(online_listbox_on_dbclick), NULL);
-    g_signal_connect(self->msg_box, "button_press_event", G_CALLBACK(msg_box_popup), self->msg_menu);
+    /* Create a tree model and use it as the completion model */
+    gtk_entry_completion_set_model (self->entrycompletion,
+            GTK_TREE_MODEL(self->completion_list));
+    gtk_entry_completion_complete(self->entrycompletion);
+    /* Use model column 0 as the text column */
+    gtk_entry_completion_set_text_column (self->entrycompletion, 0);
 }
 
 static void srain_chan_class_init(SrainChanClass *class){
@@ -215,6 +288,7 @@ static void srain_chan_class_init(SrainChanClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, onlinelist_listbox);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, send_button);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, input_entry);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, entrycompletion);
 }
 
 SrainChan* srain_chan_new(const char *name){
@@ -269,6 +343,8 @@ void srain_chan_online_list_add(SrainChan *chan, const char *name, int is_init){
     theme_apply(GTK_WIDGET(chan->onlinelist_listbox));
 
     gtk_widget_show_all(GTK_WIDGET(row));
+
+    completion_list_add(chan->completion_list, name);
 
     if (!is_init)
         srain_chan_sys_msg_addf(chan, SYS_MSG_NORMAL, "%s has joined %s", name, chan_name);
