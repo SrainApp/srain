@@ -103,7 +103,7 @@ int srain_join(const char *chan){
 int srain_part(const char *chan, const char *reason){
     ui_busy(TRUE);
 
-    if (!reason) reason = "Srain"; // TODO: replace with version
+    if (!reason) reason = META_NAME_VERSION;
 
     RET(irc_part_req(&irc, chan, reason));
 }
@@ -450,8 +450,8 @@ void srain_recv(){
 }
 
 void srain_close(){
+    irc_quit_req(&irc, META_NAME_VERSION);
     gtk_main_quit();
-    irc_quit_req(&irc, "EL PSY CONGRO");
     irc_close(&irc);
 }
 

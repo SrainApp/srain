@@ -3,7 +3,7 @@
 
 #define META_NAME           "Srain"
 #define META_VERSION        "0.01"
-#define META_NAME_VSRSION   "Srain 0.01"
+#define META_NAME_VERSION   "Srain 0.01"
 #define META_DESC           "It does not look like a IRC client."
 #define META_AUTHOR         "LastAvengers <lastavengers@outlook.com>"
 #define META_WEBSITE        "https://github.com/LastAvenger/srain"

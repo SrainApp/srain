@@ -46,7 +46,7 @@ int irc_login(irc_t *irc, const char *nick){
 
     strncpy(irc->nick, nick, NICK_LEN);
 
-    return irc_core_reg(irc->fd, nick, "Srain", "EL PSY CONGRO");
+    return irc_core_reg(irc->fd, nick, META_NAME_VERSION, "EL PSY CONGRO");
 }
 
 // irc_quit: For closeing connection
