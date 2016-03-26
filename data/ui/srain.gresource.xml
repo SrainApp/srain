@@ -8,5 +8,6 @@
       <file preprocess="xml-stripblanks">recv_msg.glade</file>
       <file preprocess="xml-stripblanks">image_window.glade</file>
       <file preprocess="xml-stripblanks">stack_sidebar_item.glade</file>
+      <file preprocess="xml-stripblanks">about_box.glade</file>
   </gresource>
 </gresources>

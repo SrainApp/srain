@@ -5,10 +5,13 @@
 #define META_VERSION        "0.01"
 #define META_NAME_VERSION   "Srain 0.01"
 #define META_DESC           "It does not look like a IRC client."
-#define META_AUTHOR         "LastAvengers <lastavengers@outlook.com>"
+#define META_AUTHOR_NAME    "LastAvengers"
+#define META_AUTHOR_MAIL    "lastavengers@outlook.com"
 #define META_WEBSITE        "https://github.com/LastAvenger/srain"
 
 #define META_CMD_HELP {\
+    "Srain supports the following commands:\n"\
+    "\n"\
     "/connect <server>: connect to a IRC server\n"\
     "\te.g: /connect irc.freenode.net\n"\
     "\tnb: you can connect to one server in the same time.\n"\
@@ -37,10 +40,10 @@
 
 /* META_SERVER is a sepecial name repersents
  * the IRC server you connecting to */
-#define META_SERVER     "Server"
+#define META_SERVER     "Server "
 /* META_ABOUT is a sepecial name repersents
  * a About page */
 // TODO: About is a legal nickname :(
-#define META_ABOUT      "About"
+#define META_ABOUT      "About "
 
 #endif /* __META_H */

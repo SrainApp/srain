@@ -17,7 +17,9 @@
 #include "srain_window.h"
 #include "srain_chan.h"
 #include "srain_stack_sidebar.h"
+#include "srain_about_box.h"
 #include "tray_icon.h"
+#include "meta.h"
 #include "log.h"
 #include "config.h"
 
@@ -53,6 +55,22 @@ static gint sidebar_menu_popup(GtkWidget *widget, GdkEventButton *event, gpointe
 }
 
 static void about_button_on_click(GtkWidget *widget, gpointer user_data){
+    SrainWindow *win;
+    SrainAboutBox *about_box;
+
+    win = user_data;
+    if (srain_window_get_chan_by_name(win, META_ABOUT)){
+        ERR_FR("chan'%s' alread exist", META_ABOUT);
+        return;
+    }
+
+    about_box = srain_about_box_new();
+
+    gtk_stack_add_named(win->stack, GTK_WIDGET(about_box), META_ABOUT);
+    // gtk_container_child_set(GTK_CONTAINER(win->stack), GTK_WIDGET(chan), "title", name, NULL);
+    theme_apply(GTK_WIDGET(win));
+
+    gtk_stack_set_visible_child(win->stack, GTK_WIDGET(about_box));
 }
 
 static gboolean CTRL_J_K_on_press(GtkAccelGroup *group, GObject *obj, guint keyval,
