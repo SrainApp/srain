@@ -172,7 +172,7 @@ SrainChan *srain_window_get_cur_chan(SrainWindow *win){
 
     chan = SRAIN_CHAN(gtk_stack_get_visible_child(win->stack));
 
-    if (!chan) ERR_FR("no visible chan");
+    if (chan == NULL) ERR_FR("no visible chan");
 
     return chan;
 }

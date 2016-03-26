@@ -100,7 +100,7 @@ SrainStackSidebarItem #count_label {
 /* SrainChan */
 #msg_scrolledwindow GtkBox { background-color: transparent; }
 #msg_scrolledwindow GtkButton { padding: 4px; }
-#msg_scrolledwindow GtkButton:hover{ }
+#msg_scrolledwindow GtkButton:hover{ background-color: transparent; }
 #chan_box {
     /* background-image: url("./bg.jpg"); */
     /* background-color: @active_color; */
@@ -111,4 +111,10 @@ SrainStackSidebarItem #count_label {
 }
 #avatar_image { border-radius: 20px; }
 #onlinelist_listbox {  background-color: @bg_color; }
+/*
+#unread_label {
+    background-color: @bg_color; padding: 6px;
+    box-shadow: alpha(black, 0.2) 0px 2px;
+}
+*/
 /* }} */

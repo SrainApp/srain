@@ -38,6 +38,7 @@ struct _SrainChan {
     GtkEntryCompletion *entrycompletion;
     GtkListStore *completion_list;
     GtkWidget *last_msg;
+    // GtkLabel *unread_label;
 };
 
 struct _SrainChanClass {
@@ -68,18 +69,62 @@ static void srain_chan_scroll_down(SrainChan *chan){
 
 static gboolean scroll_to_bottom(SrainChan *chan){
     GtkAdjustment *adj;
+    double val;
+    double max_val;
 
     adj = gtk_scrolled_window_get_vadjustment(chan->msg_scrolledwindow);
     gtk_adjustment_set_value(adj, gtk_adjustment_get_upper(adj) -
             gtk_adjustment_get_page_size(adj));
     gtk_scrolled_window_set_vadjustment(chan->msg_scrolledwindow, adj);
 
-    while (gtk_events_pending()) gtk_main_iteration();
+    gtk_widget_queue_draw(GTK_WIDGET(chan));
+
+    adj = gtk_scrolled_window_get_vadjustment(chan->msg_scrolledwindow);
+    val = gtk_adjustment_get_value(adj);
+    max_val = gtk_adjustment_get_upper(adj) - gtk_adjustment_get_page_size(adj);
+    LOG_FR("cur val: %f, max val %f", val, max_val);
+
+    if (max_val - val > 10) {
+        LOG_FR("retry");
+        return TRUE;
+    }
 
     return FALSE;
 }
 
-/* Creates a tree model containing the completions */
+static int should_scroll_to_bottom(SrainChan *chan){
+    double val;
+    double max_val;
+    SrainWindow *win;
+    SrainChan *cur_chan;
+    GtkAdjustment *adj;
+
+    win = SRAIN_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(chan)));
+    cur_chan = srain_window_get_cur_chan(win);
+    adj = gtk_scrolled_window_get_vadjustment(chan->msg_scrolledwindow);
+
+    val = gtk_adjustment_get_value(adj);
+    max_val = gtk_adjustment_get_upper(adj) - gtk_adjustment_get_page_size(adj);
+    LOG_FR("cur val: %f, max val %f", val, max_val);
+
+    // if (gtk_window_is_active(GTK_WINDOW(win))
+    if (cur_chan == chan && max_val - val < 10){
+        LOG_FR("you should go to bottom!");
+        return 1;
+    }
+    /*
+       if (chan->unread_label == NULL){
+       chan->unread_label = GTK_LABEL(gtk_label_new("Unread messages"));
+       gtk_widget_set_name(GTK_WIDGET(chan->unread_label), "unread_label");
+       gtk_container_add(GTK_CONTAINER(chan->msg_box),
+       GTK_WIDGET(chan->unread_label));
+       gtk_widget_show(GTK_WIDGET(chan->unread_label));
+       }
+    */
+
+    return 0;
+}
+
 void completion_list_add(GtkListStore *store, const char *word){
   GtkTreeIter iter;
 
@@ -162,7 +207,8 @@ static void onlinelist_button_on_click(GtkWidget *widget, gpointer user_data){
     is_show = gtk_revealer_get_reveal_child(revealer);
 
     gtk_revealer_set_reveal_child(revealer, !is_show);
-    gtk_image_set_from_icon_name(image, !is_show ? "go-next":"go-previous", GTK_ICON_SIZE_BUTTON);
+    gtk_image_set_from_icon_name(image, !is_show ? "go-next":"go-previous",
+            GTK_ICON_SIZE_BUTTON);
 }
 
 static gint online_listbox_on_dbclick(GtkWidget *widget, GdkEventButton *event){
@@ -216,6 +262,7 @@ ret:
     return;
 }
 
+// TODO: NOT work now
 static gboolean msg_box_popup(GtkWidget *widget,
         GdkEventButton *event, gpointer *user_data){
     GtkMenu *menu;
@@ -384,9 +431,12 @@ void srain_chan_online_list_rename(SrainChan *chan, const char *old_name, const 
 }
 
 void srain_chan_sys_msg_add(SrainChan *chan, sys_msg_type_t type, const char *msg){
+    int to_bottom;
     SrainSysMsg *smsg;
 
     smsg = srain_sys_msg_new(type, msg);
+
+    to_bottom = (should_scroll_to_bottom(chan));
 
     gtk_container_add(GTK_CONTAINER(chan->msg_box), GTK_WIDGET(smsg));
     theme_apply(GTK_WIDGET(chan->msg_box));
@@ -394,7 +444,7 @@ void srain_chan_sys_msg_add(SrainChan *chan, sys_msg_type_t type, const char *ms
 
     chan->last_msg = GTK_WIDGET(smsg);
 
-    gdk_threads_add_idle((GSourceFunc)scroll_to_bottom, chan);
+    if (to_bottom) gdk_threads_add_idle((GSourceFunc)scroll_to_bottom, chan);
 }
 
 
@@ -425,6 +475,7 @@ void _srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id,
 /* add a SrainRecvMsg into SrainChan, if its time is same to the last msg, combine them */
 void srain_chan_recv_msg_add(SrainChan *chan, const char *nick,
         const char *id, const char *msg){
+    int to_bottom;
     char timestr[32];
     const char *old_timestr;
     const char *old_nick;
@@ -434,6 +485,8 @@ void srain_chan_recv_msg_add(SrainChan *chan, const char *nick,
     SrainRecvMsg *last_recv_msg;
 
     get_cur_time(timestr);
+
+    to_bottom = (should_scroll_to_bottom(chan));
 
     if (chan->last_msg && SRAIN_IS_RECV_MSG(chan->last_msg)){
         last_recv_msg = SRAIN_RECV_MSG(chan->last_msg);
@@ -462,10 +515,8 @@ void srain_chan_recv_msg_add(SrainChan *chan, const char *nick,
                 gtk_label_set_text(last_recv_msg->msg_label, new_msg->str);
             }
 
-            gtk_widget_queue_draw(GTK_WIDGET(last_recv_msg));
-
             g_string_free(new_msg, TRUE);
-            gdk_threads_add_idle((GSourceFunc)scroll_to_bottom, chan);
+            if (to_bottom) gdk_threads_add_idle((GSourceFunc)scroll_to_bottom, chan);
 
             return;
         }
@@ -473,7 +524,7 @@ void srain_chan_recv_msg_add(SrainChan *chan, const char *nick,
 
     _srain_chan_recv_msg_add(chan, nick, id, msg);
 
-    gdk_threads_add_idle((GSourceFunc)scroll_to_bottom, chan);
+    if (to_bottom) gdk_threads_add_idle((GSourceFunc)scroll_to_bottom, chan);
 }
 
 void srain_chan_fcous_entry(SrainChan *chan){
