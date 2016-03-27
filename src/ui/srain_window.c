@@ -34,6 +34,9 @@ struct _SrainWindow {
     GtkMenu *sidebar_menu;
     GtkStatusIcon *tray_icon;
     GtkMenu *tray_menu;
+
+    GtkPopover *about_popover;
+    GtkPopover *join_popover;
 };
 
 struct _SrainWindowClass {
@@ -56,21 +59,9 @@ static gint sidebar_menu_popup(GtkWidget *widget, GdkEventButton *event, gpointe
 
 static void about_button_on_click(GtkWidget *widget, gpointer user_data){
     SrainWindow *win;
-    SrainAboutBox *about_box;
 
     win = user_data;
-    if (srain_window_get_chan_by_name(win, META_ABOUT)){
-        ERR_FR("chan'%s' alread exist", META_ABOUT);
-        return;
-    }
-
-    about_box = srain_about_box_new();
-
-    gtk_stack_add_named(win->stack, GTK_WIDGET(about_box), META_ABOUT);
-    // gtk_container_child_set(GTK_CONTAINER(win->stack), GTK_WIDGET(chan), "title", name, NULL);
-    theme_apply(GTK_WIDGET(win));
-
-    gtk_stack_set_visible_child(win->stack, GTK_WIDGET(about_box));
+    gtk_widget_set_visible(GTK_WIDGET(win->about_popover), TRUE);
 }
 
 static gboolean CTRL_J_K_on_press(GtkAccelGroup *group, GObject *obj, guint keyval,
@@ -101,11 +92,20 @@ static void srain_window_init(SrainWindow *self){
     GClosure *closure_j;
     GClosure *closure_k;
     GtkAccelGroup *accel;
+    SrainAboutBox *about_box;
 
     gtk_widget_init_template(GTK_WIDGET(self));
 
-    gtk_window_set_title(GTK_WINDOW(self), "Srain");
+    /* about popover init */
+    about_box = srain_about_box_new();
+    self->about_popover = GTK_POPOVER(gtk_popover_new(GTK_WIDGET(self->about_button)));
 
+    gtk_popover_set_position(self->about_popover, GTK_POS_BOTTOM);
+    gtk_container_add(GTK_CONTAINER(self->about_popover), GTK_WIDGET(about_box));
+    gtk_container_set_border_width(GTK_CONTAINER(self->about_popover), 10);
+    gtk_widget_show(GTK_WIDGET(about_box));
+
+    /* stack sidebar init */
     self->sidebar = srain_stack_sidebar_new();
     gtk_widget_show(GTK_WIDGET(self->sidebar));
     gtk_box_pack_start(self->sidebar_box, GTK_WIDGET(self->sidebar), TRUE, TRUE, 0);
@@ -114,6 +114,7 @@ static void srain_window_init(SrainWindow *self){
     theme_apply(GTK_WIDGET(self));
     theme_apply(GTK_WIDGET(self->tray_menu));
     theme_apply(GTK_WIDGET(self->sidebar_menu));
+    theme_apply(GTK_WIDGET(self->about_popover));
 
     tray_icon_set_callback(self->tray_icon, self, self->tray_menu);
     g_signal_connect(self->sidebar, "button_press_event",
@@ -121,6 +122,7 @@ static void srain_window_init(SrainWindow *self){
     g_signal_connect(self->about_button, "clicked",
             G_CALLBACK(about_button_on_click), self);
 
+    /* shortcut <C-j> and <C-k> */
     accel = gtk_accel_group_new();
 
     closure_j = g_cclosure_new(G_CALLBACK(CTRL_J_K_on_press), self->sidebar, NULL);

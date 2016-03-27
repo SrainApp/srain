@@ -10,6 +10,14 @@ GtkButton { background-color: @bg_color; padding: 8px; }
 GtkButton:hover{ background-color: @hover_color; transition: 200ms ease-in-out; }
 GtkButton:active{ background-color: @active_color; transition: 200ms ease-in-out; }
 
+GtkPopover {
+    padding: 2px;
+    border: 1px solid #bdc3c7;
+    border-radius: 2px;
+    background-color: @bg_color;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
+}
+
 GtkSeparator.horizontal {
     border: 1px solid @gray_color;
     -GtkWidget-wide-separators: true;

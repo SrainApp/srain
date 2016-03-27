@@ -10,6 +10,6 @@ typedef struct _SrainAboutBox SrainAboutBox;
 typedef struct _SrainAboutBoxClass SrainAboutBoxClass;
 
 GType srain_about_box_get_type(void);
-SrainAboutBox *srain_about_box_new(void);
+SrainAboutBox* srain_about_box_new(void);
 
 #endif /* __SRAIN_ABOUT_BOX_H */

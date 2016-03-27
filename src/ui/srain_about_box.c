@@ -16,7 +16,6 @@ struct _SrainAboutBox {
     GtkBox parent;
     GtkLabel *title_label;
     GtkLabel *content_label;
-    GtkButton *close_button;
 };
 
 struct _SrainAboutBoxClass {
@@ -49,14 +48,13 @@ static void srain_about_box_init(SrainAboutBox *self){
     tmp = g_string_new(NULL);
 
     g_string_printf(tmp,
-            "\n%s\n\n%s &lt;<a href=\"mailto://%s\">%s</a>&gt;\n<a href=\"%s\">%s</a>\n",
+            "\n%s\n\n%s &lt;\
+<span foreground=\"blue\"><a href=\"mailto://%s\">%s</a></span>&gt;\n\
+<span foreground=\"blue\"><a href=\"%s\">%s</a></span>\n",
             META_DESC, META_AUTHOR_NAME,
             META_AUTHOR_MAIL, META_AUTHOR_MAIL,
             META_WEBSITE, META_WEBSITE);
     gtk_label_set_markup(self->content_label, tmp->str);
-
-    g_signal_connect(self->close_button, "clicked",
-            G_CALLBACK(close_button_on_click), self);
 
     g_string_free(tmp, TRUE);
 }
@@ -66,7 +64,6 @@ static void srain_about_box_class_init(SrainAboutBoxClass *class){
             "/org/gtk/srain/about_box.glade");
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainAboutBox, title_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainAboutBox, content_label);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainAboutBox, close_button); 
 }
 
 SrainAboutBox* srain_about_box_new(void){
