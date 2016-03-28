@@ -133,25 +133,6 @@
       </object>
     </child>
   </template>
-  <object class="GtkMenu" id="sidebar_menu">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <child>
-      <object class="GtkMenuItem" id="info_item">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label" translatable="yes">View channel info</property>
-        <property name="use_underline">True</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="leave_menuitem">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Leave channel</property>
-      </object>
-    </child>
-  </object>
   <object class="GtkStatusIcon" id="tray_icon">
     <property name="icon_name">gtk3-demo</property>
     <property name="has_tooltip">True</property>

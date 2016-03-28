@@ -31,7 +31,6 @@ struct _SrainWindow {
     GtkBox *sidebar_box;
     SrainStackSidebar *sidebar;
     GtkStack *stack;
-    GtkMenu *sidebar_menu;
     GtkStatusIcon *tray_icon;
     GtkMenu *tray_menu;
 
@@ -44,18 +43,6 @@ struct _SrainWindowClass {
 };
 
 G_DEFINE_TYPE(SrainWindow, srain_window, GTK_TYPE_APPLICATION_WINDOW);
-
-static gint sidebar_menu_popup(GtkWidget *widget, GdkEventButton *event, gpointer *user_data){
-  GtkMenu *menu;
-
-  menu = GTK_MENU(user_data);
-
-  if (event->button == 3){
-      gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL, event->button, event->time);
-      return TRUE;
-  }
-  return FALSE;
-}
 
 static void about_button_on_click(GtkWidget *widget, gpointer user_data){
     SrainWindow *win;
@@ -98,12 +85,8 @@ static void srain_window_init(SrainWindow *self){
 
     /* about popover init */
     about_box = srain_about_box_new();
-    self->about_popover = GTK_POPOVER(gtk_popover_new(GTK_WIDGET(self->about_button)));
-
-    gtk_popover_set_position(self->about_popover, GTK_POS_BOTTOM);
-    gtk_container_add(GTK_CONTAINER(self->about_popover), GTK_WIDGET(about_box));
-    gtk_container_set_border_width(GTK_CONTAINER(self->about_popover), 10);
-    gtk_widget_show(GTK_WIDGET(about_box));
+    self->about_popover = create_popover(GTK_WIDGET(self->about_button),
+            GTK_WIDGET(about_box), GTK_POS_BOTTOM);
 
     /* stack sidebar init */
     self->sidebar = srain_stack_sidebar_new();
@@ -113,12 +96,9 @@ static void srain_window_init(SrainWindow *self){
 
     theme_apply(GTK_WIDGET(self));
     theme_apply(GTK_WIDGET(self->tray_menu));
-    theme_apply(GTK_WIDGET(self->sidebar_menu));
     theme_apply(GTK_WIDGET(self->about_popover));
 
     tray_icon_set_callback(self->tray_icon, self, self->tray_menu);
-    g_signal_connect(self->sidebar, "button_press_event",
-            G_CALLBACK(sidebar_menu_popup), self->sidebar_menu);
     g_signal_connect(self->about_button, "clicked",
             G_CALLBACK(about_button_on_click), self);
 
@@ -149,7 +129,6 @@ static void srain_window_class_init(SrainWindowClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, tray_icon);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, tray_menu);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, sidebar_box);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, sidebar_menu);
 }
 
 SrainWindow* srain_window_new(SrainApp *app){

@@ -26,10 +26,61 @@
       </object>
     </child>
   </object>
-  <object class="GtkImage" id="onlinelist_button_image">
+  <object class="GtkBox" id="option_box">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="icon_name">go-previous</property>
+    <property name="orientation">vertical</property>
+    <property name="spacing">4</property>
+    <child>
+      <object class="GtkToggleButton" id="show_topic_togglebutton">
+        <property name="label" translatable="yes">show topic</property>
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">True</property>
+        <property name="relief">none</property>
+        <property name="focus_on_click">False</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToggleButton" id="show_onlinelist_togglebutton">
+        <property name="label" translatable="yes">show onlinelist</property>
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">True</property>
+        <property name="relief">none</property>
+        <property name="focus_on_click">False</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">1</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkButton" id="leave_button">
+        <property name="label" translatable="yes">leave</property>
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">True</property>
+        <property name="relief">none</property>
+        <property name="focus_on_click">False</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">2</property>
+      </packing>
+    </child>
+  </object>
+  <object class="GtkImage" id="option_button_image">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="icon_name">preferences-other</property>
   </object>
   <object class="GtkImage" id="send_buton_image">
     <property name="visible">True</property>
@@ -101,11 +152,11 @@
           </packing>
         </child>
         <child>
-          <object class="GtkButton" id="onlinelist_button">
+          <object class="GtkButton" id="option_button">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <property name="image">onlinelist_button_image</property>
+            <property name="image">option_button_image</property>
             <property name="relief">none</property>
             <property name="focus_on_click">False</property>
             <property name="xalign">0.47999998927116394</property>

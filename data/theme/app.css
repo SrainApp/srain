@@ -7,8 +7,9 @@ GtkWindow, GtkBox { background-color: @bg_color; }
 
 GtkButton * { background-color: transparent; }
 GtkButton { background-color: @bg_color; padding: 8px; }
-GtkButton:hover{ background-color: @hover_color; transition: 200ms ease-in-out; }
-GtkButton:active{ background-color: @active_color; transition: 200ms ease-in-out; }
+GtkButton:hover { background-color: @hover_color; transition: 200ms ease-in-out; }
+GtkButton:active { background-color: @active_color; transition: 200ms ease-in-out; }
+GtkToggleButton:checked { background-color: @hover_color; transition: 200ms ease-in-out; }
 
 GtkPopover {
     padding: 2px;

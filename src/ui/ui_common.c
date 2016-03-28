@@ -46,3 +46,16 @@ GtkListBoxRow* get_list_item_by_name(GtkListBox *listbox, const char *name){
     }
     return NULL;
 }
+
+GtkPopover* create_popover(GtkWidget *parent, GtkWidget *child, GtkPositionType pos){
+    GtkPopover *popover;
+
+    popover = GTK_POPOVER(gtk_popover_new(GTK_WIDGET(parent)));
+
+    gtk_popover_set_position(popover, pos);
+    gtk_container_add(GTK_CONTAINER(popover), GTK_WIDGET(child));
+    gtk_container_set_border_width(GTK_CONTAINER(popover), 10);
+    gtk_widget_show(child);
+
+    return popover;
+}
