@@ -64,7 +64,7 @@ int irc_join_req(irc_t *irc, const char *chan){
     tmp = irc->chans;
     while (tmp){
         if (strncmp(tmp->data, chan, CHAN_LEN) == 0){
-            ERR_FR("channel already exist");
+            ERR_FR("channel '%s' already exist", chan);
             return -1;
         }
         tmp = tmp->next;
@@ -84,7 +84,7 @@ int irc_part_req(irc_t *irc, const char *chan, const char *reason){
         tmp = tmp->next;
     }
 
-    ERR_FR("no such channel");
+    ERR_FR("no such channel '%s'", chan);
     return -1;
 }
 

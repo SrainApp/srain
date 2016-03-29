@@ -54,7 +54,7 @@ GtkPopover* create_popover(GtkWidget *parent, GtkWidget *child, GtkPositionType 
 
     gtk_popover_set_position(popover, pos);
     gtk_container_add(GTK_CONTAINER(popover), GTK_WIDGET(child));
-    gtk_container_set_border_width(GTK_CONTAINER(popover), 10);
+    // gtk_container_set_border_width(GTK_CONTAINER(popover), 6);
     gtk_widget_show(child);
 
     return popover;

@@ -43,6 +43,7 @@ struct _SrainChan {
     GtkBox *option_box;
     GtkToggleButton *show_topic_togglebutton;
     GtkToggleButton *show_onlinelist_togglebutton;
+    GtkButton *leave_button;
 };
 
 struct _SrainChanClass {
@@ -201,6 +202,15 @@ static gboolean entry_on_key_press(gpointer user_data, GdkEventKey *event){
     return TRUE;
 }
 
+static void leave_button_on_click(GtkWidget *widget, gpointer user_data){
+    const char *chan_name;
+    SrainChan *chan;
+
+    chan = user_data;
+    chan_name = gtk_widget_get_name(GTK_WIDGET(chan));
+    srain_part(chan_name, NULL);
+}
+
 static void option_togglebutton_on_click(GtkWidget *widget, gpointer user_data){
     GtkRevealer *revealer;
     GtkToggleButton *button;
@@ -301,8 +311,10 @@ static void srain_chan_init(SrainChan *self){
     gtk_widget_init_template(GTK_WIDGET(self));
     self->completion_list = gtk_list_store_new(1, G_TYPE_STRING);
 
+    /* init option popover*/
     self->option_popover = create_popover(GTK_WIDGET(self->option_button),
             GTK_WIDGET(self->option_box), GTK_POS_BOTTOM);
+    gtk_container_set_border_width(GTK_CONTAINER(self->option_popover), 6);
 
     self->last_msg = NULL;
     theme_apply(GTK_WIDGET(self->msg_menu));
@@ -311,6 +323,8 @@ static void srain_chan_init(SrainChan *self){
             G_CALLBACK(on_send), self);
     g_signal_connect_swapped(self->send_button, "clicked",
             G_CALLBACK(on_send), self);
+    g_signal_connect(self->leave_button, "clicked",
+            G_CALLBACK(leave_button_on_click), self);
     g_signal_connect(self->show_topic_togglebutton, "clicked",
             G_CALLBACK(option_togglebutton_on_click), self->topic_revealer);
     g_signal_connect(self->show_onlinelist_togglebutton, "clicked",
@@ -351,6 +365,7 @@ static void srain_chan_class_init(SrainChanClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, option_box);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, show_topic_togglebutton);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, show_onlinelist_togglebutton);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, leave_button);
 }
 
 SrainChan* srain_chan_new(const char *name){

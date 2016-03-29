@@ -36,6 +36,9 @@ struct _SrainWindow {
 
     GtkPopover *about_popover;
     GtkPopover *join_popover;
+
+    GtkBox *join_box;
+    GtkEntry *join_entry;
 };
 
 struct _SrainWindowClass {
@@ -44,11 +47,22 @@ struct _SrainWindowClass {
 
 G_DEFINE_TYPE(SrainWindow, srain_window, GTK_TYPE_APPLICATION_WINDOW);
 
-static void about_button_on_click(GtkWidget *widget, gpointer user_data){
-    SrainWindow *win;
+static void join_entry_on_activate(GtkWidget *widget, gpointer user_data){
+    GtkPopover *popover;
+    GtkEntry *entry;
 
-    win = user_data;
-    gtk_widget_set_visible(GTK_WIDGET(win->about_popover), TRUE);
+    entry = GTK_ENTRY(widget);
+    popover = user_data;
+
+    srain_join(gtk_entry_get_text(entry));
+    gtk_widget_set_visible(GTK_WIDGET(popover), FALSE);
+}
+
+static void header_button_on_click(gpointer user_data){
+    GtkPopover *popover;
+
+    popover = user_data;
+    gtk_widget_set_visible(GTK_WIDGET(popover), TRUE);
 }
 
 static gboolean CTRL_J_K_on_press(GtkAccelGroup *group, GObject *obj, guint keyval,
@@ -87,6 +101,12 @@ static void srain_window_init(SrainWindow *self){
     about_box = srain_about_box_new();
     self->about_popover = create_popover(GTK_WIDGET(self->about_button),
             GTK_WIDGET(about_box), GTK_POS_BOTTOM);
+    gtk_container_set_border_width(GTK_CONTAINER(self->about_popover), 10);
+
+    /* join popover init */
+    self->join_popover = create_popover(GTK_WIDGET(self->join_button),
+            GTK_WIDGET(self->join_box), GTK_POS_BOTTOM);
+    gtk_container_set_border_width(GTK_CONTAINER(self->join_popover), 2);
 
     /* stack sidebar init */
     self->sidebar = srain_stack_sidebar_new();
@@ -99,8 +119,12 @@ static void srain_window_init(SrainWindow *self){
     theme_apply(GTK_WIDGET(self->about_popover));
 
     tray_icon_set_callback(self->tray_icon, self, self->tray_menu);
-    g_signal_connect(self->about_button, "clicked",
-            G_CALLBACK(about_button_on_click), self);
+    g_signal_connect_swapped(self->about_button, "clicked",
+            G_CALLBACK(header_button_on_click), self->about_popover);
+    g_signal_connect_swapped(self->join_button, "clicked",
+            G_CALLBACK(header_button_on_click), self->join_popover);
+    g_signal_connect(self->join_entry, "activate",
+            G_CALLBACK(join_entry_on_activate), self->join_popover);
 
     /* shortcut <C-j> and <C-k> */
     accel = gtk_accel_group_new();
@@ -129,6 +153,8 @@ static void srain_window_class_init(SrainWindowClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, tray_icon);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, tray_menu);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, sidebar_box);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, join_box);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, join_entry);
 }
 
 SrainWindow* srain_window_new(SrainApp *app){
