@@ -11,7 +11,7 @@
 #include "srain_app.h"
 #include "meta.h"
 #include "srain_window.h"
-#include "config.h"
+#include "rc.h"
 #include "theme.h"
 
 struct _SrainApp {
@@ -38,8 +38,10 @@ static void srain_app_activate(GApplication *app){
     gtk_window_present(GTK_WINDOW(win));
 
     srain_window_add_chan(win, META_SERVER);
+
     ui_init(win);
-    config_read();
+
+    rc_read();
 }
 
 static void srain_app_class_init(SrainAppClass *class){
