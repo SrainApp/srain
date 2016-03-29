@@ -21,7 +21,6 @@
 #include "tray_icon.h"
 #include "meta.h"
 #include "log.h"
-#include "config.h"
 
 struct _SrainWindow {
     GtkApplicationWindow parent;
