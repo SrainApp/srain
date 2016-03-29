@@ -1,4 +1,4 @@
-/connect irc.freenode.net
+/connect irc.freenode.org
 /login srainbot
 /join #lasttest
 /relaybot tg2arch|[|] 

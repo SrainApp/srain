@@ -17,7 +17,7 @@
         <property name="margin_left">10</property>
         <property name="margin_top">6</property>
         <property name="margin_bottom">6</property>
-        <property name="pixbuf">default_avatar.png</property>
+        <property name="pixbuf">img/default_avatar.png</property>
       </object>
       <packing>
         <property name="expand">False</property>

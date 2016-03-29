@@ -85,7 +85,7 @@
   <object class="GtkImage" id="send_buton_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">send_icon.png</property>
+    <property name="pixbuf">img/send_icon.png</property>
   </object>
   <template class="SrainChan" parent="GtkBox">
     <property name="visible">True</property>

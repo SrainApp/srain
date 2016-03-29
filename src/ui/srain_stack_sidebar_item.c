@@ -55,14 +55,14 @@ SrainStackSidebarItem *srain_stack_sidebar_item_new(const char *name){
 
     // is a channel
     if (name[0] == CHAN_PREFIX1 || name[0] == CHAN_PREFIX2){
-        gtk_image_set_from_file(item->image, "chan_icon.png");
+        gtk_image_set_from_file(item->image, "img/chan_icon.png");
     }
     else if (strcmp(name, META_SERVER) == 0){
         // is a server
-        gtk_image_set_from_file(item->image, "server_icon.png");
+        gtk_image_set_from_file(item->image, "img/server_icon.png");
     } else {
         // is a normal user
-        gtk_image_set_from_file(item->image, "user_icon.png");
+        gtk_image_set_from_file(item->image, "img/user_icon.png");
     }
 
     return item;

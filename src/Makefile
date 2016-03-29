@@ -11,6 +11,7 @@ GTK3LIBS = $$(pkg-config --libs gtk+-3.0)
 PY3FLAGS = $$(pkg-config --cflags python3)
 PY3LIBS = $$(pkg-config --libs python3)
 CURLLIBS = $$(pkg-config --libs libcurl)
+CFLAGS = -Wall -Iinc -ggdb -gstabs+ -D'DESTDIR="$(DESTDIR)"'
 
 SRCS = $(wildcard *.c */*.c)
 OBJS = $(patsubst %.c, ../build/%.o, $(notdir $(SRCS)))
