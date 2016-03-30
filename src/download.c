@@ -1,41 +1,39 @@
 /**
  * @file download.c
- * @brief provide funciton download(), download file(oftenly image file)
- *      from a given url
+ * @brief download file from a given url and save it to cache dir
  * @author LastAvengers <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-03-18
+ *
  */
 
 #define __LOG_ON
 
 #include <stdio.h>
+#include <unistd.h>
 #include <curl/curl.h>
 #include <string.h>
 #include "log.h"
 
-/* TODO: using hash is better */
-static GString* gen_path(const char *ext, int len){
-    int idx;
-    static int is_init = 0;
-    GString *path;
-    char charset[] = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+static GString* url2path(const char *url){
+    char *buf;
+    char hashstr[32];
+    unsigned long hash;
+    GString *res;
 
-    if (!is_init){
-        srand(time(NULL));
-        is_init = 1;
+    hash = 0;
+    /* BKDR hash */
+    while (*url){
+        hash = hash * 131 + *url++;
     }
+    snprintf(hashstr, 32, "%lu", hash);
 
-    path = g_string_new("./");
+    buf = g_build_filename(g_get_user_cache_dir(), "srain", hashstr, NULL);
+    res = g_string_new(buf);
+    LOG_FR("'%s'", res->str);
 
-    while (len--) {
-        idx = rand()*1.0/RAND_MAX*(sizeof(charset) - 1);
-        path = g_string_append_c(path, charset[idx]);
-    }
-
-    path = g_string_append(path, ext);
-
-    return path;
+    g_free(buf);
+    return res;
 }
 
 static int write_data(void *ptr, int size, int nmemb, FILE *stream) {
@@ -46,37 +44,40 @@ static int write_data(void *ptr, int size, int nmemb, FILE *stream) {
 }
 
 GString *download(const char *url){
-    char *ext;
     FILE *fp;
+    GString *path;
     CURL *curl;
     CURLcode res;
-    GString *path;
 
-    if ((ext = strrchr(url, '.')) == NULL){
-        /* oftenly it is impossible */
-        ERR_FR("file extend name not found");
+    LOG_FR("%s", url);
+    path = url2path(url);
+    if (access(path->str, F_OK ) != -1){
+        LOG_FR("exist, return");
+        return path;
+    }
+
+    fp = fopen(path->str, "wb");
+    if (!fp){
+        ERR_FR("failed to creating '%s'", path->str);
         return NULL;
     }
-    path = gen_path(ext, 32);
 
     curl = curl_easy_init();
     if (curl){
-        fp = fopen(path->str, "wb");
         curl_easy_setopt(curl, CURLOPT_URL, url);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
         res = curl_easy_perform(curl);
         /* always cleanup */
         curl_easy_cleanup(curl);
-
-        fclose(fp);
     }
+    fclose(fp);
 
     if (res != CURLE_OK){
         ERR_FR("error code %d", res);
         return NULL;
     }
 
-    LOG_FR("saved as '%s'",path->str);
+    LOG_FR("saved");
     return path;
 }
