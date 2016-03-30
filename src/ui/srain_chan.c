@@ -87,7 +87,7 @@ static gboolean scroll_to_bottom(SrainChan *chan){
     adj = gtk_scrolled_window_get_vadjustment(chan->msg_scrolledwindow);
     val = gtk_adjustment_get_value(adj);
     max_val = gtk_adjustment_get_upper(adj) - gtk_adjustment_get_page_size(adj);
-    LOG_FR("cur val: %f, max val %f", val, max_val);
+    // LOG_FR("cur val: %f, max val %f", val, max_val);
 
     if (max_val - val > 10) {
         LOG_FR("retry");
@@ -97,6 +97,7 @@ static gboolean scroll_to_bottom(SrainChan *chan){
     return FALSE;
 }
 
+// TODO: ugly & ambiguous code
 static int should_scroll_to_bottom(SrainChan *chan){
     double val;
     double max_val;
@@ -110,11 +111,11 @@ static int should_scroll_to_bottom(SrainChan *chan){
 
     val = gtk_adjustment_get_value(adj);
     max_val = gtk_adjustment_get_upper(adj) - gtk_adjustment_get_page_size(adj);
-    LOG_FR("cur val: %f, max val %f", val, max_val);
+    // LOG_FR("cur val: %f, max val %f", val, max_val);
 
     // if (gtk_window_is_active(GTK_WINDOW(win))
     if (cur_chan == chan && max_val - val < 10){
-        LOG_FR("you should go to bottom!");
+        // LOG_FR("you should go to bottom!");
         return 1;
     }
     /*
@@ -202,6 +203,7 @@ static gboolean entry_on_key_press(gpointer user_data, GdkEventKey *event){
     return TRUE;
 }
 
+
 static void leave_button_on_click(GtkWidget *widget, gpointer user_data){
     const char *chan_name;
     SrainChan *chan;
@@ -226,6 +228,14 @@ static void option_button_on_click(GtkWidget *widget, gpointer user_data){
 
     popover = user_data;
     gtk_widget_set_visible(GTK_WIDGET(popover), TRUE);
+}
+
+/* leave_buttons, option_togglebutton on click */
+static void option_buttons_on_click(GtkWidget *widget, gpointer user_data){
+    GtkPopover *popover;
+
+    popover = user_data;
+    gtk_widget_set_visible(GTK_WIDGET(popover), FALSE);
 }
 
 static gint online_listbox_on_dbclick(GtkWidget *widget, GdkEventButton *event){
@@ -323,6 +333,7 @@ static void srain_chan_init(SrainChan *self){
             G_CALLBACK(on_send), self);
     g_signal_connect_swapped(self->send_button, "clicked",
             G_CALLBACK(on_send), self);
+
     g_signal_connect(self->leave_button, "clicked",
             G_CALLBACK(leave_button_on_click), self);
     g_signal_connect(self->show_topic_togglebutton, "clicked",
@@ -331,8 +342,16 @@ static void srain_chan_init(SrainChan *self){
             G_CALLBACK(option_togglebutton_on_click), self->onlinelist_revealer);
     g_signal_connect(self->option_button, "clicked",
             G_CALLBACK(option_button_on_click), self->option_popover);
+    g_signal_connect(self->leave_button, "clicked",
+            G_CALLBACK(option_buttons_on_click), self->option_popover);
+    g_signal_connect(self->show_topic_togglebutton, "clicked",
+            G_CALLBACK(option_buttons_on_click), self->option_popover);
+    g_signal_connect(self->show_onlinelist_togglebutton, "clicked",
+            G_CALLBACK(option_buttons_on_click), self->option_popover);
+
     g_signal_connect_swapped(self->input_entry, "key_press_event",
             G_CALLBACK(entry_on_key_press), self);
+
     g_signal_connect(self->onlinelist_listbox, "button_press_event",
             G_CALLBACK(online_listbox_on_dbclick), NULL);
     g_signal_connect(self->msg_box, "button_press_event",
@@ -507,9 +526,9 @@ void srain_chan_recv_msg_add(SrainChan *chan, const char *nick,
         const char *id, const char *msg){
     int to_bottom;
     char timestr[32];
+    const char *old_msg;
     const char *old_timestr;
     const char *old_nick;
-    const char *old_msg;
     GString *new_msg;
     GString *markuped_msg;
     SrainRecvMsg *last_recv_msg;

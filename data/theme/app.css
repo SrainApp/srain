@@ -103,13 +103,12 @@ SrainStackSidebarItem #count_label {
     border-radius: 4px;
     box-shadow: alpha(black, 0.2) 2px 2px;
 }
+#normal_recv_msg_box GtkButton { padding: 2px; background-color: transparent; }
 /* }} */
 
 
 /* SrainChan */
 #msg_scrolledwindow GtkBox { background-color: transparent; }
-#msg_scrolledwindow GtkButton { padding: 4px; }
-#msg_scrolledwindow GtkButton:hover{ background-color: transparent; }
 #chan_box {
     /* background-image: url("./bg.jpg"); */
     /* background-color: @active_color; */
