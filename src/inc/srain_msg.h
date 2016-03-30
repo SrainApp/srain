@@ -33,11 +33,11 @@ SrainSysMsg* srain_sys_msg_new(sys_msg_type_t type, const char *msg);
 /* ================ SRAIN_SEND_MSG ================ */
 struct _SrainSendMsg {
     GtkBox parent;
+    GtkBox *padding_box;
     GtkLabel *msg_label;
     GtkLabel *time_label;
     GtkImage *image;
     GString *image_path;
-    GtkEventBox *image_eventbox;
 };
 
 struct _SrainSendMsgClass {
@@ -57,11 +57,11 @@ SrainSendMsg *srain_send_msg_new(const char *msg);
 /* ================ SRAIN_RECV_MSG ================ */
 struct _SrainRecvMsg {
     GtkBox parent;
+    GtkBox *padding_box;
     GtkLabel *msg_label;
     GtkLabel *time_label;
     GtkImage *image;
     GString *image_path;
-    GtkEventBox *image_eventbox;
     GtkImage *avatar_image;
     GtkLabel *nick_label;
     GtkLabel *identify_label;

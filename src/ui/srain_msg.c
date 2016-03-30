@@ -101,10 +101,9 @@ static void srain_send_msg_init(SrainSendMsg *self){
 static void srain_send_msg_class_init(SrainSendMsgClass *class){
     gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
             "/org/gtk/srain/send_msg.glade");
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainSendMsg, padding_box);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainSendMsg, msg_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainSendMsg, time_label);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainSendMsg, image_eventbox);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainSendMsg, image);
 }
 
 static gboolean srain_send_msg_set_image(SrainSendMsg *msg){
@@ -113,12 +112,14 @@ static gboolean srain_send_msg_set_image(SrainSendMsg *msg){
     LOG_FR("%s", msg->image_path->str);
 
     if (msg->image_path){
-        g_signal_connect_swapped(msg->image_eventbox,
-                                 "button_release_event",
-                                 G_CALLBACK(image_on_click),
-                                 msg->image_path->str);
         pixbuf = gdk_pixbuf_new_from_file_at_size(msg->image_path->str, 300, 300, NULL);
-        gtk_image_set_from_pixbuf(msg->image, pixbuf);
+        msg->image = GTK_IMAGE(gtk_image_new_from_pixbuf(pixbuf));
+        // TODO: button_release_event not work
+        g_signal_connect_swapped(msg->image, "button_release_event",
+                G_CALLBACK(image_on_click), msg->image_path->str);
+        gtk_widget_show(GTK_WIDGET(msg->image));
+        gtk_container_add(GTK_CONTAINER(msg->padding_box), GTK_WIDGET(msg->image));
+
         g_object_unref(pixbuf);
     }
 
@@ -175,10 +176,9 @@ static void srain_recv_msg_init(SrainRecvMsg *self){
 static void srain_recv_msg_class_init(SrainRecvMsgClass *class){
     gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
             "/org/gtk/srain/recv_msg.glade");
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, padding_box);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, msg_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, time_label);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, image);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, image_eventbox);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, avatar_image);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, nick_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, identify_label);
@@ -191,10 +191,13 @@ static gboolean srain_recv_msg_set_image(SrainRecvMsg *msg){
     LOG_FR("%s", msg->image_path->str);
 
     if (msg->image_path){
-        g_signal_connect_swapped(msg->image_eventbox, "button_release_event",
-                G_CALLBACK(image_on_click), msg->image_path->str);
         pixbuf = gdk_pixbuf_new_from_file_at_size(msg->image_path->str, 300, 300, NULL);
-        gtk_image_set_from_pixbuf(msg->image, pixbuf);
+        msg->image = GTK_IMAGE(gtk_image_new_from_pixbuf(pixbuf));
+        g_signal_connect_swapped(msg->image, "button_release_event",
+                G_CALLBACK(image_on_click), msg->image_path->str);
+        gtk_widget_show(GTK_WIDGET(msg->image));
+        gtk_container_add(GTK_CONTAINER(msg->padding_box), GTK_WIDGET(msg->image));
+
         g_object_unref(pixbuf);
     }
 
