@@ -6,5 +6,6 @@
 void get_cur_time(char *timestr);
 GtkListBoxRow* get_list_item_by_name(GtkListBox *listbox, const gchar* name);
 GtkPopover* create_popover(GtkWidget *parent, GtkWidget *child, GtkPositionType pos);
+char* show_open_filechosser(GtkWindow *parent);
 
 #endif /** __UI_COMMON_H **/

@@ -9,6 +9,7 @@
 #include <string.h>
 #include <gtk/gtk.h>
 #include <assert.h>
+#include "i18n.h"
 
 /**
  * @brief get current time
@@ -58,4 +59,71 @@ GtkPopover* create_popover(GtkWidget *parent, GtkWidget *child, GtkPositionType 
     gtk_widget_show(child);
 
     return popover;
+}
+
+static void filechooser_on_update_preview(GtkFileChooser *chooser,
+        gpointer user_data){
+    char *filename;
+    GError *error;
+    GtkImage *preview;
+    GdkPixbuf *pixbuf;
+
+    filename = gtk_file_chooser_get_preview_filename(chooser);
+    preview = GTK_IMAGE(gtk_file_chooser_get_preview_widget(chooser));
+    pixbuf = gdk_pixbuf_new_from_file_at_size(filename, 300, 300, &error);
+
+    if (error == NULL){
+        gtk_image_set_from_pixbuf(preview, pixbuf);
+        g_object_unref(pixbuf);
+    } else {
+        gtk_image_clear(preview);
+    }
+
+    g_free(filename);
+}
+
+
+/**
+ * @brief filechosser_run
+ *
+ * @param parent dialog parent
+ *
+ * @return NULL or a filename, filename must be freed
+ * with g_free()
+ *
+ * GtkFileChooser wrapper for opening file with image preview
+ */
+char* show_open_filechosser(GtkWindow *parent){
+    int res;
+    char *filename;
+    GtkImage *preview;
+    GtkFileChooserDialog *dialog;
+    GtkFileChooser *chooser;
+
+    dialog = GTK_FILE_CHOOSER_DIALOG(
+            gtk_file_chooser_dialog_new("Open File",
+                parent, GTK_FILE_CHOOSER_ACTION_OPEN,
+                _("cancel"), GTK_RESPONSE_CANCEL,
+                _("open"), GTK_RESPONSE_ACCEPT,
+                NULL));
+    chooser = GTK_FILE_CHOOSER(dialog);
+    preview = GTK_IMAGE(gtk_image_new());
+
+    gtk_widget_show(GTK_WIDGET(preview));
+    gtk_file_chooser_set_preview_widget(chooser, GTK_WIDGET(preview));
+
+    g_signal_connect(chooser, "update-preview",
+            G_CALLBACK(filechooser_on_update_preview), NULL);
+
+    res = gtk_dialog_run(GTK_DIALOG(dialog));
+
+    filename = NULL;
+    if(res == GTK_RESPONSE_ACCEPT){
+        filename = gtk_file_chooser_get_filename(chooser);
+    }
+
+    gtk_widget_destroy(GTK_WIDGET(dialog));
+    // gtk_widget_destroy(GTK_WIDGET(preview));
+
+    return filename;
 }
