@@ -19,31 +19,46 @@
 #include "srain_msg.h"
 #include "srain.h"
 #include "markup.h"
+#include "plugin.h"
 #include "log.h"
 #include "irc.h"
 
 struct _SrainChan {
     GtkBox parent;
+    /* header */
     GtkLabel* name_label;
     GtkButton *option_button;
     GtkRevealer *topic_revealer;
     GtkLabel *topic_label;
-    GtkScrolledWindow *msg_scrolledwindow;
-    GtkBox *msg_box;
-    GtkMenu *msg_menu;
-    GtkRevealer *onlinelist_revealer;
-    GtkListBox *onlinelist_listbox;
-    GtkButton *send_button;
-    GtkEntry *input_entry;
-    GtkEntryCompletion *entrycompletion;
-    GtkListStore *completion_list;
-    GtkWidget *last_msg;
-    // GtkLabel *unread_label;
+
+    /* option box */
     GtkPopover *option_popover;
     GtkBox *option_box;
     GtkToggleButton *show_topic_togglebutton;
     GtkToggleButton *show_onlinelist_togglebutton;
     GtkButton *leave_button;
+
+    /* */
+    GtkScrolledWindow *msg_scrolledwindow;
+    GtkBox *msg_box;
+    GtkMenu *msg_menu;
+    GtkRevealer *onlinelist_revealer;
+    GtkListBox *onlinelist_listbox;
+
+    /* annex grid */
+    GtkButton *annex_button;
+    GtkGrid *annex_grid;
+    GtkPopover *annex_popover;
+    GtkButton *annex_image_button;
+    GtkButton *annex_shot_button;
+
+    /* input entry */
+    GtkEntry *input_entry;
+    GtkEntryCompletion *entrycompletion;
+    GtkListStore *completion_list;
+
+    GtkWidget *last_msg;
+    // GtkLabel *unread_label;
 };
 
 struct _SrainChanClass {
@@ -172,8 +187,8 @@ static void entry_auto_completion(GtkEntry *entry){
         gtk_entry_buffer_insert_text(buf, cur_pos, prefix + strlen(word), -1);
         gtk_editable_set_position(GTK_EDITABLE(entry),
                 cur_pos + strlen(prefix) - strlen(word));
-        gtk_editable_select_region(GTK_EDITABLE(entry),
-                cur_pos, cur_pos + strlen(prefix) - strlen(word));
+        // gtk_editable_select_region(GTK_EDITABLE(entry),
+                // cur_pos, cur_pos + strlen(prefix) - strlen(word));
     }
 }
 
@@ -203,6 +218,54 @@ static gboolean entry_on_key_press(gpointer user_data, GdkEventKey *event){
     return TRUE;
 }
 
+static void upload_image_idle(GtkEntry *entry){
+    char *url;
+
+    url = g_object_get_data(G_OBJECT(entry), "image-url");
+    if (url){
+        gtk_entry_set_text(entry, url);
+        free(url);
+    } else {
+        gtk_entry_set_text(entry, "upload image failed");
+    }
+
+    gtk_widget_set_sensitive(GTK_WIDGET(entry), TRUE);
+}
+
+static void upload_image_async(GtkEntry *entry){
+    char *url;
+    const char *filename;
+
+    filename = gtk_entry_get_text(entry);
+    url = plugin_upload(filename);
+
+    if (url) {
+        g_object_set_data(G_OBJECT(entry), "image-url", url);
+        gdk_threads_add_idle((GSourceFunc)upload_image_idle, entry);
+    }
+}
+
+static void annex_image_button_on_click(GtkWidget *widget, gpointer user_data){
+    char *filename;
+    char *url;
+    GtkEntry *entry;
+    GtkWindow *toplevel;
+
+    entry = user_data;
+
+    toplevel = GTK_WINDOW(gtk_widget_get_toplevel(widget));
+    filename = show_open_filechosser(toplevel);
+    if (filename) {
+        LOG_FR("filename: '%s'", filename);
+        gtk_widget_set_sensitive(GTK_WIDGET(entry), FALSE);
+        gtk_entry_set_text(entry, filename);
+
+        g_thread_new(NULL, (GThreadFunc)upload_image_async, entry);
+
+        g_free(filename);
+    }
+
+}
 
 static void leave_button_on_click(GtkWidget *widget, gpointer user_data){
     const char *chan_name;
@@ -223,7 +286,7 @@ static void option_togglebutton_on_click(GtkWidget *widget, gpointer user_data){
             gtk_toggle_button_get_active(button));
 }
 
-static void option_button_on_click(GtkWidget *widget, gpointer user_data){
+static void popover_show(gpointer user_data){
     GtkPopover *popover;
 
     popover = user_data;
@@ -231,7 +294,7 @@ static void option_button_on_click(GtkWidget *widget, gpointer user_data){
 }
 
 /* leave_buttons, option_togglebutton on click */
-static void option_buttons_on_click(GtkWidget *widget, gpointer user_data){
+static void popover_hide(gpointer user_data){
     GtkPopover *popover;
 
     popover = user_data;
@@ -266,7 +329,7 @@ static int is_blank(const char *str){
     return 1;
 }
 
-static void on_send(SrainChan *chan){
+static void input_entry_on_activate(SrainChan *chan){
     char *input;
     const char *chan_name;
 
@@ -326,13 +389,19 @@ static void srain_chan_init(SrainChan *self){
             GTK_WIDGET(self->option_box), GTK_POS_BOTTOM);
     gtk_container_set_border_width(GTK_CONTAINER(self->option_popover), 6);
 
+    /* init annex popover*/
+    self->annex_popover = create_popover(GTK_WIDGET(self->annex_button),
+            GTK_WIDGET(self->annex_grid), GTK_POS_TOP);
+    gtk_container_set_border_width(GTK_CONTAINER(self->annex_popover), 6);
+
     self->last_msg = NULL;
+
     theme_apply(GTK_WIDGET(self->msg_menu));
 
     g_signal_connect_swapped(self->input_entry, "activate",
-            G_CALLBACK(on_send), self);
-    g_signal_connect_swapped(self->send_button, "clicked",
-            G_CALLBACK(on_send), self);
+            G_CALLBACK(input_entry_on_activate), self);
+    g_signal_connect_swapped(self->input_entry, "key_press_event",
+            G_CALLBACK(entry_on_key_press), self);
 
     g_signal_connect(self->leave_button, "clicked",
             G_CALLBACK(leave_button_on_click), self);
@@ -340,22 +409,26 @@ static void srain_chan_init(SrainChan *self){
             G_CALLBACK(option_togglebutton_on_click), self->topic_revealer);
     g_signal_connect(self->show_onlinelist_togglebutton, "clicked",
             G_CALLBACK(option_togglebutton_on_click), self->onlinelist_revealer);
-    g_signal_connect(self->option_button, "clicked",
-            G_CALLBACK(option_button_on_click), self->option_popover);
-    g_signal_connect(self->leave_button, "clicked",
-            G_CALLBACK(option_buttons_on_click), self->option_popover);
-    g_signal_connect(self->show_topic_togglebutton, "clicked",
-            G_CALLBACK(option_buttons_on_click), self->option_popover);
-    g_signal_connect(self->show_onlinelist_togglebutton, "clicked",
-            G_CALLBACK(option_buttons_on_click), self->option_popover);
-
-    g_signal_connect_swapped(self->input_entry, "key_press_event",
-            G_CALLBACK(entry_on_key_press), self);
+    g_signal_connect_swapped(self->option_button, "clicked",
+            G_CALLBACK(popover_show), self->option_popover);
+    g_signal_connect_swapped(self->leave_button, "clicked",
+            G_CALLBACK(popover_hide), self->option_popover);
+    g_signal_connect_swapped(self->show_topic_togglebutton, "clicked",
+            G_CALLBACK(popover_hide), self->option_popover);
+    g_signal_connect_swapped(self->show_onlinelist_togglebutton, "clicked",
+            G_CALLBACK(popover_hide), self->option_popover);
 
     g_signal_connect(self->onlinelist_listbox, "button_press_event",
             G_CALLBACK(online_listbox_on_dbclick), NULL);
     g_signal_connect(self->msg_box, "button_press_event",
             G_CALLBACK(msg_box_popup), self->msg_menu);
+
+    g_signal_connect_swapped(self->annex_button, "clicked",
+            G_CALLBACK(popover_show), self->annex_popover);
+    g_signal_connect(self->annex_image_button, "clicked",
+            G_CALLBACK(annex_image_button_on_click), self->input_entry);
+    g_signal_connect_swapped(self->annex_image_button, "clicked",
+            G_CALLBACK(popover_hide), self->annex_popover);
 
     /* Create a tree model and use it as the completion model */
     gtk_entry_completion_set_model (self->entrycompletion,
@@ -373,18 +446,25 @@ static void srain_chan_class_init(SrainChanClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, topic_revealer);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, topic_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, option_button);
+
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, msg_scrolledwindow);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, msg_box);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, msg_menu);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, onlinelist_revealer);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, onlinelist_listbox);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, send_button);
+
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, input_entry);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, entrycompletion);
+
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, option_box);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, show_topic_togglebutton);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, show_onlinelist_togglebutton);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, leave_button);
+
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, annex_button);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, annex_grid);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, annex_image_button);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, annex_shot_button);
 }
 
 SrainChan* srain_chan_new(const char *name){

@@ -2,6 +2,72 @@
 <!-- Generated with glade 3.19.0 -->
 <interface>
   <requires lib="gtk+" version="3.16"/>
+  <object class="GtkImage" id="annex_buton_image">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="icon_name">photo</property>
+  </object>
+  <object class="GtkImage" id="annex_image_button_image">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="icon_name">photo</property>
+  </object>
+  <object class="GtkImage" id="annex_shot_button_image">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="icon_name">zoom-select</property>
+  </object>
+  <object class="GtkGrid" id="annex_grid">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkButton" id="annex_image_button">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">True</property>
+        <property name="image">annex_image_button_image</property>
+        <property name="relief">none</property>
+      </object>
+      <packing>
+        <property name="left_attach">0</property>
+        <property name="top_attach">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkButton" id="annex_shot_button">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">True</property>
+        <property name="image">annex_shot_button_image</property>
+        <property name="relief">none</property>
+      </object>
+      <packing>
+        <property name="left_attach">1</property>
+        <property name="top_attach">0</property>
+      </packing>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+  </object>
   <object class="GtkEntryCompletion" id="entrycompletion">
     <property name="text_column">0</property>
     <property name="popup_completion">False</property>
@@ -81,11 +147,6 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="icon_name">preferences-other</property>
-  </object>
-  <object class="GtkImage" id="send_buton_image">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="pixbuf">img/send_icon.png</property>
   </object>
   <template class="SrainChan" parent="GtkBox">
     <property name="visible">True</property>
@@ -291,12 +352,12 @@
           </packing>
         </child>
         <child>
-          <object class="GtkButton" id="send_button">
+          <object class="GtkButton" id="annex_button">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
             <property name="has_tooltip">True</property>
-            <property name="image">send_buton_image</property>
+            <property name="image">annex_buton_image</property>
             <property name="relief">none</property>
             <property name="focus_on_click">False</property>
           </object>

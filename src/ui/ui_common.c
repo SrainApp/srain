@@ -84,7 +84,7 @@ static void filechooser_on_update_preview(GtkFileChooser *chooser,
 
 
 /**
- * @brief filechosser_run
+ * @brief show_open_filechosser
  *
  * @param parent dialog parent
  *

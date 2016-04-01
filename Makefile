@@ -35,12 +35,13 @@ install:
 	cd data && for png in img/*.png; do echo $$png; install -Dm644 "$$png" "$(DESTDIR)/share/srain/$$png"; done
 	mkdir -p "$(DESTDIR)/share/srain/theme"
 	cd data && for css in theme/*.css; do echo $$css; install -Dm644 "$$css" "$(DESTDIR)/share/srain/$$css"; done
+	mkdir -p "$(DESTDIR)/share/srain/plugin"
+	for py in plugin/*.py; do echo $$py; install -Dm644 "$$py" "$(DESTDIR)/share/srain/$$py"; done
 
 run: default
 	$(MAKE) DESTDIR=$(DESTDIR)
 	cp srainrc.example build/share/srain/srainrc
 	$(MAKE) DESTDIR=$(DESTDIR) install
-	# cp plugin/*.py build/
 	build/bin/srain
 
 dbg: $(TARGET)

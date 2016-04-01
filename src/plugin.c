@@ -3,7 +3,7 @@
 #include <Python.h>
 #include "log.h"
 
-void plugin_upload(const char *path){
+char* plugin_upload(const char *path){
     char *url;
 
     PyObject *py_module;
@@ -20,13 +20,13 @@ void plugin_upload(const char *path){
     py_module = PyImport_Import(PyUnicode_FromString("upload"));
     if (!py_module) {
         LOG_FR("plugin `upload` no found");
-        return;
+        return NULL;
     }
 
     py_func = PyObject_GetAttrString(py_module, "upload");
     if (!py_func) {
         LOG_FR("function `upload()` no found");
-        return;
+        return NULL;
     }
 
     /* build args */
@@ -38,7 +38,15 @@ void plugin_upload(const char *path){
     url = PyUnicode_AsUTF8(py_url);
 
     LOG_FR("%s", url);
+
     Py_Finalize();
+
+    if (url){
+        return strdup(url);
+    }
+    else {
+        return NULL;
+    }
 }
 
 void plugin_avatar(const char *nick, const char *user, const char *host){
