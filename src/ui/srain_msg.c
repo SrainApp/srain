@@ -17,22 +17,10 @@
 #include "srain_window.h"
 #include "srain_msg.h"
 #include "srain.h"
-#include "srain_image_window.h"
+#include "srain_image.h"
 #include "markup.h"
 #include "download.h"
 #include "log.h"
-
-/* display bigger image */
-static void image_on_click(gpointer *user_data , GdkEventButton *event){
-    char *path;
-    SrainImageWindow *win;
-
-    if (event->button == 1){
-        path = (char *)user_data;
-        win = srain_image_window_new(path);
-        gtk_window_present(GTK_WINDOW(win));
-    }
-}
 
 static void nick_button_on_click(GtkWidget *widget, gpointer *user_data){
     GString *cmd;
@@ -106,44 +94,12 @@ static void srain_send_msg_class_init(SrainSendMsgClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainSendMsg, time_label);
 }
 
-static gboolean srain_send_msg_set_image(SrainSendMsg *msg){
-    GdkPixbuf *pixbuf;
-
-    LOG_FR("%s", msg->image_path->str);
-
-    if (msg->image_path){
-        pixbuf = gdk_pixbuf_new_from_file_at_size(msg->image_path->str, 300, 300, NULL);
-        msg->image = GTK_IMAGE(gtk_image_new_from_pixbuf(pixbuf));
-        // TODO: button_release_event not work
-        g_signal_connect_swapped(msg->image, "button_release_event",
-                G_CALLBACK(image_on_click), msg->image_path->str);
-        gtk_widget_show(GTK_WIDGET(msg->image));
-        gtk_container_add(GTK_CONTAINER(msg->padding_box), GTK_WIDGET(msg->image));
-
-        g_object_unref(pixbuf);
-    }
-
-    return FALSE;
-}
-
-static void srain_send_msg_set_image_async(SrainSendMsg *msg){
-    GString *path;
-
-    LOG_FR("%s", msg->image_path->str);
-
-    path = download(msg->image_path->str);
-    if (path){
-        g_string_free(msg->image_path, TRUE);
-        msg->image_path = path;
-        gdk_threads_add_idle((GSourceFunc)srain_send_msg_set_image, msg);
-    }
-}
-
 SrainSendMsg* srain_send_msg_new(const char *msg){
     char timestr[32];
     GString *img_url;
     GString *markuped_msg;
     SrainSendMsg *smsg;
+    SrainImage *simg;
 
     smsg = g_object_new(SRAIN_TYPE_SEND_MSG, NULL);
 
@@ -159,8 +115,10 @@ SrainSendMsg* srain_send_msg_new(const char *msg){
     }
 
     if (img_url){
-        smsg->image_path = img_url;
-        g_thread_new(NULL, (GThreadFunc)srain_send_msg_set_image_async, smsg);
+        // TODO: free img_url?
+        simg = srain_image_new_from_url_async(img_url->str, 0);
+        gtk_container_add(GTK_CONTAINER(smsg->padding_box), GTK_WIDGET(simg));
+        gtk_widget_show(GTK_WIDGET(simg));
     }
 
     return smsg;
@@ -185,42 +143,11 @@ static void srain_recv_msg_class_init(SrainRecvMsgClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, nick_button);
 }
 
-static gboolean srain_recv_msg_set_image(SrainRecvMsg *msg){
-    GdkPixbuf *pixbuf;
-
-    LOG_FR("%s", msg->image_path->str);
-
-    if (msg->image_path){
-        pixbuf = gdk_pixbuf_new_from_file_at_size(msg->image_path->str, 300, 300, NULL);
-        msg->image = GTK_IMAGE(gtk_image_new_from_pixbuf(pixbuf));
-        g_signal_connect_swapped(msg->image, "button_release_event",
-                G_CALLBACK(image_on_click), msg->image_path->str);
-        gtk_widget_show(GTK_WIDGET(msg->image));
-        gtk_container_add(GTK_CONTAINER(msg->padding_box), GTK_WIDGET(msg->image));
-
-        g_object_unref(pixbuf);
-    }
-
-    return FALSE;
-}
-
-static void srain_recv_msg_set_image_async(SrainRecvMsg *msg){
-    GString *path;
-
-    LOG_FR("%s", msg->image_path->str);
-
-    path = download(msg->image_path->str);
-    if (path){
-        g_string_free(msg->image_path, TRUE);
-        msg->image_path = path;
-        gdk_threads_add_idle((GSourceFunc)srain_recv_msg_set_image, msg);
-    }
-}
-
 SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *msg){
     char timestr[32];
     GString *markuped_msg;
     GString *img_url;
+    SrainImage *simg;
     SrainRecvMsg *smsg;
 
     smsg = g_object_new(SRAIN_TYPE_RECV_MSG, NULL);
@@ -240,8 +167,9 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *m
     }
 
     if (img_url){
-        smsg->image_path = img_url;
-        g_thread_new(NULL, (GThreadFunc)srain_recv_msg_set_image_async, smsg);
+        simg = srain_image_new_from_url_async(img_url->str, 0);
+        gtk_container_add(GTK_CONTAINER(smsg->padding_box), GTK_WIDGET(simg));
+        gtk_widget_show(GTK_WIDGET(simg));
     }
 
     if (strlen(gtk_label_get_text(smsg->identify_label)) != 0){
