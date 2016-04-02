@@ -50,7 +50,7 @@ struct _SrainChan {
     GtkGrid *annex_grid;
     GtkPopover *annex_popover;
     GtkButton *annex_image_button;
-    GtkButton *annex_shot_button;
+    // GtkButton *annex_shot_button;
 
     /* input entry */
     GtkEntry *input_entry;
@@ -464,7 +464,7 @@ static void srain_chan_class_init(SrainChanClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, annex_button);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, annex_grid);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, annex_image_button);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, annex_shot_button);
+    // gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, annex_shot_button);
 }
 
 SrainChan* srain_chan_new(const char *name){

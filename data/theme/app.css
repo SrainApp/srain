@@ -53,7 +53,6 @@ GtkEntry:selected, GtkLabel:selected {
 
 
 /* SrainStackSidebar {{ */
-SrainStackSidebar GtkListBoxRow { padding: 14px; }
 SrainStackSidebar GtkSeparator { color: transparent; }
 SrainStackSidebar GtkListBoxRow:focus,
 SrainStackSidebar GtkListBoxRow:hover {

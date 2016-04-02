@@ -5,6 +5,7 @@
   <template class="SrainStackSidebarItem" parent="GtkBox">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
+    <property name="border_width">14</property>
     <property name="orientation">vertical</property>
     <child>
       <object class="GtkBox" id="box1">

@@ -12,11 +12,6 @@
     <property name="can_focus">False</property>
     <property name="icon_name">photo</property>
   </object>
-  <object class="GtkImage" id="annex_shot_button_image">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="icon_name">zoom-select</property>
-  </object>
   <object class="GtkGrid" id="annex_grid">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -32,40 +27,6 @@
         <property name="left_attach">0</property>
         <property name="top_attach">0</property>
       </packing>
-    </child>
-    <child>
-      <object class="GtkButton" id="annex_shot_button">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="receives_default">True</property>
-        <property name="image">annex_shot_button_image</property>
-        <property name="relief">none</property>
-      </object>
-      <packing>
-        <property name="left_attach">1</property>
-        <property name="top_attach">0</property>
-      </packing>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
     </child>
   </object>
   <object class="GtkEntryCompletion" id="entrycompletion">
@@ -213,7 +174,7 @@
                 <property name="halign">start</property>
                 <property name="use_markup">True</property>
                 <property name="wrap">True</property>
-                <property name="wrap_mode">word-char</property>
+                <property name="wrap_mode">char</property>
                 <property name="selectable">True</property>
                 <attributes>
                   <attribute name="weight" value="normal"/>
@@ -358,7 +319,6 @@
             <property name="receives_default">True</property>
             <property name="has_tooltip">True</property>
             <property name="image">annex_buton_image</property>
-            <property name="relief">none</property>
             <property name="focus_on_click">False</property>
           </object>
           <packing>
