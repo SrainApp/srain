@@ -11,17 +11,18 @@
 #include <gtk/gtk.h>
 #include <assert.h>
 #include <string.h>
-#include "ui.h"
 #include "ui_common.h"
 #include "theme.h"
 #include "srain_window.h"
 #include "srain_chan.h"
+#include "srain_user_list.h"
 #include "srain_msg.h"
 #include "srain.h"
 #include "markup.h"
 #include "plugin.h"
 #include "log.h"
 #include "irc.h"
+#include "irc_magic.h"
 
 struct _SrainChan {
     GtkBox parent;
@@ -35,15 +36,16 @@ struct _SrainChan {
     GtkPopover *option_popover;
     GtkBox *option_box;
     GtkToggleButton *show_topic_togglebutton;
-    GtkToggleButton *show_onlinelist_togglebutton;
+    GtkToggleButton *show_user_list_togglebutton;
     GtkButton *leave_button;
 
     /* */
     GtkScrolledWindow *msg_scrolledwindow;
     GtkBox *msg_box;
     GtkMenu *msg_menu;
-    GtkRevealer *onlinelist_revealer;
-    GtkListBox *onlinelist_listbox;
+    GtkRevealer *user_list_revealer;
+    GtkViewport *user_list_viewport;
+    SrainUserList *user_list;
 
     /* annex grid */
     GtkButton *annex_button;
@@ -247,7 +249,6 @@ static void upload_image_async(GtkEntry *entry){
 
 static void annex_image_button_on_click(GtkWidget *widget, gpointer user_data){
     char *filename;
-    char *url;
     GtkEntry *entry;
     GtkWindow *toplevel;
 
@@ -394,6 +395,12 @@ static void srain_chan_init(SrainChan *self){
             GTK_WIDGET(self->annex_grid), GTK_POS_TOP);
     gtk_container_set_border_width(GTK_CONTAINER(self->annex_popover), 6);
 
+    /* init user list */
+    self->user_list = srain_user_list_new();
+    gtk_container_add(GTK_CONTAINER(self->user_list_viewport),
+            GTK_WIDGET(self->user_list));
+    gtk_widget_show(GTK_WIDGET(self->user_list));
+
     self->last_msg = NULL;
 
     theme_apply(GTK_WIDGET(self->msg_menu));
@@ -407,19 +414,19 @@ static void srain_chan_init(SrainChan *self){
             G_CALLBACK(leave_button_on_click), self);
     g_signal_connect(self->show_topic_togglebutton, "clicked",
             G_CALLBACK(option_togglebutton_on_click), self->topic_revealer);
-    g_signal_connect(self->show_onlinelist_togglebutton, "clicked",
-            G_CALLBACK(option_togglebutton_on_click), self->onlinelist_revealer);
+    g_signal_connect(self->show_user_list_togglebutton, "clicked",
+            G_CALLBACK(option_togglebutton_on_click), self->user_list_revealer);
     g_signal_connect_swapped(self->option_button, "clicked",
             G_CALLBACK(popover_show), self->option_popover);
     g_signal_connect_swapped(self->leave_button, "clicked",
             G_CALLBACK(popover_hide), self->option_popover);
     g_signal_connect_swapped(self->show_topic_togglebutton, "clicked",
             G_CALLBACK(popover_hide), self->option_popover);
-    g_signal_connect_swapped(self->show_onlinelist_togglebutton, "clicked",
+    g_signal_connect_swapped(self->show_user_list_togglebutton, "clicked",
             G_CALLBACK(popover_hide), self->option_popover);
 
-    g_signal_connect(self->onlinelist_listbox, "button_press_event",
-            G_CALLBACK(online_listbox_on_dbclick), NULL);
+    // g_signal_connect(self->user_list_listbox, "button_press_event",
+            // G_CALLBACK(online_listbox_on_dbclick), NULL);
     g_signal_connect(self->msg_box, "button_press_event",
             G_CALLBACK(msg_box_popup), self->msg_menu);
 
@@ -450,15 +457,15 @@ static void srain_chan_class_init(SrainChanClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, msg_scrolledwindow);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, msg_box);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, msg_menu);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, onlinelist_revealer);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, onlinelist_listbox);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, user_list_revealer);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, user_list_viewport);
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, input_entry);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, entrycompletion);
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, option_box);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, show_topic_togglebutton);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, show_onlinelist_togglebutton);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, show_user_list_togglebutton);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, leave_button);
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, annex_button);
@@ -490,73 +497,42 @@ void srain_chan_set_topic(SrainChan *chan, const char *topic){
 }
 
 /**
- * @brief srain_chan_online_list_add 
+ * @brief srain_chan_user_list_add
  *
  * @param chan
- * @param name
+ * @param nick
  * @param is_init if is_init = 1, sys msg will not be sent
  */
-void srain_chan_online_list_add(SrainChan *chan, const char *name, int is_init){
+void srain_chan_user_list_add(SrainChan *chan, const char *nick,
+        IRCUserType type, int if_sys_msg){
     const char *chan_name;
-    GtkWidget *label;
-    GtkListBoxRow *row;
 
-    chan_name =gtk_widget_get_name(GTK_WIDGET(chan));
-    row = get_list_item_by_name(chan->onlinelist_listbox, name);
-    if (row){
-        ERR_FR("GtkListBoxRow %s already exist in %s", name, chan_name);
-        return;
-    }
-    label = gtk_label_new(name);
-    gtk_widget_set_name(label, name);
+    if (srain_user_list_add(chan->user_list, nick, type) == -1){
+        completion_list_add(chan->completion_list, nick);
 
-    row = GTK_LIST_BOX_ROW(gtk_list_box_row_new());
-    gtk_widget_set_can_focus(GTK_WIDGET(row), FALSE);
-
-    gtk_container_add(GTK_CONTAINER(row), label);
-    gtk_container_add(GTK_CONTAINER(chan->onlinelist_listbox), GTK_WIDGET(row));
-
-    theme_apply(GTK_WIDGET(chan->onlinelist_listbox));
-
-    gtk_widget_show_all(GTK_WIDGET(row));
-
-    completion_list_add(chan->completion_list, name);
-
-    if (!is_init)
-        srain_chan_sys_msg_addf(chan, SYS_MSG_NORMAL, "%s has joined %s", name, chan_name);
+        chan_name = gtk_widget_get_name(GTK_WIDGET(chan));
+        if (if_sys_msg)
+            srain_chan_sys_msg_addf(chan, SYS_MSG_NORMAL, "%s has joined %s",
+                    nick, chan_name);
+    };
 }
 
-void srain_chan_online_list_rm(SrainChan *chan, const char *name, const char *reason){
+void srain_chan_user_list_rm(SrainChan *chan, const char *nick, const char *reason){
     const char *chan_name;
-    GtkListBoxRow *row;
 
-    chan_name =gtk_widget_get_name(GTK_WIDGET(chan));
-    row = get_list_item_by_name(chan->onlinelist_listbox, name);
-    if (!row){
-        ERR_FR("GtkListBoxRow %s no found in %s", name, chan_name);
-        return;
+    if (srain_user_list_rm(chan->user_list, nick) != -1){
+        chan_name =gtk_widget_get_name(GTK_WIDGET(chan));
+        srain_chan_sys_msg_addf(chan, SYS_MSG_NORMAL, "%s has left %s: %s",
+                nick, chan_name, reason);
     }
-    gtk_container_remove(GTK_CONTAINER(chan->onlinelist_listbox), GTK_WIDGET(row));
-
-    srain_chan_sys_msg_addf(chan, SYS_MSG_NORMAL, "%s has left %s: %s", name, chan_name, reason);
 }
 
-void srain_chan_online_list_rename(SrainChan *chan, const char *old_name, const char *new_name){
-    const char *chan_name;
-    GtkLabel *label;
-    GtkListBoxRow *row;
-
-    chan_name =gtk_widget_get_name(GTK_WIDGET(chan));
-    row = get_list_item_by_name(chan->onlinelist_listbox, old_name);
-    if (!row){
-        ERR_FR("GtkListBoxRow %s no found in %s", old_name, chan_name);
-        return;
+void srain_chan_user_list_rename(SrainChan *chan,
+        const char *old_nick, const char *new_nick){
+    if (srain_user_list_rename(chan->user_list, old_nick, new_nick) != -1){
+        srain_chan_sys_msg_addf(chan, SYS_MSG_NORMAL, "%s is now known as %s",
+                old_nick, new_nick);
     }
-
-    label = GTK_LABEL(gtk_bin_get_child(GTK_BIN(row)));
-    gtk_label_set_text(label, new_name);
-
-    srain_chan_sys_msg_addf(chan, SYS_MSG_NORMAL, "%s is now known as %s", old_name, new_name);
 }
 
 void srain_chan_sys_msg_add(SrainChan *chan, sys_msg_type_t type, const char *msg){

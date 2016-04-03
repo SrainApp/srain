@@ -3,6 +3,7 @@
 
 #include <gtk/gtk.h>
 #include "srain_msg.h"
+#include "irc_magic.h"
 
 #define SRAIN_TYPE_CHAN (srain_chan_get_type())
 #define SRAIN_CHAN(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SRAIN_TYPE_CHAN, SrainChan))
@@ -16,9 +17,9 @@ SrainChan *srain_chan_new(const char *name);
 void srain_chan_fcous_entry(SrainChan *chan);
 
 void srain_chan_set_topic(SrainChan *chan, const char *topic);
-void srain_chan_online_list_rm(SrainChan *chan, const char *name, const char *reason);
-void srain_chan_online_list_add(SrainChan *chan, const char *name, int is_init);
-void srain_chan_online_list_rename(SrainChan *chan, const char *old_name, const char *new_name);
+void srain_chan_user_list_rm(SrainChan *chan, const char *name, const char *reason);
+void srain_chan_user_list_add(SrainChan *chan, const char *name, IRCUserType type, int if_sys_msg);
+void srain_chan_user_list_rename(SrainChan *chan, const char *old_name, const char *new_name);
 
 void srain_chan_sys_msg_add(SrainChan *chan, sys_msg_type_t type, const char *msg);
 void srain_chan_send_msg_add(SrainChan *chan, const char *msg);

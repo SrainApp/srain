@@ -53,27 +53,28 @@ void ui_chan_set_topic(const char *chan_name, const char *topic){
     }
 }
 
-void ui_chan_online_list_add(const char *chan_name, const char *name, int is_init){
+void ui_chan_user_list_add(const char *chan_name, const char *name,
+        IRCUserType type, int if_sys_msg){
     SrainChan *chan;
 
     chan = srain_window_get_chan_by_name(win, chan_name);
     if (chan){
-        srain_chan_online_list_add(chan, name, is_init);
+        srain_chan_user_list_add(chan, name, type, if_sys_msg);
     }
 }
 
-void ui_chan_online_list_rm(const char *chan_name, const char *name, const char *resaon){
+void ui_chan_user_list_rm(const char *chan_name, const char *name, const char *resaon){
     SrainChan *chan;
 
     chan = srain_window_get_chan_by_name(win, chan_name);
     if (chan){
-        srain_chan_online_list_rm(chan, name, resaon);
+        srain_chan_user_list_rm(chan, name, resaon);
     }
 }
 
 
 /**
- * @brief ui_chan_online_list_rm_broadcast
+ * @brief ui_chan_user_list_rm_broadcast
  *
  * called when recvied QUIT message
  *
@@ -81,20 +82,20 @@ void ui_chan_online_list_rm(const char *chan_name, const char *name, const char 
  * @param name
  * @param resaon
  */
-void ui_chan_online_list_rm_broadcast(GList *chans, const char *name, const char *reason){
+void ui_chan_user_list_rm_broadcast(GList *chans, const char *name, const char *reason){
     while (chans){
-        ui_chan_online_list_rm(chans->data, name, reason);
+        ui_chan_user_list_rm(chans->data, name, reason);
         chans = chans->next;
     }
 }
 
-void ui_chan_online_list_rename_broadcast(GList *chans, const char *old_name, const char *new_name){
+void ui_chan_user_list_rename_broadcast(GList *chans, const char *old_name, const char *new_name){
     SrainChan *chan;
 
     while (chans){
         chan = srain_window_get_chan_by_name(win, chans->data);
         if (chan){
-            srain_chan_online_list_rename(chan, old_name, new_name);
+            srain_chan_user_list_rename(chan, old_name, new_name);
         }
         chans = chans->next;
     }

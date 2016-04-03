@@ -177,7 +177,7 @@ gboolean srain_idles(irc_msg_t *imsg){
     /* JOIN & PART & QUIT
      *
      * sys message "xxx has join/leave #yyy" are sent
-     * by ui_chan_online_list_{add,rm}()
+     * by ui_chan_user_list_{add,rm}()
      */
     else if (strcmp(imsg->command, "JOIN") == 0){
         if (imsg->nparam != 1) goto bad;
@@ -185,11 +185,12 @@ gboolean srain_idles(irc_msg_t *imsg){
             ui_chan_add(imsg->param[0]);
             irc_join_ack(&irc, imsg->param[0]);
         }
-        ui_chan_online_list_add(imsg->param[0], imsg->nick, 0);
+        ui_chan_user_list_add(imsg->param[0], imsg->nick,
+                IRC_USER_PERSON, 1);
     }
     else if (strcmp(imsg->command, "PART") == 0){
         if (imsg->nparam != 1) goto bad;
-        ui_chan_online_list_rm(imsg->param[0], imsg->nick, imsg->message);
+        ui_chan_user_list_rm(imsg->param[0], imsg->nick, imsg->message);
         if (strncmp(imsg->nick, irc.nick, NICK_LEN) == 0){
             irc_part_ack(&irc, imsg->param[0]);
             ui_chan_rm(imsg->param[0]);
@@ -197,7 +198,7 @@ gboolean srain_idles(irc_msg_t *imsg){
     }
     else if (strcmp(imsg->command, "QUIT") == 0){
         if (imsg->nparam != 0) goto bad;
-        ui_chan_online_list_rm_broadcast(irc.chans, imsg->nick, imsg->message);
+        ui_chan_user_list_rm_broadcast(irc.chans, imsg->nick, imsg->message);
     }
 
     /* INVITE & KICK */
@@ -217,7 +218,7 @@ gboolean srain_idles(irc_msg_t *imsg){
     else if (strcmp(imsg->command, "NICK") == 0){
         if (imsg->nparam != 0) goto bad;
 
-        ui_chan_online_list_rename_broadcast(irc.chans, imsg->nick, imsg->message);
+        ui_chan_user_list_rename_broadcast(irc.chans, imsg->nick, imsg->message);
 
         if (strncmp(irc.nick, imsg->nick, NICK_LEN) == 0)
             irc_nick_ack(&irc, imsg->message);
@@ -229,7 +230,10 @@ gboolean srain_idles(irc_msg_t *imsg){
         if (imsg->nparam != 3) goto bad;
         char *nickptr = strtok(imsg->message, " ");
         while (nickptr){
-            ui_chan_online_list_add(imsg->param[2], nickptr, 1);
+            ui_chan_user_list_add(imsg->param[2],
+                    nickptr[0] == '@' ? nickptr + 1 : nickptr,
+                    nickptr[0] == '@' ? IRC_USER_OP : IRC_USER_PERSON,
+                    0);
             nickptr = strtok(NULL, " ");
         }
     }

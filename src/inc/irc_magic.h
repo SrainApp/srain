@@ -1,6 +1,12 @@
 #ifndef __IRC_MAGIC_H
 #define __IRC_MAGIC_H
 
+typedef enum{
+    IRC_USER_PERSON,
+    IRC_USER_OP,
+    // ..
+} IRCUserType;
+
 #define SERVER_LEN      64      // unconfirm
 #define HOST_LEN        64
 #define CHAN_LEN        200
@@ -10,6 +16,7 @@
 #define MSG_LEN         512
 #define PARAM_COUNT     64      // unconfirm
 #define PARAM_LEN       64      // unconfirm
+
 #define CHAN_PREFIX1    '#'
 #define CHAN_PREFIX2    '&'
 

@@ -34,7 +34,11 @@ GtkSeparator.vertical {
 GtkMenuItem { padding: 8px; background-color: @bg_color; }
 GtkMenuItem:hover { background-color: @hover_color; }
 
-GtkListBoxRow:hover { background-color: @hover_color; }
+GtkListBoxRow:hover {
+    background-color: @hover_color;
+    transition: 200ms ease-in-out;
+}
+
 GtkEntry { padding: 8px; }
 GtkEntry:selected, GtkLabel:selected {
     background-color: @selected_text_color;
@@ -117,7 +121,7 @@ SrainStackSidebarItem #count_label {
                from(@window_header_box_color), to(@active_color));
 }
 #avatar_image { border-radius: 20px; }
-#onlinelist_listbox {  background-color: @bg_color; }
+
 /*
 #unread_label {
     background-color: @bg_color; padding: 6px;
