@@ -39,6 +39,20 @@ GtkListBoxRow:hover {
     transition: 200ms ease-in-out;
 }
 
+GtkListBoxRow:focus,
+GtkListBoxRow:selected {
+    background-color: @active_color;
+    transition: 200ms ease-in-out;
+}
+
+/* for SrainUserList */
+GtkListBoxRow GtkButton,
+GtkListBoxRow GtkButton:focus,
+GtkListBoxRow GtkButton:hover,
+GtkListBoxRow GtkButton:active {
+    background-color: transparent;
+}
+
 GtkEntry { padding: 8px; }
 GtkEntry:selected, GtkLabel:selected {
     background-color: @selected_text_color;

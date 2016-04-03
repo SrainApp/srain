@@ -7,6 +7,7 @@
  */
 
 #include <gtk/gtk.h>
+#include <strings.h>
 #include "ui_common.h"
 #include "irc_magic.h"
 #include "srain_user_list.h"
@@ -23,7 +24,32 @@ struct _SrainUserListClass {
 
 G_DEFINE_TYPE(SrainUserList, srain_user_list, GTK_TYPE_LIST_BOX);
 
+static gint list_sort_func(GtkListBoxRow *row1, GtkListBoxRow *row2, gpointer user_data){
+    gpointer is1_op;
+    gpointer is2_op;
+    const char *name1;
+    const char *name2;
+    GtkButton *button1;
+    GtkButton *button2;
+
+    button1 = GTK_BUTTON(gtk_bin_get_child(GTK_BIN(row1)));
+    button2 = GTK_BUTTON(gtk_bin_get_child(GTK_BIN(row2)));
+
+    is1_op = g_object_get_data(G_OBJECT(button1), "is-op");
+    is2_op = g_object_get_data(G_OBJECT(button2), "is-op");
+
+    if (is1_op && !is2_op) return -1;
+    if (!is1_op && is2_op) return 1;
+
+    name1 = gtk_button_get_label(button1);
+    name2 = gtk_button_get_label(button2);
+
+    return strcasecmp(name1, name2);
+}
+
 static void srain_user_list_init(SrainUserList *self){
+    gtk_list_box_set_selection_mode(GTK_LIST_BOX(self), GTK_SELECTION_NONE);
+    gtk_list_box_set_sort_func(GTK_LIST_BOX(self), list_sort_func, NULL, NULL);
 }
 
 static void srain_user_list_class_init(SrainUserListClass *class){
@@ -44,9 +70,13 @@ int srain_user_list_add(SrainUserList *list, const char *nick, IRCUserType type)
         return -1;
     }
 
+    /* NOTE: use a gobject associations table item to mark
+     * whether it is a OP, uesd by func list_sort_func()
+     */
     if (type == IRC_USER_OP){
         button = GTK_BUTTON(gtk_button_new());
         image = GTK_IMAGE(gtk_image_new_from_file("img/op_icon.png"));
+        g_object_set_data(G_OBJECT(button), "is-op", button);
     }
     else if (type == IRC_USER_PERSON){
         button = GTK_BUTTON(gtk_button_new());
@@ -58,10 +88,9 @@ int srain_user_list_add(SrainUserList *list, const char *nick, IRCUserType type)
     gtk_button_set_label(button, nick);
     gtk_button_set_image(button, GTK_WIDGET(image));
     gtk_widget_set_name(GTK_WIDGET(button), nick);
+    gtk_widget_set_halign(GTK_WIDGET(button), GTK_ALIGN_START);
 
     row = GTK_LIST_BOX_ROW(gtk_list_box_row_new());
-    // gtk_widget_set_halign(GTK_WIDGET(row), GTK_ALIGN_START);
-    // TODO: align
 
     // gtk_button_set_focus_on_click is deprecated
     gtk_widget_set_can_focus(GTK_WIDGET(button), FALSE);
