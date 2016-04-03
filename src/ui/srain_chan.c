@@ -507,14 +507,14 @@ void srain_chan_user_list_add(SrainChan *chan, const char *nick,
         IRCUserType type, int if_sys_msg){
     const char *chan_name;
 
-    if (srain_user_list_add(chan->user_list, nick, type) == -1){
+    if (srain_user_list_add(chan->user_list, nick, type) != -1){
         completion_list_add(chan->completion_list, nick);
 
         chan_name = gtk_widget_get_name(GTK_WIDGET(chan));
         if (if_sys_msg)
             srain_chan_sys_msg_addf(chan, SYS_MSG_NORMAL, "%s has joined %s",
                     nick, chan_name);
-    };
+    }
 }
 
 void srain_chan_user_list_rm(SrainChan *chan, const char *nick, const char *reason){
