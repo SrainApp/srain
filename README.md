@@ -34,4 +34,4 @@ WIP, Srain is still no fully available now.
 
 As you see, its theme is inspired by Telegram Desktop.
 
-![screenshot](https://img.vim-cn.com/b7/98ca0aa65ac25de6ca43e0af81301db494c6f2.png)
+![screenshot](https://img.vim-cn.com/4f/59a3f20a2f7402d94b6759b860e37dac5bf843.png)
