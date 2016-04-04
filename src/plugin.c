@@ -14,7 +14,7 @@ char* plugin_upload(const char *path){
     Py_Initialize();
 
     /* load current dirrectory *SHOULD BE REMOVED IN RELEASE* */
-    PyRun_SimpleString("import sys; sys.path.append('.')");
+    PyRun_SimpleString("import sys; sys.path.append('./plugin')");
 
     /* import */
     py_module = PyImport_Import(PyUnicode_FromString("upload"));
@@ -41,6 +41,7 @@ char* plugin_upload(const char *path){
 
     Py_Finalize();
 
+    // TODO: should url be freed?
     if (url){
         return strdup(url);
     }
@@ -49,7 +50,7 @@ char* plugin_upload(const char *path){
     }
 }
 
-void plugin_avatar(const char *nick, const char *user, const char *host){
+char* plugin_avatar(const char *nick, const char *user, const char *host){
     char *path;
     PyObject *py_module;
     PyObject *py_func;
@@ -59,19 +60,19 @@ void plugin_avatar(const char *nick, const char *user, const char *host){
     Py_Initialize();
 
     /* load current dirrectory *SHOULD BE REMOVED IN RELEASE* */
-    PyRun_SimpleString("import sys; sys.path.append('.')");
+    PyRun_SimpleString("import sys; sys.path.append('./plugin')");
 
     /* import */
     py_module = PyImport_Import(PyUnicode_FromString("avatar"));
     if (!py_module) {
         LOG_FR("plugin `avatar` no found");
-        return;
+        return NULL;
     }
 
     py_func = PyObject_GetAttrString(py_module, "avatar");
     if (!py_func) {
         LOG_FR("function `avatar()` no found");
-        return;
+        return NULL;
     }
 
     /* build args */
@@ -85,7 +86,16 @@ void plugin_avatar(const char *nick, const char *user, const char *host){
     path = PyUnicode_AsUTF8(py_path);
 
     LOG_FR("%s", path);
+
     Py_Finalize();
+
+    // TODO: should path be freed?
+    if (path){
+        return strdup(path);
+    }
+    else {
+        return NULL;
+    }
 }
 int plugin_init(){
     plugin_upload("/home/la/Pictures/Wallpapers/bg.jpg");

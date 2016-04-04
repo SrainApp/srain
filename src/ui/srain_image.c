@@ -15,6 +15,7 @@
 
 struct _SrainImage {
     GtkBox parent;
+    int size;
     const char *url;
     GString *filename;
     GtkButton *load_button;
@@ -79,7 +80,7 @@ static gboolean set_image_idle(SrainImage *simg){
     gtk_widget_set_visible(GTK_WIDGET(simg->image), TRUE);
 
     pixbuf = gdk_pixbuf_new_from_file_at_size(simg->filename->str,
-            300, 300, &error);
+            simg->size, simg->size, &error);
 
     if (error){ 
         ERR_FR("failed to open %s as a image", simg->filename->str);
@@ -136,14 +137,15 @@ SrainImage* srain_image_new(void){
     return g_object_new(SRAIN_TYPE_IMAGE, NULL);
 }
 
-SrainImage* srain_image_new_from_url_async(const char *url, int auto_load){
+SrainImage* srain_image_new_from_url_async(const char *url, int size, int if_autoload){
     SrainImage *simg;
 
     simg = srain_image_new();
     simg->url = url;
+    simg->size = size;
 
-    if (auto_load){
-        load_image(simg);
+    if (if_autoload){
+            load_image(simg);
     } else {
         gtk_widget_set_visible(GTK_WIDGET(simg->load_button), TRUE);
         g_signal_connect_swapped(simg->load_button, "clicked",

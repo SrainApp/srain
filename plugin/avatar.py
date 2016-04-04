@@ -5,6 +5,9 @@
 # @version 1.0
 # @date 2016-03-15
 
+import urllib.request as ur
+
+api = 'https://avatars.githubusercontent.com/{{USERNAME}}?s=36'
+
 def avatar(nick, user, host):
-    print(nick, user, host)
-    return '/home/la/git/srain/build/avatar.png'
+    return api.replace('{{USERNAME}}', nick)

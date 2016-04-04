@@ -11,6 +11,6 @@ typedef struct _SrainImageClass SrainImageClass;
 
 GType srain_image_get_type(void);
 SrainImage *srain_image_new(void);
-SrainImage* srain_image_new_from_url_async(const char *url, int auto_load);
+SrainImage* srain_image_new_from_url_async(const char *url, int size, int if_autoload);
 
 #endif /* __SRAIN_IMAGE_H */

@@ -21,6 +21,7 @@
 #include "markup.h"
 #include "download.h"
 #include "log.h"
+#include "plugin.h"
 
 static void nick_button_on_click(GtkWidget *widget, gpointer *user_data){
     GString *cmd;
@@ -116,7 +117,7 @@ SrainSendMsg* srain_send_msg_new(const char *msg){
 
     if (img_url){
         // TODO: free img_url?
-        simg = srain_image_new_from_url_async(img_url->str, 0);
+        simg = srain_image_new_from_url_async(img_url->str, 300, 0);
         gtk_container_add(GTK_CONTAINER(smsg->padding_box), GTK_WIDGET(simg));
         gtk_widget_show(GTK_WIDGET(simg));
     }
@@ -134,10 +135,10 @@ static void srain_recv_msg_init(SrainRecvMsg *self){
 static void srain_recv_msg_class_init(SrainRecvMsgClass *class){
     gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
             "/org/gtk/srain/recv_msg.glade");
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, avatar_box);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, padding_box);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, msg_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, time_label);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, avatar_image);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, nick_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, identify_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, nick_button);
@@ -145,9 +146,11 @@ static void srain_recv_msg_class_init(SrainRecvMsgClass *class){
 
 SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *msg){
     char timestr[32];
+    char *avatar_path;
     GString *markuped_msg;
     GString *img_url;
     SrainImage *simg;
+    SrainImage *avatar_simg;
     SrainRecvMsg *smsg;
 
     smsg = g_object_new(SRAIN_TYPE_RECV_MSG, NULL);
@@ -166,11 +169,18 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *m
         gtk_label_set_text(smsg->msg_label, msg);
     }
 
+    /* avatar in message */
     if (img_url){
-        simg = srain_image_new_from_url_async(img_url->str, 0);
+        simg = srain_image_new_from_url_async(img_url->str, 300, 0);
         gtk_container_add(GTK_CONTAINER(smsg->padding_box), GTK_WIDGET(simg));
         gtk_widget_show(GTK_WIDGET(simg));
     }
+
+    /* avatar TODO */
+    avatar_path = plugin_avatar(nick, "", "");
+    avatar_simg = srain_image_new_from_url_async(avatar_path, 36, 1);
+    gtk_container_add(GTK_CONTAINER(smsg->avatar_box), GTK_WIDGET(avatar_simg));
+    gtk_widget_show(GTK_WIDGET(avatar_simg));
 
     if (strlen(gtk_label_get_text(smsg->identify_label)) != 0){
         g_signal_connect(smsg->nick_button, "clicked",
