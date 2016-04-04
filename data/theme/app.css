@@ -2,6 +2,7 @@
 
 /* general {{ */
 * { color: @text_color; }
+*:insensitive { opacity: 0.5; }
 
 GtkWindow, GtkBox { background-color: @bg_color; }
 
@@ -44,6 +45,8 @@ GtkListBoxRow:selected {
     background-color: @active_color;
     transition: 200ms ease-in-out;
 }
+
+.dim-label { opacity: 0.5; }
 
 /* for SrainUserList */
 GtkListBoxRow GtkButton,
@@ -134,7 +137,6 @@ SrainStackSidebarItem #count_label {
                /* TODO */
                from(@window_header_box_color), to(@active_color));
 }
-#avatar_image { border-radius: 20px; }
 
 /*
 #unread_label {
