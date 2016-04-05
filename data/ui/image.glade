@@ -8,7 +8,8 @@
     <property name="orientation">vertical</property>
     <child>
       <object class="GtkButton" id="load_button">
-        <property name="label" translatable="yes">load image</property>
+        <property name="label" translatable="yes">Load image</property>
+        <property name="name">load_button</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="receives_default">True</property>

@@ -42,6 +42,7 @@
             <property name="spacing">2</property>
             <child>
               <object class="GtkButton" id="nick_button">
+                <property name="name">nick_button</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>

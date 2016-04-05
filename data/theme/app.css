@@ -123,11 +123,11 @@ SrainStackSidebarItem #count_label {
     border-radius: 4px;
     box-shadow: alpha(black, 0.2) 2px 2px;
 }
-#normal_recv_msg_box GtkButton { padding: 2px; background-color: transparent; }
+#normal_recv_msg_box #nick_button { padding: 2px; background-color: transparent; }
 /* }} */
 
 
-/* SrainChan */
+/* SrainChan {{ */
 #msg_scrolledwindow GtkBox { background-color: transparent; }
 #chan_box {
     /* background-image: url("./bg.jpg"); */
@@ -137,11 +137,25 @@ SrainStackSidebarItem #count_label {
                /* TODO */
                from(@window_header_box_color), to(@active_color));
 }
-
 /*
 #unread_label {
     background-color: @bg_color; padding: 6px;
     box-shadow: alpha(black, 0.2) 0px 2px;
 }
 */
+/* }} */
+
+
+/* SrainImage {{ */
+SrainImage #load_button * { color: darker(darker(@gray_color)); }
+SrainImage #load_button {
+    padding: 4px;
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 2px;
+    border-color: @active_color;
+    background-color: @bg_color;
+}
+SrainImage #load_button:hover{ background-color: @hover_color; }
+SrainImage #load_button:active{ background-color: @active_color; }
 /* }} */
