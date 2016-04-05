@@ -74,6 +74,7 @@ GString *download(const char *url){
     fclose(fp);
 
     if (res != CURLE_OK){
+        unlink(path->str);
         ERR_FR("error code %d", res);
         return NULL;
     }

@@ -116,8 +116,10 @@ SrainSendMsg* srain_send_msg_new(const char *msg){
     }
 
     if (img_url){
-        // TODO: free img_url?
-        simg = srain_image_new_from_url_async(img_url->str, 300, 0);
+        simg = srain_image_new();
+        srain_image_set_from_url_async(simg, img_url->str, 300,
+                SRAIN_IMAGE_ENLARGE | SRAIN_IMAGE_SPININER);
+        g_string_free(img_url, TRUE);
         gtk_container_add(GTK_CONTAINER(smsg->padding_box), GTK_WIDGET(simg));
         gtk_widget_show(GTK_WIDGET(simg));
     }
@@ -171,14 +173,20 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *m
 
     /* avatar in message */
     if (img_url){
-        simg = srain_image_new_from_url_async(img_url->str, 300, 0);
+        simg = srain_image_new();
+        srain_image_set_from_url_async(simg, img_url->str, 300,
+                SRAIN_IMAGE_ENLARGE | SRAIN_IMAGE_SPININER);
+        g_string_free(img_url, TRUE);
         gtk_container_add(GTK_CONTAINER(smsg->padding_box), GTK_WIDGET(simg));
         gtk_widget_show(GTK_WIDGET(simg));
     }
 
     /* avatar TODO */
     avatar_path = plugin_avatar(nick, "", "");
-    avatar_simg = srain_image_new_from_url_async(avatar_path, 36, 1);
+
+    avatar_simg = srain_image_new();
+    srain_image_set_from_file(avatar_simg, "img/default_avatar.png", 36, SRAIN_IMAGE_AUTOLOAD);
+    srain_image_set_from_url_async(avatar_simg, avatar_path, 36, SRAIN_IMAGE_AUTOLOAD);
     gtk_container_add(GTK_CONTAINER(smsg->avatar_box), GTK_WIDGET(avatar_simg));
     gtk_widget_show(GTK_WIDGET(avatar_simg));
 
