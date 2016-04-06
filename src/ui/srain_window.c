@@ -53,8 +53,9 @@ static void join_entry_on_activate(GtkWidget *widget, gpointer user_data){
     entry = GTK_ENTRY(widget);
     popover = user_data;
 
-    srain_join(gtk_entry_get_text(entry));
+    srain_query(gtk_entry_get_text(entry));
     gtk_widget_set_visible(GTK_WIDGET(popover), FALSE);
+    gtk_entry_set_text(entry, "");
 }
 
 static void header_button_on_click(gpointer user_data){

@@ -274,7 +274,7 @@ static void leave_button_on_click(GtkWidget *widget, gpointer user_data){
 
     chan = user_data;
     chan_name = gtk_widget_get_name(GTK_WIDGET(chan));
-    srain_part(chan_name, NULL);
+    srain_unquery(chan_name);
 }
 
 static void option_togglebutton_on_click(GtkWidget *widget, gpointer user_data){

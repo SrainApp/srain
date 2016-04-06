@@ -108,6 +108,44 @@ int srain_part(const char *chan, const char *reason){
     RET(irc_part_req(&irc, chan, reason));
 }
 
+int srain_query(const char *target){
+    ui_busy(TRUE);
+
+    if (stat != SRAIN_LOGINED){
+        ui_msg_sys(NULL, SYS_MSG_ERROR, "no logged in");
+        ERR_FR("NO SRAIN_LOGINED");
+        RET(-1);
+    }
+
+    if (target[0] == CHAN_PREFIX1
+            || target[0] == CHAN_PREFIX2){
+        RET(srain_join(target));
+    }
+
+    ui_chan_add(target);
+
+    RET(0);
+}
+
+int srain_unquery(const char *target){
+    ui_busy(TRUE);
+
+    if (stat != SRAIN_LOGINED){
+        ui_msg_sys(NULL, SYS_MSG_ERROR, "no logged in");
+        ERR_FR("NO SRAIN_LOGINED");
+        RET(-1);
+    }
+
+    if (target[0] == CHAN_PREFIX1
+            || target[0] == CHAN_PREFIX2){
+        RET(srain_part(target, NULL));
+    }
+
+    ui_chan_rm(target);
+
+    RET(0);
+}
+
 int srain_send(const char *chan, char *msg){
     ui_busy(TRUE);
 
@@ -130,21 +168,22 @@ gboolean srain_idles(irc_msg_t *imsg){
     if (strcmp(imsg->command, "PRIVMSG") == 0){
         int is_action = 0;
         int imsg_len;
+        const char *dest;
 
         if (imsg->nparam != 1) goto bad;
 
         imsg_len = strlen(imsg->message);
 
-        /* strip \x1ACTION ... \x1 */
-        if (strcmp(imsg->message, "\1ACTION")
+        /* strip '\x1ACTION '... '\x1' */
+        if (strcmp(imsg->message, "\1ACTION ")
                 && imsg->message[imsg_len - 1] == '\1'){
             char tmp_msg[MSG_LEN];
 
             is_action = 1;
             imsg->message[imsg_len - 1] = '\0';
 
-            strncpy(tmp_msg, imsg->message + strlen("\1ACTION"),
-                    MSG_LEN - strlen("\1ACTION"));
+            strncpy(tmp_msg, imsg->message + strlen("\1ACTION "),
+                    MSG_LEN - strlen("\1ACTION "));
             memset(imsg->message, 0, MSG_LEN);
             strncpy(imsg->message, tmp_msg, MSG_LEN);
         }
@@ -157,11 +196,24 @@ gboolean srain_idles(irc_msg_t *imsg){
             return FALSE;
         }
 
-        if (is_action){
-            ui_msg_sysf(imsg->param[0], SYS_MSG_ACTION, "*** %s %s ***",
-                    strlen(imsg->nick) ? imsg->nick :imsg->servername, imsg->message);
+        /* when a message comes from a channel,
+         * param[0] is channel's name
+         * when it comes from a person,
+         * param[0] yourself's nick
+         */
+        if (imsg->param[0][0] == CHAN_PREFIX1
+                || imsg->param[0][0] == CHAN_PREFIX2){
+            dest = imsg->param[0];
         } else {
-            ui_msg_recv(imsg->param[0], imsg->nick, imsg->servername, imsg->message);
+            dest = imsg->nick;
+        }
+
+        if (is_action){
+            /* may lose relay bot information */
+            ui_msg_sysf(dest, SYS_MSG_ACTION, "*** %s %s ***",
+                    imsg->nick, imsg->message);
+        } else {
+            ui_msg_recv(dest, imsg->nick, imsg->servername, imsg->message);
         }
     }
 
@@ -455,8 +507,8 @@ void srain_recv(){
 
 void srain_close(){
     irc_quit_req(&irc, META_NAME_VERSION);
-    gtk_main_quit();
     irc_close(&irc);
+    // TODO: close client
 }
 
 int srain_cmd(const char *chan, char *cmd){
@@ -493,13 +545,22 @@ int srain_cmd(const char *chan, char *cmd){
     }
 
     /**************************************/
+    else if (strncmp(cmd, "/query", 6) == 0){
+        char *target = strtok(cmd + 6, " ");
+        if (target) return srain_query(target);
+    }
+    else if (strncmp(cmd, "/unquery", 8) == 0){
+        char *target = strtok(cmd + 8, " ");
+        if (target == NULL) target = (char *)chan;
+            return srain_unquery(target);
+    }
     else if (strncmp(cmd, "/join ", 6) == 0){
         char *jchan = strtok(cmd + 6, " ");
         if (jchan) return srain_join(jchan);
     }
     else if (strncmp(cmd, "/part", 5) == 0){
         char *pchan = strtok(cmd + 5, " ");
-        if (pchan == NULL) pchan = (char *)ui_chan_get_cur_name();
+        if (pchan == NULL) pchan = (char *)chan;
         return srain_part(pchan, NULL);
     }
     else if (strncmp(cmd, "/quit", 5) == 0){
@@ -528,9 +589,8 @@ int srain_cmd(const char *chan, char *cmd){
     }
     else if (strncmp(cmd, "/whois ", 7) == 0){
         char *nick = strtok(cmd + 7, " ");
-        if (nick){
-            return irc_whois(&irc, nick);
-        }
+        if (nick == NULL) nick = (char *)chan;
+        return irc_whois(&irc, nick);
     }
     else if (strncmp(cmd, "/invite ", 8) == 0){
         char *nick = strtok(cmd + 8, " ");

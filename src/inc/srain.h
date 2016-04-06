@@ -3,6 +3,8 @@
 
 int srain_connect(const char *server, const char *alias);
 int srain_login(const char *name);
+int srain_query(const char *target);
+int srain_unquery(const char *target);
 int srain_join(const char *chan);
 int srain_part(const char *chan, const char *reason);
 int srain_cmd(const char *chan, char *cmd);
