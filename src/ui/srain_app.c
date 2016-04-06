@@ -28,24 +28,28 @@ static void srain_app_init(SrainApp *app){
     return;
 }
 
-static void srain_app_activate(GApplication *app){
+static void srain_app_activate(GtkApplication *app){
+    GList *list;
     SrainWindow *win;
 
-    theme_init();
+    list = gtk_application_get_windows(app);
 
-    win = srain_window_new(SRAIN_APP(app));
+    if (list){
+        gtk_window_present(GTK_WINDOW(list->data));
+    } else {
+        theme_init();
 
-    gtk_window_present(GTK_WINDOW(win));
+        win = srain_window_new(SRAIN_APP(app));
+        srain_window_add_chan(win, META_SERVER);
+        gtk_window_present(GTK_WINDOW(win));
 
-    srain_window_add_chan(win, META_SERVER);
-
-    ui_init(win);
-
-    rc_read();
+        ui_init(win);
+        rc_read();
+    }
 }
 
 static void srain_app_class_init(SrainAppClass *class){
-    G_APPLICATION_CLASS(class)->activate = srain_app_activate;
+    G_APPLICATION_CLASS(class)->activate = (void *)(GApplication *)srain_app_activate;
 }
 
 SrainApp* srain_app_new(void){
