@@ -36,6 +36,7 @@
 #include "srain_stack_sidebar.h"
 #include "srain_stack_sidebar_item.h"
 #include "srain_chan.h"
+#include "ui_common.h"
 #include "log.h"
 
 struct _SrainStackSidebar {
@@ -95,8 +96,8 @@ static void srain_stack_sidebar_init(SrainStackSidebar *self){
 
 static void add_child(GtkWidget *child, SrainStackSidebar *sidebar){
     const char *name;
+    GtkListBoxRow *row;
     SrainStackSidebarItem *item;
-    GtkWidget *row;
 
     if (g_hash_table_lookup(sidebar->rows, child))
         return;
@@ -106,15 +107,11 @@ static void add_child(GtkWidget *child, SrainStackSidebar *sidebar){
     item = srain_stack_sidebar_item_new(name);
     // gtk_widget_set_halign(item, GTK_ALIGN_START);
     // gtk_widget_set_valign(item, GTK_ALIGN_CENTER);
-    row = gtk_list_box_row_new();
-    gtk_widget_set_can_focus(row, FALSE);
-    gtk_container_add(GTK_CONTAINER(row), GTK_WIDGET(item));
-    gtk_widget_show_all(row);
 
     g_object_set_data(G_OBJECT(item), "stack-child", child);
-    g_hash_table_insert(sidebar->rows, child, row);
-    gtk_container_add(GTK_CONTAINER(sidebar->list), row);
 
+    row = gtk_list_box_add_unfocusable_row(sidebar->list, GTK_WIDGET(item));
+    g_hash_table_insert(sidebar->rows, child, row);
     gtk_list_box_select_row(sidebar->list, GTK_LIST_BOX_ROW(row));
 }
 

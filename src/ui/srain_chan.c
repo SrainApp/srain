@@ -41,7 +41,7 @@ struct _SrainChan {
 
     /* */
     GtkScrolledWindow *msg_scrolledwindow;
-    GtkBox *msg_box;
+    GtkListBox *msg_listbox;
     GtkMenu *msg_menu;
     GtkRevealer *user_list_revealer;
     GtkViewport *user_list_viewport;
@@ -139,7 +139,7 @@ static int should_scroll_to_bottom(SrainChan *chan){
        if (chan->unread_label == NULL){
        chan->unread_label = GTK_LABEL(gtk_label_new("Unread messages"));
        gtk_widget_set_name(GTK_WIDGET(chan->unread_label), "unread_label");
-       gtk_container_add(GTK_CONTAINER(chan->msg_box),
+       gtk_container_add(GTK_CONTAINER(chan->msg_listbox),
        GTK_WIDGET(chan->unread_label));
        gtk_widget_show(GTK_WIDGET(chan->unread_label));
        }
@@ -354,7 +354,7 @@ ret:
 }
 
 // TODO: NOT work now
-static gboolean msg_box_popup(GtkWidget *widget,
+static gboolean msg_listbox_popup(GtkWidget *widget,
         GdkEventButton *event, gpointer *user_data){
     GtkMenu *menu;
 
@@ -427,8 +427,8 @@ static void srain_chan_init(SrainChan *self){
 
     // g_signal_connect(self->user_list_listbox, "button_press_event",
             // G_CALLBACK(online_listbox_on_dbclick), NULL);
-    g_signal_connect(self->msg_box, "button_press_event",
-            G_CALLBACK(msg_box_popup), self->msg_menu);
+    g_signal_connect(self->msg_listbox, "button_press_event",
+            G_CALLBACK(msg_listbox_popup), self->msg_menu);
 
     g_signal_connect_swapped(self->annex_button, "clicked",
             G_CALLBACK(popover_show), self->annex_popover);
@@ -455,7 +455,7 @@ static void srain_chan_class_init(SrainChanClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, option_button);
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, msg_scrolledwindow);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, msg_box);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, msg_listbox);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, msg_menu);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, user_list_revealer);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, user_list_viewport);
@@ -543,9 +543,7 @@ void srain_chan_sys_msg_add(SrainChan *chan, sys_msg_type_t type, const char *ms
 
     to_bottom = (should_scroll_to_bottom(chan));
 
-    gtk_container_add(GTK_CONTAINER(chan->msg_box), GTK_WIDGET(smsg));
-    theme_apply(GTK_WIDGET(chan->msg_box));
-    gtk_widget_show(GTK_WIDGET(smsg));
+    gtk_list_box_add_unfocusable_row(chan->msg_listbox, GTK_WIDGET(smsg));
 
     chan->last_msg = GTK_WIDGET(smsg);
 
@@ -557,9 +555,7 @@ void srain_chan_send_msg_add(SrainChan *chan, const char *msg){
     SrainSendMsg *smsg;
 
     smsg = srain_send_msg_new(msg);
-    gtk_container_add(GTK_CONTAINER(chan->msg_box), GTK_WIDGET(smsg));
-    theme_apply(GTK_WIDGET(chan->msg_box));
-    gtk_widget_show(GTK_WIDGET(smsg));
+    gtk_list_box_add_unfocusable_row(chan->msg_listbox, GTK_WIDGET(smsg));
 
     chan->last_msg = GTK_WIDGET(smsg);
 
@@ -570,9 +566,7 @@ void _srain_chan_recv_msg_add(SrainChan *chan, const char *nick, const char *id,
     SrainRecvMsg *smsg;
 
     smsg = srain_recv_msg_new(nick, id, msg);
-    gtk_container_add(GTK_CONTAINER(chan->msg_box), GTK_WIDGET(smsg));
-    theme_apply(GTK_WIDGET(chan->msg_box));
-    gtk_widget_show(GTK_WIDGET(smsg));
+    gtk_list_box_add_unfocusable_row(chan->msg_listbox, GTK_WIDGET(smsg));
 
     chan->last_msg = GTK_WIDGET(smsg);
 }

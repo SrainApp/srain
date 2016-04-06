@@ -9,6 +9,7 @@
 #include <string.h>
 #include <gtk/gtk.h>
 #include <assert.h>
+#include "theme.h"
 #include "i18n.h"
 
 /**
@@ -32,7 +33,7 @@ void get_cur_time(char *timestr){
  *
  * @return a GtkListRow if found, or return NULL
  */
-GtkListBoxRow* get_list_item_by_name(GtkListBox *listbox, const char *name){
+GtkListBoxRow* gtk_list_box_get_row_by_name(GtkListBox *listbox, const gchar* name){
     const char *widget_name;
     GtkWidget *item;
     GList *row = gtk_container_get_children(GTK_CONTAINER(listbox));
@@ -126,4 +127,35 @@ char* show_open_filechosser(GtkWindow *parent){
     // gtk_widget_destroy(GTK_WIDGET(preview));
 
     return filename;
+}
+
+/**
+ * @brief gtk_list_box_add_item
+ *
+ * @param listbox
+ * @param widget
+ *
+ * @return a unfocusable GtkListRow
+ *
+ * a useful function used to add unfocusable row which contain `widget`
+ * into `listbox`
+ */
+
+GtkListBoxRow* gtk_list_box_add_unfocusable_row(GtkListBox *listbox, GtkWidget *widget){
+    GtkListBoxRow *row;
+
+    row = GTK_LIST_BOX_ROW(gtk_list_box_row_new());
+
+    gtk_widget_set_can_focus(widget, FALSE);
+    gtk_widget_set_can_focus(GTK_WIDGET(row), FALSE);
+
+    gtk_container_add(GTK_CONTAINER(row), widget);
+    gtk_list_box_insert(listbox, GTK_WIDGET(row), -1);
+
+    gtk_widget_show(GTK_WIDGET(row));
+    gtk_widget_show(widget);
+
+    theme_apply(GTK_WIDGET(row));
+
+    return row;
 }

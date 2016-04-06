@@ -129,6 +129,8 @@ SrainStackSidebarItem #count_label {
 
 /* SrainChan {{ */
 #msg_scrolledwindow GtkBox { background-color: transparent; }
+#msg_listbox GtkListBoxRow:hover { background-color: transparent; }
+#msg_listbox GtkListBoxRow:selected { background-color: @active_color; }
 #chan_box {
     /* background-image: url("./bg.jpg"); */
     /* background-color: @active_color; */

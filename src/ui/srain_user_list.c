@@ -64,7 +64,7 @@ int srain_user_list_add(SrainUserList *list, const char *nick, IRCUserType type)
     GtkButton *button;
     GtkListBoxRow *row;
 
-    row = get_list_item_by_name(GTK_LIST_BOX(list), nick);
+    row = gtk_list_box_get_row_by_name(GTK_LIST_BOX(list), nick);
     if (row){
         ERR_FR("GtkListBoxRow %s already exist", nick);
         return -1;
@@ -90,18 +90,7 @@ int srain_user_list_add(SrainUserList *list, const char *nick, IRCUserType type)
     gtk_widget_set_name(GTK_WIDGET(button), nick);
     gtk_widget_set_halign(GTK_WIDGET(button), GTK_ALIGN_START);
 
-    row = GTK_LIST_BOX_ROW(gtk_list_box_row_new());
-
-    // gtk_button_set_focus_on_click is deprecated
-    gtk_widget_set_can_focus(GTK_WIDGET(button), FALSE);
-    gtk_widget_set_can_focus(GTK_WIDGET(row), FALSE);
-
-    gtk_container_add(GTK_CONTAINER(row), GTK_WIDGET(button));
-    gtk_container_add(GTK_CONTAINER(list), GTK_WIDGET(row));
-
-    theme_apply(GTK_WIDGET(row));
-
-    gtk_widget_show_all(GTK_WIDGET(row));
+    gtk_list_box_add_unfocusable_row(GTK_LIST_BOX(list), GTK_WIDGET(button));
 
     return 0;
 }
@@ -109,7 +98,7 @@ int srain_user_list_add(SrainUserList *list, const char *nick, IRCUserType type)
 int srain_user_list_rm(SrainUserList *list, const char *nick){
     GtkListBoxRow *row;
 
-    row = get_list_item_by_name(GTK_LIST_BOX(list), nick);
+    row = gtk_list_box_get_row_by_name(GTK_LIST_BOX(list), nick);
     if (!row){
         ERR_FR("GtkListBoxRow %s no found", nick);
         return -1;
@@ -126,7 +115,7 @@ int srain_user_list_rename(SrainUserList *list,
     GtkListBoxRow *row;
 
     // TODO: person -> op
-    row = get_list_item_by_name(GTK_LIST_BOX(list), old_nick);
+    row = gtk_list_box_get_row_by_name(GTK_LIST_BOX(list), old_nick);
     if (!row){
         ERR_FR("GtkListBoxRow %s no found", old_nick);
         return -1;
