@@ -4,9 +4,8 @@ Srain
 
 it does not look like a irc client :-)
 
-WIP, Srain is still no fully available now.
-
 # Dependencies
+
 * make          (makedepends)
 * gcc           (makedepends)
 * libcurl       (makedepends)
@@ -22,13 +21,24 @@ WIP, Srain is still no fully available now.
     make
     make run
 
+# Install
+
+## For Arch Linux users
+
+    yaourt -S srain-git
+
+## For other linux distributions:
+
+    make init
+    make DESTDIR=/usr
+	make DESTDIR=/usr install
+
 # Feature
-- [ ] beautiful theme
-- [x] relay bot message transform
-- [x] image preview
-- [ ] simple python plugin support
-- [ ] avatar support (plugin)
-- [ ] auto upload image to pastebin (plugin)
+
+- relay bot message transform
+- preview image from url
+- get avatar from github (plugin)
+- auto upload image to pastebin (plugin)
 
 # Screenshot
 
