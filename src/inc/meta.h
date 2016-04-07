@@ -23,6 +23,8 @@
     "/ignore <nick>: ignore someone\n"\
     "\te.g: /ignore srainbot\n"\
     "\tnb: humans behind relaybot also can be ignore.\n"\
+    "/query <target> start a chatting with a person/channel\n"\
+    "/unquery <target> end a chatting with a person/channel\n"\
     "/join <channel>: join a channel\n"\
     "/part [channel]: leave a channel\n"\
     "\tnb: if [channel] no specified, leave current channel.\n"\
