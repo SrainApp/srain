@@ -42,6 +42,7 @@ install:
 run: default
 	$(MAKE) DESTDIR=$(DESTDIR)
 	$(MAKE) DESTDIR=$(DESTDIR) install
+	cp srainrc.example build/share/srain/srainrc
 	build/bin/srain
 
 dbg: $(TARGET)

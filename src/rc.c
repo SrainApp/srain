@@ -26,20 +26,26 @@ int rc_read(){
     char *rc_file;
 
     /* try opening  $PWD/srainrc , used when debug */
+    LOG_F("try opening './srainrc'... ");
     fp = fopen("./srainrc", "r");
 
     if (!fp){
+        LOG("failed\n");
+
         /* open $XDG_CONFIG_HOME/srainrc, it should exist
          * (created in src/main.c::main() )*/
-        rc_file = g_build_filename(g_get_user_config_dir(), "srainrc", NULL);
+        rc_file = g_build_filename(g_get_user_config_dir(), "srain", "srainrc", NULL);
+
+        LOG_F("try opening '%s'... ", rc_file);
         fp = fopen(rc_file, "r");
+        g_free(rc_file);
         if (!fp){
-            ERR_FR("failed to open %s", rc_file);
+            LOG("failed\n");
             g_free(rc_file);
             return -1;
         }
-        g_free(rc_file);
     }
+    LOG("ok\n");
 
     len = 0;
     line = NULL;
@@ -47,7 +53,7 @@ int rc_read(){
         if (line){
             strtok(line, "\n");
             LOG_FR("read: %s", line);
-            if (srain_cmd(META_SERVER, line) < 0){
+            if (srain_cmd(META_SERVER, line)){
                 break;
             }
         }
