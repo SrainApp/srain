@@ -5,7 +5,7 @@
  * @version 1.0
  * @date 2016-03-01
  *
- * read $XDG_CONFIG_HOME/srain/srainrc or $PWD/srainrc,
+ * read $DESTDIR/srain/srainrc or $XDG_CONFIG_HOME/srain/srainrc,
  * call `srain_cmd` for every line
  */
 
@@ -23,45 +23,33 @@ int rc_read(){
     char *line;
     size_t len;
     ssize_t read;
-    char *rc_path;
+    char *rc_file;
 
+    /* try opening  $PWD/srainrc , used when debug */
+    fp = fopen("./srainrc", "r");
 
-    /* try to open $PWD/srainrc */
-    rc_path = g_build_filename(g_get_current_dir(), "srainrc", NULL);
-    LOG_F("opening '%s'... ", rc_path);
-    fp = fopen(rc_path, "r");
-    g_free(rc_path);
-
-    if (fp) goto ready;
-    LOG("failed\n")
-
-    /* try to open $PWD/srainrc */
-    rc_path = g_build_filename(g_get_user_config_dir(), "srainrc", NULL);
-    LOG_F("opening '%s'... ", rc_path);
-    fp = fopen(rc_path, "r");
-    g_free(rc_path);
-
-    if (fp) goto ready;
-    LOG("failed, new one\n")
-
-    rc_path = g_build_filename(g_get_user_config_dir(), "srainrc", NULL);
-    LOG_F("creating '%s'... ", rc_path);
-    fp = fopen(rc_path, "w");
-    g_free(rc_path);
-    if (!fp) {
-        ERR("failed, exit :(\n");
-        exit(-1);
+    if (!fp){
+        /* open $XDG_CONFIG_HOME/srainrc, it should exist
+         * (created in src/main.c::main() )*/
+        rc_file = g_build_filename(g_get_user_config_dir(), "srainrc", NULL);
+        fp = fopen(rc_file, "r");
+        if (!fp){
+            ERR_FR("failed to open %s", rc_file);
+            g_free(rc_file);
+            return -1;
+        }
+        g_free(rc_file);
     }
 
-ready:
-    LOG("done\n");
     len = 0;
     line = NULL;
     while ((read = getline(&line, &len, fp)) != -1) {
         if (line){
             strtok(line, "\n");
             LOG_FR("read: %s", line);
-            srain_cmd(META_SERVER, line);
+            if (srain_cmd(META_SERVER, line) < 0){
+                break;
+            }
         }
     }
 

@@ -8,8 +8,10 @@
 
 #define __LOG_ON
 
+#include <sys/stat.h>
 #include <gtk/gtk.h>
 #include <stdlib.h>
+#include <errno.h>
 #include "srain_app.h"
 #include "log.h"
 
@@ -18,9 +20,56 @@
 #endif
 
 int main(int argc, char **argv){
+    int res;
+    FILE *fp;
+    char *congif_dir;
+    char *cache_dir;
+    char *rc_file;
+
     LOG_FR("DESTDIR = %s", DESTDIR);
     LOG_FR("change cwd to" DESTDIR  "/share/srain");
 
-    chdir(DESTDIR  "/share/srain");
+    chdir(DESTDIR "/share/srain");
+
+    /* create directories and config files if no exist
+     * such as:
+     *  - $XDG_CONFIG_HOME/srain/
+     *  - $XDG_CONFIG_HOME/srain/srainrc
+     *  - $XDG_CACHE_HOME/srain/
+     */
+    congif_dir = g_build_filename(g_get_user_config_dir(), "srain", NULL);
+    res = mkdir(congif_dir, 0700);
+    if (res == -1) {
+        if (errno != EEXIST){
+            ERR_FR("failed to create directory '%s', errno %d", congif_dir, errno);
+            return errno;
+        }
+    }
+    g_free(congif_dir);
+    congif_dir = NULL;
+
+    rc_file = g_build_filename(g_get_user_config_dir(), "srain", "srainrc", NULL);
+    fp = fopen(rc_file, "r");
+    if (!fp){
+        fp = fopen(rc_file, "w");
+        if (!fp){
+            ERR_FR("failed to create file '%s', errno %d", rc_file, errno);
+            exit(errno);
+        }
+    }
+    g_free(rc_file);
+    rc_file = NULL;
+
+    cache_dir = g_build_filename(g_get_user_cache_dir(), "srain", NULL);
+    res = mkdir(cache_dir, 0700);
+    if (res == -1) {
+        if (errno != EEXIST){
+            ERR_FR("failed to create directory '%s', errno %d", cache_dir, errno);
+            return errno;
+        }
+    }
+    g_free(cache_dir);
+    cache_dir = NULL;
+
     return g_application_run(G_APPLICATION(srain_app_new()), argc, argv);
 }

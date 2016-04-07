@@ -1,11 +1,4 @@
-/connect irc.freenode.org
+/connect chat.freenode.org
 /login srainbot
-/join #lasttest
-/relaybot tg2arch|[|] 
-/relaybot toxsync|(|) 
-/relaybot xmppbot|[|] 
-/relaybot SilverRain|[|] 
+/join #srain
 /relaybot teleboto|[|] 
-/relaybot Orizon|[|] 
-/ignore SilverRain
-/ignore Lisa

@@ -1,3 +1,13 @@
+/**
+ * @file plugin.c
+ * @brief simple embedding python support
+ * @author LastAvengers <lastavengers@outlook.com>
+ * @version 1.0
+ * @date 2016-04-07
+ *
+ * currently, plugin.c will find python modules in
+ * $DESTDIR/share/srain/plugin
+ */
 #define __LOG_ON
 
 #include <Python.h>
@@ -5,6 +15,7 @@
 
 char* plugin_upload(const char *path){
     char *url;
+    char plugin_path;
 
     PyObject *py_module;
     PyObject *py_func;
@@ -98,7 +109,6 @@ char* plugin_avatar(const char *nick, const char *user, const char *host){
     }
 }
 int plugin_init(){
-    plugin_upload("/home/la/Pictures/Wallpapers/bg.jpg");
-    plugin_avatar("1", "2", "3");
+
     return 0;
 }
