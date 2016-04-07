@@ -99,8 +99,7 @@ void irc_part_ack(irc_t *irc, const char *chan){
     while (tmp){
         if (strncmp(chan, tmp->data, CHAN_LEN) == 0){
             free(tmp->data);
-            tmp = g_list_remove(tmp, tmp->data);
-            irc->chans = tmp;
+            irc->chans = g_list_remove(irc->chans, tmp->data);
 
             return;
         }

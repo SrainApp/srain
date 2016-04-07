@@ -133,8 +133,7 @@ int filter_ignore_list_rm(const char *nick){
     while (lst){
         if (strncmp(lst->data, nick, NICK_LEN) == 0){
             free(lst->data);
-            lst = g_list_remove(lst, lst->data);
-            ignore_list = lst;
+            ignore_list = g_list_remove(ignore_list, lst->data);
 
             LOG_FR("remove %s", nick);
             return 0;
@@ -180,8 +179,7 @@ int filter_relaybot_list_rm(const char *nick){
         info = lst->data;
         if (strncmp(info->nick, nick, NICK_LEN) == 0){
             free(lst->data);
-            lst = g_list_remove(lst, lst->data);
-            relaybot_list = lst;
+            relaybot_list = g_list_remove(relaybot_list, lst->data);
             LOG_FR("remove %s", nick);
 
             return 0;

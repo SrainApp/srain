@@ -52,8 +52,8 @@ int rc_read(){
     while ((read = getline(&line, &len, fp)) != -1) {
         if (line){
             strtok(line, "\n");
-            LOG_FR("read: %s", line);
-            if (srain_cmd(META_SERVER, line)){
+            LOG_FR("read: '%s'", line);
+            if (srain_cmd(META_SERVER, line) < 0){
                 break;
             }
         }
