@@ -45,7 +45,7 @@ typedef enum {
 int irc_connect(irc_t *irc, const char *server, const char *port);
 int irc_login(irc_t *irc, const char *nick);
 void irc_close(irc_t *irc);
-void irc_quit_req(irc_t *irc, const char *reason);
+int irc_quit_req(irc_t *irc, const char *reason);
 
 int irc_join_req(irc_t *irc, const char *chan);
 int irc_part_req(irc_t *irc, const char *chan, const char *reason);

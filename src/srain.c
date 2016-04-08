@@ -48,9 +48,12 @@ void _srain_connect(const char *server){
     }
 
     stat = SRAIN_CONNECTING;
-    irc_connect(&irc, server, "6666");
-    stat = SRAIN_CONNECTED;
-    srain_recv();   // endless loop
+    if (irc_connect(&irc, server, "6666") == 0){
+        stat = SRAIN_CONNECTED;
+        srain_recv();   // endless loop
+    } else {
+        stat = SRAIN_UNCONNECTED;
+    }
 }
 
 int srain_connect(const char *server){
@@ -58,17 +61,26 @@ int srain_connect(const char *server){
 
     if (!thread) {
         thread = g_thread_new(NULL, (GThreadFunc)_srain_connect, (char *)server);
-        ui_chan_set_topic(META_SERVER, _("connecting..."));
 
-        while (stat != SRAIN_CONNECTED)
+        ui_chan_set_topic(META_SERVER, _("connecting..."));
+        ui_msg_sysf(META_SERVER, SYS_MSG_NORMAL, _("connecting to %s ..."), server);
+
+        while (stat == SRAIN_CONNECTING)
             while (gtk_events_pending()) gtk_main_iteration();
 
-        ui_chan_set_topic(META_SERVER, server);
-        RET(0);
-    } else {
-        ui_chan_set_topic(META_SERVER, _("connection failed"));
-        RET(-1);
+        if (stat == SRAIN_CONNECTED){
+            ui_chan_set_topic(META_SERVER, server);
+            RET(0);
+        } else {
+            ui_chan_set_topic(META_SERVER, _("connection failed"));
+            ui_msg_sys(META_SERVER, SYS_MSG_ERROR, "connection failed");
+            RET(-1);
+        }
+
     }
+
+    ui_msg_sys(META_SERVER, SYS_MSG_ERROR, "you have connected");
+    RET(-1);
 }
 
 int srain_login(const char *nick){
@@ -117,8 +129,7 @@ int srain_query(const char *target){
         RET(-1);
     }
 
-    if (target[0] == CHAN_PREFIX1
-            || target[0] == CHAN_PREFIX2){
+    if (IS_CHAN(target)){
         RET(srain_join(target));
     }
 
@@ -136,8 +147,7 @@ int srain_unquery(const char *target){
         RET(-1);
     }
 
-    if (target[0] == CHAN_PREFIX1
-            || target[0] == CHAN_PREFIX2){
+    if (IS_CHAN(target)){
         RET(srain_part(target, NULL));
     }
 
@@ -201,8 +211,7 @@ gboolean srain_idles(irc_msg_t *imsg){
          * when it comes from a person,
          * param[0] yourself's nick
          */
-        if (imsg->param[0][0] == CHAN_PREFIX1
-                || imsg->param[0][0] == CHAN_PREFIX2){
+        if (IS_CHAN(imsg->param[0])){
             dest = imsg->param[0];
         } else {
             dest = imsg->nick;
@@ -511,6 +520,8 @@ void srain_close(){
     // TODO: close client
 }
 
+#define IS_CMD(x, y) (strncmp(x, y, strlen(y)) == 0 && \
+        (x[strlen(y)] == '\0' || x[strlen(y)] == ' '))
 int srain_cmd(const char *chan, char *cmd){
     if (strncmp(cmd, "/help", 5) == 0){
         static char help[] = META_CMD_HELP;
@@ -518,17 +529,17 @@ int srain_cmd(const char *chan, char *cmd){
         ui_msg_sys(NULL, SYS_MSG_NORMAL, help);
         return 0;
     }
-    else if (strncmp(cmd, "/connect ", 9) == 0){
-        char *server = strtok(cmd + 9, " ");
+    else if (IS_CMD(cmd, "/connect")){
+        char *server = strtok(cmd + strlen("/connect"), " ");
         if (server) return srain_connect(server);
     }
-    else if (strncmp(cmd, "/login ", 7) == 0){
-        char *nick = strtok(cmd + 7, " ");
+    else if (IS_CMD(cmd, "/login")){
+        char *nick = strtok(cmd + strlen("/login"), " ");
         if (nick) return srain_login(nick);
     }
     /* NB: relaybot parameters separated by '|' */
-    else if (strncmp(cmd, "/relaybot ", 10) == 0){
-        char *bot = strtok(cmd + 10, " |");
+    else if (IS_CMD(cmd, "/relaybot")){
+        char *bot = strtok(cmd + strlen("/relaybot"), " |");
         if (bot){
             char *ldelim = strtok(NULL, "|");
             if (ldelim){
@@ -539,61 +550,61 @@ int srain_cmd(const char *chan, char *cmd){
             }
         }
     }
-    else if (strncmp(cmd, "/ignore ", 8) == 0){
-        char *nick = strtok(cmd + 8, " ");
+    else if (IS_CMD(cmd, "/ignore")){
+        char *nick = strtok(cmd + strlen("/ignore"), " ");
         if (nick) return filter_ignore_list_add(nick);
     }
 
     /**************************************/
-    else if (strncmp(cmd, "/query", 6) == 0){
-        char *target = strtok(cmd + 6, " ");
+    else if (IS_CMD(cmd, "/query")){
+        char *target = strtok(cmd + strlen("/query"), " ");
         if (target) return srain_query(target);
     }
-    else if (strncmp(cmd, "/unquery", 8) == 0){
-        char *target = strtok(cmd + 8, " ");
+    else if (IS_CMD(cmd, "/unquery")){
+        char *target = strtok(cmd + strlen("/unquery"), " ");
         if (target == NULL) target = (char *)chan;
             return srain_unquery(target);
     }
-    else if (strncmp(cmd, "/join ", 6) == 0){
-        char *jchan = strtok(cmd + 6, " ");
+    else if (IS_CMD(cmd, "/join")){
+        char *jchan = strtok(cmd + strlen("/join"), " ");
         if (jchan) return srain_join(jchan);
     }
-    else if (strncmp(cmd, "/part", 5) == 0){
-        char *pchan = strtok(cmd + 5, " ");
+    else if (IS_CMD(cmd, "/part")){
+        char *pchan = strtok(cmd + strlen("/part"), " ");
         if (pchan == NULL) pchan = (char *)chan;
         return srain_part(pchan, NULL);
     }
-    else if (strncmp(cmd, "/quit", 5) == 0){
+    else if (IS_CMD(cmd, "/quit")){
         srain_close();
         return 0;
     }
-    else if (strncmp(cmd, "/msg ", 5) == 0){
-        char *to = strtok(cmd + 5, " ");
+    else if (IS_CMD(cmd, "/msg")){
+        char *to = strtok(cmd + strlen("/msg"), " ");
         char *msg = strtok(NULL, "");
         if (to && msg) return srain_send(to, msg);
     }
-    else if (strncmp(cmd, "/me ", 4) == 0){
+    else if (IS_CMD(cmd, "/me")){
         char *msg = cmd + 4;
         if (msg){
             ui_msg_sysf(chan, SYS_MSG_ACTION, "*** %s %s ***", irc.nick, msg);
             return irc_send(&irc, chan, msg, 1);
         }
     }
-    else if (strncmp(cmd, "/nick ", 6) == 0){
-        char *nick = strtok(cmd + 6, " ");
+    else if (IS_CMD(cmd, "/nick")){
+        char *nick = strtok(cmd + strlen("/nick"), " ");
         if (nick){
             /* irc->nick will be modified when recv
              * NICK command from server */
             return irc_nick_req(&irc, nick);
         }
     }
-    else if (strncmp(cmd, "/whois ", 7) == 0){
-        char *nick = strtok(cmd + 7, " ");
+    else if (IS_CMD(cmd, "/whois")){
+        char *nick = strtok(cmd + strlen("/whois"), " ");
         if (nick == NULL) nick = (char *)chan;
         return irc_whois(&irc, nick);
     }
-    else if (strncmp(cmd, "/invite ", 8) == 0){
-        char *nick = strtok(cmd + 8, " ");
+    else if (IS_CMD(cmd, "/invite")){
+        char *nick = strtok(cmd + strlen("/invite"), " ");
         char *ichan = strtok(NULL, " ");
         if (nick){
             if (ichan == NULL) ichan = (char *)ui_chan_get_cur_name();
@@ -602,8 +613,8 @@ int srain_cmd(const char *chan, char *cmd){
             return irc_invite(&irc, nick, ichan);
         }
     }
-    else if (strncmp(cmd, "/kick ", 6) == 0){
-        char *nick = strtok(cmd + 6, " ");
+    else if (IS_CMD(cmd, "/kick")){
+        char *nick = strtok(cmd + strlen("/kick"), " ");
         char *kchan = strtok(NULL, " ");
         char *reason = strtok(NULL, "");
         if (nick){
@@ -612,8 +623,8 @@ int srain_cmd(const char *chan, char *cmd){
             return irc_kick(&irc, nick, chan, reason);
         }
     }
-    else if (strncmp(cmd, "/mode ", 6) == 0){
-        char *target = strtok(cmd + 6, " ");
+    else if (IS_CMD(cmd, "/mode")){
+        char *target = strtok(cmd + strlen("/mode"), " ");
         char *mode = strtok(NULL, "");
         if (target){
             if (mode == NULL) mode = "";

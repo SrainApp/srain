@@ -54,8 +54,8 @@ void irc_close(irc_t *irc){
     close(irc->fd);
 }
 
-void irc_quit_req(irc_t *irc, const char *reason){
-    irc_core_quit(irc->fd, reason);
+int irc_quit_req(irc_t *irc, const char *reason){
+    return irc_core_quit(irc->fd, reason);
 }
 
 int irc_join_req(irc_t *irc, const char *chan){

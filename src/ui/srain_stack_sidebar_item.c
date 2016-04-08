@@ -53,8 +53,8 @@ SrainStackSidebarItem *srain_stack_sidebar_item_new(const char *name){
 
     gtk_label_set_text(item->name_label, name);
 
-    // is a channel
-    if (name[0] == CHAN_PREFIX1 || name[0] == CHAN_PREFIX2){
+    // is a channel TODO: ui shouldn't konw anything about irc protocol
+    if (IS_CHAN(name)){
         gtk_image_set_from_file(item->image, "img/chan_icon.png");
     }
     else if (strcmp(name, META_SERVER) == 0){
@@ -68,7 +68,8 @@ SrainStackSidebarItem *srain_stack_sidebar_item_new(const char *name){
     return item;
 }
 
-void srain_stack_sidebar_item_recentmsg_update(SrainStackSidebarItem *item, const char *nick, const char *msg){
+void srain_stack_sidebar_item_recentmsg_update(
+        SrainStackSidebarItem *item, const char *nick, const char *msg){
     char buf[MSG_LEN];
 
     snprintf(buf, MSG_LEN, "%s: %s", nick, msg);

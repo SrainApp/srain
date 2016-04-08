@@ -19,6 +19,7 @@ typedef enum{
 
 #define CHAN_PREFIX1    '#'
 #define CHAN_PREFIX2    '&'
+#define IS_CHAN(str) ((str)[0] == CHAN_PREFIX1 || (str)[0] == CHAN_PREFIX2)
 
 #define RPL_WELCOME     "001"
 #define RPL_YOURHOST    "002"
