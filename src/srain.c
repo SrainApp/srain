@@ -40,12 +40,21 @@ enum {
     SRAIN_LOGINED
 } stat = SRAIN_UNCONNECTED;
 
+static char *stat_err_msg[] = {
+    "You are connected",
+    "",
+    "You are no connected",
+    "You are no logged in",
+};
+
+#define STAT_REQUIRE(req_stat) if (req_stat != stat){\
+        ui_msg_sys(NULL, SYS_MSG_ERROR, stat_err_msg[req_stat]);\
+        ERR_FR("%s", stat_err_msg[req_stat]);\
+        return -1;\
+        }
+
 void srain_recv();
 void _srain_connect(const char *server){
-    if (stat != SRAIN_UNCONNECTED){
-        ERR_FR("you have connected");
-        return;
-    }
 
     stat = SRAIN_CONNECTING;
     if (irc_connect(&irc, server, "6666") == 0){
@@ -57,6 +66,7 @@ void _srain_connect(const char *server){
 }
 
 int srain_connect(const char *server){
+    STAT_REQUIRE(SRAIN_UNCONNECTED);
     ui_busy(TRUE);
 
     if (!thread) {
@@ -76,21 +86,16 @@ int srain_connect(const char *server){
             ui_msg_sys(META_SERVER, SYS_MSG_ERROR, "connection failed");
             RET(-1);
         }
-
     }
 
-    ui_msg_sys(META_SERVER, SYS_MSG_ERROR, "you have connected");
+    // ui_msg_sys(META_SERVER, SYS_MSG_ERROR, "you have connected");
     RET(-1);
 }
 
 int srain_login(const char *nick){
     ui_busy(TRUE);
 
-    if (stat != SRAIN_CONNECTED){
-        ui_msg_sys(NULL, SYS_MSG_ERROR, "no connected");
-        ERR_FR("NO SRAIN_CONNECTED");
-        RET(-1);
-    }
+    STAT_REQUIRE(SRAIN_CONNECTED);
 
     if (irc_login(&irc, nick) >= 0){
         stat = SRAIN_LOGINED;
@@ -101,18 +106,14 @@ int srain_login(const char *nick){
 }
 
 int srain_join(const char *chan){
+    STAT_REQUIRE(SRAIN_LOGINED);
     ui_busy(TRUE);
-
-    if (stat != SRAIN_LOGINED){
-        ui_msg_sys(NULL, SYS_MSG_ERROR, "no logged in");
-        ERR_FR("NO SRAIN_LOGINED");
-        RET(-1);
-    }
 
     RET(irc_join_req(&irc, chan));
 }
 
 int srain_part(const char *chan, const char *reason){
+    STAT_REQUIRE(SRAIN_LOGINED);
     ui_busy(TRUE);
 
     if (!reason) reason = META_NAME_VERSION;
@@ -121,13 +122,8 @@ int srain_part(const char *chan, const char *reason){
 }
 
 int srain_query(const char *target){
+    STAT_REQUIRE(SRAIN_LOGINED);
     ui_busy(TRUE);
-
-    if (stat != SRAIN_LOGINED){
-        ui_msg_sys(NULL, SYS_MSG_ERROR, "no logged in");
-        ERR_FR("NO SRAIN_LOGINED");
-        RET(-1);
-    }
 
     if (IS_CHAN(target)){
         RET(srain_join(target));
@@ -139,6 +135,7 @@ int srain_query(const char *target){
 }
 
 int srain_unquery(const char *target){
+    STAT_REQUIRE(SRAIN_LOGINED);
     ui_busy(TRUE);
 
     if (stat != SRAIN_LOGINED){
@@ -157,6 +154,7 @@ int srain_unquery(const char *target){
 }
 
 int srain_send(const char *chan, char *msg){
+    STAT_REQUIRE(SRAIN_LOGINED);
     ui_busy(TRUE);
 
     LOG_FR("send message '%s' to %s", msg, chan);

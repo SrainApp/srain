@@ -27,8 +27,8 @@ int irc_core_reg(int fd, const char *nick, const char *username,
         const char *fullname){
     LOG_FR("attemping to login as %s", nick);
 
-    return sck_sendf(fd, "NICK %s\r\nUSER %s localhost 0 :%s\r\n",
-            nick, username, fullname);
+    return sck_sendf(fd, "NICK %s\r\nUSER %s %s %s %s :\r\n",
+            nick, username, "localhost", fullname);
 }
 
 // irc_core_join: For joining a chan
