@@ -79,7 +79,7 @@ GString* markup(const char *raw_msg, GString **img_url){
     GString *escaped_msg;
     /* TODO: if `-` and `&` contained in pattern,
      * TODO: regcomp() may return ERROR "不适用的范围结束" */
-    char pattern[] = "((http)|(https))://(www)?[-./;?:@&=+$,_!~*'#[:alnum:]]+";
+    char pattern[] = "((http)|(https))://(www)?[-./;?:@&=+$,_!~*'#%[:alnum:]]+";
 
     if (compile_regex(&re, pattern) == -1){
         return NULL;
@@ -111,7 +111,7 @@ GString* markup(const char *raw_msg, GString **img_url){
         str = g_string_append_len(str, msg_ptr, msg + start - msg_ptr);
         url = g_string_new_len(msg + start, end - start);
         g_string_append_printf(str,
-                               "<span foreground=\"blue\"><a href=\"%s\">%s</a></span>",
+                               "<a href=\"%s\">%s</a>",
                                url->str,
                                url->str);
 

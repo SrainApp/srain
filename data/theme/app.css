@@ -22,16 +22,24 @@ popover {
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
 }
 
-separator { background-color: @gray_color; border: none; }
+separator {
+  color: transparent;
+  background-color: @gray_color;
+  min-width: 1px;
+  min-height: 1px;
+}
+
 
 menuitem { padding: 8px; background-color: @bg_color; }
 menuitem:hover { background-color: @hover_color; }
 
-row:selected,
 row:hover { background-color: @hover_color; transition: 200ms ease-in-out; }
+row:selected,
 row:focus { background-color: @active_color; transition: 200ms ease-in-out; }
 
 entry { padding: 8px; }
+label link {color: blue; }
+label link:visited {color: purple; }
 entry selection, label selection { background-color: @selected_text_color; }
 
 /* for SrainUserList */
@@ -39,14 +47,32 @@ row button, row button:focus, row button:hover, row button:active {
     background-color: transparent;
 }
 
-.scrollbar.slider:hover{ background-color: alpha(#696969, 0.8); }
-.scrollbar.slider {
-    border-width: 2px;
-    border-style: solid;
-    border-radius: 10px;
-    border-color: transparent;
-    background-clip: padding-box;
-    background-color: alpha(#696969, 0.5);
+/* srollbar {{ */
+* {
+    -GtkScrollbar-has-backward-stepper: false;
+    -GtkScrollbar-has-forward-stepper: false;
+}
+
+scrollbar slider {
+    margin: 0;
+    border-radius: 0;
+    border: 0 none transparent;
+    background-color: alpha(@fg_color, 0.2);
+}
+
+scrollbar { background-color: transparent; transition-duration: 0.2s; }
+scrollbar slider:hover { background-color: alpha(@fg_color, 0.4); }
+scrollbar slider:active { background-color: alpha(@fg_color, 0.6); }
+
+scrollbar.vertical slider { min-width: 0.75188rem; min-height: 2.40602rem; margin: 0; }
+scrollbar.horizontal slider { min-width: 2.40602rem; min-height: 0.75188rem; margin: 0; }
+/* }} */
+
+separator {
+  color: transparent;
+  background-color: rgba(0, 0, 0, 0.09);
+  min-width: 1px;
+  min-height: 1px;
 }
 /* }} */
 
@@ -104,7 +130,7 @@ row button, row button:focus, row button:hover, row button:active {
     background-image: -gtk-gradient(linear,
                left top, right bottom,
                /* TODO */
-               from(@window_header_box_color), to(@active_color));
+               from(@msglist_color1), to(@msglist_color2));
 }
 /*
 #unread_label {
