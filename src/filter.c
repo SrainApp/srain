@@ -65,7 +65,7 @@ void filter_relaybot_trans(irc_msg_t *imsg){
                 rdelim_ptr = strstr(imsg->message, info->rdelim);
                 /* right delimiter matched */
                 if (rdelim_ptr){
-                    nick_len = rdelim_ptr - imsg->message;
+                    nick_len = rdelim_ptr - imsg->message - strlen(info->ldelim);
                     max_msg_len = MSG_LEN - (rdelim_ptr + strlen(info->rdelim) - imsg->message);
                     LOG_FR("right delim %s found, nick len = %d", info->rdelim, nick_len);
 

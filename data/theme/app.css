@@ -38,14 +38,16 @@ row:selected,
 row:focus { background-color: @active_color; transition: 200ms ease-in-out; }
 
 entry { padding: 8px; }
-label link {color: blue; }
+label link { color: blue; }
 label link:visited {color: purple; }
 entry selection, label selection { background-color: @selected_text_color; }
 
 /* for SrainUserList */
-row button, row button:focus, row button:hover, row button:active {
+#user_list_viewport row button, row button:focus, row button:hover, row button:active {
+    padding: 4px;
     background-color: transparent;
 }
+
 
 /* srollbar {{ */
 * {
@@ -101,7 +103,11 @@ separator {
 #normal_sys_msg_box #msg_label,
 #error_sys_msg_box #msg_label,
 #command_sys_msg_box #msg_label,
-#action_sys_msg_box #msg_label {
+#action_sys_msg_box #msg_label,
+#normal_sys_msg_box #msg_label selection,
+#error_sys_msg_box #msg_label selection,
+#command_sys_msg_box #msg_label selection,
+#action_sys_msg_box #msg_label selection {
     color: @sys_msg_text_color;
     border-radius: 4px;
 }

@@ -8,7 +8,7 @@
 @define-color msglist_color2            #8db6cd;
 
 @define-color text_color                #000000;
-@define-color selected_text_color       alpha(#b0c4de, 0.3);
+@define-color selected_text_color       alpha(#b0c4de, 0.4);
 @define-color link_text_color           #0080ff;
 
 @define-color hover_color               alpha(#b0c4de, 0.3);
