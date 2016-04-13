@@ -27,10 +27,14 @@
 #include "markup.h"
 #include "filter.h"
 
+typedef struct {
+
+} Server;
+
 // return and stop spinner: call ui_busy(FALSE)
 #define RET(x) do { int tmp = x; ui_busy(FALSE); return tmp; } while (0)
 
-irc_t irc;
+IRC irc;
 GThread *thread = NULL;
 
 enum {
@@ -129,7 +133,10 @@ int srain_query(const char *target){
         RET(srain_join(target));
     }
 
-    ui_chan_add(target);
+    if (strcasecmp(target, META_SERVER) != 0){
+        ui_chan_add(target);
+        RET(0);
+    }
 
     RET(0);
 }
@@ -148,9 +155,12 @@ int srain_unquery(const char *target){
         RET(srain_part(target, NULL));
     }
 
-    ui_chan_rm(target);
+    if (strcasecmp(target, META_SERVER) != 0){
+        ui_chan_rm(target);
+        RET(0);
+    }
 
-    RET(0);
+    RET(-1);
 }
 
 int srain_send(const char *chan, char *msg){
@@ -158,7 +168,6 @@ int srain_send(const char *chan, char *msg){
     ui_busy(TRUE);
 
     LOG_FR("send message '%s' to %s", msg, chan);
-
 
     ui_msg_send(chan, msg);
 
@@ -171,7 +180,7 @@ int srain_send(const char *chan, char *msg){
 }
 
 /* GSourceFunc */
-gboolean srain_idles(irc_msg_t *imsg){
+gboolean srain_idles(IRCMsg *imsg){
     /* Message */
     if (strcmp(imsg->command, "PRIVMSG") == 0){
         int is_action = 0;
@@ -489,13 +498,13 @@ bad:
 
 /* this function work in listening thread */
 void srain_recv(){
-    irc_msg_t *imsg;
-    irc_msg_type_t type;
+    IRCMsg *imsg;
+    IRCMsgType type;
 
     LOG_FR("start listening in a new thread");
 
     for (;;){
-        imsg = calloc(1, sizeof(irc_msg_t));
+        imsg = calloc(1, sizeof(IRCMsg));
         type = irc_recv(&irc, imsg);
 
         if (type == IRCMSG_SCKERR){

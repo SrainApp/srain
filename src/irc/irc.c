@@ -6,7 +6,7 @@
  * @date 2016-03-02
  *
  * IRC module interface
- * irc_t varible shouldn't be modified without the following
+ * IRC varible shouldn't be modified without the following
  * functions
  *
  */
@@ -24,10 +24,10 @@
 #include "log.h"
 
 
-int irc_connect(irc_t *irc, const char *server, const char *port){
+int irc_connect(IRC *irc, const char *server, const char *port){
     LOG_FR("connecting to %s:%s", server, port);
     
-    memset(irc, 0, sizeof(irc_t));
+    memset(irc, 0, sizeof(IRC));
     strncpy(irc->alias, server, CHAN_LEN);
     strncpy(irc->server, server, sizeof(irc->server) - 1);
 
@@ -41,7 +41,7 @@ int irc_connect(irc_t *irc, const char *server, const char *port){
     return 0;
 }
 
-int irc_login(irc_t *irc, const char *nick){
+int irc_login(IRC *irc, const char *nick){
     LOG_FR("attempt to login as %s", nick);
 
     strncpy(irc->nick, nick, NICK_LEN);
@@ -50,15 +50,15 @@ int irc_login(irc_t *irc, const char *nick){
 }
 
 // irc_quit: For closeing connection
-void irc_close(irc_t *irc){
+void irc_close(IRC *irc){
     close(irc->fd);
 }
 
-int irc_quit_req(irc_t *irc, const char *reason){
+int irc_quit_req(IRC *irc, const char *reason){
     return irc_core_quit(irc->fd, reason);
 }
 
-int irc_join_req(irc_t *irc, const char *chan){
+int irc_join_req(IRC *irc, const char *chan){
     GList *tmp;
 
     tmp = irc->chans;
@@ -73,7 +73,7 @@ int irc_join_req(irc_t *irc, const char *chan){
     return irc_core_join(irc->fd, chan);
 }
 
-int irc_part_req(irc_t *irc, const char *chan, const char *reason){
+int irc_part_req(IRC *irc, const char *chan, const char *reason){
     GList *tmp;
         
     tmp = irc->chans;
@@ -88,11 +88,11 @@ int irc_part_req(irc_t *irc, const char *chan, const char *reason){
     return -1;
 }
 
-void irc_join_ack(irc_t *irc, const char *chan){
+void irc_join_ack(IRC *irc, const char *chan){
     irc->chans = g_list_append(irc->chans, strdup(chan));
 }
 
-void irc_part_ack(irc_t *irc, const char *chan){
+void irc_part_ack(IRC *irc, const char *chan){
     GList *tmp;
 
     tmp = irc->chans;
@@ -109,15 +109,15 @@ void irc_part_ack(irc_t *irc, const char *chan){
     ERR_FR("no such channel");
 }
 
-int irc_nick_req(irc_t *irc, const char *nick){
+int irc_nick_req(IRC *irc, const char *nick){
     return irc_core_nick(irc->fd, nick);
 }
 
-void irc_nick_ack(irc_t *irc, const char *nick){
+void irc_nick_ack(IRC *irc, const char *nick){
     strncpy(irc->nick, nick, NICK_LEN);
 }
 
-int irc_send(irc_t *irc, const char *chan, const char *msg, int is_me){
+int irc_send(IRC *irc, const char *chan, const char *msg, int is_me){
     if (is_me){
         return irc_core_action(irc->fd, chan, msg);
     } else {
@@ -125,23 +125,23 @@ int irc_send(irc_t *irc, const char *chan, const char *msg, int is_me){
     }
 }
 
-int irc_whois(irc_t *irc, const char *nick){
+int irc_whois(IRC *irc, const char *nick){
     return irc_core_whois(irc->fd, nick);
 }
 
-int irc_invite(irc_t *irc, const char *nick, const char *chan){
+int irc_invite(IRC *irc, const char *nick, const char *chan){
     return irc_core_invite(irc->fd, nick, chan);
 }
 
-int irc_kick(irc_t *irc, const char *nick, const char *chan, const char *reason){
+int irc_kick(IRC *irc, const char *nick, const char *chan, const char *reason){
     return irc_core_kick(irc->fd, nick, chan, reason);
 }
 
-int irc_mode(irc_t *irc, const char *target, const char *mode){
+int irc_mode(IRC *irc, const char *target, const char *mode){
     return irc_core_mode(irc->fd, target, mode);
 }
 
-irc_msg_type_t irc_recv(irc_t *irc, irc_msg_t *ircmsg){
+IRCMsgType irc_recv(IRC *irc, IRCMsg *ircmsg){
     int i;
     static int rc, tmpbuf_ptr = 0;
     static char tmpbuf[BUF_LEN];
@@ -156,7 +156,7 @@ irc_msg_type_t irc_recv(irc_t *irc, irc_msg_t *ircmsg){
         // LOG("{\n%s}\n", tmpbuf);
     }
     // LOG_FR("tmpbuf_ptr = %d, rc = %d", tmpbuf_ptr, rc);
-    irc_msg_type_t res = IRCMSG_UNKNOWN;
+    IRCMsgType res = IRCMSG_UNKNOWN;
     for (i = tmpbuf_ptr; i < rc; i++){
         switch (tmpbuf[i]){
             /* a respone may include one or more \r\n */
