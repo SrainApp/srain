@@ -1,6 +1,6 @@
 # 2016-04-07 Version 0.01:
 
-- Implement basic functions of a IRC client 
+- Implement basic functions of a IRC client
 - Themes: Silver Rain (light)
 - Simple python plugin support:
     - Auto upload image to pastebin (img.vim-cn.org)
