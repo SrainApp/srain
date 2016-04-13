@@ -73,7 +73,7 @@ void filter_relaybot_trans(irc_msg_t *imsg){
                     memset(imsg->nick, 0, NICK_LEN);
                     strncpy(imsg->nick,
                             imsg->message + strlen(info->ldelim),
-                            (nick_len>NICK_LEN?NICK_LEN:nick_len) - 1);
+                            (nick_len>NICK_LEN?NICK_LEN:nick_len));
 
                     strncpy(tmp_msg, rdelim_ptr + strlen(info->rdelim), max_msg_len);
                     memset(imsg->message, 0, MSG_LEN);

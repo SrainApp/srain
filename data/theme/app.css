@@ -23,10 +23,10 @@ popover {
 }
 
 separator {
-  color: transparent;
-  background-color: @gray_color;
-  min-width: 1px;
-  min-height: 1px;
+    color: transparent;
+    background-color: @gray_color;
+    min-width: 1px;
+    min-height: 1px;
 }
 
 
@@ -59,7 +59,7 @@ scrollbar slider {
     margin: 0;
     border-radius: 0;
     border: 0 none transparent;
-    background-color: alpha(@fg_color, 0.2);
+    background-color: alpha(@fg_color, 0.4);
 }
 
 scrollbar { background-color: transparent; transition-duration: 0.2s; }
@@ -71,10 +71,10 @@ scrollbar.horizontal slider { min-width: 2.40602rem; min-height: 0.75188rem; mar
 /* }} */
 
 separator {
-  color: transparent;
-  background-color: rgba(0, 0, 0, 0.09);
-  min-width: 1px;
-  min-height: 1px;
+    color: transparent;
+    background-color: @gray_color;
+    min-width: 1px;
+    min-height: 1px;
 }
 /* }} */
 
@@ -134,16 +134,16 @@ separator {
     /* background-image: url("./bg.jpg"); */
     /* background-color: @active_color; */
     background-image: -gtk-gradient(linear,
-               left top, right bottom,
-               /* TODO */
-               from(@msglist_color1), to(@msglist_color2));
+    left top, right bottom,
+    /* TODO */
+    from(@msglist_color1), to(@msglist_color2));
 }
 /*
 #unread_label {
-    background-color: @bg_color; padding: 6px;
-    box-shadow: alpha(black, 0.2) 0px 2px;
+background-color: @bg_color; padding: 6px;
+box-shadow: alpha(black, 0.2) 0px 2px;
 }
-*/
+ */
 /* }} */
 
 
