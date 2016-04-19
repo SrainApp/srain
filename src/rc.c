@@ -15,7 +15,7 @@
 #include <gtk/gtk.h>
 #include <string.h>
 #include "log.h"
-#include "srain.h"
+#include "srain_app.h"
 #include "meta.h"
 
 int rc_read(){
@@ -53,7 +53,7 @@ int rc_read(){
         if (line){
             strtok(line, "\n");
             LOG_FR("read: '%s'", line);
-            if (srain_cmd(META_SERVER, line) < 0){
+            if (srain_app_cmd(NULL, line) < 0){
                 break;
             }
         }

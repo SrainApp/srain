@@ -7,15 +7,27 @@
  */
 
 #include <gtk/gtk.h>
-#include "ui.h"
 #include "srain_app.h"
-#include "meta.h"
 #include "srain_window.h"
+#include "srain_chan.h"
+#include "meta.h"
 #include "rc.h"
 #include "theme.h"
+#include "server.h"
+#include "server_cmd.h"
+
+typedef int (*ServerJoinFunc) (void *server, const char *chan_name);
+typedef int (*ServerPartFunc) (void *server, const char *chan_name);
+typedef int (*ServerSendFunc) (void *server, const char *target, const char *msg);
+typedef int (*ServerCmdFunc) (void *server, const char *source, const char *cmd);
 
 struct _SrainApp {
     GtkApplication parent;
+
+    ServerJoinFunc server_join;
+    ServerPartFunc server_part;
+    ServerSendFunc server_send;
+    ServerCmdFunc server_cmd;
 };
 
 struct _SrainAppClass {
@@ -24,7 +36,19 @@ struct _SrainAppClass {
 
 G_DEFINE_TYPE(SrainApp, srain_app, GTK_TYPE_APPLICATION);
 
-static void srain_app_init(SrainApp *app){
+/* Only one SrainApp instance in one application */
+SrainApp *app = NULL;
+
+static void srain_app_init(SrainApp *self){
+    if (app) return;
+
+    self->server_join = (ServerJoinFunc)server_join;
+    self->server_part = (ServerPartFunc)server_part;
+    self->server_send = (ServerSendFunc)server_send;
+    self->server_cmd = (ServerCmdFunc)server_cmd;
+
+    app = self;
+
     return;
 }
 
@@ -40,10 +64,8 @@ static void srain_app_activate(GtkApplication *app){
         theme_init();
 
         win = srain_window_new(SRAIN_APP(app));
-        srain_window_add_chan(win, META_SERVER);
         gtk_window_present(GTK_WINDOW(win));
 
-        ui_init(win);
         rc_read();
     }
 }
@@ -54,4 +76,17 @@ static void srain_app_class_init(SrainAppClass *class){
 
 SrainApp* srain_app_new(void){
     return g_object_new(SRAIN_TYPE_APP, "application-id", "org.gtk.srain", NULL);
+}
+
+void srain_app_join(const char *chan_name){
+}
+
+void srain_app_part(SrainBuffer *chan){
+}
+
+void srain_app_send(SrainBuffer *target, const char *msg){
+}
+
+int srain_app_cmd(SrainBuffer *source, const char *cmd){
+    return 1;
 }

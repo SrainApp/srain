@@ -9,7 +9,7 @@ typedef enum {
     SYS_MSG_ERROR,
     SYS_MSG_COMMAND,
     SYS_MSG_ACTION
-} sys_msg_type_t;
+} SysMsgType;
 
 struct _SrainSysMsg {
     GtkBox parent;
@@ -28,7 +28,7 @@ typedef struct _SrainSysMsg SrainSysMsg;
 typedef struct _SrainSysMsgClass SrainSysMsgClass;
 
 GType srain_sys_msg_get_type(void);
-SrainSysMsg* srain_sys_msg_new(sys_msg_type_t type, const char *msg);
+SrainSysMsg* srain_sys_msg_new(SysMsgType type, const char *msg);
 
 /* ================ SRAIN_SEND_MSG ================ */
 struct _SrainSendMsg {

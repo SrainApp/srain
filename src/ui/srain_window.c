@@ -12,7 +12,6 @@
 #include <assert.h>
 #include "ui_common.h"
 #include "theme.h"
-#include "srain.h"
 #include "srain_app.h"
 #include "srain_window.h"
 #include "srain_chan.h"
@@ -53,7 +52,7 @@ static void join_entry_on_activate(GtkWidget *widget, gpointer user_data){
     entry = GTK_ENTRY(widget);
     popover = user_data;
 
-    srain_query(gtk_entry_get_text(entry));
+    srain_app_join(gtk_entry_get_text(entry));
     gtk_widget_set_visible(GTK_WIDGET(popover), FALSE);
     gtk_entry_set_text(entry, "");
 }
@@ -169,7 +168,7 @@ SrainChan* srain_window_add_chan(SrainWindow *win, const char *name){
         return NULL;
     }
 
-    chan = srain_chan_new(name);
+    chan = srain_chan_new("irc.freenode.net", name);
 
     gtk_stack_add_named(win->stack, GTK_WIDGET(chan), name);
     // gtk_container_child_set(GTK_CONTAINER(win->stack), GTK_WIDGET(chan), "title", name, NULL);
@@ -179,17 +178,8 @@ SrainChan* srain_window_add_chan(SrainWindow *win, const char *name){
     return chan;
 }
 
-int srain_window_rm_chan(SrainWindow *win, const char *name){
-    SrainChan *chan;
-
-    chan = SRAIN_CHAN(gtk_stack_get_child_by_name(win->stack, name));
-    if (chan) {
-        gtk_container_remove(GTK_CONTAINER(win->stack), GTK_WIDGET(chan));
-        return 0;
-    }
-
-    ERR_FR("no chan named '%s'", name);
-    return -1;
+void srain_window_rm_chan(SrainWindow *win, SrainChan *chan){
+    gtk_container_remove(GTK_CONTAINER(win->stack), GTK_WIDGET(chan));
 }
 
 SrainChan *srain_window_get_cur_chan(SrainWindow *win){

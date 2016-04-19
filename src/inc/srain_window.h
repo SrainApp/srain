@@ -15,10 +15,10 @@ typedef struct _SrainWindowClass SrainWindowClass;
 GType srain_window_get_type(void);
 SrainWindow *srain_window_new(SrainApp *app);
 
-SrainChan* srain_window_add_chan(SrainWindow *win, const char *name);
-int srain_window_rm_chan(SrainWindow *win, const char *name);
+SrainChan* srain_window_add_chan(SrainWindow *win, const char *chan_name);
+void srain_window_rm_chan(SrainWindow *win, SrainChan *chan);
 SrainChan *srain_window_get_cur_chan(SrainWindow *win);
-SrainChan *srain_window_get_chan_by_name(SrainWindow *win, const char *name);
+SrainChan *srain_window_get_chan_by_name(SrainWindow *win, const char *chan_name);
 void srain_window_spinner_toggle(SrainWindow *win, gboolean is_busy);
 void srain_window_stack_sidebar_update(SrainWindow *win, SrainChan *chan, const char *nick, const char *msg);
 
