@@ -1,16 +1,23 @@
+#define __LOG_ON
+
 #include "meta.h"
 #include "server.h"
 #include "filter.h"
-#include "ui_intf.h"
+#include "server_intf.h"
+#include "log.h"
 
 #define IS_CMD(x, y) (strncmp(x, y, strlen(y)) == 0 && \
         (x[strlen(y)] == '\0' || x[strlen(y)] == ' '))
 
 int server_cmd(IRCServer *srv, const char *chan_name, char *cmd){
+    LOG_FR("server: %s, chan: %s, cmd: '%s'",
+            srv ? srv->host : "NULL",
+            chan_name ? chan_name : "NULL", cmd);
+
     if (strncmp(cmd, "/help", 5) == 0){
         static char help[] = META_CMD_HELP;
         // TODO: remove it?
-        ui_intf_sys_msg(srv, chan_name, help, SYS_MSG_NORMAL);
+        server_intf_ui_sys_msg(srv, chan_name, help, SYS_MSG_NORMAL);
         return 0;
     }
     else if (IS_CMD(cmd, "/connect")){
@@ -75,7 +82,7 @@ int server_cmd(IRCServer *srv, const char *chan_name, char *cmd){
     else if (IS_CMD(cmd, "/me")){
         char *msg = cmd + 4;
         if (msg){
-            ui_intf_sys_msg(srv, chan_name, "ACTION", SYS_MSG_ACTION);
+            server_intf_ui_sys_msg(srv, chan_name, "ACTION", SYS_MSG_ACTION);
             // ui_msg_sysf(chan_name, SYS_MSG_ACTION, "*** %s %s ***", srv->irc.nick, msg);
             return irc_send(&(srv->irc), chan_name, msg, 1);
         }
@@ -98,7 +105,7 @@ int server_cmd(IRCServer *srv, const char *chan_name, char *cmd){
         char *ichan = strtok(NULL, " ");
         if (nick){
             // if (ichan == NULL) ichan = (char *)ui_chan_get_cur_name();
-            ui_intf_sys_msg(srv, chan_name, "invite", SYS_MSG_NORMAL);
+            server_intf_ui_sys_msg(srv, chan_name, "invite", SYS_MSG_NORMAL);
             // ui_msg_sysf(server, chan_name, SYS_MSG_NORMAL, "You have invited %s to %s",
                     // nick, ichan);
             return irc_invite(&(srv->irc), nick, ichan);
@@ -123,10 +130,10 @@ int server_cmd(IRCServer *srv, const char *chan_name, char *cmd){
         }
     } else {
         // ui_msg_sysf(server, chan_name, SYS_MSG_ERROR, "%s: unsupported command", cmd);
-        ui_intf_sys_msg(srv, chan_name, "unsupported", SYS_MSG_ERROR);
+        server_intf_ui_sys_msg(srv, chan_name, "unsupported", SYS_MSG_ERROR);
         return -1;
     }
 
-    ui_intf_sys_msg(srv, chan_name, "Missing parameter", SYS_MSG_ERROR);
+    server_intf_ui_sys_msg(srv, chan_name, "Missing parameter", SYS_MSG_ERROR);
     return -1;
 }

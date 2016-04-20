@@ -13,39 +13,36 @@
 #include "meta.h"
 #include "rc.h"
 #include "theme.h"
+#include "log.h"
 #include "server.h"
 #include "server_cmd.h"
 
 G_DEFINE_TYPE(SrainApp, srain_app, GTK_TYPE_APPLICATION);
 
 /* Only one SrainApp instance in one application */
-SrainApp *app = NULL;
+SrainApp *srain_app = NULL;
+SrainWindow *srain_win = NULL;
 
 static void srain_app_init(SrainApp *self){
-    if (app) return;
+    if (srain_app) return;
 
     self->server_join = (ServerJoinFunc)server_join;
     self->server_part = (ServerPartFunc)server_part;
     self->server_send = (ServerSendFunc)server_send;
     self->server_cmd = (ServerCmdFunc)server_cmd;
 
-    app = self;
+    srain_app = self;
 
     return;
 }
 
 static void srain_app_activate(GtkApplication *app){
-    GList *list;
-    SrainWindow *win;
-
-    list = gtk_application_get_windows(app);
-
-    if (list){
-        gtk_window_present(GTK_WINDOW(list->data));
+    if (srain_win){
+        gtk_window_present(GTK_WINDOW(srain_win));
     } else {
         theme_init();
-        win = srain_window_new(SRAIN_APP(app));
-        gtk_window_present(GTK_WINDOW(win));
+        srain_win = srain_window_new(SRAIN_APP(app));
+        gtk_window_present(GTK_WINDOW(srain_win));
         rc_read();
     }
 }

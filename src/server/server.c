@@ -24,7 +24,7 @@
 #include "log.h"
 #include "filter.h"
 #include "str_list.h"
-#include "ui_intf.h"
+#include "server_intf.h"
 
 #define __LOG_ON
 
@@ -91,7 +91,7 @@ IRCServer* server_connect(const char *host){
     }
     // TODO
     srv = server_new(host, "6666");
-    ui_intf_join(srv, META_SERVER);
+    server_intf_ui_join(srv, META_SERVER);
     srv->listen_thread = g_thread_new(NULL,
             (GThreadFunc)_server_connect, srv);
 
@@ -212,7 +212,7 @@ int server_unquery(IRCServer *srv, const char *target){
 int server_send(IRCServer *srv, const char *chan_name, char *msg){
     LOG_FR("chan: '%s', msg: '%s'", chan, msg);
 
-    ui_intf_send_msg(srv, chan_name, msg);
+    server_intf_ui_send_msg(srv, chan_name, msg);
 
     if (irc_send(&(srv->irc), chan_name, msg, 0) <= 0){
         // ui_msg_sysf(NULL, SYS_MSG_ERROR, "faild to send message \"%.8s...\"", msg);
@@ -221,7 +221,6 @@ int server_send(IRCServer *srv, const char *chan_name, char *msg){
 
     return 0;
 }
-
 
 void server_close(IRCServer *srv){
     if (srv->stat != SERVER_LOGINED || srv->stat != SERVER_CONNECTED) {
@@ -233,4 +232,3 @@ void server_close(IRCServer *srv){
 
     server_free(srv);
 }
-

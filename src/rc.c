@@ -14,9 +14,9 @@
 #include <stdio.h>
 #include <gtk/gtk.h>
 #include <string.h>
+#include "ui_intf.h"
 #include "log.h"
 #include "meta.h"
-#include "server_intf.h"
 
 int rc_read(){
     FILE *fp;
@@ -53,7 +53,7 @@ int rc_read(){
         if (line){
             strtok(line, "\n");
             LOG_FR("read: '%s'", line);
-            if (server_intf_cmd(NULL, line) < 0){
+            if (ui_intf_server_cmd(NULL, line) < 0){
                 break;
             }
         }

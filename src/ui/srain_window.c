@@ -11,6 +11,7 @@
 #include <gtk/gtk.h>
 #include <assert.h>
 #include "ui_common.h"
+#include "ui_intf.h"
 #include "theme.h"
 #include "srain_app.h"
 #include "srain_window.h"
@@ -20,7 +21,6 @@
 #include "tray_icon.h"
 #include "meta.h"
 #include "log.h"
-#include "server_intf.h"
 
 struct _SrainWindow {
     GtkApplicationWindow parent;
@@ -54,7 +54,7 @@ static void join_entry_on_activate(GtkWidget *widget, gpointer user_data){
     popover = user_data;
 
     // TODO: query
-    server_intf_join(gtk_entry_get_text(entry));
+    ui_intf_server_join(gtk_entry_get_text(entry));
     gtk_widget_set_visible(GTK_WIDGET(popover), FALSE);
     gtk_entry_set_text(entry, "");
 }
