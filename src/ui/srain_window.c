@@ -20,6 +20,7 @@
 #include "tray_icon.h"
 #include "meta.h"
 #include "log.h"
+#include "server_intf.h"
 
 struct _SrainWindow {
     GtkApplicationWindow parent;
@@ -52,7 +53,8 @@ static void join_entry_on_activate(GtkWidget *widget, gpointer user_data){
     entry = GTK_ENTRY(widget);
     popover = user_data;
 
-    srain_app_join(gtk_entry_get_text(entry));
+    // TODO: query
+    server_intf_join(gtk_entry_get_text(entry));
     gtk_widget_set_visible(GTK_WIDGET(popover), FALSE);
     gtk_entry_set_text(entry, "");
 }

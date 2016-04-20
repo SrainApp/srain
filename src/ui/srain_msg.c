@@ -13,7 +13,6 @@
 #include <assert.h>
 #include <string.h>
 #include "ui_common.h"
-#include "srain_app.h"
 #include "srain_window.h"
 #include "srain_msg.h"
 #include "srain_image.h"
@@ -21,13 +20,16 @@
 #include "download.h"
 #include "log.h"
 #include "plugin.h"
+#include "server_intf.h"
 
 static void nick_button_on_click(GtkWidget *widget, gpointer *user_data){
     GString *cmd;
 
     cmd = g_string_new(NULL);
+
     g_string_printf(cmd, "/whois %s", (char *)user_data);
-    srain_app_cmd(NULL, cmd->str);
+    server_intf_cmd(NULL, cmd->str);
+
     g_string_free(cmd, TRUE);
 }
 

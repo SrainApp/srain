@@ -15,21 +15,21 @@ typedef enum {
     SERVER_LOGINED
 } ServerStat ;
 
-typedef void (*UIJoinFunc) (GHashTable *buf_table, const char *chan_name);
-typedef void (*UIPartFunc) (GHashTable *buf_table, const char *chan_name);
-typedef void (*UISysMsgFunc) (GHashTable *buf_table, const char *target, const char *msg, SysMsgType type);
-typedef void (*UISendMsgFunc) (GHashTable *buf_table, const char *target, const char *msg);
-typedef void (*UIRecvMsgFunc) (GHashTable *buf_table, const char *target, const char *nick, const char *id, const char *msg);
-typedef void (*UIUserJoinFunc) (GHashTable *buf_table, const char *chan_name, const char *nick, IRCUserType type, int notify);
-typedef void (*UIUserPartFunc) (GHashTable *buf_table, const char *chan_name, const char *nick, const char *reason);
-typedef void (*UISetTopicFunc) (GHashTable *buf_table, const char *target, const char *topic);
+typedef void* (*UIJoinFunc) (const char *chan_name);
+typedef void (*UIPartFunc) (void *chan);
+typedef void (*UISysMsgFunc) (void *chan, const char *msg, SysMsgType type);
+typedef void (*UISendMsgFunc) (void *chan, const char *msg);
+typedef void (*UIRecvMsgFunc) (void *chan, const char *nick, const char *id, const char *msg);
+typedef int (*UIUserJoinFunc) (void *chan, const char *nick, IRCUserType type, int notify);
+typedef int (*UIUserPartFunc) (void *chan, const char *nick, const char *reason);
+typedef void (*UISetTopicFunc) (void *chan, const char *topic);
 
 typedef struct {
     char host[512];
     char port[8];
     IRC irc;
     ServerStat stat;
-    GHashTable *buffer_table;
+    GHashTable *chan_table;
     GThread *listen_thread;
 
     UIJoinFunc ui_join;

@@ -22,6 +22,7 @@
 #include "log.h"
 #include "irc.h"
 #include "irc_magic.h"
+#include "server_intf.h"
 
 struct _SrainChan {
     GtkBox parent;
@@ -275,7 +276,7 @@ static void leave_button_on_click(GtkWidget *widget, gpointer user_data){
     chan = user_data;
     // TODO: unquery
     // chan_name = gtk_widget_get_name(GTK_WIDGET(chan));
-    srain_app_part(chan);
+    server_intf_part(chan);
 }
 
 static void option_togglebutton_on_click(GtkWidget *widget, gpointer user_data){
@@ -344,9 +345,9 @@ static void input_entry_on_activate(SrainChan *chan){
     LOG_FR("panel = %s, text = '%s'", chan_name, input);
 
     if (input[0] == '/'){
-        srain_app_cmd(chan, input);
+        server_intf_send(chan, input);
     } else {
-        srain_app_send(chan, input);
+        server_intf_cmd(chan, input);
     }
 
 ret:

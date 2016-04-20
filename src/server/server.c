@@ -24,6 +24,7 @@
 #include "log.h"
 #include "filter.h"
 #include "str_list.h"
+#include "ui_intf.h"
 
 #define __LOG_ON
 
@@ -40,82 +41,82 @@ static char* str_to_lowcase(char *str){
 }
 
 static IRCServer *server_new(const char *host, const char *port){
-    IRCServer *server;
+    IRCServer *srv;
 
-    server = calloc(sizeof(IRCServer), 1);
+    srv = calloc(sizeof(IRCServer), 1);
 
-    server->stat = SERVER_UNCONNECTED;
-    server->buffer_table = g_hash_table_new_full(g_str_hash, g_str_equal, free, NULL);
+    srv->stat = SERVER_UNCONNECTED;
+    srv->chan_table = g_hash_table_new_full(g_str_hash, g_str_equal, free, NULL);
 
-    strncpy(server->host, host, sizeof(server->host));
-    strncpy(server->port, port, sizeof(server->port));
+    strncpy(srv->host, host, sizeof(srv->host));
+    strncpy(srv->port, port, sizeof(srv->port));
 
     // TODO: func pointer assign
-    return server;
+    return srv;
 }
 
-static void server_free(IRCServer *server){
+static void server_free(IRCServer *srv){
     // if the listen_thread is still running, IRCServer
     // can not be freed.
-    if (server->listen_thread != NULL) return;
+    if (srv->listen_thread != NULL) return;
 
-    server->stat = SERVER_UNCONNECTED;
+    srv->stat = SERVER_UNCONNECTED;
 
     // TODO: free key and value
-    g_hash_table_destroy(server->buffer_table);
+    g_hash_table_destroy(srv->chan_table);
 
-    free(server);
+    free(srv);
 
     return;
 }
 
-void server_recv(IRCServer *server);
+void server_recv(IRCServer *srv);
 
-void _server_connect(IRCServer *server){
-    server->stat = SERVER_CONNECTING;
+void _server_connect(IRCServer *srv){
+    srv->stat = SERVER_CONNECTING;
 
-    if (irc_connect(&(server->irc), server->host, server->port) == 0){
-        server->stat = SERVER_CONNECTING;
-        server_recv(server);   // endless loop
+    if (irc_connect(&(srv->irc), srv->host, srv->port) == 0){
+        srv->stat = SERVER_CONNECTING;
+        server_recv(srv);   // endless loop
     } else {
-        server->stat = SERVER_UNCONNECTED;
+        srv->stat = SERVER_UNCONNECTED;
     }
 }
 
 IRCServer* server_connect(const char *host){
-    IRCServer *server;
+    IRCServer *srv;
 
     if (str_list_add(host_list, host) != 0){
         return NULL;
     }
     // TODO
-    server = server_new(host, "6666");
-    server->ui_join(server->buffer_table, META_SERVER);
-    server->listen_thread = g_thread_new(NULL,
-            (GThreadFunc)_server_connect, server);
+    srv = server_new(host, "6666");
+    ui_intf_join(srv, META_SERVER);
+    srv->listen_thread = g_thread_new(NULL,
+            (GThreadFunc)_server_connect, srv);
 
-    while (server->stat == SERVER_CONNECTING)
+    while (srv->stat == SERVER_CONNECTING)
         while (gtk_events_pending()) gtk_main_iteration();
 
-    if (server->stat == SERVER_CONNECTED){
-        return server;
+    if (srv->stat == SERVER_CONNECTED){
+        return srv;
     } else {
         ERR_FR("connection failed");
-        server->listen_thread = NULL;
-        server_free(server);
+        srv->listen_thread = NULL;
+        server_free(srv);
 
         return NULL;
     }
 }
 
-int server_login(IRCServer *server, const char *nick){
-    if (server->stat != SERVER_CONNECTED) {
+int server_login(IRCServer *srv, const char *nick){
+    if (srv->stat != SERVER_CONNECTED) {
         return -1;
     }
 
-    if (irc_login(&(server->irc), nick) >= 0){
+    if (irc_login(&(srv->irc), nick) >= 0){
         // TODO: stat = SERVER_LOGINED when received a logined message
-        server->stat = SERVER_LOGINED;
+        srv->stat = SERVER_LOGINED;
         return 0;
     }
 
@@ -123,24 +124,24 @@ int server_login(IRCServer *server, const char *nick){
 }
 
 /* this function work in listening thread */
-void server_recv(IRCServer *server){
+void server_recv(IRCServer *srv){
     IRCMsg *imsg;
     IRCMsgType type;
 
-    LOG_FR("%s", server->host);
+    LOG_FR("%s", srv->host);
 
     for (;;){
         imsg = calloc(1, sizeof(IRCMsg));
-        type = irc_recv(&(server->irc), imsg);
+        type = irc_recv(&(srv->irc), imsg);
 
         if (type == IRCMSG_SCKERR){
-            irc_close(&(server->irc));
+            irc_close(&(srv->irc));
             // TODO
             return;
         }
         if (type == IRCMSG_MSG){
             // let main loop process data
-            imsg->server = server;
+            imsg->server = srv;
             gdk_threads_add_idle((GSourceFunc)server_msg_dispatch, imsg);
         } else {
             free(imsg);
@@ -148,59 +149,59 @@ void server_recv(IRCServer *server){
     }
 }
 
-int server_join(IRCServer *server, const char *chan_name){
-    return irc_join_req(&(server->irc), chan_name);
+int server_join(IRCServer *srv, const char *chan_name){
+    return irc_join_req(&(srv->irc), chan_name);
 }
 
-int server_part(IRCServer *server, const char *chan_name, const char *reason){
+int server_part(IRCServer *srv, const char *chan_name, const char *reason){
     if (!reason) reason = META_NAME_VERSION;
 
-    return irc_part_req(&(server->irc), chan_name, reason);
+    return irc_part_req(&(srv->irc), chan_name, reason);
 }
 
-int server_query(IRCServer *server, const char *target){
+int server_query(IRCServer *srv, const char *target){
     char *person;
 
-    if (server->stat != SERVER_LOGINED){
+    if (srv->stat != SERVER_LOGINED){
         return -1;
     }
 
     if (IS_CHAN(target)){
-        return server_join(server, target);
+        return server_join(srv, target);
     }
 
     person = str_to_lowcase(strdup(target));
-    if (g_hash_table_lookup(server->buffer_table, target) != NULL){
+    if (g_hash_table_lookup(srv->chan_table, target) != NULL){
         free(person);
         return -1;
     }
 
-    // ui_chan_add(server, person);
+    // ui_chan_add(srv, person);
     // TODO
     free(person);
 
     return 1;
 }
 
-int server_unquery(IRCServer *server, const char *target){
+int server_unquery(IRCServer *srv, const char *target){
     char *person;
     SrainChan *chan;
 
-    if (server->stat != SERVER_LOGINED){
+    if (srv->stat != SERVER_LOGINED){
         return -1;
     }
 
     if (IS_CHAN(target)){
-        return server_part(server, target, NULL);
+        return server_part(srv, target, NULL);
     }
 
     person = str_to_lowcase(strdup(target));
-    if ((chan = g_hash_table_lookup(server->buffer_table, target)) == NULL){
+    if ((chan = g_hash_table_lookup(srv->chan_table, target)) == NULL){
         free(person);
         return -1;
     }
 
-    // ui_chan_rm(server, person);
+    // ui_chan_rm(srv, person);
     // TODO
 
     free(person);
@@ -208,12 +209,12 @@ int server_unquery(IRCServer *server, const char *target){
     return 0;
 }
 
-int server_send(IRCServer *server, const char *chan_name, char *msg){
+int server_send(IRCServer *srv, const char *chan_name, char *msg){
     LOG_FR("chan: '%s', msg: '%s'", chan, msg);
 
-    server->ui_send_msg(server->buffer_table, chan_name, msg);
+    ui_intf_send_msg(srv, chan_name, msg);
 
-    if (irc_send(&(server->irc), chan_name, msg, 0) <= 0){
+    if (irc_send(&(srv->irc), chan_name, msg, 0) <= 0){
         // ui_msg_sysf(NULL, SYS_MSG_ERROR, "faild to send message \"%.8s...\"", msg);
         return -1;
     }
@@ -222,14 +223,14 @@ int server_send(IRCServer *server, const char *chan_name, char *msg){
 }
 
 
-void server_close(IRCServer *server){
-    if (server->stat != SERVER_LOGINED || server->stat != SERVER_CONNECTED) {
+void server_close(IRCServer *srv){
+    if (srv->stat != SERVER_LOGINED || srv->stat != SERVER_CONNECTED) {
         return;
     }
 
-    irc_quit_req(&(server->irc), META_NAME_VERSION);
-    irc_close(&(server->irc));
+    irc_quit_req(&(srv->irc), META_NAME_VERSION);
+    irc_close(&(srv->irc));
 
-    server_free(server);
+    server_free(srv);
 }
 

@@ -10,6 +10,7 @@
 #include "filter.h"
 #include "log.h"
 #include "server.h"
+#include "ui_intf.h"
 
 /* GSourceFunc */
 gboolean server_msg_dispatch(IRCMsg *imsg){
@@ -61,11 +62,11 @@ gboolean server_msg_dispatch(IRCMsg *imsg){
 
         if (is_action){
             /* may lose relay bot information */
-            srv->ui_sys_msg(srv->buffer_table, dest, "ACTION recv", SYS_MSG_ACTION);
+            ui_intf_sys_msg(srv, dest, "ACTION recv", SYS_MSG_ACTION);
             // ui_msg_sysf(srv, dest, SYS_MSG_ACTION, "*** %s %s ***",
                     // imsg->nick, imsg->message);
         } else {
-            srv->ui_recv_msg(srv->buffer_table, dest, imsg->nick,
+            ui_intf_recv_msg(srv, dest, imsg->nick,
                     imsg->servername, imsg->message);
         }
     }
@@ -73,11 +74,11 @@ gboolean server_msg_dispatch(IRCMsg *imsg){
     /* Topic */
     else if (strcmp(imsg->command, "TOPIC") == 0){
         if (imsg->nparam != 1) goto bad;
-        srv->ui_set_topic(srv->buffer_table, imsg->param[0], imsg->message);
+        ui_intf_set_topic(srv, imsg->param[0], imsg->message);
     }
     else if (strcmp(imsg->command, RPL_TOPIC) == 0){
         if (imsg->nparam != 2) goto bad;
-        srv->ui_set_topic(srv->buffer_table, imsg->param[1], imsg->message);
+        ui_intf_set_topic(srv, imsg->param[1], imsg->message);
     }
 
     /* JOIN & PART & QUIT
@@ -88,18 +89,18 @@ gboolean server_msg_dispatch(IRCMsg *imsg){
     else if (strcmp(imsg->command, "JOIN") == 0){
         if (imsg->nparam != 1) goto bad;
         if (strncasecmp(imsg->nick, srv->irc.nick, NICK_LEN) == 0){
-            srv->ui_join(srv->buffer_table, imsg->param[0]);
+            ui_intf_join(srv, imsg->param[0]);
             // irc_join_ack(&irc, imsg->param[0]);
         }
-        srv->ui_user_join(srv->buffer_table, imsg->param[0], imsg->nick,
+        ui_intf_user_join(srv, imsg->param[0], imsg->nick,
                 IRC_USER_PERSON, 1);
     }
     else if (strcmp(imsg->command, "PART") == 0){
         if (imsg->nparam != 1) goto bad;
-        srv->ui_user_part(srv->buffer_table, imsg->param[0], imsg->nick, imsg->message);
+        ui_intf_user_part(srv, imsg->param[0], imsg->nick, imsg->message);
         if (strncasecmp(imsg->nick, srv->irc.nick, NICK_LEN) == 0){
             // irc_part_ack(&irc, imsg->param[0]);
-            srv->ui_part(srv->buffer_table, imsg->param[0]);
+            ui_intf_part(srv, imsg->param[0]);
         }
     }
     else if (strcmp(imsg->command, "QUIT") == 0){
@@ -113,14 +114,14 @@ gboolean server_msg_dispatch(IRCMsg *imsg){
         if (imsg->nparam != 1) goto bad;
         // ui_msg_sysf(srv, imsg->nick, SYS_MSG_NORMAL, "%s invites you into %s",
                 // imsg->nick, imsg->message);
-        srv->ui_sys_msg(srv->buffer_table, imsg->nick, "invite recv", SYS_MSG_NORMAL);
+        ui_intf_sys_msg(srv, imsg->nick, "invite recv", SYS_MSG_NORMAL);
         goto bad;
     }
     else if (strcmp(imsg->command, "KICK") == 0){
         if (imsg->nparam != 2) goto bad;
         // ui_msg_sysf(srv, imsg->param[0], SYS_MSG_ERROR, "%s are kicked from %s by %s",
                 // imsg->param[1], imsg->param[0], imsg->nick);
-        srv->ui_sys_msg(srv->buffer_table, imsg->nick, "kick recv", SYS_MSG_NORMAL);
+        ui_intf_sys_msg(srv, imsg->nick, "kick recv", SYS_MSG_NORMAL);
     }
 
     /* NICK (someone change his name) */
@@ -140,7 +141,7 @@ gboolean server_msg_dispatch(IRCMsg *imsg){
         if (imsg->nparam != 3) goto bad;
         char *nickptr = strtok(imsg->message, " ");
         while (nickptr){
-            srv->ui_user_join(srv->buffer_table, imsg->param[2],
+            ui_intf_user_join(srv, imsg->param[2],
                     nickptr[0] == '@' ? nickptr + 1 : nickptr,
                     nickptr[0] == '@' ? IRC_USER_OP : IRC_USER_PERSON,
                     0);
@@ -158,11 +159,11 @@ gboolean server_msg_dispatch(IRCMsg *imsg){
                     // TODO
         }
         else if (strncasecmp(imsg->param[0], srv->irc.nick, NICK_LEN) == 0) {
-            srv->ui_recv_msg(srv->buffer_table, META_SERVER,
+            ui_intf_recv_msg(srv, META_SERVER,
                     strlen(imsg->nick) ? imsg->nick : imsg->servername,
                     "", imsg->message);
         } else {
-            srv->ui_recv_msg(srv->buffer_table, imsg->param[0],
+            ui_intf_recv_msg(srv, imsg->param[0],
                     strlen(imsg->nick) ? imsg->nick : imsg->servername,
                     "", imsg->message);
         }
@@ -187,7 +188,7 @@ gboolean server_msg_dispatch(IRCMsg *imsg){
             }
             // ui_msg_sysf(srv, imsg->param[0] ,SYS_MSG_NORMAL, "mode %s by %s",
                     // buf->str, strlen(imsg->nick) ? imsg->nick : imsg->servername);
-            srv->ui_sys_msg(srv->buffer_table, imsg->param[0], "MODE recv", SYS_MSG_ACTION);
+            ui_intf_sys_msg(srv, imsg->param[0], "MODE recv", SYS_MSG_ACTION);
             g_string_free(buf, TRUE);
         }
     }
@@ -196,14 +197,14 @@ gboolean server_msg_dispatch(IRCMsg *imsg){
         // ui_msg_sysf(srv, imsg->param[1], SYS_MSG_NORMAL, "mode %s %s by %s",
            // imsg->param[1], imsg->param[2],
            // strlen(imsg->nick) ? imsg->nick : imsg->servername);
-        srv->ui_sys_msg(srv->buffer_table, imsg->param[1], "RPL_CHANNELMODEIS recv", SYS_MSG_ACTION);
+        ui_intf_sys_msg(srv, imsg->param[1], "RPL_CHANNELMODEIS recv", SYS_MSG_ACTION);
     }
     else if (strcmp(imsg->command, RPL_UMODEIS) == 0){
         if (imsg->nparam != 2) goto bad;
         // ui_msg_sysf(srv, imsg->nick, SYS_MSG_NORMAL, "mode %s %s by %s",
                 // imsg->param[0], imsg->param[1],
                 // strlen(imsg->nick) ? imsg->nick : imsg->servername);
-        srv->ui_sys_msg(srv->buffer_table, imsg->nick, "RPL_UMODEIS recv", SYS_MSG_ACTION);
+        ui_intf_sys_msg(srv, imsg->nick, "RPL_UMODEIS recv", SYS_MSG_ACTION);
     }
 
     /* WHOIS TODO */
@@ -266,7 +267,7 @@ gboolean server_msg_dispatch(IRCMsg *imsg){
             else if (strcmp(imsg->command, RPL_ENDOFWHOIS) == 0){
                 g_string_append(whois_buf, imsg->message);
                 // ui_msg_sys(srv, NULL, SYS_MSG_NORMAL, whois_buf->str);
-                srv->ui_sys_msg(srv->buffer_table, NULL, whois_buf->str, SYS_MSG_NORMAL);
+                ui_intf_sys_msg(srv, NULL, whois_buf->str, SYS_MSG_NORMAL);
 
                 g_string_free(whois_buf, TRUE);
                 whois_buf = NULL;
@@ -304,7 +305,7 @@ gboolean server_msg_dispatch(IRCMsg *imsg){
             g_string_append_printf(buf, "%s ", imsg->param[i++]);
         }
         buf = g_string_append(buf, imsg->message);
-        srv->ui_recv_msg(srv->buffer_table, META_SERVER, imsg->servername, srv->irc.server, buf->str);
+        ui_intf_recv_msg(srv, META_SERVER, imsg->servername, srv->irc.server, buf->str);
         g_string_free(buf, TRUE);
     }
 

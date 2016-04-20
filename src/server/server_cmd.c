@@ -1,15 +1,16 @@
 #include "meta.h"
 #include "server.h"
 #include "filter.h"
+#include "ui_intf.h"
 
 #define IS_CMD(x, y) (strncmp(x, y, strlen(y)) == 0 && \
         (x[strlen(y)] == '\0' || x[strlen(y)] == ' '))
 
-int server_cmd(IRCServer *server, const char *chan_name, char *cmd){
+int server_cmd(IRCServer *srv, const char *chan_name, char *cmd){
     if (strncmp(cmd, "/help", 5) == 0){
         static char help[] = META_CMD_HELP;
         // TODO: remove it?
-        server->ui_sys_msg(server->buffer_table, chan_name, help, SYS_MSG_NORMAL);
+        ui_intf_sys_msg(srv, chan_name, help, SYS_MSG_NORMAL);
         return 0;
     }
     else if (IS_CMD(cmd, "/connect")){
@@ -24,7 +25,7 @@ int server_cmd(IRCServer *server, const char *chan_name, char *cmd){
     }
     else if (IS_CMD(cmd, "/login")){
         char *nick = strtok(cmd + strlen("/login"), " ");
-        if (nick) return server_login(server, nick);
+        if (nick) return server_login(srv, nick);
     }
     /* NB: relaybot parameters separated by '|' */
     else if (IS_CMD(cmd, "/relaybot")){
@@ -46,37 +47,37 @@ int server_cmd(IRCServer *server, const char *chan_name, char *cmd){
 
     else if (IS_CMD(cmd, "/query")){
         char *target = strtok(cmd + strlen("/query"), " ");
-        if (target) return server_query(server, target);
+        if (target) return server_query(srv, target);
     }
     else if (IS_CMD(cmd, "/unquery")){
         char *target = strtok(cmd + strlen("/unquery"), " ");
         if (target == NULL) target = (char *)chan_name;
-            return server_unquery(server, target);
+            return server_unquery(srv, target);
     }
     else if (IS_CMD(cmd, "/join")){
         char *jchan = strtok(cmd + strlen("/join"), " ");
-        if (jchan) return server_join(server, jchan);
+        if (jchan) return server_join(srv, jchan);
     }
     else if (IS_CMD(cmd, "/part")){
         char *pchan = strtok(cmd + strlen("/part"), " ");
         if (pchan == NULL) pchan = (char *)chan_name;
-        return server_part(server, pchan, NULL);
+        return server_part(srv, pchan, NULL);
     }
     else if (IS_CMD(cmd, "/quit")){
-        server_close(server);
+        server_close(srv);
         return 0;
     }
     else if (IS_CMD(cmd, "/msg")){
         char *to = strtok(cmd + strlen("/msg"), " ");
         char *msg = strtok(NULL, "");
-        if (to && msg) return server_send(server, to, msg);
+        if (to && msg) return server_send(srv, to, msg);
     }
     else if (IS_CMD(cmd, "/me")){
         char *msg = cmd + 4;
         if (msg){
-            server->ui_sys_msg(server->buffer_table, chan_name, "ACTION", SYS_MSG_ACTION);
-            // ui_msg_sysf(chan_name, SYS_MSG_ACTION, "*** %s %s ***", server->irc.nick, msg);
-            return irc_send(&(server->irc), chan_name, msg, 1);
+            ui_intf_sys_msg(srv, chan_name, "ACTION", SYS_MSG_ACTION);
+            // ui_msg_sysf(chan_name, SYS_MSG_ACTION, "*** %s %s ***", srv->irc.nick, msg);
+            return irc_send(&(srv->irc), chan_name, msg, 1);
         }
     }
     else if (IS_CMD(cmd, "/nick")){
@@ -84,23 +85,23 @@ int server_cmd(IRCServer *server, const char *chan_name, char *cmd){
         if (nick){
             /* irc->nick will be modified when recv
              * NICK command from server */
-            return irc_nick_req(&(server->irc), nick);
+            return irc_nick_req(&(srv->irc), nick);
         }
     }
     else if (IS_CMD(cmd, "/whois")){
         char *nick = strtok(cmd + strlen("/whois"), " ");
         if (nick == NULL) nick = (char *)chan_name;
-        return irc_whois(&(server->irc), nick);
+        return irc_whois(&(srv->irc), nick);
     }
     else if (IS_CMD(cmd, "/invite")){
         char *nick = strtok(cmd + strlen("/invite"), " ");
         char *ichan = strtok(NULL, " ");
         if (nick){
             // if (ichan == NULL) ichan = (char *)ui_chan_get_cur_name();
-            server->ui_sys_msg(server->buffer_table, chan_name, "invite", SYS_MSG_NORMAL);
+            ui_intf_sys_msg(srv, chan_name, "invite", SYS_MSG_NORMAL);
             // ui_msg_sysf(server, chan_name, SYS_MSG_NORMAL, "You have invited %s to %s",
                     // nick, ichan);
-            return irc_invite(&(server->irc), nick, ichan);
+            return irc_invite(&(srv->irc), nick, ichan);
         }
     }
     else if (IS_CMD(cmd, "/kick")){
@@ -110,7 +111,7 @@ int server_cmd(IRCServer *server, const char *chan_name, char *cmd){
         if (nick){
             // if (kchan == NULL) kchan = (char *)ui_chan_get_cur_name();
             if (reason == NULL) reason = "";
-            return irc_kick(&(server->irc), nick, chan_name, reason);
+            return irc_kick(&(srv->irc), nick, chan_name, reason);
         }
     }
     else if (IS_CMD(cmd, "/mode")){
@@ -118,14 +119,14 @@ int server_cmd(IRCServer *server, const char *chan_name, char *cmd){
         char *mode = strtok(NULL, "");
         if (target){
             if (mode == NULL) mode = "";
-            return irc_mode(&(server->irc), target, mode);
+            return irc_mode(&(srv->irc), target, mode);
         }
     } else {
         // ui_msg_sysf(server, chan_name, SYS_MSG_ERROR, "%s: unsupported command", cmd);
-        server->ui_sys_msg(server->buffer_table, chan_name, "unsupported", SYS_MSG_ERROR);
+        ui_intf_sys_msg(srv, chan_name, "unsupported", SYS_MSG_ERROR);
         return -1;
     }
 
-    server->ui_sys_msg(server->buffer_table, chan_name, "Missing parameter", SYS_MSG_ERROR);
+    ui_intf_sys_msg(srv, chan_name, "Missing parameter", SYS_MSG_ERROR);
     return -1;
 }
