@@ -54,3 +54,35 @@ static void srain_app_class_init(SrainAppClass *class){
 SrainApp* srain_app_new(void){
     return g_object_new(SRAIN_TYPE_APP, "application-id", "org.gtk.srain", NULL);
 }
+
+SrainChan* srain_app_add_chan(const char *server_name, const char *chan_name){
+    return srain_window_add_chan(srain_win, server_name, chan_name);
+}
+
+void srain_app_rm_chan(SrainChan *chan){
+    return srain_window_rm_chan(srain_win, chan);
+}
+
+void srain_app_sys_msg(SrainChan *chan, SysMsgType type, const char *msg){
+    return srain_chan_sys_msg_add(chan, type, msg);
+}
+
+void srain_app_send_msg(SrainChan *chan, const char *msg){
+    return srain_chan_send_msg_add(chan, msg);
+}
+
+void srain_app_recv_msg(SrainChan *chan, const char *nick, const char *id, const char *msg){
+    return srain_chan_recv_msg_add(chan, nick, id, msg);
+}
+
+void srain_app_user_join(SrainChan *chan, const char *nick, IRCUserType type, int notify){
+    return srain_chan_user_list_add(chan, nick, type, notify);
+}
+
+void srain_app_user_part(SrainChan *chan, const char *nick, const char *reason){
+    return srain_chan_user_list_rm(chan, nick, reason);
+}
+
+void srain_app_set_topic(SrainChan *chan, const char *topic){
+    return srain_chan_set_topic(chan, topic);
+}

@@ -11,12 +11,14 @@
  *      part from a channel, send message, receive message and etc.
  */
 
+#define __LOG_ON
+
 #include <stdlib.h>
 #include <ctype.h>
 #include <stdlib.h>
 #include <strings.h>
 #include <gtk/gtk.h>
-#include "srain_chan.h"
+#include "srain_app.h"
 #include "irc.h"
 #include "server.h"
 #include "server_msg_dispatch.h"
@@ -26,9 +28,7 @@
 #include "str_list.h"
 #include "server_intf.h"
 
-#define __LOG_ON
-
-GList *host_list;
+GList *host_list = NULL;
 
 static char* str_to_lowcase(char *str){
     int i;
@@ -48,10 +48,18 @@ static IRCServer *server_new(const char *host, const char *port){
     srv->stat = SERVER_UNCONNECTED;
     srv->chan_table = g_hash_table_new_full(g_str_hash, g_str_equal, free, NULL);
 
-    strncpy(srv->host, host, sizeof(srv->host));
-    strncpy(srv->port, port, sizeof(srv->port));
+    strncpy(srv->host, host, 512);
+    strncpy(srv->port, port, 8);
 
     // TODO: func pointer assign
+    srv->ui_add_chan = (UIAddChanFunc)srain_app_add_chan;
+    srv->ui_rm_chan = srain_app_rm_chan;
+    srv->ui_sys_msg = srain_app_sys_msg;
+    srv->ui_send_msg = srain_app_send_msg;
+    srv->ui_recv_msg = srain_app_recv_msg;
+    srv->ui_user_join = srain_app_user_join;
+    srv->ui_user_part = srain_app_user_part;
+    srv->ui_set_topic = srain_app_set_topic;
     return srv;
 }
 
@@ -73,10 +81,8 @@ static void server_free(IRCServer *srv){
 void server_recv(IRCServer *srv);
 
 void _server_connect(IRCServer *srv){
-    srv->stat = SERVER_CONNECTING;
-
     if (irc_connect(&(srv->irc), srv->host, srv->port) == 0){
-        srv->stat = SERVER_CONNECTING;
+        srv->stat = SERVER_CONNECTED;
         server_recv(srv);   // endless loop
     } else {
         srv->stat = SERVER_UNCONNECTED;
@@ -86,12 +92,15 @@ void _server_connect(IRCServer *srv){
 IRCServer* server_connect(const char *host){
     IRCServer *srv;
 
-    if (str_list_add(host_list, host) != 0){
+    if (str_list_find(host_list, host)){
+        ERR_FR("you have connected to %s", host);
         return NULL;
     }
-    // TODO
+
     srv = server_new(host, "6666");
-    server_intf_ui_join(srv, META_SERVER);
+    server_intf_ui_add_chan(srv, META_SERVER);
+
+    srv->stat = SERVER_CONNECTING;
     srv->listen_thread = g_thread_new(NULL,
             (GThreadFunc)_server_connect, srv);
 
@@ -99,17 +108,20 @@ IRCServer* server_connect(const char *host){
         while (gtk_events_pending()) gtk_main_iteration();
 
     if (srv->stat == SERVER_CONNECTED){
+        host_list = str_list_add(host_list, host);
+        LOG_FR("%s connected", host);
         return srv;
     } else {
         ERR_FR("connection failed");
         srv->listen_thread = NULL;
-        server_free(srv);
 
         return NULL;
     }
 }
 
 int server_login(IRCServer *srv, const char *nick){
+    LOG_FR("srv: %s, nick: %s", srv ? srv->host : "(null)", nick);
+
     if (srv->stat != SERVER_CONNECTED) {
         return -1;
     }
@@ -210,7 +222,7 @@ int server_unquery(IRCServer *srv, const char *target){
 }
 
 int server_send(IRCServer *srv, const char *chan_name, char *msg){
-    LOG_FR("chan: '%s', msg: '%s'", chan, msg);
+    LOG_FR("chan: '%s', msg: '%s'", chan_name, msg);
 
     server_intf_ui_send_msg(srv, chan_name, msg);
 

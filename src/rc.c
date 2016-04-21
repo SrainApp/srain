@@ -54,6 +54,7 @@ int rc_read(){
             strtok(line, "\n");
             LOG_FR("read: '%s'", line);
             if (ui_intf_server_cmd(NULL, line) < 0){
+                ERR_FR("command failed");
                 break;
             }
         }

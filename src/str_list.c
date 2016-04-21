@@ -26,7 +26,7 @@ GList* str_list_find(GList *lst, const char *str){
 }
 
 GList* str_list_add(GList *lst, const char *str){
-    if (str_list_find(lst, str)) {
+    if (str_list_find(lst, str)){
         return NULL;
     }
 

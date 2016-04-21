@@ -18,9 +18,9 @@
 struct _SrainStackSidebarItem {
     GtkBox parent;
     GtkImage *image;
-    GtkLabel *name_label;
+    GtkLabel *chan_label;
+    GtkLabel *server_label;
     GtkLabel *recentmsg_label;
-    GtkLabel *time_label;
     GtkLabel *count_label;
 };
 
@@ -38,26 +38,28 @@ static void srain_stack_sidebar_item_class_init(SrainStackSidebarItemClass *clas
     gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
             "/org/gtk/srain/stack_sidebar_item.glade");
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainStackSidebarItem, image);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainStackSidebarItem, name_label);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainStackSidebarItem, chan_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainStackSidebarItem, recentmsg_label);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainStackSidebarItem, time_label);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainStackSidebarItem, server_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainStackSidebarItem, count_label);
 }
 
-SrainStackSidebarItem *srain_stack_sidebar_item_new(const char *name){
+SrainStackSidebarItem *srain_stack_sidebar_item_new(const char *server_name, const char *chan_name){
     SrainStackSidebarItem *item;
 
-    g_return_val_if_fail(name, NULL);
+    g_return_val_if_fail(chan_name, NULL);
+    g_return_val_if_fail(server_name, NULL);
 
     item = g_object_new(SRAIN_TYPE_STACK_SIDEBAR_ITEM, NULL);
 
-    gtk_label_set_text(item->name_label, name);
+    gtk_label_set_text(item->chan_label, chan_name);
+    gtk_label_set_text(item->server_label, server_name);
 
     // is a channel TODO: ui shouldn't konw anything about irc protocol
-    if (IS_CHAN(name)){
+    if (IS_CHAN(chan_name)){
         gtk_image_set_from_file(item->image, "img/chan_icon.png");
     }
-    else if (strcmp(name, META_SERVER) == 0){
+    else if (strcmp(chan_name, META_SERVER) == 0){
         // is a server
         gtk_image_set_from_file(item->image, "img/server_icon.png");
     } else {

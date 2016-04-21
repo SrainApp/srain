@@ -31,9 +31,13 @@ typedef struct _SrainAppClass SrainAppClass;
 GType srain_app_get_type(void);
 SrainApp *srain_app_new(void);
 
-void srain_app_join(const char *chan_name);
-void srain_app_part(SrainChan *chan);
-void srain_app_send(SrainChan *target, const char *msg);
-int srain_app_cmd(SrainChan *source, const char *cmd);
+SrainChan* srain_app_add_chan(const char *server_name, const char *chan_name);
+void srain_app_rm_chan(SrainChan *chan);
+void srain_app_sys_msg(SrainChan *chan, SysMsgType type, const char *msg);
+void srain_app_send_msg(SrainChan *chan, const char *msg);
+void srain_app_recv_msg(SrainChan *chan, const char *nick, const char *id, const char *msg);
+void srain_app_user_join(SrainChan *chan, const char *nick, IRCUserType type, int notify);
+void srain_app_user_part(SrainChan *chan, const char *nick, const char *reason);
+void srain_app_set_topic(SrainChan *chan, const char *topic);
 
 #endif /* __SRAIN_APP_H */

@@ -162,18 +162,20 @@ SrainWindow* srain_window_new(SrainApp *app){
     return g_object_new(SRAIN_TYPE_WINDOW, "application", app, NULL);
 }
 
-SrainChan* srain_window_add_chan(SrainWindow *win, const char *name){
+SrainChan* srain_window_add_chan(SrainWindow *win, const char *server_name, const char *chan_name){
     SrainChan *chan;
 
-    if (srain_window_get_chan_by_name(win, name)){
-        ERR_FR("chan'%s' alread exist", name);
+    if (srain_window_get_chan_by_name(win, chan_name)){
+        ERR_FR("chan %s alread exist", chan_name);
         return NULL;
     }
 
-    chan = srain_chan_new("irc.freenode.net", name);
+    chan = srain_chan_new(server_name, chan_name);
 
-    gtk_stack_add_named(win->stack, GTK_WIDGET(chan), name);
-    // gtk_container_child_set(GTK_CONTAINER(win->stack), GTK_WIDGET(chan), "title", name, NULL);
+    g_object_set_data(G_OBJECT(chan), "chan-name", (void *)chan_name);
+    g_object_set_data(G_OBJECT(chan), "server-name", (void *)server_name);
+    gtk_stack_add_named(win->stack, GTK_WIDGET(chan), chan_name);
+
     theme_apply(GTK_WIDGET(win));
 
     gtk_stack_set_visible_child (win->stack, GTK_WIDGET(chan));

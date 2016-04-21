@@ -53,7 +53,8 @@ struct _SrainStackSidebarClass {
 
 G_DEFINE_TYPE(SrainStackSidebar, srain_stack_sidebar, GTK_TYPE_BIN)
 
-static void srain_stack_sidebar_row_selected(GtkListBox *box, GtkListBoxRow *row, gpointer user_data){
+static void srain_stack_sidebar_row_selected(GtkListBox *box,
+        GtkListBoxRow *row, gpointer user_data){
     SrainStackSidebar *sidebar;
     SrainStackSidebarItem *item;
     GtkWidget *child;
@@ -95,16 +96,18 @@ static void srain_stack_sidebar_init(SrainStackSidebar *self){
 }
 
 static void add_child(GtkWidget *child, SrainStackSidebar *sidebar){
-    const char *name;
+    const char *chan_name;
+    const char *server_name;
     GtkListBoxRow *row;
     SrainStackSidebarItem *item;
 
     if (g_hash_table_lookup(sidebar->rows, child))
         return;
 
-    // TODO
-    name = gtk_widget_get_name(child);
-    item = srain_stack_sidebar_item_new(name);
+    chan_name = g_object_get_data(G_OBJECT(child), "chan-name");
+    server_name = g_object_get_data(G_OBJECT(child), "server-name");
+    item = srain_stack_sidebar_item_new(server_name, chan_name);
+
     // gtk_widget_set_halign(item, GTK_ALIGN_START);
     // gtk_widget_set_valign(item, GTK_ALIGN_CENTER);
 
@@ -220,7 +223,8 @@ GtkStack *srain_stack_sidebar_get_stack(SrainStackSidebar *sidebar){
     return GTK_STACK(sidebar->stack);
 }
 
-void srain_stack_sidebar_update(SrainStackSidebar *sidebar, SrainChan *chan, const char *nick, const char *msg, int is_visible){
+void srain_stack_sidebar_update(SrainStackSidebar *sidebar, SrainChan *chan,
+        const char *nick, const char *msg, int is_visible){
     GtkListBoxRow *row;
     SrainStackSidebarItem *item;
 

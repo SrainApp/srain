@@ -15,8 +15,8 @@ typedef enum {
     SERVER_LOGINED
 } ServerStat ;
 
-typedef void* (*UIJoinFunc) (const char *chan_name);
-typedef void (*UIPartFunc) (void *chan);
+typedef void* (*UIAddChanFunc) (const char *srv_name, const char *chan_name);
+typedef void (*UIRmChanFunc) (void *chan);
 typedef void (*UISysMsgFunc) (void *chan, const char *msg, SysMsgType type);
 typedef void (*UISendMsgFunc) (void *chan, const char *msg);
 typedef void (*UIRecvMsgFunc) (void *chan, const char *nick, const char *id, const char *msg);
@@ -32,8 +32,8 @@ typedef struct {
     GHashTable *chan_table;
     GThread *listen_thread;
 
-    UIJoinFunc ui_join;
-    UIPartFunc ui_part;
+    UIAddChanFunc ui_add_chan;
+    UIRmChanFunc ui_rm_chan;
     UISysMsgFunc ui_sys_msg;
     UISendMsgFunc ui_send_msg;
     UIRecvMsgFunc ui_recv_msg;

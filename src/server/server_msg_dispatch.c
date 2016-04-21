@@ -89,7 +89,7 @@ gboolean server_msg_dispatch(IRCMsg *imsg){
     else if (strcmp(imsg->command, "JOIN") == 0){
         if (imsg->nparam != 1) goto bad;
         if (strncasecmp(imsg->nick, srv->irc.nick, NICK_LEN) == 0){
-            server_intf_ui_join(srv, imsg->param[0]);
+            server_intf_ui_add_chan(srv, imsg->param[0]);
             // irc_join_ack(&irc, imsg->param[0]);
         }
         server_intf_ui_user_join(srv, imsg->param[0], imsg->nick,
@@ -100,7 +100,7 @@ gboolean server_msg_dispatch(IRCMsg *imsg){
         server_intf_ui_user_part(srv, imsg->param[0], imsg->nick, imsg->message);
         if (strncasecmp(imsg->nick, srv->irc.nick, NICK_LEN) == 0){
             // irc_part_ack(&irc, imsg->param[0]);
-            server_intf_ui_part(srv, imsg->param[0]);
+            server_intf_ui_rm_chan(srv, imsg->param[0]);
         }
     }
     else if (strcmp(imsg->command, "QUIT") == 0){

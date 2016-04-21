@@ -463,7 +463,7 @@ static void srain_chan_class_init(SrainChanClass *class){
     // gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, annex_shot_button);
 }
 
-SrainChan* srain_chan_new(const char *server_name, const char *chan_name){
+SrainChan* srain_chan_new(const char *srv_name, const char *chan_name){
     SrainChan *chan;
 
     chan = g_object_new(SRAIN_TYPE_CHAN, NULL);

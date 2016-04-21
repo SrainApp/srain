@@ -11,10 +11,9 @@
 
 int server_cmd(IRCServer *srv, const char *chan_name, char *cmd){
     LOG_FR("server: %s, chan: %s, cmd: '%s'",
-            srv ? srv->host : "NULL",
-            chan_name ? chan_name : "NULL", cmd);
+            srv ? srv->host : "(null)", chan_name, cmd);
 
-    if (strncmp(cmd, "/help", 5) == 0){
+    if (IS_CMD(cmd, "/help")){
         static char help[] = META_CMD_HELP;
         // TODO: remove it?
         server_intf_ui_sys_msg(srv, chan_name, help, SYS_MSG_NORMAL);
@@ -23,11 +22,7 @@ int server_cmd(IRCServer *srv, const char *chan_name, char *cmd){
     else if (IS_CMD(cmd, "/connect")){
         char *host = strtok(cmd + strlen("/connect"), " ");
         if (host){
-            if (server_connect(host) != NULL){
-                return 0;
-            } else {
-                return -1;
-            }
+            return server_connect(host) ? 0 : -1;
         }
     }
     else if (IS_CMD(cmd, "/login")){
