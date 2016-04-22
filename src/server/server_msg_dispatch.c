@@ -157,6 +157,10 @@ gboolean server_msg_dispatch(IRCMsg *imsg){
                     // strlen(imsg->nick) ? imsg->nick : imsg->servername,
                     // "", imsg->message);
                     // TODO
+            server_intf_ui_recv_msg(srv, META_SERVER,
+                    strlen(imsg->nick) ? imsg->nick : imsg->servername,
+                    "", imsg->message);
+
         }
         else if (strncasecmp(imsg->param[0], srv->irc.nick, NICK_LEN) == 0) {
             server_intf_ui_recv_msg(srv, META_SERVER,

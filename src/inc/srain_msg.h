@@ -28,7 +28,7 @@ typedef struct _SrainSysMsg SrainSysMsg;
 typedef struct _SrainSysMsgClass SrainSysMsgClass;
 
 GType srain_sys_msg_get_type(void);
-SrainSysMsg* srain_sys_msg_new(SysMsgType type, const char *msg);
+SrainSysMsg* srain_sys_msg_new(const char *msg, SysMsgType type);
 
 /* ================ SRAIN_SEND_MSG ================ */
 struct _SrainSendMsg {

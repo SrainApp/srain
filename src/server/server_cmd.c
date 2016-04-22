@@ -9,6 +9,15 @@
 #define IS_CMD(x, y) (strncmp(x, y, strlen(y)) == 0 && \
         (x[strlen(y)] == '\0' || x[strlen(y)] == ' '))
 
+/**
+ * @brief server_cmd send a command to server
+ *
+ * @param srv server
+ * @param chan_name where the `cmd` comes from,
+ * @param cmd command
+ *
+ * @return 0 if successed, -1 if failed
+ */
 int server_cmd(IRCServer *srv, const char *chan_name, char *cmd){
     LOG_FR("server: %s, chan: %s, cmd: '%s'",
             srv ? srv->host : "(null)", chan_name, cmd);

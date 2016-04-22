@@ -342,7 +342,7 @@ static void input_entry_on_activate(SrainChan *chan){
 
     if (is_blank(input)) goto ret;
 
-    LOG_FR("panel = %s, text = '%s'", chan_name, input);
+    LOG_FR("chan: %s, text: '%s'", chan_name, input);
 
     if (input[0] == '/'){
         ui_intf_server_cmd(chan, input);
@@ -486,11 +486,11 @@ void srain_chan_set_topic(SrainChan *chan, const char *topic){
     }
 }
 
-void srain_chan_sys_msg_add(SrainChan *chan, SysMsgType type, const char *msg){
+void srain_chan_sys_msg_add(SrainChan *chan, const char *msg, SysMsgType type){
     int to_bottom;
     SrainSysMsg *smsg;
 
-    smsg = srain_sys_msg_new(type, msg);
+    smsg = srain_sys_msg_new(msg, type);
 
     to_bottom = (should_scroll_to_bottom(chan));
 
@@ -512,7 +512,7 @@ void srain_chan_sys_msg_addf(SrainChan *chan,
         vsnprintf(msg, sizeof(msg), fmt, args);
         va_end(args);
 
-        srain_chan_sys_msg_add(chan, type, msg);
+        srain_chan_sys_msg_add(chan, msg, type);
     }
 }
 

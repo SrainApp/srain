@@ -56,7 +56,7 @@ static void srain_sys_msg_class_init(SrainSysMsgClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainSysMsg, msg_label);
 }
 
-SrainSysMsg* srain_sys_msg_new(SysMsgType type, const char *msg){
+SrainSysMsg* srain_sys_msg_new(const char *msg, SysMsgType type){
     SrainSysMsg *smsg;
 
     smsg = g_object_new(SRAIN_TYPE_SYS_MSG, NULL);

@@ -15,7 +15,7 @@ typedef enum {
     SERVER_LOGINED
 } ServerStat ;
 
-typedef void* (*UIAddChanFunc) (const char *srv_name, const char *chan_name);
+typedef void* (*UIAddChanFunc) (void *server, const char *srv_name, const char *chan_name);
 typedef void (*UIRmChanFunc) (void *chan);
 typedef void (*UISysMsgFunc) (void *chan, const char *msg, SysMsgType type);
 typedef void (*UISendMsgFunc) (void *chan, const char *msg);

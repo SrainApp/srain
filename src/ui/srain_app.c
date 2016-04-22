@@ -55,16 +55,20 @@ SrainApp* srain_app_new(void){
     return g_object_new(SRAIN_TYPE_APP, "application-id", "org.gtk.srain", NULL);
 }
 
-SrainChan* srain_app_add_chan(const char *server_name, const char *chan_name){
-    return srain_window_add_chan(srain_win, server_name, chan_name);
+SrainChan* srain_app_add_chan(void *server, const char *server_name, const char *chan_name){
+    SrainChan *chan;
+    chan = srain_window_add_chan(srain_win, server_name, chan_name);
+    g_object_set_data(G_OBJECT(chan), "server", server);
+
+    return chan;
 }
 
 void srain_app_rm_chan(SrainChan *chan){
     return srain_window_rm_chan(srain_win, chan);
 }
 
-void srain_app_sys_msg(SrainChan *chan, SysMsgType type, const char *msg){
-    return srain_chan_sys_msg_add(chan, type, msg);
+void srain_app_sys_msg(SrainChan *chan, const char *msg, SysMsgType type){
+    return srain_chan_sys_msg_add(chan, msg, type);
 }
 
 void srain_app_send_msg(SrainChan *chan, const char *msg){

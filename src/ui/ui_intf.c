@@ -1,6 +1,6 @@
 /**
  * @file ui_intf.c
- * @brief UI modeule interface
+ * @brief irc server interface for UI module
  * @author LastAvengers <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-04-21
@@ -15,6 +15,7 @@
 #include "srain_chan.h"
 #include "log.h"
 
+/* import from srain_app.c */
 extern SrainApp *srain_app;
 extern SrainWindow *srain_win;
 
@@ -35,13 +36,19 @@ int ui_intf_server_cmd(SrainChan *chan, const char *cmd){
 
     cmd2 = strdup(cmd);
 
-    if (chan){
-        srv = g_object_get_data(G_OBJECT(chan), "server");
-        chan_name = gtk_widget_get_name(GTK_WIDGET(chan));
-        res = srain_app->server_cmd(srv, chan_name, cmd2);
-    } else {
-        res = srain_app->server_cmd(NULL, NULL, cmd2);
+    if (chan == NULL){
+        chan = srain_window_get_cur_chan(srain_win);
     }
+
+    // TODO: hardcode
+    if (chan == NULL && strncmp("/connect", cmd, 8) != 0){
+        ERR_FR("chan: (null), cmd: '%s', it shouldn't be null", cmd);
+        return -1;
+    }
+
+    srv = g_object_get_data(G_OBJECT(chan), "server");
+    chan_name = gtk_widget_get_name(GTK_WIDGET(chan));
+    res = srain_app->server_cmd(srv, chan_name, cmd2);
 
     free(cmd2);
     return res;
