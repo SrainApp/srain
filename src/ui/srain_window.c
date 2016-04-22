@@ -165,15 +165,20 @@ SrainWindow* srain_window_new(SrainApp *app){
 SrainChan* srain_window_add_chan(SrainWindow *win, const char *server_name, const char *chan_name){
     SrainChan *chan;
 
-    if (srain_window_get_chan_by_name(win, chan_name)){
-        ERR_FR("chan %s alread exist", chan_name);
-        return NULL;
-    }
+    // if (srain_window_get_chan_by_name(win, chan_name)){
+        // ERR_FR("chan %s alread exist", chan_name);
+        // return NULL;
+    // }
 
     chan = srain_chan_new(server_name, chan_name);
 
+    /* SrainStackSidebarItem want to know the name of the chan and
+     * which server it belongs to, pass to it by `g_object_set_data()`
+     * */
     g_object_set_data(G_OBJECT(chan), "chan-name", (void *)chan_name);
     g_object_set_data(G_OBJECT(chan), "server-name", (void *)server_name);
+
+    // FIXME: Gtk-WARNING **: Duplicate child name in GtkStack
     gtk_stack_add_named(win->stack, GTK_WIDGET(chan), chan_name);
 
     theme_apply(GTK_WIDGET(win));

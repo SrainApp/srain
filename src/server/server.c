@@ -1,6 +1,6 @@
 /**
  * @file server.c
- * @brief irc server manange and message dispatch
+ * @brief irc servers manange
  * @author LastAvengers <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-04-15
@@ -53,13 +53,15 @@ static IRCServer *server_new(const char *host, const char *port){
 
     // TODO: func pointer assign
     srv->ui_add_chan = (UIAddChanFunc)srain_app_add_chan;
-    srv->ui_rm_chan = srain_app_rm_chan;
-    srv->ui_sys_msg = srain_app_sys_msg;
-    srv->ui_send_msg = srain_app_send_msg;
-    srv->ui_recv_msg = srain_app_recv_msg;
-    srv->ui_user_join = srain_app_user_join;
-    srv->ui_user_part = srain_app_user_part;
-    srv->ui_set_topic = srain_app_set_topic;
+    srv->ui_rm_chan = (UIRmChanFunc)srain_app_rm_chan;
+    srv->ui_sys_msg = (UISysMsgFunc)srain_app_sys_msg;
+    srv->ui_send_msg = (UISendMsgFunc)srain_app_send_msg;
+    srv->ui_recv_msg = (UIRecvMsgFunc)srain_app_recv_msg;
+    srv->ui_user_list_add = (UIUserListAddFunc)srain_app_user_list_add;
+    srv->ui_user_list_rm = (UIUserListRmFunc)srain_app_user_list_rm;
+    srv->ui_user_list_rename = (UIUserListRenameFunc)srain_app_user_list_rename;
+    srv->ui_set_topic = (UISetTopicFunc)srain_app_set_topic;
+
     return srv;
 }
 
@@ -110,6 +112,7 @@ IRCServer* server_connect(const char *host){
     if (srv->stat == SERVER_CONNECTED){
         host_list = str_list_add(host_list, host);
         LOG_FR("%s connected", host);
+
         return srv;
     } else {
         ERR_FR("connection failed");
@@ -148,7 +151,7 @@ void server_recv(IRCServer *srv){
 
         if (type == IRCMSG_SCKERR){
             irc_close(&(srv->irc));
-            // TODO
+            // TODO: free IRCServer
             return;
         }
         if (type == IRCMSG_MSG){

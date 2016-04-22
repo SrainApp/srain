@@ -67,7 +67,15 @@ void srain_app_rm_chan(SrainChan *chan){
     return srain_window_rm_chan(srain_win, chan);
 }
 
+/* when chan = NULL, fallback to current chan,
+ * if current chan = NULL, giveup this message
+ */
 void srain_app_sys_msg(SrainChan *chan, const char *msg, SysMsgType type){
+    if (chan == NULL) chan = srain_window_get_cur_chan(srain_win);
+    if (chan == NULL) {
+        ERR_FR("chan: (null), msg: '%s', type: %d, current chan is (null)",
+                msg, type);
+    }
     return srain_chan_sys_msg_add(chan, msg, type);
 }
 
@@ -79,12 +87,16 @@ void srain_app_recv_msg(SrainChan *chan, const char *nick, const char *id, const
     return srain_chan_recv_msg_add(chan, nick, id, msg);
 }
 
-void srain_app_user_join(SrainChan *chan, const char *nick, IRCUserType type, int notify){
+int srain_app_user_list_add(SrainChan *chan, const char *nick, IRCUserType type, int notify){
     return srain_chan_user_list_add(chan, nick, type, notify);
 }
 
-void srain_app_user_part(SrainChan *chan, const char *nick, const char *reason){
+int srain_app_user_list_rm(SrainChan *chan, const char *nick, const char *reason){
     return srain_chan_user_list_rm(chan, nick, reason);
+}
+
+int srain_app_user_list_rename(SrainChan *chan, const char *old_nick, const char *new_nick){
+    return srain_chan_user_list_rename(chan, old_nick, new_nick);
 }
 
 void srain_app_set_topic(SrainChan *chan, const char *topic){

@@ -47,6 +47,14 @@ void server_intf_ui_rm_chan(IRCServer *srv, const char *chan_name){
     g_hash_table_remove(srv->chan_table, chan_name);
 }
 
+/**
+ * @brief server_intf_ui_sys_msg
+ *
+ * @param srv
+ * @param chan_name can be NULL, srv->ui_sys_msg will deal with it
+ * @param msg
+ * @param type
+ */
 void server_intf_ui_sys_msg (IRCServer *srv, const char *chan_name,
         const char *msg, SysMsgType type){
     void *chan;
@@ -54,14 +62,50 @@ void server_intf_ui_sys_msg (IRCServer *srv, const char *chan_name,
     LOG_FR("server: %s, chan_name: %s, msg: '%s', type: %d",
             srv->host, chan_name, msg, type);
 
-    chan = g_hash_table_lookup(srv->chan_table, chan_name);
-    if (chan == NULL){
-        ERR_FR("%s not found", chan_name);
-        return;
+    chan = NULL;
+    if (chan_name){
+        chan = g_hash_table_lookup(srv->chan_table, chan_name);
+        if (chan == NULL){
+            ERR_FR("%s not found", chan_name);
+        }
     }
 
-    // TODO
     srv->ui_sys_msg(chan, msg, type);
+}
+
+/* formatted output version of server_intf_ui_sys_msg */
+void server_intf_ui_sys_msgf(IRCServer *srv, const char *chan_name,
+        SysMsgType type, const char *fmt, ...){
+    char msg[512];
+    va_list args;
+
+    if (strlen(fmt) != 0){
+        va_start(args, fmt);
+        vsnprintf(msg, sizeof(msg), fmt, args);
+        va_end(args);
+    }
+
+    server_intf_ui_sys_msg(srv, chan_name, msg, type);
+}
+
+/* broadcast version of server_intf_ui_sys_msgf */
+void server_intf_ui_sys_msgf_bcst(IRCServer *srv, SysMsgType type,
+        const char *fmt, ...){
+    char msg[512];
+    va_list args;
+    GHashTableIter iter;
+    gpointer key, value;
+
+    if (strlen(fmt) != 0){
+        va_start(args, fmt);
+        vsnprintf(msg, sizeof(msg), fmt, args);
+        va_end(args);
+    }
+
+    g_hash_table_iter_init (&iter, srv->chan_table);
+    while (g_hash_table_iter_next (&iter, &key, &value)){
+        server_intf_ui_sys_msg(srv, key, msg, type);
+    }
 }
 
 void server_intf_ui_send_msg(IRCServer *srv, const char *chan_name, const char *msg){
@@ -94,8 +138,9 @@ void server_intf_ui_recv_msg(IRCServer *srv, const char *chan_name,
     srv->ui_recv_msg(chan, nick, id, msg);
 }
 
-void server_intf_ui_user_join(IRCServer *srv, const char *chan_name,
+void server_intf_ui_user_list_add(IRCServer *srv, const char *chan_name,
         const char *nick, IRCUserType type, int notify){
+    int res;
     void *chan;
 
     LOG_FR("server: %s, chan_name: %s, nick: %s, type: %d",
@@ -107,10 +152,13 @@ void server_intf_ui_user_join(IRCServer *srv, const char *chan_name,
         return;
     }
 
-    srv->ui_user_join(chan, nick, type, notify);
+    if (srv->ui_user_list_add(chan, nick, type, notify) != -1){
+        server_intf_ui_sys_msgf(srv, chan_name, SYS_MSG_NORMAL,
+                "%s has joined %s", nick, chan_name);
+    }
 }
 
-void server_intf_ui_user_part(IRCServer *srv, const char *chan_name,
+void server_intf_ui_user_list_rm(IRCServer *srv, const char *chan_name,
         const char *nick, const char *reason){
     void *chan;
 
@@ -123,7 +171,51 @@ void server_intf_ui_user_part(IRCServer *srv, const char *chan_name,
         return;
     }
 
-    srv->ui_user_part(chan, nick, reason);
+    if (srv->ui_user_list_rm(chan, nick, reason) != -1){
+        server_intf_ui_sys_msgf(srv, chan_name, SYS_MSG_NORMAL,
+                "%s has left %s: %s", nick, chan_name, reason);
+    }
+}
+
+
+/* called when recvied a QUIT message */
+void server_intf_ui_user_list_rm_bcst(IRCServer *srv, const char *nick, const char *reason){
+    GHashTableIter iter;
+    gpointer key, value;
+
+    g_hash_table_iter_init (&iter, srv->chan_table);
+    while (g_hash_table_iter_next (&iter, &key, &value)){
+        server_intf_ui_user_list_rm(srv, key, nick, reason);
+    }
+}
+
+void server_intf_ui_user_list_rename(IRCServer *srv, const char *chan_name,
+        const char *old_nick, const char *new_nick){
+    void *chan;
+
+    LOG_FR("server: %s, chan_name: %s, old_nick: %s, new_nick: %s",
+            srv->host, chan_name, old_nick, new_nick);
+
+    chan = g_hash_table_lookup(srv->chan_table, chan_name);
+    if (chan == NULL){
+        ERR_FR("%s no found", chan_name);
+        return;
+    }
+
+    if (srv->ui_user_list_rename(chan, old_nick, new_nick) != -1){
+        server_intf_ui_sys_msgf(srv, chan_name, SYS_MSG_NORMAL,
+                "%s is now known as %s", old_nick, new_nick);
+    }
+}
+
+void server_intf_ui_user_list_rename_bcst(IRCServer *srv, const char *old_nick, const char *new_nick){
+    GHashTableIter iter;
+    gpointer key, value;
+
+    g_hash_table_iter_init (&iter, srv->chan_table);
+    while (g_hash_table_iter_next (&iter, &key, &value)){
+        server_intf_ui_user_list_rename(srv, key, old_nick, new_nick);
+    }
 }
 
 void server_intf_ui_set_topic(IRCServer *srv, const char *chan_name, const char *topic){

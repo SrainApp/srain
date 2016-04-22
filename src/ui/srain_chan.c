@@ -602,26 +602,41 @@ void srain_chan_fcous_entry(SrainChan *chan){
  * @param nick
  * @param is_init if is_init = 1, sys msg will not be sent
  */
-void srain_chan_user_list_add(SrainChan *chan, const char *nick,
+int srain_chan_user_list_add(SrainChan *chan, const char *nick,
         IRCUserType type, int if_sys_msg){
-    const char *chan_name;
+    int res;
 
-    if (srain_user_list_add(chan->user_list, nick, type) != -1){
+    res = srain_user_list_add(chan->user_list, nick, type);
+    if (res != -1){
         completion_list_add(chan->completion_list, nick);
-
-        chan_name = gtk_widget_get_name(GTK_WIDGET(chan));
-        if (if_sys_msg)
-            srain_chan_sys_msg_addf(chan, SYS_MSG_NORMAL, "%s has joined %s",
-                    nick, chan_name);
     }
+
+    return res;
 }
 
-void srain_chan_user_list_rm(SrainChan *chan, const char *nick, const char *reason){
+int srain_chan_user_list_rm(SrainChan *chan, const char *nick, const char *reason){
+    int res;
     const char *chan_name;
 
-    if (srain_user_list_rm(chan->user_list, nick) != -1){
-        chan_name =gtk_widget_get_name(GTK_WIDGET(chan));
-        srain_chan_sys_msg_addf(chan, SYS_MSG_NORMAL, "%s has left %s: %s",
-                nick, chan_name, reason);
+    res = srain_user_list_rm(chan->user_list, nick);
+    if (res != -1){
+        // TODO: impl func completion_list_add()
+        // completion_list_add(chan->completion_list, nick);
     }
+    return res;
+}
+
+int srain_chan_user_list_rename(SrainChan *chan, const char *old_nick, const char *new_nick){
+    int res;
+    const char *chan_name;
+
+    res = srain_user_list_rename(chan->user_list, old_nick, new_nick);
+
+    if (res != -1){
+        // TODO: impl func completion_list_add()
+        // completion_list_rm(chan->completion_list, old_nick);
+        // completion_list_add(chan->completion_list, new_nick);
+    }
+
+    return res;
 }

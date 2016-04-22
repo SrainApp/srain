@@ -20,8 +20,9 @@ typedef void (*UIRmChanFunc) (void *chan);
 typedef void (*UISysMsgFunc) (void *chan, const char *msg, SysMsgType type);
 typedef void (*UISendMsgFunc) (void *chan, const char *msg);
 typedef void (*UIRecvMsgFunc) (void *chan, const char *nick, const char *id, const char *msg);
-typedef int (*UIUserJoinFunc) (void *chan, const char *nick, IRCUserType type, int notify);
-typedef int (*UIUserPartFunc) (void *chan, const char *nick, const char *reason);
+typedef int (*UIUserListAddFunc) (void *chan, const char *nick, IRCUserType type, int notify);
+typedef int (*UIUserListRmFunc) (void *chan, const char *nick, const char *reason);
+typedef int (*UIUserListRenameFunc) (void *chan, const char *old_nick, const char *new_nick);
 typedef void (*UISetTopicFunc) (void *chan, const char *topic);
 
 typedef struct {
@@ -37,8 +38,9 @@ typedef struct {
     UISysMsgFunc ui_sys_msg;
     UISendMsgFunc ui_send_msg;
     UIRecvMsgFunc ui_recv_msg;
-    UIUserJoinFunc ui_user_join;
-    UIUserPartFunc ui_user_part;
+    UIUserListAddFunc ui_user_list_add;
+    UIUserListRmFunc ui_user_list_rm;
+    UIUserListRenameFunc ui_user_list_rename;
     UISetTopicFunc ui_set_topic;
 } IRCServer;
 

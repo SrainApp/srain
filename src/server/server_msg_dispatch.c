@@ -62,9 +62,8 @@ gboolean server_msg_dispatch(IRCMsg *imsg){
 
         if (is_action){
             /* may lose relay bot information */
-            server_intf_ui_sys_msg(srv, dest, "ACTION recv", SYS_MSG_ACTION);
-            // ui_msg_sysf(srv, dest, SYS_MSG_ACTION, "*** %s %s ***",
-                    // imsg->nick, imsg->message);
+            server_intf_ui_sys_msgf(srv, dest, SYS_MSG_ACTION,
+                    "*** %s %s ***", imsg->nick, imsg->message);
         } else {
             server_intf_ui_recv_msg(srv, dest, imsg->nick,
                     imsg->servername, imsg->message);
@@ -81,23 +80,19 @@ gboolean server_msg_dispatch(IRCMsg *imsg){
         server_intf_ui_set_topic(srv, imsg->param[1], imsg->message);
     }
 
-    /* JOIN & PART & QUIT
-     *
-     * sys message "xxx has join/leave #yyy" are sent
-     * by ui_chan_user_list_{add,rm}()
-     */
+    /* JOIN & PART & QUIT */
     else if (strcmp(imsg->command, "JOIN") == 0){
         if (imsg->nparam != 1) goto bad;
         if (strncasecmp(imsg->nick, srv->irc.nick, NICK_LEN) == 0){
             server_intf_ui_add_chan(srv, imsg->param[0]);
             // irc_join_ack(&irc, imsg->param[0]);
         }
-        server_intf_ui_user_join(srv, imsg->param[0], imsg->nick,
+        server_intf_ui_user_list_add(srv, imsg->param[0], imsg->nick,
                 IRC_USER_PERSON, 1);
     }
     else if (strcmp(imsg->command, "PART") == 0){
         if (imsg->nparam != 1) goto bad;
-        server_intf_ui_user_part(srv, imsg->param[0], imsg->nick, imsg->message);
+        server_intf_ui_user_list_rm(srv, imsg->param[0], imsg->nick, imsg->message);
         if (strncasecmp(imsg->nick, srv->irc.nick, NICK_LEN) == 0){
             // irc_part_ack(&irc, imsg->param[0]);
             server_intf_ui_rm_chan(srv, imsg->param[0]);
@@ -105,43 +100,40 @@ gboolean server_msg_dispatch(IRCMsg *imsg){
     }
     else if (strcmp(imsg->command, "QUIT") == 0){
         if (imsg->nparam != 0) goto bad;
-        // ui_chan_user_list_rm_broadcast(srv, imsg->nick, imsg->message);
-        // TODO
+        server_intf_ui_user_list_rm_bcst(srv, imsg->nick, imsg->message);
     }
 
     /* INVITE & KICK */
     else if (strcmp(imsg->command, "INVITE") == 0){
         if (imsg->nparam != 1) goto bad;
-        // ui_msg_sysf(srv, imsg->nick, SYS_MSG_NORMAL, "%s invites you into %s",
-                // imsg->nick, imsg->message);
-        server_intf_ui_sys_msg(srv, imsg->nick, "invite recv", SYS_MSG_NORMAL);
-        goto bad;
+        server_intf_ui_sys_msgf(srv, imsg->nick, SYS_MSG_NORMAL,
+                "%s invites you into %s", imsg->nick, imsg->message);
     }
     else if (strcmp(imsg->command, "KICK") == 0){
         if (imsg->nparam != 2) goto bad;
-        // ui_msg_sysf(srv, imsg->param[0], SYS_MSG_ERROR, "%s are kicked from %s by %s",
-                // imsg->param[1], imsg->param[0], imsg->nick);
-        server_intf_ui_sys_msg(srv, imsg->nick, "kick recv", SYS_MSG_NORMAL);
+        server_intf_ui_sys_msgf(srv, imsg->param[0], SYS_MSG_ERROR,
+                "%s are kicked from %s by %s", imsg->param[1], imsg->param[0], imsg->nick);
     }
 
     /* NICK (someone change his name) */
     else if (strcmp(imsg->command, "NICK") == 0){
         if (imsg->nparam != 0) goto bad;
 
-        // ui_chan_user_list_rename_broadcast(srv, imsg->nick, imsg->message);
-        // TODO
+        server_intf_ui_user_list_rename_bcst(srv, imsg->nick, imsg->message);
 
+        // TODO: let server handle nick
         if (strncmp(srv->irc.nick, imsg->nick, NICK_LEN) == 0)
             irc_nick_ack(&(srv->irc), imsg->message);
     }
 
-    /* Names (Channel name list) */
+    /* NAMES (Channel name list) */
     else if (strcmp(imsg->command, RPL_NAMREPLY) == 0){
 
         if (imsg->nparam != 3) goto bad;
         char *nickptr = strtok(imsg->message, " ");
         while (nickptr){
-            server_intf_ui_user_join(srv, imsg->param[2],
+            // TODO: do not send sys msg
+            server_intf_ui_user_list_add(srv, imsg->param[2],
                     nickptr[0] == '@' ? nickptr + 1 : nickptr,
                     nickptr[0] == '@' ? IRC_USER_OP : IRC_USER_PERSON,
                     0);
@@ -179,9 +171,9 @@ gboolean server_msg_dispatch(IRCMsg *imsg){
         /* User modes */
         if (strlen(imsg->message) != 0){
             if (imsg->nparam != 1) goto bad;
-            // ui_msg_sysf_broadcast(srv, SYS_MSG_NORMAL, "mode %s %s by %s",
-                    // imsg->param[0], imsg->message, imsg->servername);
-                    // TODO
+            server_intf_ui_sys_msgf_bcst(srv, SYS_MSG_NORMAL,
+                    "mode %s %s by %s", imsg->param[0],
+                    imsg->message, imsg->servername);
         }
         /* Channel modes */
         else {
@@ -190,28 +182,28 @@ gboolean server_msg_dispatch(IRCMsg *imsg){
             while (i < imsg->nparam){
                 g_string_append_printf(buf, "%s ", imsg->param[i++]);
             }
-            // ui_msg_sysf(srv, imsg->param[0] ,SYS_MSG_NORMAL, "mode %s by %s",
-                    // buf->str, strlen(imsg->nick) ? imsg->nick : imsg->servername);
-            server_intf_ui_sys_msg(srv, imsg->param[0], "MODE recv", SYS_MSG_ACTION);
+            server_intf_ui_sys_msgf(srv, imsg->param[0] ,SYS_MSG_NORMAL,
+                    "mode %s by %s", buf->str,
+                    strlen(imsg->nick) ? imsg->nick : imsg->servername);
             g_string_free(buf, TRUE);
         }
     }
     else if (strcmp(imsg->command, RPL_CHANNELMODEIS) == 0){
         if (imsg->nparam != 3) goto bad;
-        // ui_msg_sysf(srv, imsg->param[1], SYS_MSG_NORMAL, "mode %s %s by %s",
-           // imsg->param[1], imsg->param[2],
-           // strlen(imsg->nick) ? imsg->nick : imsg->servername);
+        server_intf_ui_sys_msgf(srv, imsg->param[1], SYS_MSG_NORMAL,
+                "mode %s %s by %s", imsg->param[1], imsg->param[2],
+                strlen(imsg->nick) ? imsg->nick : imsg->servername);
         server_intf_ui_sys_msg(srv, imsg->param[1], "RPL_CHANNELMODEIS recv", SYS_MSG_ACTION);
     }
     else if (strcmp(imsg->command, RPL_UMODEIS) == 0){
         if (imsg->nparam != 2) goto bad;
-        // ui_msg_sysf(srv, imsg->nick, SYS_MSG_NORMAL, "mode %s %s by %s",
-                // imsg->param[0], imsg->param[1],
-                // strlen(imsg->nick) ? imsg->nick : imsg->servername);
+        server_intf_ui_sys_msgf(srv, imsg->nick, SYS_MSG_NORMAL, "mode %s %s by %s",
+                imsg->param[0], imsg->param[1],
+                strlen(imsg->nick) ? imsg->nick : imsg->servername);
         server_intf_ui_sys_msg(srv, imsg->nick, "RPL_UMODEIS recv", SYS_MSG_ACTION);
     }
 
-    /* WHOIS TODO */
+    /* WHOIS */
     else if (strcmp(imsg->command, RPL_WHOISUSER) == 0
             || strcmp(imsg->command, RPL_WHOISCHANNELS) == 0
             || strcmp(imsg->command, RPL_WHOISSERVER) == 0
@@ -321,7 +313,8 @@ gboolean server_msg_dispatch(IRCMsg *imsg){
     /* RPL_ERROR */
     else if (imsg->command[0] == '4'
             || imsg->command[0] == '5'){
-        // ui_msg_sysf(NULL, SYS_MSG_ERROR, "ERROR [%s]: %s", imsg->command, imsg->message);
+        server_intf_ui_sys_msgf(srv, NULL, SYS_MSG_ERROR,
+                "ERROR [%s]: %s", imsg->command, imsg->message);
         ERR_FR("error message:");
         goto bad;
     }
