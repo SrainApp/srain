@@ -11,8 +11,8 @@
 #include <gtk/gtk.h>
 #include <assert.h>
 #include "ui_common.h"
+#include "ui_intf.h"
 #include "theme.h"
-#include "srain.h"
 #include "srain_app.h"
 #include "srain_window.h"
 #include "srain_chan.h"
@@ -53,7 +53,8 @@ static void join_entry_on_activate(GtkWidget *widget, gpointer user_data){
     entry = GTK_ENTRY(widget);
     popover = user_data;
 
-    srain_query(gtk_entry_get_text(entry));
+    // TODO: query
+    ui_intf_server_join(gtk_entry_get_text(entry));
     gtk_widget_set_visible(GTK_WIDGET(popover), FALSE);
     gtk_entry_set_text(entry, "");
 }
@@ -161,35 +162,33 @@ SrainWindow* srain_window_new(SrainApp *app){
     return g_object_new(SRAIN_TYPE_WINDOW, "application", app, NULL);
 }
 
-SrainChan* srain_window_add_chan(SrainWindow *win, const char *name){
+SrainChan* srain_window_add_chan(SrainWindow *win, const char *server_name, const char *chan_name){
     SrainChan *chan;
 
-    if (srain_window_get_chan_by_name(win, name)){
-        ERR_FR("chan'%s' alread exist", name);
-        return NULL;
-    }
+    // if (srain_window_get_chan_by_name(win, chan_name)){
+        // ERR_FR("chan %s alread exist", chan_name);
+        // return NULL;
+    // }
 
-    chan = srain_chan_new(name);
+    chan = srain_chan_new(server_name, chan_name);
 
-    gtk_stack_add_named(win->stack, GTK_WIDGET(chan), name);
-    // gtk_container_child_set(GTK_CONTAINER(win->stack), GTK_WIDGET(chan), "title", name, NULL);
+    /* SrainStackSidebarItem want to know the name of the chan and
+     * which server it belongs to, pass to it by `g_object_set_data()`
+     * */
+    g_object_set_data(G_OBJECT(chan), "chan-name", (void *)chan_name);
+    g_object_set_data(G_OBJECT(chan), "server-name", (void *)server_name);
+
+    // FIXME: Gtk-WARNING **: Duplicate child name in GtkStack
+    gtk_stack_add_named(win->stack, GTK_WIDGET(chan), chan_name);
+
     theme_apply(GTK_WIDGET(win));
 
     gtk_stack_set_visible_child (win->stack, GTK_WIDGET(chan));
     return chan;
 }
 
-int srain_window_rm_chan(SrainWindow *win, const char *name){
-    SrainChan *chan;
-
-    chan = SRAIN_CHAN(gtk_stack_get_child_by_name(win->stack, name));
-    if (chan) {
-        gtk_container_remove(GTK_CONTAINER(win->stack), GTK_WIDGET(chan));
-        return 0;
-    }
-
-    ERR_FR("no chan named '%s'", name);
-    return -1;
+void srain_window_rm_chan(SrainWindow *win, SrainChan *chan){
+    gtk_container_remove(GTK_CONTAINER(win->stack), GTK_WIDGET(chan));
 }
 
 SrainChan *srain_window_get_cur_chan(SrainWindow *win){

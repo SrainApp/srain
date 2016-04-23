@@ -2,7 +2,7 @@
 # make without any argument to generate `buile/srain`
 # make dgb debug app with cgdb
 
-.PHONY: init install run clean cleanobj
+.PHONY: init install run clean cleanobj todo
 .IGNORE: init
 
 MAKE = make -r
@@ -62,6 +62,9 @@ po: $(OBJS)
 
 mo:
 	msgfmt po/zh_CN.po -o build/locale/zh_CN/LC_MESSAGES/srain.mo
+
+todo:
+	grep --color=auto -r "TODO" src/
 
 # compile multiple object file to execute file
 $(TARGET): $(OBJS)

@@ -12,12 +12,12 @@
 #include <assert.h>
 #include <string.h>
 #include "ui_common.h"
+#include "ui_intf.h"
 #include "theme.h"
 #include "srain_window.h"
 #include "srain_chan.h"
 #include "srain_user_list.h"
 #include "srain_msg.h"
-#include "srain.h"
 #include "markup.h"
 #include "plugin.h"
 #include "log.h"
@@ -26,6 +26,7 @@
 
 struct _SrainChan {
     GtkBox parent;
+
     /* header */
     GtkLabel* name_label;
     GtkButton *option_button;
@@ -273,8 +274,9 @@ static void leave_button_on_click(GtkWidget *widget, gpointer user_data){
     SrainChan *chan;
 
     chan = user_data;
-    chan_name = gtk_widget_get_name(GTK_WIDGET(chan));
-    srain_unquery(chan_name);
+    // TODO: unquery
+    // chan_name = gtk_widget_get_name(GTK_WIDGET(chan));
+    ui_intf_server_part(chan);
 }
 
 static void option_togglebutton_on_click(GtkWidget *widget, gpointer user_data){
@@ -313,8 +315,9 @@ static gint online_listbox_on_dbclick(GtkWidget *widget, GdkEventButton *event){
             label = GTK_LABEL(gtk_bin_get_child(GTK_BIN(row)));
             cmd = g_string_new(NULL);
 
+            // server = g_object_get_data(G_OBJECT(chan), "server");
             g_string_printf(cmd, "/whois %s", gtk_label_get_text(label));
-            srain_cmd(NULL, cmd->str);
+            // irc_server_cmd(NULL, NULL, cmd->str);
             g_string_free(cmd, TRUE);
         }
     }
@@ -339,12 +342,12 @@ static void input_entry_on_activate(SrainChan *chan){
 
     if (is_blank(input)) goto ret;
 
-    LOG_FR("panel = %s, text = '%s'", chan_name, input);
+    LOG_FR("chan: %s, text: '%s'", chan_name, input);
 
     if (input[0] == '/'){
-        srain_cmd(chan_name, input);
+        ui_intf_server_cmd(chan, input);
     } else {
-        srain_send(chan_name, input);
+        ui_intf_server_send(chan, input);
     }
 
 ret:
@@ -365,20 +368,6 @@ static gboolean msg_listbox_popup(GtkWidget *widget,
         return TRUE;
     }
     return FALSE;
-}
-
-static void srain_chan_sys_msg_addf(SrainChan *chan,
-        sys_msg_type_t type, const char *fmt, ...){
-    char msg[512];
-    va_list args;
-
-    if (strlen(fmt) != 0 ){
-        va_start(args, fmt);
-        vsnprintf(msg, sizeof(msg), fmt, args);
-        va_end(args);
-
-        srain_chan_sys_msg_add(chan, type, msg);
-    }
 }
 
 static void srain_chan_init(SrainChan *self){
@@ -474,12 +463,13 @@ static void srain_chan_class_init(SrainChanClass *class){
     // gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, annex_shot_button);
 }
 
-SrainChan* srain_chan_new(const char *name){
+SrainChan* srain_chan_new(const char *srv_name, const char *chan_name){
     SrainChan *chan;
 
     chan = g_object_new(SRAIN_TYPE_CHAN, NULL);
-    gtk_label_set_text(chan->name_label, name);
-    gtk_widget_set_name(GTK_WIDGET(chan), name);
+
+    gtk_label_set_text(chan->name_label, chan_name);
+    gtk_widget_set_name(GTK_WIDGET(chan), chan_name);
 
     return chan;
 }
@@ -496,50 +486,11 @@ void srain_chan_set_topic(SrainChan *chan, const char *topic){
     }
 }
 
-/**
- * @brief srain_chan_user_list_add
- *
- * @param chan
- * @param nick
- * @param is_init if is_init = 1, sys msg will not be sent
- */
-void srain_chan_user_list_add(SrainChan *chan, const char *nick,
-        IRCUserType type, int if_sys_msg){
-    const char *chan_name;
-
-    if (srain_user_list_add(chan->user_list, nick, type) != -1){
-        completion_list_add(chan->completion_list, nick);
-
-        chan_name = gtk_widget_get_name(GTK_WIDGET(chan));
-        if (if_sys_msg)
-            srain_chan_sys_msg_addf(chan, SYS_MSG_NORMAL, "%s has joined %s",
-                    nick, chan_name);
-    }
-}
-
-void srain_chan_user_list_rm(SrainChan *chan, const char *nick, const char *reason){
-    const char *chan_name;
-
-    if (srain_user_list_rm(chan->user_list, nick) != -1){
-        chan_name =gtk_widget_get_name(GTK_WIDGET(chan));
-        srain_chan_sys_msg_addf(chan, SYS_MSG_NORMAL, "%s has left %s: %s",
-                nick, chan_name, reason);
-    }
-}
-
-void srain_chan_user_list_rename(SrainChan *chan,
-        const char *old_nick, const char *new_nick){
-    if (srain_user_list_rename(chan->user_list, old_nick, new_nick) != -1){
-        srain_chan_sys_msg_addf(chan, SYS_MSG_NORMAL, "%s is now known as %s",
-                old_nick, new_nick);
-    }
-}
-
-void srain_chan_sys_msg_add(SrainChan *chan, sys_msg_type_t type, const char *msg){
+void srain_chan_sys_msg_add(SrainChan *chan, const char *msg, SysMsgType type){
     int to_bottom;
     SrainSysMsg *smsg;
 
-    smsg = srain_sys_msg_new(type, msg);
+    smsg = srain_sys_msg_new(msg, type);
 
     to_bottom = (should_scroll_to_bottom(chan));
 
@@ -550,6 +501,20 @@ void srain_chan_sys_msg_add(SrainChan *chan, sys_msg_type_t type, const char *ms
     if (to_bottom) gdk_threads_add_idle((GSourceFunc)scroll_to_bottom, chan);
 }
 
+
+void srain_chan_sys_msg_addf(SrainChan *chan,
+        SysMsgType type, const char *fmt, ...){
+    char msg[512];
+    va_list args;
+
+    if (strlen(fmt) != 0 ){
+        va_start(args, fmt);
+        vsnprintf(msg, sizeof(msg), fmt, args);
+        va_end(args);
+
+        srain_chan_sys_msg_add(chan, msg, type);
+    }
+}
 
 void srain_chan_send_msg_add(SrainChan *chan, const char *msg){
     SrainSendMsg *smsg;
@@ -628,4 +593,49 @@ void srain_chan_recv_msg_add(SrainChan *chan, const char *nick,
 
 void srain_chan_fcous_entry(SrainChan *chan){
     gtk_widget_grab_focus(GTK_WIDGET(chan->input_entry));
+}
+
+/**
+ * @brief srain_chan_user_list_add
+ *
+ * @param chan
+ * @param nick
+ * @param is_init if is_init = 1, sys msg will not be sent
+ */
+int srain_chan_user_list_add(SrainChan *chan, const char *nick, IRCUserType type){
+    int res;
+
+    res = srain_user_list_add(chan->user_list, nick, type);
+    if (res != -1){
+        completion_list_add(chan->completion_list, nick);
+    }
+
+    return res;
+}
+
+int srain_chan_user_list_rm(SrainChan *chan, const char *nick, const char *reason){
+    int res;
+    const char *chan_name;
+
+    res = srain_user_list_rm(chan->user_list, nick);
+    if (res != -1){
+        // TODO: impl func completion_list_add()
+        // completion_list_add(chan->completion_list, nick);
+    }
+    return res;
+}
+
+int srain_chan_user_list_rename(SrainChan *chan, const char *old_nick, const char *new_nick){
+    int res;
+    const char *chan_name;
+
+    res = srain_user_list_rename(chan->user_list, old_nick, new_nick);
+
+    if (res != -1){
+        // TODO: impl func completion_list_add()
+        // completion_list_rm(chan->completion_list, old_nick);
+        // completion_list_add(chan->completion_list, new_nick);
+    }
+
+    return res;
 }

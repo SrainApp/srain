@@ -46,7 +46,7 @@ static void strip(char *str){
  * @brief parsing IRC raw data
  *
  * @param ircbuf a buffer contains ONE IRC raw message (end with "\n\r")
- * @param ircmsg a pointer points to a irc_msg_t strcture, used to store parsing result
+ * @param ircmsg a pointer points to a IRCMsg strcture, used to store parsing result
  *
  * @return message type,
  *      - IRCMSG_MSG: recv a normal message
@@ -54,7 +54,7 @@ static void strip(char *str){
  *        (after you recv IRCMSG_ERROR, connection maybe closed by server)
  *      - IRCMSG_UNKNOWN: unrecognized
  */
-irc_msg_type_t irc_parse(char *ircbuf, irc_msg_t *ircmsg){
+IRCMsgType irc_parse(char *ircbuf, IRCMsg *ircmsg){
     if (strncmp(ircbuf, "PING :", 6) == 0){
         LOG_FR("PING? PONG");
         return IRCMSG_PING;

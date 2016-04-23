@@ -59,8 +59,16 @@ SrainUserList* srain_user_list_new(void){
     return g_object_new(SRAIN_TYPE_USER_LIST, NULL);
 }
 
-int srain_user_list_add(SrainUserList *list, const char *nick, IRCUserType type){
-    GtkImage *image;
+/**
+ * @brief srain_user_list_add add a nick into SrainUserList
+ *
+ * @param list
+ * @param nick
+ * @param type
+ *
+ * @return 0 if successed, -1 if failed
+ */
+int srain_user_list_add(SrainUserList *list, const char *nick, IRCUserType type){ GtkImage *image;
     GtkButton *button;
     GtkListBoxRow *row;
 
@@ -95,6 +103,14 @@ int srain_user_list_add(SrainUserList *list, const char *nick, IRCUserType type)
     return 0;
 }
 
+/**
+ * @brief srain_user_list_rm remove a nick from SrainUserList
+ *
+ * @param list
+ * @param nick
+ *
+ * @return 0 if successed, -1 if failed
+ */
 int srain_user_list_rm(SrainUserList *list, const char *nick){
     GtkListBoxRow *row;
 
@@ -109,6 +125,15 @@ int srain_user_list_rm(SrainUserList *list, const char *nick){
     return 0;
 }
 
+/**
+ * @brief srain_user_list_rename rename a nick in SrainUserList
+ *
+ * @param list
+ * @param old_nick
+ * @param new_nick
+ *
+ * @return 0 if successed, -1 if failed
+ */
 int srain_user_list_rename(SrainUserList *list,
         const char *old_nick, const char *new_nick){
     GtkButton *button;

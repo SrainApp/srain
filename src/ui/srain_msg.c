@@ -12,11 +12,10 @@
 #include <time.h>
 #include <assert.h>
 #include <string.h>
-#include "ui.h"
 #include "ui_common.h"
+#include "ui_intf.h"
 #include "srain_window.h"
 #include "srain_msg.h"
-#include "srain.h"
 #include "srain_image.h"
 #include "markup.h"
 #include "download.h"
@@ -27,8 +26,10 @@ static void nick_button_on_click(GtkWidget *widget, gpointer *user_data){
     GString *cmd;
 
     cmd = g_string_new(NULL);
+
     g_string_printf(cmd, "/whois %s", (char *)user_data);
-    srain_cmd(NULL, cmd->str);
+    ui_intf_server_cmd(NULL, cmd->str);
+
     g_string_free(cmd, TRUE);
 }
 
@@ -55,7 +56,7 @@ static void srain_sys_msg_class_init(SrainSysMsgClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainSysMsg, msg_label);
 }
 
-SrainSysMsg* srain_sys_msg_new(sys_msg_type_t type, const char *msg){
+SrainSysMsg* srain_sys_msg_new(const char *msg, SysMsgType type){
     SrainSysMsg *smsg;
 
     smsg = g_object_new(SRAIN_TYPE_SYS_MSG, NULL);
@@ -73,7 +74,7 @@ SrainSysMsg* srain_sys_msg_new(sys_msg_type_t type, const char *msg){
             gtk_widget_set_name(GTK_WIDGET(smsg), "action_sys_msg_box");
             break;
         default:
-            ERR_FR("unkown sys_msg_type_t");
+            ERR_FR("unkown SysMsgType");
     }
     gtk_label_set_text(smsg->msg_label, msg);
 

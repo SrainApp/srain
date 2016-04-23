@@ -21,7 +21,7 @@ typedef struct {
     char ldelim[10];
     char rdelim[10];
     char nick[NICK_LEN];
-} relaybot_info_t;
+} RelaybotInfo;
 
 /* if imsg->nick exist in relaybot_list,
  * and imsg->message starts with "<ldeilm><human's nick><rdelim>"
@@ -43,13 +43,13 @@ typedef struct {
  *  
  *  if {nick,ldelim,rdelim} no matched, nothing will be changed.
  */
-void filter_relaybot_trans(irc_msg_t *imsg){
+void filter_relaybot_trans(IRCMsg *imsg){
     int nick_len;
     int max_msg_len;
     char *rdelim_ptr;
     char tmp_msg[512];
     GList *lst;
-    relaybot_info_t *info;
+    RelaybotInfo *info;
 
     lst = relaybot_list;
     while (lst){
@@ -147,7 +147,7 @@ int filter_ignore_list_rm(const char *nick){
 
 int filter_relaybot_list_add(const char *nick, char *ldelim, char* rdelim){
     GList *lst;
-    relaybot_info_t *info;
+    RelaybotInfo *info;
 
     lst = relaybot_list;
     while (lst){
@@ -159,7 +159,7 @@ int filter_relaybot_list_add(const char *nick, char *ldelim, char* rdelim){
         lst = lst->next;
     }
 
-    info = calloc(1, sizeof(relaybot_info_t));
+    info = calloc(1, sizeof(RelaybotInfo));
     strncpy(info->nick, nick, NICK_LEN);
     strncpy(info->ldelim, ldelim, 10);
     strncpy(info->rdelim, rdelim, 10);
@@ -172,7 +172,7 @@ int filter_relaybot_list_add(const char *nick, char *ldelim, char* rdelim){
 
 int filter_relaybot_list_rm(const char *nick){
     GList *lst;
-    relaybot_info_t *info;
+    RelaybotInfo *info;
 
     lst = relaybot_list;
     while (lst){

@@ -28,7 +28,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="name_label">
+          <object class="GtkLabel" id="chan_label">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="label" translatable="yes">#archlinux-cn</property>
@@ -42,9 +42,10 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="time_label">
+          <object class="GtkLabel" id="server_label">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="label" translatable="yes">irc.freenode.net</property>
             <style>
               <class name="dim-label"/>
             </style>

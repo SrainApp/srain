@@ -13,3 +13,11 @@
 
 NB: 0.01 is a pre-release, some functions are no completed yet.
 it also has some undetected bugs.
+
+# 2016-04-13 Version 0.02:
+
+- Bugs fixed
+- Port to GTK+-3.20
+
+NB: 0.02 is a pre-release, some functions are no completed yet.
+it also has some undetected bugs.
