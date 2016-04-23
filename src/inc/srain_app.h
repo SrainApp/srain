@@ -36,7 +36,7 @@ void srain_app_rm_chan(SrainChan *chan);
 void srain_app_sys_msg(SrainChan *chan, const char *msg, SysMsgType type);
 void srain_app_send_msg(SrainChan *chan, const char *msg);
 void srain_app_recv_msg(SrainChan *chan, const char *nick, const char *id, const char *msg);
-int srain_app_user_list_add(SrainChan *chan, const char *nick, IRCUserType type, int notify);
+int srain_app_user_list_add(SrainChan *chan, const char *nick, IRCUserType type);
 int srain_app_user_list_rm(SrainChan *chan, const char *nick, const char *reason);
 int srain_app_user_list_rename(SrainChan *chan, const char *old_nick, const char *new_nick);
 void srain_app_set_topic(SrainChan *chan, const char *topic);

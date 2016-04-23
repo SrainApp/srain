@@ -20,7 +20,7 @@ typedef void (*UIRmChanFunc) (void *chan);
 typedef void (*UISysMsgFunc) (void *chan, const char *msg, SysMsgType type);
 typedef void (*UISendMsgFunc) (void *chan, const char *msg);
 typedef void (*UIRecvMsgFunc) (void *chan, const char *nick, const char *id, const char *msg);
-typedef int (*UIUserListAddFunc) (void *chan, const char *nick, IRCUserType type, int notify);
+typedef int (*UIUserListAddFunc) (void *chan, const char *nick, IRCUserType type);
 typedef int (*UIUserListRmFunc) (void *chan, const char *nick, const char *reason);
 typedef int (*UIUserListRenameFunc) (void *chan, const char *old_nick, const char *new_nick);
 typedef void (*UISetTopicFunc) (void *chan, const char *topic);

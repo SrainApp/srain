@@ -87,8 +87,8 @@ void srain_app_recv_msg(SrainChan *chan, const char *nick, const char *id, const
     return srain_chan_recv_msg_add(chan, nick, id, msg);
 }
 
-int srain_app_user_list_add(SrainChan *chan, const char *nick, IRCUserType type, int notify){
-    return srain_chan_user_list_add(chan, nick, type, notify);
+int srain_app_user_list_add(SrainChan *chan, const char *nick, IRCUserType type){
+    return srain_chan_user_list_add(chan, nick, type);
 }
 
 int srain_app_user_list_rm(SrainChan *chan, const char *nick, const char *reason){

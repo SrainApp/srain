@@ -602,8 +602,7 @@ void srain_chan_fcous_entry(SrainChan *chan){
  * @param nick
  * @param is_init if is_init = 1, sys msg will not be sent
  */
-int srain_chan_user_list_add(SrainChan *chan, const char *nick,
-        IRCUserType type, int if_sys_msg){
+int srain_chan_user_list_add(SrainChan *chan, const char *nick, IRCUserType type){
     int res;
 
     res = srain_user_list_add(chan->user_list, nick, type);

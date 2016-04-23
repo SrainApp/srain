@@ -152,7 +152,7 @@ void server_intf_ui_user_list_add(IRCServer *srv, const char *chan_name,
         return;
     }
 
-    if (srv->ui_user_list_add(chan, nick, type, notify) != -1){
+    if (srv->ui_user_list_add(chan, nick, type) != -1 && notify){
         server_intf_ui_sys_msgf(srv, chan_name, SYS_MSG_NORMAL,
                 "%s has joined %s", nick, chan_name);
     }
