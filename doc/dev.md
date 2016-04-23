@@ -49,15 +49,17 @@ srain 简陋地支持了插件功能，允许使用 python 3 编写插件。
     - 接口：`SrainApp` 提供了操作 server 模块的函数 `ui_intf_server_*()` （由 `src/ui/ui_intf.c` 提供）
         而 `ui_intf_server_*()` 最终调用了 `SrainApp` 中默认指向 server 模块的函数指针，现有函数如下：
 
-        typedef int (*ServerJoinFunc) (void *server, const char *chan_name);
-        typedef int (*ServerPartFunc) (void *server, const char *chan_name);
-        typedef int (*ServerSendFunc) (void *server, const char *target, const char *msg);
-        typedef int (*ServerCmdFunc) (void *server, const char *source, const char *cmd);
+```
+typedef int (*ServerJoinFunc) (void *server, const char *chan_name);
+typedef int (*ServerPartFunc) (void *server, const char *chan_name);
+typedef int (*ServerSendFunc) (void *server, const char *target, const char *msg);
+typedef int (*ServerCmdFunc) (void *server, const char *source, const char *cmd);
 
-        self->server_join = (ServerJoinFunc)server_join;
-        self->server_part = (ServerPartFunc)server_part;
-        self->server_send = (ServerSendFunc)server_send;
-        self->server_cmd = (ServerCmdFunc)server_cmd;
+self->server_join = (ServerJoinFunc)server_join;
+self->server_part = (ServerPartFunc)server_part;
+self->server_send = (ServerSendFunc)server_send;
+self->server_cmd = (ServerCmdFunc)server_cmd;
+```
 
 - irc:
     - 对 RFC 1459 所规定的 client 协议的部分实现
@@ -70,12 +72,24 @@ srain 简陋地支持了插件功能，允许使用 python 3 编写插件。
     - 接口：`IRCServer` 提供了操作 ui 模块的函数 `server_intf_ui_*()` （由 `src/server/server_intf.c` 提供）
         而 `ui_intf_server_*()` 最终调用了 `SrainApp` 中默认指向 ui 模块的函数指针，现有函数如下：
 
-        typedef void* (*UIAddChanFunc) (void *server, const char *srv_name, const char *chan_name);
-        typedef void (*UIRmChanFunc) (void *chan);
-        typedef void (*UISysMsgFunc) (void *chan, const char *msg, SysMsgType type);
-        typedef void (*UISendMsgFunc) (void *chan, const char *msg);
-        typedef void (*UIRecvMsgFunc) (void *chan, const char *nick, const char *id, const char *msg);
-        typedef int (*UIUserListAddFunc) (void *chan, const char *nick, IRCUserType type);
-        typedef int (*UIUserListRmFunc) (void *chan, const char *nick, const char *reason);
-        typedef int (*UIUserListRenameFunc) (void *chan, const char *old_nick, const char *new_nick);
-        typedef void (*UISetTopicFunc) (void *chan, const char *topic);
+```
+typedef void* (*UIAddChanFunc) (void *server, const char *srv_name, const char *chan_name);
+typedef void (*UIRmChanFunc) (void *chan);
+typedef void (*UISysMsgFunc) (void *chan, const char *msg, SysMsgType type);
+typedef void (*UISendMsgFunc) (void *chan, const char *msg);
+typedef void (*UIRecvMsgFunc) (void *chan, const char *nick, const char *id, const char *msg);
+typedef int (*UIUserListAddFunc) (void *chan, const char *nick, IRCUserType type);
+typedef int (*UIUserListRmFunc) (void *chan, const char *nick, const char *reason);
+typedef int (*UIUserListRenameFunc) (void *chan, const char *old_nick, const char *new_nick);
+typedef void (*UISetTopicFunc) (void *chan, const char *topic);
+
+srv->ui_add_chan = (UIAddChanFunc)srain_app_add_chan;
+srv->ui_rm_chan = (UIRmChanFunc)srain_app_rm_chan;
+srv->ui_sys_msg = (UISysMsgFunc)srain_app_sys_msg;
+srv->ui_send_msg = (UISendMsgFunc)srain_app_send_msg;
+srv->ui_recv_msg = (UIRecvMsgFunc)srain_app_recv_msg;
+srv->ui_user_list_add = (UIUserListAddFunc)srain_app_user_list_add;
+srv->ui_user_list_rm = (UIUserListRmFunc)srain_app_user_list_rm;
+srv->ui_user_list_rename = (UIUserListRenameFunc)srain_app_user_list_rename;
+srv->ui_set_topic = (UISetTopicFunc)srain_app_set_topic;
+```
