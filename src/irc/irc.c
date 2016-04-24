@@ -141,10 +141,16 @@ int irc_mode(IRC *irc, const char *target, const char *mode){
     return irc_core_mode(irc->fd, target, mode);
 }
 
+/************************************************************
+ * NOTE: This function works in a number of different threads
+ * non-thread-local static varible is NOT allowed.
+ ************************************************************/
 IRCMsgType irc_recv(IRC *irc, IRCMsg *ircmsg){
     int i;
-    static int rc, tmpbuf_ptr = 0;
-    static char tmpbuf[BUF_LEN];
+    // gnu11 does NOT support `thread_local`, just use extension:
+    static __thread int rc;
+    static __thread int tmpbuf_ptr = 0;
+    static __thread char tmpbuf[BUF_LEN];
 
     if (tmpbuf_ptr == 0){
         if ((rc = sck_recv(irc->fd, tmpbuf, BUF_LEN -2)) <= 0 ){

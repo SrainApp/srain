@@ -7,6 +7,7 @@
 #define BUF_LEN     512
 
 typedef struct {
+    // TODO: remove alias; let IRCServer handle nick
     int fd;
     int bufptr;
     char nick[NICK_LEN];

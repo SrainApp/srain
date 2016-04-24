@@ -4,11 +4,6 @@
  * @author LastAvengers <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-04-15
- *
- * This file gules UI module and IRC module together
- * and provides some abstract operations of a IRC client:
- *      connect to server, login as someone, join a channel,
- *      part from a channel, send message, receive message and etc.
  */
 
 #define __LOG_ON
@@ -138,7 +133,10 @@ int server_login(IRCServer *srv, const char *nick){
     return -1;
 }
 
-/* this function work in listening thread */
+/************************************************************
+ * NOTE: This function works in a number of different threads
+ * non-thread-local static varible is NOT allowed.
+ ************************************************************/
 void server_recv(IRCServer *srv){
     IRCMsg *imsg;
     IRCMsgType type;
