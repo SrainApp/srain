@@ -40,15 +40,13 @@ int ui_intf_server_cmd(SrainChan *chan, const char *cmd){
         chan = srain_window_get_cur_chan(srain_win);
     }
 
-    // TODO: hardcode
-    if (chan == NULL && strncmp("/connect", cmd, 8) != 0){
-        ERR_FR("chan: (null), cmd: '%s', it shouldn't be null", cmd);
-        return -1;
+    if (chan){
+        srv = g_object_get_data(G_OBJECT(chan), "server");
+        chan_name = gtk_widget_get_name(GTK_WIDGET(chan));
+        res = srain_app->server_cmd(srv, chan_name, cmd2);
+    } else {
+        res = srain_app->server_cmd(NULL, NULL, cmd2);
     }
-
-    srv = g_object_get_data(G_OBJECT(chan), "server");
-    chan_name = gtk_widget_get_name(GTK_WIDGET(chan));
-    res = srain_app->server_cmd(srv, chan_name, cmd2);
 
     free(cmd2);
     return res;
