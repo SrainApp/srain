@@ -16,6 +16,7 @@
 #include "log.h"
 #include "server.h"
 #include "server_cmd.h"
+#include "i18n.h"
 
 G_DEFINE_TYPE(SrainApp, srain_app, GTK_TYPE_APPLICATION);
 
@@ -76,15 +77,20 @@ void srain_app_sys_msg(SrainChan *chan, const char *msg, SysMsgType type){
         ERR_FR("chan: (null), msg: '%s', type: %d, current chan is (null)",
                 msg, type);
     }
-    return srain_chan_sys_msg_add(chan, msg, type);
+    srain_chan_sys_msg_add(chan, msg, type);
+    if (type == SYS_MSG_ACTION){
+        srain_window_stack_sidebar_update(srain_win, chan, _("ACTION"), msg);
+    }
 }
 
 void srain_app_send_msg(SrainChan *chan, const char *msg){
-    return srain_chan_send_msg_add(chan, msg);
+    srain_chan_send_msg_add(chan, msg);
+    srain_window_stack_sidebar_update(srain_win, chan, _("You"), msg);
 }
 
 void srain_app_recv_msg(SrainChan *chan, const char *nick, const char *id, const char *msg){
-    return srain_chan_recv_msg_add(chan, nick, id, msg);
+    srain_chan_recv_msg_add(chan, nick, id, msg);
+    srain_window_stack_sidebar_update(srain_win, chan, nick, msg);
 }
 
 int srain_app_user_list_add(SrainChan *chan, const char *nick, IRCUserType type){
