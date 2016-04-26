@@ -7,6 +7,8 @@
  *
  */
 
+#define __LOG_ON
+
 #include <string.h>
 #include "irc.h"
 #include "log.h"
@@ -82,6 +84,7 @@ IRCMsgType irc_parse(char *ircbuf, IRCMsg *ircmsg){
         prefix_ptr = strtok(ircbuf + 1, " ");
         command_ptr = strtok(NULL, " ");
         middle_ptr = strtok(NULL, "");
+        // FIXME: crash here, see #19
         trailing_ptr = strstr(middle_ptr, " :");
 
         if (!prefix_ptr || !command_ptr || !middle_ptr) goto bad;
