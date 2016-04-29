@@ -95,6 +95,9 @@ static gboolean scroll_to_bottom(SrainChan *chan){
     double val;
     double max_val;
 
+    /* if chan has been freed */
+    if (!SRAIN_IS_CHAN(chan)) return FALSE;
+
     adj = gtk_scrolled_window_get_vadjustment(chan->msg_scrolledwindow);
     gtk_adjustment_set_value(adj, gtk_adjustment_get_upper(adj) -
             gtk_adjustment_get_page_size(adj));
