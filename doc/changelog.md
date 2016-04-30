@@ -21,3 +21,14 @@ it also has some undetected bugs.
 
 NB: 0.02 is a pre-release, some functions are no completed yet.
 it also has some undetected bugs.
+
+# 2016-04-30 Version 0.03:
+
+- new interface between UI and IRC module
+- multi-server support
+- channel name is not case sensitive now
+- /quit command will close all SrainChan of a server
+- fix GTK-Warning when close a SrainCHan
+
+NB: 0.03 is a pre-release, some functions are no completed yet.
+it also has some undetected bugs.

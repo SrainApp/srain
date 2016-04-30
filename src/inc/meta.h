@@ -2,8 +2,8 @@
 #define __META_H
 
 #define META_NAME           "Srain"
-#define META_VERSION        "0.01"
-#define META_NAME_VERSION   "Srain 0.01"
+#define META_VERSION        "0.03"
+#define META_NAME_VERSION   "Srain 0.03"
 #define META_DESC           "It does not look like a IRC client."
 #define META_AUTHOR_NAME    "LastAvengers"
 #define META_AUTHOR_MAIL    "lastavengers@outlook.com"
