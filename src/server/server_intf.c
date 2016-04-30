@@ -9,42 +9,98 @@
 
 #include <string.h>
 #include <glib.h>
+#include <ctype.h>
+#include "meta.h"
 #include "server.h"
-#include "server_cmd.h"
+#include "meta.h"
 #include "srain_chan.h"
 #include "srain_app.h"
 #include "log.h"
 
+static char* strtolower(char *str){
+    int i;
 
+    for (i = 0; i < strlen(str); i++){
+        str[i] = tolower(str[i]);
+    }
+
+    return str;
+}
+
+static gpointer hash_table_lookup_lowercase(
+        GHashTable *hash_table, const char *key){
+    char *lkey;
+    gpointer res;
+
+    lkey= strtolower(strdup(key));
+    res = g_hash_table_lookup(hash_table, lkey);
+    free(lkey);
+
+    return res;
+}
+
+/* NOTE:this funciton assumes the key is not exists in the table yet*/
+static gboolean hast_table_insert_lowercase(
+        GHashTable *hash_table, const char *key, gpointer value){
+    char *lkey;
+    gboolean res;
+
+    lkey= strtolower(strdup(key));
+    res =  g_hash_table_insert(hash_table, lkey, value);
+
+    if (!res){
+        ERR_FR("hast_table_insert_lowercase shouldn't return FALSE");
+    }
+
+    return res;
+}
+
+static gboolean hash_tabel_remove_lowercase(
+        GHashTable *hash_table, const char *key){
+    char *lkey;
+    gboolean res;
+
+    lkey= strtolower(strdup(key));
+    res = g_hash_table_remove(hash_table, key);
+    free(lkey);
+
+    return res;
+}
+
+/* if there is no a chan named `chan_name`,
+ * add it into srv->chan_table in lowercase
+ */
 void server_intf_ui_add_chan(IRCServer *srv, const char *chan_name){
     void *chan;
 
     LOG_FR("server: %s, chan_name: %s", srv->host, chan_name);
 
-    chan = g_hash_table_lookup(srv->chan_table, chan_name);
+    chan = hash_table_lookup_lowercase(srv->chan_table, chan_name);
     if (chan){
         ERR_FR("%s already exist", chan_name);
         return;
     }
 
     chan = srv->ui_add_chan(srv, srv->host, chan_name);
-
-    g_hash_table_insert(srv->chan_table, strdup(chan_name), chan);
+    hast_table_insert_lowercase(srv->chan_table, chan_name, chan);
 }
 
+/* if there is a chan named `chan_name` in lowercase,
+ * remove it from srv->chan_table
+ */
 void server_intf_ui_rm_chan(IRCServer *srv, const char *chan_name){
     void *chan;
 
     LOG_FR("server: %s, chan_name: %s", srv->host, chan_name);
 
-    chan = g_hash_table_lookup(srv->chan_table, chan_name);
+    chan = hash_table_lookup_lowercase(srv->chan_table, chan_name);
     if (chan == NULL){
         ERR_FR("%s not found", chan_name);
         return;
     }
 
     srv->ui_rm_chan(chan);
-    g_hash_table_remove(srv->chan_table, chan_name);
+    hash_tabel_remove_lowercase(srv->chan_table, chan_name);
 }
 
 /**
@@ -64,7 +120,7 @@ void server_intf_ui_sys_msg (IRCServer *srv, const char *chan_name,
 
     chan = NULL;
     if (chan_name){
-        chan = g_hash_table_lookup(srv->chan_table, chan_name);
+        chan = hash_table_lookup_lowercase(srv->chan_table, chan_name);
         if (chan == NULL){
             ERR_FR("%s not found", chan_name);
         }
@@ -113,7 +169,7 @@ void server_intf_ui_send_msg(IRCServer *srv, const char *chan_name, const char *
 
     LOG_FR("server: %s, chan_name: %s, msg: '%s'", srv->host, chan_name, msg);
 
-    chan = g_hash_table_lookup(srv->chan_table, chan_name);
+    chan = hash_table_lookup_lowercase(srv->chan_table, chan_name);
     if (chan == NULL){
         ERR_FR("%s not found", chan_name);
         return;
@@ -122,6 +178,14 @@ void server_intf_ui_send_msg(IRCServer *srv, const char *chan_name, const char *
     srv->ui_send_msg(chan, msg);
 }
 
+/* display a recv message on UI,
+ * if the value of `chan_name` (a UI object) found in chan_table,
+ * add this message on UI object whose key is META_SERVER
+ *
+ * be different with sys message,
+ * if a UI object no found, add it to current UI object
+ * (impl in src/ui/srain_window.c)
+ */
 void server_intf_ui_recv_msg(IRCServer *srv, const char *chan_name,
         const char *nick, const char *id, const char *msg){
     void *chan;
@@ -129,10 +193,14 @@ void server_intf_ui_recv_msg(IRCServer *srv, const char *chan_name,
     LOG_FR("server: %s, chan_name: %s, nick: %s, id: %s, msg: '%s'",
             srv->host, chan_name, nick, id, msg);
 
-    chan = g_hash_table_lookup(srv->chan_table, chan_name);
+    chan = hash_table_lookup_lowercase(srv->chan_table, chan_name);
     if (chan == NULL){
-        ERR_FR("%s no found", chan_name);
-        return;
+        LOG_FR("%s no found, fallback to META_SERVER", chan_name);
+        chan = hash_table_lookup_lowercase(srv->chan_table, META_SERVER);
+        if (chan == NULL){
+            ERR_FR("key META_SERVER shouldn't have no a value");
+            return;
+        }
     }
 
     srv->ui_recv_msg(chan, nick, id, msg);
@@ -146,7 +214,7 @@ void server_intf_ui_user_list_add(IRCServer *srv, const char *chan_name,
     LOG_FR("server: %s, chan_name: %s, nick: %s, type: %d",
             srv->host, chan_name, nick, type);
 
-    chan = g_hash_table_lookup(srv->chan_table, chan_name);
+    chan = hash_table_lookup_lowercase(srv->chan_table, chan_name);
     if (chan == NULL){
         ERR_FR("%s no found", chan_name);
         return;
@@ -165,7 +233,7 @@ void server_intf_ui_user_list_rm(IRCServer *srv, const char *chan_name,
     LOG_FR("server: %s, chan_name: %s, nick: %s, reasion: %s",
             srv->host, chan_name, nick, reason);
 
-    chan = g_hash_table_lookup(srv->chan_table, chan_name);
+    chan = hash_table_lookup_lowercase(srv->chan_table, chan_name);
     if (chan == NULL){
         ERR_FR("%s no found", chan_name);
         return;
@@ -196,7 +264,7 @@ void server_intf_ui_user_list_rename(IRCServer *srv, const char *chan_name,
     LOG_FR("server: %s, chan_name: %s, old_nick: %s, new_nick: %s",
             srv->host, chan_name, old_nick, new_nick);
 
-    chan = g_hash_table_lookup(srv->chan_table, chan_name);
+    chan = hash_table_lookup_lowercase(srv->chan_table, chan_name);
     if (chan == NULL){
         ERR_FR("%s no found", chan_name);
         return;
@@ -224,7 +292,7 @@ void server_intf_ui_set_topic(IRCServer *srv, const char *chan_name, const char 
     LOG_FR("server: %s, chan_name: %s, topic: '%s'",
             srv->host, chan_name, topic);
 
-    chan = g_hash_table_lookup(srv->chan_table, chan_name);
+    chan = hash_table_lookup_lowercase(srv->chan_table, chan_name);
     if (chan == NULL){
         ERR_FR("%s no found", chan_name);
         return;

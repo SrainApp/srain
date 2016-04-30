@@ -25,16 +25,6 @@
 
 GList *host_list = NULL;
 
-static char* str_to_lowcase(char *str){
-    int i;
-
-    for (i = 0; i < strlen(str); i++){
-        str[i] = tolower(str[i]);
-    }
-
-    return str;
-}
-
 static IRCServer *server_new(const char *host, const char *port){
     IRCServer *srv;
 
@@ -46,7 +36,6 @@ static IRCServer *server_new(const char *host, const char *port){
     strncpy(srv->host, host, 512);
     strncpy(srv->port, port, 8);
 
-    // TODO: func pointer assign
     srv->ui_add_chan = (UIAddChanFunc)srain_app_add_chan;
     srv->ui_rm_chan = (UIRmChanFunc)srain_app_rm_chan;
     srv->ui_sys_msg = (UISysMsgFunc)srain_app_sys_msg;
@@ -173,8 +162,6 @@ int server_part(IRCServer *srv, const char *chan_name, const char *reason){
 }
 
 int server_query(IRCServer *srv, const char *target){
-    char *person;
-
     if (srv->stat != SERVER_LOGINED){
         return -1;
     }
@@ -183,23 +170,12 @@ int server_query(IRCServer *srv, const char *target){
         return server_join(srv, target);
     }
 
-    person = str_to_lowcase(strdup(target));
-    if (g_hash_table_lookup(srv->chan_table, target) != NULL){
-        free(person);
-        return -1;
-    }
-
-    // ui_chan_add(srv, person);
-    // TODO
-    free(person);
-
-    return 1;
+    server_intf_ui_add_chan(srv, target);
+    // TODO: add whois target
+    return 0;
 }
 
 int server_unquery(IRCServer *srv, const char *target){
-    char *person;
-    SrainChan *chan;
-
     if (srv->stat != SERVER_LOGINED){
         return -1;
     }
@@ -208,17 +184,12 @@ int server_unquery(IRCServer *srv, const char *target){
         return server_part(srv, target, NULL);
     }
 
-    person = str_to_lowcase(strdup(target));
-    if ((chan = g_hash_table_lookup(srv->chan_table, target)) == NULL){
-        free(person);
+    if (strcasecmp(target, META_SERVER) == 0){
+        ERR_FR("can no unquery META_SERVER");
         return -1;
     }
 
-    // ui_chan_rm(srv, person);
-    // TODO
-
-    free(person);
-
+    server_intf_ui_rm_chan(srv, target);
     return 0;
 }
 
@@ -228,7 +199,8 @@ int server_send(IRCServer *srv, const char *chan_name, char *msg){
     server_intf_ui_send_msg(srv, chan_name, msg);
 
     if (irc_send(&(srv->irc), chan_name, msg, 0) <= 0){
-        // ui_msg_sysf(NULL, SYS_MSG_ERROR, "faild to send message \"%.8s...\"", msg);
+        server_intf_ui_sys_msgf(srv, chan_name, SYS_MSG_ERROR,
+                "faild to send message \"%.8s...\"", msg);
         return -1;
     }
 

@@ -59,54 +59,11 @@ int irc_quit_req(IRC *irc, const char *reason){
 }
 
 int irc_join_req(IRC *irc, const char *chan){
-    GList *tmp;
-
-    tmp = irc->chans;
-    while (tmp){
-        if (strncmp(tmp->data, chan, CHAN_LEN) == 0){
-            ERR_FR("channel '%s' already exist", chan);
-            return -1;
-        }
-        tmp = tmp->next;
-    }
-
     return irc_core_join(irc->fd, chan);
 }
 
 int irc_part_req(IRC *irc, const char *chan, const char *reason){
-    GList *tmp;
-        
-    tmp = irc->chans;
-    while (tmp){
-        if (strncmp(tmp->data, chan, CHAN_LEN) == 0){
-            return irc_core_part(irc->fd, chan, reason);
-        }
-        tmp = tmp->next;
-    }
-
-    ERR_FR("no such channel '%s'", chan);
-    return -1;
-}
-
-void irc_join_ack(IRC *irc, const char *chan){
-    irc->chans = g_list_append(irc->chans, strdup(chan));
-}
-
-void irc_part_ack(IRC *irc, const char *chan){
-    GList *tmp;
-
-    tmp = irc->chans;
-    while (tmp){
-        if (strncmp(chan, tmp->data, CHAN_LEN) == 0){
-            free(tmp->data);
-            irc->chans = g_list_remove(irc->chans, tmp->data);
-
-            return;
-        }
-        tmp = tmp->next;
-    }
-
-    ERR_FR("no such channel");
+    return irc_core_part(irc->fd, chan, reason);
 }
 
 int irc_nick_req(IRC *irc, const char *nick){
@@ -170,6 +127,8 @@ IRCMsgType irc_recv(IRC *irc, IRCMsg *ircmsg){
             case '\n': {
                            irc->servbuf[irc->bufptr] = '\0';
                            irc->bufptr = 0;
+                           // TODO: remove it
+                           LOG_FR("TODAY's buf is: %s", irc->servbuf);
                            res = irc_parse(irc->servbuf, ircmsg);
                            switch (res){
                                case IRCMSG_PING:

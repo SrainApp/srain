@@ -61,7 +61,7 @@ gboolean server_msg_dispatch(IRCMsg *imsg){
         }
 
         if (is_action){
-            /* may lose relay bot information */
+            /* lose relay bot information */
             server_intf_ui_sys_msgf(srv, dest, SYS_MSG_ACTION,
                     "*** %s %s ***", imsg->nick, imsg->message);
         } else {
@@ -85,7 +85,6 @@ gboolean server_msg_dispatch(IRCMsg *imsg){
         if (imsg->nparam != 1) goto bad;
         if (strncasecmp(imsg->nick, srv->irc.nick, NICK_LEN) == 0){
             server_intf_ui_add_chan(srv, imsg->param[0]);
-            // irc_join_ack(&irc, imsg->param[0]);
         }
         server_intf_ui_user_list_add(srv, imsg->param[0], imsg->nick,
                 IRC_USER_PERSON, 1);
@@ -94,7 +93,6 @@ gboolean server_msg_dispatch(IRCMsg *imsg){
         if (imsg->nparam != 1) goto bad;
         server_intf_ui_user_list_rm(srv, imsg->param[0], imsg->nick, imsg->message);
         if (strncasecmp(imsg->nick, srv->irc.nick, NICK_LEN) == 0){
-            // irc_part_ack(&irc, imsg->param[0]);
             server_intf_ui_rm_chan(srv, imsg->param[0]);
         }
     }

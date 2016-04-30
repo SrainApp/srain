@@ -27,9 +27,18 @@ typedef void (*UISetTopicFunc) (void *chan, const char *topic);
 
 typedef struct {
     char host[512];
+    char nick[NICK_LEN];
     char port[8];
     IRC irc;
     ServerStat stat;
+
+    /* this hash table stores associations between chan_name(char *)
+     * and a UI object which reprsent a channnel (void *)
+     *
+     * chan_name *MUST* be encoded in ASCII, and lowercase
+     *
+     * this table should only be modified in src/server/server_intf.c
+     */
     GHashTable *chan_table;
     GThread *listen_thread;
 
