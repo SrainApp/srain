@@ -99,6 +99,8 @@ gboolean server_msg_dispatch(IRCMsg *imsg){
     else if (strcmp(imsg->command, "QUIT") == 0){
         if (imsg->nparam != 0) goto bad;
         server_intf_ui_user_list_rm_bcst(srv, imsg->nick, imsg->message);
+        if (strcasecmp(imsg->nick, srv->irc.nick) == 0)
+            server_quit_ack(srv);
     }
 
     /* INVITE & KICK */

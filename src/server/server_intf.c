@@ -103,6 +103,20 @@ void server_intf_ui_rm_chan(IRCServer *srv, const char *chan_name){
     hash_tabel_remove_lowercase(srv->chan_table, chan_name);
 }
 
+void server_intf_ui_rm_all_chan(IRCServer *srv){
+    GHashTableIter iter;
+    gpointer key, value;
+
+    LOG_FR("server: %s", srv->host);
+
+    g_hash_table_iter_init(&iter, srv->chan_table);
+    while (g_hash_table_iter_next (&iter, &key, &value)){
+        /* server_intf_ui_rm_chan() will modifiy hashtable,
+         * so don't use it */
+        srv->ui_rm_chan(value);
+    }
+}
+
 /**
  * @brief server_intf_ui_sys_msg
  *
@@ -230,7 +244,7 @@ void server_intf_ui_user_list_rm(IRCServer *srv, const char *chan_name,
         const char *nick, const char *reason){
     void *chan;
 
-    LOG_FR("server: %s, chan_name: %s, nick: %s, reasion: %s",
+    LOG_FR("server: %s, chan_name: %s, nick: %s, reason: %s",
             srv->host, chan_name, nick, reason);
 
     chan = hash_table_lookup_lowercase(srv->chan_table, chan_name);

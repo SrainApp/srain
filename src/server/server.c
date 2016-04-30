@@ -170,6 +170,11 @@ int server_query(IRCServer *srv, const char *target){
         return server_join(srv, target);
     }
 
+    if (strcasecmp(target, META_SERVER) == 0){
+        ERR_FR("can not query META_SERVER");
+        return -1;
+    }
+
     server_intf_ui_add_chan(srv, target);
     // TODO: add whois target
     return 0;
@@ -185,7 +190,7 @@ int server_unquery(IRCServer *srv, const char *target){
     }
 
     if (strcasecmp(target, META_SERVER) == 0){
-        ERR_FR("can no unquery META_SERVER");
+        ERR_FR("can not unquery META_SERVER");
         return -1;
     }
 
@@ -207,13 +212,22 @@ int server_send(IRCServer *srv, const char *chan_name, char *msg){
     return 0;
 }
 
-void server_close(IRCServer *srv){
-    if (srv->stat != SERVER_LOGINED || srv->stat != SERVER_CONNECTED) {
-        return;
+void server_quit_req(IRCServer *srv){
+    LOG_FR("host: %s", srv->host);
+
+    // if (srv->stat != SERVER_LOGINED || srv->stat != SERVER_CONNECTED) {
+        //return;
+    // }
+
+    /* if socket error */
+    if (irc_quit_req(&(srv->irc), META_NAME_VERSION) < 0){
+        server_quit_ack(srv);
     }
+}
 
-    irc_quit_req(&(srv->irc), META_NAME_VERSION);
-    irc_close(&(srv->irc));
+void server_quit_ack(IRCServer *srv){
+    LOG_FR("host: %s", srv->host);
 
+    server_intf_ui_rm_all_chan(srv);
     server_free(srv);
 }

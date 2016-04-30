@@ -60,6 +60,7 @@ int server_part(IRCServer *server, const char *chan_name, const char *reason);
 int server_query(IRCServer *server, const char *target);
 int server_unquery(IRCServer *server, const char *target);
 int server_send(IRCServer *server, const char *target, char *msg);
-void server_close(IRCServer *server);
+void server_quit_req(IRCServer *server);
+void server_quit_ack(IRCServer *srv);
 
 #endif /* __SERVER_H */

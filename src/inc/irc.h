@@ -51,8 +51,6 @@ int irc_quit_req(IRC *irc, const char *reason);
 
 int irc_join_req(IRC *irc, const char *chan);
 int irc_part_req(IRC *irc, const char *chan, const char *reason);
-void irc_join_ack(IRC *irc, const char *chan);
-void irc_part_ack(IRC *irc, const char *chan);
 
 int irc_nick_req(IRC *irc, const char *nick);
 void irc_nick_ack(IRC *irc, const char *nick);

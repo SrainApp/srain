@@ -95,7 +95,7 @@ int server_cmd(IRCServer *srv, const char *chan_name, char *cmd){
     }
 
     else if (IS_CMD(cmd, "/quit")){
-        server_close(srv);
+        server_quit_req(srv);
         return 0;
     }
 

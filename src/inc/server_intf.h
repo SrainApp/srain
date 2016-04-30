@@ -5,6 +5,7 @@
 
 void server_intf_ui_add_chan(IRCServer *srv, const char *chan_name);
 void server_intf_ui_rm_chan(IRCServer *srv, const char *chan_name);
+void server_intf_ui_rm_all_chan(IRCServer *srv);
 void server_intf_ui_sys_msg (IRCServer *srv, const char *chan_name, const char *msg, SysMsgType type);
 void server_intf_ui_sys_msgf(IRCServer *srv, const char *chan_name, SysMsgType type, const char *fmt, ...);
 void server_intf_ui_sys_msgf_bcst(IRCServer *srv, SysMsgType type, const char *fmt, ...);
