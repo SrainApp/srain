@@ -1,6 +1,7 @@
 Srain
 =====
-[![Build Status](https://travis-ci.org/LastAvenger/srain.svg?branch=master)](https://travis-ci.org/LastAvenger/srain)
+[![Travis](https://img.shields.io/travis/LastAvenger/srain.svg?maxAge=2592000)]()
+[![Github All Releases](https://img.shields.io/github/downloads/LastAvenger/srain/total.svg?maxAge=2592000)]()
 
 it does not look like a irc client :-)
 
