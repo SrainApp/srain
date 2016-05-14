@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.19.0 -->
+<!-- Generated with glade 3.20.0 -->
 <interface>
   <requires lib="gtk+" version="3.16"/>
   <template class="SrainSendMsg" parent="GtkBox">
@@ -25,8 +25,9 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="halign">start</property>
+                <property name="margin_left">4</property>
+                <property name="margin_right">4</property>
                 <property name="margin_bottom">4</property>
-                <property name="xpad">4</property>
                 <property name="label" translatable="yes">sent message.
 &lt;a href="http://www.google.com"&gt;Link Test&lt;/a&gt;</property>
                 <property name="use_markup">True</property>
@@ -50,7 +51,8 @@
                 <property name="can_focus">False</property>
                 <property name="halign">end</property>
                 <property name="valign">end</property>
-                <property name="xpad">4</property>
+                <property name="margin_left">4</property>
+                <property name="margin_right">4</property>
                 <property name="label" translatable="yes">HH:MM</property>
                 <style>
                   <class name="dim-label"/>

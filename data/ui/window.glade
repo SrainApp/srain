@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.19.0 -->
+<!-- Generated with glade 3.20.0 -->
 <interface>
   <requires lib="gtk+" version="3.16"/>
   <object class="GtkImage" id="about_image">
@@ -29,10 +29,10 @@
                 <property name="name">about_button</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="focus_on_click">False</property>
                 <property name="receives_default">True</property>
                 <property name="image">about_image</property>
                 <property name="relief">none</property>
-                <property name="focus_on_click">False</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -44,10 +44,10 @@
               <object class="GtkButton" id="join_button">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="focus_on_click">False</property>
                 <property name="receives_default">True</property>
                 <property name="image">connect_image</property>
                 <property name="relief">none</property>
-                <property name="focus_on_click">False</property>
               </object>
               <packing>
                 <property name="expand">False</property>

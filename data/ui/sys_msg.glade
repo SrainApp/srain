@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.19.0 -->
+<!-- Generated with glade 3.20.0 -->
 <interface>
   <requires lib="gtk+" version="3.16"/>
   <template class="SrainSysMsg" parent="GtkBox">
@@ -15,13 +15,11 @@
         <property name="can_focus">False</property>
         <property name="halign">center</property>
         <property name="valign">center</property>
-        <property name="xpad">4</property>
-        <property name="ypad">4</property>
         <property name="label" translatable="yes">system message.</property>
         <property name="use_markup">True</property>
         <property name="selectable">True</property>
         <attributes>
-            <attribute name="weight" value="normal"/>
+          <attribute name="weight" value="normal"/>
         </attributes>
       </object>
       <packing>
