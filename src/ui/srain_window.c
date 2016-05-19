@@ -33,10 +33,7 @@ struct _SrainWindow {
     GtkStatusIcon *tray_icon;
     GtkMenu *tray_menu;
 
-    GtkPopover *about_popover;
     GtkPopover *join_popover;
-
-    GtkBox *join_box;
     GtkEntry *join_entry;
 };
 
@@ -45,6 +42,38 @@ struct _SrainWindowClass {
 };
 
 G_DEFINE_TYPE(SrainWindow, srain_window, GTK_TYPE_APPLICATION_WINDOW);
+
+static void about_button_on_click(gpointer user_data){
+    GtkWidget *window = user_data;
+    const gchar *authors[] = { META_AUTHOR_NAME " <" META_AUTHOR_MAIL ">", NULL };
+    const gchar **documentors = authors;
+    const gchar *version = g_strdup_printf("%s\nRunning against GTK+ %d.%d.%d",
+            META_VERSION,
+            gtk_get_major_version(),
+            gtk_get_minor_version(),
+            gtk_get_micro_version());
+
+    gtk_show_about_dialog(GTK_WINDOW(window),
+            "program-name", META_NAME,
+            "version", version,
+            "copyright", "(C) 2016 " META_AUTHOR_NAME,
+            "license-type", GTK_LICENSE_GPL_3_0,
+            "website", META_WEBSITE,
+            "comments", META_DESC,
+            "authors", authors,
+            "documenters", documentors,
+            "logo-icon-name", "gtk3-demo",
+            "title", "About Srain",
+            NULL);
+}
+
+static void join_button_on_click(gpointer user_data){
+    GtkPopover *popover;
+
+    popover = user_data;
+    gtk_widget_set_visible(GTK_WIDGET(popover), TRUE);
+    LOG_FR("w");
+}
 
 static void join_entry_on_activate(GtkWidget *widget, gpointer user_data){
     GtkPopover *popover;
@@ -57,13 +86,6 @@ static void join_entry_on_activate(GtkWidget *widget, gpointer user_data){
     ui_intf_server_join(gtk_entry_get_text(entry));
     gtk_widget_set_visible(GTK_WIDGET(popover), FALSE);
     gtk_entry_set_text(entry, "");
-}
-
-static void header_button_on_click(gpointer user_data){
-    GtkPopover *popover;
-
-    popover = user_data;
-    gtk_widget_set_visible(GTK_WIDGET(popover), TRUE);
 }
 
 static gboolean CTRL_J_K_on_press(GtkAccelGroup *group, GObject *obj, guint keyval,
@@ -98,17 +120,6 @@ static void srain_window_init(SrainWindow *self){
 
     gtk_widget_init_template(GTK_WIDGET(self));
 
-    /* about popover init */
-    about_box = srain_about_box_new();
-    self->about_popover = create_popover(GTK_WIDGET(self->about_button),
-            GTK_WIDGET(about_box), GTK_POS_BOTTOM);
-    gtk_container_set_border_width(GTK_CONTAINER(self->about_popover), 10);
-
-    /* join popover init */
-    self->join_popover = create_popover(GTK_WIDGET(self->join_button),
-            GTK_WIDGET(self->join_box), GTK_POS_BOTTOM);
-    gtk_container_set_border_width(GTK_CONTAINER(self->join_popover), 2);
-
     /* stack sidebar init */
     self->sidebar = srain_stack_sidebar_new();
     gtk_widget_show(GTK_WIDGET(self->sidebar));
@@ -117,13 +128,12 @@ static void srain_window_init(SrainWindow *self){
 
     theme_apply(GTK_WIDGET(self));
     theme_apply(GTK_WIDGET(self->tray_menu));
-    theme_apply(GTK_WIDGET(self->about_popover));
 
     tray_icon_set_callback(self->tray_icon, self, self->tray_menu);
     g_signal_connect_swapped(self->about_button, "clicked",
-            G_CALLBACK(header_button_on_click), self->about_popover);
+            G_CALLBACK(about_button_on_click), self);
     g_signal_connect_swapped(self->join_button, "clicked",
-            G_CALLBACK(header_button_on_click), self->join_popover);
+            G_CALLBACK(join_button_on_click), self->join_popover);
     g_signal_connect(self->join_entry, "activate",
             G_CALLBACK(join_entry_on_activate), self->join_popover);
 
@@ -154,7 +164,7 @@ static void srain_window_class_init(SrainWindowClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, tray_icon);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, tray_menu);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, sidebar_box);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, join_box);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, join_popover);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, join_entry);
 }
 
@@ -226,5 +236,4 @@ void srain_window_stack_sidebar_update(SrainWindow *win, SrainChan *chan,
     } else {
         srain_stack_sidebar_update(win->sidebar, chan, nick, msg, 1);
     }
-
 }
