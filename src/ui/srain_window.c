@@ -17,7 +17,6 @@
 #include "srain_window.h"
 #include "srain_chan.h"
 #include "srain_stack_sidebar.h"
-#include "srain_about_box.h"
 #include "tray_icon.h"
 #include "meta.h"
 #include "log.h"
@@ -72,7 +71,6 @@ static void join_button_on_click(gpointer user_data){
 
     popover = user_data;
     gtk_widget_set_visible(GTK_WIDGET(popover), TRUE);
-    LOG_FR("w");
 }
 
 static void join_entry_on_activate(GtkWidget *widget, gpointer user_data){
@@ -116,7 +114,6 @@ static void srain_window_init(SrainWindow *self){
     GClosure *closure_j;
     GClosure *closure_k;
     GtkAccelGroup *accel;
-    SrainAboutBox *about_box;
 
     gtk_widget_init_template(GTK_WIDGET(self));
 
