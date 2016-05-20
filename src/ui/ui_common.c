@@ -49,19 +49,6 @@ GtkListBoxRow* gtk_list_box_get_row_by_name(GtkListBox *listbox, const gchar* na
     return NULL;
 }
 
-GtkPopover* create_popover(GtkWidget *parent, GtkWidget *child, GtkPositionType pos){
-    GtkPopover *popover;
-
-    popover = GTK_POPOVER(gtk_popover_new(GTK_WIDGET(parent)));
-
-    gtk_popover_set_position(popover, pos);
-    gtk_container_add(GTK_CONTAINER(popover), GTK_WIDGET(child));
-    // gtk_container_set_border_width(GTK_CONTAINER(popover), 6);
-    gtk_widget_show(child);
-
-    return popover;
-}
-
 static void filechooser_on_update_preview(GtkFileChooser *chooser,
         gpointer user_data){
     char *filename;

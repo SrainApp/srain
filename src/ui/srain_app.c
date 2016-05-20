@@ -7,15 +7,20 @@
  */
 
 #include <gtk/gtk.h>
+
+#include "theme.h"
 #include "srain_app.h"
 #include "srain_window.h"
 #include "srain_chan.h"
-#include "meta.h"
-#include "rc.h"
-#include "theme.h"
-#include "log.h"
+#include "srain_user_list.h"
+#include "srain_msg_list.h"
+
 #include "server.h"
 #include "server_cmd.h"
+
+#include "meta.h"
+#include "rc.h"
+#include "log.h"
 #include "i18n.h"
 
 G_DEFINE_TYPE(SrainApp, srain_app, GTK_TYPE_APPLICATION);
@@ -68,41 +73,113 @@ void srain_app_rm_chan(SrainChan *chan){
     return srain_window_rm_chan(srain_win, chan);
 }
 
-/* when chan = NULL, fallback to current chan,
- * if current chan = NULL, giveup this message
+/**
+ * @brief srain_app_sys_msg UI interface used to send system message
+ *
+ * @param chan if NULL, fallback to current chan,
+ *      if current chan is NULL too, giveup this message
+ * @param msg
+ * @param type if SYS_MSG_ACTION, this message should be display on sidebar
  */
 void srain_app_sys_msg(SrainChan *chan, const char *msg, SysMsgType type){
+    SrainMsgList *list;
+
     if (chan == NULL) chan = srain_window_get_cur_chan(srain_win);
     if (chan == NULL) {
-        ERR_FR("chan: (null), msg: '%s', type: %d, current chan is (null)",
+        ERR_FR("chan: (null), msg: '%s', type: %d, current chan is null",
                 msg, type);
     }
-    srain_chan_sys_msg_add(chan, msg, type);
+
+    list = srain_chan_get_msg_list(chan);
+    if (list){
+        srain_msg_list_sys_msg_add(list, msg, type);
+    }
+    else {
+        ERR_FR("msg: %s, type: %d, invaild SrainMsgList", msg, type);
+    }
+
     if (type == SYS_MSG_ACTION){
         srain_window_stack_sidebar_update(srain_win, chan, _("ACTION"), msg);
     }
 }
 
+/**
+ * @brief srain_app_send_msg UI interface used to send sent message
+ *
+ * @param chan
+ * @param msg
+ */
 void srain_app_send_msg(SrainChan *chan, const char *msg){
-    srain_chan_send_msg_add(chan, msg);
-    srain_window_stack_sidebar_update(srain_win, chan, _("You"), msg);
+    SrainMsgList *list;
+
+    list = srain_chan_get_msg_list(chan);
+    if (list){
+        srain_msg_list_send_msg_add(list, msg);
+        srain_window_stack_sidebar_update(srain_win, chan, _("You"), msg);
+    }
+    else {
+        ERR_FR("msg: %s, invaild SrainMsgList", msg);
+    }
 }
 
+/**
+ * @brief srain_app_recv_msg UI interface uesd to send recvived message
+ *
+ * @param chan
+ * @param nick
+ * @param id
+ * @param msg
+ */
 void srain_app_recv_msg(SrainChan *chan, const char *nick, const char *id, const char *msg){
-    srain_chan_recv_msg_add(chan, nick, id, msg);
-    srain_window_stack_sidebar_update(srain_win, chan, nick, msg);
+    SrainMsgList *list;
+
+    list = srain_chan_get_msg_list(chan);
+    if (list){
+        srain_msg_list_recv_msg_add(list, nick, id, msg);
+        srain_window_stack_sidebar_update(srain_win, chan, nick, msg);
+    }
+    else {
+        ERR_FR("msg: %s, invaild SrainMsgList", msg);
+    }
 }
 
 int srain_app_user_list_add(SrainChan *chan, const char *nick, IRCUserType type){
-    return srain_chan_user_list_add(chan, nick, type);
+    SrainUserList *list;
+
+    list = srain_chan_get_user_list(chan);
+    if (list){
+        return srain_user_list_add(list, nick, type);
+    }
+    else {
+        ERR_FR("nick: %s, type: %d, invaild SrainUserList", nick, type);
+        return -1;
+    }
 }
 
 int srain_app_user_list_rm(SrainChan *chan, const char *nick, const char *reason){
-    return srain_chan_user_list_rm(chan, nick, reason);
+    SrainUserList *list;
+
+    list = srain_chan_get_user_list(chan);
+    if (list){
+        return srain_user_list_rm(list, nick);
+    }
+    else {
+        ERR_FR("nick: %s, reason: %s, invaild SrainUserList", nick, reason);
+        return -1;
+    }
 }
 
 int srain_app_user_list_rename(SrainChan *chan, const char *old_nick, const char *new_nick){
-    return srain_chan_user_list_rename(chan, old_nick, new_nick);
+    SrainUserList *list;
+
+    list = srain_chan_get_user_list(chan);
+    if (list){
+        return srain_user_list_rename(list, old_nick, new_nick);
+    }
+    else {
+        ERR_FR("old_nick: %s, new_nick: %s, invaild SrainUserList", old_nick, new_nick);
+        return -1;
+    }
 }
 
 void srain_app_set_topic(SrainChan *chan, const char *topic){
