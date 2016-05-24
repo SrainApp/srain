@@ -95,6 +95,7 @@ int srain_user_list_add(SrainUserList *list, const char *nick, IRCUserType type)
 
     gtk_button_set_label(button, nick);
     gtk_button_set_image(button, GTK_WIDGET(image));
+    gtk_button_set_relief(button, GTK_RELIEF_NONE);
     gtk_widget_set_name(GTK_WIDGET(button), nick);
     gtk_widget_set_halign(GTK_WIDGET(button), GTK_ALIGN_START);
 

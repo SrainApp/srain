@@ -1,0 +1,100 @@
+/**
+* @file app-min.css
+* @brief Application minimal style, GTK+ >= 3.19 required
+* @author LastAvengers <lastavengers@outlook.com>
+* @version 1.0
+* @date 2016-05-24
+*/
+
+/* TODO: css node of custom widget */
+
+/* general {{ */
+*:disabled, .dim-label { opacity: 0.5; }
+
+/* SrainStackSidebar {{ */
+.srainstacksidebaritem,
+.srainstacksidebaritem * { background-color: transparent; }
+.srainstacksidebaritem #count_label {
+    color: @white_color;
+    background-color: @red_color;
+    border-radius: 4px;
+}
+/* }} */
+
+
+/* SrainWindow {{*/
+#window_header_box { background-color: @window_header_box_color; }
+#window_header_box button,
+#window_header_box button:hover{ background-color: @window_header_box_color; padding: 8px;}
+#window_header_box button:active{ background-color: darker(@window_header_box_color); }
+/* }} */
+
+
+/* SrainMsg {{ */
+#normal_sys_msg_box #msg_label,
+#error_sys_msg_box #msg_label,
+#command_sys_msg_box #msg_label,
+#action_sys_msg_box #msg_label,
+#normal_sys_msg_box #msg_label selection,
+#error_sys_msg_box #msg_label selection,
+#command_sys_msg_box #msg_label selection,
+#action_sys_msg_box #msg_label selection {
+    color: @sys_msg_text_color;
+    border-radius: 4px;
+}
+
+#normal_sys_msg_box #msg_label { background-color: @normal_sys_msg_color; }
+#error_sys_msg_box #msg_label { background-color: @error_sys_msg_color; }
+#command_sys_msg_box #msg_label { background-color: @command_sys_msg_color; }
+#action_sys_msg_box #msg_label { background-color: @action_sys_msg_color; }
+#normal_send_msg_box #padding_box,
+#normal_recv_msg_box #padding_box {
+    background-color: @normal_recv_msg_color;
+    border-radius: 4px;
+    box-shadow: alpha(black, 0.2) 2px 2px;
+}
+#normal_recv_msg_box #nick_button { padding: 2px; background-color: transparent; }
+
+/* }} */
+
+
+/* SrainChan {{ */
+
+#msg_list_box label { color: @text_color; }
+#msg_list_box label selection { color: @text_color; background-color: @selected_text_color; }
+
+/* SrainMsgList Container */
+#msg_list_box * { background-color: transparent; }
+#msg_list_box {
+    /* background-image: url("./bg.jpg"); */
+    /* background-color: @active_color; */
+    background-image: -gtk-gradient(linear,
+    left top, right bottom,
+    from(@msglist_color1), to(@msglist_color2));
+}
+
+/* SrainUserList Container */
+/* TODO: does not work */
+#user_list_box button,
+#user_list_box button:focus,
+#user_list_box button:hover,
+#user_list_box button:active {
+    padding: 4px;
+    background-color: transparent;
+}
+/* }} */
+
+
+/* SrainImage {{ */
+.srainimage #load_button * { color: darker(darker(@gray_color)); }
+.srainimage #load_button {
+    padding: 4px;
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 2px;
+    border-color: @active_color;
+    background-color: @bg_color;
+}
+.srainimage #load_button:hover{ background-color: @hover_color; }
+.srainimage #load_button:active{ background-color: @active_color; }
+/* }} */
