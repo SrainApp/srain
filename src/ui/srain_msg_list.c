@@ -26,6 +26,9 @@
 
 struct _SrainMsgList {
     GtkScrolledWindow parent;
+
+    int to_bottom;
+
     GtkListBox *list;
     GtkWidget *last_msg;
 };
@@ -77,15 +80,21 @@ static gboolean scroll_to_bottom(SrainMsgList *list){
  * @brief smart_scroll
  *
  * @param list
+ * @param force if force = 1, scroll to bottom anyway.
  *
- * if the top-level window is visible
+ * if force != 1,
+ * and the top-level window is visible,
  * and `list` is belonged to the current SrainChan,
+ * and the value of scrolled window's adjustment (scrollbar):
+ *      value + page size > max value (upper - page size),
  * scroll the list to the bottom.
  *
- * TODO: do not scroll to bottom when browseing messages.
- *
  */
-static void smart_scroll(SrainMsgList *list){
+static void smart_scroll(SrainMsgList *list, int force){
+    double val;
+    double max_val;
+    double page_size;
+    GtkAdjustment *adj;
     SrainWindow *win;
     SrainChan *chan;
 
@@ -103,8 +112,21 @@ static void smart_scroll(SrainMsgList *list){
 
     if (gtk_widget_get_visible(GTK_WIDGET(win))
             && srain_chan_get_msg_list(chan) == list){
-        gdk_threads_add_idle((GSourceFunc)scroll_to_bottom, list);
+
+        adj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(list));
+        val = gtk_adjustment_get_value(adj);
+        page_size = gtk_adjustment_get_page_size(adj);
+        max_val = gtk_adjustment_get_upper(adj) - page_size;
+
+        if (val + page_size > max_val){
+            gdk_threads_add_idle((GSourceFunc)scroll_to_bottom, list);
+        }
     }
+}
+
+static void scrolled_window_on_edge_overshot(GtkScrolledWindow *swin,
+        GtkPositionType pos, gpointer user_data){
+    if (pos != GTK_POS_TOP) return;
 }
 
 void srain_msg_list_scroll_up(SrainMsgList *list, double step){
@@ -129,6 +151,10 @@ void srain_msg_list_scroll_down(SrainMsgList *list, double step){
 
 static void srain_msg_list_init(SrainMsgList *self){
     gtk_widget_init_template(GTK_WIDGET(self));
+
+    self->to_bottom = 1;
+    g_signal_connect(self, "edge-overshot",
+            G_CALLBACK(scrolled_window_on_edge_overshot), NULL);
 }
 
 static void srain_msg_list_class_init(SrainMsgListClass *class){
@@ -143,7 +169,6 @@ SrainMsgList* srain_msg_list_new(void){
 }
 
 void srain_msg_list_sys_msg_add(SrainMsgList *list, const char *msg, SysMsgType type){
-    int to_bottom;
     SrainSysMsg *smsg;
 
     smsg = srain_sys_msg_new(msg, type);
@@ -152,7 +177,7 @@ void srain_msg_list_sys_msg_add(SrainMsgList *list, const char *msg, SysMsgType 
 
     list->last_msg = GTK_WIDGET(smsg);
 
-    smart_scroll(list);
+    smart_scroll(list, 0);
 }
 
 
@@ -164,7 +189,7 @@ void srain_msg_list_send_msg_add(SrainMsgList *list, const char *msg){
 
     list->last_msg = GTK_WIDGET(smsg);
 
-    smart_scroll(list);
+    smart_scroll(list, 1);
 }
 
 void _srain_msg_list_recv_msg_add(SrainMsgList *list, const char *nick,
@@ -176,10 +201,12 @@ void _srain_msg_list_recv_msg_add(SrainMsgList *list, const char *nick,
 
     list->last_msg = GTK_WIDGET(smsg);
 
-    smart_scroll(list);
+    smart_scroll(list, 0);
 }
 
-/* add a SrainRecvMsg into SrainMsgList, if its time is same to the last msg, combine them */
+/* add a SrainRecvMsg into SrainMsgList,
+ * if its time is same to the last msg, combine them
+ */
 void srain_msg_list_recv_msg_add(SrainMsgList *list, const char *nick,
         const char *id, const char *msg){
     char timestr[32];
@@ -220,7 +247,7 @@ void srain_msg_list_recv_msg_add(SrainMsgList *list, const char *nick,
             }
 
             g_string_free(new_msg, TRUE);
-            smart_scroll(list);
+            smart_scroll(list, 0);
 
             return;
         }
