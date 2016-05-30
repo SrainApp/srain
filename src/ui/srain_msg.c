@@ -119,7 +119,7 @@ SrainSendMsg* srain_send_msg_new(const char *msg){
     if (img_url){
         simg = srain_image_new();
         srain_image_set_from_url_async(simg, img_url->str, 300,
-                SRAIN_IMAGE_ENLARGE | SRAIN_IMAGE_SPININER);
+                SRAIN_IMAGE_ENLARGE | SRAIN_IMAGE_SPININER | SRAIN_IMAGE_AUTOLOAD);
         g_string_free(img_url, TRUE);
         gtk_container_add(GTK_CONTAINER(smsg->padding_box), GTK_WIDGET(simg));
         gtk_container_set_border_width(GTK_CONTAINER(simg), 6);
@@ -177,7 +177,7 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *m
     if (img_url){
         simg = srain_image_new();
         srain_image_set_from_url_async(simg, img_url->str, 300,
-                SRAIN_IMAGE_ENLARGE | SRAIN_IMAGE_SPININER);
+                SRAIN_IMAGE_ENLARGE | SRAIN_IMAGE_SPININER | SRAIN_IMAGE_AUTOLOAD);
         g_string_free(img_url, TRUE);
         gtk_container_add(GTK_CONTAINER(smsg->padding_box), GTK_WIDGET(simg));
         gtk_container_set_border_width(GTK_CONTAINER(simg), 6);

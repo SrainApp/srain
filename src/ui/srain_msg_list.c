@@ -110,6 +110,11 @@ static void smart_scroll(SrainMsgList *list, int force){
         return;
     }
 
+    if (force){
+        gdk_threads_add_idle((GSourceFunc)scroll_to_bottom, list);
+        return;
+    }
+
     if (gtk_widget_get_visible(GTK_WIDGET(win))
             && srain_chan_get_msg_list(chan) == list){
 

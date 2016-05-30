@@ -63,6 +63,7 @@ SrainApp* srain_app_new(void){
 
 SrainChan* srain_app_add_chan(void *server, const char *server_name, const char *chan_name){
     SrainChan *chan;
+
     chan = srain_window_add_chan(srain_win, server_name, chan_name);
     g_object_set_data(G_OBJECT(chan), "server", server);
 
@@ -91,12 +92,9 @@ void srain_app_sys_msg(SrainChan *chan, const char *msg, SysMsgType type){
     }
 
     list = srain_chan_get_msg_list(chan);
-    if (list){
-        srain_msg_list_sys_msg_add(list, msg, type);
-    }
-    else {
-        ERR_FR("msg: %s, type: %d, invaild SrainMsgList", msg, type);
-    }
+    if (!list) return;
+
+    srain_msg_list_sys_msg_add(list, msg, type);
 
     if (type == SYS_MSG_ACTION){
         srain_window_stack_sidebar_update(srain_win, chan, _("ACTION"), msg);
@@ -113,13 +111,10 @@ void srain_app_send_msg(SrainChan *chan, const char *msg){
     SrainMsgList *list;
 
     list = srain_chan_get_msg_list(chan);
-    if (list){
-        srain_msg_list_send_msg_add(list, msg);
-        srain_window_stack_sidebar_update(srain_win, chan, _("You"), msg);
-    }
-    else {
-        ERR_FR("msg: %s, invaild SrainMsgList", msg);
-    }
+    if (!list) return;
+
+    srain_msg_list_send_msg_add(list, msg);
+    srain_window_stack_sidebar_update(srain_win, chan, _("You"), msg);
 }
 
 /**
@@ -134,52 +129,53 @@ void srain_app_recv_msg(SrainChan *chan, const char *nick, const char *id, const
     SrainMsgList *list;
 
     list = srain_chan_get_msg_list(chan);
-    if (list){
-        srain_msg_list_recv_msg_add(list, nick, id, msg);
-        srain_window_stack_sidebar_update(srain_win, chan, nick, msg);
-    }
-    else {
-        ERR_FR("msg: %s, invaild SrainMsgList", msg);
-    }
+    if (!list) return;
+
+    srain_msg_list_recv_msg_add(list, nick, id, msg);
+    srain_window_stack_sidebar_update(srain_win, chan, nick, msg);
 }
 
 int srain_app_user_list_add(SrainChan *chan, const char *nick, IRCUserType type){
+    int res;
     SrainUserList *list;
 
     list = srain_chan_get_user_list(chan);
-    if (list){
-        return srain_user_list_add(list, nick, type);
-    }
-    else {
-        ERR_FR("nick: %s, type: %d, invaild SrainUserList", nick, type);
-        return -1;
-    }
+    if (!list) return -1;
+
+    if ((res = srain_user_list_add(list, nick, type))){
+        srain_chan_completion_list_add(chan, nick);
+    };
+
+    return res;
 }
 
 int srain_app_user_list_rm(SrainChan *chan, const char *nick, const char *reason){
+    int res;
     SrainUserList *list;
 
     list = srain_chan_get_user_list(chan);
-    if (list){
-        return srain_user_list_rm(list, nick);
+    if (!list) return -1;
+
+    if ((res = srain_user_list_rm(list, nick))){
+        srain_chan_completion_list_rm(chan, nick);
     }
-    else {
-        ERR_FR("nick: %s, reason: %s, invaild SrainUserList", nick, reason);
-        return -1;
-    }
+
+    return res;
 }
 
 int srain_app_user_list_rename(SrainChan *chan, const char *old_nick, const char *new_nick){
+    int res;
     SrainUserList *list;
 
     list = srain_chan_get_user_list(chan);
-    if (list){
-        return srain_user_list_rename(list, old_nick, new_nick);
+    if (!list) return -1;
+
+    if ((res = srain_user_list_rename(list, old_nick, new_nick))){
+        srain_chan_completion_list_rm(chan, old_nick);
+        srain_chan_completion_list_add(chan, new_nick);
     }
-    else {
-        ERR_FR("old_nick: %s, new_nick: %s, invaild SrainUserList", old_nick, new_nick);
-        return -1;
-    }
+
+    return res;
 }
 
 void srain_app_set_topic(SrainChan *chan, const char *topic){

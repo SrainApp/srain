@@ -60,13 +60,6 @@ struct _SrainChanClass {
 
 G_DEFINE_TYPE(SrainChan, srain_chan, GTK_TYPE_BOX);
 
-void completion_list_add(GtkListStore *store, const char *word){
-  GtkTreeIter iter;
-
-  gtk_list_store_append(store, &iter);
-  gtk_list_store_set(store, &iter, 0, word, -1);
-}
-
 static void entry_auto_completion(GtkEntry *entry){
     int cur_pos;
     const char *word_ptr;
@@ -372,4 +365,14 @@ SrainMsgList* srain_chan_get_msg_list(SrainChan *chan){
     }
 
     return NULL;
+}
+
+void srain_chan_completion_list_add(SrainChan *chan, const char *word){
+  GtkTreeIter iter;
+
+  gtk_list_store_append(chan->completion_list, &iter);
+  gtk_list_store_set(chan->completion_list, &iter, 0, word, -1);
+}
+
+void srain_chan_completion_list_rm(SrainChan *chan, const char *word){
 }

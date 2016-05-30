@@ -21,6 +21,8 @@ void srain_chan_fcous_entry(SrainChan *chan);
 void srain_chan_set_topic(SrainChan *chan, const char *topic);
 SrainUserList* srain_chan_get_user_list(SrainChan *chan);
 SrainMsgList* srain_chan_get_msg_list(SrainChan *chan);
+void srain_chan_completion_list_add(SrainChan *chan, const char *word);
+void srain_chan_completion_list_rm(SrainChan *chan, const char *word);
 
 #endif /* __SRAIN_CHAN_H */
 
