@@ -17,7 +17,9 @@ SRCS = $(wildcard *.c */*.c)
 OBJS = $(patsubst %.c, ../build/%.o, $(notdir $(SRCS)))
 
 default:
+	./cmd_list.sh --gen
 	make $(OBJS)
+	./cmd_list.sh --restore
 
 ../build/%.o: %.c
 	$(CC) $(CFLAGS) -c $(GTK3FLAGS) $(PY3FLAGS) $^ -o $@ $(GTK3LIBS) $(PY3LIBS) $(CURLLIBS)

@@ -68,13 +68,14 @@ SrainUserList* srain_user_list_new(void){
  *
  * @return 0 if successed, -1 if failed
  */
-int srain_user_list_add(SrainUserList *list, const char *nick, IRCUserType type){ GtkImage *image;
+int srain_user_list_add(SrainUserList *list, const char *nick, IRCUserType type){
+    GtkImage *image;
     GtkButton *button;
     GtkListBoxRow *row;
 
     row = gtk_list_box_get_row_by_name(GTK_LIST_BOX(list), nick);
     if (row){
-        ERR_FR("GtkListBoxRow %s already exist", nick);
+        LOG_FR("GtkListBoxRow %s already exist", nick);
         return -1;
     }
 
@@ -117,7 +118,7 @@ int srain_user_list_rm(SrainUserList *list, const char *nick){
 
     row = gtk_list_box_get_row_by_name(GTK_LIST_BOX(list), nick);
     if (!row){
-        ERR_FR("GtkListBoxRow %s no found", nick);
+        LOG_FR("GtkListBoxRow %s no found", nick);
         return -1;
     }
 
@@ -143,7 +144,7 @@ int srain_user_list_rename(SrainUserList *list,
     // TODO: person -> op
     row = gtk_list_box_get_row_by_name(GTK_LIST_BOX(list), old_nick);
     if (!row){
-        ERR_FR("GtkListBoxRow %s no found", old_nick);
+        LOG_FR("GtkListBoxRow %s no found", old_nick);
         return -1;
     }
 
