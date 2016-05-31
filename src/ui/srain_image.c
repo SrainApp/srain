@@ -67,12 +67,21 @@ SrainImage* srain_image_new(void){
     return g_object_new(SRAIN_TYPE_IMAGE, NULL);
 }
 
+/**
+ * @brief eventbox_on_click
+ *
+ * @param user_data: a instance of SrainImage
+ * @param event
+ *
+ * new a popup window to display image at its origin size.
+ *
+ * TODO: if the image's size too large, scale it ?
+ * we need to deal with dual-monitor issue :(
+ */
 static void eventbox_on_click(gpointer user_data , GdkEventButton *event){
-    gint height, width;
-    GdkScreen *screen;
     GdkPixbuf *pixbuf;
     GtkImage *image;
-    GtkWindow *win;
+    GtkWindow *iwin;
     GtkBuilder *builder;
     SrainImage *simg;
 
@@ -81,25 +90,23 @@ static void eventbox_on_click(gpointer user_data , GdkEventButton *event){
         if (simg->file == NULL) return;
 
         builder = gtk_builder_new_from_resource("/org/gtk/srain/image_window.glade");
-        win = GTK_WINDOW(gtk_builder_get_object(builder, "image_window"));
-        image = GTK_IMAGE(gtk_builder_get_object(builder, "image"));
+        iwin = GTK_WINDOW(gtk_builder_get_object(builder, "image_window"));
 
-        screen = gdk_screen_get_default();
-        height = gdk_screen_get_height(screen);
-        width = gdk_screen_get_width(screen);
-        pixbuf = gdk_pixbuf_new_from_file_at_size(simg->file, width - 20, height - 20, NULL);
+        image = GTK_IMAGE(gtk_builder_get_object(builder, "image"));
+        pixbuf = gdk_pixbuf_new_from_file(simg->file, NULL);
         gtk_image_set_from_pixbuf(image, pixbuf);
 
-        g_signal_connect_swapped(win, "button_release_event",
-                G_CALLBACK(gtk_widget_destroy), win);
+        g_signal_connect_swapped(iwin, "button_release_event",
+                G_CALLBACK(gtk_widget_destroy), iwin);
         g_signal_connect_swapped(image, "button_release_event",
-                G_CALLBACK(gtk_widget_destroy), win);
+                G_CALLBACK(gtk_widget_destroy), iwin);
 
-        g_object_unref(builder);
+
         g_object_unref(pixbuf);
+        g_object_unref(builder);
 
         // theme_apply(GTK_WIDGET(win));
-        gtk_window_present(win);
+        gtk_window_present(iwin);
     }
 }
 
