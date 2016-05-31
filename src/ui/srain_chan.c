@@ -24,6 +24,8 @@
 #include "plugin.h"
 #include "log.h"
 
+#include "cmd_list.h"
+
 struct _SrainChan {
     GtkBox parent;
 
@@ -298,6 +300,12 @@ static void srain_chan_init(SrainChan *self){
     gtk_entry_completion_complete(self->entrycompletion);
     /* Use model column 0 as the text column */
     gtk_entry_completion_set_text_column (self->entrycompletion, 0);
+
+    /* command completion */
+    int i;
+    for (i = 0; cmd_list[i] != 0; i++){
+        srain_chan_completion_list_add(self, cmd_list[i]);
+    }
 }
 
 static void srain_chan_class_init(SrainChanClass *class){

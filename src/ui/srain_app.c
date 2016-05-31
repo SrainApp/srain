@@ -67,6 +67,9 @@ SrainChan* srain_app_add_chan(void *server, const char *server_name, const char 
     chan = srain_window_add_chan(srain_win, server_name, chan_name);
     g_object_set_data(G_OBJECT(chan), "server", server);
 
+    // TODO: for ecch chan?
+    srain_chan_completion_list_add(chan, chan_name);
+
     return chan;
 }
 
