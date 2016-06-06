@@ -14,6 +14,7 @@
 #include "srain_chan.h"
 #include "srain_user_list.h"
 #include "srain_msg_list.h"
+#include "srain_entry_completion.h"
 
 #include "server.h"
 #include "server_cmd.h"
@@ -66,9 +67,6 @@ SrainChan* srain_app_add_chan(void *server, const char *server_name, const char 
 
     chan = srain_window_add_chan(srain_win, server_name, chan_name);
     g_object_set_data(G_OBJECT(chan), "server", server);
-
-    // TODO: for ecch chan?
-    srain_chan_completion_list_add(chan, chan_name);
 
     return chan;
 }
@@ -141,12 +139,15 @@ void srain_app_recv_msg(SrainChan *chan, const char *nick, const char *id, const
 int srain_app_user_list_add(SrainChan *chan, const char *nick, IRCUserType type){
     int res;
     SrainUserList *list;
+    SrainEntryCompletion *comp;
 
     list = srain_chan_get_user_list(chan);
     if (!list) return -1;
 
-    if ((res = srain_user_list_add(list, nick, type))){
-        srain_chan_completion_list_add(chan, nick);
+    if ((res = srain_user_list_add(list, nick, type)) == 0){
+        comp = srain_chan_get_entry_completion(chan);
+        if (!comp) return -1;
+        srain_entry_completion_add_keyword(comp, nick);
     };
 
     return res;
@@ -155,12 +156,15 @@ int srain_app_user_list_add(SrainChan *chan, const char *nick, IRCUserType type)
 int srain_app_user_list_rm(SrainChan *chan, const char *nick, const char *reason){
     int res;
     SrainUserList *list;
+    SrainEntryCompletion *comp;
 
     list = srain_chan_get_user_list(chan);
     if (!list) return -1;
 
-    if ((res = srain_user_list_rm(list, nick))){
-        srain_chan_completion_list_rm(chan, nick);
+    if ((res = srain_user_list_rm(list, nick)) == 0){
+        comp = srain_chan_get_entry_completion(chan);
+        if (!comp) return -1;
+        srain_entry_completion_add_keyword(comp, nick);
     }
 
     return res;
@@ -169,13 +173,16 @@ int srain_app_user_list_rm(SrainChan *chan, const char *nick, const char *reason
 int srain_app_user_list_rename(SrainChan *chan, const char *old_nick, const char *new_nick){
     int res;
     SrainUserList *list;
+    SrainEntryCompletion *comp;
 
     list = srain_chan_get_user_list(chan);
     if (!list) return -1;
 
-    if ((res = srain_user_list_rename(list, old_nick, new_nick))){
-        srain_chan_completion_list_rm(chan, old_nick);
-        srain_chan_completion_list_add(chan, new_nick);
+    if ((res = srain_user_list_rename(list, old_nick, new_nick)) == 0){
+        comp = srain_chan_get_entry_completion(chan);
+        if (!comp) return -1;
+        srain_entry_completion_add_keyword(comp, old_nick);
+        srain_entry_completion_rm_keyword(comp, new_nick);
     }
 
     return res;

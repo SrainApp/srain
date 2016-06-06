@@ -1,6 +1,6 @@
 /**
  * @file srain_chan.c
- * @brief
+ * @brief Complex widget used to reprsenting a session
  * @author LastAvengers <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-03-01
@@ -16,6 +16,7 @@
 #include "ui_common.h"
 #include "ui_intf.h"
 #include "srain_chan.h"
+#include "srain_entry_completion.h"
 #include "srain_msg_list.h"
 #include "srain_user_list.h"
 #include "srain_msg.h"
@@ -49,8 +50,7 @@ struct _SrainChan {
 
     /* input entry */
     GtkEntry *input_entry;
-    GtkEntryCompletion *entrycompletion;
-    GtkListStore *completion_list;
+    SrainEntryCompletion *completion;
     GtkButton *upload_image_button;
 
     GtkWidget *last_msg;
@@ -61,45 +61,6 @@ struct _SrainChanClass {
 };
 
 G_DEFINE_TYPE(SrainChan, srain_chan, GTK_TYPE_BOX);
-
-static void entry_auto_completion(GtkEntry *entry){
-    int cur_pos;
-    const char *word_ptr;
-    const char *text;
-    const char *word;
-    const char *prefix;
-    GtkEntryBuffer *buf;
-    GtkEntryCompletion *comp;
-
-    comp = gtk_entry_get_completion(entry);
-    buf = gtk_entry_get_buffer(entry);
-    text = gtk_entry_get_text(entry);
-
-    cur_pos = gtk_editable_get_position(GTK_EDITABLE(entry));
-    LOG_FR("current position %d", cur_pos);
-    word_ptr = text + cur_pos;
-
-    while (word_ptr > text){
-        word_ptr = g_utf8_prev_char(word_ptr);
-        if (*word_ptr == ' '){
-            word_ptr++;
-            break;
-        }
-    }
-    word = strndup(word_ptr, text + cur_pos - word_ptr);
-    LOG_FR("word '%s'", word);
-    // TODO: 中文处理有问题
-
-    prefix = gtk_entry_completion_compute_prefix(comp, word);
-    LOG_FR("prefix '%s'", prefix);
-    if (prefix) {
-        gtk_entry_buffer_insert_text(buf, cur_pos, prefix + strlen(word), -1);
-        gtk_editable_set_position(GTK_EDITABLE(entry),
-                cur_pos + strlen(prefix) - strlen(word));
-        // gtk_editable_select_region(GTK_EDITABLE(entry),
-                // cur_pos, cur_pos + strlen(prefix) - strlen(word));
-    }
-}
 
 static gboolean entry_on_key_press(gpointer user_data, GdkEventKey *event){
     SrainChan *chan;
@@ -113,11 +74,11 @@ static gboolean entry_on_key_press(gpointer user_data, GdkEventKey *event){
             // srain_chan_scroll_up(chan);
             break;
         case GDK_KEY_Tab:
-            entry_auto_completion(chan->input_entry);
+            srain_entry_completion_complete(chan->completion);
             break;
         case GDK_KEY_n:
             if (event->state & GDK_CONTROL_MASK){
-                entry_auto_completion(chan->input_entry);
+                srain_entry_completion_complete(chan->completion);
                 break;
             }
         default:
@@ -263,7 +224,7 @@ static void srain_chan_init(SrainChan *self){
     gtk_widget_init_template(GTK_WIDGET(self));
 
     /* init completion list */
-    self->completion_list = gtk_list_store_new(1, G_TYPE_STRING);
+    self->completion = srain_entry_completion_new(self->input_entry);
 
     /* init user list */
     self->user_list = srain_user_list_new();
@@ -294,18 +255,12 @@ static void srain_chan_init(SrainChan *self){
     g_signal_connect(self->upload_image_button, "clicked",
             G_CALLBACK(upload_image_button_on_click), self->input_entry);
 
-    /* Create a tree model and use it as the completion model */
-    gtk_entry_completion_set_model (self->entrycompletion,
-            GTK_TREE_MODEL(self->completion_list));
-    gtk_entry_completion_complete(self->entrycompletion);
-    /* Use model column 0 as the text column */
-    gtk_entry_completion_set_text_column (self->entrycompletion, 0);
-
     /* command completion */
     int i;
     for (i = 0; cmd_list[i] != 0; i++){
-        srain_chan_completion_list_add(self, cmd_list[i]);
+        srain_entry_completion_add_keyword(self->completion, cmd_list[i]);
     }
+
 }
 
 static void srain_chan_class_init(SrainChanClass *class){
@@ -322,7 +277,6 @@ static void srain_chan_class_init(SrainChanClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, user_list_viewport);
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, input_entry);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, entrycompletion);
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, option_box);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, show_topic_togglebutton);
@@ -375,12 +329,10 @@ SrainMsgList* srain_chan_get_msg_list(SrainChan *chan){
     return NULL;
 }
 
-void srain_chan_completion_list_add(SrainChan *chan, const char *word){
-  GtkTreeIter iter;
+SrainEntryCompletion* srain_chan_get_entry_completion(SrainChan *chan){
+    if (SRAIN_IS_CHAN(chan)) {
+        return chan->completion;
+    }
 
-  gtk_list_store_append(chan->completion_list, &iter);
-  gtk_list_store_set(chan->completion_list, &iter, 0, word, -1);
-}
-
-void srain_chan_completion_list_rm(SrainChan *chan, const char *word){
+    return NULL;
 }
