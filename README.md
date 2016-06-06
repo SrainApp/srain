@@ -1,7 +1,7 @@
 Srain
 =====
-[![Travis](https://img.shields.io/travis/LastAvenger/srain.svg?maxAge=2592000)]()
-[![Github All Releases](https://img.shields.io/github/downloads/LastAvenger/srain/total.svg?maxAge=2592000)]()
+[![Travis](https://img.shields.io/travis/LastAvenger/srain.svg?maxAge=2592000)](https://travis-ci.org/LastAvenger/srain)
+[![Github All Releases](https://img.shields.io/github/downloads/LastAvenger/srain/total.svg?maxAge=2592000)](https://github.com/LastAvenger/srain/releases)
 
 it does not look like a irc client :-)
 
@@ -26,7 +26,8 @@ it does not look like a irc client :-)
 
 ## For Arch Linux users
 
-    yaourt -S srain-git
+    yaourt -S srain-git # git version
+    yaourt -S srain     # latest release
 
 ## For other linux distributions:
 
