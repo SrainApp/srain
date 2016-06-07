@@ -128,12 +128,19 @@ void srain_app_send_msg(SrainChan *chan, const char *msg){
  */
 void srain_app_recv_msg(SrainChan *chan, const char *nick, const char *id, const char *msg){
     SrainMsgList *list;
+    SrainEntryCompletion *comp;
 
     list = srain_chan_get_msg_list(chan);
     if (!list) return;
 
     srain_msg_list_recv_msg_add(list, nick, id, msg);
     srain_window_stack_sidebar_update(srain_win, chan, nick, msg);
+
+    if (strlen(id) != 0){
+        comp = srain_chan_get_entry_completion(chan);
+        if (!comp) return;
+        srain_entry_completion_add_keyword(comp, nick, KEYWORD_TMP);
+    }
 }
 
 int srain_app_user_list_add(SrainChan *chan, const char *nick, IRCUserType type){
@@ -147,7 +154,7 @@ int srain_app_user_list_add(SrainChan *chan, const char *nick, IRCUserType type)
     if ((res = srain_user_list_add(list, nick, type)) == 0){
         comp = srain_chan_get_entry_completion(chan);
         if (!comp) return -1;
-        srain_entry_completion_add_keyword(comp, nick);
+        srain_entry_completion_add_keyword(comp, nick, KEYWORD_NORMAL);
     };
 
     return res;
@@ -164,7 +171,7 @@ int srain_app_user_list_rm(SrainChan *chan, const char *nick, const char *reason
     if ((res = srain_user_list_rm(list, nick)) == 0){
         comp = srain_chan_get_entry_completion(chan);
         if (!comp) return -1;
-        srain_entry_completion_add_keyword(comp, nick);
+        srain_entry_completion_rm_keyword(comp, nick);
     }
 
     return res;
@@ -181,7 +188,7 @@ int srain_app_user_list_rename(SrainChan *chan, const char *old_nick, const char
     if ((res = srain_user_list_rename(list, old_nick, new_nick)) == 0){
         comp = srain_chan_get_entry_completion(chan);
         if (!comp) return -1;
-        srain_entry_completion_add_keyword(comp, old_nick);
+        srain_entry_completion_add_keyword(comp, old_nick, KEYWORD_NORMAL);
         srain_entry_completion_rm_keyword(comp, new_nick);
     }
 

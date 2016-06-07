@@ -258,7 +258,8 @@ static void srain_chan_init(SrainChan *self){
     /* command completion */
     int i;
     for (i = 0; cmd_list[i] != 0; i++){
-        srain_entry_completion_add_keyword(self->completion, cmd_list[i]);
+        srain_entry_completion_add_keyword(self->completion,
+                cmd_list[i], KEYWORD_NORMAL);
     }
 
 }

@@ -127,8 +127,6 @@ IRCMsgType irc_recv(IRC *irc, IRCMsg *ircmsg){
             case '\n': {
                            irc->servbuf[irc->bufptr] = '\0';
                            irc->bufptr = 0;
-                           // TODO: remove it
-                           LOG_FR("TODAY's buf is: %s", irc->servbuf);
                            res = irc_parse(irc->servbuf, ircmsg);
                            switch (res){
                                case IRCMSG_PING:

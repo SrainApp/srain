@@ -1,9 +1,15 @@
 /**
  * @file completion.c
- * @brief GtkEntryCompletion wrapper for srain
+ * @brief GtkEntryCompletion wrapper for keywords completion
  * @author LastAvengers <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-06-05
+ *
+ * Normal GtkEntryCompletion can only do completion according
+ * to the full content of GtkEntry, SrainEntryCompletion can
+ * do it according to the word at current cursor.
+ *
+ * TODO: case insensitive
  */
 
 #define __LOG_ON
@@ -15,8 +21,17 @@
 
 #include "log.h"
 
+#define TMP_QUEUE_LEN 5
+
 struct _SrainEntryCompletion {
     GtkEntryCompletion parent;
+
+    /* Queue for storing temporary keywords,
+     * length not exceeding TMP_QUEUE_LEN.
+     * If the limit is reached,
+     * the last element will be removed  */
+    GQueue *queue;
+    /* Tree model for storing normal keywords */
     GtkListStore *list;
 };
 
@@ -26,14 +41,62 @@ struct _SrainEntryCompletionClass {
 
 G_DEFINE_TYPE(SrainEntryCompletion, srain_entry_completion, GTK_TYPE_ENTRY_COMPLETION);
 
+/**
+ * @brief is_legal_keyword
+ *
+ * @param keyword
+ *
+ * @return if 1, legal, if 0, illegal
+ *
+ * Is `keyword` a legal keyword?
+ */
+static int is_legal_keyword(const char *keyword){
+    while (*keyword){
+        if (*keyword == '\t' && *keyword == ' '){
+            ERR_FR("keyword: '%s' illegal", keyword);
+            return 0;
+        }
+        keyword++;
+    }
+    return 1;
+}
+
+static const char* srain_entry_completion_compute_prefix(
+        SrainEntryCompletion *comp, const char *key){
+    const char *prefix;
+    prefix = gtk_entry_completion_compute_prefix(
+            GTK_ENTRY_COMPLETION(comp), key);
+
+    if (prefix != NULL){
+        return prefix;
+    }
+
+    // TODO: better match algorithm
+    int i, len;
+
+    len = g_queue_get_length(comp->queue);
+    for (i = 0; i < len; i++){
+        prefix = g_queue_peek_nth(comp->queue, i);
+        if (strncmp(prefix, key, strlen(key)) == 0){
+            LOG_FR("queue matched");
+            return prefix;
+        }
+    }
+
+    return NULL;
+}
+
 static void srain_entry_completion_finalize(GObject *object){
     // if (SRAIN_ENTRY_COMPLETION(object)->list)
     // free(SRAIN_IMAGE(object)->list);
+
+    // TODO: free list and queue?
 
     G_OBJECT_CLASS(srain_entry_completion_parent_class)->finalize(object);
 }
 
 static void srain_entry_completion_init(SrainEntryCompletion *self){
+    self->queue = g_queue_new();
     self->list = gtk_list_store_new(1, G_TYPE_STRING);
 }
 
@@ -52,30 +115,122 @@ SrainEntryCompletion* srain_entry_completion_new(GtkEntry *entry){
 
     gtk_entry_set_completion(entry, comp2);
 
-    // gtk_entry_completion_set_inline_selection(comp2, TRUE);
+    gtk_entry_completion_set_inline_selection(comp2, FALSE);
     gtk_entry_completion_set_popup_completion(comp2, FALSE);
     gtk_entry_completion_set_popup_set_width(comp2, FALSE);
     gtk_entry_completion_set_popup_single_match(comp2, FALSE);
 
     /* Use a tree model as the comp model */
     gtk_entry_completion_set_model(comp2, GTK_TREE_MODEL(comp->list));
+    /* (?) 少了这句的话 gtk_entry_completion_compute_prefix() 无法得出结果 */
     gtk_entry_completion_complete(comp2);
     gtk_entry_completion_set_text_column(comp2, 0);
 
     return comp;
 }
 
-void srain_entry_completion_add_keyword(SrainEntryCompletion *comp, const char *keyword){
-    GtkTreeIter iter;
+/**
+ * @brief srain_entry_completion_add_keyword
+ *
+ * @param comp
+ * @param keyword
+ * @param type If type = KEYWORD_TMP,
+ *  `keyword` will be added to `comp`-> queue;
+ *  If type == KEYWORD_NORMAL , `keyword` will
+ *  be added to `comp`-> list.
+ *
+ * @return If 0, keyword added successfully.
+ *
+ * Append a whitespace to the end of `keyword`,
+ * add this new string to the completion list of `comp`.
+ */
+int srain_entry_completion_add_keyword(SrainEntryCompletion *comp,
+        const char *keyword, SECKeywordType type){
+    GString *str;
 
-    LOG_FR("keyword: '%s'", keyword);
+    LOG_FR("keyword: '%s', type: %d", keyword, type);
 
-    gtk_list_store_append(comp->list, &iter);
-    gtk_list_store_set(comp->list, &iter, 0, keyword, -1);
+    if (!is_legal_keyword(keyword)){
+        return -1;
+    }
+
+    str = g_string_new(keyword);
+    str = g_string_append_c(str, ' ');
+
+    if (type == KEYWORD_TMP){
+        gpointer data;
+
+        if (g_queue_get_length(comp->queue) > TMP_QUEUE_LEN){
+            data = g_queue_pop_tail(comp->queue);
+            g_free(data);
+            LOG_FR("queue full");
+        }
+
+        g_queue_push_head(comp->queue, strdup(str->str));
+    }
+    else if (type == KEYWORD_NORMAL){
+        GtkTreeIter iter;
+        /* gtk_list_store_set: The value will be referenced by the store
+         * if it is a G_TYPE_OBJECT,
+         * and it will be copiedif it is a G_TYPE_STRING or G_TYPE_BOXED
+         */
+        gtk_list_store_append(comp->list, &iter);
+        gtk_list_store_set(comp->list, &iter, 0, str->str, -1);
+    } else {
+        ERR_FR("Unsupported SECKeywordType: %d", type);
+        return -1;
+    }
+
+    g_string_free(str, TRUE);
+
+    return 0;
 }
 
-void srain_entry_completion_rm_keyword(SrainEntryCompletion *comp, const char *keyword){
-    LOG_FR("keyword: '%s'", keyword);
+/**
+ * @brief srain_entry_completion_rm_keyword
+ *
+ * @param comp
+ * @param keyword
+ *
+ * @return If 0, keyword removed successfully.
+ *
+ * Remove a whitespace appended keyword from `comp`->list.
+ * For keywords in `comp`->queue, they will be removed
+ * automatically when reach the limit.
+ */
+int srain_entry_completion_rm_keyword(SrainEntryCompletion *comp,
+        const char *keyword){
+    const char *val_str;
+    GValue val = {0, };
+    GString *str;
+    GtkTreeIter  iter;
+    GtkTreeModel *tree_model;
+
+    str = g_string_new(keyword);
+    str = g_string_append_c(str, ' ');
+
+    tree_model = GTK_TREE_MODEL(comp->list);
+
+    if (!gtk_tree_model_get_iter_first(tree_model, &iter)){
+        LOG_FR("empty");
+        return -1;
+    }
+
+    do {
+        gtk_tree_model_get_value(tree_model, &iter, 0, &val);
+        val_str = g_value_get_string(&val);
+        if (strcmp(str->str, val_str) == 0){
+            gtk_list_store_remove(comp->list, &iter);
+            g_string_free(str, TRUE);
+            return 0;
+        }
+        g_value_unset(&val);
+    } while (gtk_tree_model_iter_next(tree_model, &iter));
+
+    LOG_FR("not found");
+    g_string_free(str, TRUE);
+
+    return -1;
 }
 
 void srain_entry_completion_complete(SrainEntryCompletion *comp){
@@ -86,10 +241,9 @@ void srain_entry_completion_complete(SrainEntryCompletion *comp){
     const char *prefix;
     GtkEntry *entry;
     GtkEntryBuffer *buf;
-    GtkEntryCompletion *comp2;
 
-    comp2 = GTK_ENTRY_COMPLETION(comp);
-    entry = GTK_ENTRY(gtk_entry_completion_get_entry(comp2));
+    entry = GTK_ENTRY(gtk_entry_completion_get_entry(
+                GTK_ENTRY_COMPLETION(comp)));
 
     buf = gtk_entry_get_buffer(entry);
     text = gtk_entry_get_text(entry);
@@ -107,7 +261,7 @@ void srain_entry_completion_complete(SrainEntryCompletion *comp){
 
     // TODO: 中文处理有问题
     word = strndup(word_ptr, text + cur_pos - word_ptr);
-    prefix = gtk_entry_completion_compute_prefix(comp2, word);
+    prefix = srain_entry_completion_compute_prefix(comp, word);
 
     if (prefix) {
         gtk_entry_buffer_insert_text(buf, cur_pos, prefix + strlen(word), -1);
