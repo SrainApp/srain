@@ -21,7 +21,7 @@
 
 #include "log.h"
 
-#define TMP_QUEUE_LEN 5
+#define TMP_QUEUE_LEN 50
 
 struct _SrainEntryCompletion {
     GtkEntryCompletion parent;
@@ -87,10 +87,17 @@ static const char* srain_entry_completion_compute_prefix(
 }
 
 static void srain_entry_completion_finalize(GObject *object){
-    // if (SRAIN_ENTRY_COMPLETION(object)->list)
-    // free(SRAIN_IMAGE(object)->list);
+    GQueue *queue;
 
-    // TODO: free list and queue?
+    /* SRAIN_ENTRY_COMPLETION(object)->list
+     * will be free automatically */
+
+    queue = SRAIN_ENTRY_COMPLETION(object)->queue;
+    if (queue){
+        while (!g_queue_is_empty(queue)){
+            g_free(g_queue_pop_tail(queue));
+        }
+    }
 
     G_OBJECT_CLASS(srain_entry_completion_parent_class)->finalize(object);
 }
@@ -114,6 +121,7 @@ SrainEntryCompletion* srain_entry_completion_new(GtkEntry *entry){
     comp2 = GTK_ENTRY_COMPLETION(comp);
 
     gtk_entry_set_completion(entry, comp2);
+    g_object_unref(comp);
 
     gtk_entry_completion_set_inline_selection(comp2, FALSE);
     gtk_entry_completion_set_popup_completion(comp2, FALSE);
@@ -122,6 +130,8 @@ SrainEntryCompletion* srain_entry_completion_new(GtkEntry *entry){
 
     /* Use a tree model as the comp model */
     gtk_entry_completion_set_model(comp2, GTK_TREE_MODEL(comp->list));
+    g_object_unref(comp->list);
+
     /* (?) 少了这句的话 gtk_entry_completion_compute_prefix() 无法得出结果 */
     gtk_entry_completion_complete(comp2);
     gtk_entry_completion_set_text_column(comp2, 0);
@@ -235,6 +245,7 @@ int srain_entry_completion_rm_keyword(SrainEntryCompletion *comp,
 
 void srain_entry_completion_complete(SrainEntryCompletion *comp){
     int cur_pos;
+    int word_len;
     const char *word_ptr;
     const char *text;
     const char *word;
@@ -247,10 +258,16 @@ void srain_entry_completion_complete(SrainEntryCompletion *comp){
 
     buf = gtk_entry_get_buffer(entry);
     text = gtk_entry_get_text(entry);
-
     cur_pos = gtk_editable_get_position(GTK_EDITABLE(entry));
-    word_ptr = text + cur_pos;
 
+    int i = cur_pos;
+    word_ptr = text;
+    while (i){
+        word_ptr = g_utf8_next_char(word_ptr);
+        i--;
+    }
+
+    word_len = word_ptr - text;
     while (word_ptr > text){
         word_ptr = g_utf8_prev_char(word_ptr);
         if (*word_ptr == ' '){
@@ -259,17 +276,17 @@ void srain_entry_completion_complete(SrainEntryCompletion *comp){
         }
     }
 
-    // TODO: 中文处理有问题
-    word = strndup(word_ptr, text + cur_pos - word_ptr);
+    word_len -= word_ptr - text;
+    word = strndup(word_ptr, word_len);
     prefix = srain_entry_completion_compute_prefix(comp, word);
 
     if (prefix) {
-        gtk_entry_buffer_insert_text(buf, cur_pos, prefix + strlen(word), -1);
+        gtk_entry_buffer_insert_text(buf, cur_pos, prefix + word_len, -1);
         gtk_editable_set_position(GTK_EDITABLE(entry),
                 cur_pos + strlen(prefix) - strlen(word));
         // gtk_editable_select_region(GTK_EDITABLE(entry),
         // cur_pos, cur_pos + strlen(prefix) - strlen(word));
     }
 
-    LOG_FR("cur_pos: %d, word: '%s', prefix: '%s'", cur_pos, word, prefix);
+    LOG_FR("cur_pos: %d, word: '%s', word_len: %d, prefix: '%s'", cur_pos, word, word_len, prefix);
 }
