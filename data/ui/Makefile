@@ -4,11 +4,6 @@
 # compile ui file(*.glade) to <PROJECT DIR>/build/resources.c
 # then compile it to <PROJECT DIR>/build/resources.o
 
-MAKE = make -r
-CC = gcc
-CFLAGS = -Wall -ggdb -gstabs+
-GTK3FLAGS = $$(pkg-config --cflags gtk+-3.0)
-GTK3LIBS = $$(pkg-config --libs gtk+-3.0)
 GLIB_COMPILE_RESOURCES = glib-compile-resources
 
 default:

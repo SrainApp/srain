@@ -12,11 +12,14 @@
 #define __LOG_ON
 
 #include <stdio.h>
-#include <gtk/gtk.h>
 #include <string.h>
+#include <gtk/gtk.h>
+
 #include "ui_intf.h"
-#include "log.h"
+
 #include "meta.h"
+#include "log.h"
+#include "get_path.h"
 
 int rc_read(){
     FILE *fp;
@@ -25,27 +28,22 @@ int rc_read(){
     ssize_t read;
     char *rc_file;
 
-    /* try opening  $PWD/srainrc , used when debug */
-    LOG_F("try opening './srainrc'... ");
-    fp = fopen("./srainrc", "r");
+
+    rc_file = get_config_path("srainrc");
+
+    if (!rc_file){
+        return -1;
+    }
+
+    fp = fopen(rc_file, "r");
 
     if (!fp){
-        LOG("failed\n");
-
-        /* open $XDG_CONFIG_HOME/srainrc, it should exist
-         * (created in src/main.c::main() )*/
-        rc_file = g_build_filename(g_get_user_config_dir(), "srain", "srainrc", NULL);
-
-        LOG_F("try opening '%s'... ", rc_file);
-        fp = fopen(rc_file, "r");
+        ERR_FR("failed to open %s", rc_file);
         g_free(rc_file);
-        if (!fp){
-            LOG("failed\n");
-            g_free(rc_file);
-            return -1;
-        }
+
+        return -1;
     }
-    LOG("ok\n");
+    g_free(rc_file);
 
     len = 0;
     line = NULL;

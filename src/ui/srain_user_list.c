@@ -84,12 +84,14 @@ int srain_user_list_add(SrainUserList *list, const char *nick, IRCUserType type)
      */
     if (type == IRC_USER_OP){
         button = GTK_BUTTON(gtk_button_new());
-        image = GTK_IMAGE(gtk_image_new_from_file("img/op_icon.png"));
+        image = GTK_IMAGE(
+                gtk_image_new_from_icon_name("srain-op", GTK_ICON_SIZE_BUTTON));
         g_object_set_data(G_OBJECT(button), "is-op", button);
     }
     else if (type == IRC_USER_PERSON){
         button = GTK_BUTTON(gtk_button_new());
-        image = GTK_IMAGE(gtk_image_new_from_file("img/person_icon.png"));
+        image = GTK_IMAGE(
+                gtk_image_new_from_icon_name("srain-person", GTK_ICON_SIZE_BUTTON));
     } else {
         return -1;
     }

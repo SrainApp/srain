@@ -9,10 +9,9 @@
  * to the full content of GtkEntry, SrainEntryCompletion can
  * do it according to the word at current cursor.
  *
- * TODO: case insensitive
  */
 
-#define __LOG_ON
+// #define __LOG_ON
 
 #include <gtk/gtk.h>
 #include <string.h>
@@ -156,16 +155,11 @@ SrainEntryCompletion* srain_entry_completion_new(GtkEntry *entry){
  */
 int srain_entry_completion_add_keyword(SrainEntryCompletion *comp,
         const char *keyword, SECKeywordType type){
-    GString *str;
-
     LOG_FR("keyword: '%s', type: %d", keyword, type);
 
     if (!is_legal_keyword(keyword)){
         return -1;
     }
-
-    str = g_string_new(keyword);
-    str = g_string_append_c(str, ' ');
 
     if (type == KEYWORD_TMP){
         gpointer data;
@@ -176,7 +170,7 @@ int srain_entry_completion_add_keyword(SrainEntryCompletion *comp,
             LOG_FR("queue full");
         }
 
-        g_queue_push_head(comp->queue, strdup(str->str));
+        g_queue_push_head(comp->queue, strdup(keyword));
     }
     else if (type == KEYWORD_NORMAL){
         GtkTreeIter iter;
@@ -185,13 +179,11 @@ int srain_entry_completion_add_keyword(SrainEntryCompletion *comp,
          * and it will be copiedif it is a G_TYPE_STRING or G_TYPE_BOXED
          */
         gtk_list_store_append(comp->list, &iter);
-        gtk_list_store_set(comp->list, &iter, 0, str->str, -1);
+        gtk_list_store_set(comp->list, &iter, 0, keyword, -1);
     } else {
         ERR_FR("Unsupported SECKeywordType: %d", type);
         return -1;
     }
-
-    g_string_free(str, TRUE);
 
     return 0;
 }
@@ -212,12 +204,8 @@ int srain_entry_completion_rm_keyword(SrainEntryCompletion *comp,
         const char *keyword){
     const char *val_str;
     GValue val = {0, };
-    GString *str;
     GtkTreeIter  iter;
     GtkTreeModel *tree_model;
-
-    str = g_string_new(keyword);
-    str = g_string_append_c(str, ' ');
 
     tree_model = GTK_TREE_MODEL(comp->list);
 
@@ -229,16 +217,14 @@ int srain_entry_completion_rm_keyword(SrainEntryCompletion *comp,
     do {
         gtk_tree_model_get_value(tree_model, &iter, 0, &val);
         val_str = g_value_get_string(&val);
-        if (strcmp(str->str, val_str) == 0){
+        if (strcmp(keyword, val_str) == 0){
             gtk_list_store_remove(comp->list, &iter);
-            g_string_free(str, TRUE);
             return 0;
         }
         g_value_unset(&val);
     } while (gtk_tree_model_iter_next(tree_model, &iter));
 
     LOG_FR("not found");
-    g_string_free(str, TRUE);
 
     return -1;
 }

@@ -8,19 +8,22 @@
 
 #define __LOG_ON
 
-#include <gtk/gtk.h>
 #include <time.h>
+#include <gtk/gtk.h>
 #include <assert.h>
 #include <string.h>
+
 #include "ui_common.h"
 #include "ui_intf.h"
 #include "srain_window.h"
 #include "srain_msg.h"
 #include "srain_image.h"
+
 #include "markup.h"
 #include "download.h"
 #include "log.h"
 #include "plugin.h"
+#include "get_path.h"
 
 static void nick_button_on_click(GtkWidget *widget, gpointer *user_data){
     GString *cmd;
@@ -188,7 +191,11 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *m
     avatar_path = plugin_avatar(nick, "", "");
 
     avatar_simg = srain_image_new();
-    srain_image_set_from_file(avatar_simg, "img/default_avatar.png", 36, SRAIN_IMAGE_AUTOLOAD);
+    avatar_path =  get_pixmap_path("srain-avatar.png");
+    if (avatar_path){
+        srain_image_set_from_file(avatar_simg, avatar_path, 36, SRAIN_IMAGE_AUTOLOAD);
+        g_free(avatar_path);
+    }
     srain_image_set_from_url_async(avatar_simg, avatar_path, 36, SRAIN_IMAGE_AUTOLOAD);
     gtk_container_add(GTK_CONTAINER(smsg->avatar_box), GTK_WIDGET(avatar_simg));
     gtk_widget_show(GTK_WIDGET(avatar_simg));

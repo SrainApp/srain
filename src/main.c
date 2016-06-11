@@ -15,21 +15,12 @@
 #include "srain_app.h"
 #include "log.h"
 
-#ifndef DESTDIR
-#define DESTDIR "NULL"
-#endif
-
 int main(int argc, char **argv){
     int res;
     FILE *fp;
     char *congif_dir;
     char *cache_dir;
     char *rc_file;
-
-    LOG_FR("DESTDIR = %s", DESTDIR);
-    LOG_FR("change cwd to" DESTDIR  "/share/srain");
-
-    chdir(DESTDIR "/share/srain");
 
     /* create directories and config files if no exist
      * such as:

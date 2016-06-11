@@ -3,11 +3,17 @@
 
 #define META_NAME           "Srain"
 #define META_VERSION        "0.03"
-#define META_NAME_VERSION   "Srain 0.03"
+#define META_NAME_VERSION   META_NAME " " META_VERSION
 #define META_DESC           "It does not look like an IRC client."
 #define META_AUTHOR_NAME    "LastAvengers"
 #define META_AUTHOR_MAIL    "lastavengers@outlook.com"
 #define META_WEBSITE        "https://github.com/LastAvenger/srain"
+
+#define META_PACKAGE_NAME "srain"
+
+#ifndef META_PACKAGE_DATA_DIRS
+#define META_PACKAGE_DATA_DIRS ""
+#endif
 
 #define META_CMD_HELP {\
     "Srain supports the following commands:\n"\

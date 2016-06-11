@@ -57,14 +57,14 @@ SrainStackSidebarItem *srain_stack_sidebar_item_new(const char *server_name, con
 
     // is a channel TODO: ui shouldn't konw anything about irc protocol
     if (IS_CHAN(chan_name)){
-        gtk_image_set_from_file(item->image, "img/chan_icon.png");
+        gtk_image_set_from_icon_name(item->image, "srain-chan", GTK_ICON_SIZE_BUTTON);
     }
     else if (strcmp(chan_name, META_SERVER) == 0){
         // is a server
-        gtk_image_set_from_file(item->image, "img/server_icon.png");
+        gtk_image_set_from_icon_name(item->image, "srain-server", GTK_ICON_SIZE_BUTTON);
     } else {
         // is a normal user
-        gtk_image_set_from_file(item->image, "img/user_icon.png");
+        gtk_image_set_from_icon_name(item->image, "srain-person", GTK_ICON_SIZE_BUTTON);
     }
 
     return item;
