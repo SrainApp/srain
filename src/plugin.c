@@ -14,6 +14,9 @@
 #include "log.h"
 
 char* plugin_upload(const char *path){
+    // FIXME:
+    return "";
+
     char *url;
     char plugin_path;
 
@@ -25,7 +28,8 @@ char* plugin_upload(const char *path){
     Py_Initialize();
 
     /* load current dirrectory *SHOULD BE REMOVED IN RELEASE* */
-    PyRun_SimpleString("import sys; sys.path.append('./plugin')");
+    // TODO: use absolute path
+    PyRun_SimpleString("import sys; sys.path.append('../data/plugins')");
 
     /* import */
     py_module = PyImport_Import(PyUnicode_FromString("upload"));
@@ -62,6 +66,9 @@ char* plugin_upload(const char *path){
 }
 
 char* plugin_avatar(const char *nick, const char *user, const char *host){
+    // FIXME:
+    return "";
+
     char *path;
     PyObject *py_module;
     PyObject *py_func;

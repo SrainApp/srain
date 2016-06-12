@@ -9,15 +9,13 @@ export
 MAKE = make
 DEL = rm -rf
 CC = gcc
-INC = -Isrc/inc
-DBGFLAGS = -O0 -ggdb -gstabs+
-CFLAGS = -Wall -DMETA_PACKAGE_DATA_DIRS=\"$(PREFIX)\"
+CFLAGS = -O2 -Wall -I$(PWD)/src/inc -DMETA_PACKAGE_DATA_DIRS=\"$(PREFIX)\"
+CFLAGS += $(DBGFLAGS)
 GTK3FLAGS = `pkg-config --cflags gtk+-3.0`
 GTK3LIBS = `pkg-config --libs gtk+-3.0`
 PY3FLAGS = `pkg-config --cflags python3`
 PY3LIBS = `pkg-config --libs python3`
 CURLLIBS = `pkg-config --libs libcurl`
-PREFIX = $(PWD)/build
 
 TARGET = build/srain
 SRCS = $(wildcard src/*.c src/*/*.c build/resources.c)
@@ -27,10 +25,6 @@ default: Makefile src/Makefile data/ui/Makefile
 	$(MAKE) -C src
 	$(MAKE) -C data/ui
 	$(MAKE) $(TARGET)
-
-init:
-	mkdir -p build || true
-	mkdir -p build/locale/zh_CN/LC_MESSAGES || true
 
 install:
 	install -Dm755 "build/srain" "$(DESTDIR)$(PREFIX)/bin/srain"
@@ -56,7 +50,7 @@ install:
 		done
 
 run: default
-	$(MAKE) PREFIX=$(PWD)/build install
+	$(MAKE) PREFIX=$(PWD)/build
 	$(MAKE) PREFIX=$(PWD)/build install
 	cp srainrc.example build/srainrc
 	cd build; XDG_DATA_DIRS=$(PWD)/build/share:/usr/share/ ./bin/srain
@@ -82,8 +76,8 @@ mo:
 	msgfmt po/zh_CN.po -o build/locale/zh_CN/LC_MESSAGES/srain.mo
 
 todo:
-	grep --color=auto -r "TODO" src/
+	grep --color=auto -r -E "TODO|FIXME" src/
 
 # Compile multiple object files to execute file
 $(TARGET): $(OBJS)
-	$(CC) $(INC) $(CFLAGS) $(GTK3FLAGS) $(PY3FLAGS) $^ -o $@ $(GTK3LIBS) $(PY3LIBS) $(CURLLIBS)
+	$(CC) $(CFLAGS) $(GTK3FLAGS) $(PY3FLAGS) $^ -o $@ $(GTK3LIBS) $(PY3LIBS) $(CURLLIBS)

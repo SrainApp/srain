@@ -3,22 +3,23 @@ Srain
 [![Travis](https://img.shields.io/travis/LastAvenger/srain.svg?maxAge=2592000)](https://travis-ci.org/LastAvenger/srain)
 [![Github All Releases](https://img.shields.io/github/downloads/LastAvenger/srain/total.svg?maxAge=2592000)](https://github.com/LastAvenger/srain/releases)
 
-it does not look like a irc client :-)
+It does not look like an IRC client :-)
 
 # Dependencies
 
-* make          (makedepends)
-* gcc           (makedepends)
-* libcurl       (makedepends)
-* pkg-config    (makedepends)
-* gettext       (makedepends)
-* gtk >= 3.16
-* glib2
-* python >= 3.2
+- make          (makedepends)
+- gcc           (makedepends)
+- libcurl       (makedepends)
+- pkg-config    (makedepends)
+- gettext       (makedepends)
+- gtk >= 3.16
+- glib2
+- python >= 3.2
 
-# Build
+# Build & Debug
 
-    make init
+    mkdir build
+    ./configure --prefix=$PWD/build --enable-debug
     make
     make run
 
@@ -31,16 +32,16 @@ it does not look like a irc client :-)
 
 ## For other linux distributions:
 
-    make init
-    make DESTDIR=/usr
-	make DESTDIR=/usr install
+    ./configure --prefix=/usr/local --disable-debug
+    make
+	make DESTDIR=/ install
 
 # Feature
 
-- relay bot message transform
-- preview image from url
-- get avatar from github (plugin)
-- auto upload image to pastebin (plugin)
+- Relay bot message transform
+- Preview image from URL
+- Get avatar from github (plugin)
+- Auto upload image to pastebin (plugin)
 
 # Screenshot
 
