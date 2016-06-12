@@ -32,6 +32,7 @@ It does not look like an IRC client :-)
 
 ## For other linux distributions:
 
+    mkdir build
     ./configure --prefix=/usr/local --disable-debug
     make
 	make DESTDIR=/ install
