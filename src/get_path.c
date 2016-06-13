@@ -1,3 +1,10 @@
+/**
+ * @file get_path.c
+ * @brief Get application data files' path
+ * @author LastAvengers <lastavengers@outlook.com>
+ * @version 1.0
+ * @date 2016-06-12
+ */
 #include <glib.h>
 
 #include "meta.h"
@@ -52,7 +59,7 @@ char *get_pixmap_path(const char *filename){
  *
  * @param filename
  *
- * @return 
+ * @return NULL or path to the pixmap file, must be freed.
  */
 char *get_plugin_path(const char *filename){
     char *path;
@@ -74,7 +81,7 @@ char *get_plugin_path(const char *filename){
  *
  * @param filename
  *
- * @return 
+ * @return NULL or path to the theme file, must be freed.
  */
 char *get_config_path(const char *filename){
     char *path;
