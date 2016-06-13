@@ -64,7 +64,7 @@
 #msg_list_box label selection { color: @text_color; background-color: @selected_text_color; }
 
 /* SrainMsgList Container */
-#msg_list_box * { background-color: transparent; }
+#msg_list_box list { background-color: transparent; }
 #msg_list_box {
     /* background-image: url("./bg.jpg"); */
     /* background-color: @active_color; */
