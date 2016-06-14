@@ -11,7 +11,7 @@
  *
  */
 
-// #define __LOG_ON
+#define __LOG_ON
 
 #include <gtk/gtk.h>
 #include <string.h>
@@ -26,11 +26,16 @@ struct _SrainEntryCompletion {
     GtkEntryCompletion parent;
 
     /* Queue for storing temporary keywords,
-     * length not exceeding TMP_QUEUE_LEN.
+     * not store duplicate strings,
+     * and its length not exceeding TMP_QUEUE_LEN.
      * If the limit is reached,
      * the last element will be removed  */
     GQueue *queue;
-    /* Tree model for storing normal keywords */
+    /* Tree model for storing normal keywords,
+     * it may stores duplicate strings,
+     * but caller won't give duplicate string
+     * to it.
+     */
     GtkListStore *list;
 };
 
@@ -156,6 +161,7 @@ SrainEntryCompletion* srain_entry_completion_new(GtkEntry *entry){
 int srain_entry_completion_add_keyword(SrainEntryCompletion *comp,
         const char *keyword, SECKeywordType type){
     LOG_FR("keyword: '%s', type: %d", keyword, type);
+    int len;
 
     if (!is_legal_keyword(keyword)){
         return -1;
@@ -167,9 +173,16 @@ int srain_entry_completion_add_keyword(SrainEntryCompletion *comp,
         if (g_queue_get_length(comp->queue) > TMP_QUEUE_LEN){
             data = g_queue_pop_tail(comp->queue);
             g_free(data);
-            LOG_FR("queue full");
+            LOG_FR("Queue full");
         }
 
+        len = g_queue_get_length(comp->queue);
+        while (len > 0){
+            if (strcmp(keyword, g_queue_peek_nth(comp->queue, --len)) == 0){
+                LOG_FR("Duplicate");
+                return -1;
+            }
+        }
         g_queue_push_head(comp->queue, strdup(keyword));
     }
     else if (type == KEYWORD_NORMAL){
