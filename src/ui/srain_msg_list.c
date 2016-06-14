@@ -24,12 +24,13 @@
 #include "markup.h"
 #include "log.h"
 
+#define MAX_MSG_COUNT 100
+
 struct _SrainMsgList {
     GtkScrolledWindow parent;
 
-    int to_bottom;
-
-    GtkListBox *list;
+    int vis_row_num;
+    GtkListBox *list_box;
     GtkWidget *last_msg;
 };
 
@@ -39,14 +40,75 @@ struct _SrainMsgListClass {
 
 G_DEFINE_TYPE(SrainMsgList, srain_msg_list, GTK_TYPE_SCROLLED_WINDOW);
 
+static int get_list_box_length(GtkListBox *list_box){
+    if (GTK_IS_LIST_BOX(list_box)){
+        return g_list_length(
+                gtk_container_get_children(GTK_CONTAINER(list_box)));
+    }
+
+    return 0;
+}
+
+/* scrolled_window_on_edge_overshot() and scrolled_window_on_edge_reached ()
+ * are used for implement dynamic hide&load messages */
+
+static void scrolled_window_on_edge_overshot(GtkScrolledWindow *swin,
+        GtkPositionType pos, gpointer user_data){
+    int i;
+    int len;
+    SrainMsgList *list;
+    GtkListBoxRow *row;
+
+    if (pos != GTK_POS_TOP) return;
+
+    LOG_FR("overshot");
+
+    list = user_data;
+    len = get_list_box_length(list->list_box);
+
+    for (i = MAX_MSG_COUNT - 1;
+            list->vis_row_num >= 0 && i >= 0;
+            list->vis_row_num--, i--){
+        row = gtk_list_box_get_row_at_index(
+                list->list_box, list->vis_row_num);
+        LOG_FR("hide row %p", row);
+        if (GTK_IS_LIST_BOX_ROW(row)){
+            gtk_widget_set_visible(GTK_WIDGET(row), TRUE);
+        }
+    }
+}
+
+static void scrolled_window_on_edge_reached(GtkScrolledWindow *swin,
+               GtkPositionType pos, gpointer user_data){
+    int len;
+    SrainMsgList *list;
+    GtkListBoxRow *row;
+
+    if (pos != GTK_POS_BOTTOM) return;
+
+    LOG_FR("reached");
+    list = user_data;
+
+    len = get_list_box_length(list->list_box);
+    for ( ;list->vis_row_num < len - MAX_MSG_COUNT;
+            list->vis_row_num++){
+        row = gtk_list_box_get_row_at_index(
+                list->list_box, list->vis_row_num);
+        LOG_FR("hide row %p", row);
+        if (GTK_IS_LIST_BOX_ROW(row)){
+            gtk_widget_set_visible(GTK_WIDGET(row), FALSE);
+        }
+    }
+}
+
 /**
  * @brief scroll_to_bottom
  *
  * @param list
  *
- * @return always return FALSE
+ * @return Always return FALSE
  *
- * this function must be called as a idle.
+ * This function must be called as a idle.
  *
  */
 static gboolean scroll_to_bottom(SrainMsgList *list){
@@ -62,17 +124,6 @@ static gboolean scroll_to_bottom(SrainMsgList *list){
             gtk_adjustment_get_page_size(adj));
     gtk_scrolled_window_set_vadjustment(GTK_SCROLLED_WINDOW(list), adj);
 
-    // TODO: remove me
-    adj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(list));
-    val = gtk_adjustment_get_value(adj);
-    max_val = gtk_adjustment_get_upper(adj) - gtk_adjustment_get_page_size(adj);
-    // LOG_FR("cur val: %f, max val %f", val, max_val);
-
-    if (max_val != val) {
-        LOG_FR("retry");
-        return TRUE;
-    }
-
     return FALSE;
 }
 
@@ -80,9 +131,9 @@ static gboolean scroll_to_bottom(SrainMsgList *list){
  * @brief smart_scroll
  *
  * @param list
- * @param force if force = 1, scroll to bottom anyway.
+ * @param force If force = 1, scroll to bottom anyway.
  *
- * if force != 1,
+ * If force != 1,
  * and the top-level window is visible,
  * and `list` is belonged to the current SrainChan,
  * and the value of scrolled window's adjustment (scrollbar):
@@ -129,11 +180,6 @@ static void smart_scroll(SrainMsgList *list, int force){
     }
 }
 
-static void scrolled_window_on_edge_overshot(GtkScrolledWindow *swin,
-        GtkPositionType pos, gpointer user_data){
-    if (pos != GTK_POS_TOP) return;
-}
-
 void srain_msg_list_scroll_up(SrainMsgList *list, double step){
     GtkAdjustment *adj;
 
@@ -157,16 +203,18 @@ void srain_msg_list_scroll_down(SrainMsgList *list, double step){
 static void srain_msg_list_init(SrainMsgList *self){
     gtk_widget_init_template(GTK_WIDGET(self));
 
-    self->to_bottom = 1;
+    self->vis_row_num = 0;
     g_signal_connect(self, "edge-overshot",
-            G_CALLBACK(scrolled_window_on_edge_overshot), NULL);
+            G_CALLBACK(scrolled_window_on_edge_overshot), self);
+    g_signal_connect(self, "edge-reached",
+            G_CALLBACK(scrolled_window_on_edge_reached), self);
 }
 
 static void srain_msg_list_class_init(SrainMsgListClass *class){
     gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
             "/org/gtk/srain/msg_list.glade");
 
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainMsgList, list);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainMsgList, list_box);
 }
 
 SrainMsgList* srain_msg_list_new(void){
@@ -177,8 +225,7 @@ void srain_msg_list_sys_msg_add(SrainMsgList *list, const char *msg, SysMsgType 
     SrainSysMsg *smsg;
 
     smsg = srain_sys_msg_new(msg, type);
-
-    gtk_list_box_add_unfocusable_row(list->list, GTK_WIDGET(smsg));
+    gtk_list_box_add_unfocusable_row(list->list_box, GTK_WIDGET(smsg));
 
     list->last_msg = GTK_WIDGET(smsg);
 
@@ -190,7 +237,7 @@ void srain_msg_list_send_msg_add(SrainMsgList *list, const char *msg){
     SrainSendMsg *smsg;
 
     smsg = srain_send_msg_new(msg);
-    gtk_list_box_add_unfocusable_row(list->list, GTK_WIDGET(smsg));
+    gtk_list_box_add_unfocusable_row(list->list_box, GTK_WIDGET(smsg));
 
     list->last_msg = GTK_WIDGET(smsg);
 
@@ -202,15 +249,15 @@ void _srain_msg_list_recv_msg_add(SrainMsgList *list, const char *nick,
     SrainRecvMsg *smsg;
 
     smsg = srain_recv_msg_new(nick, id, msg);
-    gtk_list_box_add_unfocusable_row(list->list, GTK_WIDGET(smsg));
+    gtk_list_box_add_unfocusable_row(list->list_box, GTK_WIDGET(smsg));
 
     list->last_msg = GTK_WIDGET(smsg);
 
     smart_scroll(list, 0);
 }
 
-/* add a SrainRecvMsg into SrainMsgList,
- * if its time is same to the last msg, combine them
+/* Add a SrainRecvMsg into SrainMsgList.
+ * If its time is same to the last msg, combine them.
  */
 void srain_msg_list_recv_msg_add(SrainMsgList *list, const char *nick,
         const char *id, const char *msg){
@@ -230,7 +277,7 @@ void srain_msg_list_recv_msg_add(SrainMsgList *list, const char *nick,
         old_timestr = gtk_label_get_text(last_recv_msg->time_label);
         old_nick = gtk_label_get_text(last_recv_msg->nick_label);
 
-        /* a message that
+        /* A message that
          *  - send by the same people
          *  - send in same minute
          *  - less then 512 char

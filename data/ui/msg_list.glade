@@ -5,16 +5,17 @@
   <template class="SrainMsgList" parent="GtkScrolledWindow">
     <property name="visible">True</property>
     <property name="can_focus">True</property>
+    <property name="vscrollbar_policy">always</property>
     <child>
       <object class="GtkViewport" id="viewport">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="shadow_type">none</property>
         <child>
-          <object class="GtkListBox" id="list">
+          <object class="GtkListBox" id="list_box">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="selection_mode">multiple</property>
+            <property name="selection_mode">none</property>
             <property name="activate_on_single_click">False</property>
           </object>
         </child>
