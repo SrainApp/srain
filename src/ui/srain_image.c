@@ -39,7 +39,6 @@ static void srain_image_finalize(GObject *object){
     if (SRAIN_IMAGE(object)->file)
         free(SRAIN_IMAGE(object)->file);
 
-    // :-( 什么黑魔法？
     G_OBJECT_CLASS(srain_image_parent_class)->finalize(object);
 }
 
@@ -73,13 +72,20 @@ SrainImage* srain_image_new(void){
  * @param user_data: a instance of SrainImage
  * @param event
  *
- * new a popup window to display image at its origin size.
- *
- * TODO: if the image's size too large, scale it ?
- * we need to deal with dual-monitor issue :(
+ * New a popup window to display image at its origin size,
+ * if image is too large, it will be scaled.
  */
 static void eventbox_on_click(gpointer user_data , GdkEventButton *event){
+    int monitor;
+    int img_width;
+    int img_height;
+    double img_ratio;
+    double scr_ratio;
+    GdkScreen *screen;
+    GdkWindow *gdkwin;
+    GdkRectangle rect;
     GdkPixbuf *pixbuf;
+    GdkPixbuf *pixbuf2;
     GtkImage *image;
     GtkWindow *iwin;
     GtkBuilder *builder;
@@ -92,20 +98,61 @@ static void eventbox_on_click(gpointer user_data , GdkEventButton *event){
         builder = gtk_builder_new_from_resource("/org/gtk/srain/image_window.glade");
         iwin = GTK_WINDOW(gtk_builder_get_object(builder, "image_window"));
 
+        screen = gdk_screen_get_default();
+        gdkwin = gtk_widget_get_window((gtk_widget_get_toplevel(GTK_WIDGET(simg))));
+        monitor = gdk_screen_get_monitor_at_window(screen, gdkwin);
+        gdk_screen_get_monitor_geometry(screen, monitor, &rect);
+
+        /* If we should scale the image, do not fill full screen */
+        rect.height -= 20;
+        rect.width -= 20;
+        scr_ratio = (rect.width*1.0)/rect.height;
+
+        LOG_FR("max width: %d, max height: %d, radio: %lf",
+                rect.width, rect.height, scr_ratio);
+
+
         image = GTK_IMAGE(gtk_builder_get_object(builder, "image"));
         pixbuf = gdk_pixbuf_new_from_file(simg->file, NULL);
+
+        img_width = gdk_pixbuf_get_width(pixbuf);
+        img_height = gdk_pixbuf_get_height(pixbuf);
+        img_ratio = (img_width*1.0)/img_height;
+
+        LOG_FR("image width: %d, height: %d, ratio: %lf",
+                img_width ,img_height, img_ratio);
+
+        /* Scale if image to large */
+        if (img_width >= rect.height
+                || img_height >= rect.width){
+            /* FIXME:
+             * If the img_ratio is much larger or smaller than 1,
+             * the new pixbuf's aspect ratio may changed
+             * because of loss of precision
+             * gdk_pixbuf_scale() can deal with this.
+             */
+            if (scr_ratio > img_ratio){
+                pixbuf2 = gdk_pixbuf_scale_simple(pixbuf,
+                        (int)(rect.height*img_ratio), rect.height, GDK_INTERP_BILINEAR);
+            } else {
+                pixbuf2 = gdk_pixbuf_scale_simple(pixbuf,
+                        rect.width, (int)(rect.height/img_ratio), GDK_INTERP_BILINEAR);
+            }
+
+            g_object_unref(pixbuf);
+            pixbuf = pixbuf2;
+        }
+
         gtk_image_set_from_pixbuf(image, pixbuf);
 
-        g_signal_connect_swapped(iwin, "button_release_event",
+        g_signal_connect_swapped(iwin, "button-release-event",
                 G_CALLBACK(gtk_widget_destroy), iwin);
-        g_signal_connect_swapped(image, "button_release_event",
+        g_signal_connect_swapped(image, "button-release-event",
                 G_CALLBACK(gtk_widget_destroy), iwin);
-
 
         g_object_unref(pixbuf);
         g_object_unref(builder);
 
-        // theme_apply(GTK_WIDGET(win));
         gtk_window_present(iwin);
     }
 }
