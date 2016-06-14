@@ -195,6 +195,7 @@ SrainChan* srain_window_add_chan(SrainWindow *win, const char *server_name, cons
 }
 
 void srain_window_rm_chan(SrainWindow *win, SrainChan *chan){
+    srain_user_list_clear(srain_chan_get_user_list(chan));
     gtk_container_remove(GTK_CONTAINER(win->stack), GTK_WIDGET(chan));
 }
 

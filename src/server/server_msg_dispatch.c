@@ -132,7 +132,8 @@ gboolean server_msg_dispatch(IRCMsg *imsg){
         if (imsg->nparam != 3) goto bad;
         char *nickptr = strtok(imsg->message, " ");
         while (nickptr){
-            // TODO: do not send sys msg
+            // TODO: do not use gtk function in server code
+            while (gtk_events_pending()) gtk_main_iteration();
             server_intf_ui_user_list_add(srv, imsg->param[2],
                     nickptr[0] == '@' ? nickptr + 1 : nickptr,
                     nickptr[0] == '@' ? IRC_USER_OP : IRC_USER_PERSON,

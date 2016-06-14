@@ -6,6 +6,8 @@
  * @date 2016-04-03
  */
 
+#define __LOG_ON
+
 #include <gtk/gtk.h>
 #include <strings.h>
 #include "ui_common.h"
@@ -98,6 +100,7 @@ int srain_user_list_add(SrainUserList *list, const char *nick, IRCUserType type)
 
     gtk_button_set_label(button, nick);
     gtk_button_set_image(button, GTK_WIDGET(image));
+
     gtk_button_set_relief(button, GTK_RELIEF_NONE);
     gtk_widget_set_name(GTK_WIDGET(button), nick);
     gtk_widget_set_halign(GTK_WIDGET(button), GTK_ALIGN_START);
@@ -155,4 +158,23 @@ int srain_user_list_rename(SrainUserList *list,
     gtk_widget_set_name(GTK_WIDGET(button), new_nick);
 
     return 0;
+}
+
+void srain_user_list_clear(SrainUserList *list){
+    int len;
+    GtkListBoxRow *row;
+
+    len = g_list_length(
+            gtk_container_get_children(GTK_CONTAINER(list)));
+    LOG_FR("len: %d", len);
+
+    while (len > 0){
+        while (gtk_events_pending()) gtk_main_iteration();
+
+        row = gtk_list_box_get_row_at_index(GTK_LIST_BOX(list), 0);
+        if (GTK_IS_LIST_BOX_ROW(row)){
+            gtk_container_remove(GTK_CONTAINER(list), GTK_WIDGET(row));
+            len--;
+        }
+    }
 }
