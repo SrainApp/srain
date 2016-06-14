@@ -123,8 +123,8 @@ static void eventbox_on_click(gpointer user_data , GdkEventButton *event){
                 img_width ,img_height, img_ratio);
 
         /* Scale if image to large */
-        if (img_width >= rect.height
-                || img_height >= rect.width){
+        if (img_width >= rect.width
+                || img_height >= rect.height){
             /* FIXME:
              * If the img_ratio is much larger or smaller than 1,
              * the new pixbuf's aspect ratio may changed
