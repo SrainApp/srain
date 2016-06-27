@@ -56,7 +56,9 @@ run: default
 	cd build; XDG_DATA_DIRS=$(PWD)/build/share:/usr/share/ ./bin/srain
 
 dbg: $(TARGET)
-	cd build/ && cgdb srain
+	GTK_DEBUG=interactive\
+		  GOBJECT_DEBUG=instance-countcd \
+		  $(MAKE) run
 
 clean:
 	$(DEL) build/srain
