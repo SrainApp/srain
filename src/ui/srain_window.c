@@ -1,7 +1,7 @@
 /**
  * @file srain_window.c
  * @brief Srain's main windows
- * @author LastAvengers <lastavengers@outlook.com>
+ * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-03-01
  */
@@ -9,7 +9,9 @@
 #define __LOG_ON
 
 #include <gtk/gtk.h>
+#include <string.h>
 #include <assert.h>
+
 #include "ui_common.h"
 #include "ui_intf.h"
 #include "theme.h"
@@ -18,6 +20,7 @@
 #include "srain_chan.h"
 #include "srain_stack_sidebar.h"
 #include "tray_icon.h"
+
 #include "meta.h"
 #include "log.h"
 
@@ -86,8 +89,8 @@ static void join_entry_on_activate(GtkWidget *widget, gpointer user_data){
     gtk_entry_set_text(entry, "");
 }
 
-static gboolean CTRL_J_K_on_press(GtkAccelGroup *group, GObject *obj, guint keyval,
-        GdkModifierType mod, gpointer user_data){
+static gboolean CTRL_J_K_on_press(GtkAccelGroup *group, GObject *obj,
+        guint keyval, GdkModifierType mod, gpointer user_data){
     SrainStackSidebar *sidebar;
 
     if (mod != GDK_CONTROL_MASK) return FALSE;
@@ -120,7 +123,8 @@ static void srain_window_init(SrainWindow *self){
     /* stack sidebar init */
     self->sidebar = srain_stack_sidebar_new();
     gtk_widget_show(GTK_WIDGET(self->sidebar));
-    gtk_box_pack_start(self->sidebar_box, GTK_WIDGET(self->sidebar), TRUE, TRUE, 0);
+    gtk_box_pack_start(self->sidebar_box, GTK_WIDGET(self->sidebar),
+            TRUE, TRUE, 0);
     srain_stack_sidebar_set_stack(self->sidebar, self->stack);
 
     theme_apply(GTK_WIDGET(self));
@@ -137,8 +141,10 @@ static void srain_window_init(SrainWindow *self){
     /* shortcut <C-j> and <C-k> */
     accel = gtk_accel_group_new();
 
-    closure_j = g_cclosure_new(G_CALLBACK(CTRL_J_K_on_press), self->sidebar, NULL);
-    closure_k = g_cclosure_new(G_CALLBACK(CTRL_J_K_on_press), self->sidebar, NULL);
+    closure_j = g_cclosure_new(G_CALLBACK(CTRL_J_K_on_press),
+            self->sidebar, NULL);
+    closure_k = g_cclosure_new(G_CALLBACK(CTRL_J_K_on_press),
+            self->sidebar, NULL);
 
     gtk_accel_group_connect(accel, GDK_KEY_j, GDK_CONTROL_MASK,
             GTK_ACCEL_VISIBLE, closure_j);
@@ -169,7 +175,8 @@ SrainWindow* srain_window_new(SrainApp *app){
     return g_object_new(SRAIN_TYPE_WINDOW, "application", app, NULL);
 }
 
-SrainChan* srain_window_add_chan(SrainWindow *win, const char *server_name, const char *chan_name){
+SrainChan* srain_window_add_chan(SrainWindow *win,
+        const char *server_name, const char *chan_name){
     SrainChan *chan;
 
     // if (srain_window_get_chan_by_name(win, chan_name)){
@@ -179,14 +186,10 @@ SrainChan* srain_window_add_chan(SrainWindow *win, const char *server_name, cons
 
     chan = srain_chan_new(server_name, chan_name);
 
-    /* SrainStackSidebarItem want to know the name of the chan and
-     * which server it belongs to, pass to it by `g_object_set_data()`
-     * */
-    g_object_set_data(G_OBJECT(chan), "chan-name", (void *)chan_name);
-    g_object_set_data(G_OBJECT(chan), "server-name", (void *)server_name);
-
-    // FIXME: Gtk-WARNING **: Duplicate child name in GtkStack
-    gtk_stack_add_named(win->stack, GTK_WIDGET(chan), chan_name);
+    GString *gstr = g_string_new("");
+    g_string_printf(gstr, "%s %s", server_name, chan_name);
+    gtk_stack_add_named(win->stack, GTK_WIDGET(chan), gstr->str);
+    g_string_free(gstr, TRUE);
 
     theme_apply(GTK_WIDGET(win));
 
@@ -195,11 +198,19 @@ SrainChan* srain_window_add_chan(SrainWindow *win, const char *server_name, cons
 }
 
 void srain_window_rm_chan(SrainWindow *win, SrainChan *chan){
+    char *chan_name;
+    char *server_name;
+
+    chan_name = g_object_get_data(G_OBJECT(chan), "chan-name");
+    server_name = g_object_get_data(G_OBJECT(chan), "server-name");
+    free(chan_name);
+    free(server_name);
+
     srain_user_list_clear(srain_chan_get_user_list(chan));
     gtk_container_remove(GTK_CONTAINER(win->stack), GTK_WIDGET(chan));
 }
 
-SrainChan *srain_window_get_cur_chan(SrainWindow *win){
+SrainChan* srain_window_get_cur_chan(SrainWindow *win){
     SrainChan *chan = NULL;
 
     chan = SRAIN_CHAN(gtk_stack_get_visible_child(win->stack));
@@ -210,19 +221,20 @@ SrainChan *srain_window_get_cur_chan(SrainWindow *win){
     return chan;
 }
 
-SrainChan *srain_window_get_chan_by_name(SrainWindow *win, const char *name){
+SrainChan* srain_window_get_chan_by_name(SrainWindow *win,
+        const char *server_name, const char *chan_name){
     SrainChan *chan = NULL;
 
-    if (name)
-        chan = SRAIN_CHAN(gtk_stack_get_child_by_name(win->stack, name));
-    else
-        chan = srain_window_get_cur_chan(win);
+    GString *name;
+    g_string_sprintf(name, "%s %s", server_name, chan_name);
+    chan = SRAIN_CHAN(gtk_stack_get_child_by_name(win->stack, name->str));
+    g_string_free(name, TRUE);
 
     return chan;
 }
 
 void srain_window_spinner_toggle(SrainWindow *win, gboolean is_busy){
-   is_busy  
+   is_busy
         ? gtk_spinner_start(win->spinner)
         : gtk_spinner_stop(win->spinner);
 }

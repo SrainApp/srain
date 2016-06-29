@@ -1,7 +1,7 @@
 /**
  * @file srain_chan.c
  * @brief Complex widget used to reprsenting a session
- * @author LastAvengers <lastavengers@outlook.com>
+ * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-03-01
  */
@@ -29,6 +29,9 @@
 
 struct _SrainChan {
     GtkBox parent;
+
+    char *server_name;
+    char *chan_name;
 
     /* header */
     GtkLabel* name_label;
@@ -264,7 +267,18 @@ static void srain_chan_init(SrainChan *self){
 
 }
 
+static void srain_chan_finalize(GObject *object){
+    free(SRAIN_CHAN(object)->server_name);
+    free(SRAIN_CHAN(object)->chan_name);
+
+    G_OBJECT_CLASS(srain_chan_parent_class)->finalize(object);
+}
+
 static void srain_chan_class_init(SrainChanClass *class){
+    GObjectClass *object_class = G_OBJECT_CLASS (class);
+
+    object_class->finalize = srain_chan_finalize;
+
     gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
             "/org/gtk/srain/chan.glade");
 
@@ -287,13 +301,16 @@ static void srain_chan_class_init(SrainChanClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, upload_image_button);
 }
 
-SrainChan* srain_chan_new(const char *srv_name, const char *chan_name){
+SrainChan* srain_chan_new(const char *server_name, const char *chan_name){
     SrainChan *chan;
 
     chan = g_object_new(SRAIN_TYPE_CHAN, NULL);
 
     gtk_label_set_text(chan->name_label, chan_name);
     gtk_widget_set_name(GTK_WIDGET(chan), chan_name);
+
+    chan->chan_name = strdup(chan_name);
+    chan->server_name = strdup(server_name);
 
     return chan;
 }
@@ -333,6 +350,22 @@ SrainMsgList* srain_chan_get_msg_list(SrainChan *chan){
 SrainEntryCompletion* srain_chan_get_entry_completion(SrainChan *chan){
     if (SRAIN_IS_CHAN(chan)) {
         return chan->completion;
+    }
+
+    return NULL;
+}
+
+const char* srain_chan_get_name(SrainChan *chan){
+    if (SRAIN_IS_CHAN(chan)) {
+        return chan->chan_name;
+    }
+
+    return NULL;
+}
+
+const char* srain_chan_get_server_name(SrainChan *chan){
+    if (SRAIN_IS_CHAN(chan)) {
+        return chan->server_name;
     }
 
     return NULL;
