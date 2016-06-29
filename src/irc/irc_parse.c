@@ -1,13 +1,13 @@
  /**
  * @file irc_parse.c
  * @brief provide function for parsing raw IRC data
- * @author LastAvengers <lastavengers@outlook.com>
+ * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-03-01
  *
  */
 
-#define __LOG_ON
+// #define __LOG_ON
 
 #include <string.h>
 #include "irc.h"

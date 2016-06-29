@@ -1,7 +1,7 @@
 /**
  * @file srain_image.c
  * @brief a widget which can load image from url asynchronously
- * @author LastAvengers <lastavengers@outlook.com>
+ * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-04-01
  */

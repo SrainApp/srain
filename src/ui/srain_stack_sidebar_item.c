@@ -1,7 +1,7 @@
 /**
  * @file srain_stack_sidebar_item.c
  * @brief item class of SrainStackSidebar
- * @author LastAvengers <lastavengers@outlook.com>
+ * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-03-07
  */

@@ -1,7 +1,7 @@
 /**
  * @file completion.c
  * @brief GtkEntryCompletion wrapper for keywords completion
- * @author LastAvengers <lastavengers@outlook.com>
+ * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-06-05
  *
@@ -11,7 +11,7 @@
  *
  */
 
-#define __LOG_ON
+// #define __LOG_ON
 
 #include <gtk/gtk.h>
 #include <string.h>

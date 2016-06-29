@@ -1,7 +1,7 @@
 /**
  * @file filter.c
  * @brief filter of irc received message
- * @author LastAvengers <lastavengers@outlook.com>
+ * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-03-10
  */

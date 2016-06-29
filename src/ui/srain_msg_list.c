@@ -1,7 +1,7 @@
 /**
  * @file srain_msg_list.c
  * @brief A auto-scrolling, dynamic loading listbox used to display messages
- * @author LastAvengers <lastavengers@outlook.com>
+ * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-05-19
  *

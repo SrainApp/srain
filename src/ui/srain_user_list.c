@@ -1,7 +1,7 @@
 /**
  * @file srain_user_list.c
  * @brief listbox used to display user list of channel
- * @author LastAvengers <lastavengers@outlook.com>
+ * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-04-03
  */

@@ -1,7 +1,7 @@
 /**
  * @file srain_msg.c
  * @brief GtkWidget subclass used to display message
- * @author LastAvengers <lastavengers@outlook.com>
+ * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-03-01
  */

@@ -1,7 +1,7 @@
 /**
  * @file tray_icon.c
  * @brief system tray's callback functions
- * @author LastAvengers <lastavengers@outlook.com>
+ * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-03-01
  *

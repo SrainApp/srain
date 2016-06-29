@@ -1,11 +1,11 @@
 /**
  * @file server_intf.c
  * @brief UI interface for server module
- * @author LastAvengers <lastavengers@outlook.com>
+ * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-04-20
  */
-#define __LOG_ON
+// #define __LOG_ON
 
 #include <string.h>
 #include <glib.h>

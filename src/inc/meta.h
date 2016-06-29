@@ -5,7 +5,7 @@
 #define META_VERSION        "0.03"
 #define META_NAME_VERSION   META_NAME " " META_VERSION
 #define META_DESC           "It does not look like an IRC client."
-#define META_AUTHOR_NAME    "LastAvengers"
+#define META_AUTHOR_NAME    "Shengyu Zhang"
 #define META_AUTHOR_MAIL    "lastavengers@outlook.com"
 #define META_WEBSITE        "https://github.com/LastAvenger/srain"
 

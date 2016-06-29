@@ -1,7 +1,7 @@
 /**
  * @file get_path.c
  * @brief Get application data files' path
- * @author LastAvengers <lastavengers@outlook.com>
+ * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-06-12
  */
