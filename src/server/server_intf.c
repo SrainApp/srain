@@ -221,7 +221,7 @@ void server_intf_ui_recv_msg(IRCServer *srv, const char *chan_name,
 }
 
 void server_intf_ui_user_list_add(IRCServer *srv, const char *chan_name,
-        const char *nick, IRCUserType type, int notify){
+        const char *nick, UserType type, int notify){
     void *chan;
 
     LOG_FR("server: %s, chan_name: %s, nick: %s, type: %d",

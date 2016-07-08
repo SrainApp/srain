@@ -55,7 +55,6 @@ static int get_list_box_length(GtkListBox *list_box){
 static void scrolled_window_on_edge_overshot(GtkScrolledWindow *swin,
         GtkPositionType pos, gpointer user_data){
     int i;
-    int len;
     SrainMsgList *list;
     GtkListBoxRow *row;
 
@@ -64,7 +63,6 @@ static void scrolled_window_on_edge_overshot(GtkScrolledWindow *swin,
     LOG_FR("overshot");
 
     list = user_data;
-    len = get_list_box_length(list->list_box);
 
     for (i = MAX_MSG_COUNT - 1;
             list->vis_row_num >= 0 && i >= 0;
@@ -113,8 +111,6 @@ static void scrolled_window_on_edge_reached(GtkScrolledWindow *swin,
  */
 static gboolean scroll_to_bottom(SrainMsgList *list){
     GtkAdjustment *adj;
-    double val;
-    double max_val;
 
     /* if this instance has been freed */
     if (!SRAIN_IS_MSG_LIST(list)) return FALSE;

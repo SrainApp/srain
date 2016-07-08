@@ -144,8 +144,8 @@ SrainEntryCompletion* srain_entry_completion_new(GtkEntry *entry){
 }
 
 /**
- * @brief srain_entry_completion_add_keyword
- *
+ * @brief Append a whitespace to the end of `keyword`,
+ *      add this new string to the completion list of `comp`.
  * @param comp
  * @param keyword
  * @param type If type = KEYWORD_TMP,
@@ -155,8 +155,6 @@ SrainEntryCompletion* srain_entry_completion_new(GtkEntry *entry){
  *
  * @return If 0, keyword added successfully.
  *
- * Append a whitespace to the end of `keyword`,
- * add this new string to the completion list of `comp`.
  */
 int srain_entry_completion_add_keyword(SrainEntryCompletion *comp,
         const char *keyword, SECKeywordType type){
@@ -202,16 +200,15 @@ int srain_entry_completion_add_keyword(SrainEntryCompletion *comp,
 }
 
 /**
- * @brief srain_entry_completion_rm_keyword
+ * @brief Remove a whitespace appended keyword from `comp`->list.
+ *      For keywords in `comp`->queue, they will be removed
+ *      automatically when reach the limit.
  *
  * @param comp
  * @param keyword
  *
  * @return If 0, keyword removed successfully.
  *
- * Remove a whitespace appended keyword from `comp`->list.
- * For keywords in `comp`->queue, they will be removed
- * automatically when reach the limit.
  */
 int srain_entry_completion_rm_keyword(SrainEntryCompletion *comp,
         const char *keyword){

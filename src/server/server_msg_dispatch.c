@@ -87,7 +87,7 @@ gboolean server_msg_dispatch(IRCMsg *imsg){
             server_intf_ui_add_chan(srv, imsg->param[0]);
         }
         server_intf_ui_user_list_add(srv, imsg->param[0], imsg->nick,
-                IRC_USER_PERSON, 1);
+                USER_PERSON, 1);
     }
     else if (strcmp(imsg->command, "PART") == 0){
         if (imsg->nparam != 1) goto bad;
@@ -136,7 +136,7 @@ gboolean server_msg_dispatch(IRCMsg *imsg){
             while (gtk_events_pending()) gtk_main_iteration();
             server_intf_ui_user_list_add(srv, imsg->param[2],
                     nickptr[0] == '@' ? nickptr + 1 : nickptr,
-                    nickptr[0] == '@' ? IRC_USER_OP : IRC_USER_PERSON,
+                    nickptr[0] == '@' ? USER_OP : USER_PERSON,
                     0);
             nickptr = strtok(NULL, " ");
         }

@@ -1,6 +1,6 @@
 /**
  * @file srain_user_list.c
- * @brief listbox used to display user list of channel
+ * @brief Listbox used to display user list of channel
  * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-04-03
@@ -10,10 +10,11 @@
 
 #include <gtk/gtk.h>
 #include <strings.h>
+
 #include "ui_common.h"
-#include "irc_magic.h"
 #include "srain_user_list.h"
 #include "theme.h"
+
 #include "log.h"
 
 struct _SrainUserList {
@@ -26,25 +27,26 @@ struct _SrainUserListClass {
 
 G_DEFINE_TYPE(SrainUserList, srain_user_list, GTK_TYPE_LIST_BOX);
 
-static gint list_sort_func(GtkListBoxRow *row1, GtkListBoxRow *row2, gpointer user_data){
+static gint list_sort_func(GtkListBoxRow *row1, GtkListBoxRow *row2,
+        gpointer user_data){
     gpointer is1_op;
     gpointer is2_op;
     const char *name1;
     const char *name2;
-    GtkButton *button1;
-    GtkButton *button2;
+    GtkLabel *label1;
+    GtkLabel *label2;
 
-    button1 = GTK_BUTTON(gtk_bin_get_child(GTK_BIN(row1)));
-    button2 = GTK_BUTTON(gtk_bin_get_child(GTK_BIN(row2)));
+    label1 = GTK_LABEL(gtk_bin_get_child(GTK_BIN(row1)));
+    label2 = GTK_LABEL(gtk_bin_get_child(GTK_BIN(row2)));
 
-    is1_op = g_object_get_data(G_OBJECT(button1), "is-op");
-    is2_op = g_object_get_data(G_OBJECT(button2), "is-op");
+    is1_op = g_object_get_data(G_OBJECT(label1), "is-op");
+    is2_op = g_object_get_data(G_OBJECT(label2), "is-op");
 
     if (is1_op && !is2_op) return -1;
     if (!is1_op && is2_op) return 1;
 
-    name1 = gtk_button_get_label(button1);
-    name2 = gtk_button_get_label(button2);
+    name1 = gtk_label_get_text(label1);
+    name2 = gtk_label_get_text(label2);
 
     return strcasecmp(name1, name2);
 }
@@ -62,7 +64,7 @@ SrainUserList* srain_user_list_new(void){
 }
 
 /**
- * @brief srain_user_list_add add a nick into SrainUserList
+ * @brief Add a nick into SrainUserList
  *
  * @param list
  * @param nick
@@ -70,9 +72,10 @@ SrainUserList* srain_user_list_new(void){
  *
  * @return 0 if successed, -1 if failed
  */
-int srain_user_list_add(SrainUserList *list, const char *nick, IRCUserType type){
-    GtkImage *image;
-    GtkButton *button;
+int srain_user_list_add(SrainUserList *list, const char *nick, UserType type){
+    GtkLabel *label;
+    // GtkImage *image;
+    // GtkButton *button;
     GtkListBoxRow *row;
 
     row = gtk_list_box_get_row_by_name(GTK_LIST_BOX(list), nick);
@@ -81,37 +84,28 @@ int srain_user_list_add(SrainUserList *list, const char *nick, IRCUserType type)
         return -1;
     }
 
+    label = GTK_LABEL(gtk_label_new(nick));
+    gtk_widget_set_name(GTK_WIDGET(label), nick);
+    gtk_label_set_xalign(label, 0.05);
+
     /* NOTE: use a gobject associations table item to mark
      * whether it is a OP, uesd by func list_sort_func()
      */
-    if (type == IRC_USER_OP){
-        button = GTK_BUTTON(gtk_button_new());
-        image = GTK_IMAGE(
-                gtk_image_new_from_icon_name("srain-op", GTK_ICON_SIZE_BUTTON));
-        g_object_set_data(G_OBJECT(button), "is-op", button);
+    if (type == USER_OP){
+        g_object_set_data(G_OBJECT(label), "is-op", label);
     }
-    else if (type == IRC_USER_PERSON){
-        button = GTK_BUTTON(gtk_button_new());
-        image = GTK_IMAGE(
-                gtk_image_new_from_icon_name("srain-person", GTK_ICON_SIZE_BUTTON));
+    else if (type == USER_PERSON){
     } else {
         return -1;
     }
 
-    gtk_button_set_label(button, nick);
-    gtk_button_set_image(button, GTK_WIDGET(image));
-
-    gtk_button_set_relief(button, GTK_RELIEF_NONE);
-    gtk_widget_set_name(GTK_WIDGET(button), nick);
-    gtk_widget_set_halign(GTK_WIDGET(button), GTK_ALIGN_START);
-
-    gtk_list_box_add_unfocusable_row(GTK_LIST_BOX(list), GTK_WIDGET(button));
+    gtk_list_box_add_unfocusable_row(GTK_LIST_BOX(list), GTK_WIDGET(label));
 
     return 0;
 }
 
 /**
- * @brief srain_user_list_rm remove a nick from SrainUserList
+ * @brief Remove a nick from SrainUserList
  *
  * @param list
  * @param nick
@@ -133,7 +127,7 @@ int srain_user_list_rm(SrainUserList *list, const char *nick){
 }
 
 /**
- * @brief srain_user_list_rename rename a nick in SrainUserList
+ * @brief Rename a nick in SrainUserList
  *
  * @param list
  * @param old_nick
@@ -143,7 +137,7 @@ int srain_user_list_rm(SrainUserList *list, const char *nick){
  */
 int srain_user_list_rename(SrainUserList *list,
         const char *old_nick, const char *new_nick){
-    GtkButton *button;
+    GtkLabel *label;
     GtkListBoxRow *row;
 
     // TODO: person -> op
@@ -153,9 +147,9 @@ int srain_user_list_rename(SrainUserList *list,
         return -1;
     }
 
-    button = GTK_BUTTON(gtk_bin_get_child(GTK_BIN(row)));
-    gtk_button_set_label(button, new_nick);
-    gtk_widget_set_name(GTK_WIDGET(button), new_nick);
+    label = GTK_LABEL(gtk_bin_get_child(GTK_BIN(row)));
+    gtk_label_set_text(label, new_nick);
+    gtk_widget_set_name(GTK_WIDGET(label), new_nick);
 
     return 0;
 }

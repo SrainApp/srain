@@ -11,7 +11,7 @@
 #include <gtk/gtk.h>
 
 #include "theme.h"
-#include "ui_test.c"
+#include "ui_test.h"
 #include "srain_app.h"
 #include "srain_window.h"
 #include "srain_chan.h"
@@ -38,10 +38,10 @@ static void srain_app_init(SrainApp *self){
     if (srain_app) return;
 
 #ifdef UI_TEST
-    self->server_join = (ServerJoinFunc)ui_test_server_name_join;
-    self->server_part = (ServerPartFunc)ui_test_server_name_part;
-    self->server_send = (ServerSendFunc)ui_test_server_name_send;
-    self->server_cmd = (ServerCmdFunc)ui_test_server_name_cmd;
+    self->server_join = (ServerJoinFunc)ui_test_server_join;
+    self->server_part = (ServerPartFunc)ui_test_server_part;
+    self->server_send = (ServerSendFunc)ui_test_server_send;
+    self->server_cmd = (ServerCmdFunc)ui_test_server_cmd;
 #else
     self->server_join = (ServerJoinFunc)server_join;
     self->server_part = (ServerPartFunc)server_part;

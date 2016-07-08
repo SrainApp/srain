@@ -9,9 +9,9 @@
 #include <gtk/gtk.h>
 #include <string.h>
 
+#include "ui.h"
 #include "srain_app.h"
 #include "srain_window.h"
-#include "srain_chan.h"
 
 #include "i18n.h"
 #include "log.h"
@@ -69,7 +69,7 @@ ui_sys_msg(const char *server_name, const char *chan_name,
     chan = srain_window_get_chan_by_name(srain_win, server_name, chan_name);
     if (chan == NULL) chan = srain_window_get_cur_chan(srain_win);
 
-    if (!list) return;
+    list = srain_chan_get_msg_list(chan);
     srain_msg_list_sys_msg_add(list, msg, type);
 
     if (type == SYS_MSG_ACTION){
@@ -90,7 +90,6 @@ ui_send_msg(const char *server_name, const char *chan_name, const char *msg){
 
     chan = srain_window_get_chan_by_name(srain_win, server_name, chan_name);
     list = srain_chan_get_msg_list(chan);
-    if (!list) return;
 
     srain_msg_list_send_msg_add(list, msg);
     srain_window_stack_sidebar_update(srain_win, chan, _("You"), msg);
@@ -138,7 +137,7 @@ ui_recv_msg(const char *server_name, const char *chan_name,
  */
 int
 ui_user_list_add(const char *server_name, const char *chan_name,
-        const char *nick, IRCUserType type){
+        const char *nick, UserType type){
     int res;
     SrainChan *chan;
     SrainUserList *list;

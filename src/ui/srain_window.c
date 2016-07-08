@@ -179,10 +179,11 @@ SrainChan* srain_window_add_chan(SrainWindow *win,
         const char *server_name, const char *chan_name){
     SrainChan *chan;
 
-    // if (srain_window_get_chan_by_name(win, chan_name)){
-        // ERR_FR("chan %s alread exist", chan_name);
-        // return NULL;
-    // }
+    if (srain_window_get_chan_by_name(win, server_name, chan_name)){
+        ERR_FR("server_name: %s, chan_name: %s, already exist",
+                server_name, chan_name);
+        return NULL;
+    }
 
     chan = srain_chan_new(server_name, chan_name);
 
@@ -225,8 +226,8 @@ SrainChan* srain_window_get_chan_by_name(SrainWindow *win,
         const char *server_name, const char *chan_name){
     SrainChan *chan = NULL;
 
-    GString *name;
-    g_string_sprintf(name, "%s %s", server_name, chan_name);
+    GString *name = g_string_new("");
+    g_string_printf(name, "%s %s", server_name, chan_name);
     chan = SRAIN_CHAN(gtk_stack_get_child_by_name(win->stack, name->str));
     g_string_free(name, TRUE);
 

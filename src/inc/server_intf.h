@@ -11,7 +11,7 @@ void server_intf_ui_sys_msgf(IRCServer *srv, const char *chan_name, SysMsgType t
 void server_intf_ui_sys_msgf_bcst(IRCServer *srv, SysMsgType type, const char *fmt, ...);
 void server_intf_ui_send_msg(IRCServer *srv, const char *chan_name, const char *msg);
 void server_intf_ui_recv_msg(IRCServer *srv, const char *chan_name, const char *nick, const char *id, const char *msg);
-void server_intf_ui_user_list_add(IRCServer *srv, const char *chan_name, const char *nick, IRCUserType type, int notify);
+void server_intf_ui_user_list_add(IRCServer *srv, const char *chan_name, const char *nick, UserType type, int notify);
 void server_intf_ui_user_list_rm(IRCServer *srv, const char *chan_name, const char *nick, const char *reason);
 void server_intf_ui_user_list_rm_bcst(IRCServer *srv, const char *nick, const char *reason);
 void server_intf_ui_user_list_rename(IRCServer *srv, const char *chan_name, const char *old_nick, const char *new_nick);
