@@ -20,7 +20,8 @@ GType srain_user_list_get_type(void);
 SrainUserList *srain_user_list_new(void);
 int srain_user_list_add(SrainUserList *list, const char *nick, UserType type);
 int srain_user_list_rm(SrainUserList *list, const char *nick);
-int srain_user_list_rename(SrainUserList *list, const char *old_nick, const char *new_nick);
+int srain_user_list_rename(SrainUserList *list, const char *old_nick,
+                           const char *new_nick, UserType type);
 void srain_user_list_clear(SrainUserList *list);
 
 #endif /* __SRAIN_USER_LIST_H */

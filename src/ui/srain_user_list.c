@@ -95,6 +95,7 @@ int srain_user_list_add(SrainUserList *list, const char *nick, UserType type){
         g_object_set_data(G_OBJECT(label), "is-op", label);
     }
     else if (type == USER_PERSON){
+
     } else {
         return -1;
     }
@@ -135,12 +136,17 @@ int srain_user_list_rm(SrainUserList *list, const char *nick){
  *
  * @return 0 if successed, -1 if failed
  */
-int srain_user_list_rename(SrainUserList *list,
-        const char *old_nick, const char *new_nick){
+int srain_user_list_rename(SrainUserList *list, const char *old_nick,
+                           const char *new_nick, UserType type){
     GtkLabel *label;
     GtkListBoxRow *row;
 
     // TODO: person -> op
+    row = gtk_list_box_get_row_by_name(GTK_LIST_BOX(list), new_nick);
+    if (row){
+        LOG_FR("GtkListBoxRow %s already exist", new_nick);
+        return -1;
+    }
     row = gtk_list_box_get_row_by_name(GTK_LIST_BOX(list), old_nick);
     if (!row){
         LOG_FR("GtkListBoxRow %s no found", old_nick);
