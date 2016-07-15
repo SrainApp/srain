@@ -8,17 +8,14 @@
 
 void ui_test_server_join(const char *server_name, const char *chan_name){
     LOG_FR("server_name: %s, chan_name: %s", server_name, chan_name);
-    ui_add_chan(server_name, chan_name);
 }
 
 void ui_test_server_part(const char *server_name, const char *chan_name){
     LOG_FR("server_name: %s, chan_name: %s", server_name, chan_name);
-    ui_rm_chan("server_name", "chan_name");
 }
 
 void ui_test_server_send(const char *server_name, const char *chan_name, const char *msg){
     LOG_FR("server_name: %s, chan_name: %s, msg: '%s'", server_name, chan_name, msg);
-    ui_send_msg(server_name, chan_name, msg);
 }
 
 void ui_test_server_cmd(const char *server_name, const char *chan_name, const char *cmd){
@@ -40,6 +37,32 @@ void ui_test(){
     // irc.freenode.net #srain
     // chat.freenode.net #srain
     // irc.freenode.net #srain2
+
+    assert(ui_add_chan("irc.freenode.net", "#summer-time-record") == 0);
+    ui_sys_msg("no.exist.net", "#summer-time-record", "follback to cur chan", SYS_MSG_NORMAL);
+    ui_send_msg("no.exist.net", "#summer-time-record", "msg");
+    ui_recv_msg("no.exist.net", "#summer-time-record", "nick", "id", "msg");
+
+    ui_sys_msg("irc.freenode.net", "#summer-time-record",
+            "マリー：痛いくらいに现実は 足早に駆け抜けた", SYS_MSG_NORMAL);
+    ui_send_msg("irc.freenode.net", "#summer-time-record",
+            "マリー ナイス！");
+    ui_recv_msg("irc.freenode.net", "#summer-time-record",
+            "マリー", "", "えへへっ");
+    ui_sys_msg("irc.freenode.net", "#summer-time-record",
+            "カノ：选んだ今日は平凡で 崩れそうになる日々さ", SYS_MSG_ACTION);
+    ui_send_msg("irc.freenode.net", "#summer-time-record",
+            "なんかイラッとするっすね");
+    ui_recv_msg("irc.freenode.net", "#summer-time-record",
+            "キド", "", "奇遇だな?俺もそう思った");
+    ui_recv_msg("irc.freenode.net", "#summer-time-record",
+            "カノ", "", "ヒドくないっ！");
+    ui_sys_msg("irc.freenode.net", "#summer-time-record",
+            "ヒビヤ：昨日の今日も延长戦 大人だって 臆病だ", SYS_MSG_ERROR);
+    ui_recv_msg("irc.freenode.net", "#summer-time-record",
+            "モモ", "", "ヒビヤでうだうめい");
+    ui_recv_msg("irc.freenode.net", "#summer-time-record",
+            "ヒビヤ", "", "バスッ!");
 
     // Test ui_user_list_add
     assert(ui_user_list_add("chat.freenode.net", "#non-exist",
