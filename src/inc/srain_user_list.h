@@ -5,9 +5,12 @@
 #include "irc_magic.h"
 
 typedef enum{
-    USER_PERSON,
-    USER_OP,
-    // ..
+    USER_OWNER,     // ~ mode +q
+    USER_ADMIN,     // & mode +a
+    USER_FULL_OP,   // @ mode +o
+    USER_HALF_OP,   // % mode +h
+    USER_VOICED,    // + mode +v
+    USER_CHIGUA,    // No prefix, 低头吃瓜
 } UserType;
 
 #define SRAIN_TYPE_USER_LIST (srain_user_list_get_type())

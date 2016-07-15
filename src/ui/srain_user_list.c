@@ -29,8 +29,8 @@ G_DEFINE_TYPE(SrainUserList, srain_user_list, GTK_TYPE_LIST_BOX);
 
 static gint list_sort_func(GtkListBoxRow *row1, GtkListBoxRow *row2,
         gpointer user_data){
-    gpointer is1_op;
-    gpointer is2_op;
+    UserType type1;
+    UserType type2;
     const char *name1;
     const char *name2;
     GtkLabel *label1;
@@ -39,11 +39,10 @@ static gint list_sort_func(GtkListBoxRow *row1, GtkListBoxRow *row2,
     label1 = GTK_LABEL(gtk_bin_get_child(GTK_BIN(row1)));
     label2 = GTK_LABEL(gtk_bin_get_child(GTK_BIN(row2)));
 
-    is1_op = g_object_get_data(G_OBJECT(label1), "is-op");
-    is2_op = g_object_get_data(G_OBJECT(label2), "is-op");
+    type1 = (UserType)g_object_get_data(G_OBJECT(label1), "user-type");
+    type2 = (UserType)g_object_get_data(G_OBJECT(label2), "user-type");
 
-    if (is1_op && !is2_op) return -1;
-    if (!is1_op && is2_op) return 1;
+    if (type1 != type2) return type1 > type2;
 
     name1 = gtk_label_get_text(label1);
     name2 = gtk_label_get_text(label2);
@@ -88,17 +87,7 @@ int srain_user_list_add(SrainUserList *list, const char *nick, UserType type){
     gtk_widget_set_name(GTK_WIDGET(label), nick);
     gtk_label_set_xalign(label, 0.05);
 
-    /* NOTE: use a gobject associations table item to mark
-     * whether it is a OP, uesd by func list_sort_func()
-     */
-    if (type == USER_OP){
-        g_object_set_data(G_OBJECT(label), "is-op", label);
-    }
-    else if (type == USER_PERSON){
-
-    } else {
-        return -1;
-    }
+    g_object_set_data(G_OBJECT(label), "user-type", (void *)type);
 
     gtk_list_box_add_unfocusable_row(GTK_LIST_BOX(list), GTK_WIDGET(label));
 
@@ -141,9 +130,8 @@ int srain_user_list_rename(SrainUserList *list, const char *old_nick,
     GtkLabel *label;
     GtkListBoxRow *row;
 
-    // TODO: person -> op
     row = gtk_list_box_get_row_by_name(GTK_LIST_BOX(list), new_nick);
-    if (row){
+    if (row && strcasecmp(old_nick, new_nick) != 0){
         LOG_FR("GtkListBoxRow %s already exist", new_nick);
         return -1;
     }
@@ -154,6 +142,7 @@ int srain_user_list_rename(SrainUserList *list, const char *old_nick,
     }
 
     label = GTK_LABEL(gtk_bin_get_child(GTK_BIN(row)));
+    g_object_set_data(G_OBJECT(label), "user-type", (void *)type);
     gtk_label_set_text(label, new_nick);
     gtk_widget_set_name(GTK_WIDGET(label), new_nick);
 
