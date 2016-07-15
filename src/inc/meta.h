@@ -1,8 +1,12 @@
 #ifndef __META_H
 #define __META_H
 
+#ifndef META_BUILD
+    #define META_BUILD      ""
+#endif
+
 #define META_NAME           "Srain"
-#define META_VERSION        "0.03"
+#define META_VERSION        "0.03" META_BUILD
 #define META_NAME_VERSION   META_NAME " " META_VERSION
 #define META_DESC           "It does not look like an IRC client."
 #define META_AUTHOR_NAME    "Shengyu Zhang"
