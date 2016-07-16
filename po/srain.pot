@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# This file is distributed under the same license as the Srain package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-30 19:03+0800\n"
+"Project-Id-Version: Srain 0.03\n"
+"Report-Msgid-Bugs-To: lastavengesr@outlook.com\n"
+"POT-Creation-Date: 2016-07-16 13:34+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,144 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/srain.c:47
-#, c-format
-msgid "Hello srain!\n"
+#: data/ui/stack_sidebar_item.glade:34
+msgid "#archlinux-cn"
+msgstr ""
+
+#: data/ui/chan.glade:35
+msgid "#channel"
+msgstr ""
+
+#: src/ui/ui.c:78
+msgid "ACTION"
+msgstr ""
+
+#: data/ui/window.glade:177
+msgid "Address:"
+msgstr ""
+
+#: data/ui/window.glade:306
+msgid "Channel:"
+msgstr ""
+
+#: data/ui/msg_list.glade:92
+msgid "Chat"
+msgstr ""
+
+#: data/ui/window.glade:272
+msgid "Connect"
+msgstr ""
+
+#: data/ui/msg_list.glade:59
+msgid "Current channel"
+msgstr ""
+
+#: data/ui/msg_list.glade:49
+msgid "Forward to..."
+msgstr ""
+
+#: data/ui/recv_msg.glade:134 data/ui/send_msg.glade:56
+msgid "HH:MM"
+msgstr ""
+
+#: data/ui/msg_list.glade:100
+msgid "Invite to..."
+msgstr ""
+
+#: data/ui/window.glade:356
+msgid "Join"
+msgstr ""
+
+#: data/ui/msg_list.glade:84
+msgid "Kick"
+msgstr ""
+
+#: src/i18n.c:18
+msgid "Language: English"
+msgstr ""
+
+#: data/ui/image.glade:11
+msgid "Load image"
+msgstr ""
+
+#: data/ui/window.glade:246
+msgid "Nickname:"
+msgstr ""
+
+#: data/ui/window.glade:200 data/ui/window.glade:327
+msgid "Password:"
+msgstr ""
+
+#: data/ui/window.glade:224
+msgid "Port:"
+msgstr ""
+
+#: data/ui/window.glade:383
+msgid "Quit"
+msgstr ""
+
+#: data/ui/msg_list.glade:41
+msgid "Quote"
+msgstr ""
+
+#: data/ui/msg_list.glade:33
+msgid "Reply"
+msgstr ""
+
+#: data/ui/window.glade:373
+msgid "Srain"
+msgstr ""
+
+#: data/ui/recv_msg.glade:109
+msgid "This message can not be showed correctly."
+msgstr ""
+
+#: data/ui/msg_list.glade:76
+msgid "Whois"
+msgstr ""
+
+#: src/ui/ui.c:98
+msgid "You"
+msgstr ""
+
+#: src/ui/ui_common.c:94
+msgid "cancel"
+msgstr ""
+
+#: data/ui/stack_sidebar_item.glade:48
+msgid "irc.freenode.net"
+msgstr ""
+
+#: data/ui/chan.glade:288
+msgid "leave"
+msgstr ""
+
+#: data/ui/recv_msg.glade:55
+msgid "nickname"
+msgstr ""
+
+#: src/ui/ui_common.c:95
+msgid "open"
+msgstr ""
+
+#: data/ui/send_msg.glade:31
+msgid ""
+"sent message.\n"
+"<a href=\"http://www.google.com\">Link Test</a>"
+msgstr ""
+
+#: data/ui/chan.glade:258
+msgid "show topic"
+msgstr ""
+
+#: data/ui/chan.glade:273
+msgid "show user list"
+msgstr ""
+
+#: data/ui/sys_msg.glade:20
+msgid "system message."
+msgstr ""
+
+#: data/ui/recv_msg.glade:74
+msgid "via relaybot"
 msgstr ""

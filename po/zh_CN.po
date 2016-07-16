@@ -1,15 +1,15 @@
-# Chinese translations for PACKAGE package
-# PACKAGE 软件包的简体中文翻译.
-# Copyright (C) 2016 THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# Chinese translations for Srain package
+# Srain 软件包的简体中文翻译.
+# Copyright (C) 2016 THE Srain'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the Srain package.
 # Automatically generated, 2016.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-30 19:03+0800\n"
-"PO-Revision-Date: 2016-01-30 19:03+0800\n"
+"Project-Id-Version: Srain 0.03\n"
+"Report-Msgid-Bugs-To: lastavengesr@outlook.com\n"
+"POT-Creation-Date: 2016-07-16 13:26+0800\n"
+"PO-Revision-Date: 2016-07-16 13:06+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -17,7 +17,144 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/srain.c:47
-#, c-format
-msgid "Hello srain!\n"
-msgstr "你好 srain！\n"
+#: data/ui/stack_sidebar_item.glade:34
+msgid "#archlinux-cn"
+msgstr ""
+
+#: data/ui/chan.glade:35
+msgid "#channel"
+msgstr ""
+
+#: src/ui/ui.c:78
+msgid "ACTION"
+msgstr ""
+
+#: data/ui/window.glade:177
+msgid "Address:"
+msgstr "地址："
+
+#: data/ui/window.glade:306
+msgid "Channel:"
+msgstr "频道："
+
+#: data/ui/msg_list.glade:92
+msgid "Chat"
+msgstr "聊天"
+
+#: data/ui/window.glade:272
+msgid "Connect"
+msgstr "连接"
+
+#: data/ui/msg_list.glade:59
+msgid "Current channel"
+msgstr "当前频道"
+
+#: data/ui/msg_list.glade:49
+msgid "Forward to..."
+msgstr "转发到……"
+
+#: data/ui/recv_msg.glade:134 data/ui/send_msg.glade:56
+msgid "HH:MM"
+msgstr ""
+
+#: data/ui/msg_list.glade:100
+msgid "Invite to..."
+msgstr "邀请加入……"
+
+#: data/ui/window.glade:356
+msgid "Join"
+msgstr "加入"
+
+#: data/ui/msg_list.glade:84
+msgid "Kick"
+msgstr "踢出"
+
+#: src/i18n.c:18
+msgid "Language: English"
+msgstr "语言：中文"
+
+#: data/ui/image.glade:11
+msgid "Load image"
+msgstr ""
+
+#: data/ui/window.glade:246
+msgid "Nickname:"
+msgstr "昵称："
+
+#: data/ui/window.glade:200 data/ui/window.glade:327
+msgid "Password:"
+msgstr "密码："
+
+#: data/ui/window.glade:224
+msgid "Port:"
+msgstr "端口："
+
+#: data/ui/window.glade:383
+msgid "Quit"
+msgstr "退出"
+
+#: data/ui/msg_list.glade:41
+msgid "Quote"
+msgstr "引用"
+
+#: data/ui/msg_list.glade:33
+msgid "Reply"
+msgstr "回复"
+
+#: data/ui/window.glade:373
+msgid "Srain"
+msgstr ""
+
+#: data/ui/recv_msg.glade:109
+msgid "This message can not be showed correctly."
+msgstr ""
+
+#: data/ui/msg_list.glade:76
+msgid "Whois"
+msgstr "个人信息"
+
+#: src/ui/ui.c:98
+msgid "You"
+msgstr ""
+
+#: src/ui/ui_common.c:94
+msgid "cancel"
+msgstr "取消"
+
+#: data/ui/stack_sidebar_item.glade:48
+msgid "irc.freenode.net"
+msgstr ""
+
+#: data/ui/chan.glade:288
+msgid "leave"
+msgstr "离开"
+
+#: data/ui/recv_msg.glade:55
+msgid "nickname"
+msgstr ""
+
+#: src/ui/ui_common.c:95
+msgid "open"
+msgstr "打开"
+
+#: data/ui/send_msg.glade:31
+msgid ""
+"sent message.\n"
+"<a href=\"http://www.google.com\">Link Test</a>"
+msgstr ""
+
+#: data/ui/chan.glade:258
+msgid "show topic"
+msgstr "显示主题"
+
+#: data/ui/chan.glade:273
+msgid "show user list"
+msgstr "显示用户列表"
+
+#: data/ui/sys_msg.glade:20
+msgid "system message."
+msgstr ""
+
+#: data/ui/recv_msg.glade:74
+msgid "via relaybot"
+msgstr ""
