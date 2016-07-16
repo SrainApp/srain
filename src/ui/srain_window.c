@@ -23,6 +23,7 @@
 
 #include "meta.h"
 #include "log.h"
+#include "i18n.h"
 
 typedef struct {
     // join_popover
@@ -85,7 +86,7 @@ static void about_button_on_click(gpointer user_data){
     GtkWidget *window = user_data;
     const gchar *authors[] = { META_AUTHOR_NAME " <" META_AUTHOR_MAIL ">", NULL };
     const gchar **documentors = authors;
-    const gchar *version = g_strdup_printf("%s\nRunning against GTK+ %d.%d.%d",
+    const gchar *version = g_strdup_printf(_("%s\nRunning against GTK+ %d.%d.%d"),
             META_VERSION,
             gtk_get_major_version(),
             gtk_get_minor_version(),
@@ -101,7 +102,7 @@ static void about_button_on_click(gpointer user_data){
             "authors", authors,
             "documenters", documentors,
             "logo-icon-name", "gtk3-demo",
-            "title", "About Srain",
+            "title", _("About Srain"),
             NULL);
 }
 

@@ -24,6 +24,7 @@
 #include "markup.h"
 #include "plugin.h"
 #include "log.h"
+#include "i18n.h"
 
 #include "cmd_list.h"
 
@@ -109,7 +110,7 @@ static void upload_image_idle(GtkEntry *entry){
         gtk_entry_set_text(entry, url);
         free(url);
     } else {
-        gtk_entry_set_text(entry, "upload image failed");
+        gtk_entry_set_text(entry, _("Failed to upload image"));
     }
 
     gtk_widget_set_sensitive(GTK_WIDGET(entry), TRUE);

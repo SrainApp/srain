@@ -89,10 +89,10 @@ char* show_open_filechosser(GtkWindow *parent){
     GtkFileChooser *chooser;
 
     dialog = GTK_FILE_CHOOSER_DIALOG(
-            gtk_file_chooser_dialog_new("Open File",
+            gtk_file_chooser_dialog_new(_("Open File"),
                 parent, GTK_FILE_CHOOSER_ACTION_OPEN,
-                _("cancel"), GTK_RESPONSE_CANCEL,
-                _("open"), GTK_RESPONSE_ACCEPT,
+                _("Cancel"), GTK_RESPONSE_CANCEL,
+                _("Open"), GTK_RESPONSE_ACCEPT,
                 NULL));
     chooser = GTK_FILE_CHOOSER(dialog);
     preview = GTK_IMAGE(gtk_image_new());
