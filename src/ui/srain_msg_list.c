@@ -32,6 +32,19 @@ struct _SrainMsgList {
     int vis_row_num;
     GtkListBox *list_box;
     GtkWidget *last_msg;
+
+    // msg_menu
+    GtkMenu *msg_menu;
+    GtkMenuItem *reply_menu_item;
+    GtkMenuItem *quote_menu_item;
+    GtkMenuItem *fwd_menu_item;
+
+    // nick_menu
+    GtkMenu *nick_menu;
+    GtkMenuItem *whois_menu_item;
+    GtkMenuItem *kick_menu_item;
+    GtkMenuItem *chat_menu_item;
+    GtkMenuItem *invite_menu_item;
 };
 
 struct _SrainMsgListClass {
@@ -39,6 +52,19 @@ struct _SrainMsgListClass {
 };
 
 G_DEFINE_TYPE(SrainMsgList, srain_msg_list, GTK_TYPE_SCROLLED_WINDOW);
+
+static gboolean menu_on_popup(GtkWidget *widget,
+        GdkEventButton *event, gpointer *user_data){
+    GtkMenu *menu;
+
+    menu = GTK_MENU(user_data);
+    if (event->button == 3){
+        gtk_menu_popup(menu, NULL, NULL, NULL, NULL,
+                event->button, event->time);
+        return TRUE;
+    }
+    return FALSE;
+}
 
 static int get_list_box_length(GtkListBox *list_box){
     if (GTK_IS_LIST_BOX(list_box)){
@@ -204,6 +230,8 @@ static void srain_msg_list_init(SrainMsgList *self){
             G_CALLBACK(scrolled_window_on_edge_overshot), self);
     g_signal_connect(self, "edge-reached",
             G_CALLBACK(scrolled_window_on_edge_reached), self);
+    g_signal_connect(self->list_box, "button_press_event",
+            G_CALLBACK(menu_on_popup), self->msg_menu);
 }
 
 static void srain_msg_list_class_init(SrainMsgListClass *class){
@@ -211,6 +239,19 @@ static void srain_msg_list_class_init(SrainMsgListClass *class){
             "/org/gtk/srain/msg_list.glade");
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainMsgList, list_box);
+
+    // msg_menu
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainMsgList, msg_menu);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainMsgList, reply_menu_item);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainMsgList, quote_menu_item);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainMsgList, fwd_menu_item);
+
+    // nick_menu
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainMsgList, nick_menu);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainMsgList, whois_menu_item);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainMsgList, kick_menu_item);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainMsgList, chat_menu_item);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainMsgList, invite_menu_item);
 }
 
 SrainMsgList* srain_msg_list_new(void){
@@ -246,6 +287,9 @@ void _srain_msg_list_recv_msg_add(SrainMsgList *list, const char *nick,
 
     smsg = srain_recv_msg_new(nick, id, msg);
     gtk_list_box_add_unfocusable_row(list->list_box, GTK_WIDGET(smsg));
+
+    g_signal_connect(smsg->nick_button, "button_press_event",
+            G_CALLBACK(menu_on_popup), list->nick_menu);
 
     list->last_msg = GTK_WIDGET(smsg);
 

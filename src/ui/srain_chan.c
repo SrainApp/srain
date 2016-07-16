@@ -37,8 +37,10 @@ struct _SrainChan {
     GtkLabel* name_label;
     GtkRevealer *topic_revealer;
     GtkLabel *topic_label;
+    GtkButton *option_button;
 
     /* option box */
+    GtkPopover *option_popover;
     GtkBox *option_box;
     GtkToggleButton *show_topic_togglebutton;
     GtkToggleButton *show_user_list_togglebutton;
@@ -64,6 +66,14 @@ struct _SrainChanClass {
 };
 
 G_DEFINE_TYPE(SrainChan, srain_chan, GTK_TYPE_BOX);
+
+static void popover_button_on_click(gpointer user_data){
+    GtkPopover *popover;
+
+    popover = user_data;
+    gtk_widget_set_visible(GTK_WIDGET(popover),
+            !gtk_widget_get_visible(GTK_WIDGET(popover)));
+}
 
 static gboolean entry_on_key_press(gpointer user_data, GdkEventKey *event){
     SrainChan *chan;
@@ -209,20 +219,6 @@ ret:
     return;
 }
 
-// TODO: NOT work now
-static gboolean msg_list_popup(GtkWidget *widget,
-        GdkEventButton *event, gpointer *user_data){
-    GtkMenu *menu;
-
-    menu = GTK_MENU(user_data);
-    if (event->button == 3){
-        gtk_menu_popup(menu, NULL, NULL, NULL, NULL,
-                event->button, event->time);
-        return TRUE;
-    }
-    return FALSE;
-}
-
 static void srain_chan_init(SrainChan *self){
     gtk_widget_init_template(GTK_WIDGET(self));
 
@@ -255,6 +251,16 @@ static void srain_chan_init(SrainChan *self){
     g_signal_connect(self->show_user_list_togglebutton, "clicked",
             G_CALLBACK(option_togglebutton_on_click), self->user_list_revealer);
 
+    // Click to show/hide GtkPopover
+    g_signal_connect_swapped(self->option_button, "clicked",
+            G_CALLBACK(popover_button_on_click), self->option_popover);
+    g_signal_connect_swapped(self->show_topic_togglebutton, "clicked",
+            G_CALLBACK(popover_button_on_click), self->option_popover);
+    g_signal_connect_swapped(self->show_user_list_togglebutton, "clicked",
+            G_CALLBACK(popover_button_on_click), self->option_popover);
+    g_signal_connect_swapped(self->leave_button, "clicked",
+            G_CALLBACK(popover_button_on_click), self->option_popover);
+
     g_signal_connect(self->upload_image_button, "clicked",
             G_CALLBACK(upload_image_button_on_click), self->input_entry);
 
@@ -285,6 +291,7 @@ static void srain_chan_class_init(SrainChanClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, name_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, topic_revealer);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, topic_label);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, option_button);
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, msg_list_box);
 
@@ -293,6 +300,7 @@ static void srain_chan_class_init(SrainChanClass *class){
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, input_entry);
 
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, option_popover);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, option_box);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, show_topic_togglebutton);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, show_user_list_togglebutton);

@@ -155,6 +155,7 @@ void srain_user_list_clear(SrainUserList *list){
 
     len = g_list_length(
             gtk_container_get_children(GTK_CONTAINER(list)));
+    // TODO: len is always 0
     LOG_FR("len: %d", len);
 
     while (len > 0){

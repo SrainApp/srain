@@ -12,6 +12,12 @@
     <property name="can_focus">False</property>
     <property name="icon_name">srain-chan</property>
   </object>
+  <object class="GtkEntryCompletion" id="conn_addr_entrycompletion"/>
+  <object class="GtkImage" id="server_image">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="icon_name">srain-server</property>
+  </object>
   <template class="SrainWindow" parent="GtkApplicationWindow">
     <property name="can_focus">False</property>
     <child>
@@ -179,6 +185,7 @@
               <object class="GtkEntry" id="conn_addr_entry">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="completion">conn_addr_entrycompletion</property>
                 <property name="input_purpose">url</property>
               </object>
               <packing>
@@ -360,11 +367,6 @@
       </object>
     </child>
   </object>
-  <object class="GtkImage" id="server_image">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="icon_name">srain-server</property>
-  </object>
   <object class="GtkStatusIcon" id="tray_icon">
     <property name="icon_name">gtk3-demo</property>
     <property name="has_tooltip">True</property>
@@ -375,7 +377,7 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <child>
-      <object class="GtkMenuItem" id="quit_menuitem">
+      <object class="GtkMenuItem" id="quit_menu_item">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Quit</property>

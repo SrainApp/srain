@@ -30,6 +30,7 @@ typedef struct _SrainAppClass SrainAppClass;
 
 GType srain_app_get_type(void);
 SrainApp *srain_app_new(void);
+void srain_app_quit(SrainApp *app);
 
 /* Only one SrainApp instance in one application */
 extern SrainApp *srain_app;

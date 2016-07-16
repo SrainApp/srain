@@ -34,6 +34,23 @@ SrainApp *srain_app = NULL;
 /* Only one SrainWindow instance in one application */
 SrainWindow *srain_win = NULL;
 
+static void srain_app_activate(GtkApplication *app){
+    i18n_init();
+
+    if (srain_win){
+        gtk_window_present(GTK_WINDOW(srain_win));
+    } else {
+        theme_init();
+        srain_win = srain_window_new(SRAIN_APP(app));
+        gtk_window_present(GTK_WINDOW(srain_win));
+#ifdef UI_TEST
+        ui_test();
+#else
+        rc_read();
+#endif
+    }
+}
+
 static void srain_app_init(SrainApp *self){
     if (srain_app) return;
 
@@ -50,23 +67,7 @@ static void srain_app_init(SrainApp *self){
 #endif
 
     srain_app = self;
-
     return;
-}
-
-static void srain_app_activate(GtkApplication *app){
-    if (srain_win){
-        gtk_window_present(GTK_WINDOW(srain_win));
-    } else {
-        theme_init();
-        srain_win = srain_window_new(SRAIN_APP(app));
-        gtk_window_present(GTK_WINDOW(srain_win));
-#ifdef UI_TEST
-        ui_test();
-#else
-        rc_read();
-#endif
-    }
 }
 
 static void srain_app_class_init(SrainAppClass *class){
@@ -77,4 +78,19 @@ static void srain_app_class_init(SrainAppClass *class){
 SrainApp* srain_app_new(void){
     return g_object_new(SRAIN_TYPE_APP,
             "application-id", "org.gtk.srain", NULL);
+}
+
+void srain_app_quit(SrainApp *app){
+    GtkWidget *win;
+    GList *list, *next;
+
+    list = gtk_application_get_windows(GTK_APPLICATION(app));
+    while (list){
+        win = list->data;
+        next = list->next;
+
+        gtk_widget_destroy (GTK_WIDGET (win));
+
+        list = next;
+    }
 }
