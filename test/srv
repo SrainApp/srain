@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+ngircd -n -p -f ngircd.conf 

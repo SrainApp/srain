@@ -1,7 +1,7 @@
 /**
  * @file irc_core.c
  * @brief simple implement of irc client protocol
- * @author LastAvengers <lastavengers@outlook.com>
+ * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-03-01
  *

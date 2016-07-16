@@ -1,11 +1,11 @@
 /**
  * @file server_intf.c
  * @brief UI interface for server module
- * @author LastAvengers <lastavengers@outlook.com>
+ * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-04-20
  */
-#define __LOG_ON
+// #define __LOG_ON
 
 #include <string.h>
 #include <glib.h>
@@ -221,7 +221,7 @@ void server_intf_ui_recv_msg(IRCServer *srv, const char *chan_name,
 }
 
 void server_intf_ui_user_list_add(IRCServer *srv, const char *chan_name,
-        const char *nick, IRCUserType type, int notify){
+        const char *nick, UserType type, int notify){
     void *chan;
 
     LOG_FR("server: %s, chan_name: %s, nick: %s, type: %d",

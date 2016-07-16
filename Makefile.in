@@ -1,25 +1,47 @@
 # Makefile
 
-.PHONY: init install run clean cleanobj todo
-.IGNORE: init
+.PHONY: install run clean todo po
 
 # Export all variables
 export
 
+# Package meta message
+PACKAGE = srain
+PACKAGE_NAME = Srain
+PACKAGE_BUILD = $(shell [ -d .git ] || \
+				git rev-parse --git-dir > /dev/null 2>&1 && \
+				echo -n -git@`git rev-parse --short HEAD`)
+PACKAGE_VERSION = 0.03$(PACKAGE_BUILD)
+PACKAGE_AUTHOR = Shengyu Zhang
+PACKAGE_EMAIL = lastavengesr@outlook.com
+PACKAGE_DESC = It does not look like an IRC client.
+PACKAGE_WEBSITE = https://github.com/lastavenger/srain
+PACKAGE_DATA_DIR = $(PREFIX)
+
 MAKE = make
 DEL = rm -rf
 CC = gcc
-CFLAGS = -O2 -Wall -I$(PWD)/src/inc -DMETA_PACKAGE_DATA_DIRS=\"$(PREFIX)\"
-CFLAGS += $(DBGFLAGS)
-GTK3FLAGS = `pkg-config --cflags gtk+-3.0`
-GTK3LIBS = `pkg-config --libs gtk+-3.0`
-PY3FLAGS = `pkg-config --cflags python3`
-PY3LIBS = `pkg-config --libs python3`
-CURLLIBS = `pkg-config --libs libcurl`
+TEST_FLAG = NO_TEST
+DEFS = -D PACKAGE='"$(PACKAGE)"' \
+	   -D PACKAGE_NAME='"$(PACKAGE_NAME)"' \
+	   -D PACKAGE_VERSION='"$(PACKAGE_VERSION)"' \
+	   -D PACKAGE_AUTHOR='"$(PACKAGE_AUTHOR)"' \
+	   -D PACKAGE_EMAIL='"$(PACKAGE_EMAIL)"' \
+	   -D PACKAGE_DESC='"$(PACKAGE_DESC)"' \
+	   -D PACKAGE_WEBSITE='"$(PACKAGE_WEBSITE)"' \
+	   -D PACKAGE_DATA_DIR='"$(PACKAGE_DATA_DIR)"' \
+	   -D $(TEST_FLAG)
+CFLAGS = -O2 -Wall -I$(PWD)/src/inc $(DEFS)
+GTK3FLAGS = $(shell pkg-config --cflags gtk+-3.0)
+GTK3LIBS = $(shell pkg-config --libs gtk+-3.0)
+PY3FLAGS = $(shell pkg-config --cflags python3)
+PY3LIBS = $(shell pkg-config --libs python3)
+CURLLIBS = $(shell pkg-config --libs libcurl)
 
 TARGET = build/srain
 SRCS = $(wildcard src/*.c src/*/*.c build/resources.c)
 OBJS = $(patsubst %.c, build/%.o, $(notdir $(SRCS)))
+UIS = $(wildcard data/ui/*.glade)
 
 default: Makefile src/Makefile data/ui/Makefile
 	$(MAKE) -C src
@@ -49,6 +71,10 @@ install:
 		"$(DESTDIR)$(PREFIX)/share/srain/plugins/$$py"; \
 		done
 
+ui_test:
+	$(MAKE) TEST_FLAG=UI_TEST
+	$(MAKE) run
+
 run: default
 	$(MAKE) PREFIX=$(PWD)/build
 	$(MAKE) PREFIX=$(PWD)/build install
@@ -67,15 +93,29 @@ clean:
 	$(DEL) build/bin
 	$(DEL) build/share
 
-# Target `po` and `mo` are no used recently, ignore them
-# TODO: out-of-date
-po: $(OBJS)
-	xgettext --from-code=UTF-8 -o po/srain.pot -k_ -s $(OBJS)
-	cd po/ && msginit --no-translator -i srain.pot
+XGETTEXTFLAG = --sort-output --from-code=UTF-8 --package-name=Srain	\
+			   --package-version=0.03 \
+			   --msgid-bugs-address=lastavengesr@outlook.com
 
-# TODO: out-of-date
+po/srain.pot: $(SRCS) $(UIS) Makefile
+	xgettext $(XGETTEXTFLAG) -LGlade -ktranslatable -o $@ $(UIS)
+	xgettext $(XGETTEXTFLAG) -LC -k_ -o $@ $(SRCS) -j
+
+po: po/srain.pot po/LANGS
+	for i in $(shell cat po/LANGS); do \
+		if test -f "po/$$i.po"; then \
+			msgmerge -U po/$$i.po $<; \
+		else \
+			msginit -l $$i.UTF-8 --no-translator \
+					-i $< -o po/$$i.po; \
+		fi; \
+	done
+
 mo:
-	msgfmt po/zh_CN.po -o build/locale/zh_CN/LC_MESSAGES/srain.mo
+	for i in $(shell cat po/LANGS); do \
+		mkdir -p build/locale/$$i/LC_MESSAGES || ture; \
+		msgfmt po/$$i.po -o build/locale/$$i/LC_MESSAGES/srain.mo; \
+	done
 
 todo:
 	grep --color=auto -r -E "TODO|FIXME" src/

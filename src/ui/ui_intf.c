@@ -1,10 +1,11 @@
 /**
  * @file ui_intf.c
  * @brief irc server interface for UI module
- * @author LastAvengers <lastavengers@outlook.com>
+ * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-04-21
  */
+
 #define __LOG_ON
 
 #include <stdlib.h>
@@ -20,7 +21,7 @@ extern SrainApp *srain_app;
 extern SrainWindow *srain_win;
 
 /**
- * @brief ui_intf_server_cmd interface to execute a command
+ * @brief Server Interface to execute a command
  *
  * @param source where this cmd comes from,
  *      if NULL, command echo may appear in the current SrainChan
@@ -30,8 +31,8 @@ extern SrainWindow *srain_win;
  */
 int ui_intf_server_cmd(SrainChan *chan, const char *cmd){
     int res;
-    void *srv;
     char *cmd2;
+    const char *server_name;
     const char *chan_name;
 
     cmd2 = strdup(cmd);
@@ -41,9 +42,9 @@ int ui_intf_server_cmd(SrainChan *chan, const char *cmd){
     }
 
     if (chan){
-        srv = g_object_get_data(G_OBJECT(chan), "server");
-        chan_name = gtk_widget_get_name(GTK_WIDGET(chan));
-        res = srain_app->server_cmd(srv, chan_name, cmd2);
+        server_name = srain_chan_get_server_name(chan);
+        chan_name = srain_chan_get_name(chan);
+        res = srain_app->server_cmd(server_name, chan_name, cmd2);
     } else {
         res = srain_app->server_cmd(NULL, NULL, cmd2);
     }
@@ -53,41 +54,41 @@ int ui_intf_server_cmd(SrainChan *chan, const char *cmd){
 }
 
 /**
- * @brief ui_intf_server_join join a channel of current server
+ * @brief join a channel of current server
  *
  * @param chan_name
  */
 void ui_intf_server_join(const char *chan_name){
-    void *srv;
+    const char *server_name;
     SrainChan *chan;
 
     chan = srain_window_get_cur_chan(srain_win);
-    srv = g_object_get_data(G_OBJECT(chan), "server");
+    server_name = srain_chan_get_server_name(chan);
 
-    srain_app->server_join(srv, chan_name);
+    srain_app->server_join(server_name, chan_name);
 }
 
 void ui_intf_server_part(SrainChan *chan){
-    void *srv;
+    const char *server_name;
     const char *chan_name;
 
-    srv = g_object_get_data(G_OBJECT(chan), "server");
-    chan_name = gtk_widget_get_name(GTK_WIDGET(chan));
+    server_name = srain_chan_get_server_name(chan);
+    chan_name = srain_chan_get_name(chan);
 
-    srain_app->server_part(srv, chan_name);
+    srain_app->server_part(server_name, chan_name);
 }
 
 void ui_intf_server_send(SrainChan *chan, const char *msg){
-    void *srv;
     const char *chan_name;
+    const char *server_name;
 
     if (chan == NULL){
         ERR_FR("chan: NULL, msg: %s", msg);
         return;
     }
 
-    srv = g_object_get_data(G_OBJECT(chan), "server");
-    chan_name = gtk_widget_get_name(GTK_WIDGET(chan));
+    server_name = srain_chan_get_server_name(chan);
+    chan_name = srain_chan_get_name(chan);
 
-    srain_app->server_send(srv, chan_name, msg);
+    srain_app->server_send(server_name, chan_name, msg);
 }

@@ -1,7 +1,7 @@
 /**
  * @file server.c
  * @brief irc servers manange
- * @author LastAvengers <lastavengers@outlook.com>
+ * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-04-15
  */
@@ -36,6 +36,7 @@ static IRCServer *server_new(const char *host, const char *port){
     strncpy(srv->host, host, 512);
     strncpy(srv->port, port, 8);
 
+    /*
     srv->ui_add_chan = (UIAddChanFunc)srain_app_add_chan;
     srv->ui_rm_chan = (UIRmChanFunc)srain_app_rm_chan;
     srv->ui_sys_msg = (UISysMsgFunc)srain_app_sys_msg;
@@ -45,6 +46,7 @@ static IRCServer *server_new(const char *host, const char *port){
     srv->ui_user_list_rm = (UIUserListRmFunc)srain_app_user_list_rm;
     srv->ui_user_list_rename = (UIUserListRenameFunc)srain_app_user_list_rename;
     srv->ui_set_topic = (UISetTopicFunc)srain_app_set_topic;
+    */
 
     return srv;
 }
@@ -83,7 +85,7 @@ IRCServer* server_connect(const char *host){
         return NULL;
     }
 
-    srv = server_new(host, "6666");
+    srv = server_new(host, "6667");
     server_intf_ui_add_chan(srv, META_SERVER);
 
     srv->stat = SERVER_CONNECTING;

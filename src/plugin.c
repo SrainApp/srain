@@ -1,7 +1,7 @@
 /**
  * @file plugin.c
  * @brief simple embedding python support
- * @author LastAvengers <lastavengers@outlook.com>
+ * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-04-07
  *

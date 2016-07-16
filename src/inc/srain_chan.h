@@ -23,6 +23,8 @@ void srain_chan_set_topic(SrainChan *chan, const char *topic);
 SrainUserList* srain_chan_get_user_list(SrainChan *chan);
 SrainMsgList* srain_chan_get_msg_list(SrainChan *chan);
 SrainEntryCompletion* srain_chan_get_entry_completion(SrainChan *chan);
+const char* srain_chan_get_name(SrainChan *chan);
+const char* srain_chan_get_server_name(SrainChan *chan);
 
 #endif /* __SRAIN_CHAN_H */
 

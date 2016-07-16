@@ -106,8 +106,7 @@
                 <property name="margin_left">4</property>
                 <property name="margin_right">4</property>
                 <property name="margin_bottom">4</property>
-                <property name="label" translatable="yes">received message.
-&lt;a href="http://www.google.com"&gt;Link Test&lt;/a&gt;</property>
+                <property name="label" translatable="yes">This message can not be showed correctly.</property>
                 <property name="use_markup">True</property>
                 <property name="wrap">True</property>
                 <property name="wrap_mode">char</property>

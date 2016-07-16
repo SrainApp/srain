@@ -1,7 +1,7 @@
 /**
  * @file srain_chan.c
  * @brief Complex widget used to reprsenting a session
- * @author LastAvengers <lastavengers@outlook.com>
+ * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-03-01
  */
@@ -24,18 +24,24 @@
 #include "markup.h"
 #include "plugin.h"
 #include "log.h"
+#include "i18n.h"
 
 #include "cmd_list.h"
 
 struct _SrainChan {
     GtkBox parent;
 
+    char *server_name;
+    char *chan_name;
+
     /* header */
     GtkLabel* name_label;
     GtkRevealer *topic_revealer;
     GtkLabel *topic_label;
+    GtkButton *option_button;
 
     /* option box */
+    GtkPopover *option_popover;
     GtkBox *option_box;
     GtkToggleButton *show_topic_togglebutton;
     GtkToggleButton *show_user_list_togglebutton;
@@ -61,6 +67,14 @@ struct _SrainChanClass {
 };
 
 G_DEFINE_TYPE(SrainChan, srain_chan, GTK_TYPE_BOX);
+
+static void popover_button_on_click(gpointer user_data){
+    GtkPopover *popover;
+
+    popover = user_data;
+    gtk_widget_set_visible(GTK_WIDGET(popover),
+            !gtk_widget_get_visible(GTK_WIDGET(popover)));
+}
 
 static gboolean entry_on_key_press(gpointer user_data, GdkEventKey *event){
     SrainChan *chan;
@@ -96,7 +110,7 @@ static void upload_image_idle(GtkEntry *entry){
         gtk_entry_set_text(entry, url);
         free(url);
     } else {
-        gtk_entry_set_text(entry, "upload image failed");
+        gtk_entry_set_text(entry, _("Failed to upload image"));
     }
 
     gtk_widget_set_sensitive(GTK_WIDGET(entry), TRUE);
@@ -206,20 +220,6 @@ ret:
     return;
 }
 
-// TODO: NOT work now
-static gboolean msg_list_popup(GtkWidget *widget,
-        GdkEventButton *event, gpointer *user_data){
-    GtkMenu *menu;
-
-    menu = GTK_MENU(user_data);
-    if (event->button == 3){
-        gtk_menu_popup(menu, NULL, NULL, NULL, NULL,
-                event->button, event->time);
-        return TRUE;
-    }
-    return FALSE;
-}
-
 static void srain_chan_init(SrainChan *self){
     gtk_widget_init_template(GTK_WIDGET(self));
 
@@ -252,6 +252,16 @@ static void srain_chan_init(SrainChan *self){
     g_signal_connect(self->show_user_list_togglebutton, "clicked",
             G_CALLBACK(option_togglebutton_on_click), self->user_list_revealer);
 
+    // Click to show/hide GtkPopover
+    g_signal_connect_swapped(self->option_button, "clicked",
+            G_CALLBACK(popover_button_on_click), self->option_popover);
+    g_signal_connect_swapped(self->show_topic_togglebutton, "clicked",
+            G_CALLBACK(popover_button_on_click), self->option_popover);
+    g_signal_connect_swapped(self->show_user_list_togglebutton, "clicked",
+            G_CALLBACK(popover_button_on_click), self->option_popover);
+    g_signal_connect_swapped(self->leave_button, "clicked",
+            G_CALLBACK(popover_button_on_click), self->option_popover);
+
     g_signal_connect(self->upload_image_button, "clicked",
             G_CALLBACK(upload_image_button_on_click), self->input_entry);
 
@@ -264,13 +274,25 @@ static void srain_chan_init(SrainChan *self){
 
 }
 
+static void srain_chan_finalize(GObject *object){
+    free(SRAIN_CHAN(object)->server_name);
+    free(SRAIN_CHAN(object)->chan_name);
+
+    G_OBJECT_CLASS(srain_chan_parent_class)->finalize(object);
+}
+
 static void srain_chan_class_init(SrainChanClass *class){
+    GObjectClass *object_class = G_OBJECT_CLASS (class);
+
+    object_class->finalize = srain_chan_finalize;
+
     gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
             "/org/gtk/srain/chan.glade");
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, name_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, topic_revealer);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, topic_label);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, option_button);
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, msg_list_box);
 
@@ -279,6 +301,7 @@ static void srain_chan_class_init(SrainChanClass *class){
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, input_entry);
 
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, option_popover);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, option_box);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, show_topic_togglebutton);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, show_user_list_togglebutton);
@@ -287,13 +310,16 @@ static void srain_chan_class_init(SrainChanClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, upload_image_button);
 }
 
-SrainChan* srain_chan_new(const char *srv_name, const char *chan_name){
+SrainChan* srain_chan_new(const char *server_name, const char *chan_name){
     SrainChan *chan;
 
     chan = g_object_new(SRAIN_TYPE_CHAN, NULL);
 
     gtk_label_set_text(chan->name_label, chan_name);
     gtk_widget_set_name(GTK_WIDGET(chan), chan_name);
+
+    chan->chan_name = strdup(chan_name);
+    chan->server_name = strdup(server_name);
 
     return chan;
 }
@@ -333,6 +359,22 @@ SrainMsgList* srain_chan_get_msg_list(SrainChan *chan){
 SrainEntryCompletion* srain_chan_get_entry_completion(SrainChan *chan){
     if (SRAIN_IS_CHAN(chan)) {
         return chan->completion;
+    }
+
+    return NULL;
+}
+
+const char* srain_chan_get_name(SrainChan *chan){
+    if (SRAIN_IS_CHAN(chan)) {
+        return chan->chan_name;
+    }
+
+    return NULL;
+}
+
+const char* srain_chan_get_server_name(SrainChan *chan){
+    if (SRAIN_IS_CHAN(chan)) {
+        return chan->server_name;
     }
 
     return NULL;
