@@ -20,8 +20,8 @@
 char *get_theme_path(const char *filename){
     char *path;
 
-    path = g_build_filename(META_PACKAGE_DATA_DIRS, "share",
-            META_PACKAGE_NAME, "themes", filename, NULL);
+    path = g_build_filename(PACKAGE_DATA_DIR, "share",
+            PACKAGE, "themes", filename, NULL);
 
     if (g_file_test(path, G_FILE_TEST_EXISTS)){
         return path;
@@ -42,8 +42,8 @@ char *get_theme_path(const char *filename){
 char *get_pixmap_path(const char *filename){
     char *path;
 
-    path = g_build_filename(META_PACKAGE_DATA_DIRS, "share",
-            META_PACKAGE_NAME, "pixmaps", filename, NULL);
+    path = g_build_filename(PACKAGE_DATA_DIR, "share",
+            PACKAGE, "pixmaps", filename, NULL);
 
     if (g_file_test(path, G_FILE_TEST_EXISTS)){
         return path;
@@ -64,8 +64,8 @@ char *get_pixmap_path(const char *filename){
 char *get_plugin_path(const char *filename){
     char *path;
 
-    path = g_build_filename(META_PACKAGE_DATA_DIRS, "share",
-            META_PACKAGE_NAME, "plugins", filename, NULL);
+    path = g_build_filename(PACKAGE_DATA_DIR, "share",
+            PACKAGE, "plugins", filename, NULL);
 
     if (g_file_test(path, G_FILE_TEST_EXISTS)){
         return path;
@@ -94,7 +94,7 @@ char *get_config_path(const char *filename){
     ERR_FR("'%s' not found", path);
     g_free(path);
 
-    path = g_build_filename(g_get_user_config_dir(), META_PACKAGE_NAME,
+    path = g_build_filename(g_get_user_config_dir(), PACKAGE,
             filename, NULL);
 
     if (g_file_test(path, G_FILE_TEST_EXISTS)){

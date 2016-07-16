@@ -84,21 +84,21 @@ static void quit_menu_item_on_activate(){
 
 static void about_button_on_click(gpointer user_data){
     GtkWidget *window = user_data;
-    const gchar *authors[] = { META_AUTHOR_NAME " <" META_AUTHOR_MAIL ">", NULL };
+    const gchar *authors[] = { PACKAGE_AUTHOR " <" PACKAGE_EMAIL ">", NULL };
     const gchar **documentors = authors;
     const gchar *version = g_strdup_printf(_("%s\nRunning against GTK+ %d.%d.%d"),
-            META_VERSION,
+            PACKAGE_VERSION,
             gtk_get_major_version(),
             gtk_get_minor_version(),
             gtk_get_micro_version());
 
     gtk_show_about_dialog(GTK_WINDOW(window),
-            "program-name", META_NAME,
+            "program-name", PACKAGE_NAME,
             "version", version,
-            "copyright", "(C) 2016 " META_AUTHOR_NAME,
+            "copyright", "(C) 2016 " PACKAGE_AUTHOR,
             "license-type", GTK_LICENSE_GPL_3_0,
-            "website", META_WEBSITE,
-            "comments", META_DESC,
+            "website", PACKAGE_WEBSITE,
+            "comments", PACKAGE_DESC,
             "authors", authors,
             "documenters", documentors,
             "logo-icon-name", "gtk3-demo",
