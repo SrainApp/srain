@@ -19,9 +19,6 @@
 #include "srain_msg_list.h"
 #include "srain_entry_completion.h"
 
-#include "server.h"
-#include "server_cmd.h"
-
 #include "meta.h"
 #include "rc.h"
 #include "log.h"
@@ -60,10 +57,6 @@ static void srain_app_init(SrainApp *self){
     self->server_send = (ServerSendFunc)ui_test_server_send;
     self->server_cmd = (ServerCmdFunc)ui_test_server_cmd;
 #else
-    self->server_join = (ServerJoinFunc)server_join;
-    self->server_part = (ServerPartFunc)server_part;
-    self->server_send = (ServerSendFunc)server_send;
-    self->server_cmd = (ServerCmdFunc)server_cmd;
 #endif
 
     srain_app = self;

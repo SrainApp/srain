@@ -12,7 +12,7 @@ default:
 	./cmd_list.sh --restore
 
 ../build/%.o: %.c
-	$(CC) $(CFLAGS) -c $$^ -o $@
+	$(CC) $(CFLAGS) -c $^ -o $@
 
 ../build/%.o: */%.c
 	$(CC) $(CFLAGS) -c $^ -o $@

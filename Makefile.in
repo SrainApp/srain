@@ -76,8 +76,12 @@ install:
 		"$(DESTDIR)$(PREFIX)/share/srain/plugins/$$py"; \
 		done
 
-ui_test:
+uitest:
 	$(MAKE) TEST_FLAG=UI_TEST
+	$(MAKE) run
+
+irctest:
+	$(MAKE) TEST_FLAG=IRC_TEST
 	$(MAKE) run
 
 run: default
