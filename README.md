@@ -1,7 +1,6 @@
 Srain
 =====
-[![Travis](https://img.shields.io/travis/LastAvenger/srain.svg?maxAge=2592000)](https://travis-ci.org/LastAvenger/srain)
-[![Github All Releases](https://img.shields.io/github/downloads/LastAvenger/srain/total.svg?maxAge=2592000)](https://github.com/LastAvenger/srain/releases)
+[![Build Status](https://travis-ci.org/LastAvenger/srain.svg?branch=master)](https://travis-ci.org/LastAvenger/srain)
 
 It does not look like an IRC client :-)
 
@@ -9,12 +8,13 @@ It does not look like an IRC client :-)
 
 - make          (makedepends)
 - gcc           (makedepends)
-- libcurl       (makedepends)
 - pkg-config    (makedepends)
 - gettext       (makedepends)
-- gtk >= 3.16
+- gtk >= 3.19
 - glib2
 - python >= 3.2
+- libcurl
+- libircclient 1.8
 
 # Build & Debug
 
@@ -48,4 +48,4 @@ It does not look like an IRC client :-)
 
 As you see, its theme is inspired by Telegram Desktop.
 
-![screenshot](https://img.vim-cn.com/4f/59a3f20a2f7402d94b6759b860e37dac5bf843.png)
+![screenshot](http://img.tjm.moe/c5/1e91eced2cb59498a2cbe32fcf7d797f6f626d.png)

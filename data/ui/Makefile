@@ -15,7 +15,7 @@ OBJS = $(patsubst %.c, %.o, $(SRCS))
 GLADES = $(wildcard *.glade)
 
 $(OBJS): $(SRCS)
-	$(CC) $(CFLAGS) -c $(GTK3FLAGS) $(GTK3LIBS) $^ -o $@
+	$(CC) $(CFLAGS) -c $^ -o $@
 
 $(SRCS): srain.gresource.xml $(GLADES)
 	$(GLIB_COMPILE_RESOURCES) srain.gresource.xml --target=$@ --sourcedir=. --generate-source

@@ -31,12 +31,17 @@ DEFS = -D PACKAGE='"$(PACKAGE)"' \
 	   -D PACKAGE_WEBSITE='"$(PACKAGE_WEBSITE)"' \
 	   -D PACKAGE_DATA_DIR='"$(PACKAGE_DATA_DIR)"' \
 	   -D $(TEST_FLAG)
-CFLAGS = -O2 -Wall -I$(PWD)/src/inc $(DEFS)
+CFLAGS = -O2 -Wall -I$(PWD)/src/inc
 GTK3FLAGS = $(shell pkg-config --cflags gtk+-3.0)
 GTK3LIBS = $(shell pkg-config --libs gtk+-3.0)
 PY3FLAGS = $(shell pkg-config --cflags python3)
 PY3LIBS = $(shell pkg-config --libs python3)
 CURLLIBS = $(shell pkg-config --libs libcurl)
+LIBIRCCLINETFLAGS = $(shell pkg-config --cflags libircclient)
+LIBIRCCLINETLIBS = $(shell pkg-config --libs libircclient)
+
+CFLAGS += $(DEFS) $(GTK3FLAGS) $(PY3FLAGS) $(LIBIRCCLINETFLAGS) \
+		  $(GTK3LIBS) $(PY3LIBS) $(CURLLIBS) $(LIBIRCCLINETLIBS)
 
 TARGET = build/srain
 SRCS = $(wildcard src/*.c src/*/*.c build/resources.c)
@@ -122,4 +127,4 @@ todo:
 
 # Compile multiple object files to execute file
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) $(GTK3FLAGS) $(PY3FLAGS) $^ -o $@ $(GTK3LIBS) $(PY3LIBS) $(CURLLIBS)
+	$(CC) $(CFLAGS) $^ -o $@
