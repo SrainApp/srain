@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <glib.h>
 
-// log macro with Line number, Fucntion name and Return
 #ifdef __LOG_ON
     #define LOG_LFR(...) _LOG_LFR(__VA_ARGS__)
     #define LOG_FR(...) _LOG_FR(__VA_ARGS__)
@@ -17,41 +16,41 @@
     #define LOG(...) ;
 #endif
 
-#define _LOG_LFR(...)                                \
-    g_print("%d: [%s]: ", __LINE__, __FUNCTION__);  \
-    g_print(__VA_ARGS__);                           \
-    g_print("\n")
+/* Print a line of log with fucntion name */
+#define _LOG_FR(...)                        \
+    do {                                    \
+        g_print("[%s]: ",  __FUNCTION__);   \
+        g_print(__VA_ARGS__);               \
+        g_print("\n");                      \
+    } while (0);
 
-// log macro with Fucntion name and Return
-#define _LOG_FR(...)                     \
-    g_print("[%s]: ",  __FUNCTION__);   \
-    g_print(__VA_ARGS__);               \
-    g_print("\n")
+/* Print a line of log with fucntion name
+ * do not output the trailing newline */
+#define _LOG_F(...)                         \
+    do {                                    \
+        g_print("[%s]: ",  __FUNCTION__);   \
+        g_print(__VA_ARGS__);               \
+    } while (0);
 
-// log macro with Fucntion name
-#define _LOG_F(...)                     \
-    g_print("[%s]: ",  __FUNCTION__);   \
-    g_print(__VA_ARGS__);
+/* Print a log */
+#define _LOG(...)               \
+    do {                        \
+        g_print(__VA_ARGS__);   \
+    } while (0);
 
-// log macro, equal to g_print
-#define _LOG(...)            \
-    g_print(__VA_ARGS__);   \
+/* Print a line of error message with fucntion name */
+#define ERR_FR(...)                                     \
+    do {                                                \
+        g_printerr("**ERROR** [%s]: ",  __FUNCTION__);  \
+        g_printerr(__VA_ARGS__);                        \
+        g_printerr("\n");                               \
+    } while (0);
 
-// printerr macro with Line number, Fucntion name and Return
-#define ERR_LFR(...)                                            \
-    g_print("%d: **ERROR** [%s]: ", __LINE__, __FUNCTION__);    \
-    g_print(__VA_ARGS__);                                       \
-    g_print("\n")
-
-// printerr macro with Fucntion name and Return
-#define ERR_FR(...)                                 \
-    g_printerr("**ERROR** [%s]: ",  __FUNCTION__);  \
-    g_printerr(__VA_ARGS__);                        \
-    g_printerr("\n")
-
-// printerr macro, equal to g_printerr
-#define ERR(...)                \
-    g_printerr("**ERROR** ");   \
-    g_printerr(__VA_ARGS__);    \
+/* Print a error message */
+#define ERR(...)                    \
+    do {                            \
+        g_printerr("**ERROR** ");   \
+        g_printerr(__VA_ARGS__);    \
+    } while (0);
 
 #endif /* __LOG_H */
