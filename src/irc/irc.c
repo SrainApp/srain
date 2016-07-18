@@ -10,21 +10,28 @@
 
 #include <stdlib.h>
 #include <string.h>
-
+#include <netdb.h>
+#include <unistd.h>
 #include "libircclient.h"
 #include "libirc_rfcnumeric.h"
 
 #include "log.h"
 
 #define MAX_SESSIONS    10
-#define HOST_LEN        256
-#define CHAN_LEN        200
-#define NICK_LEN        128
+#define HOST_LEN        INET6_ADDRSTRLEN
+#define CHAN_LEN        64
+#define NICK_LEN        64
+#define PASSWORD_LEN    64
+
 
 // Session context
 typedef struct {
-    char host[HOST_LEN];
+    char host[INET6_ADDRSTRLEN];
+    int port;
+    char password[PASSWORD_LEN]; // Server password
     char nick[NICK_LEN];
+    char username[NICK_LEN];
+    char realname[NICK_LEN];
 } irc_ctx_t;
 
 irc_session_t *sessions[MAX_SESSIONS] = { NULL };
@@ -44,14 +51,127 @@ static irc_session_t* get_session_by_host(const char *host){
     return NULL;
 }
 
-static void event_connect(irc_session_t *session, const char *event,
-        const char* origin, const char ** params, unsigned int count){
-    LOG_FR("Connected: %s %s", event, origin);
+static const char* get_session_host(irc_session_t *session){
+    irc_ctx_t *ctx;
+
+    ctx = irc_get_ctx(session);
+
+    return ctx->host;
 }
 
-static void event_numeric (irc_session_t * session, unsigned int event,
-        const char* origin, const char ** params, unsigned int count){
-    LOG_FR("Numeric: %d %s", event, origin);
+/******************** Callbacks ********************/
+static void event_connect(irc_session_t *session, const char *event,
+        const char *origin, const char **params, unsigned int count){
+    LOG_FR("session: %s, event: %s", get_session_host(session), event);
+    irc_cmd_join(session, "#srain", 0);
+}
+
+static void event_nick(irc_session_t *session, const char *event,
+        const char *origin, const char **params, unsigned int count){
+    LOG_FR("session: %s, event: %s", get_session_host(session), event);
+}
+
+static void event_quit(irc_session_t *session, const char *event,
+        const char *origin, const char **params, unsigned int count){
+    LOG_FR("session: %s, event: %s", get_session_host(session), event);
+}
+
+static void event_join(irc_session_t *session, const char *event,
+ const char *origin, const char **params, unsigned int count){
+    LOG_FR("session: %s, event: %s", get_session_host(session), event);
+}
+
+static void event_part(irc_session_t *session, const char *event,
+ const char *origin, const char **params, unsigned int count){
+    LOG_FR("session: %s, event: %s", get_session_host(session), event);
+}
+
+static void event_mode(irc_session_t *session, const char *event,
+ const char *origin, const char **params, unsigned int count){
+    LOG_FR("session: %s, event: %s", get_session_host(session), event);
+}
+
+static void event_umode(irc_session_t *session, const char *event,
+ const char *origin, const char **params, unsigned int count){
+    LOG_FR("session: %s, event: %s", get_session_host(session), event);
+}
+
+static void event_topic(irc_session_t *session, const char *event,
+ const char *origin, const char **params, unsigned int count){
+    LOG_FR("session: %s, event: %s", get_session_host(session), event);
+}
+
+static void event_kick(irc_session_t *session, const char *event,
+ const char *origin, const char **params, unsigned int count){
+    LOG_FR("session: %s, event: %s", get_session_host(session), event);
+}
+
+static void event_channel(irc_session_t *session, const char *event,
+ const char *origin, const char **params, unsigned int count){
+    LOG_FR("session: %s, event: %s", get_session_host(session), event);
+}
+
+static void event_privmsg(irc_session_t *session, const char *event,
+ const char *origin, const char **params, unsigned int count){
+    LOG_FR("session: %s, event: %s", get_session_host(session), event);
+}
+
+static void event_notice(irc_session_t *session, const char *event,
+ const char *origin, const char **params, unsigned int count){
+    LOG_FR("session: %s, event: %s", get_session_host(session), event);
+}
+
+static void event_channel_notice(irc_session_t *session, const char *event,
+ const char *origin, const char **params, unsigned int count){
+    LOG_FR("session: %s, event: %s", get_session_host(session), event);
+}
+
+static void event_invite(irc_session_t *session, const char *event,
+ const char *origin, const char **params, unsigned int count){
+    LOG_FR("session: %s, event: %s", get_session_host(session), event);
+}
+
+static void event_numeric (irc_session_t *session, unsigned int event,
+        const char *origin, const char **params, unsigned int count){
+    int i;
+
+    LOG_FR("session: %s, event: %d", get_session_host(session), event);
+    switch (event){
+        case LIBIRC_RFC_RPL_WELCOME:
+            LOG_FR("LIBIRC_RFC_RPL_WELCOME %d", count);
+            LOG_FR("You are logined as %s", params[0]);
+            break;
+        case LIBIRC_RFC_RPL_NAMREPLY:
+            LOG_FR("LIBIRC_RFC_RPL_NAMREPLY %d", count);
+            for (i = 0; i < count; i++)
+                LOG_FR("params %s", params[i]);
+            break;
+        case LIBIRC_RFC_ERR_NICKNAMEINUSE:
+            LOG_FR("LIBIRC_RFC_ERR_NICKNAMEINUSE %d", count);
+            irc_cmd_nick(session, "la_");
+    }
+
+}
+/***************************************************/
+
+static int irc_session_reconnect(irc_session_t *session){
+    int retry;
+    irc_ctx_t *ctx;
+
+    retry = 10;
+    ctx = irc_get_ctx(session);
+
+    while (retry--){
+        ERR_FR("Reconnecting, session: %s, left times: %d",
+                get_session_host(session), retry);
+        irc_connect(session, ctx->host, ctx->port, ctx->password,
+                ctx->nick, ctx->username, ctx->realname);
+        if (irc_is_connected(session))
+            return 0;
+        sleep(1);
+    }
+
+    return -1;
 }
 
 void irc_init(){
@@ -60,7 +180,20 @@ void irc_init(){
     memset (&cbs, 0, sizeof(cbs));
 
     // Set up the mandatory events
-    cbs.event_connect = event_connect;
+    cbs.event_connect  = event_connect;
+    cbs.event_nick = event_nick;
+    cbs.event_quit = event_quit;
+    cbs.event_join = event_join;
+    cbs.event_part = event_part;
+    cbs.event_mode = event_mode;
+    cbs.event_umode = event_umode;
+    cbs.event_topic = event_topic;
+    cbs.event_kick = event_kick;
+    cbs.event_channel = event_channel;
+    cbs.event_privmsg = event_privmsg;
+    cbs.event_notice = event_notice;
+    cbs.event_channel_notice = event_channel_notice;
+    cbs.event_invite = event_invite;
     cbs.event_numeric = event_numeric;
 }
 
@@ -82,14 +215,10 @@ int irc_session_process(){
     for (i = 0; i < MAX_SESSIONS; i++){
         if (sessions[i] == 0) continue;
         if (!irc_is_connected(sessions[i])){
-            // ctx = irc_get_ctx(sessions[i]);
-            // irc_connect(sessions[i], ctx->host, ctx->nick, )
-            // TODO: reconnect
-            ERR_FR("No connected");
-            continue;
+            if (irc_session_reconnect(sessions[i]) == -1)
+                continue;
         }
         session = sessions[i];
-        LOG_FR("Add session %p", session);
 
         irc_add_select_descriptors(session, &in_set, &out_set, &maxfd);
     }
@@ -103,7 +232,6 @@ int irc_session_process(){
         if (sessions[i] == 0) continue;
         session = sessions[i];
 
-        LOG_FR("Process session %p", session);
         if (irc_process_select_descriptors(session, &in_set, &out_set)){
         }
     }
@@ -111,8 +239,8 @@ int irc_session_process(){
     return 0;
 }
 
-int irc_session_new(const char *host, int port, const char *nickname,
-        const char *username, const char *realname){
+int irc_session_new(const char *host, int port, const char *password,
+        const char *nickname, const char *username, const char *realname){
     int i;
     irc_session_t *session;
     irc_ctx_t *ctx;
@@ -147,7 +275,8 @@ int irc_session_new(const char *host, int port, const char *nickname,
     irc_set_ctx(session, ctx);
     irc_option_set(session, LIBIRC_OPTION_STRIPNICKS);
 
-    if (irc_connect(session, host, port, 0, nickname, username, realname)){
+    if (irc_connect(session, host, port, password,
+                nickname,username, realname)){
         ERR_FR("Failed to connect: %s", irc_strerror(irc_errno(session)));
         return -1;
     }
