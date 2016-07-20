@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#include "irc_test.h"
+#include "srv_test.h"
 
 #include "srain_app.h"
 
@@ -76,7 +76,7 @@ int main(int argc, char **argv){
 #ifndef IRC_TEST
     return g_application_run(G_APPLICATION(srain_app_new()), argc, argv);
 #else
-    irc_test();
+    srv_test();
 #endif
 
 }
