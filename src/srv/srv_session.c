@@ -114,6 +114,7 @@ loop:
 
 void srv_session_init(){
     LOG_FR("...");
+    srv_hdr_init();
 
     memset(sessions, 0, sizeof(sessions));
     memset (&cbs, 0, sizeof(cbs));

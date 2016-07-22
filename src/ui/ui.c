@@ -25,13 +25,11 @@
  *
  * @return 0 if successful, -1 if failed
  */
-int
-ui_add_chan(const char *server_name, const char *chan_name){
+void ui_add_chan(const char *server_name, const char *chan_name){
     SrainChan *chan = NULL;
 
     chan = srain_window_add_chan(srain_win, server_name, chan_name);
 
-    return chan ? 0 : -1;
 }
 
 /**
@@ -42,15 +40,13 @@ ui_add_chan(const char *server_name, const char *chan_name){
  *
  * @return 0 if successful, -1 if failed
  */
-int
-ui_rm_chan(const char *server_name, const char *chan_name){
+void ui_rm_chan(const char *server_name, const char *chan_name){
     SrainChan *chan;
     chan = srain_window_get_chan_by_name(srain_win, server_name, chan_name);
 
-    g_return_val_if_fail(chan, -1);
+    g_return_if_fail(chan);
     srain_window_rm_chan(srain_win, chan);
 
-    return 0;
 }
 
 /**
@@ -139,24 +135,22 @@ ui_recv_msg(const char *server_name, const char *chan_name,
  *
  * @return 0 if successful, -1 if failed
  */
-int
+void
 ui_user_list_add(const char *server_name, const char *chan_name,
-        const char *nick, UserType type){
+        const char *nick, UserType type, int notify){
     int res;
     SrainChan *chan;
     SrainUserList *list;
     SrainEntryCompletion *comp;
 
     chan = srain_window_get_chan_by_name(srain_win, server_name, chan_name);
-    g_return_val_if_fail(chan, -1);
+    g_return_if_fail(chan);
     list = srain_chan_get_user_list(chan);
 
     if ((res = srain_user_list_add(list, nick, type)) == 0){
         comp = srain_chan_get_entry_completion(chan);
         srain_entry_completion_add_keyword(comp, nick, KEYWORD_NORMAL);
     };
-
-    return res;
 }
 
 /**
@@ -170,8 +164,7 @@ ui_user_list_add(const char *server_name, const char *chan_name,
  * @return 0 if successful, -1 if failed
  * TODO: reason
  */
-int
-ui_user_list_rm(const char *server_name, const char *chan_name,
+void ui_user_list_rm(const char *server_name, const char *chan_name,
         const char *nick, const char *reason){
     int res;
     SrainChan *chan;
@@ -179,15 +172,13 @@ ui_user_list_rm(const char *server_name, const char *chan_name,
     SrainEntryCompletion *comp;
 
     chan = srain_window_get_chan_by_name(srain_win, server_name, chan_name);
-    g_return_val_if_fail(chan, -1);
+    g_return_if_fail(chan);
     list = srain_chan_get_user_list(chan);
 
     if ((res = srain_user_list_rm(list, nick)) == 0){
         comp = srain_chan_get_entry_completion(chan);
         srain_entry_completion_rm_keyword(comp, nick);
     }
-
-    return res;
 }
 
 /**
@@ -200,8 +191,7 @@ ui_user_list_rm(const char *server_name, const char *chan_name,
  *
  * @return 0 if successful, -1 if failed
  */
-int
-ui_user_list_rename(const char *server_name, const char *chan_name,
+void ui_user_list_rename(const char *server_name, const char *chan_name,
                     const char *old_nick, const char *new_nick,
                     UserType type){
     int res;
@@ -210,7 +200,7 @@ ui_user_list_rename(const char *server_name, const char *chan_name,
     SrainEntryCompletion *comp;
 
     chan = srain_window_get_chan_by_name(srain_win, server_name, chan_name);
-    g_return_val_if_fail(chan, -1);
+    g_return_if_fail(chan);
     list = srain_chan_get_user_list(chan);
 
     if ((res = srain_user_list_rename(list, old_nick, new_nick, type)) == 0){
@@ -218,8 +208,6 @@ ui_user_list_rename(const char *server_name, const char *chan_name,
         srain_entry_completion_add_keyword(comp, old_nick, KEYWORD_NORMAL);
         srain_entry_completion_rm_keyword(comp, new_nick);
     }
-
-    return res;
 }
 
 /**
