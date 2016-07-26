@@ -134,6 +134,7 @@ void srv_session_init(){
     cbs.event_notice = srv_event_notice;
     cbs.event_channel_notice = srv_event_channel_notice;
     cbs.event_invite = srv_event_invite;
+    cbs.event_ctcp_action = srv_event_ctcp_action;
     cbs.event_numeric = srv_event_numeric;
 }
 

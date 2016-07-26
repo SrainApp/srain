@@ -9,9 +9,10 @@ typedef void (*UIRmChanFunc) (const char *server_name, const char *chan_name);
 typedef void (*UISysMsgFunc) (const char *server_name, const char *chan_name, const char *msg, SysMsgType type);
 typedef void (*UISendMsgFunc) (const char *server_name, const char *chan_name, const char *msg);
 typedef void (*UIRecvMsgFunc) (const char *server_name, const char *chan_name, const char *nick, const char *id, const char *msg);
-typedef void (*UIUserListAddFunc) (const char *server_name, const char *chan_name, const char *nick, UserType type, int notify);
-typedef void (*UIUserListRmFunc) (const char *server_name, const char *chan_name, const char *nick, const char *reason);
-typedef void (*UIUserListRenameFunc) (const char *server_name, const char *chan_name, const char *old_nick, const char *new_nick, UserType type);
+typedef void (*UIUserListAddFunc) (const char *server_name, const char *chan_name, const char *nick, UserType type);
+typedef void (*UIUserListRmFunc) (const char *server_name, const char *chan_name, const char *nick);
+typedef void (*UIUserListRmAllFunc) (const char *server_name, const char *nick, const char *reason);
+typedef void (*UIUserListRenameFunc) (const char *server_name, const char *old_nick, const char *new_nick, UserType type, const char *msg);
 typedef void (*UISetTopicFunc) (const char *server_name, const char *chan_name, const char *topic);
 
 void srv_hdr_init();
@@ -24,6 +25,7 @@ UISendMsgFunc srv_hdr_ui_send_msg;
 UIRecvMsgFunc srv_hdr_ui_recv_msg;
 UIUserListAddFunc srv_hdr_ui_user_list_add;
 UIUserListRmFunc srv_hdr_ui_user_list_rm;
+UIUserListRmAllFunc srv_hdr_ui_user_list_rm_all;
 UIUserListRenameFunc srv_hdr_ui_user_list_rename;
 UISetTopicFunc srv_hdr_ui_set_topic;
 

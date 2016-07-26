@@ -41,15 +41,21 @@ void srv_test_ui_user_list_add(const char *server_name, const char *chan_name,
 }
 
 void srv_test_ui_user_list_rm(const char *server_name, const char *chan_name,
-        const char *nick, const char *reason){
-    LOG_FR("server_name: %s, chan_name: %s, nick: '%s', reason: %s",
-            server_name, chan_name, nick, reason);
+        const char *nick){
+    LOG_FR("server_name: %s, chan_name: %s, nick: '%s'",
+            server_name, chan_name, nick);
 }
 
-void srv_test_ui_user_list_rename(const char *server_name, const char *chan_name,
-        const char *old_nick, const char *new_nick, UserType type){
-    LOG_FR("server_name: %s, chan_name: %s, old_nick: %s, new_nick: %s, type: %d",
-            server_name, chan_name, old_nick, new_nick, type);
+void srv_test_ui_user_list_rm_all(const char *server_name, const char *nick,
+        const char *reason){
+    LOG_FR("server_name: %s, nick: '%s', reason: %s",
+            server_name, nick, reason);
+}
+
+void srv_test_ui_user_list_rename(const char *server_name, const char *old_nick,
+        const char *new_nick, UserType type, const char *msg){
+    LOG_FR("server_name: %s, old_nick: %s, new_nick: %s, type: %d, msg: %s",
+            server_name, old_nick, new_nick, type, msg);
 }
 
 void srv_test_ui_set_topic(const char *server_name, const char *chan_name,
