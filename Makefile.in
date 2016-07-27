@@ -102,9 +102,10 @@ clean:
 	$(DEL) build/bin
 	$(DEL) build/share
 
-XGETTEXTFLAG = --sort-output --from-code=UTF-8 --package-name=Srain	\
-			   --package-version=0.03 \
-			   --msgid-bugs-address=lastavengesr@outlook.com
+XGETTEXTFLAG = --sort-output --from-code=UTF-8 \
+			   --package-name=$(PACKAGE_NAME) \
+			   --package-version=$(PACKAGE_VERSION) \
+			   --msgid-bugs-address=$(PACKAGE_EMAIL)
 
 po/srain.pot: $(SRCS) $(UIS) Makefile
 	xgettext $(XGETTEXTFLAG) -LGlade -ktranslatable -o $@ $(UIS)

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 0.03\n"
 "Report-Msgid-Bugs-To: lastavengesr@outlook.com\n"
-"POT-Creation-Date: 2016-07-16 14:03+0800\n"
+"POT-Creation-Date: 2016-07-26 21:14+0800\n"
 "PO-Revision-Date: 2016-07-16 13:06+0800\n"
 "Last-Translator: Shengyu Zhang <lastavengers@outlook.com>\n"
 "Language-Team: none\n"
@@ -25,7 +25,7 @@ msgstr ""
 msgid "#channel"
 msgstr ""
 
-#: src/ui/srain_window.c:89
+#: src/ui/srain_window.c:88
 #, c-format
 msgid ""
 "%s\n"
@@ -34,11 +34,66 @@ msgstr ""
 "%s\n"
 "运行于 GTK+ %d.%d.%d 上"
 
-#: src/ui/ui.c:78
+#: src/srv/srv_event.c:378
+#, c-format
+msgid "%s <%s@%s> %s"
+msgstr ""
+
+#: src/srv/srv_event.c:193
+#, c-format
+msgid "%s are kicked from %s by %s: %s"
+msgstr "%s 被踢出 %s，执行者：%s，原因：%s"
+
+#: src/srv/srv_event.c:104
+#, c-format
+msgid "%s has joined %s"
+msgstr "%s 加入了 %s"
+
+#: src/srv/srv_event.c:120
+#, c-format
+msgid "%s has left %s: %s"
+msgstr "%s 离开了 %s：%s"
+
+#: src/srv/srv_event.c:83
+#, c-format
+msgid "%s has quit: %s"
+msgstr "%s 退出了服务器：%s"
+
+#: src/srv/srv_event.c:273
+#, c-format
+msgid "%s invites you into %s"
+msgstr "%s 邀请你加入 %s"
+
+#: src/srv/srv_event.c:389
+#, c-format
+msgid "%s is attached to %s at \"%s\""
+msgstr "%s 连接到服务器 %s 位于 \"%s\""
+
+#: src/srv/srv_event.c:395
+#, c-format
+msgid "%s is idle for %s seconds since %s"
+msgstr ""
+
+#: src/srv/srv_event.c:384
+#, c-format
+msgid "%s is member of %s"
+msgstr "%s 是这些频道的成员：%s"
+
+#: src/srv/srv_event.c:65
+#, c-format
+msgid "%s is now known as %s"
+msgstr "%s 现在的昵称是 %s"
+
+#: src/srv/srv_event.c:289
+#, c-format
+msgid "*** %s: %s ***"
+msgstr ""
+
+#: src/ui/ui.c:74
 msgid "ACTION"
 msgstr ""
 
-#: src/ui/srain_window.c:105
+#: src/ui/srain_window.c:104
 msgid "About Srain"
 msgstr "关于 Srain"
 
@@ -65,6 +120,11 @@ msgstr "连接"
 #: data/ui/msg_list.glade:59
 msgid "Current channel"
 msgstr "当前频道"
+
+#: src/srv/srv_event.c:410
+#, c-format
+msgid "ERROR[%3d]: %s"
+msgstr ""
 
 #: src/ui/srain_chan.c:113
 msgid "Failed to upload image"
@@ -142,7 +202,7 @@ msgstr "这条消息无法正确显示。"
 msgid "Whois"
 msgstr "个人信息"
 
-#: src/ui/ui.c:98
+#: src/ui/ui.c:94
 msgid "You"
 msgstr "你"
 
@@ -153,6 +213,16 @@ msgstr ""
 #: data/ui/chan.glade:288
 msgid "leave"
 msgstr "离开"
+
+#: src/srv/srv_event.c:138
+#, c-format
+msgid "mode %s %s %s by %s"
+msgstr ""
+
+#: src/srv/srv_event.c:156
+#, c-format
+msgid "mode %s %s by %s"
+msgstr ""
 
 #: data/ui/recv_msg.glade:55
 msgid "nickname"
