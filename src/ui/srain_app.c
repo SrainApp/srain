@@ -12,6 +12,7 @@
 
 #include "theme.h"
 #include "ui_test.h"
+#include "ui_hdr.h"
 #include "srain_app.h"
 #include "srain_window.h"
 #include "srain_chan.h"
@@ -22,7 +23,6 @@
 #include "meta.h"
 #include "rc.h"
 #include "log.h"
-#include "i18n.h"
 
 G_DEFINE_TYPE(SrainApp, srain_app, GTK_TYPE_APPLICATION);
 
@@ -32,7 +32,6 @@ SrainApp *srain_app = NULL;
 SrainWindow *srain_win = NULL;
 
 static void srain_app_activate(GtkApplication *app){
-    i18n_init();
 
     if (srain_win){
         gtk_window_present(GTK_WINDOW(srain_win));
@@ -51,14 +50,7 @@ static void srain_app_activate(GtkApplication *app){
 static void srain_app_init(SrainApp *self){
     if (srain_app) return;
 
-#ifdef UI_TEST
-    self->server_join = (ServerJoinFunc)ui_test_server_join;
-    self->server_part = (ServerPartFunc)ui_test_server_part;
-    self->server_send = (ServerSendFunc)ui_test_server_send;
-    self->server_cmd = (ServerCmdFunc)ui_test_server_cmd;
-#else
-#endif
-
+    ui_hdr_init();
     srain_app = self;
     return;
 }

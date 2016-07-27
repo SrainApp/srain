@@ -12,6 +12,7 @@
 #define NICK_LEN        64
 #define PASSWD_LEN      64
 
+#define SRV_SESSION_SERVER "Server "
 typedef enum {
     SESS_NOINUSE = 0,
     SESS_INUSE = 1,
@@ -44,9 +45,9 @@ int srv_session_free(srv_session_t *session);
 srv_session_t* srv_session_get_by_host(const char *host);
 
 int srv_session_send(srv_session_t *session, const char *target, const char *msg);
-int srv_session_cmd(srv_session_t *session, const char *source, const char *cmd);
+int srv_session_me(srv_session_t *session, const char *target, const char *msg);
 int srv_session_join(srv_session_t *session, const char *chan, const char *passwd);
 int srv_session_part(srv_session_t *session, const char *chan);
-int srv_session_quit(srv_session_t *session, const char *chan, const char *reason);
+int srv_session_quit(srv_session_t *session, const char *reason);
 
 #endif /* __SRV_SESSION_H */

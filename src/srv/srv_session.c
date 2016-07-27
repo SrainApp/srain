@@ -114,7 +114,6 @@ loop:
 
 void srv_session_init(){
     LOG_FR("...");
-    srv_hdr_init();
 
     memset(sessions, 0, sizeof(sessions));
     memset (&cbs, 0, sizeof(cbs));
@@ -143,10 +142,27 @@ void srv_session_proc(){
     g_thread_new(NULL, (GThreadFunc)_srv_session_proc, NULL);
 }
 
+/**
+ * @brief Create a srv_session
+ *
+ * @param host
+ * @param port Can be 0, fallback to 6667
+ * @param passwd Can be NULL
+ * @param nickname
+ * @param username Can be NULL
+ * @param realname Can be NULL
+ *
+ * @return NULL or srv_session_t
+ */
 srv_session_t* srv_session_new(const char *host, int port, const char *passwd,
         const char *nickname, const char *username, const char *realname){
     int i;
     srv_session_t *sess;
+
+    if (!port) port = 6667;
+    if (!passwd) passwd = "";
+    if (!username) username = nickname;
+    if (!realname) realname = nickname;
 
     if (srv_session_get_by_host(host) != NULL){
         WARN_FR("Session %s already exist", host);
@@ -171,7 +187,7 @@ srv_session_t* srv_session_new(const char *host, int port, const char *passwd,
 
     sess->irc_session = irc_create_session(&cbs);
 
-    if (!sess->irc_session){
+    if (!(sess->irc_session)){
         ERR_FR("Failed to create IRC session");
         return NULL;
     }
@@ -180,10 +196,9 @@ srv_session_t* srv_session_new(const char *host, int port, const char *passwd,
     sess->port = port;
     strncpy(sess->host, host, HOST_LEN);
     strncpy(sess->passwd, passwd, PASSWD_LEN);
-    strncpy(sess->nickname, nickname, NICK_LEN);
-    strncpy(sess->username, username, NICK_LEN);
     strncpy(sess->realname, realname, NICK_LEN);
-
+    strncpy(sess->username, username, NICK_LEN);
+    strncpy(sess->nickname, nickname, NICK_LEN);
 
     irc_set_ctx(sess->irc_session, sess);
     irc_option_set(sess->irc_session, LIBIRC_OPTION_STRIPNICKS);
@@ -233,10 +248,9 @@ int srv_session_send(srv_session_t *session,
     return irc_cmd_msg(session->irc_session, target, msg);
 }
 
-int srv_session_cmd(srv_session_t *session,
-        const char *source, const char *cmd){
-    // TODO: in a new file
-    return 0;
+int srv_session_me(srv_session_t *session,
+        const char *target, const char *msg){
+    return irc_cmd_me(session->irc_session, target, msg);
 }
 
 int srv_session_join(srv_session_t *session,
@@ -248,7 +262,6 @@ int srv_session_part(srv_session_t *session, const char *chan){
     return irc_cmd_part(session->irc_session, chan);
 }
 
-int srv_session_quit(srv_session_t *session,
-        const char *chan, const char *reason){
+int srv_session_quit(srv_session_t *session, const char *reason){
     return irc_cmd_quit(session->irc_session, reason);
 }

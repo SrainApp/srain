@@ -11,6 +11,7 @@
 
 #include <glib.h>
 #include <string.h>
+#include <strings.h>
 
 #include "srv_session.h"
 #include "srv_event.h"
@@ -42,8 +43,6 @@ void srv_event_connect(irc_session_t *irc_session, const char *event,
 
     PRINT_EVENT_PARAM;
 
-    irc_cmd_join(irc_session, "#srain", 0);
-    irc_cmd_join(irc_session, "#srain2", 0);
     sess->stat = SESS_CONNECT;
 
     // TODO: ??
@@ -95,11 +94,13 @@ void srv_event_join(irc_session_t *irc_session, const char *event,
     CHECK_COUNT(1);
     const char *chan = params[0];
 
-    // TODO: more prefix
-    if (origin[0] == '@')
-        srv_hdr_ui_user_list_add(sess->host, chan, origin, USER_FULL_OP);
-    else
-        srv_hdr_ui_user_list_add(sess->host, chan, origin, USER_CHIGUA);
+    /* YOU has join a channel */
+    if (strncasecmp(sess->nickname, origin, NICK_LEN) == 0){
+        srv_hdr_ui_add_chan(sess->host, chan);
+    }
+
+    // TODO: prefix?
+    srv_hdr_ui_user_list_add(sess->host, chan, origin, USER_CHIGUA);
 
     snprintf(msg, sizeof(msg), _("%s has joined %s"), origin, chan);
     srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_NORMAL);
@@ -120,6 +121,11 @@ void srv_event_part(irc_session_t *irc_session, const char *event,
     snprintf(msg, sizeof(msg), _("%s has left %s: %s"), origin, chan, reason);
     srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_NORMAL);
     srv_hdr_ui_user_list_rm(sess->host, origin, chan);
+
+    /* YOU has left a channel */
+    if (strncasecmp(sess->nickname, origin, NICK_LEN) == 0){
+        srv_hdr_ui_rm_chan(sess->host, chan);
+    }
 }
 
 void srv_event_mode(irc_session_t *irc_session, const char *event,
@@ -330,7 +336,8 @@ void srv_event_numeric (irc_session_t *irc_session, unsigned int event,
                 while (i < count){
                     g_string_append_printf(buf, "%s ", params[i++]);
                 }
-                srv_hdr_ui_recv_msg(sess->host, NULL, origin, sess->host, buf->str);
+                srv_hdr_ui_recv_msg(sess->host, SRV_SESSION_SERVER,
+                        origin, sess->host, buf->str);
                 g_string_free(buf, TRUE);
                 break;
             }

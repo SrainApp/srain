@@ -13,7 +13,6 @@
 #include <assert.h>
 
 #include "ui_common.h"
-#include "ui_intf.h"
 #include "theme.h"
 #include "srain_app.h"
 #include "srain_window.h"
@@ -356,6 +355,35 @@ SrainChan* srain_window_get_chan_by_name(SrainWindow *win,
     g_string_free(name, TRUE);
 
     return chan;
+}
+
+/**
+ * @brief Find out all SrainChans with the server_name given as argument
+ *
+ * @param win
+ * @param server_name
+ *
+ * @return a GList, may be NULL, should be freed by caller
+ */
+GList* srain_window_get_chans_by_srv_name(SrainWindow *win,
+        const char *server_name){
+    GList *all_chans;
+    GList *chans = NULL;
+    SrainChan *chan = NULL;
+
+    all_chans = gtk_container_get_children(GTK_CONTAINER(win->stack));
+    while (all_chans){
+        chan = SRAIN_CHAN(all_chans->data);
+
+        if (strncmp(server_name,
+                    srain_chan_get_server_name(chan),
+                    strlen(server_name)) == 0){
+            chans = g_list_append(chans, chan);
+        }
+        all_chans = g_list_next(all_chans);
+    }
+
+    return chans;
 }
 
 void srain_window_spinner_toggle(SrainWindow *win, gboolean is_busy){

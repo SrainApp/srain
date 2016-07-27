@@ -2,7 +2,6 @@
 #define __SRAIN_USER_LIST_H
 
 #include <gtk/gtk.h>
-#include "irc_magic.h"
 
 typedef enum{
     USER_OWNER,     // ~ mode +q

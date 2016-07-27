@@ -14,7 +14,7 @@
 
 #include "theme.h"
 #include "ui_common.h"
-#include "ui_intf.h"
+#include "ui_hdr.h"
 #include "srain_chan.h"
 #include "srain_entry_completion.h"
 #include "srain_msg_list.h"
@@ -155,7 +155,7 @@ static void leave_button_on_click(GtkWidget *widget, gpointer user_data){
 
     chan = user_data;
     // TODO: unquery
-    ui_intf_server_part(chan);
+    ui_hdr_srv_part(chan, "Leaving");
 }
 
 static void option_togglebutton_on_click(GtkWidget *widget, gpointer user_data){
@@ -209,9 +209,9 @@ static void input_entry_on_activate(SrainChan *chan){
     LOG_FR("chan: %s, text: '%s'", chan_name, input);
 
     if (input[0] == '/'){
-        ui_intf_server_cmd(chan, input);
+        ui_hdr_srv_cmd(chan, input);
     } else {
-        ui_intf_server_send(chan, input);
+        ui_hdr_srv_send(chan, input);
     }
 
 ret:
@@ -375,6 +375,14 @@ const char* srain_chan_get_name(SrainChan *chan){
 const char* srain_chan_get_server_name(SrainChan *chan){
     if (SRAIN_IS_CHAN(chan)) {
         return chan->server_name;
+    }
+
+    return NULL;
+}
+
+const char* srain_chan_get_chan_name(SrainChan *chan){
+    if (SRAIN_IS_CHAN(chan)) {
+        return chan->chan_name;
     }
 
     return NULL;

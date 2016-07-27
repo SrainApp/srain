@@ -6,7 +6,7 @@
  * @date 2016-03-01
  *
  * read $DESTDIR/srain/srainrc or $XDG_CONFIG_HOME/srain/srainrc,
- * call `ui_intf_server_cmd()` for every line
+ * call `ui_hdr_srv_cmd()` for every line
  */
 
 #define __LOG_ON
@@ -15,7 +15,7 @@
 #include <string.h>
 #include <gtk/gtk.h>
 
-#include "ui_intf.h"
+#include "ui_hdr.h"
 
 #include "meta.h"
 #include "log.h"
@@ -51,7 +51,7 @@ int rc_read(){
         if (line){
             strtok(line, "\n");
             LOG_FR("read: '%s'", line);
-            if (ui_intf_server_cmd(NULL, line) < 0){
+            if (ui_hdr_srv_cmd(NULL, line) < 0){
                 ERR_FR("command failed");
                 break;
             }

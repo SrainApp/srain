@@ -14,7 +14,7 @@
 #include <string.h>
 
 #include "ui_common.h"
-#include "ui_intf.h"
+#include "ui_hdr.h"
 #include "srain_window.h"
 #include "srain_msg.h"
 #include "srain_image.h"
@@ -31,7 +31,7 @@ static void nick_button_on_click(GtkWidget *widget, gpointer *user_data){
     cmd = g_string_new(NULL);
 
     g_string_printf(cmd, "/whois %s", (char *)user_data);
-    ui_intf_server_cmd(NULL, cmd->str);
+    ui_hdr_srv_cmd(NULL, cmd->str);
 
     g_string_free(cmd, TRUE);
 }

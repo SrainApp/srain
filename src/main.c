@@ -13,10 +13,12 @@
 #include <stdlib.h>
 #include <errno.h>
 
+#include "srv.h"
 #include "srv_test.h"
 
 #include "srain_app.h"
 
+#include "i18n.h"
 #include "log.h"
 
 /**
@@ -72,6 +74,8 @@ static int create_user_file(){
 }
 
 int main(int argc, char **argv){
+    i18n_init();
+    srv_init();
 
 #ifndef IRC_TEST
     return g_application_run(G_APPLICATION(srain_app_new()), argc, argv);

@@ -37,8 +37,4 @@
 #define PACKAGE_DATA_DIR "Undefined"
 #endif
 
-/* META_SERVER is a sepecial name repersents
- * the IRC server you connecting to */
-#define META_SERVER     "Server "
-
 #endif /* __META_H */

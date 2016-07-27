@@ -19,8 +19,8 @@
 #include "srain_chan.h"
 #include "srain_msg.h"
 
-#include "irc_magic.h"
-
+// TODO
+#include "srv_session.h"
 #include "markup.h"
 #include "log.h"
 
