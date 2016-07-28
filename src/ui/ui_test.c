@@ -1,3 +1,12 @@
+/**
+ * @file ui_test.c
+ * @brief
+ * @author Shengyu Zhang <lastavengers@outlook.com>
+ * @version 1.0
+ * @date 2016-07-28
+ */
+
+#define __DBG_ON
 #define __LOG_ON
 
 #include <assert.h>

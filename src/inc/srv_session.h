@@ -7,12 +7,14 @@
 #include "libirc_rfcnumeric.h"
 
 #define MAX_SESSIONS    10
-#define HOST_LEN        INET6_ADDRSTRLEN
-#define CHAN_LEN        64
-#define NICK_LEN        64
-#define PASSWD_LEN      64
+#define HOST_LEN        128
+#define CHAN_LEN        32
+#define NICK_LEN        32
+#define PASSWD_LEN      32
+#define MSG_LEN         512
 
 #define SRV_SESSION_SERVER "Server "
+
 typedef enum {
     SESS_NOINUSE = 0,
     SESS_INUSE = 1,
@@ -26,7 +28,7 @@ typedef struct {
     session_stat_t stat;
 
     // IRC context
-    char host[INET6_ADDRSTRLEN];
+    char host[HOST_LEN];
     int port;
     char passwd[PASSWD_LEN]; // Server password
     char nickname[NICK_LEN];

@@ -1,10 +1,12 @@
 /**
  * @file ui.c
- * @brief UI module interface
+ * @brief UI module interfaces
  * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-06-29
  */
+
+#define __DBG_ON
 
 #include <gtk/gtk.h>
 #include <string.h>
@@ -14,8 +16,241 @@
 #include "srain_chan.h"
 #include "srain_window.h"
 
+#include "srv_session.h"
+
 #include "i18n.h"
 #include "log.h"
+
+typedef struct {
+    void *ui_interface;
+    char srv_name[HOST_LEN];
+    char chan_name[CHAN_LEN];
+    char nick[NICK_LEN];
+    char nick2[NICK_LEN];
+    char msg[MSG_LEN];
+    int type;
+} CommonUIData;
+
+void ui_idle_destroy_data(void *data){
+    DBG_FR("CommonUIData %p freed", data);
+    g_free(data);
+}
+
+int ui_idle(CommonUIData *data){
+    DBG_FR("Idle call, data: %p", data);
+    DBG_FR("func: %p", data->ui_interface);
+
+    if (data->ui_interface == ui_add_chan_sync){
+        const char *srv_name = data->srv_name;
+        const char *chan_name = data->chan_name;
+        ui_add_chan_sync(srv_name, chan_name);
+    }
+    else if (data->ui_interface == ui_rm_chan_sync){
+        const char *srv_name = data->srv_name;
+        const char *chan_name = data->chan_name;
+        ui_rm_chan_sync(srv_name, chan_name);
+    }
+    else if (data->ui_interface == ui_sys_msg_sync){
+        const char *srv_name = data->srv_name;
+        const char *chan_name = data->chan_name;
+        const char *msg = data->msg;
+        SysMsgType type = data->type;
+        ui_sys_msg_sync(srv_name, chan_name, msg, type);
+    }
+    else if (data->ui_interface == ui_send_msg_sync){
+        const char *srv_name = data->srv_name;
+        const char *chan_name = data->chan_name;
+        const char *msg = data->msg;
+        ui_send_msg_sync(srv_name, chan_name, msg);
+    }
+    else if (data->ui_interface == ui_recv_msg_sync){
+        const char *srv_name = data->srv_name;
+        const char *chan_name = data->chan_name;
+        const char *nick = data->nick;
+        const char *id = data->nick2;
+        const char *msg = data->msg;
+        ui_recv_msg_sync(srv_name, chan_name, nick, id, msg);
+    }
+    else if (data->ui_interface == ui_user_list_add_sync){
+        const char *srv_name = data->srv_name;
+        const char *chan_name = data->chan_name;
+        const char *nick = data->nick;
+        UserType type = data->type;
+        ui_user_list_add_sync(srv_name, chan_name, nick, type);
+    }
+    else if (data->ui_interface == ui_user_list_rm_sync){
+        const char *srv_name = data->srv_name;
+        const char *chan_name = data->chan_name;
+        const char *nick = data->nick;
+        ui_user_list_rm(srv_name, chan_name, nick);
+    }
+    else if (data->ui_interface == ui_user_list_rm_all_sync){
+        const char *srv_name = data->srv_name;
+        const char *chan_name = data->chan_name;
+        const char *reason = data->msg;
+        ui_user_list_rm_all_sync(srv_name, chan_name, reason);
+    }
+    else if (data->ui_interface == ui_user_list_rename_sync){
+        const char *srv_name = data->srv_name;
+        const char *chan_name = data->chan_name;
+        const char *nick = data->nick;
+        const char *new_nick = data->nick2;
+        const char *reason = data->msg;
+        UserType type = data->type;
+        ui_user_list_rename_sync(srv_name, nick, new_nick, type, reason);
+    }
+    else if (data->ui_interface == ui_set_topic_sync){
+        const char *srv_name = data->srv_name;
+        const char *chan_name = data->chan_name;
+        const char *topic = data->nick;
+        ui_set_topic(srv_name, chan_name, topic);
+    }
+    else {
+        ERR_FR("Invaild function pointer :(");
+    }
+
+    return FALSE;
+}
+
+/* ======================================================================= */
+/* Note: the following functions are asynchronous and thread-safed, enjoy~ */
+/* ======================================================================= */
+
+void ui_add_chan(const char *srv_name, const char *chan_name){
+    CommonUIData *data = g_malloc0(sizeof(CommonUIData));
+
+    data->ui_interface = ui_add_chan_sync;
+    strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
+    strncpy(data->chan_name, chan_name, sizeof(data->chan_name));
+
+    gdk_threads_add_idle_full(G_PRIORITY_DEFAULT_IDLE,
+            (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
+}
+
+void ui_rm_chan(const char *srv_name, const char *chan_name){
+    CommonUIData *data = g_malloc0(sizeof(CommonUIData));
+
+    data->ui_interface = ui_rm_chan_sync;
+    strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
+    strncpy(data->chan_name, chan_name, sizeof(data->chan_name));
+
+    gdk_threads_add_idle_full(G_PRIORITY_DEFAULT_IDLE,
+            (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
+}
+
+void ui_sys_msg(const char *srv_name, const char *chan_name,
+        const char *msg, SysMsgType type){
+    CommonUIData *data = g_malloc0(sizeof(CommonUIData));
+
+    DBG_FR("%s %s %s %d", srv_name, chan_name, msg, type);
+    data->ui_interface = ui_sys_msg_sync;
+    strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
+    strncpy(data->chan_name, chan_name, sizeof(data->chan_name));
+    strncpy(data->msg, msg, sizeof(data->msg));
+    data->type = type;
+
+    gdk_threads_add_idle_full(G_PRIORITY_DEFAULT_IDLE,
+            (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
+}
+
+void ui_send_msg(const char *srv_name, const char *chan_name,
+        const char *msg){
+    CommonUIData *data = g_malloc0(sizeof(CommonUIData));
+
+    data->ui_interface = ui_send_msg_sync;
+    strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
+    strncpy(data->chan_name, chan_name, sizeof(data->chan_name));
+    strncpy(data->msg, msg, sizeof(data->msg));
+
+    gdk_threads_add_idle_full(G_PRIORITY_DEFAULT_IDLE,
+            (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
+}
+
+void ui_recv_msg(const char *srv_name, const char *chan_name,
+        const char *nick, const char *id, const char *msg){
+    CommonUIData *data = g_malloc0(sizeof(CommonUIData));
+
+    data->ui_interface = ui_recv_msg_sync;
+    strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
+    strncpy(data->chan_name, chan_name, sizeof(data->chan_name));
+    strncpy(data->nick, nick, sizeof(data->nick));
+    strncpy(data->nick2, id, sizeof(data->msg));
+    strncpy(data->msg, msg, sizeof(data->msg));
+
+    gdk_threads_add_idle_full(G_PRIORITY_DEFAULT_IDLE,
+            (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
+}
+
+void ui_user_list_add(const char *srv_name, const char *chan_name,
+ const char *nick, UserType type){
+    CommonUIData *data = g_malloc0(sizeof(CommonUIData));
+
+    data->ui_interface = ui_user_list_add_sync;
+    strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
+    strncpy(data->chan_name, chan_name, sizeof(data->chan_name));
+    strncpy(data->nick, nick, sizeof(data->nick));
+    data->type = type;
+
+    gdk_threads_add_idle_full(G_PRIORITY_DEFAULT_IDLE,
+            (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
+}
+
+void ui_user_list_rm(const char *srv_name, const char *chan_name,
+        const char *nick){
+    CommonUIData *data = g_malloc0(sizeof(CommonUIData));
+
+    data->ui_interface = ui_user_list_rm_sync;
+    strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
+    strncpy(data->chan_name, chan_name, sizeof(data->chan_name));
+    strncpy(data->nick, nick, sizeof(data->nick));
+
+    gdk_threads_add_idle_full(G_PRIORITY_DEFAULT_IDLE,
+            (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
+}
+
+void ui_user_list_rm_all(const char *srv_name, const char *nick,
+        const char *reason){
+    CommonUIData *data = g_malloc0(sizeof(CommonUIData));
+
+    data->ui_interface = ui_user_list_rm_all_sync;
+    strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
+    strncpy(data->nick, nick, sizeof(data->nick));
+    strncpy(data->msg, reason, sizeof(data->msg));
+
+    gdk_threads_add_idle_full(G_PRIORITY_DEFAULT_IDLE,
+            (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
+}
+
+void ui_user_list_rename(const char *srv_name, const char *old_nick,
+        const char *new_nick, UserType type, const char *msg){
+    CommonUIData *data = g_malloc0(sizeof(CommonUIData));
+
+    data->ui_interface = ui_user_list_rename_sync;
+    strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
+    strncpy(data->nick, old_nick, sizeof(data->nick));
+    strncpy(data->nick2, new_nick, sizeof(data->nick2));
+    strncpy(data->msg, msg, sizeof(data->msg));
+    data->type = type;
+
+    gdk_threads_add_idle_full(G_PRIORITY_DEFAULT_IDLE,
+            (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
+}
+
+void ui_set_topic(const char *srv_name, const char *chan_name,
+        const char *topic){
+    CommonUIData *data = g_malloc0(sizeof(CommonUIData));
+
+    data->ui_interface = ui_set_topic_sync;
+    strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
+    strncpy(data->msg, topic, sizeof(data->msg));
+
+    gdk_threads_add_idle_full(G_PRIORITY_DEFAULT_IDLE,
+            (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
+}
+
+/* ================================================================================ */
+/* Note: the following functions are synchronous, should be called from main thread */
+/* ================================================================================ */
 
 /**
  * @brief Add a channel to main window
@@ -23,7 +258,7 @@
  * @param srv_name Server's name, can't contains whitespace
  * @param chan_name Channel's name, can't contains whitespace
  */
-void ui_add_chan(const char *srv_name, const char *chan_name){
+void ui_add_chan_sync(const char *srv_name, const char *chan_name){
     srain_window_add_chan(srain_win, srv_name, chan_name);
 }
 
@@ -33,7 +268,7 @@ void ui_add_chan(const char *srv_name, const char *chan_name){
  * @param srv_name Server's name, can't contains whitespace
  * @param chan_name Channel's name, can't contains whitespace
  */
-void ui_rm_chan(const char *srv_name, const char *chan_name){
+void ui_rm_chan_sync(const char *srv_name, const char *chan_name){
     SrainChan *chan;
     chan = srain_window_get_chan_by_name(srain_win, srv_name, chan_name);
 
@@ -49,8 +284,7 @@ void ui_rm_chan(const char *srv_name, const char *chan_name){
  * @param msg
  * @param type If it is SYS_MSG_ACTION, sidebar should be updated
  */
-void
-ui_sys_msg(const char *srv_name, const char *chan_name,
+void ui_sys_msg_sync(const char *srv_name, const char *chan_name,
         const char *msg, SysMsgType type){
     SrainChan *chan;
     SrainMsgList *list;
@@ -73,8 +307,7 @@ ui_sys_msg(const char *srv_name, const char *chan_name,
  * @param chan This channel must be existent
  * @param msg
  */
-void
-ui_send_msg(const char *srv_name, const char *chan_name, const char *msg){
+void ui_send_msg_sync(const char *srv_name, const char *chan_name, const char *msg){
     SrainChan *chan;
     SrainMsgList *list;
 
@@ -96,8 +329,7 @@ ui_send_msg(const char *srv_name, const char *chan_name, const char *msg){
  * @param id
  * @param msg
  */
-void
-ui_recv_msg(const char *srv_name, const char *chan_name,
+void ui_recv_msg_sync(const char *srv_name, const char *chan_name,
         const char *nick, const char *id, const char *msg){
     SrainChan *chan;
     SrainMsgList *list;
@@ -125,8 +357,7 @@ ui_recv_msg(const char *srv_name, const char *chan_name,
  * @param nick
  * @param type
  */
-void
-ui_user_list_add(const char *srv_name, const char *chan_name,
+void ui_user_list_add_sync(const char *srv_name, const char *chan_name,
         const char *nick, UserType type){
     SrainChan *chan;
     SrainUserList *list;
@@ -149,7 +380,7 @@ ui_user_list_add(const char *srv_name, const char *chan_name,
  * @param chan_name
  * @param nick
  */
-void ui_user_list_rm(const char *srv_name, const char *chan_name,
+void ui_user_list_rm_sync(const char *srv_name, const char *chan_name,
         const char *nick){
     SrainChan *chan;
     SrainUserList *list;
@@ -173,7 +404,7 @@ void ui_user_list_rm(const char *srv_name, const char *chan_name,
  * @param reason When nick was removed form a channel, send `reason`
  *          to this channel using `ui_sys_msg()`
  */
-void ui_user_list_rm_all(const char *srv_name, const char *nick,
+void ui_user_list_rm_all_sync(const char *srv_name, const char *nick,
         const char *reason){
     const char *chan_name;
     GList *chans;
@@ -201,7 +432,7 @@ void ui_user_list_rm_all(const char *srv_name, const char *nick,
  * @param msg When nick was renamed in a channel, send `reason`
  *          to this channel using `ui_sys_msg()`
  */
-void ui_user_list_rename(const char *srv_name, const char *old_nick,
+void ui_user_list_rename_sync(const char *srv_name, const char *old_nick,
         const char *new_nick, UserType type, const char *msg){
     const char *chan_name;
     GList *chans;
@@ -235,8 +466,7 @@ void ui_user_list_rename(const char *srv_name, const char *old_nick,
  * @param chan_name
  * @param topic
  */
-void
-ui_set_topic(const char *srv_name, const char *chan_name, const char *topic){
+void ui_set_topic_sync(const char *srv_name, const char *chan_name, const char *topic){
     SrainChan *chan;
 
     chan = srain_window_get_chan_by_name(srain_win, srv_name, chan_name);

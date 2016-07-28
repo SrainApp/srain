@@ -76,7 +76,7 @@ int ui_hdr_srv_cmd(SrainChan *chan, const char *cmd){
 
         res = _ui_hdr_srv_cmd(srv_name, chan_name, cmd2);
     } else {
-        DBG_FR("srv_name: %s, chan_name: %s, cmd: '%s'", NULL, NULL, cmd);
+        DBG_FR("srv_name: %s, chan_name: %s, cmd: '%s'", "NULL", "NULL", cmd);
 
         res = _ui_hdr_srv_cmd(NULL, NULL, cmd2);
     }

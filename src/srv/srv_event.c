@@ -277,7 +277,7 @@ void srv_event_invite(irc_session_t *irc_session, const char *event,
     const char *chan = params[1];
 
     snprintf(msg, sizeof(msg), _("%s invites you into %s"), origin, chan);
-    srv_hdr_ui_sys_msg(sess->host, NULL, msg, SYS_MSG_NORMAL);
+    srv_hdr_ui_sys_msg(sess->host, "", msg, SYS_MSG_NORMAL);
 }
 
 void srv_event_ctcp_action(irc_session_t *irc_session, const char *event,
@@ -384,29 +384,29 @@ void srv_event_numeric (irc_session_t *irc_session, unsigned int event,
             CHECK_COUNT(5);
             snprintf(buf, sizeof(buf), _("%s <%s@%s> %s"), params[1], params[2],
                     params[3], params[4]);
-            srv_hdr_ui_sys_msg(sess->host, NULL, buf, SYS_MSG_NORMAL);
+            srv_hdr_ui_sys_msg(sess->host, "", buf, SYS_MSG_NORMAL);
             break;
         case LIBIRC_RFC_RPL_WHOISCHANNELS:
             CHECK_COUNT(3);
             snprintf(buf, sizeof(buf), _("%s is member of %s"), params[1], params[2]);
-            srv_hdr_ui_sys_msg(sess->host, NULL, buf, SYS_MSG_NORMAL);
+            srv_hdr_ui_sys_msg(sess->host, "", buf, SYS_MSG_NORMAL);
             break;
         case LIBIRC_RFC_RPL_WHOISSERVER:
             CHECK_COUNT(4);
             snprintf(buf, sizeof(buf), _("%s is attached to %s at \"%s\""),
                     params[1], params[2], params[3]);
-            srv_hdr_ui_sys_msg(sess->host, NULL, buf, SYS_MSG_NORMAL);
+            srv_hdr_ui_sys_msg(sess->host, "", buf, SYS_MSG_NORMAL);
             break;
         case LIBIRC_RFC_RPL_WHOISIDLE:
             CHECK_COUNT(5); // TODO
             snprintf(buf, sizeof(buf), _("%s is idle for %s seconds since %s"),
                     params[1], params[2], params[3]);
-            srv_hdr_ui_sys_msg(sess->host, NULL, buf, SYS_MSG_NORMAL);
+            srv_hdr_ui_sys_msg(sess->host, "", buf, SYS_MSG_NORMAL);
             break;
             // TODO 378 330
         case LIBIRC_RFC_RPL_ENDOFWHOIS:
             CHECK_COUNT(2);
-            srv_hdr_ui_sys_msg(sess->host, NULL, params[1], SYS_MSG_NORMAL);
+            srv_hdr_ui_sys_msg(sess->host, "", params[1], SYS_MSG_NORMAL);
             break;
     }
 
@@ -415,7 +415,7 @@ void srv_event_numeric (irc_session_t *irc_session, unsigned int event,
         char msg[512];
 
         snprintf(msg, sizeof(msg), _("ERROR[%3d]: %s"), event, params[count-1]);
-        srv_hdr_ui_sys_msg(sess->host, NULL, msg, SYS_MSG_ERROR);
+        srv_hdr_ui_sys_msg(sess->host, "", msg, SYS_MSG_ERROR);
         return;
     }
 }
