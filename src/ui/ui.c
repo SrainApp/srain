@@ -47,10 +47,12 @@ int ui_idle(CommonUIData *data){
     }
     else if (data->ui_interface == ui_rm_chan_sync){
         const char *srv_name = data->srv_name;
+        DBG_FR("ui_rm_chan_sync");
         const char *chan_name = data->chan_name;
         ui_rm_chan_sync(srv_name, chan_name);
     }
     else if (data->ui_interface == ui_sys_msg_sync){
+        DBG_FR("ui_sys_msg_sync");
         const char *srv_name = data->srv_name;
         const char *chan_name = data->chan_name;
         const char *msg = data->msg;
@@ -58,12 +60,14 @@ int ui_idle(CommonUIData *data){
         ui_sys_msg_sync(srv_name, chan_name, msg, type);
     }
     else if (data->ui_interface == ui_send_msg_sync){
+        DBG_FR("ui_send_msg_sync");
         const char *srv_name = data->srv_name;
         const char *chan_name = data->chan_name;
         const char *msg = data->msg;
         ui_send_msg_sync(srv_name, chan_name, msg);
     }
     else if (data->ui_interface == ui_recv_msg_sync){
+        DBG_FR("ui_recv_msg_sync");
         const char *srv_name = data->srv_name;
         const char *chan_name = data->chan_name;
         const char *nick = data->nick;
@@ -72,6 +76,7 @@ int ui_idle(CommonUIData *data){
         ui_recv_msg_sync(srv_name, chan_name, nick, id, msg);
     }
     else if (data->ui_interface == ui_user_list_add_sync){
+        DBG_FR("ui_user_list_add_sync");
         const char *srv_name = data->srv_name;
         const char *chan_name = data->chan_name;
         const char *nick = data->nick;
@@ -79,18 +84,21 @@ int ui_idle(CommonUIData *data){
         ui_user_list_add_sync(srv_name, chan_name, nick, type);
     }
     else if (data->ui_interface == ui_user_list_rm_sync){
+        DBG_FR("ui_user_list_rm_sync");
         const char *srv_name = data->srv_name;
         const char *chan_name = data->chan_name;
         const char *nick = data->nick;
-        ui_user_list_rm(srv_name, chan_name, nick);
+        ui_user_list_rm_sync(srv_name, chan_name, nick);
     }
     else if (data->ui_interface == ui_user_list_rm_all_sync){
+        DBG_FR("ui_user_list_rm_all_sync");
         const char *srv_name = data->srv_name;
         const char *chan_name = data->chan_name;
         const char *reason = data->msg;
         ui_user_list_rm_all_sync(srv_name, chan_name, reason);
     }
     else if (data->ui_interface == ui_user_list_rename_sync){
+        DBG_FR("ui_user_list_rename_sync");
         const char *srv_name = data->srv_name;
         const char *chan_name = data->chan_name;
         const char *nick = data->nick;
@@ -100,10 +108,11 @@ int ui_idle(CommonUIData *data){
         ui_user_list_rename_sync(srv_name, nick, new_nick, type, reason);
     }
     else if (data->ui_interface == ui_set_topic_sync){
+        DBG_FR("ui_set_topic_sync");
         const char *srv_name = data->srv_name;
         const char *chan_name = data->chan_name;
         const char *topic = data->nick;
-        ui_set_topic(srv_name, chan_name, topic);
+        ui_set_topic_sync(srv_name, chan_name, topic);
     }
     else {
         ERR_FR("Invaild function pointer :(");
