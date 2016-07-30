@@ -47,7 +47,7 @@ GString *download(const char *url){
     FILE *fp;
     GString *path;
     CURL *curl;
-    CURLcode res;
+    CURLcode res = 0;
 
     LOG_FR("%s", url);
     path = url2path(url);

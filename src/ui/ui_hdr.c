@@ -56,7 +56,7 @@ void ui_hdr_init(){
  *
  * @return 0 if successed, -1 if failed
  */
-int ui_hdr_srv_cmd(SrainChan *chan, const char *cmd){
+int ui_hdr_srv_cmd(SrainChan *chan, char *cmd){
     int res;
     char *cmd2;
     const char *srv_name;

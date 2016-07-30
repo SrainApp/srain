@@ -70,7 +70,7 @@ int srv_session_cmd(srv_session_t *session, const char *source, char *cmd){
     }
 
     else if (IS_CMD(cmd, "/ignore")){
-        char *nick = strtok(cmd + strlen("/ignore"), " ");
+        // char *nick = strtok(cmd + strlen("/ignore"), " ");
         // TODO
         // if (nick) return filter_ignore_list_add(nick);
     }

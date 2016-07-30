@@ -301,7 +301,7 @@ void srv_event_ctcp_action(irc_session_t *irc_session, const char *event,
     const char *msg1 = params[1];
 
     snprintf(msg, sizeof(msg), _("*** %s: %s ***"), origin, msg1);
-    srv_hdr_ui_sys_msg(sess->host, origin, msg, SYS_MSG_ACTION);
+    srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_ACTION);
 }
 
 void srv_event_numeric (irc_session_t *irc_session, unsigned int event,

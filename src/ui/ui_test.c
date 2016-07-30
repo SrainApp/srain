@@ -28,7 +28,7 @@ int ui_test_srv_send(const char *srv_name, const char *chan_name, const char *ms
     return 0;
 }
 
-int ui_test_srv_cmd(const char *srv_name, const char *chan_name, const char *cmd){
+int ui_test_srv_cmd(const char *srv_name, const char *chan_name, char *cmd){
     return 0;
 }
 

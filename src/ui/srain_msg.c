@@ -36,16 +36,6 @@ static void nick_button_on_click(GtkWidget *widget, gpointer *user_data){
     g_string_free(cmd, TRUE);
 }
 
-static gint menu_popup(GtkWidget *label, GdkEventButton *event, GtkWidget *menu){
-    if (event->button == 3
-            && !gtk_label_get_selection_bounds(GTK_LABEL(label), NULL, NULL)){
-        gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL,
-                event->button, event->time);
-        return TRUE;
-    }
-    return FALSE;
-}
-
 /* ================ SRAIN_SYS_MSG ================ */
 G_DEFINE_TYPE(SrainSysMsg, srain_sys_msg, GTK_TYPE_BOX);
 
