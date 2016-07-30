@@ -20,10 +20,7 @@ PACKAGE_DATA_DIR = $(PREFIX)
 
 MAKE = make
 DEL = rm -rf
-CC = gcc
-TEST_FLAG = NO_TEST
-DEFS = -D PACKAGE='"$(PACKAGE)"' \
-	   -D PACKAGE_NAME='"$(PACKAGE_NAME)"' \
+CC = gcc TEST_FLAG = NO_TEST DEFS = -D PACKAGE='"$(PACKAGE)"' \ -D PACKAGE_NAME='"$(PACKAGE_NAME)"' \
 	   -D PACKAGE_VERSION='"$(PACKAGE_VERSION)"' \
 	   -D PACKAGE_AUTHOR='"$(PACKAGE_AUTHOR)"' \
 	   -D PACKAGE_EMAIL='"$(PACKAGE_EMAIL)"' \
@@ -49,6 +46,8 @@ OBJS = $(patsubst %.c, build/%.o, $(notdir $(SRCS)))
 UIS = $(wildcard data/ui/*.glade)
 
 default: Makefile src/Makefile data/ui/Makefile
+	$(MAKE) po
+	$(MAKE) mo
 	$(MAKE) -C src
 	$(MAKE) -C data/ui
 	$(MAKE) $(TARGET)
