@@ -5,7 +5,7 @@
  * @date 2016-06-29
  */
 
-#define __DBG_ON
+// #define __DBG_ON
 
 #include <gtk/gtk.h>
 #include <string.h>
@@ -45,8 +45,8 @@ int ui_idle(CommonUIData *data){
         ui_add_chan_sync(srv_name, chan_name);
     }
     else if (data->ui_interface == ui_rm_chan_sync){
-        const char *srv_name = data->srv_name;
         DBG_FR("ui_rm_chan_sync");
+        const char *srv_name = data->srv_name;
         const char *chan_name = data->chan_name;
         ui_rm_chan_sync(srv_name, chan_name);
     }
@@ -328,20 +328,31 @@ int ui_add_chan_sync(const char *srv_name, const char *chan_name){
  * @brief Remove a channel from main window
  *
  * @param srv_name Server's name, can't contains whitespace
- * @param chan_name Channel's name, can't contains whitespace
+ * @param chan_name Channel's name, if chan_name == ""(empty string), remove
+ *          all channel with the srv_name given as the argument
  *
  * @return 0 if successful, -1 if failed
  */
 int ui_rm_chan_sync(const char *srv_name, const char *chan_name){
+    GList *chans;
     SrainChan *chan;
-    chan = srain_window_get_chan_by_name(srain_win, srv_name, chan_name);
 
-    if (chan == NULL){
-        ERR_FR("No such channel: %s %s", srv_name, chan_name);
-        return -1;
+    if (strcmp(chan_name, "") == 0){
+        chans = srain_window_get_chans_by_srv_name(srain_win, srv_name);
+        while (chans){
+            srain_window_rm_chan(srain_win, chans->data);
+            chans = g_list_next(chans);
+        }
+
+        g_list_free(chans);
+    } else {
+        chan = srain_window_get_chan_by_name(srain_win, srv_name, chan_name);
+        if (chan == NULL){
+            ERR_FR("No such channel: %s %s", srv_name, chan_name);
+            return -1;
+        }
+        srain_window_rm_chan(srain_win, chan);
     }
-
-    srain_window_rm_chan(srain_win, chan);
 
     return 0;
 }

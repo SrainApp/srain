@@ -6,8 +6,8 @@
  * @date 2016-07-19
  */
 
-#define __DBG_ON
-// #define __LOG_ON
+// #define __DBG_ON
+#define __LOG_ON
 
 #include <glib.h>
 #include <string.h>
@@ -46,7 +46,6 @@ void srv_event_connect(irc_session_t *irc_session, const char *event,
     sess->stat = SESS_CONNECT;
 
     srv_hdr_ui_add_chan(sess->host, SRV_SESSION_SERVER);
-    // TODO: ??
 }
 
 void srv_event_nick(irc_session_t *irc_session, const char *event,
@@ -74,15 +73,22 @@ void srv_event_quit(irc_session_t *irc_session, const char *event,
 
     sess = irc_get_ctx(irc_session);
 
+    sess->stat = SESS_NOINUSE;
+
     PRINT_EVENT_PARAM;
 
     CHECK_COUNT(1);
     reason = params[0];
 
-    LOG_FR("====");
     snprintf(msg, sizeof(msg), _("%s has quit: %s"), origin, reason);
-    LOG_FR("====");
     srv_hdr_ui_user_list_rm_all(sess->host, origin, msg);
+
+    /* You quit */
+    if (strncasecmp(origin, sess->nickname, NICK_LEN) == 0){
+        /* Remove all chans belong to this session */
+        srv_hdr_ui_rm_chan(sess->host, "");
+        srv_session_free(sess);
+    }
 }
 
 void srv_event_join(irc_session_t *irc_session, const char *event,

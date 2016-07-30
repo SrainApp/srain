@@ -33,6 +33,8 @@
 
 int srv_session_cmd(srv_session_t *session, const char *source, char *cmd){
 
+    WARN_FR("Wrong parameters, session: %p source: %s, cmd: %s", session, source, cmd);
+    if (session) WARN_FR("stat: %d", session->stat);
     /* Usage: /connect <host> <nick> [port=<port>] [passwd=<passwd>] [realname=<realname>] */
     if (IS_CMD(cmd, "/connect")){
         char *host = strtok(cmd + strlen("/connect"), " ");
@@ -75,8 +77,9 @@ int srv_session_cmd(srv_session_t *session, const char *source, char *cmd){
     // TODO: impl /unignore
     // TODO: impl /unrelaybot
 
+    if (session) WARN_FR("stat: %d", session->stat);
     /* In the following commands, `source` and `session` MUST be vaild */
-    if (!srv_session_is_session(session) && source){
+    if (srv_session_is_session(session) && source){
 
         /* Usage: /query <nickname> */
         if (IS_CMD(cmd, "/query")){

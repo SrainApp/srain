@@ -19,9 +19,9 @@
 
 typedef enum {
     SESS_NOINUSE = 0,
-    SESS_INUSE = 1,
-    SESS_CONNECT = 2,
-    SESS_LOGIN = 3,
+    SESS_INUSE,
+    SESS_CONNECT,
+    SESS_LOGIN,
     /*...*/
 } session_stat_t;
 

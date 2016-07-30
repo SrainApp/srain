@@ -29,9 +29,12 @@ static int srv_session_get_index(srv_session_t *session){
         return -1;
     }
 
+    // TODO: access data from another thread?
+    srv_session_t *session2;
     for (i = 0; i < MAX_SESSIONS; i++){
-        if (&sessions[i] == session){
-            if (session[i].stat == SESS_NOINUSE){
+        session2 = &sessions[i];
+        if (session2 == session){
+            if (session2->stat == SESS_NOINUSE){
                 return -1;
             } else {
                 return i;
@@ -210,6 +213,7 @@ srv_session_t* srv_session_new(const char *host, int port, const char *passwd,
         return NULL;
     }
 
+    DBG_FR("Alloc session: %p for %s", sess, sess->host);
     return sess;
 }
 
@@ -238,8 +242,10 @@ int srv_session_free(srv_session_t *session){
 srv_session_t* srv_session_get_by_host(const char *host){
     int i;
 
+    if (!host) return NULL;
+
     for (i = 0; i < MAX_SESSIONS; i++){
-        if (sessions[i].irc_session == 0) continue;
+        if (sessions[i].stat == SESS_NOINUSE) continue;
         if (strcmp(sessions[i].host, host) == 0)
             return &sessions[i];
     }
