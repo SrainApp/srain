@@ -76,9 +76,6 @@ int srv_cmd(const char *srv_name, const char *source, char *cmd){
     srv_session_t *session;
 
     session = srv_session_get_by_host(srv_name);
-    if (!session){
-        WARN_FR("No such session %s", srv_name);
-    }
 
     return srv_session_cmd(session, source, cmd);
 }

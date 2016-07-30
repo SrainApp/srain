@@ -99,7 +99,6 @@ int ui_idle(CommonUIData *data){
     else if (data->ui_interface == ui_user_list_rename_sync){
         DBG_FR("ui_user_list_rename_sync");
         const char *srv_name = data->srv_name;
-        const char *chan_name = data->chan_name;
         const char *nick = data->nick;
         const char *new_nick = data->nick2;
         const char *reason = data->msg;
@@ -145,7 +144,7 @@ void ui_add_chan(const char *srv_name, const char *chan_name){
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
     strncpy(data->chan_name, chan_name, sizeof(data->chan_name));
 
-    gdk_threads_add_idle_full(G_PRIORITY_DEFAULT_IDLE,
+    gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 
@@ -159,7 +158,7 @@ void ui_rm_chan(const char *srv_name, const char *chan_name){
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
     strncpy(data->chan_name, chan_name, sizeof(data->chan_name));
 
-    gdk_threads_add_idle_full(G_PRIORITY_DEFAULT_IDLE,
+    gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 
@@ -177,7 +176,7 @@ void ui_sys_msg(const char *srv_name, const char *chan_name,
     strncpy(data->msg, msg, sizeof(data->msg));
     data->type = type;
 
-    gdk_threads_add_idle_full(G_PRIORITY_DEFAULT_IDLE,
+    gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 
@@ -194,7 +193,7 @@ void ui_send_msg(const char *srv_name, const char *chan_name,
     strncpy(data->chan_name, chan_name, sizeof(data->chan_name));
     strncpy(data->msg, msg, sizeof(data->msg));
 
-    gdk_threads_add_idle_full(G_PRIORITY_DEFAULT_IDLE,
+    gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 
@@ -215,7 +214,7 @@ void ui_recv_msg(const char *srv_name, const char *chan_name,
     strncpy(data->nick2, id, sizeof(data->msg));
     strncpy(data->msg, msg, sizeof(data->msg));
 
-    gdk_threads_add_idle_full(G_PRIORITY_DEFAULT_IDLE,
+    gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 
@@ -233,7 +232,7 @@ void ui_user_list_add(const char *srv_name, const char *chan_name,
     strncpy(data->nick, nick, sizeof(data->nick));
     data->type = type;
 
-    gdk_threads_add_idle_full(G_PRIORITY_DEFAULT_IDLE,
+    gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 
@@ -250,7 +249,7 @@ void ui_user_list_rm(const char *srv_name, const char *chan_name,
     strncpy(data->chan_name, chan_name, sizeof(data->chan_name));
     strncpy(data->nick, nick, sizeof(data->nick));
 
-    gdk_threads_add_idle_full(G_PRIORITY_DEFAULT_IDLE,
+    gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 
@@ -267,7 +266,7 @@ void ui_user_list_rm_all(const char *srv_name, const char *nick,
     strncpy(data->nick, nick, sizeof(data->nick));
     strncpy(data->msg, reason, sizeof(data->msg));
 
-    gdk_threads_add_idle_full(G_PRIORITY_DEFAULT_IDLE,
+    gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 
@@ -287,7 +286,7 @@ void ui_user_list_rename(const char *srv_name, const char *old_nick,
     strncpy(data->msg, msg, sizeof(data->msg));
     data->type = type;
 
-    gdk_threads_add_idle_full(G_PRIORITY_DEFAULT_IDLE,
+    gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 
@@ -303,7 +302,7 @@ void ui_set_topic(const char *srv_name, const char *chan_name,
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
     strncpy(data->msg, topic, sizeof(data->msg));
 
-    gdk_threads_add_idle_full(G_PRIORITY_DEFAULT_IDLE,
+    gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 

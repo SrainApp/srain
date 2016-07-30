@@ -10,8 +10,10 @@
 
 #include <string.h>
 #include <glib.h>
+
+#include "srv_session.h"
+
 #include "meta.h"
-#include "irc.h"
 #include "log.h"
 
 GList *ignore_list;
@@ -24,6 +26,7 @@ typedef struct {
 } RelaybotInfo;
 
 /* if imsg->nick exist in relaybot_list,
+ * TODO: update
  * and imsg->message starts with "<ldeilm><human's nick><rdelim>"
  * let imsg->servername = imsg->nick
  *     imsg->nick = human's nick
@@ -43,7 +46,7 @@ typedef struct {
  *  
  *  if {nick,ldelim,rdelim} no matched, nothing will be changed.
  */
-void filter_relaybot_trans(IRCMsg *imsg){
+void filter_relaybot_trans(const char *orgin_nick, char *nick, char *msg){
     int nick_len;
     int max_msg_len;
     char *rdelim_ptr;
@@ -55,29 +58,27 @@ void filter_relaybot_trans(IRCMsg *imsg){
     while (lst){
         info = lst->data;
 
-        if (strncmp(info->nick, imsg->nick, NICK_LEN) == 0){
-            LOG_FR("relaybot %s found", info->nick);
+        if (strncmp(info->nick, orgin_nick, NICK_LEN) == 0){
+            DBG_FR("Relaybot %s found", info->nick);
 
             /* left delimiter matched */
-            if (strncmp(imsg->message, info->ldelim, strlen(info->ldelim)) == 0){
-                LOG_FR("left delim %s found", info->ldelim);
+            if (strncmp(msg, info->ldelim, strlen(info->ldelim)) == 0){
+                DBG_FR("Left delim %s found", info->ldelim);
 
-                rdelim_ptr = strstr(imsg->message, info->rdelim);
+                rdelim_ptr = strstr(msg, info->rdelim);
                 /* right delimiter matched */
                 if (rdelim_ptr){
-                    nick_len = rdelim_ptr - imsg->message - strlen(info->ldelim);
-                    max_msg_len = MSG_LEN - (rdelim_ptr + strlen(info->rdelim) - imsg->message);
-                    LOG_FR("right delim %s found, nick len = %d", info->rdelim, nick_len);
+                    nick_len = rdelim_ptr - msg - strlen(info->ldelim);
+                    max_msg_len = MSG_LEN - (rdelim_ptr + strlen(info->rdelim) - msg);
+                    DBG_FR("Right delim %s found, nick len = %d", info->rdelim, nick_len);
 
-                    strncpy(imsg->servername, imsg->nick, SERVER_LEN);
-                    memset(imsg->nick, 0, NICK_LEN);
-                    strncpy(imsg->nick,
-                            imsg->message + strlen(info->ldelim),
+                    strncpy(nick,
+                            msg + strlen(info->ldelim),
                             (nick_len>NICK_LEN?NICK_LEN:nick_len));
 
                     strncpy(tmp_msg, rdelim_ptr + strlen(info->rdelim), max_msg_len);
-                    memset(imsg->message, 0, MSG_LEN);
-                    strncpy(imsg->message, tmp_msg, max_msg_len);
+                    memset(msg, 0, MSG_LEN);
+                    strncpy(msg, tmp_msg, max_msg_len);
 
                     return;
                 }
@@ -114,14 +115,14 @@ int filter_ignore_list_add(const char *nick){
     lst = ignore_list;
     while (lst){
         if (strncmp(lst->data, nick, NICK_LEN) == 0){
-            ERR_FR("%s already exist in ignore_list", nick);
+            WARN_FR("%s already exist in ignore_list", nick);
             return -1;
         }
         lst = lst->next;
     }
 
     ignore_list = g_list_append(ignore_list, strdup(nick));
-    LOG_FR("add %s", nick);
+    LOG_FR("Add %s", nick);
 
     return 0;
 }
@@ -135,13 +136,13 @@ int filter_ignore_list_rm(const char *nick){
             free(lst->data);
             ignore_list = g_list_remove(ignore_list, lst->data);
 
-            LOG_FR("remove %s", nick);
+            LOG_FR("Remove %s", nick);
             return 0;
         }
         lst = lst->next;
     }
 
-    ERR_FR("%s no found", nick);
+    WARN_FR("%s no found", nick);
     return -1;
 }
 
@@ -153,7 +154,7 @@ int filter_relaybot_list_add(const char *nick, char *ldelim, char* rdelim){
     while (lst){
         info = lst->data;
         if (strncmp(info->nick, nick, NICK_LEN) == 0){
-            ERR_FR("%s already exist in relaybot_list", nick);
+            WARN_FR("%s already exist in relaybot_list", nick);
             return -1;
         }
         lst = lst->next;
@@ -165,7 +166,7 @@ int filter_relaybot_list_add(const char *nick, char *ldelim, char* rdelim){
     strncpy(info->rdelim, rdelim, 10);
 
     relaybot_list = g_list_append(relaybot_list, info);
-    LOG_FR("add %s ldelim '%s' rdelim '%s'", nick, ldelim, rdelim);
+    LOG_FR("Add %s ldelim '%s' rdelim '%s'", nick, ldelim, rdelim);
 
     return 0;
 }
@@ -180,13 +181,13 @@ int filter_relaybot_list_rm(const char *nick){
         if (strncmp(info->nick, nick, NICK_LEN) == 0){
             free(lst->data);
             relaybot_list = g_list_remove(relaybot_list, lst->data);
-            LOG_FR("remove %s", nick);
+            LOG_FR("Remove %s", nick);
 
             return 0;
         }
         lst = lst->next;
     }
 
-    ERR_FR("%s no found", nick);
+    WARN_FR("%s no found", nick);
     return -1;
 }

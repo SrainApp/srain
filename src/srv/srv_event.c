@@ -19,6 +19,7 @@
 
 #include "i18n.h"
 #include "log.h"
+#include "filter.h"
 
 #define PRINT_EVENT_PARAM \
     do { \
@@ -35,6 +36,37 @@
         return; \
     }
 
+/* TODO: remove me strip unprintable char and irc color code */
+static void strip(char *str){
+    int i;
+    int j;
+    int len;
+
+    j = 0;
+    len = strlen(str);
+
+    for (i = 0; i < len; i++){
+        switch (str[i]){
+            case 2: case 0xf: case 0x16:
+            case 0x1d: case 0x1f:
+                break;
+            case 3:  // irc color code
+                if (str[i+1] >= '0' && str[i+1] <= '9'){
+                    if (str[i+2] >= '0' && str[i+2] <= '9'){
+                        i += 2;
+                    } else {
+                        i += 1;
+                    }
+                }
+                break;
+            default:
+                str[j++] = str[i];
+        }
+    }
+
+    str[j] = '\0';
+}
+
 void srv_event_connect(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
     srv_session_t *sess;
@@ -44,6 +76,8 @@ void srv_event_connect(irc_session_t *irc_session, const char *event,
     PRINT_EVENT_PARAM;
 
     sess->stat = SESS_CONNECT;
+
+    LOG_FR("Connected to %s", sess->host);
 
     srv_hdr_ui_add_chan(sess->host, SRV_SESSION_SERVER);
 }
@@ -214,6 +248,7 @@ void srv_event_channel(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
     const char *chan;
     const char *msg;
+    char vmsg[MSG_LEN];
     srv_session_t *sess;
 
     sess = irc_get_ctx(irc_session);
@@ -224,14 +259,26 @@ void srv_event_channel(irc_session_t *irc_session, const char *event,
     chan = params[0];
     msg = params[1];
 
-    // TODO: id
-    srv_hdr_ui_recv_msg(sess->host, chan, origin, "", msg);
+    strncpy(vmsg, msg, MSG_LEN);
+    strip(vmsg);
+
+    char nick[NICK_LEN] = { 0 };
+    filter_relaybot_trans(origin, nick, vmsg);
+
+    /* A message sent by relay bot */
+    if (strlen(nick) > 0){
+        if (!filter_is_ignore(nick))
+            srv_hdr_ui_recv_msg(sess->host, chan, nick, origin, vmsg);
+    } else {
+        if (!filter_is_ignore(origin))
+            srv_hdr_ui_recv_msg(sess->host, chan, origin, "", vmsg);
+    }
 }
 
 void srv_event_privmsg(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
     const char *dest;
-    const char *msg;
+    char *msg;
     srv_session_t *sess;
 
     sess = irc_get_ctx(irc_session);
@@ -240,10 +287,15 @@ void srv_event_privmsg(irc_session_t *irc_session, const char *event,
 
     CHECK_COUNT(2);
     dest = params[0];
-    msg = params[1];
+    msg = strdup(params[1]);
 
-    // TODO: id
-    srv_hdr_ui_recv_msg(sess->host, dest, origin, "", msg);
+    strip(msg);
+
+    if (!filter_is_ignore(origin))
+        // TODO: fall back to SRV_SESSION_SERVER
+        srv_hdr_ui_recv_msg(sess->host, dest, origin, "", msg);
+
+    free(msg);
 }
 
 void srv_event_notice(irc_session_t *irc_session, const char *event,
@@ -319,8 +371,6 @@ void srv_event_numeric (irc_session_t *irc_session, unsigned int event,
     switch (event){
             /************************ Server Message ************************/
         case LIBIRC_RFC_RPL_WELCOME:
-            DBG_FR("You are logined as %s", params[0]);
-            sess->stat = SESS_LOGIN;
         case LIBIRC_RFC_RPL_YOURHOST:
         case LIBIRC_RFC_RPL_CREATED:
         case LIBIRC_RFC_RPL_MOTDSTART:

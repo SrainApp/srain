@@ -14,11 +14,7 @@
 #include "log.h"
 
 char* plugin_upload(const char *path){
-    // FIXME:
-    return "";
-
     char *url;
-    char plugin_path;
 
     PyObject *py_module;
     PyObject *py_func;
@@ -66,9 +62,6 @@ char* plugin_upload(const char *path){
 }
 
 char* plugin_avatar(const char *nick, const char *user, const char *host){
-    // FIXME:
-    return "";
-
     char *path;
     PyObject *py_module;
     PyObject *py_func;
@@ -78,7 +71,9 @@ char* plugin_avatar(const char *nick, const char *user, const char *host){
     Py_Initialize();
 
     /* load current dirrectory *SHOULD BE REMOVED IN RELEASE* */
-    PyRun_SimpleString("import sys; sys.path.append('./plugin')");
+    PyRun_SimpleString("import sys; sys.path.append('" PACKAGE_DATA_DIR "/share/" PACKAGE "/plugins')");
+
+    LOG_FR("import sys; sys.path.append('" PACKAGE_DATA_DIR "/share/" PACKAGE "/plugins')");
 
     /* import */
     py_module = PyImport_Import(PyUnicode_FromString("avatar"));

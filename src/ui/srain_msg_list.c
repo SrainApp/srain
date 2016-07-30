@@ -86,7 +86,7 @@ static void scrolled_window_on_edge_overshot(GtkScrolledWindow *swin,
 
     if (pos != GTK_POS_TOP) return;
 
-    LOG_FR("overshot");
+    DBG_FR("Overshot");
 
     list = user_data;
 
@@ -95,7 +95,7 @@ static void scrolled_window_on_edge_overshot(GtkScrolledWindow *swin,
             list->vis_row_num--, i--){
         row = gtk_list_box_get_row_at_index(
                 list->list_box, list->vis_row_num);
-        LOG_FR("hide row %p", row);
+        DBG_FR("Hide row %p", row);
         if (GTK_IS_LIST_BOX_ROW(row)){
             gtk_widget_set_visible(GTK_WIDGET(row), TRUE);
         }
@@ -110,7 +110,7 @@ static void scrolled_window_on_edge_reached(GtkScrolledWindow *swin,
 
     if (pos != GTK_POS_BOTTOM) return;
 
-    LOG_FR("reached");
+    DBG_FR("Reached");
     list = user_data;
 
     len = get_list_box_length(list->list_box);
@@ -118,7 +118,7 @@ static void scrolled_window_on_edge_reached(GtkScrolledWindow *swin,
             list->vis_row_num++){
         row = gtk_list_box_get_row_at_index(
                 list->list_box, list->vis_row_num);
-        LOG_FR("hide row %p", row);
+        DBG_FR("Hide row %p", row);
         if (GTK_IS_LIST_BOX_ROW(row)){
             gtk_widget_set_visible(GTK_WIDGET(row), FALSE);
         }
@@ -173,13 +173,13 @@ static void smart_scroll(SrainMsgList *list, int force){
 
     win = SRAIN_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(list)));
     if (!SRAIN_IS_WINDOW(win)){
-        ERR_FR("top level widget is not SrainWindow");
+        ERR_FR("Top level widget is not SrainWindow");
         return;
     }
 
     chan = srain_window_get_cur_chan(win);
     if (!SRAIN_IS_CHAN(chan)){
-        ERR_FR("current chan is no a SrainChan");
+        ERR_FR("Current chan is no a SrainChan");
         return;
     }
 
