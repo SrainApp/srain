@@ -13,6 +13,7 @@
 #include <assert.h>
 
 #include "ui_common.h"
+#include "ui_hdr.h"
 #include "theme.h"
 #include "srain_app.h"
 #include "srain_window.h"
@@ -36,6 +37,7 @@ typedef struct {
     GtkEntry *conn_port_entry;
     GtkEntry *conn_pwd_entry;
     GtkEntry *conn_nick_entry;
+    GtkEntry *conn_real_entry;
 } ConnEntries;
 
 struct _SrainWindow {
@@ -67,6 +69,7 @@ struct _SrainWindow {
     GtkEntry *conn_port_entry;
     GtkEntry *conn_pwd_entry;
     GtkEntry *conn_nick_entry;
+    GtkEntry *conn_real_entry;
     GtkButton *conn_button;
     ConnEntries conn_entries;
 };
@@ -131,6 +134,7 @@ static void popover_entry_on_activate(GtkWidget *widget, gpointer user_data){
 static void join_button_on_click(gpointer user_data){
     const char *chan;
     const char *pwd;
+    GString *cmd;
     JoinEntries *join_entries;
 
     join_entries = user_data;
@@ -138,30 +142,49 @@ static void join_button_on_click(gpointer user_data){
     chan = gtk_entry_get_text(join_entries->join_chan_entry);
     pwd = gtk_entry_get_text(join_entries->join_pwd_entry);
 
+    cmd = g_string_new("");
+    g_string_printf(cmd, "/join %s %s", chan, pwd);
+    ui_hdr_srv_cmd(srain_window_get_cur_chan(srain_win), cmd->str);
+    g_string_free(cmd, TRUE);
+
     gtk_entry_set_text(join_entries->join_chan_entry, "");
     gtk_entry_set_text(join_entries->join_pwd_entry, "");
 
-    // TODO: Send command to server
 }
 
 static void conn_button_on_click(gpointer user_data){
     const char *addr;
     const char *port;
-    const char *pwd;
+    const char *passwd;
     const char *nick;
+    const char *realname;
+    GString *cmd;
     ConnEntries *conn_entries;
 
     conn_entries = user_data;
 
     addr = gtk_entry_get_text(conn_entries->conn_addr_entry);
     port = gtk_entry_get_text(conn_entries->conn_port_entry);
-    pwd = gtk_entry_get_text(conn_entries->conn_pwd_entry);
+    passwd = gtk_entry_get_text(conn_entries->conn_pwd_entry);
     nick = gtk_entry_get_text(conn_entries->conn_nick_entry);
+    realname = gtk_entry_get_text(conn_entries->conn_real_entry);
+
+    cmd = g_string_new("");
+
+    g_string_printf(cmd, "/connect %s %s", addr, nick);
+    if (strlen(port) > 0) g_string_append_printf(cmd, " port=%s", port);
+    if (strlen(passwd) > 0) g_string_append_printf(cmd, " passwd=%s", passwd);
+    if (strlen(realname) > 0) g_string_append_printf(cmd, " realname=%s", realname);
+
+    ui_hdr_srv_cmd(srain_window_get_cur_chan(srain_win), cmd->str);
+
+    g_string_free(cmd, TRUE);
 
     gtk_entry_set_text(conn_entries->conn_addr_entry, "");
     gtk_entry_set_text(conn_entries->conn_port_entry, "");
     gtk_entry_set_text(conn_entries->conn_pwd_entry, "");
     gtk_entry_set_text(conn_entries->conn_nick_entry, "");
+    gtk_entry_set_text(conn_entries->conn_real_entry, "");
 
     // TODO: Send command to server
 }
@@ -204,6 +227,7 @@ static void srain_window_init(SrainWindow *self){
     self->conn_entries.conn_port_entry = self->conn_port_entry;
     self->conn_entries.conn_pwd_entry = self->conn_pwd_entry;
     self->conn_entries.conn_nick_entry = self->conn_nick_entry;
+    self->conn_entries.conn_real_entry = self->conn_real_entry;
 
     /* stack sidebar init */
     self->sidebar = srain_stack_sidebar_new();
@@ -250,6 +274,8 @@ static void srain_window_init(SrainWindow *self){
             G_CALLBACK(popover_entry_on_activate), self->conn_button);
     g_signal_connect(self->conn_nick_entry, "activate",
             G_CALLBACK(popover_entry_on_activate), self->conn_button);
+    g_signal_connect(self->conn_real_entry, "activate",
+            G_CALLBACK(popover_entry_on_activate), self->conn_button);
 
     /* shortcut <C-j> and <C-k> */
     accel = gtk_accel_group_new();
@@ -291,6 +317,7 @@ static void srain_window_class_init(SrainWindowClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, conn_port_entry);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, conn_pwd_entry);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, conn_nick_entry);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, conn_real_entry);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, conn_button);
 }
 
