@@ -1,5 +1,4 @@
-/**
- * @file ui.c
+/* @file ui.c
  * @brief UI module interfaces
  * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
@@ -121,12 +120,26 @@ int ui_idle(CommonUIData *data){
     return FALSE;
 }
 
-/* ======================================================================= */
-/* Note: the following functions are asynchronous and thread-safed, enjoy~ */
-/* ======================================================================= */
+/* =======================================================================
+ * Note: The following functions are asynchronous and thread-safed, enjoy~
+ * Arguments can be NULL, and will convert to ""(empty string) when passing
+ * the data to main thread.
+ * =======================================================================
+ */
+
+/*
+#define CHECK_IF_NULL(x) \
+    do { \
+        if (!x) x = ""; \
+        WARN_FR("`"#x "` is NULL, convert to empty string"); \
+    } while (0)
+*/
 
 void ui_add_chan(const char *srv_name, const char *chan_name){
     CommonUIData *data = g_malloc0(sizeof(CommonUIData));
+
+    g_return_if_fail(srv_name);
+    g_return_if_fail(chan_name);
 
     data->ui_interface = ui_add_chan_sync;
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
@@ -138,6 +151,9 @@ void ui_add_chan(const char *srv_name, const char *chan_name){
 
 void ui_rm_chan(const char *srv_name, const char *chan_name){
     CommonUIData *data = g_malloc0(sizeof(CommonUIData));
+
+    g_return_if_fail(srv_name);
+    g_return_if_fail(chan_name);
 
     data->ui_interface = ui_rm_chan_sync;
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
@@ -151,7 +167,10 @@ void ui_sys_msg(const char *srv_name, const char *chan_name,
         const char *msg, SysMsgType type){
     CommonUIData *data = g_malloc0(sizeof(CommonUIData));
 
-    DBG_FR("%s %s %s %d", srv_name, chan_name, msg, type);
+    g_return_if_fail(srv_name);
+    g_return_if_fail(chan_name);
+    g_return_if_fail(msg);
+
     data->ui_interface = ui_sys_msg_sync;
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
     strncpy(data->chan_name, chan_name, sizeof(data->chan_name));
@@ -166,6 +185,10 @@ void ui_send_msg(const char *srv_name, const char *chan_name,
         const char *msg){
     CommonUIData *data = g_malloc0(sizeof(CommonUIData));
 
+    g_return_if_fail(srv_name);
+    g_return_if_fail(chan_name);
+    g_return_if_fail(msg);
+
     data->ui_interface = ui_send_msg_sync;
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
     strncpy(data->chan_name, chan_name, sizeof(data->chan_name));
@@ -178,6 +201,12 @@ void ui_send_msg(const char *srv_name, const char *chan_name,
 void ui_recv_msg(const char *srv_name, const char *chan_name,
         const char *nick, const char *id, const char *msg){
     CommonUIData *data = g_malloc0(sizeof(CommonUIData));
+
+    g_return_if_fail(srv_name);
+    g_return_if_fail(chan_name);
+    g_return_if_fail(nick);
+    g_return_if_fail(msg);
+    g_return_if_fail(id);
 
     data->ui_interface = ui_recv_msg_sync;
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
@@ -194,6 +223,10 @@ void ui_user_list_add(const char *srv_name, const char *chan_name,
  const char *nick, UserType type){
     CommonUIData *data = g_malloc0(sizeof(CommonUIData));
 
+    g_return_if_fail(srv_name);
+    g_return_if_fail(chan_name);
+    g_return_if_fail(nick);
+
     data->ui_interface = ui_user_list_add_sync;
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
     strncpy(data->chan_name, chan_name, sizeof(data->chan_name));
@@ -208,6 +241,10 @@ void ui_user_list_rm(const char *srv_name, const char *chan_name,
         const char *nick){
     CommonUIData *data = g_malloc0(sizeof(CommonUIData));
 
+    g_return_if_fail(srv_name);
+    g_return_if_fail(chan_name);
+    g_return_if_fail(nick);
+
     data->ui_interface = ui_user_list_rm_sync;
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
     strncpy(data->chan_name, chan_name, sizeof(data->chan_name));
@@ -221,6 +258,10 @@ void ui_user_list_rm_all(const char *srv_name, const char *nick,
         const char *reason){
     CommonUIData *data = g_malloc0(sizeof(CommonUIData));
 
+    g_return_if_fail(srv_name);
+    g_return_if_fail(nick);
+    g_return_if_fail(reason);
+
     data->ui_interface = ui_user_list_rm_all_sync;
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
     strncpy(data->nick, nick, sizeof(data->nick));
@@ -233,6 +274,11 @@ void ui_user_list_rm_all(const char *srv_name, const char *nick,
 void ui_user_list_rename(const char *srv_name, const char *old_nick,
         const char *new_nick, UserType type, const char *msg){
     CommonUIData *data = g_malloc0(sizeof(CommonUIData));
+
+    g_return_if_fail(srv_name);
+    g_return_if_fail(old_nick);
+    g_return_if_fail(new_nick);
+    g_return_if_fail(msg);
 
     data->ui_interface = ui_user_list_rename_sync;
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
@@ -248,6 +294,10 @@ void ui_user_list_rename(const char *srv_name, const char *old_nick,
 void ui_set_topic(const char *srv_name, const char *chan_name,
         const char *topic){
     CommonUIData *data = g_malloc0(sizeof(CommonUIData));
+
+    g_return_if_fail(srv_name);
+    g_return_if_fail(chan_name);
+    g_return_if_fail(topic);
 
     data->ui_interface = ui_set_topic_sync;
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
@@ -266,9 +316,12 @@ void ui_set_topic(const char *srv_name, const char *chan_name,
  *
  * @param srv_name Server's name, can't contains whitespace
  * @param chan_name Channel's name, can't contains whitespace
+ *
+ * @return 0 if successful, -1 if failed
  */
-void ui_add_chan_sync(const char *srv_name, const char *chan_name){
-    srain_window_add_chan(srain_win, srv_name, chan_name);
+int ui_add_chan_sync(const char *srv_name, const char *chan_name){
+    return srain_window_add_chan(srain_win, srv_name, chan_name)
+        ? 0 : -1;
 }
 
 /**
@@ -276,13 +329,21 @@ void ui_add_chan_sync(const char *srv_name, const char *chan_name){
  *
  * @param srv_name Server's name, can't contains whitespace
  * @param chan_name Channel's name, can't contains whitespace
+ *
+ * @return 0 if successful, -1 if failed
  */
-void ui_rm_chan_sync(const char *srv_name, const char *chan_name){
+int ui_rm_chan_sync(const char *srv_name, const char *chan_name){
     SrainChan *chan;
     chan = srain_window_get_chan_by_name(srain_win, srv_name, chan_name);
 
-    g_return_if_fail(chan);
+    if (chan == NULL){
+        ERR_FR("No such channel: %s %s", srv_name, chan_name);
+        return -1;
+    }
+
     srain_window_rm_chan(srain_win, chan);
+
+    return 0;
 }
 
 /**
@@ -365,21 +426,30 @@ void ui_recv_msg_sync(const char *srv_name, const char *chan_name,
  * @param chan_name
  * @param nick
  * @param type
+ *
+ * @return 0 if successful, -1 if failed
  */
-void ui_user_list_add_sync(const char *srv_name, const char *chan_name,
+int ui_user_list_add_sync(const char *srv_name, const char *chan_name,
         const char *nick, UserType type){
+    int res;
     SrainChan *chan;
     SrainUserList *list;
     SrainEntryCompletion *comp;
 
     chan = srain_window_get_chan_by_name(srain_win, srv_name, chan_name);
-    g_return_if_fail(chan);
+    if (chan == NULL){
+        ERR_FR("No such channel: %s %s", srv_name, chan_name);
+        return -1;
+    }
+
     list = srain_chan_get_user_list(chan);
 
-    if (srain_user_list_add(list, nick, type) == 0){
+    if ((res = srain_user_list_add(list, nick, type)) == 0){
         comp = srain_chan_get_entry_completion(chan);
         srain_entry_completion_add_keyword(comp, nick, KEYWORD_NORMAL);
     };
+
+    return res;
 }
 
 /**
@@ -388,21 +458,30 @@ void ui_user_list_add_sync(const char *srv_name, const char *chan_name,
  * @param srv_name
  * @param chan_name
  * @param nick
+ *
+ * @return 0 if successful, -1 if failed
  */
-void ui_user_list_rm_sync(const char *srv_name, const char *chan_name,
+int ui_user_list_rm_sync(const char *srv_name, const char *chan_name,
         const char *nick){
+    int res;
     SrainChan *chan;
     SrainUserList *list;
     SrainEntryCompletion *comp;
 
     chan = srain_window_get_chan_by_name(srain_win, srv_name, chan_name);
-    g_return_if_fail(chan);
+    if (chan == NULL){
+        ERR_FR("No such channel: %s %s", srv_name, chan_name);
+        return -1;
+    }
+
     list = srain_chan_get_user_list(chan);
 
-    if (srain_user_list_rm(list, nick) == 0){
+    if ((res = srain_user_list_rm(list, nick)) == 0){
         comp = srain_chan_get_entry_completion(chan);
         srain_entry_completion_rm_keyword(comp, nick);
     }
+
+    return res;
 }
 
 /**
@@ -418,8 +497,9 @@ void ui_user_list_rm_all_sync(const char *srv_name, const char *nick,
     const char *chan_name;
     GList *chans;
 
+    DBG_FR("%s %s %s", srv_name, nick, reason);
+
     chans = srain_window_get_chans_by_srv_name(srain_win, srv_name);
-    g_return_if_fail(chans);
     while (chans){
         chan_name = srain_chan_get_chan_name(SRAIN_CHAN(chans->data));
         ui_user_list_rm(srv_name, chan_name, nick);
@@ -454,12 +534,15 @@ void ui_user_list_rename_sync(const char *srv_name, const char *old_nick,
 
     while (chans){
         chan = SRAIN_CHAN(chans->data);
+        chan_name = srain_chan_get_chan_name(chan);
         list = srain_chan_get_user_list(chan);
 
         if (srain_user_list_rename(list, old_nick, new_nick, type) == 0){
             comp = srain_chan_get_entry_completion(chan);
             srain_entry_completion_add_keyword(comp, old_nick, KEYWORD_NORMAL);
             srain_entry_completion_rm_keyword(comp, new_nick);
+
+            ui_sys_msg(srv_name, chan_name, msg, SYS_MSG_NORMAL);
         }
 
         chans = g_list_next(chans);

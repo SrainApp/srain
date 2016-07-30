@@ -20,15 +20,15 @@ void ui_user_list_rename(const char *srv_name, const char *old_nick, const char 
 void ui_set_topic(const char *srv_name, const char *chan_name, const char *topic);
 
 /* Synchronous functions, export them for testing */
-void ui_add_chan_sync(const char *srv_name, const char *chan_name);
-void ui_rm_chan_sync(const char *srv_name, const char *chan_name);
+int ui_add_chan_sync(const char *srv_name, const char *chan_name);
+int ui_rm_chan_sync(const char *srv_name, const char *chan_name);
 
 void ui_sys_msg_sync(const char *srv_name, const char *chan_name, const char *msg, SysMsgType type);
 void ui_send_msg_sync(const char *srv_name, const char *chan_name, const char *msg);
 void ui_recv_msg_sync(const char *srv_name, const char *chan_name, const char *nick, const char *id, const char *msg);
 
-void ui_user_list_add_sync(const char *srv_name, const char *chan_name, const char *nick, UserType type);
-void ui_user_list_rm_sync(const char *srv_name, const char *chan_name, const char *nick);
+int ui_user_list_add_sync(const char *srv_name, const char *chan_name, const char *nick, UserType type);
+int ui_user_list_rm_sync(const char *srv_name, const char *chan_name, const char *nick);
 void ui_user_list_rm_all_sync(const char *srv_name, const char *nick, const char *reason);
 void ui_user_list_rename_sync(const char *srv_name, const char *old_nick, const char *new_nick, UserType type, const char *msg);
 
