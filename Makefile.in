@@ -77,6 +77,10 @@ install:
 		install -Dm644 "$$py" \
 		"$(DESTDIR)$(PREFIX)/share/srain/plugins/$$py"; \
 		done
+	for i in $(shell cat po/LANGS); do \
+		install -Dm644 build/locale/$$i/LC_MESSAGES/srain.mo \
+		$(DESTDIR)$(PREFIX)/share/locale/$$i/LC_MESSAGES/srain.mo; \
+		done
 
 uitest:
 	$(MAKE) TEST_FLAG=UI_TEST
