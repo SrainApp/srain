@@ -43,19 +43,25 @@ int srv_connect(const char *host, int port, const char *passwd,
 
     if (!host || !nickname){
         ERR_FR("host or nickname is NULL");
+        return -1;
     }
 
     res = srv_session_new(host, port, passwd, nickname, username, realname)
         ?  0 : -1;
-    if (res == 0){
-        srv_hdr_ui_add_chan(host, SRV_SESSION_SERVER);
-    }
+    // if (res == 0){
+        // srv_hdr_ui_add_chan(host, SRV_SESSION_SERVER);
+    // }
 
     return res;
 }
 
 int srv_send(const char *srv_name, const char *target, const char *msg){
     srv_session_t *session;
+
+    if (!srv_name || !target || !msg){
+        ERR_FR("host or nickname is NULL");
+        return -1;
+    }
 
     session = srv_session_get_by_host(srv_name);
     if (!session){
@@ -66,10 +72,9 @@ int srv_send(const char *srv_name, const char *target, const char *msg){
     return srv_session_send(session, target, msg);
 }
 
-int srv_cmd(const char *srv_name, const char *source, const char *cmd){
+int srv_cmd(const char *srv_name, const char *source, char *cmd){
     srv_session_t *session;
 
-    LOG_FR("%s", srv_name);
     session = srv_session_get_by_host(srv_name);
     if (!session){
         WARN_FR("No such session %s", srv_name);

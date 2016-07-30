@@ -211,7 +211,11 @@ static void input_entry_on_activate(SrainChan *chan){
     if (input[0] == '/'){
         ui_hdr_srv_cmd(chan, input);
     } else {
-        ui_hdr_srv_send(chan, input);
+        srain_msg_list_send_msg_add(chan->msg_list, input);
+        if (ui_hdr_srv_send(chan, input) < 0){
+            srain_msg_list_sys_msg_add(chan->msg_list,
+                    _("Failed to send message"), SYS_MSG_ERROR);
+        }
     }
 
 ret:

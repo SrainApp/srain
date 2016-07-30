@@ -6,7 +6,7 @@
  * @date 2016-07-19
  */
 
-// #define __DBG_ON
+#define __DBG_ON
 // #define __LOG_ON
 
 #include <glib.h>
@@ -45,6 +45,7 @@ void srv_event_connect(irc_session_t *irc_session, const char *event,
 
     sess->stat = SESS_CONNECT;
 
+    srv_hdr_ui_add_chan(sess->host, SRV_SESSION_SERVER);
     // TODO: ??
 }
 
@@ -78,8 +79,9 @@ void srv_event_quit(irc_session_t *irc_session, const char *event,
     CHECK_COUNT(1);
     reason = params[0];
 
-
+    LOG_FR("====");
     snprintf(msg, sizeof(msg), _("%s has quit: %s"), origin, reason);
+    LOG_FR("====");
     srv_hdr_ui_user_list_rm_all(sess->host, origin, msg);
 }
 

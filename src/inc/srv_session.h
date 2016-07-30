@@ -15,6 +15,8 @@
 
 #define SRV_SESSION_SERVER "Server "
 
+#define IS_CHAN(x) (x && (x[0] == '#' || x[0] == '&'))
+
 typedef enum {
     SESS_NOINUSE = 0,
     SESS_INUSE = 1,
@@ -42,6 +44,7 @@ void srv_session_init();
 void srv_session_proc();
 srv_session_t* srv_session_new(const char *host, int port, const char *passwd,
         const char *nickname, const char *username, const char *realname);
+int srv_session_is_session(srv_session_t *session);
 int srv_session_free(srv_session_t *session);
 
 srv_session_t* srv_session_get_by_host(const char *host);
@@ -51,5 +54,10 @@ int srv_session_me(srv_session_t *session, const char *target, const char *msg);
 int srv_session_join(srv_session_t *session, const char *chan, const char *passwd);
 int srv_session_part(srv_session_t *session, const char *chan);
 int srv_session_quit(srv_session_t *session, const char *reason);
+int srv_session_nick(srv_session_t *session, const char *new_nick);
+int srv_session_whois(srv_session_t *session, const char *nick);
+int srv_session_invite(srv_session_t *session, const char *nick, const char *chan);
+int srv_session_kick(srv_session_t *session, const char *nick, const char *chan, const char *reason);
+int srv_session_mode(srv_session_t *session, const char *target, const char *mode);
 
 #endif /* __SRV_SESSION_H */

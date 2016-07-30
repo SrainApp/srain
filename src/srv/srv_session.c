@@ -213,6 +213,10 @@ srv_session_t* srv_session_new(const char *host, int port, const char *passwd,
     return sess;
 }
 
+int srv_session_is_session(srv_session_t *session){
+    return srv_session_get_index(session) == -1 ? 0 : 1;
+}
+
 int srv_session_free(srv_session_t *session){
     int i;
 
@@ -264,4 +268,28 @@ int srv_session_part(srv_session_t *session, const char *chan){
 
 int srv_session_quit(srv_session_t *session, const char *reason){
     return irc_cmd_quit(session->irc_session, reason);
+}
+
+int srv_session_nick(srv_session_t *session, const char *new_nick){
+    return irc_cmd_nick(session->irc_session, new_nick);
+}
+
+int srv_session_whois(srv_session_t *session, const char *nick){
+    return irc_cmd_whois(session->irc_session, nick);
+}
+
+int srv_session_invite(srv_session_t *session, const char *nick, const char *chan){
+    return irc_cmd_invite(session->irc_session, nick, chan);
+}
+
+int srv_session_kick(srv_session_t *session, const char *nick,
+        const char *chan, const char *reason){
+    return irc_cmd_kick(session->irc_session, nick, chan, reason);
+}
+
+int srv_session_mode(srv_session_t *session, const char *target, const char *mode){
+    if (target)
+        return irc_cmd_user_mode(session->irc_session, mode);
+    else
+        return irc_cmd_channel_mode(session->irc_session, target, mode);
 }
