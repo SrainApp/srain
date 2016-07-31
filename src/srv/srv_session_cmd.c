@@ -65,7 +65,7 @@ int srv_session_cmd(srv_session_t *session, const char *source, char *cmd){
 
         srv_session_t *tmp;
         tmp = srv_session_new(host, atoi(port), passwd, nick,
-                PACKAGE_VERSION, realname);
+                PACKAGE_NAME, realname);
         if (tmp){
             last_sess = tmp;
             return 0;

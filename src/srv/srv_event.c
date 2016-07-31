@@ -107,8 +107,6 @@ void srv_event_quit(irc_session_t *irc_session, const char *event,
 
     sess = irc_get_ctx(irc_session);
 
-    sess->stat = SESS_NOINUSE;
-
     PRINT_EVENT_PARAM;
 
     CHECK_COUNT(1);
@@ -122,6 +120,7 @@ void srv_event_quit(irc_session_t *irc_session, const char *event,
         /* Remove all chans belong to this session */
         srv_hdr_ui_rm_chan(sess->host, "");
         srv_session_free(sess);
+        sess->stat = SESS_NOINUSE;
     }
 }
 
