@@ -9,6 +9,7 @@
 #include <string.h>
 #include <gtk/gtk.h>
 #include <assert.h>
+
 #include "theme.h"
 #include "i18n.h"
 
@@ -52,12 +53,14 @@ GtkListBoxRow* gtk_list_box_get_row_by_name(GtkListBox *listbox, const gchar* na
 static void filechooser_on_update_preview(GtkFileChooser *chooser,
         gpointer user_data){
     char *filename;
-    GError *error;
+    GError *error = NULL;
     GtkImage *preview;
     GdkPixbuf *pixbuf;
 
     filename = gtk_file_chooser_get_preview_filename(chooser);
     preview = GTK_IMAGE(gtk_file_chooser_get_preview_widget(chooser));
+    if (!filename || !preview) return;
+
     pixbuf = gdk_pixbuf_new_from_file_at_size(filename, 300, 300, &error);
 
     if (error == NULL){

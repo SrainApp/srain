@@ -78,10 +78,13 @@ int srv_session_cmd(srv_session_t *session, const char *source, char *cmd){
     else if (IS_CMD(cmd, "/relaybot")){
         char *bot = strtok(cmd + strlen("/relaybot"), " |");
         if (bot){
+            DBG_FR("Relaybot: %s", bot);
             char *ldelim = strtok(NULL, "|");
             if (ldelim){
+                DBG_FR("Left delim: '%s'", ldelim);
                 char *rdelim = strtok(NULL, "|");
                 if (rdelim){
+                    DBG_FR("Right delim: '%s'", rdelim);
                     return filter_relaybot_list_add(bot, ldelim, rdelim);
                 }
             }
@@ -89,25 +92,41 @@ int srv_session_cmd(srv_session_t *session, const char *source, char *cmd){
         goto bad;
     }
 
+    /* Usage: /unrelaybot <nick> */
+    else if (IS_CMD(cmd, "/unrelaybot")){
+        char *nick = strtok(cmd + strlen("/unrelaybot"), " ");
+        if (!nick) goto bad;
+        return filter_relaybot_list_rm(nick);
+    }
+
     /* Usage: /ignore <nick> */
     else if (IS_CMD(cmd, "/ignore")){
         char *nick = strtok(cmd + strlen("/ignore"), " ");
-        if (!nick)  goto bad;
+        if (!nick) goto bad;
         return filter_ignore_list_add(nick);
     }
-    // TODO: impl /unignore
-    // TODO: impl /unrelaybot
+
+    /* Usage: /unignore <nick> */
+    else if (IS_CMD(cmd, "/unignore")){
+        char *nick = strtok(cmd + strlen("/unignore"), " ");
+        if (!nick) goto bad;
+        return filter_ignore_list_rm(nick);
+    }
 
     /* In the following commands, `source` and `session` MUST be vaild,
      * if session is NULL, use the last uesd session */
     if (!srv_session_is_session(session)) session = last_sess;
-    if (!srv_session_is_session(session)) return -1;
+    if (!srv_session_is_session(session)) {
+        ERR_FR("Session %p is invaild", session);
+        return -1;
+    }
 
     /* Usage: /query <nickname> */
     if (IS_CMD(cmd, "/query")){
         char *target = strtok(cmd + strlen("/query"), " ");
         if (IS_CHAN(target)) goto bad;
         srv_hdr_ui_add_chan(session->host, target);
+        srv_session_whois(session, target);
     }
 
     /* Usage: /unquery [nickname] */
@@ -115,7 +134,7 @@ int srv_session_cmd(srv_session_t *session, const char *source, char *cmd){
         char *target = strtok(cmd + strlen("/unquery"), " ");
         if (!target) target = (char *)source;
         if (IS_CHAN(target)) goto bad;
-        srv_hdr_ui_add_chan(session->host, target);
+        srv_hdr_ui_rm_chan(session->host, target);
     }
 
     /* Usage: /join <channel> [password] */
@@ -158,11 +177,11 @@ int srv_session_cmd(srv_session_t *session, const char *source, char *cmd){
 
     /* Usage: /me <message> */
     else if (IS_CMD(cmd, "/me")){
-        char *msg = strtok(cmd + strlen("/me"), " ");
+        char *msg = strtok(cmd + strlen("/me"), "");
         char buf[512];
         if (!msg) goto bad;
         snprintf(buf, sizeof(buf), _("*** %s %s ***"), session->nickname, msg);
-        srv_hdr_ui_sys_msg(session->host, source, buf, SYS_MSG_NORMAL);
+        srv_hdr_ui_sys_msg(session->host, source, buf, SYS_MSG_ACTION);
         return srv_session_me(session, source, buf);
     }
 
@@ -230,9 +249,7 @@ int srv_session_cmd(srv_session_t *session, const char *source, char *cmd){
         return -1;
     }
 
-    ERR_FR("session: %p, source: %s, one of them is invaild", session, source);
-    return -1;
-
+    return 0;
 bad:
     if (srv_session_is_session(session)){
         char buf[512];

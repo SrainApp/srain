@@ -97,6 +97,10 @@ void srv_event_nick(irc_session_t *irc_session, const char *event,
 
     snprintf(msg, sizeof(msg), _("%s is now known as %s"), origin, new_nick);
     srv_hdr_ui_user_list_rename(sess->host, origin, new_nick, 0, msg);
+
+    if (strncasecmp(origin, sess->nickname, NICK_LEN) == 0){
+        strncpy(sess->nickname, new_nick, NICK_LEN);
+    }
 }
 
 void srv_event_quit(irc_session_t *irc_session, const char *event,
@@ -177,15 +181,15 @@ void srv_event_mode(irc_session_t *irc_session, const char *event,
     sess = irc_get_ctx(irc_session);
 
     PRINT_EVENT_PARAM;
-    CHECK_COUNT(3);
+    // CHECK_COUNT(2);
     const char *chan = params[0];
     const char *mode = params[1];
-    const char *mode_arg = params[2];
+    const char *mode_args = "";
+    if (count == 3) mode_args = params[2];
 
     snprintf(msg, sizeof(msg), _("mode %s %s %s by %s"),
-            chan, mode, mode_arg, origin);
+            chan, mode, mode_args, origin);
     srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_NORMAL);
-    // TODO
 }
 
 void srv_event_umode(irc_session_t *irc_session, const char *event,
@@ -196,14 +200,12 @@ void srv_event_umode(irc_session_t *irc_session, const char *event,
     sess = irc_get_ctx(irc_session);
 
     PRINT_EVENT_PARAM;
-    CHECK_COUNT(2);
-    const char *chan = params[0];
-    const char *mode = params[1];
+    CHECK_COUNT(1);
+    const char *mode = params[0];
 
-    snprintf(msg, sizeof(msg), _("mode %s %s by %s"),
-            chan, mode, origin);
+    snprintf(msg, sizeof(msg), _("mode %s %s by %s"), origin, mode, origin);
 
-    srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_NORMAL);
+    srv_hdr_ui_sys_msg(sess->host, "", msg, SYS_MSG_NORMAL);
 }
 
 void srv_event_topic(irc_session_t *irc_session, const char *event,
@@ -303,10 +305,15 @@ void srv_event_notice(irc_session_t *irc_session, const char *event,
     sess = irc_get_ctx(irc_session);
 
     PRINT_EVENT_PARAM;
-    CHECK_COUNT(1);
-    const char *msg = params[0];
+    CHECK_COUNT(2);
+    const char *nick = params[0];
+    char *msg = strdup(params[1]);
+
+    strip(msg);
 
     srv_hdr_ui_recv_msg(sess->host, origin, origin, "", msg);
+
+    free(msg);
 }
 
 void srv_event_channel_notice(irc_session_t *irc_session, const char *event,
@@ -318,9 +325,13 @@ void srv_event_channel_notice(irc_session_t *irc_session, const char *event,
     PRINT_EVENT_PARAM;
     CHECK_COUNT(2);
     const char *chan = params[0];
-    const char *msg = params[1];
+    char *msg = strdup(params[1]);
+
+    strip(msg);
 
     srv_hdr_ui_recv_msg(sess->host, chan, origin, "", msg);
+
+    free(msg);
 }
 
 void srv_event_invite(irc_session_t *irc_session, const char *event,
@@ -443,9 +454,9 @@ void srv_event_numeric (irc_session_t *irc_session, unsigned int event,
 
             /************************ Whois message ************************/
         case LIBIRC_RFC_RPL_WHOISUSER:
-            CHECK_COUNT(5);
+            CHECK_COUNT(6);
             snprintf(buf, sizeof(buf), _("%s <%s@%s> %s"), params[1], params[2],
-                    params[3], params[4]);
+                    params[3], params[5]);
             srv_hdr_ui_sys_msg(sess->host, "", buf, SYS_MSG_NORMAL);
             break;
         case LIBIRC_RFC_RPL_WHOISCHANNELS:
@@ -467,8 +478,8 @@ void srv_event_numeric (irc_session_t *irc_session, unsigned int event,
             break;
             // TODO 378 330
         case LIBIRC_RFC_RPL_ENDOFWHOIS:
-            CHECK_COUNT(2);
-            srv_hdr_ui_sys_msg(sess->host, "", params[1], SYS_MSG_NORMAL);
+            CHECK_COUNT(3);
+            srv_hdr_ui_sys_msg(sess->host, "", params[2], SYS_MSG_NORMAL);
             break;
     }
 

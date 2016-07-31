@@ -405,7 +405,7 @@ void ui_send_msg_sync(const char *srv_name, const char *chan_name, const char *m
  *      The nick will be added into the completion list of this channel,
  *      The sidebar should be updated
  *
- * @param chan
+ * @param chan_name If no such channel, fallback to SRV_SESSION_SERVER
  * @param nick
  * @param id
  * @param msg
@@ -417,7 +417,10 @@ void ui_recv_msg_sync(const char *srv_name, const char *chan_name,
     SrainEntryCompletion *comp;
 
     chan = srain_window_get_chan_by_name(srain_win, srv_name, chan_name);
+    if (!chan)
+        chan = srain_window_get_chan_by_name(srain_win, srv_name, SRV_SESSION_SERVER);
     g_return_if_fail(chan);
+
     list = srain_chan_get_msg_list(chan);
 
     srain_msg_list_recv_msg_add(list, nick, id, msg);
@@ -513,8 +516,9 @@ void ui_user_list_rm_all_sync(const char *srv_name, const char *nick,
     chans = srain_window_get_chans_by_srv_name(srain_win, srv_name);
     while (chans){
         chan_name = srain_chan_get_chan_name(SRAIN_CHAN(chans->data));
-        ui_user_list_rm(srv_name, chan_name, nick);
-        ui_sys_msg(srv_name, chan_name, reason, SYS_MSG_NORMAL);
+        if (ui_user_list_rm_sync(srv_name, chan_name, nick) == 0){
+            ui_sys_msg(srv_name, chan_name, reason, SYS_MSG_NORMAL);
+        }
 
         chans = g_list_next(chans);
     }
