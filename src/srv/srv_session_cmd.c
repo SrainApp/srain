@@ -36,7 +36,7 @@
  * @brief Execute a command
  *
  * @param session If null, the last used session will be used
- * @param source CAN NOT be NULL
+ * @param source If source = NULL, fallback to SRV_SESSION_SERVER
  * @param cmd
  *
  * @return -1 if command fails
@@ -45,7 +45,7 @@ int srv_session_cmd(srv_session_t *session, const char *source, char *cmd){
     /* The last used session */
     static srv_session_t *last_sess = NULL;
 
-    if (!source) return -1;
+    if (!source) source = SRV_SESSION_SERVER;
 
     /* Usage: /connect <host> <nick> [port=<port>] [passwd=<passwd>] [realname=<realname>] */
     if (IS_CMD(cmd, "/connect")){

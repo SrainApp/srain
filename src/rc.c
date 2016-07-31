@@ -51,7 +51,7 @@ int rc_read(){
         if (line){
             strtok(line, "\n");
             LOG_FR("Read: '%s'", line);
-            if (srv_cmd(NULL, "rc", line) < 0){
+            if (srv_cmd(NULL, NULL, line) < 0){
                 ERR_FR("Command failed");
                 break;
             }
