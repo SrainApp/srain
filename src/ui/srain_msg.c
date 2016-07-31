@@ -26,14 +26,13 @@
 #include "get_path.h"
 
 static void nick_button_on_click(GtkWidget *widget, gpointer *user_data){
-    GString *cmd;
+    GString *str;
 
-    cmd = g_string_new(NULL);
+    str = g_string_new((char *)user_data);
+    str = g_string_append(str, ": ");
 
-    g_string_printf(cmd, "/whois %s", (char *)user_data);
-    ui_hdr_srv_cmd(NULL, cmd->str);
-
-    g_string_free(cmd, TRUE);
+    srain_chan_insert_text(srain_window_get_cur_chan(srain_win), str->str, 0);
+    g_string_free(str, TRUE);
 }
 
 /* ================ SRAIN_SYS_MSG ================ */
@@ -190,13 +189,16 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *m
     gtk_container_add(GTK_CONTAINER(smsg->avatar_box), GTK_WIDGET(avatar_simg));
     gtk_widget_show(GTK_WIDGET(avatar_simg));
 
-    if (strlen(gtk_label_get_text(smsg->identify_label)) != 0){
-        g_signal_connect(smsg->nick_button, "clicked",
-                G_CALLBACK(nick_button_on_click), (char *)gtk_label_get_text(smsg->identify_label));
-    } else {
-        g_signal_connect(smsg->nick_button, "clicked",
-                G_CALLBACK(nick_button_on_click), (char *)gtk_label_get_text(smsg->nick_label));
-    }
+    g_signal_connect(smsg->nick_button, "clicked",
+            G_CALLBACK(nick_button_on_click), (char *)gtk_label_get_text(smsg->nick_label));
+
+    // if (strlen(gtk_label_get_text(smsg->identify_label)) != 0){
+        // g_signal_connect(smsg->nick_button, "clicked",
+                // G_CALLBACK(nick_button_on_click), (char *)gtk_label_get_text(smsg->identify_label));
+    // } else {
+        // g_signal_connect(smsg->nick_button, "clicked",
+            // G_CALLBACK(nick_button_on_click), (char *)gtk_label_get_text(smsg->nick_label));
+    // }
 
     return smsg;
 }

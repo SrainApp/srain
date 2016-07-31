@@ -340,6 +340,25 @@ void srain_chan_set_topic(SrainChan *chan, const char *topic){
     }
 }
 
+/**
+ * @brief Insert text into a SrainChan's input entry
+ *
+ * @param chan
+ * @param text
+ * @param pos If the pos = -1, insert at current position
+ */
+void srain_chan_insert_text(SrainChan *chan, const char *text, int pos){
+    GtkEntryBuffer *buf;
+
+    buf = gtk_entry_get_buffer(chan->input_entry);
+    if (pos == -1)
+        pos = gtk_editable_get_position(GTK_EDITABLE(chan->input_entry));
+
+    gtk_entry_buffer_insert_text(buf, pos, text, -1);
+    gtk_editable_set_position(GTK_EDITABLE(chan->input_entry),
+            pos + strlen(text));
+}
+
 void srain_chan_fcous_entry(SrainChan *chan){
     gtk_widget_grab_focus(GTK_WIDGET(chan->input_entry));
 }
