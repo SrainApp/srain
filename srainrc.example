@@ -1,4 +1,3 @@
-/connect chat.freenode.org
-/login srainbot
-/join #srain
 /relaybot teleboto|[|] 
+/connect irc.freenode.net srainbot realname="I am srain bot"
+/join #srain
