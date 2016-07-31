@@ -419,7 +419,13 @@ void srv_event_numeric (irc_session_t *irc_session, unsigned int event,
 
                 nickptr = strtok((char *)names, " ");
                 while (nickptr){
-                    // TODO: more prefix
+                    // TODO: DO NOT IGNORE prefix
+                    if (nickptr[0] == '~'
+                            || nickptr[0] == '&'
+                            || nickptr[0] == '@'
+                            || nickptr[0] == '%'
+                            || nickptr[0] == '+')
+                        nickptr++;
                     srv_hdr_ui_user_list_add(sess->host, chan, nickptr, USER_CHIGUA);
                     nickptr = strtok(NULL, " ");
                 }
