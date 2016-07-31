@@ -32,7 +32,6 @@
                 <property name="can_focus">False</property>
                 <property name="halign">start</property>
                 <property name="margin_left">6</property>
-                <property name="label" translatable="yes">#channel</property>
                 <attributes>
                   <attribute name="weight" value="semibold"/>
                 </attributes>
@@ -214,6 +213,7 @@
             <property name="margin_top">2</property>
             <property name="margin_bottom">2</property>
             <property name="has_frame">False</property>
+            <property name="truncate_multiline">True</property>
             <property name="shadow_type">none</property>
           </object>
           <packing>
