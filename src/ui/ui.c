@@ -92,9 +92,9 @@ int ui_idle(CommonUIData *data){
     else if (data->ui_interface == ui_user_list_rm_all_sync){
         DBG_FR("ui_user_list_rm_all_sync");
         const char *srv_name = data->srv_name;
-        const char *chan_name = data->chan_name;
+        const char *nick = data->nick;
         const char *reason = data->msg;
-        ui_user_list_rm_all_sync(srv_name, chan_name, reason);
+        ui_user_list_rm_all_sync(srv_name, nick, reason);
     }
     else if (data->ui_interface == ui_user_list_rename_sync){
         DBG_FR("ui_user_list_rename_sync");

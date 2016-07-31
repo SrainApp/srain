@@ -161,7 +161,7 @@ void srv_event_part(irc_session_t *irc_session, const char *event,
 
     snprintf(msg, sizeof(msg), _("%s has left %s: %s"), origin, chan, reason);
     srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_NORMAL);
-    srv_hdr_ui_user_list_rm(sess->host, origin, chan);
+    srv_hdr_ui_user_list_rm(sess->host, chan, origin);
 
     /* YOU has left a channel */
     if (strncasecmp(sess->nickname, origin, NICK_LEN) == 0){
@@ -240,7 +240,8 @@ void srv_event_kick(irc_session_t *irc_session, const char *event,
     snprintf(msg, sizeof(msg), _("%s are kicked from %s by %s: %s"),
             kick_nick, chan, origin, reason);
     srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_ERROR);
-    srv_hdr_ui_user_list_rm(sess->host, origin, chan);
+
+    srv_hdr_ui_user_list_rm(sess->host, chan, kick_nick);
 }
 
 void srv_event_channel(irc_session_t *irc_session, const char *event,
@@ -276,7 +277,6 @@ void srv_event_channel(irc_session_t *irc_session, const char *event,
 
 void srv_event_privmsg(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
-    const char *dest;
     char *msg;
     srv_session_t *sess;
 
@@ -285,7 +285,6 @@ void srv_event_privmsg(irc_session_t *irc_session, const char *event,
     PRINT_EVENT_PARAM;
 
     CHECK_COUNT(2);
-    dest = params[0];
     msg = strdup(params[1]);
 
     strip(msg);
