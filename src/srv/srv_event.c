@@ -292,7 +292,7 @@ void srv_event_privmsg(irc_session_t *irc_session, const char *event,
 
     if (!filter_is_ignore(origin))
         // TODO: fall back to SRV_SESSION_SERVER
-        srv_hdr_ui_recv_msg(sess->host, dest, origin, "", msg);
+        srv_hdr_ui_recv_msg(sess->host, origin, origin, "", msg);
 
     free(msg);
 }
