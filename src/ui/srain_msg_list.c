@@ -148,8 +148,8 @@ static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_da
             gtk_menu_item_get_label(GTK_MENU_ITEM(widget)));
 
     str = g_string_new("");
-    g_string_printf(str, _("%s <Forward from %s>"),
-            fwd_msg, srain_chan_get_chan_name(chan));
+    g_string_printf(str, _("%s <Forward from %s>"), fwd_msg,
+            srain_chan_get_chan_name(srain_window_get_cur_chan(srain_win)));
     g_free(fwd_msg);
 
     // TODO: error message when failed to send?
