@@ -109,7 +109,7 @@ int ui_idle(CommonUIData *data){
         DBG_FR("ui_set_topic_sync");
         const char *srv_name = data->srv_name;
         const char *chan_name = data->chan_name;
-        const char *topic = data->nick;
+        const char *topic = data->msg;
         ui_set_topic_sync(srv_name, chan_name, topic);
     }
     else {
@@ -300,6 +300,7 @@ void ui_set_topic(const char *srv_name, const char *chan_name,
 
     data->ui_interface = ui_set_topic_sync;
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
+    strncpy(data->chan_name, chan_name, sizeof(data->chan_name));
     strncpy(data->msg, topic, sizeof(data->msg));
 
     gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE,

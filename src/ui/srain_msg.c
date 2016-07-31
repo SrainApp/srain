@@ -166,7 +166,7 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *m
         gtk_label_set_text(smsg->msg_label, msg);
     }
 
-    /* avatar in message */
+    /* Image in message */
     if (img_url){
         simg = srain_image_new();
         srain_image_set_from_url_async(simg, img_url->str, 300,
@@ -178,15 +178,15 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *m
     }
 
     /* avatar TODO */
-    avatar_path = plugin_avatar(nick, "", "");
-
     avatar_simg = srain_image_new();
     avatar_path =  get_pixmap_path("srain-avatar.png");
     if (avatar_path){
         srain_image_set_from_file(avatar_simg, avatar_path, 36, SRAIN_IMAGE_AUTOLOAD);
         g_free(avatar_path);
     }
+    avatar_path = plugin_avatar(nick, "", "");
     srain_image_set_from_url_async(avatar_simg, avatar_path, 36, SRAIN_IMAGE_AUTOLOAD);
+    g_free(avatar_path);
     gtk_container_add(GTK_CONTAINER(smsg->avatar_box), GTK_WIDGET(avatar_simg));
     gtk_widget_show(GTK_WIDGET(avatar_simg));
 

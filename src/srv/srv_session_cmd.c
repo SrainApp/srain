@@ -159,9 +159,11 @@ int srv_session_cmd(srv_session_t *session, const char *source, char *cmd){
     /* Usage: /me <message> */
     else if (IS_CMD(cmd, "/me")){
         char *msg = strtok(cmd + strlen("/me"), " ");
+        char buf[512];
         if (!msg) goto bad;
-        srv_hdr_ui_sys_msg(session->host, source, msg, SYS_MSG_NORMAL);
-        return srv_session_me(session, source, msg);
+        snprintf(buf, sizeof(buf), _("*** %s %s ***"), session->nickname, msg);
+        srv_hdr_ui_sys_msg(session->host, source, buf, SYS_MSG_NORMAL);
+        return srv_session_me(session, source, buf);
     }
 
     /* Usage: /nick <new_nick> */
@@ -216,26 +218,26 @@ int srv_session_cmd(srv_session_t *session, const char *source, char *cmd){
 
     else if (IS_CMD(cmd, "/help")){
         srv_hdr_ui_sys_msg(session->host, source,
-                _("Please visit " PACKAGE_WEBSITE "/wiki"),
+                _("Please visit" PACKAGE_WEBSITE "/wiki"),
                 SYS_MSG_NORMAL);
     }
 
     /* no command matched */
     else {
-        WARN_FR("No such command, session: %s, source: %s, cmd: %s",
-                session->host, source, cmd);
-        srv_hdr_ui_sys_msg(session->host, source,
-                _("No such command"), SYS_MSG_ERROR);
-        goto bad;
+        char buf[512];
+        snprintf(buf, sizeof(buf), _("No such commmand: %s"), strtok(cmd, " "));
+        srv_hdr_ui_sys_msg(session->host, source, buf, SYS_MSG_ERROR);
+        return -1;
     }
 
     ERR_FR("session: %p, source: %s, one of them is invaild", session, source);
     return -1;
 
 bad:
-    if (srv_session_is_session(session) && source){
-        srv_hdr_ui_sys_msg(session->host, source,
-                _("Wrong parameters"), SYS_MSG_ERROR);
+    if (srv_session_is_session(session)){
+        char buf[512];
+        snprintf(buf, sizeof(buf), _("%s: wrong parameters"), cmd);
+        srv_hdr_ui_sys_msg(session->host, source, buf, SYS_MSG_ERROR);
     } else {
         WARN_FR("Wrong parameters, session: %p, source: %s, cmd: %s",
                 session, source, cmd);
