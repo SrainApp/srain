@@ -65,6 +65,7 @@
 
 /* SrainMsgList Container */
 #msg_list_box list { background-color: transparent; }
+#msg_list_box list * { background-color: transparent; }
 #msg_list_box {
     /* background-image: url("./bg.jpg"); */
     /* background-color: @active_color; */

@@ -1,7 +1,7 @@
 /**
  * @file srain_image.c
  * @brief a widget which can load image from url asynchronously
- * @author LastAvengers <lastavengers@outlook.com>
+ * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-04-01
  */
@@ -133,10 +133,12 @@ static void eventbox_on_click(gpointer user_data , GdkEventButton *event){
              */
             if (scr_ratio > img_ratio){
                 pixbuf2 = gdk_pixbuf_scale_simple(pixbuf,
-                        (int)(rect.height*img_ratio), rect.height, GDK_INTERP_BILINEAR);
+                        (int)(rect.height*img_ratio), rect.height,
+                        GDK_INTERP_BILINEAR);
             } else {
                 pixbuf2 = gdk_pixbuf_scale_simple(pixbuf,
-                        rect.width, (int)(rect.height/img_ratio), GDK_INTERP_BILINEAR);
+                        rect.width, (int)(rect.height/img_ratio),
+                        GDK_INTERP_BILINEAR);
             }
 
             g_object_unref(pixbuf);

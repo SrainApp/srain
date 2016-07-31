@@ -22,4 +22,44 @@
       </object>
     </child>
   </template>
+  <object class="GtkMenu" id="nick_menu">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="take_focus">False</property>
+    <child>
+      <object class="GtkMenuItem" id="whois_menu_item">
+        <property name="name">whois_menu_item</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Whois</property>
+        <property name="use_underline">True</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="kick_menu_item">
+        <property name="name">kick_menu_item</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Kick</property>
+        <property name="use_underline">True</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="chat_menu_item">
+        <property name="name">chat_menu_item</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Chat</property>
+        <property name="use_underline">True</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="invite_menu_item">
+        <property name="name">invite_menu_item</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Invite to...</property>
+      </object>
+    </child>
+  </object>
 </interface>

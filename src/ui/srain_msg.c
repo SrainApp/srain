@@ -1,7 +1,7 @@
 /**
  * @file srain_msg.c
  * @brief GtkWidget subclass used to display message
- * @author LastAvengers <lastavengers@outlook.com>
+ * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-03-01
  */
@@ -14,7 +14,7 @@
 #include <string.h>
 
 #include "ui_common.h"
-#include "ui_intf.h"
+#include "ui_hdr.h"
 #include "srain_window.h"
 #include "srain_msg.h"
 #include "srain_image.h"
@@ -26,24 +26,13 @@
 #include "get_path.h"
 
 static void nick_button_on_click(GtkWidget *widget, gpointer *user_data){
-    GString *cmd;
+    GString *str;
 
-    cmd = g_string_new(NULL);
+    str = g_string_new((char *)user_data);
+    str = g_string_append(str, ": ");
 
-    g_string_printf(cmd, "/whois %s", (char *)user_data);
-    ui_intf_server_cmd(NULL, cmd->str);
-
-    g_string_free(cmd, TRUE);
-}
-
-static gint menu_popup(GtkWidget *label, GdkEventButton *event, GtkWidget *menu){
-    if (event->button == 3
-            && !gtk_label_get_selection_bounds(GTK_LABEL(label), NULL, NULL)){
-        gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL,
-                event->button, event->time);
-        return TRUE;
-    }
-    return FALSE;
+    srain_chan_insert_text(srain_window_get_cur_chan(srain_win), str->str, 0);
+    g_string_free(str, TRUE);
 }
 
 /* ================ SRAIN_SYS_MSG ================ */
@@ -176,7 +165,7 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *m
         gtk_label_set_text(smsg->msg_label, msg);
     }
 
-    /* avatar in message */
+    /* Image in message */
     if (img_url){
         simg = srain_image_new();
         srain_image_set_from_url_async(simg, img_url->str, 300,
@@ -188,25 +177,28 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *m
     }
 
     /* avatar TODO */
-    avatar_path = plugin_avatar(nick, "", "");
-
     avatar_simg = srain_image_new();
     avatar_path =  get_pixmap_path("srain-avatar.png");
     if (avatar_path){
         srain_image_set_from_file(avatar_simg, avatar_path, 36, SRAIN_IMAGE_AUTOLOAD);
         g_free(avatar_path);
     }
+    avatar_path = plugin_avatar(nick, "", "");
     srain_image_set_from_url_async(avatar_simg, avatar_path, 36, SRAIN_IMAGE_AUTOLOAD);
+    g_free(avatar_path);
     gtk_container_add(GTK_CONTAINER(smsg->avatar_box), GTK_WIDGET(avatar_simg));
     gtk_widget_show(GTK_WIDGET(avatar_simg));
 
-    if (strlen(gtk_label_get_text(smsg->identify_label)) != 0){
-        g_signal_connect(smsg->nick_button, "clicked",
-                G_CALLBACK(nick_button_on_click), (char *)gtk_label_get_text(smsg->identify_label));
-    } else {
-        g_signal_connect(smsg->nick_button, "clicked",
-                G_CALLBACK(nick_button_on_click), (char *)gtk_label_get_text(smsg->nick_label));
-    }
+    g_signal_connect(smsg->nick_button, "clicked",
+            G_CALLBACK(nick_button_on_click), (char *)gtk_label_get_text(smsg->nick_label));
+
+    // if (strlen(gtk_label_get_text(smsg->identify_label)) != 0){
+        // g_signal_connect(smsg->nick_button, "clicked",
+                // G_CALLBACK(nick_button_on_click), (char *)gtk_label_get_text(smsg->identify_label));
+    // } else {
+        // g_signal_connect(smsg->nick_button, "clicked",
+            // G_CALLBACK(nick_button_on_click), (char *)gtk_label_get_text(smsg->nick_label));
+    // }
 
     return smsg;
 }

@@ -2,7 +2,7 @@
  * @file markup.c
  * @brief provide function markup(): match url and
  *      return a GString with html tags
- * @author LastAvengers <lastavengers@outlook.com>
+ * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-03-16
  */
@@ -13,7 +13,6 @@
 #include <regex.h>
 #include <string.h>
 #include <glib.h>
-#include "irc_magic.h"
 #include "log.h"
 
 #define MAX_ERROR_MSG 0x1000

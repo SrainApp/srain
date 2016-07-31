@@ -1,7 +1,7 @@
 /**
  * @file srain_stack_sidebar.c
- * @brief a simplified, customized stacksidebar implement
- * @author LastAvengers <lastavengers@outlook.com>
+ * @brief A simplified, customized stacksidebar implement
+ * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-03-06
  *
@@ -53,8 +53,8 @@ struct _SrainStackSidebarClass {
 
 G_DEFINE_TYPE(SrainStackSidebar, srain_stack_sidebar, GTK_TYPE_BIN)
 
-static void srain_stack_sidebar_row_selected(GtkListBox *box,
-        GtkListBoxRow *row, gpointer user_data){
+static void
+listbox_on_row_selected(GtkListBox *box, GtkListBoxRow *row, gpointer user_data){
     SrainStackSidebar *sidebar;
     SrainStackSidebarItem *item;
     GtkWidget *child;
@@ -71,14 +71,16 @@ static void srain_stack_sidebar_row_selected(GtkListBox *box,
     srain_chan_fcous_entry(SRAIN_CHAN(child));
 }
 
-static void srain_stack_sidebar_init(SrainStackSidebar *self){
+static void
+srain_stack_sidebar_init(SrainStackSidebar *self){
     GtkWidget *sw;
     GtkStyleContext *style;
 
     sw = gtk_scrolled_window_new(NULL, NULL);
     gtk_widget_show(sw);
     gtk_widget_set_no_show_all(sw, TRUE);
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(sw), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(sw),
+            GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 
     gtk_container_add(GTK_CONTAINER(self), sw);
 
@@ -87,7 +89,8 @@ static void srain_stack_sidebar_init(SrainStackSidebar *self){
 
     gtk_container_add(GTK_CONTAINER(sw), GTK_WIDGET(self->list));
 
-    g_signal_connect(self->list, "row-selected", G_CALLBACK(srain_stack_sidebar_row_selected), self);
+    g_signal_connect(self->list, "row-selected",
+            G_CALLBACK(listbox_on_row_selected), self);
 
     style = gtk_widget_get_style_context(GTK_WIDGET(self));
     gtk_style_context_add_class(style, "sidebar"); // ?
@@ -95,7 +98,8 @@ static void srain_stack_sidebar_init(SrainStackSidebar *self){
     self->rows = g_hash_table_new(NULL, NULL);
 }
 
-static void add_child(GtkWidget *child, SrainStackSidebar *sidebar){
+static void
+add_child(GtkWidget *child, SrainStackSidebar *sidebar){
     const char *chan_name;
     const char *server_name;
     GtkListBoxRow *row;
@@ -104,8 +108,8 @@ static void add_child(GtkWidget *child, SrainStackSidebar *sidebar){
     if (g_hash_table_lookup(sidebar->rows, child))
         return;
 
-    chan_name = g_object_get_data(G_OBJECT(child), "chan-name");
-    server_name = g_object_get_data(G_OBJECT(child), "server-name");
+    chan_name = srain_chan_get_name(SRAIN_CHAN(child));
+    server_name = srain_chan_get_server_name(SRAIN_CHAN(child));
     item = srain_stack_sidebar_item_new(server_name, chan_name);
 
     // gtk_widget_set_halign(item, GTK_ALIGN_START);
@@ -118,7 +122,8 @@ static void add_child(GtkWidget *child, SrainStackSidebar *sidebar){
     gtk_list_box_select_row(sidebar->list, GTK_LIST_BOX_ROW(row));
 }
 
-static void remove_child(GtkWidget *widget, SrainStackSidebar *sidebar){
+static void
+remove_child(GtkWidget *widget, SrainStackSidebar *sidebar){
     GtkWidget *row;
 
     row = g_hash_table_lookup(sidebar->rows, widget);
@@ -128,7 +133,8 @@ static void remove_child(GtkWidget *widget, SrainStackSidebar *sidebar){
     g_hash_table_remove(sidebar->rows, widget);
 }
 
-static void populate_sidebar(SrainStackSidebar *sidebar){
+static void
+populate_sidebar(SrainStackSidebar *sidebar){
     GtkWidget *widget, *row;
 
     gtk_container_foreach(GTK_CONTAINER(sidebar->stack),(GtkCallback)add_child, sidebar);
@@ -140,11 +146,13 @@ static void populate_sidebar(SrainStackSidebar *sidebar){
     }
 }
 
-static void clear_sidebar(SrainStackSidebar *sidebar){
+static void
+clear_sidebar(SrainStackSidebar *sidebar){
     gtk_container_foreach(GTK_CONTAINER(sidebar->stack), (GtkCallback)remove_child, sidebar);
 }
 
-static void on_child_changed(GtkWidget *widget, GParamSpec *pspec, SrainStackSidebar *sidebar){
+static void
+on_child_changed(GtkWidget *widget, GParamSpec *pspec, SrainStackSidebar *sidebar){
     GtkWidget *child;
     GtkWidget *row;
 
@@ -155,29 +163,34 @@ static void on_child_changed(GtkWidget *widget, GParamSpec *pspec, SrainStackSid
     }
 }
 
-static void on_stack_child_added(GtkContainer *container, GtkWidget *widget, SrainStackSidebar *sidebar){
+static void
+on_stack_child_added(GtkContainer *container, GtkWidget *widget, SrainStackSidebar *sidebar){
     add_child(widget, sidebar);
 }
 
-static void on_stack_child_removed(GtkContainer *container, GtkWidget *widget, SrainStackSidebar *sidebar){
+static void
+on_stack_child_removed(GtkContainer *container, GtkWidget *widget, SrainStackSidebar *sidebar){
     remove_child(widget, sidebar);
 }
 
-static void disconnect_stack_signals(SrainStackSidebar *sidebar){
+static void
+disconnect_stack_signals(SrainStackSidebar *sidebar){
     g_signal_handlers_disconnect_by_func(sidebar->stack, on_stack_child_added, sidebar);
     g_signal_handlers_disconnect_by_func(sidebar->stack, on_stack_child_removed, sidebar);
     g_signal_handlers_disconnect_by_func(sidebar->stack, on_child_changed, sidebar);
     g_signal_handlers_disconnect_by_func(sidebar->stack, disconnect_stack_signals, sidebar);
 }
 
-static void connect_stack_signals(SrainStackSidebar *sidebar){
+static void
+connect_stack_signals(SrainStackSidebar *sidebar){
     g_signal_connect_after(sidebar->stack, "add", G_CALLBACK(on_stack_child_added), sidebar);
     g_signal_connect_after(sidebar->stack, "remove", G_CALLBACK(on_stack_child_removed), sidebar);
     g_signal_connect(sidebar->stack, "notify::visible-child", G_CALLBACK(on_child_changed), sidebar);
     g_signal_connect_swapped(sidebar->stack, "destroy", G_CALLBACK(disconnect_stack_signals), sidebar);
 }
 
-static void srain_stack_sidebar_finalize(GObject *object){
+static void
+srain_stack_sidebar_finalize(GObject *object){
     SrainStackSidebar *sidebar = SRAIN_STACK_SIDEBAR(object);
 
     g_hash_table_destroy(sidebar->rows);
@@ -185,17 +198,20 @@ static void srain_stack_sidebar_finalize(GObject *object){
     G_OBJECT_CLASS(srain_stack_sidebar_parent_class)->finalize(object);
 }
 
-static void srain_stack_sidebar_class_init(SrainStackSidebarClass *klass){
+static void
+srain_stack_sidebar_class_init(SrainStackSidebarClass *klass){
     GObjectClass *object_class = G_OBJECT_CLASS(klass);
 
     object_class->finalize = srain_stack_sidebar_finalize;
 }
 
-SrainStackSidebar *srain_stack_sidebar_new(){
+SrainStackSidebar*
+srain_stack_sidebar_new(){
     return g_object_new(SRAIN_TYPE_STACK_SIDEBAR, NULL);
 }
 
-void srain_stack_sidebar_set_stack(SrainStackSidebar *sidebar, GtkStack *stack)
+void
+srain_stack_sidebar_set_stack(SrainStackSidebar *sidebar, GtkStack *stack)
 {
     g_return_if_fail(SRAIN_IS_STACK_SIDEBAR(sidebar));
     g_return_if_fail(GTK_IS_STACK(stack) || stack == NULL);
@@ -217,13 +233,15 @@ void srain_stack_sidebar_set_stack(SrainStackSidebar *sidebar, GtkStack *stack)
     gtk_widget_queue_resize(GTK_WIDGET(sidebar));
 }
 
-GtkStack *srain_stack_sidebar_get_stack(SrainStackSidebar *sidebar){
+GtkStack*
+srain_stack_sidebar_get_stack(SrainStackSidebar *sidebar){
     g_return_val_if_fail(GTK_IS_STACK_SIDEBAR(sidebar), NULL);
 
     return GTK_STACK(sidebar->stack);
 }
 
-void srain_stack_sidebar_update(SrainStackSidebar *sidebar, SrainChan *chan,
+void
+srain_stack_sidebar_update(SrainStackSidebar *sidebar, SrainChan *chan,
         const char *nick, const char *msg, int is_visible){
     GtkListBoxRow *row;
     SrainStackSidebarItem *item;
@@ -239,7 +257,8 @@ void srain_stack_sidebar_update(SrainStackSidebar *sidebar, SrainChan *chan,
     }
 }
 
-void srain_stack_sidebar_prev(SrainStackSidebar *sidebar){
+void
+srain_stack_sidebar_prev(SrainStackSidebar *sidebar){
     GList *rows;
     GtkListBoxRow *tail, *cur_row;
 

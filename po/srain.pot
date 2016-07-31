@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# This file is distributed under the same license as the Srain package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-30 19:03+0800\n"
+"Project-Id-Version: Srain 0.03-git@65525c8\n"
+"Report-Msgid-Bugs-To: lastavengesr@outlook.com\n"
+"POT-Creation-Date: 2016-07-31 19:51+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,243 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/srain.c:47
+#: data/ui/stack_sidebar_item.glade:34
+msgid "#archlinux-cn"
+msgstr ""
+
+#: src/ui/srain_window.c:91
 #, c-format
-msgid "Hello srain!\n"
+msgid ""
+"%s\n"
+"Running against GTK+ %d.%d.%d"
+msgstr ""
+
+#: src/srv/srv_event.c:447
+#, c-format
+msgid "%s <%s@%s> %s"
+msgstr ""
+
+#: src/ui/srain_msg_list.c:151
+#, c-format
+msgid "%s <Forward from %s>"
+msgstr ""
+
+#: src/srv/srv_event.c:240
+#, c-format
+msgid "%s are kicked from %s by %s: %s"
+msgstr ""
+
+#: src/srv/srv_event.c:146
+#, c-format
+msgid "%s has joined %s"
+msgstr ""
+
+#: src/srv/srv_event.c:162
+#, c-format
+msgid "%s has left %s: %s"
+msgstr ""
+
+#: src/srv/srv_event.c:115
+#, c-format
+msgid "%s has quit: %s"
+msgstr ""
+
+#: src/srv/srv_event.c:337
+#, c-format
+msgid "%s invites you into %s"
+msgstr ""
+
+#: src/srv/srv_event.c:458
+#, c-format
+msgid "%s is attached to %s at \"%s\""
+msgstr ""
+
+#: src/srv/srv_event.c:464
+#, c-format
+msgid "%s is idle for %s seconds since %s"
+msgstr ""
+
+#: src/srv/srv_event.c:453
+#, c-format
+msgid "%s is member of %s"
+msgstr ""
+
+#: src/srv/srv_event.c:98
+#, c-format
+msgid "%s is now known as %s"
+msgstr ""
+
+#: src/srv/srv_session_cmd.c:239
+#, c-format
+msgid "%s: wrong parameters"
+msgstr ""
+
+#: src/srv/srv_session_cmd.c:164 src/srv/srv_event.c:353
+#, c-format
+msgid "*** %s %s ***"
+msgstr ""
+
+#: src/ui/ui.c:381
+msgid "ACTION"
+msgstr ""
+
+#: src/ui/srain_window.c:107
+msgid "About Srain"
+msgstr ""
+
+#: data/ui/window.glade:177
+msgid "Address:"
+msgstr ""
+
+#: src/ui/ui_common.c:94
+msgid "Cancel"
+msgstr ""
+
+#: data/ui/window.glade:328
+msgid "Channel:"
+msgstr ""
+
+#: data/ui/msg_list.glade:52
+msgid "Chat"
+msgstr ""
+
+#: data/ui/window.glade:294
+msgid "Connect"
+msgstr ""
+
+#: src/srv/srv_event.c:479
+#, c-format
+msgid "ERROR[%3d]: %s"
+msgstr ""
+
+#: src/ui/srain_chan.c:217
+msgid "Failed to send message"
+msgstr ""
+
+#: src/ui/srain_chan.c:113
+msgid "Failed to upload image"
+msgstr ""
+
+#: src/ui/srain_msg_list.c:217
+msgid "Forward to..."
+msgstr ""
+
+#: data/ui/recv_msg.glade:133 data/ui/send_msg.glade:54
+msgid "HH:MM"
+msgstr ""
+
+#: data/ui/msg_list.glade:61
+msgid "Invite to..."
+msgstr ""
+
+#: data/ui/window.glade:378
+msgid "Join"
+msgstr ""
+
+#: data/ui/msg_list.glade:43
+msgid "Kick"
+msgstr ""
+
+#: src/i18n.c:21
+msgid "Language: English"
+msgstr ""
+
+#: data/ui/image.glade:11
+msgid "Load image"
+msgstr ""
+
+#: data/ui/window.glade:246
+msgid "Nickname:"
+msgstr ""
+
+#: src/srv/srv_session_cmd.c:228
+#, c-format
+msgid "No such commmand: %s"
+msgstr ""
+
+#: src/ui/ui_common.c:95
+msgid "Open"
+msgstr ""
+
+#: src/ui/ui_common.c:92
+msgid "Open File"
+msgstr ""
+
+#: data/ui/window.glade:200 data/ui/window.glade:349
+msgid "Password:"
+msgstr ""
+
+#: src/srv/srv_session_cmd.c:221
+msgid "Please visit"
+msgstr ""
+
+#: data/ui/window.glade:224
+msgid "Port:"
+msgstr ""
+
+#: data/ui/window.glade:405
+msgid "Quit"
+msgstr ""
+
+#: src/ui/srain_msg_list.c:222
+msgid "Quote"
+msgstr ""
+
+#: src/ui/srain_msg_list.c:131
+#, c-format
+msgid "Quote { %s } "
+msgstr ""
+
+#: data/ui/window.glade:267
+msgid "RealName:"
+msgstr ""
+
+#: data/ui/window.glade:395
+msgid "Srain"
+msgstr ""
+
+#: data/ui/recv_msg.glade:108
+msgid "This message can not be showed correctly."
+msgstr ""
+
+#: data/ui/msg_list.glade:34
+msgid "Whois"
+msgstr ""
+
+#: src/ui/ui.c:400
+msgid "You"
+msgstr ""
+
+#: data/ui/stack_sidebar_item.glade:48
+msgid "irc.freenode.net"
+msgstr ""
+
+#: data/ui/chan.glade:288
+msgid "leave"
+msgstr ""
+
+#: src/srv/srv_event.c:185
+#, c-format
+msgid "mode %s %s %s by %s"
+msgstr ""
+
+#: src/srv/srv_event.c:203
+#, c-format
+msgid "mode %s %s by %s"
+msgstr ""
+
+#: data/ui/chan.glade:258
+msgid "show topic"
+msgstr ""
+
+#: data/ui/chan.glade:273
+msgid "show user list"
+msgstr ""
+
+#: data/ui/sys_msg.glade:20
+msgid "system message."
+msgstr ""
+
+#: data/ui/recv_msg.glade:73
+msgid "via relaybot"
 msgstr ""

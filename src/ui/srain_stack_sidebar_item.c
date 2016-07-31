@@ -1,7 +1,7 @@
 /**
  * @file srain_stack_sidebar_item.c
  * @brief item class of SrainStackSidebar
- * @author LastAvengers <lastavengers@outlook.com>
+ * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-03-07
  */
@@ -10,9 +10,14 @@
 
 #include <gtk/gtk.h>
 #include <string.h>
-#include "meta.h"
+
 #include "srain_stack_sidebar_item.h"
-#include "irc_magic.h"
+
+#include "srv_session.h"
+#define MSG_LEN 512
+// TODO
+
+#include "meta.h"
 #include "log.h"
 
 struct _SrainStackSidebarItem {
@@ -56,10 +61,10 @@ SrainStackSidebarItem *srain_stack_sidebar_item_new(const char *server_name, con
     gtk_label_set_text(item->server_label, server_name);
 
     // is a channel TODO: ui shouldn't konw anything about irc protocol
-    if (IS_CHAN(chan_name)){
+    if (chan_name[0] == '#'){
         gtk_image_set_from_icon_name(item->image, "srain-chan", GTK_ICON_SIZE_BUTTON);
     }
-    else if (strcmp(chan_name, META_SERVER) == 0){
+    else if (strcmp(chan_name, "Server ") == 0){
         // is a server
         gtk_image_set_from_icon_name(item->image, "srain-server", GTK_ICON_SIZE_BUTTON);
     } else {

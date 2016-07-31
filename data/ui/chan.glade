@@ -2,6 +2,11 @@
 <!-- Generated with glade 3.20.0 -->
 <interface>
   <requires lib="gtk+" version="3.16"/>
+  <object class="GtkImage" id="option_button_image">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="icon_name">preferences-other</property>
+  </object>
   <object class="GtkImage" id="upload_image_button_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -27,7 +32,6 @@
                 <property name="can_focus">False</property>
                 <property name="halign">start</property>
                 <property name="margin_left">6</property>
-                <property name="label" translatable="yes">#channel</property>
                 <attributes>
                   <attribute name="weight" value="semibold"/>
                 </attributes>
@@ -39,17 +43,12 @@
               </packing>
             </child>
             <child>
-              <object class="GtkMenuButton" id="option_button">
+              <object class="GtkButton" id="option_button">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="focus_on_click">False</property>
                 <property name="receives_default">True</property>
+                <property name="image">option_button_image</property>
                 <property name="relief">none</property>
-                <property name="direction">none</property>
-                <property name="popover">option_menu</property>
-                <child>
-                  <placeholder/>
-                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -214,6 +213,7 @@
             <property name="margin_top">2</property>
             <property name="margin_bottom">2</property>
             <property name="has_frame">False</property>
+            <property name="truncate_multiline">True</property>
             <property name="shadow_type">none</property>
           </object>
           <packing>
@@ -244,7 +244,7 @@
       </packing>
     </child>
   </template>
-  <object class="GtkPopoverMenu" id="option_menu">
+  <object class="GtkPopover" id="option_popover">
     <property name="can_focus">False</property>
     <property name="relative_to">option_button</property>
     <child>
@@ -299,10 +299,6 @@
           </packing>
         </child>
       </object>
-      <packing>
-        <property name="submenu">submenu0</property>
-        <property name="position">1</property>
-      </packing>
     </child>
   </object>
 </interface>

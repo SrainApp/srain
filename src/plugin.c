@@ -1,24 +1,21 @@
 /**
  * @file plugin.c
  * @brief simple embedding python support
- * @author LastAvengers <lastavengers@outlook.com>
+ * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-04-07
  *
  * currently, plugin.c will find python modules in
  * $DESTDIR/share/srain/plugin
  */
+#define __DBG_ON
 #define __LOG_ON
 
 #include <Python.h>
 #include "log.h"
 
 char* plugin_upload(const char *path){
-    // FIXME:
-    return "";
-
     char *url;
-    char plugin_path;
 
     PyObject *py_module;
     PyObject *py_func;
@@ -28,19 +25,18 @@ char* plugin_upload(const char *path){
     Py_Initialize();
 
     /* load current dirrectory *SHOULD BE REMOVED IN RELEASE* */
-    // TODO: use absolute path
-    PyRun_SimpleString("import sys; sys.path.append('../data/plugins')");
+    PyRun_SimpleString("import sys; sys.path.append('" PACKAGE_DATA_DIR "/share/" PACKAGE "/plugins')");
 
     /* import */
     py_module = PyImport_Import(PyUnicode_FromString("upload"));
     if (!py_module) {
-        LOG_FR("plugin `upload` no found");
+        LOG_FR("Plugin `upload` no found");
         return NULL;
     }
 
     py_func = PyObject_GetAttrString(py_module, "upload");
     if (!py_func) {
-        LOG_FR("function `upload()` no found");
+        LOG_FR("Function `upload()` no found");
         return NULL;
     }
 
@@ -66,9 +62,6 @@ char* plugin_upload(const char *path){
 }
 
 char* plugin_avatar(const char *nick, const char *user, const char *host){
-    // FIXME:
-    return "";
-
     char *path;
     PyObject *py_module;
     PyObject *py_func;
@@ -78,7 +71,7 @@ char* plugin_avatar(const char *nick, const char *user, const char *host){
     Py_Initialize();
 
     /* load current dirrectory *SHOULD BE REMOVED IN RELEASE* */
-    PyRun_SimpleString("import sys; sys.path.append('./plugin')");
+    PyRun_SimpleString("import sys; sys.path.append('" PACKAGE_DATA_DIR "/share/" PACKAGE "/plugins')");
 
     /* import */
     py_module = PyImport_Import(PyUnicode_FromString("avatar"));
@@ -103,7 +96,7 @@ char* plugin_avatar(const char *nick, const char *user, const char *host){
     py_path = PyObject_CallObject(py_func, py_args);
     path = PyUnicode_AsUTF8(py_path);
 
-    LOG_FR("%s", path);
+    DBG_FR("%s", path);
 
     Py_Finalize();
 

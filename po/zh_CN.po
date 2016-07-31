@@ -1,23 +1,262 @@
-# Chinese translations for PACKAGE package
-# PACKAGE 软件包的简体中文翻译.
-# Copyright (C) 2016 THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# Chinese translations for Srain package
+# Srain 软件包的简体中文翻译.
+# Copyright (C) 2016 THE Srain'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the Srain package.
 # Automatically generated, 2016.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-30 19:03+0800\n"
-"PO-Revision-Date: 2016-01-30 19:03+0800\n"
-"Last-Translator: Automatically generated\n"
+"Project-Id-Version: Srain 0.03\n"
+"Report-Msgid-Bugs-To: lastavengesr@outlook.com\n"
+"POT-Creation-Date: 2016-07-31 19:42+0800\n"
+"PO-Revision-Date: 2016-07-16 13:06+0800\n"
+"Last-Translator: Shengyu Zhang <lastavengers@outlook.com>\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/srain.c:47
+#: data/ui/stack_sidebar_item.glade:34
+msgid "#archlinux-cn"
+msgstr ""
+
+#: src/ui/srain_window.c:91
 #, c-format
-msgid "Hello srain!\n"
-msgstr "你好 srain！\n"
+msgid ""
+"%s\n"
+"Running against GTK+ %d.%d.%d"
+msgstr ""
+"%s\n"
+"运行于 GTK+ %d.%d.%d 上"
+
+#: src/srv/srv_event.c:447
+#, c-format
+msgid "%s <%s@%s> %s"
+msgstr ""
+
+#: src/ui/srain_msg_list.c:151
+#, c-format
+msgid "%s <Forward from %s>"
+msgstr "%s <转发自 %s>"
+
+#: src/srv/srv_event.c:240
+#, c-format
+msgid "%s are kicked from %s by %s: %s"
+msgstr "%s 被踢出 %s，执行者：%s，原因：%s"
+
+#: src/srv/srv_event.c:146
+#, c-format
+msgid "%s has joined %s"
+msgstr "%s 加入了聊天室 %s"
+
+#: src/srv/srv_event.c:162
+#, c-format
+msgid "%s has left %s: %s"
+msgstr "%s 离开了聊天室 %s：%s"
+
+#: src/srv/srv_event.c:115
+#, c-format
+msgid "%s has quit: %s"
+msgstr "%s 退出了聊天室：%s"
+
+#: src/srv/srv_event.c:337
+#, c-format
+msgid "%s invites you into %s"
+msgstr "%s 邀请你加入 %s"
+
+#: src/srv/srv_event.c:458
+#, c-format
+msgid "%s is attached to %s at \"%s\""
+msgstr "%s 连接的服务器是 %s，位于 \"%s\""
+
+#: src/srv/srv_event.c:464
+#, c-format
+msgid "%s is idle for %s seconds since %s"
+msgstr "%s 已经一动不动 %s 秒了…… %s"
+
+#: src/srv/srv_event.c:453
+#, c-format
+msgid "%s is member of %s"
+msgstr "%s 在聊天室 %s 中"
+
+#: src/srv/srv_event.c:98
+#, c-format
+msgid "%s is now known as %s"
+msgstr "%s 将昵称更改为 %s"
+
+#: src/srv/srv_session_cmd.c:239
+#, c-format
+msgid "%s: wrong parameters"
+msgstr "%s: 参数错误"
+
+#: src/srv/srv_session_cmd.c:164 src/srv/srv_event.c:353
+#, c-format
+msgid "*** %s %s ***"
+msgstr ""
+
+#: src/ui/ui.c:381
+msgid "ACTION"
+msgstr ""
+
+#: src/ui/srain_window.c:107
+msgid "About Srain"
+msgstr "关于 Srain"
+
+#: data/ui/window.glade:177
+msgid "Address:"
+msgstr "地址："
+
+#: src/ui/ui_common.c:94
+msgid "Cancel"
+msgstr "取消"
+
+#: data/ui/window.glade:328
+msgid "Channel:"
+msgstr "频道："
+
+#: data/ui/msg_list.glade:52
+msgid "Chat"
+msgstr "聊天"
+
+#: data/ui/window.glade:294
+msgid "Connect"
+msgstr "连接"
+
+#: src/srv/srv_event.c:479
+#, c-format
+msgid "ERROR[%3d]: %s"
+msgstr "错误[%3d]: %s"
+
+#: src/ui/srain_chan.c:217
+msgid "Failed to send message"
+msgstr "无法发送消息"
+
+#: src/ui/srain_chan.c:113
+msgid "Failed to upload image"
+msgstr "无法上传图片"
+
+#: src/ui/srain_msg_list.c:217
+msgid "Forward to..."
+msgstr "转发到……"
+
+#: data/ui/recv_msg.glade:133 data/ui/send_msg.glade:54
+msgid "HH:MM"
+msgstr ""
+
+#: data/ui/msg_list.glade:61
+msgid "Invite to..."
+msgstr "邀请加入……"
+
+#: data/ui/window.glade:378
+msgid "Join"
+msgstr "加入"
+
+#: data/ui/msg_list.glade:43
+msgid "Kick"
+msgstr "踢出"
+
+#: src/i18n.c:21
+msgid "Language: English"
+msgstr "语言：中文"
+
+#: data/ui/image.glade:11
+msgid "Load image"
+msgstr "加载图片"
+
+#: data/ui/window.glade:246
+msgid "Nickname:"
+msgstr "昵称："
+
+#: src/srv/srv_session_cmd.c:228
+#, c-format
+msgid "No such commmand: %s"
+msgstr "无效的命令: %s"
+
+#: src/ui/ui_common.c:95
+msgid "Open"
+msgstr "打开"
+
+#: src/ui/ui_common.c:92
+msgid "Open File"
+msgstr "打开文件"
+
+#: data/ui/window.glade:200 data/ui/window.glade:349
+msgid "Password:"
+msgstr "密码："
+
+#: src/srv/srv_session_cmd.c:221
+#, fuzzy
+msgid "Please visit"
+msgstr "请访问 "
+
+#: data/ui/window.glade:224
+msgid "Port:"
+msgstr "端口："
+
+#: data/ui/window.glade:405
+msgid "Quit"
+msgstr "退出"
+
+#: src/ui/srain_msg_list.c:222
+msgid "Quote"
+msgstr "引用"
+
+#: src/ui/srain_msg_list.c:131
+#, c-format
+msgid "Quote { %s } "
+msgstr "引用 「%s」"
+
+#: data/ui/window.glade:267
+msgid "RealName:"
+msgstr "真实姓名："
+
+#: data/ui/window.glade:395
+msgid "Srain"
+msgstr ""
+
+#: data/ui/recv_msg.glade:108
+msgid "This message can not be showed correctly."
+msgstr "这条消息无法正确显示。"
+
+#: data/ui/msg_list.glade:34
+msgid "Whois"
+msgstr "个人信息"
+
+#: src/ui/ui.c:400
+msgid "You"
+msgstr "你"
+
+#: data/ui/stack_sidebar_item.glade:48
+msgid "irc.freenode.net"
+msgstr ""
+
+#: data/ui/chan.glade:288
+msgid "leave"
+msgstr "离开"
+
+#: src/srv/srv_event.c:185
+#, c-format
+msgid "mode %s %s %s by %s"
+msgstr ""
+
+#: src/srv/srv_event.c:203
+#, c-format
+msgid "mode %s %s by %s"
+msgstr ""
+
+#: data/ui/chan.glade:258
+msgid "show topic"
+msgstr "显示主题"
+
+#: data/ui/chan.glade:273
+msgid "show user list"
+msgstr "显示用户列表"
+
+#: data/ui/sys_msg.glade:20
+msgid "system message."
+msgstr ""
+
+#: data/ui/recv_msg.glade:73
+msgid "via relaybot"
+msgstr ""

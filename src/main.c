@@ -1,7 +1,7 @@
 /**
  * @file main.c
  * @brief main function here
- * @author LastAvengers <lastavengers@outlook.com>
+ * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-03-01
  */
@@ -12,22 +12,30 @@
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <errno.h>
+
+#include "srv.h"
+#include "srv_test.h"
+
 #include "srain_app.h"
+
+#include "i18n.h"
 #include "log.h"
 
-int main(int argc, char **argv){
+/**
+ * @brief Create directories and config files if no exist
+ *          - $XDG_CONFIG_HOME/srain/
+ *          - $XDG_CONFIG_HOME/srain/srainrc
+ *          - $XDG_CACHE_HOME/srain/
+ *
+ * @return 0 if all required files are created or already existent
+ */
+static int create_user_file(){
     int res;
     FILE *fp;
     char *congif_dir;
     char *cache_dir;
     char *rc_file;
 
-    /* create directories and config files if no exist
-     * such as:
-     *  - $XDG_CONFIG_HOME/srain/
-     *  - $XDG_CONFIG_HOME/srain/srainrc
-     *  - $XDG_CACHE_HOME/srain/
-     */
     congif_dir = g_build_filename(g_get_user_config_dir(), "srain", NULL);
     res = mkdir(congif_dir, 0700);
     if (res == -1) {
@@ -62,5 +70,19 @@ int main(int argc, char **argv){
     g_free(cache_dir);
     cache_dir = NULL;
 
+    return 0;
+}
+
+int main(int argc, char **argv){
+    i18n_init();
+
+    create_user_file();
+
+#ifndef IRC_TEST
+    srv_init();
     return g_application_run(G_APPLICATION(srain_app_new()), argc, argv);
+#else
+    srv_test();
+#endif
+
 }

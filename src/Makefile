@@ -12,7 +12,7 @@ default:
 	./cmd_list.sh --restore
 
 ../build/%.o: %.c
-	$(CC) $(CFLAGS) -c $(GTK3FLAGS) $(PY3FLAGS) $^ -o $@ $(GTK3LIBS) $(PY3LIBS) $(CURLLIBS)
+	$(CC) $(CFLAGS) -c $^ -o $@
 
 ../build/%.o: */%.c
-	$(CC) $(CFLAGS) -c $(GTK3FLAGS) $(PY3FLAGS) $^ -o $@ $(GTK3LIBS) $(PY3LIBS) $(CURLLIBS)
+	$(CC) $(CFLAGS) -c $^ -o $@

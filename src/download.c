@@ -1,13 +1,13 @@
 /**
  * @file download.c
  * @brief download file from a given url and save it to cache dir
- * @author LastAvengers <lastavengers@outlook.com>
+ * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-03-18
  *
  */
 
-#define __LOG_ON
+// #define __LOG_ON
 
 #include <stdio.h>
 #include <unistd.h>
@@ -47,7 +47,7 @@ GString *download(const char *url){
     FILE *fp;
     GString *path;
     CURL *curl;
-    CURLcode res;
+    CURLcode res = 0;
 
     LOG_FR("%s", url);
     path = url2path(url);
