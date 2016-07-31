@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 0.03\n"
 "Report-Msgid-Bugs-To: lastavengesr@outlook.com\n"
-"POT-Creation-Date: 2016-07-30 19:51+0800\n"
+"POT-Creation-Date: 2016-07-31 19:42+0800\n"
 "PO-Revision-Date: 2016-07-16 13:06+0800\n"
 "Last-Translator: Shengyu Zhang <lastavengers@outlook.com>\n"
 "Language-Team: none\n"
@@ -21,10 +21,6 @@ msgstr ""
 msgid "#archlinux-cn"
 msgstr ""
 
-#: data/ui/chan.glade:35
-msgid "#channel"
-msgstr ""
-
 #: src/ui/srain_window.c:91
 #, c-format
 msgid ""
@@ -34,22 +30,27 @@ msgstr ""
 "%s\n"
 "运行于 GTK+ %d.%d.%d 上"
 
-#: src/srv/srv_event.c:442
+#: src/srv/srv_event.c:447
 #, c-format
 msgid "%s <%s@%s> %s"
 msgstr ""
 
-#: src/srv/srv_event.c:239
+#: src/ui/srain_msg_list.c:151
+#, c-format
+msgid "%s <Forward from %s>"
+msgstr "%s <转发自 %s>"
+
+#: src/srv/srv_event.c:240
 #, c-format
 msgid "%s are kicked from %s by %s: %s"
 msgstr "%s 被踢出 %s，执行者：%s，原因：%s"
 
-#: src/srv/srv_event.c:145
+#: src/srv/srv_event.c:146
 #, c-format
 msgid "%s has joined %s"
 msgstr "%s 加入了聊天室 %s"
 
-#: src/srv/srv_event.c:161
+#: src/srv/srv_event.c:162
 #, c-format
 msgid "%s has left %s: %s"
 msgstr "%s 离开了聊天室 %s：%s"
@@ -59,37 +60,42 @@ msgstr "%s 离开了聊天室 %s：%s"
 msgid "%s has quit: %s"
 msgstr "%s 退出了聊天室：%s"
 
-#: src/srv/srv_event.c:336
+#: src/srv/srv_event.c:337
 #, c-format
 msgid "%s invites you into %s"
 msgstr "%s 邀请你加入 %s"
 
-#: src/srv/srv_event.c:453
+#: src/srv/srv_event.c:458
 #, c-format
 msgid "%s is attached to %s at \"%s\""
-msgstr "%s 连接到服务器 %s 位于 \"%s\""
+msgstr "%s 连接的服务器是 %s，位于 \"%s\""
 
-#: src/srv/srv_event.c:459
+#: src/srv/srv_event.c:464
 #, c-format
 msgid "%s is idle for %s seconds since %s"
 msgstr "%s 已经一动不动 %s 秒了…… %s"
 
-#: src/srv/srv_event.c:448
+#: src/srv/srv_event.c:453
 #, c-format
 msgid "%s is member of %s"
-msgstr "%s 在频道 %s 中"
+msgstr "%s 在聊天室 %s 中"
 
-#: src/srv/srv_event.c:96
+#: src/srv/srv_event.c:98
 #, c-format
 msgid "%s is now known as %s"
 msgstr "%s 将昵称更改为 %s"
 
-#: src/srv/srv_event.c:352
+#: src/srv/srv_session_cmd.c:239
 #, c-format
-msgid "*** %s: %s ***"
+msgid "%s: wrong parameters"
+msgstr "%s: 参数错误"
+
+#: src/srv/srv_session_cmd.c:164 src/srv/srv_event.c:353
+#, c-format
+msgid "*** %s %s ***"
 msgstr ""
 
-#: src/ui/ui.c:380
+#: src/ui/ui.c:381
 msgid "ACTION"
 msgstr ""
 
@@ -109,7 +115,7 @@ msgstr "取消"
 msgid "Channel:"
 msgstr "频道："
 
-#: data/ui/msg_list.glade:92
+#: data/ui/msg_list.glade:52
 msgid "Chat"
 msgstr "聊天"
 
@@ -117,11 +123,7 @@ msgstr "聊天"
 msgid "Connect"
 msgstr "连接"
 
-#: data/ui/msg_list.glade:59
-msgid "Current channel"
-msgstr "当前频道"
-
-#: src/srv/srv_event.c:474
+#: src/srv/srv_event.c:479
 #, c-format
 msgid "ERROR[%3d]: %s"
 msgstr "错误[%3d]: %s"
@@ -134,15 +136,15 @@ msgstr "无法发送消息"
 msgid "Failed to upload image"
 msgstr "无法上传图片"
 
-#: data/ui/msg_list.glade:49
+#: src/ui/srain_msg_list.c:217
 msgid "Forward to..."
 msgstr "转发到……"
 
-#: data/ui/recv_msg.glade:134 data/ui/send_msg.glade:56
+#: data/ui/recv_msg.glade:133 data/ui/send_msg.glade:54
 msgid "HH:MM"
 msgstr ""
 
-#: data/ui/msg_list.glade:100
+#: data/ui/msg_list.glade:61
 msgid "Invite to..."
 msgstr "邀请加入……"
 
@@ -150,11 +152,11 @@ msgstr "邀请加入……"
 msgid "Join"
 msgstr "加入"
 
-#: data/ui/msg_list.glade:84
+#: data/ui/msg_list.glade:43
 msgid "Kick"
 msgstr "踢出"
 
-#: src/i18n.c:19
+#: src/i18n.c:21
 msgid "Language: English"
 msgstr "语言：中文"
 
@@ -166,9 +168,10 @@ msgstr "加载图片"
 msgid "Nickname:"
 msgstr "昵称："
 
-#: src/srv/srv_session_cmd.c:205
-msgid "No such command"
-msgstr "无效的命令"
+#: src/srv/srv_session_cmd.c:228
+#, c-format
+msgid "No such commmand: %s"
+msgstr "无效的命令: %s"
 
 #: src/ui/ui_common.c:95
 msgid "Open"
@@ -182,8 +185,9 @@ msgstr "打开文件"
 msgid "Password:"
 msgstr "密码："
 
-#: src/srv/srv_session_cmd.c:196
-msgid "Please visit "
+#: src/srv/srv_session_cmd.c:221
+#, fuzzy
+msgid "Please visit"
 msgstr "请访问 "
 
 #: data/ui/window.glade:224
@@ -194,35 +198,32 @@ msgstr "端口："
 msgid "Quit"
 msgstr "退出"
 
-#: data/ui/msg_list.glade:41
+#: src/ui/srain_msg_list.c:222
 msgid "Quote"
 msgstr "引用"
+
+#: src/ui/srain_msg_list.c:131
+#, c-format
+msgid "Quote { %s } "
+msgstr "引用 「%s」"
 
 #: data/ui/window.glade:267
 msgid "RealName:"
 msgstr "真实姓名："
 
-#: data/ui/msg_list.glade:33
-msgid "Reply"
-msgstr "回复"
-
 #: data/ui/window.glade:395
 msgid "Srain"
 msgstr ""
 
-#: data/ui/recv_msg.glade:109
+#: data/ui/recv_msg.glade:108
 msgid "This message can not be showed correctly."
 msgstr "这条消息无法正确显示。"
 
-#: data/ui/msg_list.glade:76
+#: data/ui/msg_list.glade:34
 msgid "Whois"
 msgstr "个人信息"
 
-#: src/srv/srv_session_cmd.c:218
-msgid "Wrong parameters"
-msgstr "参数错误"
-
-#: src/ui/ui.c:399
+#: src/ui/ui.c:400
 msgid "You"
 msgstr "你"
 
@@ -234,24 +235,14 @@ msgstr ""
 msgid "leave"
 msgstr "离开"
 
-#: src/srv/srv_event.c:184
+#: src/srv/srv_event.c:185
 #, c-format
 msgid "mode %s %s %s by %s"
 msgstr ""
 
-#: src/srv/srv_event.c:202
+#: src/srv/srv_event.c:203
 #, c-format
 msgid "mode %s %s by %s"
-msgstr ""
-
-#: data/ui/recv_msg.glade:55
-msgid "nickname"
-msgstr ""
-
-#: data/ui/send_msg.glade:31
-msgid ""
-"sent message.\n"
-"<a href=\"http://www.google.com\">Link Test</a>"
 msgstr ""
 
 #: data/ui/chan.glade:258
@@ -266,6 +257,6 @@ msgstr "显示用户列表"
 msgid "system message."
 msgstr ""
 
-#: data/ui/recv_msg.glade:74
+#: data/ui/recv_msg.glade:73
 msgid "via relaybot"
 msgstr ""
