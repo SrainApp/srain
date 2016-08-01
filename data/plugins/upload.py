@@ -22,11 +22,14 @@ def test():
         print("test failed")
 
 def upload(img):
-    with open(img,'rb') as f:
-        res = requests.post(url, files = {'name': f}, timeout = 10)
-    if (res.text.startswith('http')):
-        return res.text.strip('\n')
-    else:
+    try:
+        with open(img,'rb') as f:
+            res = requests.post(url, files = {'name': f}, timeout = 10)
+        if (res.text.startswith('http')):
+            return res.text.strip('\n')
+        else:
+            return "failed to upload " + img
+    except Exception as err:
         return "failed to upload " + img
 
 if __name__ == '__main__':
