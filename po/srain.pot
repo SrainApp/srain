@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Srain 0.03-git@1dcb55a\n"
+"Project-Id-Version: Srain 0.03-git@d3585b5\n"
 "Report-Msgid-Bugs-To: lastavengesr@outlook.com\n"
-"POT-Creation-Date: 2016-08-01 11:00+0800\n"
+"POT-Creation-Date: 2016-08-01 16:12+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -83,17 +83,17 @@ msgstr ""
 msgid "%s is now known as %s"
 msgstr ""
 
-#: src/srv/srv_session_cmd.c:256
+#: src/srv/srv_session_cmd.c:257
 #, c-format
 msgid "%s: wrong parameters"
 msgstr ""
 
-#: src/srv/srv_session_cmd.c:183 src/srv/srv_event.c:364
+#: src/srv/srv_session_cmd.c:184 src/srv/srv_event.c:364
 #, c-format
 msgid "*** %s %s ***"
 msgstr ""
 
-#: src/ui/srain_app.c:59
+#: src/ui/srain_app.c:58
 msgid ""
 "<big><b>Welcome to Srain :)</b></big>\n"
 "\n"
@@ -143,11 +143,11 @@ msgstr ""
 msgid "ERROR[%3d]: %s"
 msgstr ""
 
-#: src/ui/srain_chan.c:217
+#: src/ui/srain_chan.c:218
 msgid "Failed to send message"
 msgstr ""
 
-#: src/ui/srain_chan.c:113
+#: src/ui/srain_chan.c:114
 msgid "Failed to upload image"
 msgstr ""
 
@@ -183,7 +183,7 @@ msgstr ""
 msgid "Nickname:"
 msgstr ""
 
-#: src/srv/srv_session_cmd.c:247
+#: src/srv/srv_session_cmd.c:248
 #, c-format
 msgid "No such commmand: %s"
 msgstr ""
@@ -200,7 +200,7 @@ msgstr ""
 msgid "Password:"
 msgstr ""
 
-#: src/srv/srv_session_cmd.c:240
+#: src/srv/srv_session_cmd.c:241
 msgid "Please visit"
 msgstr ""
 
@@ -233,7 +233,7 @@ msgstr ""
 msgid "This message can not be showed correctly."
 msgstr ""
 
-#: data/ui/chan.glade:18
+#: data/ui/chan.glade:230
 msgid "Upload image"
 msgstr ""
 
