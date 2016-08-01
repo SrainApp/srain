@@ -13,7 +13,7 @@ It does not look like an IRC client :-)
 - glib2
 - python >= 3.2
 - libcurl
-- libircclient > 1.8
+- libircclient >= 1.8
 
 # Build & Debug
 

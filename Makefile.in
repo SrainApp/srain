@@ -11,7 +11,7 @@ PACKAGE_NAME = Srain
 PACKAGE_BUILD = $(shell [ -d .git ] || \
 				git rev-parse --git-dir > /dev/null 2>&1 && \
 				echo -n -git@`git rev-parse --short HEAD`)
-PACKAGE_VERSION = 0.03$(PACKAGE_BUILD)
+PACKAGE_VERSION = 0.05$(PACKAGE_BUILD)
 PACKAGE_AUTHOR = Shengyu Zhang
 PACKAGE_EMAIL = lastavengesr@outlook.com
 PACKAGE_DESC = It does not look like an IRC client.

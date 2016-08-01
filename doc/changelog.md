@@ -1,10 +1,20 @@
+# 2016-08-01 Version 0.05:
+
+- Port to libircclient
+- New translations: zh_CN
+- More friendly User interface
+- Support to quote and forward message
+- Fixed a lot of bugs
+
+0.05 is the first stable release of Srain, enjoy~
+
 # 2016-04-30 Version 0.03:
 
-- new interface between UI and IRC module
-- multi-server support
-- channel name is not case sensitive now
+- New interface between UI and IRC module
+- Multi-server support
+- Channel name is not case sensitive now
 - /quit command will close all SrainChan of a server
-- fix GTK-Warning when close a SrainCHan
+- Fix GTK-Warning when close a SrainCHan
 
 NB: 0.03 is a pre-release, some functions are no completed yet.
 it also has some undetected bugs.
