@@ -82,10 +82,11 @@ static gboolean entry_on_key_press(gpointer user_data, GdkEventKey *event){
     chan = user_data;
     switch (event->keyval){
         case GDK_KEY_Down:
-            // srain_chan_scroll_down(chan);
+            // TODO: use up/down to switch history message?
+            srain_msg_list_scroll_down(chan->msg_list, 30);
             break;
         case GDK_KEY_Up:
-            // srain_chan_scroll_up(chan);
+            srain_msg_list_scroll_up(chan->msg_list, 30);
             break;
         case GDK_KEY_Tab:
             srain_entry_completion_complete(chan->completion);
