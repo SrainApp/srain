@@ -11,9 +11,11 @@
 #include <string.h>
 
 #include "ui.h"
+#include "ui_hdr.h"
 #include "srain_app.h"
 #include "srain_chan.h"
 #include "srain_window.h"
+#include "theme.h"
 
 #include "srv_session.h"
 
@@ -29,6 +31,13 @@ typedef struct {
     char msg[MSG_LEN];
     int type;
 } CommonUIData;
+
+void ui_init(int argc, char **argv){
+    ui_hdr_init();
+    theme_init();
+
+    g_application_run(G_APPLICATION(srain_app_new()), argc, argv);
+}
 
 void ui_idle_destroy_data(void *data){
     DBG_FR("CommonUIData %p freed", data);

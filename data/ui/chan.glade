@@ -15,6 +15,7 @@
   <template class="SrainChan" parent="GtkBox">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
+    <property name="tooltip_text" translatable="yes">Upload image</property>
     <property name="orientation">vertical</property>
     <property name="spacing">1</property>
     <child>

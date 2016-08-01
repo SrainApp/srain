@@ -23,6 +23,7 @@
 
 int rc_read(){
     FILE *fp;
+    int ncmd;
     char *line;
     size_t len;
     ssize_t read;
@@ -47,6 +48,7 @@ int rc_read(){
 
     len = 0;
     line = NULL;
+    ncmd = 0;
     while ((read = getline(&line, &len, fp)) != -1) {
         if (line){
             strtok(line, "\n");
@@ -55,11 +57,16 @@ int rc_read(){
                 ERR_FR("Command failed");
                 break;
             }
+            ncmd++;
         }
     }
 
+
     if (line) free(line);
     fclose(fp);
+
+    /* No command executed */
+    if (ncmd == 0) return -1;
 
     return 0;
 }

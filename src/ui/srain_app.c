@@ -23,6 +23,7 @@
 #include "meta.h"
 #include "rc.h"
 #include "log.h"
+#include "i18n.h"
 
 G_DEFINE_TYPE(SrainApp, srain_app, GTK_TYPE_APPLICATION);
 
@@ -36,21 +37,45 @@ static void srain_app_activate(GtkApplication *app){
     if (srain_win){
         gtk_window_present(GTK_WINDOW(srain_win));
     } else {
-        theme_init();
         srain_win = srain_window_new(SRAIN_APP(app));
         gtk_window_present(GTK_WINDOW(srain_win));
+
 #ifdef UI_TEST
         ui_test();
-#else
-        rc_read();
 #endif
+        /* Without this, message dialog cannot be displayed on the center */
+        while (gtk_events_pending()) gtk_main_iteration();
+
+        if (rc_read() < 0) {
+            GtkMessageDialog *dia = GTK_MESSAGE_DIALOG(
+                    gtk_message_dialog_new(GTK_WINDOW(srain_win),
+                        GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                        GTK_MESSAGE_INFO,
+                        GTK_BUTTONS_OK,
+                        NULL
+                        )
+                    );
+            gtk_message_dialog_set_markup(GTK_MESSAGE_DIALOG(dia),
+                    _("<big><b>Welcome to Srain :)</b></big>\n\n"
+                        "Click the \"Connect\" button on the header bar to connect to a IRC server."
+                        "\n\n"
+                        "If you want to execute some commands automatically when startup, please "
+                        "add your commands into <u>~/.config/srain/srainrc</u>."
+                        "\n\n"
+                        "Need help? Please visit "
+                        "<a href=\"https://github.com/lastavenger/srain/wiki\">Srain's website</a>."
+                        "\n"
+                        )
+                    );
+            gtk_dialog_run(GTK_DIALOG(dia));
+            gtk_widget_destroy(GTK_WIDGET(dia));
+        }
     }
 }
 
 static void srain_app_init(SrainApp *self){
     if (srain_app) return;
 
-    ui_hdr_init();
     srain_app = self;
     return;
 }

@@ -12,6 +12,7 @@
 #include "srv_session.h"
 #include "srv_session_cmd.h"
 #include "srv_hdr.h"
+#include "srv_test.h"
 
 #include "meta.h"
 #include "log.h"
@@ -23,6 +24,11 @@ void srv_init(){
     srv_hdr_init();
     srv_session_init();
     srv_session_proc();
+
+#ifdef IRC_TEST
+    srv_test();
+    exit(0);
+#endif
 }
 
 /**

@@ -4,6 +4,7 @@
 #include "srain_msg.h"
 #include "srain_user_list.h"
 
+void ui_init(int argc, char **argv);
 /* UI interface functions, used by other module */
 void ui_add_chan(const char *srv_name, const char *chan_name);
 void ui_rm_chan(const char *srv_name, const char *chan_name);

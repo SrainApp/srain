@@ -74,15 +74,14 @@ static int create_user_file(){
 }
 
 int main(int argc, char **argv){
+    create_user_file();
     i18n_init();
 
-    create_user_file();
-
-#ifndef IRC_TEST
+#ifndef UI_TEST
     srv_init();
-    return g_application_run(G_APPLICATION(srain_app_new()), argc, argv);
-#else
-    srv_test();
 #endif
 
+#ifndef IRC_TEST
+    ui_init(argc, argv);
+#endif
 }
