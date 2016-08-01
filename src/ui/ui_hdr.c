@@ -6,7 +6,7 @@
  * @date 2016-04-21
  */
 
-#define __DBG_ON
+// #define __DBG_ON
 #define __LOG_ON
 
 #include <stdlib.h>

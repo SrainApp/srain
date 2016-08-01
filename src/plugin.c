@@ -8,7 +8,7 @@
  * currently, plugin.c will find python modules in
  * $DESTDIR/share/srain/plugin
  */
-#define __DBG_ON
+// #define __DBG_ON
 #define __LOG_ON
 
 #include <Python.h>

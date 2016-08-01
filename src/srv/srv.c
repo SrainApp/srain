@@ -7,7 +7,7 @@
  */
 
 #define __LOG_ON
-#define __DBG_ON
+// #define __DBG_ON
 
 #include "srv_session.h"
 #include "srv_session_cmd.h"

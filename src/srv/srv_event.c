@@ -78,8 +78,6 @@ void srv_event_connect(irc_session_t *irc_session, const char *event,
     sess->stat = SESS_CONNECT;
 
     LOG_FR("Connected to %s", sess->host);
-
-    srv_hdr_ui_add_chan(sess->host, SRV_SESSION_SERVER);
 }
 
 void srv_event_nick(irc_session_t *irc_session, const char *event,

@@ -1,3 +1,5 @@
 /relaybot teleboto|[|] 
-/connect irc.freenode.net srainbot realname="I am srain bot"
-/join #srain
+/relaybot xmppbot|[|] 
+/relaybot toxsync|(|) 
+/connect irc.freenode.org srainbot
+/join #archlinux-cn

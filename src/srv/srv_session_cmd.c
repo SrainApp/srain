@@ -7,7 +7,7 @@
  */
 
 #define __LOG_ON
-#define __DBG_ON
+// #define __DBG_ON
 
 #include <string.h>
 #include <strings.h>
@@ -163,6 +163,7 @@ int srv_session_cmd(srv_session_t *session, const char *source, char *cmd){
     /* Usage: /quit [reason] */
     else if (IS_CMD(cmd, "/quit")){
         char *reason = strtok(cmd + strlen("/quit"), " ");
+        // FIXME: reason doesnt work
         return srv_session_quit(session, reason);
     }
 
