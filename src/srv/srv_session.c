@@ -6,7 +6,7 @@
  * @date 2016-07-19
  */
 
-#define __DBG_ON
+// #define __DBG_ON
 #define __LOG_ON
 
 #include <stdlib.h>
@@ -16,11 +16,19 @@
 
 #include "srv_session.h"
 #include "srv_event.h"
+#include "srv_hdr.h"
 
 #include "log.h"
 
 srv_session_t sessions[MAX_SESSIONS] = { 0 };
 irc_callbacks_t cbs;
+
+static void wait_until_connected(srv_session_t *session){
+    while (session->stat != SESS_CONNECT){
+        sleep(1);
+    };
+    DBG_FR("Ready :)");
+}
 
 static int srv_session_get_index(srv_session_t *session){
     int i;
@@ -214,6 +222,8 @@ srv_session_t* srv_session_new(const char *host, int port, const char *passwd,
     }
 
     DBG_FR("Alloc session: %p for %s", sess, sess->host);
+
+    srv_hdr_ui_add_chan(host, SRV_SESSION_SERVER);
     return sess;
 }
 
@@ -255,45 +265,55 @@ srv_session_t* srv_session_get_by_host(const char *host){
 
 int srv_session_send(srv_session_t *session,
         const char *target, const char *msg){
+    wait_until_connected(session);
     return irc_cmd_msg(session->irc_session, target, msg);
 }
 
 int srv_session_me(srv_session_t *session,
         const char *target, const char *msg){
+    wait_until_connected(session);
     return irc_cmd_me(session->irc_session, target, msg);
 }
 
 int srv_session_join(srv_session_t *session,
         const char *chan, const char *passwd){
+    wait_until_connected(session);
     return irc_cmd_join(session->irc_session, chan, passwd);
 }
 
 int srv_session_part(srv_session_t *session, const char *chan){
+    wait_until_connected(session);
     return irc_cmd_part(session->irc_session, chan);
 }
 
 int srv_session_quit(srv_session_t *session, const char *reason){
+    wait_until_connected(session);
     return irc_cmd_quit(session->irc_session, reason);
 }
 
 int srv_session_nick(srv_session_t *session, const char *new_nick){
+    wait_until_connected(session);
     return irc_cmd_nick(session->irc_session, new_nick);
 }
 
 int srv_session_whois(srv_session_t *session, const char *nick){
+    wait_until_connected(session);
     return irc_cmd_whois(session->irc_session, nick);
 }
 
 int srv_session_invite(srv_session_t *session, const char *nick, const char *chan){
+    wait_until_connected(session);
     return irc_cmd_invite(session->irc_session, nick, chan);
 }
 
 int srv_session_kick(srv_session_t *session, const char *nick,
         const char *chan, const char *reason){
+    wait_until_connected(session);
     return irc_cmd_kick(session->irc_session, nick, chan, reason);
 }
 
 int srv_session_mode(srv_session_t *session, const char *target, const char *mode){
+    wait_until_connected(session);
     if (target)
         return irc_cmd_user_mode(session->irc_session, mode);
     else

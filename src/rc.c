@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <gtk/gtk.h>
+#include <sys/stat.h>
 
 #include "srv.h"
 
@@ -21,34 +22,28 @@
 #include "log.h"
 #include "get_path.h"
 
-int rc_read(){
+void _rc_read(){
     FILE *fp;
-    int ncmd;
     char *line;
     size_t len;
     ssize_t read;
     char *rc_file;
 
-
     rc_file = get_config_path("srainrc");
-
-    if (!rc_file){
-        return -1;
-    }
+    if (!rc_file) return;
 
     fp = fopen(rc_file, "r");
+
 
     if (!fp){
         ERR_FR("Failed to open %s", rc_file);
         g_free(rc_file);
-
-        return -1;
+        return;
     }
     g_free(rc_file);
 
     len = 0;
     line = NULL;
-    ncmd = 0;
     while ((read = getline(&line, &len, fp)) != -1) {
         if (line){
             strtok(line, "\n");
@@ -57,16 +52,30 @@ int rc_read(){
                 ERR_FR("Command failed");
                 break;
             }
-            ncmd++;
         }
     }
 
-
     if (line) free(line);
     fclose(fp);
+}
 
-    /* No command executed */
-    if (ncmd == 0) return -1;
+int rc_read(){
+    char *rc_file;
+    struct stat st;
+
+    rc_file = get_config_path("srainrc");
+    if (!rc_file) return -1;
+
+    if (stat(rc_file, &st) != 0) {
+        g_free(rc_file);
+        return -1;
+    }
+
+    g_free(rc_file);
+
+    if (st.st_size == 0) return -1;
+
+    g_thread_new(NULL, (GThreadFunc)_rc_read, NULL);
 
     return 0;
 }

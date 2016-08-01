@@ -54,9 +54,6 @@ int srv_connect(const char *host, int port, const char *passwd,
 
     res = srv_session_new(host, port, passwd, nickname, username, realname)
         ?  0 : -1;
-    // if (res == 0){
-        // srv_hdr_ui_add_chan(host, SRV_SESSION_SERVER);
-    // }
 
     return res;
 }

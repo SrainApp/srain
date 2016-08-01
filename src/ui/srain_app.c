@@ -43,10 +43,9 @@ static void srain_app_activate(GtkApplication *app){
 #ifdef UI_TEST
         ui_test();
 #endif
-        /* Without this, message dialog cannot be displayed on the center */
-        while (gtk_events_pending()) gtk_main_iteration();
 
         if (rc_read() < 0) {
+            /* Show a message dialog if no command runned in rc file */
             GtkMessageDialog *dia = GTK_MESSAGE_DIALOG(
                     gtk_message_dialog_new(GTK_WINDOW(srain_win),
                         GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
@@ -67,6 +66,10 @@ static void srain_app_activate(GtkApplication *app){
                         "\n"
                         )
                     );
+
+            /* Without this, message dialog cannot be displayed on the center */
+            while (gtk_events_pending()) gtk_main_iteration();
+
             gtk_dialog_run(GTK_DIALOG(dia));
             gtk_widget_destroy(GTK_WIDGET(dia));
         }
