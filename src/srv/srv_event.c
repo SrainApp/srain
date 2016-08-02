@@ -31,8 +31,8 @@
     } while (0)
 
 #define CHECK_COUNT(x) \
-    if (count != x) { \
-        ERR_FR("sessions: %s, count: %u, except %u", sess->host, count, x); \
+    if (count < x) { \
+        ERR_FR("sessions: %s, count: %u, except >= %u", sess->host, count, x); \
         return; \
     }
 
@@ -83,15 +83,14 @@ void srv_event_connect(irc_session_t *irc_session, const char *event,
 void srv_event_nick(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
     char msg[512];
-    const char *new_nick;
     srv_session_t *sess;
 
     sess = irc_get_ctx(irc_session);
 
     PRINT_EVENT_PARAM;
-
     CHECK_COUNT(1);
-    new_nick = params[0];
+
+    const char *new_nick = params[0];
 
     snprintf(msg, sizeof(msg), _("%s is now known as %s"), origin, new_nick);
     srv_hdr_ui_user_list_rename(sess->host, origin, new_nick, 0, msg);
@@ -104,15 +103,14 @@ void srv_event_nick(irc_session_t *irc_session, const char *event,
 void srv_event_quit(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
     char msg[512];
-    const char *reason;
     srv_session_t *sess;
 
     sess = irc_get_ctx(irc_session);
 
     PRINT_EVENT_PARAM;
+    CHECK_COUNT(0);
 
-    CHECK_COUNT(1);
-    reason = params[0];
+    const char *reason = count >= 1 ? params[0] : "";
 
     snprintf(msg, sizeof(msg), _("%s has quit: %s"), origin, reason);
     srv_hdr_ui_user_list_rm_all(sess->host, origin, msg);
@@ -122,7 +120,6 @@ void srv_event_quit(irc_session_t *irc_session, const char *event,
         /* Remove all chans belong to this session */
         srv_hdr_ui_rm_chan(sess->host, "");
         srv_session_free(sess);
-        sess->stat = SESS_NOINUSE;
     }
 }
 
@@ -135,6 +132,7 @@ void srv_event_join(irc_session_t *irc_session, const char *event,
 
     PRINT_EVENT_PARAM;
     CHECK_COUNT(1);
+
     const char *chan = params[0];
 
     /* YOU has join a channel */
@@ -157,9 +155,11 @@ void srv_event_part(irc_session_t *irc_session, const char *event,
     sess = irc_get_ctx(irc_session);
 
     PRINT_EVENT_PARAM;
-    CHECK_COUNT(2);
+    CHECK_COUNT(1);
+
     const char *chan = params[0];
-    const char *reason = params[1];
+    const char *reason = count >= 2 ? params[1] : "";;
+
 
     snprintf(msg, sizeof(msg), _("%s has left %s: %s"), origin, chan, reason);
     srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_NORMAL);
@@ -179,11 +179,11 @@ void srv_event_mode(irc_session_t *irc_session, const char *event,
     sess = irc_get_ctx(irc_session);
 
     PRINT_EVENT_PARAM;
-    // CHECK_COUNT(2);
+    CHECK_COUNT(2);
+
     const char *chan = params[0];
     const char *mode = params[1];
-    const char *mode_args = "";
-    if (count == 3) mode_args = params[2];
+    const char *mode_args = count >= 3 ? params[2] : "";
 
     snprintf(msg, sizeof(msg), _("mode %s %s %s by %s"),
             chan, mode, mode_args, origin);
@@ -199,6 +199,7 @@ void srv_event_umode(irc_session_t *irc_session, const char *event,
 
     PRINT_EVENT_PARAM;
     CHECK_COUNT(1);
+
     const char *mode = params[0];
 
     snprintf(msg, sizeof(msg), _("mode %s %s by %s"), origin, mode, origin);
@@ -208,17 +209,15 @@ void srv_event_umode(irc_session_t *irc_session, const char *event,
 
 void srv_event_topic(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
-    const char *chan;
-    const char *topic;
     srv_session_t *sess;
 
     sess = irc_get_ctx(irc_session);
 
     PRINT_EVENT_PARAM;
+    CHECK_COUNT(1);
 
-    CHECK_COUNT(2);
-    chan = params[0];
-    topic = params[1];
+    const char *chan = params[0];
+    const char *topic = count >= 2 ? params[1] : "";
 
     srv_hdr_ui_set_topic(sess->host, chan, topic);
 }
@@ -231,11 +230,11 @@ void srv_event_kick(irc_session_t *irc_session, const char *event,
     sess = irc_get_ctx(irc_session);
 
     PRINT_EVENT_PARAM;
+    CHECK_COUNT(1);
 
-    CHECK_COUNT(3);
     const char *chan = params[0];
-    const char *kick_nick = params[1];
-    const char *reason = params[2];
+    const char *kick_nick = count >= 2 ? params[1] : "";;
+    const char *reason = count >= 3 ? params[2] : "";
 
     snprintf(msg, sizeof(msg), _("%s are kicked from %s by %s: %s"),
             kick_nick, chan, origin, reason);
@@ -246,18 +245,16 @@ void srv_event_kick(irc_session_t *irc_session, const char *event,
 
 void srv_event_channel(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
-    const char *chan;
-    const char *msg;
     char vmsg[MSG_LEN];
     srv_session_t *sess;
 
     sess = irc_get_ctx(irc_session);
 
     PRINT_EVENT_PARAM;
+    CHECK_COUNT(1);
 
-    CHECK_COUNT(2);
-    chan = params[0];
-    msg = params[1];
+    const char *chan = params[0];
+    const char *msg = count >= 2 ? params[1] : "";
 
     strncpy(vmsg, msg, MSG_LEN);
     strip(vmsg);
@@ -277,15 +274,14 @@ void srv_event_channel(irc_session_t *irc_session, const char *event,
 
 void srv_event_privmsg(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
-    char *msg;
     srv_session_t *sess;
 
     sess = irc_get_ctx(irc_session);
 
     PRINT_EVENT_PARAM;
+    CHECK_COUNT(1);
 
-    CHECK_COUNT(2);
-    msg = strdup(params[1]);
+    char *msg = strdup(count >= 2 ? params[1] : "");
 
     strip(msg);
 
@@ -303,9 +299,10 @@ void srv_event_notice(irc_session_t *irc_session, const char *event,
     sess = irc_get_ctx(irc_session);
 
     PRINT_EVENT_PARAM;
-    CHECK_COUNT(2);
+    CHECK_COUNT(1);
+
     const char *nick = params[0];
-    char *msg = strdup(params[1]);
+    char *msg = strdup(count >= 2 ? params[1] : "");
 
     strip(msg);
 
@@ -322,8 +319,9 @@ void srv_event_channel_notice(irc_session_t *irc_session, const char *event,
 
     PRINT_EVENT_PARAM;
     CHECK_COUNT(2);
+
     const char *chan = params[0];
-    char *msg = strdup(params[1]);
+    char *msg = strdup(count >= 2 ? params[1] : "");
 
     strip(msg);
 
@@ -340,8 +338,8 @@ void srv_event_invite(irc_session_t *irc_session, const char *event,
     sess = irc_get_ctx(irc_session);
     PRINT_EVENT_PARAM;
 
-    CHECK_COUNT(2);
-    const char *chan = params[1];
+    CHECK_COUNT(1);
+    const char *chan = count >= 2 ? params[1] : "";
 
     snprintf(msg, sizeof(msg), _("%s invites you into %s"), origin, chan);
     srv_hdr_ui_sys_msg(sess->host, "", msg, SYS_MSG_NORMAL);
@@ -358,6 +356,7 @@ void srv_event_ctcp_action(irc_session_t *irc_session, const char *event,
     CHECK_COUNT(2);
     const char *chan = params[0];
     const char *msg1 = params[1];
+    // TODO: strip ?
 
     snprintf(msg, sizeof(msg), _("*** %s %s ***"), origin, msg1);
     srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_ACTION);
