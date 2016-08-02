@@ -56,7 +56,7 @@ void ui_hdr_init(){
  *
  * @return 0 if successed, -1 if failed
  */
-int ui_hdr_srv_cmd(SrainChan *chan, char *cmd){
+int ui_hdr_srv_cmd(SrainChan *chan, char *cmd, int block){
     int res;
     char *cmd2;
     const char *srv_name;
@@ -71,15 +71,13 @@ int ui_hdr_srv_cmd(SrainChan *chan, char *cmd){
     if (chan){
         srv_name = srain_chan_get_server_name(chan);
         chan_name = srain_chan_get_name(chan);
-
-        DBG_FR("srv_name: %s, chan_name: %s, cmd: '%s'", srv_name, chan_name, cmd);
-
-        res = _ui_hdr_srv_cmd(srv_name, chan_name, cmd2);
     } else {
-        DBG_FR("srv_name: %s, chan_name: %s, cmd: '%s'", "NULL", "NULL", cmd);
-
-        res = _ui_hdr_srv_cmd(NULL, NULL, cmd2);
+        srv_name = chan_name = NULL;
     }
+
+    DBG_FR("srv_name: %s, chan_name: %s, cmd: '%s', block: %d",
+            srv_name, chan_name, cmd, block);
+    res = _ui_hdr_srv_cmd(srv_name, chan_name, cmd2, block);
 
     free(cmd2);
     return res;

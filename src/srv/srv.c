@@ -75,12 +75,12 @@ int srv_send(const char *srv_name, const char *target, const char *msg){
     return srv_session_send(session, target, msg);
 }
 
-int srv_cmd(const char *srv_name, const char *source, char *cmd){
+int srv_cmd(const char *srv_name, const char *source, char *cmd, int block){
     srv_session_t *session;
 
     session = srv_session_get_by_host(srv_name);
 
-    return srv_session_cmd(session, source, cmd);
+    return srv_session_cmd(session, source, cmd, block);
 }
 
 int srv_join(const char *srv_name, const char *chan, const char *passwd){

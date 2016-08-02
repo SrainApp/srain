@@ -116,7 +116,7 @@ static void nick_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
         return;
     }
 
-    ui_hdr_srv_cmd(srain_window_get_cur_chan(srain_win), cmd->str);
+    ui_hdr_srv_cmd(srain_window_get_cur_chan(srain_win), cmd->str, 0);
 
     g_string_free(cmd, TRUE);
 }

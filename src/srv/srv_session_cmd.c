@@ -32,22 +32,35 @@
         } \
     } while (0)
 
+static void wait_until_connected(srv_session_t *session){
+    DBG_FR("Waiting for session: %s", session->host);
+    while (session->stat != SESS_CONNECT){
+        sleep(1);
+    };
+    DBG_FR("Ready :)");
+}
+
+
 /**
  * @brief Execute a command
  *
  * @param session If null, the last used session will be used
  * @param source If source = NULL, fallback to SRV_SESSION_SERVER
  * @param cmd
+ * @param block If block == 1 and `session`->stat != SESS_CONN, this function
+ *              will blocked until `session`->stat == SESS_CONN
+ *              If block == 0 and `session`->stat != SESS_CONN, command may not
+ *              sent
  *
  * @return -1 if command fails
  */
-int srv_session_cmd(srv_session_t *session, const char *source, char *cmd){
+int srv_session_cmd(srv_session_t *session, const char *source, char *cmd, int block){
     /* The last used session */
     static srv_session_t *last_sess = NULL;
 
     if (!source) source = SRV_SESSION_SERVER;
 
-    /* Usage: /connect <host> <nick> [port=<port>] [passwd=<passwd>] [realname=<realname>] */
+    /* Usage: /connect <host> <nick> [port=<port>,passwd=<passwd>,realname=<realname>,ssl=[on|off]] */
     if (IS_CMD(cmd, "/connect")){
         char *host = strtok(cmd + strlen("/connect"), " ");
         char *nick = strtok(NULL, " ");
@@ -113,13 +126,16 @@ int srv_session_cmd(srv_session_t *session, const char *source, char *cmd){
         return filter_ignore_list_rm(nick);
     }
 
-    /* In the following commands, `source` and `session` MUST be vaild,
+    /* ================================================================
+     * In the following commands, `source` and `session` MUST be vaild,
      * if session is NULL, use the last uesd session */
     if (!srv_session_is_session(session)) session = last_sess;
     if (!srv_session_is_session(session)) {
         ERR_FR("Session %p is invaild", session);
         return -1;
     }
+
+    if (block) wait_until_connected(session);
 
     /* Usage: /query <nickname> */
     if (IS_CMD(cmd, "/query")){

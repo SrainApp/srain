@@ -3,6 +3,6 @@
 
 #include "srv_session.h"
 
-int srv_session_cmd(srv_session_t *session, const char *source, char *cmd);
+int srv_session_cmd(srv_session_t *session, const char *source, char *cmd, int block);
 
 #endif /* __SRV_SESSION_CMD_H */

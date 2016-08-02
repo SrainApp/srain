@@ -144,7 +144,7 @@ static void join_button_on_click(gpointer user_data){
 
     cmd = g_string_new("");
     g_string_printf(cmd, "/join %s %s", chan, pwd);
-    ui_hdr_srv_cmd(srain_window_get_cur_chan(srain_win), cmd->str);
+    ui_hdr_srv_cmd(srain_window_get_cur_chan(srain_win), cmd->str, 0);
     g_string_free(cmd, TRUE);
 
     gtk_entry_set_text(join_entries->join_chan_entry, "");
@@ -176,7 +176,7 @@ static void conn_button_on_click(gpointer user_data){
     if (strlen(passwd) > 0) g_string_append_printf(cmd, " passwd=%s", passwd);
     if (strlen(realname) > 0) g_string_append_printf(cmd, " realname=%s", realname);
 
-    ui_hdr_srv_cmd(srain_window_get_cur_chan(srain_win), cmd->str);
+    ui_hdr_srv_cmd(srain_window_get_cur_chan(srain_win), cmd->str, 0);
 
     g_string_free(cmd, TRUE);
 

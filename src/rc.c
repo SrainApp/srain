@@ -16,7 +16,7 @@
 #include <gtk/gtk.h>
 #include <sys/stat.h>
 
-#include "srv.h"
+#include "ui_hdr.h"
 
 #include "meta.h"
 #include "log.h"
@@ -48,7 +48,7 @@ void _rc_read(){
         if (line){
             strtok(line, "\n");
             LOG_FR("Read: '%s'", line);
-            if (srv_cmd(NULL, NULL, line) < 0){
+            if (ui_hdr_srv_cmd(NULL, line, 1) < 0){
                 ERR_FR("Command failed");
                 break;
             }

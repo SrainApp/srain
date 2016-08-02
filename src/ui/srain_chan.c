@@ -210,7 +210,7 @@ static void input_entry_on_activate(SrainChan *chan){
     LOG_FR("chan: %s, text: '%s'", chan_name, input);
 
     if (input[0] == '/'){
-        ui_hdr_srv_cmd(chan, input);
+        ui_hdr_srv_cmd(chan, input, 0);
     } else {
         srain_msg_list_send_msg_add(chan->msg_list, input);
         if (ui_hdr_srv_send(chan, input) < 0){
