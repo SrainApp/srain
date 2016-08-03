@@ -4,6 +4,7 @@
 
 #include "srv.h"
 #include "srv_test.h"
+#include "srv_session.h"
 
 #include "log.h"
 #include "meta.h"
@@ -65,8 +66,8 @@ void srv_test_ui_set_topic(const char *server_name, const char *chan_name,
 }
 
 void srv_test(){
-    assert(srv_connect("127.0.0.1", 6667, NULL, "la", PACKAGE_VERSION, PACKAGE_WEBSITE) == 0);
-    assert(srv_connect("localhost", 6667, NULL, "srainbot2", PACKAGE_VERSION, PACKAGE_WEBSITE) == 0);
+    assert(srv_connect("127.0.0.1", 6667, NULL, "la", PACKAGE_VERSION, PACKAGE_WEBSITE, SSL_OFF) == 0);
+    assert(srv_connect("localhost", 6667, NULL, "srainbot2", PACKAGE_VERSION, PACKAGE_WEBSITE, SSL_OFF) == 0);
 
     while (1);
 }
