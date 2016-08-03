@@ -19,6 +19,7 @@
 #include "srv_hdr.h"
 
 #include "log.h"
+#include "i18n.h"
 
 srv_session_t sessions[MAX_SESSIONS] = { 0 };
 irc_callbacks_t cbs;
@@ -66,6 +67,57 @@ static int srv_session_reconnect(srv_session_t *session){
     return 0;
 }
 
+static void srv_session_err_hdr(srv_session_t *session){
+    int errno;
+    char msg[512];
+    const char *errmsg = "";
+
+    errno = irc_errno(session->irc_session);
+    errmsg = irc_strerror(irc_errno(session->irc_session));
+
+    /* Ignore it */
+    if (errno == LIBIRC_ERR_OK ||
+            errno == LIBIRC_ERR_STATE)
+        return;
+
+    /* Error message should be reported */
+    ERR_FR("session: %s, errno: %d, errmsg: %s",
+            session->host, errno, errmsg);
+
+    switch (errno){
+        /* Nothing to do */
+        case LIBIRC_ERR_INVAL:
+        case LIBIRC_ERR_NODCCSEND:
+        case LIBIRC_ERR_READ:
+        case LIBIRC_ERR_WRITE:
+        case LIBIRC_ERR_OPENFILE:
+            break;
+        /* Terminate the session */
+        case LIBIRC_ERR_RESOLV:
+        case LIBIRC_ERR_SOCKET:
+        case LIBIRC_ERR_CONNECT:
+        case LIBIRC_ERR_NOMEM:
+        case LIBIRC_ERR_NOIPV6:
+        case LIBIRC_ERR_SSL_NOT_SUPPORTED:
+        case LIBIRC_ERR_SSL_INIT_FAILED:
+        case LIBIRC_ERR_CONNECT_SSL_FAILED:
+        case LIBIRC_ERR_SSL_CERT_VERIFY_FAILED:
+            srv_session_free(session);
+            break;
+        /* Reconnect TODO: times? */
+        case LIBIRC_ERR_CLOSED:
+        case LIBIRC_ERR_ACCEPT:
+        case LIBIRC_ERR_TIMEOUT:
+        case LIBIRC_ERR_TERMINATED:
+            srv_session_reconnect(session);
+            break;
+    }
+
+    snprintf(msg, sizeof(msg), _("ERROR: %s"), errmsg);
+    srv_hdr_ui_sys_msg(session->host, SRV_SESSION_SERVER,
+            msg, SYS_MSG_ERROR);
+}
+
 /**
  * @brief Proecss all sessions' event, This function runs on a separate thread
  * and never return, there is only one thread in a application.
@@ -109,7 +161,8 @@ loop:
         isess = sessions[i].irc_session;
 
         if (irc_process_select_descriptors(isess, &in_set, &out_set)){
-            // Handle error
+            /* Some error occurred */
+            srv_session_err_hdr(&sessions[i]);
         }
     }
 
@@ -260,47 +313,90 @@ srv_session_t* srv_session_get_by_host(const char *host){
 
 int srv_session_send(srv_session_t *session,
         const char *target, const char *msg){
-    return irc_cmd_msg(session->irc_session, target, msg);
+    int res;
+    if ((res = irc_cmd_msg(session->irc_session, target, msg)) < 0){
+        srv_session_err_hdr(session);
+    }
+    return res;
 }
 
 int srv_session_me(srv_session_t *session,
         const char *target, const char *msg){
-    return irc_cmd_me(session->irc_session, target, msg);
+    int res;
+    if ((res = irc_cmd_me(session->irc_session, target, msg)) < 0){
+        srv_session_err_hdr(session);
+    }
+    return res;
 }
 
 int srv_session_join(srv_session_t *session,
         const char *chan, const char *passwd){
-    return irc_cmd_join(session->irc_session, chan, passwd);
+    int res;
+    if ((res = irc_cmd_join(session->irc_session, chan, passwd)) < 0){
+        srv_session_err_hdr(session);
+    }
+    return res;
 }
 
 int srv_session_part(srv_session_t *session, const char *chan){
-    return irc_cmd_part(session->irc_session, chan);
+    int res;
+    if ((res = irc_cmd_part(session->irc_session, chan)) < 0){
+        srv_session_err_hdr(session);
+    }
+    return res;
 }
 
 int srv_session_quit(srv_session_t *session, const char *reason){
-    return irc_cmd_quit(session->irc_session, reason);
+    int res;
+    if ((res = irc_cmd_quit(session->irc_session, reason)) < 0){
+        srv_session_err_hdr(session);
+    }
+    return res;
 }
 
 int srv_session_nick(srv_session_t *session, const char *new_nick){
-    return irc_cmd_nick(session->irc_session, new_nick);
+    int res;
+    if ((res = irc_cmd_nick(session->irc_session, new_nick)) < 0){
+        srv_session_err_hdr(session);
+    }
+    return res;
 }
 
 int srv_session_whois(srv_session_t *session, const char *nick){
-    return irc_cmd_whois(session->irc_session, nick);
+    int res;
+    if ((res = irc_cmd_whois(session->irc_session, nick)) < 0){
+        srv_session_err_hdr(session);
+    }
+    return res;
 }
 
 int srv_session_invite(srv_session_t *session, const char *nick, const char *chan){
-    return irc_cmd_invite(session->irc_session, nick, chan);
+    int res;
+    if ((res = irc_cmd_invite(session->irc_session, nick, chan)) < 0){
+        srv_session_err_hdr(session);
+    }
+    return res;
 }
 
 int srv_session_kick(srv_session_t *session, const char *nick,
         const char *chan, const char *reason){
-    return irc_cmd_kick(session->irc_session, nick, chan, reason);
+    int res;
+    if ((res = irc_cmd_kick(session->irc_session, nick, chan, reason)) < 0){
+        srv_session_err_hdr(session);
+    }
+    return res;
 }
 
 int srv_session_mode(srv_session_t *session, const char *target, const char *mode){
+    int res;
     if (target)
-        return irc_cmd_user_mode(session->irc_session, mode);
+        res = irc_cmd_user_mode(session->irc_session, mode);
     else
-        return irc_cmd_channel_mode(session->irc_session, target, mode);
+        res = irc_cmd_channel_mode(session->irc_session, target, mode);
+
+    if (res < 0){
+        srv_session_err_hdr(session);
+    }
+
+    return res;
 }
