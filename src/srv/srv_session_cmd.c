@@ -27,7 +27,7 @@
     do { \
         if (strncmp(_params, _param "=", sizeof(_param "=") - 1) == 0){ \
             _var = _params + sizeof(_param "=") - 1; \
-            DBG_FR("GET_PARAM: %s: %s", _param, _var); \
+            DBG_FR("GET_PARAM: %s: '%s'", _param, _var); \
             if (strlen(_var) == 0) _var = _default; \
         } \
     } while (0)
@@ -60,25 +60,30 @@ int srv_session_cmd(srv_session_t *session, const char *source, char *cmd, int b
 
     if (!source) source = SRV_SESSION_SERVER;
 
-    /* Usage: /connect <host> <nick> [port=<port>,passwd=<passwd>,realname=<realname>,ssl=[on|off]] */
+    /* Usage: /connect <host> <nick> [port=<port>,passwd=<passwd>,realname=<realname>,ssl=[on|noverify|off]] */
     if (IS_CMD(cmd, "/connect")){
         char *host = strtok(cmd + strlen("/connect"), " ");
         char *nick = strtok(NULL, " ");
-        char *port = "0", *passwd = NULL, *realname = NULL;
-        char *params = strtok(NULL, " ");
+        char *port = "0", *passwd = NULL, *realname = NULL, *ssl = "off";
+        char *params = strtok(NULL, ",");
         while (params){
             GET_PARAM(params, "port", port, "0");
             GET_PARAM(params, "passwd", passwd, NULL);
             GET_PARAM(params, "realname", passwd, PACKAGE_WEBSITE);
-            LOG_FR("params %s", params);
-            params = strtok(NULL, " ");
+            GET_PARAM(params, "ssl", ssl, "off");
+            params = strtok(NULL, ",");
         }
 
         if (!host || !nick) goto bad;
 
+        ssl_opt_t sslopt = 0;
+        if (strcmp(ssl, "on") == 0) sslopt = SSL_ON;
+        if (strcmp(ssl, "off") == 0) sslopt = SSL_OFF;
+        if (strcmp(ssl, "noverify") == 0) sslopt = SSL_NO_VERIFY;
+
         srv_session_t *tmp;
         tmp = srv_session_new(host, atoi(port), passwd, nick,
-                PACKAGE_NAME, realname);
+                PACKAGE_NAME, realname, sslopt);
         if (tmp){
             last_sess = tmp;
             return 0;

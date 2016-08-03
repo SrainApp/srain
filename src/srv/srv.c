@@ -44,7 +44,7 @@ void srv_init(){
  * @return 0 if successed, -1 if failed
  */
 int srv_connect(const char *host, int port, const char *passwd,
-        const char *nickname, const char *username, const char *realname){
+        const char *nickname, const char *username, const char *realname, int ssl){
     int res;
 
     if (!host || !nickname){
@@ -52,7 +52,7 @@ int srv_connect(const char *host, int port, const char *passwd,
         return -1;
     }
 
-    res = srv_session_new(host, port, passwd, nickname, username, realname)
+    res = srv_session_new(host, port, passwd, nickname, username, realname, ssl)
         ?  0 : -1;
 
     return res;

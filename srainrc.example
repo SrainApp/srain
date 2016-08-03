@@ -1,5 +1,5 @@
 /relaybot teleboto|[|] 
 /relaybot xmppbot|[|] 
 /relaybot toxsync|(|) 
-/connect irc.freenode.org srainbot
+/connect chat.freenode.net srainbot realname=I am srainbot,ssl=noverify,port=6697
 /join #archlinux-cn

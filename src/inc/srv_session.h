@@ -18,6 +18,13 @@
 #define IS_CHAN(x) (x && (x[0] == '#' || x[0] == '&'))
 
 typedef enum {
+    SSL_OFF = 0,
+    SSL_NO_VERIFY,
+    SSL_ON,
+    /*...*/
+} ssl_opt_t;
+
+typedef enum {
     SESS_NOINUSE = 0,
     SESS_INUSE,
     SESS_CONNECT,
@@ -30,6 +37,7 @@ typedef struct {
     session_stat_t stat;
 
     // IRC context
+    char prefix[1];   // '#' or ' ', Note: plz use it as server parameter of `irc_connect()`
     char host[HOST_LEN];
     int port;
     char passwd[PASSWD_LEN]; // Server password
@@ -43,7 +51,7 @@ typedef struct {
 void srv_session_init();
 void srv_session_proc();
 srv_session_t* srv_session_new(const char *host, int port, const char *passwd,
-        const char *nickname, const char *username, const char *realname);
+        const char *nickname, const char *username, const char *realname, ssl_opt_t ssl);
 int srv_session_is_session(srv_session_t *session);
 int srv_session_free(srv_session_t *session);
 

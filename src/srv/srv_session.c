@@ -55,8 +55,8 @@ static int srv_session_reconnect(srv_session_t *session){
     // TODO: stat control
     irc_disconnect(session->irc_session);
     res = irc_connect(session->irc_session,
-            session->host, session->port,
-            session->passwd, session->nickname,
+            session->prefix[0] ? session->prefix : session->host,
+            session->port, session->passwd, session->nickname,
             session->username, session->realname);
     if (res){
         ERR_FR("Failed to connect: %s",
@@ -109,7 +109,9 @@ static void srv_session_err_hdr(srv_session_t *session){
         case LIBIRC_ERR_ACCEPT:
         case LIBIRC_ERR_TIMEOUT:
         case LIBIRC_ERR_TERMINATED:
-            srv_session_reconnect(session);
+            // srv_session_reconnect(session);
+            // FIXME:
+            srv_session_free(session);
             break;
     }
 
@@ -205,14 +207,15 @@ void srv_session_proc(){
  * @param host
  * @param port Can be 0, fallback to 6667
  * @param passwd Can be NULL
- * @param nickname
+ * @param nickname Can NOT be NULL
  * @param username Can be NULL
  * @param realname Can be NULL
+ * @param ssl
  *
  * @return NULL or srv_session_t
  */
 srv_session_t* srv_session_new(const char *host, int port, const char *passwd,
-        const char *nickname, const char *username, const char *realname){
+        const char *nickname, const char *username, const char *realname, ssl_opt_t ssl){
     int i;
     srv_session_t *sess;
 
@@ -226,7 +229,7 @@ srv_session_t* srv_session_new(const char *host, int port, const char *passwd,
         return NULL;
     }
 
-    LOG_FR("host: %s, port: %d, nickname: %s", host, port, nickname);
+    LOG_FR("host: %s, port: %d, nickname: %s, ssl: %d", host, port, nickname, ssl);
 
     sess = NULL;
     for (i = 0; i < MAX_SESSIONS; i++){
@@ -251,6 +254,10 @@ srv_session_t* srv_session_new(const char *host, int port, const char *passwd,
 
     sess->stat = SESS_INUSE;
     sess->port = port;
+    if (ssl != SSL_OFF)
+        sess->prefix[0] = '#';
+    else
+        sess->prefix[0] = 0;
     strncpy(sess->host, host, HOST_LEN);
     strncpy(sess->passwd, passwd, PASSWD_LEN);
     strncpy(sess->realname, realname, NICK_LEN);
@@ -259,11 +266,12 @@ srv_session_t* srv_session_new(const char *host, int port, const char *passwd,
 
     irc_set_ctx(sess->irc_session, sess);
     irc_option_set(sess->irc_session, LIBIRC_OPTION_STRIPNICKS);
+    if (ssl == SSL_NO_VERIFY)
+        irc_option_set(sess->irc_session, LIBIRC_OPTION_SSL_NO_VERIFY);
 
-    if (irc_connect(sess->irc_session, host, port, passwd,
-                nickname,username, realname)){
-        ERR_FR("Failed to connect: %s",
-                irc_strerror(irc_errno(sess->irc_session)));
+    if (irc_connect(sess->irc_session, sess->prefix[0] ? sess->prefix : host,
+                port, passwd, nickname, username, realname)){
+        srv_session_err_hdr(sess);
         return NULL;
     }
 
