@@ -204,7 +204,7 @@ int srv_session_cmd(srv_session_t *session, const char *source, char *cmd, int b
         if (!msg) goto bad;
         snprintf(buf, sizeof(buf), _("*** %s %s ***"), session->nickname, msg);
         srv_hdr_ui_sys_msg(session->host, source, buf, SYS_MSG_ACTION);
-        return srv_session_me(session, source, buf);
+        return srv_session_me(session, source, msg);
     }
 
     /* Usage: /nick <new_nick> */
