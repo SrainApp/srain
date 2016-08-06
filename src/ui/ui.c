@@ -386,8 +386,8 @@ void ui_sys_msg_sync(const char *srv_name, const char *chan_name,
     list = srain_chan_get_msg_list(chan);
     srain_msg_list_sys_msg_add(list, msg, type);
 
-    if (type == SYS_MSG_ACTION){
-        srain_window_stack_sidebar_update(srain_win, chan, _("ACTION"), msg);
+    if (type == SYS_MSG_ACTION || type== SYS_MSG_ERROR){
+        srain_window_stack_sidebar_update(srain_win, chan, NULL, msg);
     }
 }
 

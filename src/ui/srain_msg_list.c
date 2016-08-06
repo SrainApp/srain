@@ -13,11 +13,11 @@
 #include <gtk/gtk.h>
 #include <string.h>
 
+#include "ui.h"
 #include "ui_common.h"
 #include "ui_hdr.h"
 #include "srain_msg_list.h"
 #include "srain_window.h"
-#include "srain_chan.h"
 #include "srain_msg.h"
 
 // TODO
@@ -143,7 +143,7 @@ static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_da
 
     if ((fwd_msg = clicked_label_get_selection()) == NULL) return;
 
-    srv_name = srain_chan_get_server_name(srain_window_get_cur_chan(srain_win));
+    srv_name = srain_chan_get_srv_name(srain_window_get_cur_chan(srain_win));
     chan = srain_window_get_chan_by_name(srain_win, srv_name,
             gtk_menu_item_get_label(GTK_MENU_ITEM(widget)));
 
@@ -152,9 +152,18 @@ static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_da
             srain_chan_get_chan_name(srain_window_get_cur_chan(srain_win)));
     g_free(fwd_msg);
 
-    // TODO: error message when failed to send?
-    srain_msg_list_send_msg_add(srain_chan_get_msg_list(chan), str->str);
-    ui_hdr_srv_send(chan, str->str);
+    ui_send_msg_sync(
+            srain_chan_get_srv_name(chan),
+            srain_chan_get_chan_name(chan),
+            str->str);
+
+    if (ui_hdr_srv_send(chan, str->str) < 0){
+        ui_sys_msg_sync(
+                srain_chan_get_srv_name(chan),
+                srain_chan_get_chan_name(chan),
+                _("Failed to send message"),
+                SYS_MSG_ERROR);
+    }
 
     g_string_free(str, TRUE);
 }
@@ -184,7 +193,7 @@ static gboolean nick_button_on_popup(GtkWidget *widget,
         chan = srain_window_get_cur_chan(srain_win);
 
         chans = srain_window_get_chans_by_srv_name(srain_win,
-                srain_chan_get_server_name(chan));
+                srain_chan_get_srv_name(chan));
         while (chans){
             item  = GTK_MENU_ITEM(gtk_menu_item_new_with_label(
                         srain_chan_get_chan_name(chans->data)));
@@ -237,7 +246,7 @@ static void msg_label_on_popup(GtkLabel *label, GtkMenu *menu,
     chan = srain_window_get_cur_chan(srain_win);
 
     chans = srain_window_get_chans_by_srv_name(srain_win,
-            srain_chan_get_server_name(chan));
+            srain_chan_get_srv_name(chan));
     while (chans){
         item = GTK_MENU_ITEM(gtk_menu_item_new_with_label(
                     srain_chan_get_chan_name(chans->data)));

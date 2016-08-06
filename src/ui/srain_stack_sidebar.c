@@ -109,7 +109,7 @@ add_child(GtkWidget *child, SrainStackSidebar *sidebar){
         return;
 
     chan_name = srain_chan_get_name(SRAIN_CHAN(child));
-    server_name = srain_chan_get_server_name(SRAIN_CHAN(child));
+    server_name = srain_chan_get_srv_name(SRAIN_CHAN(child));
     item = srain_stack_sidebar_item_new(server_name, chan_name);
 
     // gtk_widget_set_halign(item, GTK_ALIGN_START);

@@ -12,13 +12,9 @@
 
 #include "theme.h"
 #include "ui_test.h"
-#include "ui_hdr.h"
 #include "srain_app.h"
 #include "srain_window.h"
 #include "srain_chan.h"
-#include "srain_user_list.h"
-#include "srain_msg_list.h"
-#include "srain_entry_completion.h"
 
 #include "meta.h"
 #include "rc.h"

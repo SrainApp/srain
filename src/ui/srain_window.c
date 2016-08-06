@@ -417,7 +417,7 @@ GList* srain_window_get_chans_by_srv_name(SrainWindow *win,
         chan = SRAIN_CHAN(all_chans->data);
 
         if (strncmp(server_name,
-                    srain_chan_get_server_name(chan),
+                    srain_chan_get_srv_name(chan),
                     strlen(server_name)) == 0){
             chans = g_list_append(chans, chan);
         }

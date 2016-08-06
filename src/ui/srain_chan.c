@@ -13,6 +13,7 @@
 #include <string.h>
 
 #include "theme.h"
+#include "ui.h"
 #include "ui_common.h"
 #include "ui_hdr.h"
 #include "srain_chan.h"
@@ -212,10 +213,16 @@ static void input_entry_on_activate(SrainChan *chan){
     if (input[0] == '/'){
         ui_hdr_srv_cmd(chan, input, 0);
     } else {
-        srain_msg_list_send_msg_add(chan->msg_list, input);
+        ui_send_msg_sync(
+                    srain_chan_get_srv_name(chan),
+                    srain_chan_get_chan_name(chan),
+                    input);
         if (ui_hdr_srv_send(chan, input) < 0){
-            srain_msg_list_sys_msg_add(chan->msg_list,
-                    _("Failed to send message"), SYS_MSG_ERROR);
+            ui_sys_msg_sync(
+                    srain_chan_get_srv_name(chan),
+                    srain_chan_get_chan_name(chan),
+                    _("Failed to send message"),
+                    SYS_MSG_ERROR);
         }
     }
 
@@ -396,7 +403,7 @@ const char* srain_chan_get_name(SrainChan *chan){
     return NULL;
 }
 
-const char* srain_chan_get_server_name(SrainChan *chan){
+const char* srain_chan_get_srv_name(SrainChan *chan){
     if (SRAIN_IS_CHAN(chan)) {
         return chan->server_name;
     }

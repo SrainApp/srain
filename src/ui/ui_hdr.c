@@ -69,7 +69,7 @@ int ui_hdr_srv_cmd(SrainChan *chan, char *cmd, int block){
     }
 
     if (chan){
-        srv_name = srain_chan_get_server_name(chan);
+        srv_name = srain_chan_get_srv_name(chan);
         chan_name = srain_chan_get_name(chan);
     } else {
         srv_name = chan_name = NULL;
@@ -93,7 +93,7 @@ int ui_hdr_srv_join(const char *chan_name, const char *passwd){
     SrainChan *chan;
 
     chan = srain_window_get_cur_chan(srain_win);
-    srv_name = srain_chan_get_server_name(chan);
+    srv_name = srain_chan_get_srv_name(chan);
 
     DBG_FR("srv_name: %s, chan_name: %s, passwd: %s",
             srv_name, chan_name, passwd);
@@ -105,7 +105,7 @@ int ui_hdr_srv_part(SrainChan *chan, const char *reason){
     const char *srv_name;
     const char *chan_name;
 
-    srv_name = srain_chan_get_server_name(chan);
+    srv_name = srain_chan_get_srv_name(chan);
     chan_name = srain_chan_get_name(chan);
 
     DBG_FR("srv_name: %s, chan_name: %s, reason: %s",
@@ -123,7 +123,7 @@ int ui_hdr_srv_send(SrainChan *chan, const char *msg){
         return -1;
     }
 
-    srv_name = srain_chan_get_server_name(chan);
+    srv_name = srain_chan_get_srv_name(chan);
     chan_name = srain_chan_get_name(chan);
 
     DBG_FR("srv_name: %s, chan_name: %s, msg: '%s'", srv_name, chan_name, msg);
