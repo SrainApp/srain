@@ -70,7 +70,6 @@
               <object class="GtkLabel" id="identify_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">via relaybot</property>
                 <property name="use_underline">True</property>
                 <attributes>
                   <attribute name="weight" value="normal"/>
@@ -130,7 +129,6 @@
                 <property name="valign">end</property>
                 <property name="margin_left">4</property>
                 <property name="margin_right">4</property>
-                <property name="label" translatable="yes">HH:MM</property>
                 <style>
                   <class name="dim-label"/>
                 </style>

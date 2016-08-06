@@ -273,7 +273,7 @@
             </child>
             <child>
               <object class="GtkCheckButton" id="conn_ssl_check_button">
-                <property name="label" translatable="yes">Use SSL connection</property>
+                <property name="label" translatable="yes">Use secure connection</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>

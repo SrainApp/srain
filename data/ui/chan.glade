@@ -256,7 +256,7 @@
         <property name="spacing">4</property>
         <child>
           <object class="GtkToggleButton" id="show_topic_togglebutton">
-            <property name="label" translatable="yes">show topic</property>
+            <property name="label" translatable="yes">Show topic</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="focus_on_click">False</property>
@@ -271,7 +271,7 @@
         </child>
         <child>
           <object class="GtkToggleButton" id="show_user_list_togglebutton">
-            <property name="label" translatable="yes">show user list</property>
+            <property name="label" translatable="yes">Show user list</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="focus_on_click">False</property>
@@ -286,7 +286,7 @@
         </child>
         <child>
           <object class="GtkButton" id="leave_button">
-            <property name="label" translatable="yes">leave</property>
+            <property name="label" translatable="yes">Leave</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="focus_on_click">False</property>

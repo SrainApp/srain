@@ -51,7 +51,6 @@
                 <property name="valign">end</property>
                 <property name="margin_left">4</property>
                 <property name="margin_right">4</property>
-                <property name="label" translatable="yes">HH:MM</property>
                 <style>
                   <class name="dim-label"/>
                 </style>
