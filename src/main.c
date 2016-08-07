@@ -20,6 +20,7 @@
 
 #include "i18n.h"
 #include "log.h"
+#include "plugin.h"
 
 /**
  * @brief Create directories and config files if no exist
@@ -75,7 +76,9 @@ static int create_user_file(){
 
 int main(int argc, char **argv){
     create_user_file();
+
     i18n_init();
+    plugin_init();
 
 #ifndef UI_TEST
     srv_init();
@@ -84,4 +87,6 @@ int main(int argc, char **argv){
 #ifndef IRC_TEST
     ui_init(argc, argv);
 #endif
+
+    plugin_finalize();
 }

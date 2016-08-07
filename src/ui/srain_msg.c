@@ -183,7 +183,7 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *m
         srain_image_set_from_file(avatar_simg, avatar_path, 36, SRAIN_IMAGE_AUTOLOAD);
         g_free(avatar_path);
     }
-    avatar_path = plugin_avatar(nick, "", "");
+    // avatar_path = plugin_avatar(nick, "", "");
     srain_image_set_from_url_async(avatar_simg, avatar_path, 36, SRAIN_IMAGE_AUTOLOAD);
     g_free(avatar_path);
     gtk_container_add(GTK_CONTAINER(smsg->avatar_box), GTK_WIDGET(avatar_simg));

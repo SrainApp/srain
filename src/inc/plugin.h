@@ -1,9 +1,10 @@
 #ifndef __PLUGIN_H
 #define __PLUGIN_H
 
-int plugin_init();
+void plugin_init();
+void plugin_finalize();
 char* plugin_upload(const char *path);
-char* plugin_avatar(const char *nick, const char *user, const char *host);
+int plugin_avatar(const char *nick, const char *token);
 
 #endif /* __PLUGIN_H */
 
