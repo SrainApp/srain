@@ -83,9 +83,11 @@ static void copy_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
 
 static void nick_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
     const char *nick;
+    GtkLabel *nick_label;
     GString *cmd;
 
-    nick = user_data;
+    nick_label = GTK_LABEL(user_data);
+    nick = gtk_label_get_text(nick_label);
     cmd = g_string_new("");
 
     if (strcmp(gtk_widget_get_name(widget), "whois_menu_item") == 0){
@@ -255,8 +257,10 @@ static gboolean nick_button_on_popup(GtkWidget *widget,
 
 static void nick_button_on_click(GtkWidget *widget, gpointer *user_data){
     GString *str;
+    GtkLabel *nick_label;
 
-    str = g_string_new((char *)user_data);
+    nick_label = GTK_LABEL(user_data);
+    str = g_string_new(gtk_label_get_text(nick_label));
     str = g_string_append(str, ": ");
 
     srain_chan_insert_text(srain_window_get_cur_chan(srain_win), str->str, 0);
@@ -356,22 +360,18 @@ static void srain_recv_msg_init(SrainRecvMsg *self){
     gtk_widget_init_template(GTK_WIDGET(self));
 
     g_signal_connect(self->nick_button, "clicked",
-            G_CALLBACK(nick_button_on_click),
-            (char *)gtk_label_get_text(self->nick_label));
+            G_CALLBACK(nick_button_on_click), self->nick_label);
     g_signal_connect(self->nick_button, "button-press-event",
             G_CALLBACK(nick_button_on_popup), self);
     g_signal_connect(self->msg_label, "populate-popup",
             G_CALLBACK(msg_label_on_popup), self);
 
     g_signal_connect(self->whois_menu_item, "activate",
-            G_CALLBACK(nick_menu_item_on_activate),
-            (char *)gtk_label_get_text(self->nick_label));
+            G_CALLBACK(nick_menu_item_on_activate), self->nick_label);
     g_signal_connect(self->kick_menu_item, "activate",
-            G_CALLBACK(nick_menu_item_on_activate),
-            (char *)gtk_label_get_text(self->nick_label));
+            G_CALLBACK(nick_menu_item_on_activate), self->nick_label);
     g_signal_connect(self->chat_menu_item, "activate",
-            G_CALLBACK(nick_menu_item_on_activate),
-            (char *)gtk_label_get_text(self->nick_label));
+            G_CALLBACK(nick_menu_item_on_activate), self->nick_label);
 }
 
 static void srain_recv_msg_class_init(SrainRecvMsgClass *class){
@@ -438,5 +438,6 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *m
 
     gtk_container_add(GTK_CONTAINER(smsg->avatar_box), GTK_WIDGET(avatar_simg));
     gtk_widget_show(GTK_WIDGET(avatar_simg));
+
     return smsg;
 }
