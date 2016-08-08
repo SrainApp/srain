@@ -69,7 +69,7 @@ int srv_session_cmd(srv_session_t *session, const char *source, char *cmd, int b
         while (params){
             GET_PARAM(params, "port", port, "0");
             GET_PARAM(params, "passwd", passwd, NULL);
-            GET_PARAM(params, "realname", passwd, PACKAGE_WEBSITE);
+            GET_PARAM(params, "realname", realname, PACKAGE_WEBSITE);
             GET_PARAM(params, "ssl", ssl, "off");
             params = strtok(NULL, ",");
         }

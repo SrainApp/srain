@@ -229,7 +229,8 @@ srv_session_t* srv_session_new(const char *host, int port, const char *passwd,
         return NULL;
     }
 
-    LOG_FR("host: %s, port: %d, nickname: %s, ssl: %d", host, port, nickname, ssl);
+    LOG_FR("host: %s, port: %d, nickname: %s, username: %s, realname: %s, ssl: %d",
+            host, port, nickname, username, realname, ssl);
 
     sess = NULL;
     for (i = 0; i < MAX_SESSIONS; i++){
