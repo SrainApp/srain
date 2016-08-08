@@ -64,6 +64,12 @@ struct _SrainRecvMsg {
     GtkLabel *nick_label;
     GtkLabel *identify_label;
     GtkButton *nick_button;
+    // nick_menu
+    GtkMenu *nick_menu;
+    GtkMenuItem *whois_menu_item;
+    GtkMenuItem *kick_menu_item;
+    GtkMenuItem *chat_menu_item;
+    GtkMenuItem *invite_menu_item;
 };
 
 struct _SrainRecvMsgClass {

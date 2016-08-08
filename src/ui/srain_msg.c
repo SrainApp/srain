@@ -13,6 +13,7 @@
 #include <assert.h>
 #include <string.h>
 
+#include "ui.h"
 #include "ui_common.h"
 #include "ui_hdr.h"
 #include "srain_window.h"
@@ -23,8 +24,234 @@
 #include "markup.h"
 #include "download.h"
 #include "log.h"
-#include "plugin.h"
 #include "get_path.h"
+#include "i18n.h"
+
+/**
+ * @brief Get the selected text (utf-8 supported) of `label`,
+ *      if no text was selected, return all of the text in this label,
+ *      if there is any '\n'(newline) in the text, strip it.
+ *
+ * @return A allocated (char *), it should be freed by `free()`
+ */
+static char* label_get_selection(GtkLabel *label){
+    int start, end;
+    const char *msg;
+    char *sel_msg;
+    if (!label) return NULL;
+
+    msg = gtk_label_get_text(label);
+
+    if (gtk_label_get_selection_bounds(label, &start, &end)){
+        sel_msg = g_utf8_substring(msg, start, end);
+    } else {
+        sel_msg = strdup(msg);
+    }
+
+    return sel_msg;
+}
+
+static void copy_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
+    char* sel_msg;
+    char* line;
+    GString *str;
+    GtkClipboard *cb;
+    SrainRecvMsg *smsg;
+
+    smsg = SRAIN_RECV_MSG(user_data);
+
+    if ((sel_msg = label_get_selection(smsg->msg_label)) == NULL) return;
+
+    /* Get the clipboard object */
+    cb = gtk_widget_get_clipboard(GTK_WIDGET(smsg), GDK_SELECTION_CLIPBOARD);
+
+    str = g_string_new("");
+    line = strtok(sel_msg, "\n");
+    while (line){
+        g_string_append_printf(str, "[%s] <%s> %s\n",
+                gtk_label_get_text(smsg->time_label),
+                gtk_label_get_text(smsg->nick_label),
+                line);
+        line = strtok(NULL, "\n");
+    }
+    /* Set clipboard text */
+    gtk_clipboard_set_text(cb, str->str, -1);
+
+    g_string_free(str, TRUE);
+    g_free(sel_msg);
+}
+
+static void nick_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
+    const char *nick;
+    GString *cmd;
+
+    nick = user_data;
+    cmd = g_string_new("");
+
+    if (strcmp(gtk_widget_get_name(widget), "whois_menu_item") == 0){
+        g_string_printf(cmd, "/whois %s", nick);
+    }
+    else if (strcmp(gtk_widget_get_name(widget), "kick_menu_item") == 0){
+        g_string_printf(cmd, "/kick %s", nick);
+    }
+    else if (strcmp(gtk_widget_get_name(widget), "chat_menu_item") == 0){
+        g_string_printf(cmd, "/query %s", nick);
+    }
+    else if (strcmp(gtk_widget_get_name(widget), "invite_submenu_item") == 0){
+        g_string_printf(cmd, "/invite %s %s", nick,
+                gtk_menu_item_get_label(GTK_MENU_ITEM(widget)));
+    }
+    else {
+        ERR_FR("Unknown menu item: %s", gtk_widget_get_name(widget));
+        g_string_free(cmd, TRUE);
+
+        return;
+    }
+
+    ui_hdr_srv_cmd(srain_window_get_cur_chan(srain_win), cmd->str, 0);
+
+    g_string_free(cmd, TRUE);
+}
+
+static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_data){
+    char *sel_msg;
+    char *line;
+    const char *srv_name;
+    GString *str;
+    SrainChan *chan;
+    SrainRecvMsg *smsg;
+
+    smsg = SRAIN_RECV_MSG(user_data);
+    if ((sel_msg = label_get_selection(smsg->msg_label)) == NULL) return;
+
+    srv_name = srain_chan_get_srv_name(srain_window_get_cur_chan(srain_win));
+    chan = srain_window_get_chan_by_name(srain_win, srv_name,
+            gtk_menu_item_get_label(GTK_MENU_ITEM(widget)));
+
+    line = strtok(sel_msg, "\n");
+    while (line){
+        str = g_string_new("");
+        g_string_printf(str, _("%s <Forward from %s@%s>"), line,
+                gtk_label_get_text(smsg->nick_label),
+                srain_chan_get_chan_name(srain_window_get_cur_chan(srain_win)));
+        line = strtok(NULL, "\n");
+
+        ui_send_msg_sync(
+                srain_chan_get_srv_name(chan),
+                srain_chan_get_chan_name(chan),
+                str->str);
+        if (ui_hdr_srv_send(chan, str->str) < 0){
+            ui_sys_msg_sync(
+                    srain_chan_get_srv_name(chan),
+                    srain_chan_get_chan_name(chan),
+                    _("Failed to send message"),
+                    SYS_MSG_ERROR);
+        }
+        g_string_free(str, TRUE);
+    }
+
+    g_free(sel_msg);
+}
+
+static void msg_label_on_popup(GtkLabel *label, GtkMenu *menu,
+        gpointer user_data){
+    GtkMenuItem *copy_menu_item;
+    GtkMenuItem *forward_menu_item;
+    SrainRecvMsg *smsg;
+
+    smsg = SRAIN_RECV_MSG(user_data);
+
+    /* Create menuitem copy_menu_item */
+    copy_menu_item = GTK_MENU_ITEM(gtk_menu_item_new_with_label(_("Copy message")));
+    gtk_widget_show(GTK_WIDGET(copy_menu_item));
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), GTK_WIDGET(copy_menu_item));
+    g_signal_connect(copy_menu_item, "activate",
+                G_CALLBACK(copy_menu_item_on_activate), smsg);
+
+    /* Create menuitem forward_menu_item */
+    forward_menu_item = GTK_MENU_ITEM(gtk_menu_item_new_with_label(_("Forward to...")));
+    gtk_widget_show(GTK_WIDGET(forward_menu_item));
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), GTK_WIDGET(forward_menu_item));
+
+    /* Create submenu of forward_menu_item */
+    GList *chans;
+    GtkMenuItem *item;
+    GtkMenu *forward_submenu = GTK_MENU(gtk_menu_new());
+    SrainChan *chan;
+
+    chan = srain_window_get_cur_chan(srain_win);
+    chans = srain_window_get_chans_by_srv_name(srain_win,
+            srain_chan_get_srv_name(chan));
+    if (g_list_length(chans) == 1){
+        g_list_free(chans);
+        return;
+    } else {
+        /* Skip SRV_SESSION_SERVER */
+        chans = g_list_next(chans);
+    }
+
+    gtk_menu_item_set_submenu(forward_menu_item, GTK_WIDGET(forward_submenu));
+
+    while (chans){
+        item = GTK_MENU_ITEM(gtk_menu_item_new_with_label(
+                    srain_chan_get_chan_name(chans->data)));
+        gtk_widget_show(GTK_WIDGET(item));
+        g_signal_connect(item, "activate",
+                G_CALLBACK(froward_submenu_item_on_activate), smsg);
+        gtk_menu_shell_append(GTK_MENU_SHELL(forward_submenu), GTK_WIDGET(item));
+
+        chans = g_list_next(chans);
+    }
+
+    g_list_free(chans);
+}
+
+static gboolean nick_button_on_popup(GtkWidget *widget,
+        GdkEventButton *event, gpointer user_data){
+    GList *chans;
+    GtkMenuItem *item;
+    SrainChan *chan;
+    SrainRecvMsg *smsg;
+
+    smsg = SRAIN_RECV_MSG(user_data);
+    if (event->button == 3){
+        gtk_menu_popup(smsg->nick_menu, NULL, NULL, NULL, NULL,
+                event->button, event->time);
+
+        chan = srain_window_get_cur_chan(srain_win);
+        chans = srain_window_get_chans_by_srv_name(srain_win,
+                srain_chan_get_srv_name(chan));
+        if (g_list_length(chans) == 1){
+            g_list_free(chans);
+            return TRUE;
+        } else {
+            /* Skip SRV_SESSION_SERVER */
+            chans = g_list_next(chans);
+        }
+
+        /* Create subitem of invite_menu_item */
+        GtkMenu *invite_submenu = GTK_MENU(gtk_menu_new());
+        gtk_menu_item_set_submenu(smsg->invite_menu_item, GTK_WIDGET(invite_submenu));
+
+        while (chans){
+            item  = GTK_MENU_ITEM(gtk_menu_item_new_with_label(
+                        srain_chan_get_chan_name(chans->data)));
+            gtk_widget_show(GTK_WIDGET(item));
+            gtk_widget_set_name(GTK_WIDGET(item), "invite_submenu_item");
+            g_signal_connect(item, "activate",
+                    G_CALLBACK(nick_menu_item_on_activate),
+                    (char *)gtk_label_get_text(smsg->nick_label));
+            gtk_menu_shell_append(GTK_MENU_SHELL(invite_submenu), GTK_WIDGET(item));
+
+            chans = g_list_next(chans);
+        }
+
+        g_list_free(chans);
+
+        return TRUE;
+    }
+    return FALSE;
+}
 
 static void nick_button_on_click(GtkWidget *widget, gpointer *user_data){
     GString *str;
@@ -127,6 +354,24 @@ G_DEFINE_TYPE(SrainRecvMsg, srain_recv_msg, GTK_TYPE_BOX);
 
 static void srain_recv_msg_init(SrainRecvMsg *self){
     gtk_widget_init_template(GTK_WIDGET(self));
+
+    g_signal_connect(self->nick_button, "clicked",
+            G_CALLBACK(nick_button_on_click),
+            (char *)gtk_label_get_text(self->nick_label));
+    g_signal_connect(self->nick_button, "button-press-event",
+            G_CALLBACK(nick_button_on_popup), self);
+    g_signal_connect(self->msg_label, "populate-popup",
+            G_CALLBACK(msg_label_on_popup), self);
+
+    g_signal_connect(self->whois_menu_item, "activate",
+            G_CALLBACK(nick_menu_item_on_activate),
+            (char *)gtk_label_get_text(self->nick_label));
+    g_signal_connect(self->kick_menu_item, "activate",
+            G_CALLBACK(nick_menu_item_on_activate),
+            (char *)gtk_label_get_text(self->nick_label));
+    g_signal_connect(self->chat_menu_item, "activate",
+            G_CALLBACK(nick_menu_item_on_activate),
+            (char *)gtk_label_get_text(self->nick_label));
 }
 
 static void srain_recv_msg_class_init(SrainRecvMsgClass *class){
@@ -139,6 +384,11 @@ static void srain_recv_msg_class_init(SrainRecvMsgClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, nick_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, identify_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, nick_button);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, nick_menu);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, whois_menu_item);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, kick_menu_item);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, chat_menu_item);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, invite_menu_item);
 }
 
 SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *msg){
@@ -188,8 +438,5 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *m
 
     gtk_container_add(GTK_CONTAINER(smsg->avatar_box), GTK_WIDGET(avatar_simg));
     gtk_widget_show(GTK_WIDGET(avatar_simg));
-
-    g_signal_connect(smsg->nick_button, "clicked",
-            G_CALLBACK(nick_button_on_click), (char *)gtk_label_get_text(smsg->nick_label));
     return smsg;
 }
