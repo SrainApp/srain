@@ -16,6 +16,7 @@
 #include "ui_common.h"
 #include "ui_hdr.h"
 #include "srain_window.h"
+#include "srain_chan.h"
 #include "srain_msg.h"
 #include "srain_image.h"
 
@@ -176,29 +177,19 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *m
         gtk_widget_show(GTK_WIDGET(simg));
     }
 
-    /* avatar TODO */
     avatar_simg = srain_image_new();
-    avatar_path =  get_pixmap_path("srain-avatar.png");
+    avatar_path = get_avatar_path(nick);
+
+    if (!avatar_path) avatar_path = get_pixmap_path("srain-avatar.png");
     if (avatar_path){
         srain_image_set_from_file(avatar_simg, avatar_path, 36, SRAIN_IMAGE_AUTOLOAD);
         g_free(avatar_path);
     }
-    // avatar_path = plugin_avatar(nick, "", "");
-    srain_image_set_from_url_async(avatar_simg, avatar_path, 36, SRAIN_IMAGE_AUTOLOAD);
-    g_free(avatar_path);
+
     gtk_container_add(GTK_CONTAINER(smsg->avatar_box), GTK_WIDGET(avatar_simg));
     gtk_widget_show(GTK_WIDGET(avatar_simg));
 
     g_signal_connect(smsg->nick_button, "clicked",
             G_CALLBACK(nick_button_on_click), (char *)gtk_label_get_text(smsg->nick_label));
-
-    // if (strlen(gtk_label_get_text(smsg->identify_label)) != 0){
-        // g_signal_connect(smsg->nick_button, "clicked",
-                // G_CALLBACK(nick_button_on_click), (char *)gtk_label_get_text(smsg->identify_label));
-    // } else {
-        // g_signal_connect(smsg->nick_button, "clicked",
-            // G_CALLBACK(nick_button_on_click), (char *)gtk_label_get_text(smsg->nick_label));
-    // }
-
     return smsg;
 }

@@ -27,7 +27,7 @@ char *get_theme_path(const char *filename){
         return path;
     }
 
-    ERR_FR("'%s' not found", path);
+    WARN_FR("'%s' not found", path);
     g_free(path);
     return NULL;
 }
@@ -49,7 +49,7 @@ char *get_pixmap_path(const char *filename){
         return path;
     }
 
-    ERR_FR("'%s' not found", path);
+    WARN_FR("'%s' not found", path);
     g_free(path);
     return NULL;
 }
@@ -71,7 +71,7 @@ char *get_plugin_path(const char *filename){
         return path;
     }
 
-    ERR_FR("'%s' not found", path);
+    WARN_FR("'%s' not found", path);
     g_free(path);
     return NULL;
 }
@@ -91,7 +91,7 @@ char *get_config_path(const char *filename){
     if (g_file_test(path, G_FILE_TEST_EXISTS)){
         return path;
     }
-    ERR_FR("'%s' not found", path);
+    WARN_FR("'%s' not found", path);
     g_free(path);
 
     path = g_build_filename(g_get_user_config_dir(), PACKAGE,
@@ -101,7 +101,23 @@ char *get_config_path(const char *filename){
         return path;
     }
 
-    ERR_FR("'%s' not found", path);
+    WARN_FR("'%s' not found", path);
     g_free(path);
+    return NULL;
+}
+
+char *get_avatar_path(const char *filename){
+    char *path;
+
+    path = g_build_filename(g_get_user_cache_dir(),
+            PACKAGE, "avatars", filename, NULL);
+
+    if (g_file_test(path, G_FILE_TEST_EXISTS)){
+        return path;
+    }
+
+    WARN_FR("'%s' not found", path);
+    g_free(path);
+
     return NULL;
 }

@@ -6,6 +6,7 @@
  * @date 2016-04-03
  */
 
+// #define __DBG_ON
 #define __LOG_ON
 
 #include <gtk/gtk.h>
@@ -79,7 +80,7 @@ int srain_user_list_add(SrainUserList *list, const char *nick, UserType type){
 
     row = gtk_list_box_get_row_by_name(GTK_LIST_BOX(list), nick);
     if (row){
-        LOG_FR("GtkListBoxRow %s already exist", nick);
+        DBG_FR("GtkListBoxRow %s already exist", nick);
         return -1;
     }
 
@@ -107,7 +108,7 @@ int srain_user_list_rm(SrainUserList *list, const char *nick){
 
     row = gtk_list_box_get_row_by_name(GTK_LIST_BOX(list), nick);
     if (!row){
-        LOG_FR("GtkListBoxRow %s no found", nick);
+        DBG_FR("GtkListBoxRow %s no found", nick);
         return -1;
     }
 
@@ -132,12 +133,12 @@ int srain_user_list_rename(SrainUserList *list, const char *old_nick,
 
     row = gtk_list_box_get_row_by_name(GTK_LIST_BOX(list), new_nick);
     if (row && strcasecmp(old_nick, new_nick) != 0){
-        LOG_FR("GtkListBoxRow %s already exist", new_nick);
+        DBG_FR("GtkListBoxRow %s already exist", new_nick);
         return -1;
     }
     row = gtk_list_box_get_row_by_name(GTK_LIST_BOX(list), old_nick);
     if (!row){
-        LOG_FR("GtkListBoxRow %s no found", old_nick);
+        DBG_FR("GtkListBoxRow %s no found", old_nick);
         return -1;
     }
 
@@ -156,7 +157,7 @@ void srain_user_list_clear(SrainUserList *list){
     len = g_list_length(
             gtk_container_get_children(GTK_CONTAINER(list)));
     // TODO: len is always 0
-    LOG_FR("len: %d", len);
+    LOG_FR("TODO: len: %d", len);
 
     while (len > 0){
         while (gtk_events_pending()) gtk_main_iteration();
