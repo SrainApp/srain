@@ -13,10 +13,6 @@
 
 #include "srain_stack_sidebar_item.h"
 
-#include "srv_session.h"
-#define MSG_LEN 512
-// TODO
-
 #include "meta.h"
 #include "log.h"
 
@@ -77,10 +73,10 @@ SrainStackSidebarItem *srain_stack_sidebar_item_new(const char *server_name, con
 
 void srain_stack_sidebar_item_recentmsg_update(
         SrainStackSidebarItem *item, const char *nick, const char *msg){
-    char buf[MSG_LEN];
+    char buf[512];
 
     if (nick){
-        snprintf(buf, MSG_LEN, "%s: %s", nick, msg);
+        snprintf(buf, sizeof(buf), "%s: %s", nick, msg);
         gtk_label_set_text(item->recentmsg_label, buf);
     } else {
         gtk_label_set_text(item->recentmsg_label, msg);

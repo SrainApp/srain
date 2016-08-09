@@ -1,7 +1,7 @@
 #ifndef __SRV_SESSION_H
 #define __SRV_SESSION_H
 
-#include <netdb.h>
+#include <glib.h>
 
 #include "libircclient.h"
 #include "libirc_rfcnumeric.h"
@@ -12,8 +12,6 @@
 #define NICK_LEN        32
 #define PASSWD_LEN      32
 #define MSG_LEN         512
-
-#define SRV_SESSION_SERVER "Server "
 
 #define IS_CHAN(x) (x && (x[0] == '#' || x[0] == '&'))
 
@@ -44,6 +42,8 @@ typedef struct {
     char nickname[NICK_LEN];
     char username[NICK_LEN];
     char realname[NICK_LEN];
+
+    GList *chans;
 
     irc_session_t *irc_session;
 } srv_session_t;

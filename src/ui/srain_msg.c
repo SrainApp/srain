@@ -26,6 +26,7 @@
 #include "log.h"
 #include "get_path.h"
 #include "i18n.h"
+#include "meta.h"
 
 /**
  * @brief Get the selected text (utf-8 supported) of `label`,
@@ -188,7 +189,7 @@ static void msg_label_on_popup(GtkLabel *label, GtkMenu *menu,
         g_list_free(chans);
         return;
     } else {
-        /* Skip SRV_SESSION_SERVER */
+        /* Skip META_SERVER */
         chans = g_list_next(chans);
     }
 
@@ -227,7 +228,7 @@ static gboolean nick_button_on_popup(GtkWidget *widget,
             g_list_free(chans);
             return TRUE;
         } else {
-            /* Skip SRV_SESSION_SERVER */
+            /* Skip META_SERVER */
             chans = g_list_next(chans);
         }
 

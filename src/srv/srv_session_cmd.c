@@ -40,12 +40,11 @@ static void wait_until_connected(srv_session_t *session){
     DBG_FR("Ready :)");
 }
 
-
 /**
  * @brief Execute a command
  *
  * @param session If null, the last used session will be used
- * @param source If source = NULL, fallback to SRV_SESSION_SERVER
+ * @param source If source = NULL, fallback to META_SERVER
  * @param cmd
  * @param block If block == 1 and `session`->stat != SESS_CONN, this function
  *              will blocked until `session`->stat == SESS_CONN
@@ -58,7 +57,7 @@ int srv_session_cmd(srv_session_t *session, const char *source, char *cmd, int b
     /* The last used session */
     static srv_session_t *last_sess = NULL;
 
-    if (!source) source = SRV_SESSION_SERVER;
+    if (!source) source = META_SERVER;
 
     /* Usage: /connect <host> <nick> [port=<port>,passwd=<passwd>,realname=<realname>,ssl=[on|noverify|off]] */
     if (IS_CMD(cmd, "/connect")){

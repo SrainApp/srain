@@ -12,7 +12,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <glib.h>
 
 #include "srv_session.h"
 #include "srv_event.h"
@@ -20,9 +19,12 @@
 
 #include "log.h"
 #include "i18n.h"
+#include "meta.h"
 
 srv_session_t sessions[MAX_SESSIONS] = { 0 };
 irc_callbacks_t cbs;
+
+static void srv_session_err_hdr(srv_session_t *session);
 
 static int srv_session_get_index(srv_session_t *session){
     int i;
@@ -49,19 +51,22 @@ static int srv_session_get_index(srv_session_t *session){
 
 static int srv_session_reconnect(srv_session_t *session){
     int res;
+    char msg[512];
 
     WARN_FR("Reconnecting, session: %s", session->host);
 
-    // TODO: stat control
+    snprintf(msg, sizeof(msg), _("Reconnecting to %s ..."), session->host);
+    srv_hdr_ui_sys_msg(session->host, META_SERVER, msg, SYS_MSG_NORMAL);
+
+    session->stat = SESS_INUSE;
     irc_disconnect(session->irc_session);
     res = irc_connect(session->irc_session,
             session->prefix[0] ? session->prefix : session->host,
             session->port, session->passwd, session->nickname,
             session->username, session->realname);
+
     if (res){
-        ERR_FR("Failed to connect: %s",
-                irc_strerror(irc_errno(session->irc_session)));
-        return -1;
+        srv_session_err_hdr(session);
     }
 
     return 0;
@@ -84,6 +89,9 @@ static void srv_session_err_hdr(srv_session_t *session){
     ERR_FR("session: %s, errno: %d, errmsg: %s",
             session->host, errno, errmsg);
 
+    snprintf(msg, sizeof(msg), _("ERROR: %s"), errmsg);
+    srv_hdr_ui_sys_msg(session->host, META_SERVER, msg, SYS_MSG_ERROR);
+
     switch (errno){
         /* Nothing to do */
         case LIBIRC_ERR_INVAL:
@@ -104,20 +112,14 @@ static void srv_session_err_hdr(srv_session_t *session){
         case LIBIRC_ERR_SSL_CERT_VERIFY_FAILED:
             srv_session_free(session);
             break;
-        /* Reconnect TODO: times? */
         case LIBIRC_ERR_CLOSED:
         case LIBIRC_ERR_ACCEPT:
         case LIBIRC_ERR_TIMEOUT:
         case LIBIRC_ERR_TERMINATED:
-            // srv_session_reconnect(session);
-            // FIXME:
-            srv_session_free(session);
+            srv_session_reconnect(session);
+            sleep(5);
             break;
     }
-
-    snprintf(msg, sizeof(msg), _("ERROR: %s"), errmsg);
-    srv_hdr_ui_sys_msg(session->host, SRV_SESSION_SERVER,
-            msg, SYS_MSG_ERROR);
 }
 
 /**
@@ -143,11 +145,10 @@ loop:
 
     for (i = 0; i < MAX_SESSIONS; i++){
         if (sessions[i].stat == SESS_NOINUSE) continue;
-        if ((sessions[i].stat == SESS_CONNECT || sessions[i].stat == SESS_LOGIN)
-                && !irc_is_connected(sessions[i].irc_session)){
-            if (srv_session_reconnect(&sessions[i]) == -1)
-                continue;
-        }
+        // if (sessions[i].stat == SESS_CONNECT
+                // && !irc_is_connected(sessions[i].irc_session)){
+                // continue;
+        // }
         isess = sessions[i].irc_session;
 
         irc_add_select_descriptors(isess, &in_set, &out_set, &maxfd);
@@ -255,6 +256,7 @@ srv_session_t* srv_session_new(const char *host, int port, const char *passwd,
 
     sess->stat = SESS_INUSE;
     sess->port = port;
+    sess->chans = NULL;
     if (ssl != SSL_OFF)
         sess->prefix[0] = '#';
     else
@@ -278,7 +280,7 @@ srv_session_t* srv_session_new(const char *host, int port, const char *passwd,
 
     DBG_FR("Alloc session: %p for %s", sess, sess->host);
 
-    srv_hdr_ui_add_chan(host, SRV_SESSION_SERVER);
+    srv_hdr_ui_add_chan(host, META_SERVER);
     return sess;
 }
 
@@ -300,8 +302,15 @@ int srv_session_free(srv_session_t *session){
     irc_disconnect(session->irc_session);
     irc_destroy_session(session->irc_session);
 
+    GList *list = sessions[i].chans;
+    while (list){
+        free(list->data);
+        list = g_list_next(list);
+    }
+
     sessions[i] = (srv_session_t) { 0 };
     sessions[i].stat = SESS_NOINUSE;
+    sessions[i].chans = NULL;
 
     return 0;
 }

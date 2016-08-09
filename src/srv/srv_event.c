@@ -20,6 +20,7 @@
 #include "i18n.h"
 #include "log.h"
 #include "filter.h"
+#include "meta.h"
 
 #define PRINT_EVENT_PARAM \
     do { \
@@ -69,6 +70,7 @@ static void strip(char *str){
 
 void srv_event_connect(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
+    GList *list;
     srv_session_t *sess;
 
     sess = irc_get_ctx(irc_session);
@@ -78,6 +80,12 @@ void srv_event_connect(irc_session_t *irc_session, const char *event,
     sess->stat = SESS_CONNECT;
 
     LOG_FR("Connected to %s", sess->host);
+
+    list = sess->chans;
+    while (list){
+        srv_session_join(sess, list->data, NULL);
+        list = g_list_next(list);
+    }
 }
 
 void srv_event_nick(irc_session_t *irc_session, const char *event,
@@ -138,6 +146,15 @@ void srv_event_join(irc_session_t *irc_session, const char *event,
     /* YOU has join a channel */
     if (strncasecmp(sess->nickname, origin, NICK_LEN) == 0){
         srv_hdr_ui_add_chan(sess->host, chan);
+
+        /* Append to seesion channel list */
+        GList *list = sess->chans;
+        while (list){
+            if (strcasecmp(list->data, chan) == 0) break;
+            list = g_list_next(list);
+        }
+        if (!list)
+            sess->chans = g_list_append(sess->chans, strdup(chan));
     }
 
     // TODO: prefix?
@@ -160,7 +177,6 @@ void srv_event_part(irc_session_t *irc_session, const char *event,
     const char *chan = params[0];
     const char *reason = count >= 2 ? params[1] : "";;
 
-
     snprintf(msg, sizeof(msg), _("%s has left %s: %s"), origin, chan, reason);
     srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_NORMAL);
     srv_hdr_ui_user_list_rm(sess->host, chan, origin);
@@ -168,6 +184,16 @@ void srv_event_part(irc_session_t *irc_session, const char *event,
     /* YOU has left a channel */
     if (strncasecmp(sess->nickname, origin, NICK_LEN) == 0){
         srv_hdr_ui_rm_chan(sess->host, chan);
+        /* Remove from seesion channel list */
+        GList *list = sess->chans;
+        while (list){
+            if (strcasecmp(list->data, chan) == 0){
+                free(list->data);
+                sess->chans = g_list_remove(sess->chans, list->data);
+                break;
+            }
+            list = g_list_next(list);
+        }
     }
 }
 
@@ -286,7 +312,6 @@ void srv_event_privmsg(irc_session_t *irc_session, const char *event,
     strip(msg);
 
     if (!filter_is_ignore(origin))
-        // TODO: fall back to SRV_SESSION_SERVER
         srv_hdr_ui_recv_msg(sess->host, origin, origin, "", msg);
 
     free(msg);
@@ -301,7 +326,7 @@ void srv_event_notice(irc_session_t *irc_session, const char *event,
     PRINT_EVENT_PARAM;
     CHECK_COUNT(1);
 
-    const char *nick = params[0];
+    // const char *nick = params[0];
     char *msg = strdup(count >= 2 ? params[1] : "");
 
     strip(msg);
@@ -400,7 +425,7 @@ void srv_event_numeric (irc_session_t *irc_session, unsigned int event,
                 while (i < count){
                     g_string_append_printf(buf, "%s ", params[i++]);
                 }
-                srv_hdr_ui_recv_msg(sess->host, SRV_SESSION_SERVER,
+                srv_hdr_ui_recv_msg(sess->host, META_SERVER,
                         origin, sess->host, buf->str);
                 g_string_free(buf, TRUE);
                 break;

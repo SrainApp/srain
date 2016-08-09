@@ -21,6 +21,7 @@
 
 #include "i18n.h"
 #include "log.h"
+#include "meta.h"
 
 typedef struct {
     void *ui_interface;
@@ -414,7 +415,7 @@ void ui_send_msg_sync(const char *srv_name, const char *chan_name, const char *m
  *      The nick will be added into the completion list of this channel,
  *      The sidebar should be updated
  *
- * @param chan_name If no such channel, fallback to SRV_SESSION_SERVER
+ * @param chan_name If no such channel, fallback to META_SERVER
  * @param nick
  * @param id
  * @param msg
@@ -427,7 +428,7 @@ void ui_recv_msg_sync(const char *srv_name, const char *chan_name,
 
     chan = srain_window_get_chan_by_name(srain_win, srv_name, chan_name);
     if (!chan)
-        chan = srain_window_get_chan_by_name(srain_win, srv_name, SRV_SESSION_SERVER);
+        chan = srain_window_get_chan_by_name(srain_win, srv_name, META_SERVER);
     g_return_if_fail(chan);
 
     list = srain_chan_get_msg_list(chan);

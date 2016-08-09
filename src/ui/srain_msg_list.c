@@ -20,7 +20,6 @@
 #include "srain_window.h"
 #include "srain_msg.h"
 
-// TODO
 #include "srv_session.h"
 
 #include "i18n.h"
