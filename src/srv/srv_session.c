@@ -62,8 +62,9 @@ static int srv_session_reconnect(srv_session_t *session){
     irc_disconnect(session->irc_session);
     res = irc_connect(session->irc_session,
             session->prefix[0] ? session->prefix : session->host,
-            session->port, session->passwd, session->nickname,
-            session->username, session->realname);
+            session->port,
+            strlen(session->passwd) ? session->passwd : NULL,
+            session->nickname, session->username, session->realname);
 
     if (res){
         srv_session_err_hdr(session);
@@ -272,8 +273,11 @@ srv_session_t* srv_session_new(const char *host, int port, const char *passwd,
     if (ssl == SSL_NO_VERIFY)
         irc_option_set(sess->irc_session, LIBIRC_OPTION_SSL_NO_VERIFY);
 
-    if (irc_connect(sess->irc_session, sess->prefix[0] ? sess->prefix : host,
-                port, passwd, nickname, username, realname)){
+    if (irc_connect(sess->irc_session,
+                sess->prefix[0] ? sess->prefix : sess->host,
+                port,
+                strlen(sess->passwd) ? sess->passwd : NULL,
+                sess->nickname, sess->username, sess->realname)){
         srv_session_err_hdr(sess);
         return NULL;
     }
