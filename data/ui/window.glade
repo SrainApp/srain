@@ -5,7 +5,7 @@
   <object class="GtkImage" id="about_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="icon_name">gtk3-demo</property>
+    <property name="icon_name">srain-black</property>
   </object>
   <object class="GtkImage" id="chan_image">
     <property name="visible">True</property>
@@ -411,7 +411,7 @@
     </child>
   </object>
   <object class="GtkStatusIcon" id="tray_icon">
-    <property name="icon_name">gtk3-demo</property>
+    <property name="icon_name">srain</property>
     <property name="has_tooltip">True</property>
     <property name="tooltip_text" translatable="yes">Srain</property>
   </object>

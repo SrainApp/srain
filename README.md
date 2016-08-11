@@ -1,4 +1,4 @@
-Srain
+<img src="/data/pixmaps/srain.png" width=8%> Srain
 =====
 
 It does not look like an IRC client :-)
@@ -9,7 +9,8 @@ It does not look like an IRC client :-)
 - gcc           (makedepends)
 - pkg-config    (makedepends)
 - gettext       (makedepends)
-- gtk >= 3.19
+- imagemagick   (makedepends)
+- gtk >= 3.20
 - glib2
 - python >= 3.2
 - libcurl
@@ -47,4 +48,4 @@ It does not look like an IRC client :-)
 
 As you see, its theme is inspired by Telegram Desktop.
 
-![screenshot](http://img.tjm.moe/c5/1e91eced2cb59498a2cbe32fcf7d797f6f626d.png)
+![screenshot](http://img.tjm.moe/47/ceece073d29563da0c22ab6e8e8c3cdc534113.png)

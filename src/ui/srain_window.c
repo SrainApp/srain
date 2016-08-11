@@ -107,7 +107,7 @@ static void about_button_on_click(gpointer user_data){
             "comments", PACKAGE_DESC,
             "authors", authors,
             "documenters", documentors,
-            "logo-icon-name", "gtk3-demo",
+            "logo-icon-name", "srain",
             "title", _("About Srain"),
             NULL);
 }

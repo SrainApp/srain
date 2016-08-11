@@ -21,6 +21,7 @@ PACKAGE_DATA_DIR = $(PREFIX)
 MAKE = make
 DEL = rm -rf
 CC = gcc
+INSTALL = install -v
 TEST_FLAG = NO_TEST
 DEFS = -D PACKAGE='"$(PACKAGE)"' \
 	   -D PACKAGE_NAME='"$(PACKAGE_NAME)"' \
@@ -57,32 +58,47 @@ default: Makefile src/Makefile data/ui/Makefile
 	$(MAKE) -C data/ui
 	$(MAKE) $(TARGET)
 
-install:
-	install -Dm755 "build/srain" "$(DESTDIR)$(PREFIX)/bin/srain"
+install: mo
+	$(INSTALL) -Dm755 "build/srain" "$(DESTDIR)$(PREFIX)/bin/srain"
+	# Install icons
 	cd data/icons; \
-		for png in *.png; do \
-			install -Dm644 "$$png" \
-				"$(DESTDIR)$(PREFIX)/share/icons/hicolor/16x16/apps/$$png"; \
-		done
+	for png in *.png; do \
+		$(INSTALL) -Dm644 "$$png" \
+			"$(DESTDIR)$(PREFIX)/share/icons/hicolor/16x16/apps/$$png"; \
+	done
+	# Install pixmaps
 	cd data/pixmaps; \
-		for png in *.png; do \
-			install -Dm644 "$$png" \
-				"$(DESTDIR)$(PREFIX)/share/srain/pixmaps/$$png"; \
-		done
+	for png in *.png; do \
+		$(INSTALL) -Dm644 "$$png" \
+			"$(DESTDIR)$(PREFIX)/share/srain/pixmaps/$$png"; \
+	done
+	# Install application logos
+	cd data/pixmaps; \
+	for png in srain*.png; do \
+		for size in 14x14 16x16 22x22 24x24 32x32 36x36 48x48 64x64 72x72 96x96 128x128 192x192 256x256 512x512; do \
+			convert "$$png" -resize $$size "tmp.png"; \
+			$(INSTALL) -Dm644 "tmp.png" \
+				"$(DESTDIR)$(PREFIX)/share/icons/hicolor/$$size/apps/$$png"; \
+		done; \
+	done; \
+	rm tmp.png
+	# Install themes
 	cd data/themes; \
-		for css in *.css; do \
-			install -Dm644 "$$css" \
-				"$(DESTDIR)$(PREFIX)/share/srain/themes/$$css"; \
-		done
+	for css in *.css; do \
+		$(INSTALL) -Dm644 "$$css" \
+			"$(DESTDIR)$(PREFIX)/share/srain/themes/$$css"; \
+	done
+	# Install plugins
 	cd data/plugins; \
 	for py in *.py; do \
-			install -Dm644 "$$py" \
+		$(INSTALL) -Dm644 "$$py" \
 			"$(DESTDIR)$(PREFIX)/share/srain/plugins/$$py"; \
-		done
+	done
+	# Install mo files
 	for i in $(shell cat po/LANGS); do \
-			install -Dm644 "build/locale/$$i/LC_MESSAGES/srain.mo" \
+		$(INSTALL) -Dm644 "build/locale/$$i/LC_MESSAGES/srain.mo" \
 			"$(DESTDIR)$(PREFIX)/share/locale/$$i/LC_MESSAGES/srain.mo"; \
-		done
+	done
 
 uitest:
 	$(MAKE) TEST_FLAG=UI_TEST
@@ -98,7 +114,7 @@ run: default
 	cp srainrc.example build/srainrc
 	cd build; XDG_DATA_DIRS=$(PWD)/build/share:/usr/share/ ./bin/srain
 
-dbg: $(TARGET)
+bt: $(TARGET)
 	cd build && yes | gdb ./srain -ex 'r' -ex 'bt' -ex 'q'
 	#	GTK_DEBUG=interactive\
 	#		GOBJECT_DEBUG=instance-countcd \
