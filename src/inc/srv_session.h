@@ -67,5 +67,6 @@ int srv_session_whois(srv_session_t *session, const char *nick);
 int srv_session_invite(srv_session_t *session, const char *nick, const char *chan);
 int srv_session_kick(srv_session_t *session, const char *nick, const char *chan, const char *reason);
 int srv_session_mode(srv_session_t *session, const char *target, const char *mode);
+int srv_session_topic(srv_session_t *session, const char *chan, const char *topic);
 
 #endif /* __SRV_SESSION_H */
