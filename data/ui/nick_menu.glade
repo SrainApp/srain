@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.20.0 -->
+<interface>
+  <requires lib="gtk+" version="3.20"/>
+  <object class="GtkMenu" id="nick_menu">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="take_focus">False</property>
+    <child>
+      <object class="GtkMenuItem" id="whois_menu_item">
+        <property name="name">whois_menu_item</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Whois</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="kick_menu_item">
+        <property name="name">kick_menu_item</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Kick</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="chat_menu_item">
+        <property name="name">chat_menu_item</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Chat</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="invite_menu_item">
+        <property name="name">invite_menu_item</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Invite to...</property>
+      </object>
+    </child>
+  </object>
+</interface>

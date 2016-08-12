@@ -11,5 +11,6 @@
       <file preprocess="xml-stripblanks">stack_sidebar_item.glade</file>
       <file preprocess="xml-stripblanks">msg_list.glade</file>
       <file preprocess="xml-stripblanks">user_list.glade</file>
+      <file preprocess="xml-stripblanks">nick_menu.glade</file>
   </gresource>
 </gresources>
