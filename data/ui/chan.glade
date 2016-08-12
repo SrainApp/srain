@@ -188,6 +188,7 @@
           <object class="GtkButton" id="upload_image_button">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="focus_on_click">False</property>
             <property name="receives_default">True</property>
             <property name="tooltip_text" translatable="yes">Upload image</property>
             <property name="image">upload_image_button_image</property>
