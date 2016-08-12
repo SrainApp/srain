@@ -56,6 +56,7 @@ struct _SrainWindow {
     GtkStack *stack;
     GtkStatusIcon *tray_icon;
     GtkMenu *tray_menu;
+    GtkMenuItem *about_menu_item;
     GtkMenuItem *quit_menu_item;
 
     // join_popover
@@ -88,7 +89,7 @@ static void quit_menu_item_on_activate(){
     srain_app_quit(srain_app);
 }
 
-static void about_button_on_click(gpointer user_data){
+static void show_about_dialog(gpointer user_data){
     GtkWidget *window = user_data;
     const gchar *authors[] = { PACKAGE_AUTHOR " <" PACKAGE_EMAIL ">", NULL };
     const gchar **documentors = authors;
@@ -254,10 +255,12 @@ static void srain_window_init(SrainWindow *self){
     tray_icon_set_callback(self->tray_icon, self, self->tray_menu);
     g_signal_connect_swapped(self->quit_menu_item, "activate",
             G_CALLBACK(quit_menu_item_on_activate), NULL);
+    g_signal_connect_swapped(self->about_menu_item, "activate",
+            G_CALLBACK(show_about_dialog), self);
 
     // Click to show/hide GtkPopover
     g_signal_connect_swapped(self->about_button, "clicked",
-            G_CALLBACK(about_button_on_click), self);
+            G_CALLBACK(show_about_dialog), self);
     g_signal_connect_swapped(self->join_popover_button, "clicked",
             G_CALLBACK(popover_button_on_click), self->join_popover);
     g_signal_connect_swapped(self->conn_popover_button, "clicked",
@@ -319,6 +322,7 @@ static void srain_window_class_init(SrainWindowClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, tray_icon);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, tray_menu);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, quit_menu_item);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, about_menu_item);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, sidebar_box);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, join_popover);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, conn_popover);
