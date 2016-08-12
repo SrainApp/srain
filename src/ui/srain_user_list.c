@@ -167,7 +167,7 @@ int srain_user_list_add(SrainUserList *list, const char *nick, UserType type){
             break;
         case USER_CHIGUA:
         default:
-            gtk_image_set_from_icon_name(image, "srain-user-chigua",
+            gtk_image_set_from_icon_name(image, "srain-person",
                         GTK_ICON_SIZE_BUTTON);
             break;
     }
