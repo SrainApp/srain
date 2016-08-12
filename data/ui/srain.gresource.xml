@@ -10,5 +10,6 @@
       <file preprocess="xml-stripblanks">image_window.glade</file>
       <file preprocess="xml-stripblanks">stack_sidebar_item.glade</file>
       <file preprocess="xml-stripblanks">msg_list.glade</file>
+      <file preprocess="xml-stripblanks">user_list.glade</file>
   </gresource>
 </gresources>

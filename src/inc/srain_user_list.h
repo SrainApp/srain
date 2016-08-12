@@ -3,6 +3,7 @@
 
 #include <gtk/gtk.h>
 
+/* Ref: http://www.geekshed.net/2009/10/nick-prefixes-explained/ */
 typedef enum{
     USER_OWNER,     // ~ mode +q
     USER_ADMIN,     // & mode +a
@@ -10,6 +11,8 @@ typedef enum{
     USER_HALF_OP,   // % mode +h
     USER_VOICED,    // + mode +v
     USER_CHIGUA,    // No prefix, 低头吃瓜
+    /* ... */
+    USER_TYPE_MAX
 } UserType;
 
 #define SRAIN_TYPE_USER_LIST (srain_user_list_get_type())

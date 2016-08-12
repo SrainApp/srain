@@ -34,18 +34,17 @@ void get_cur_time(char *timestr){
  *
  * @return a GtkListRow if found, or return NULL
  */
-GtkListBoxRow* gtk_list_box_get_row_by_name(GtkListBox *listbox, const gchar* name){
+GtkListBoxRow* gtk_list_box_get_row_by_name(GtkListBox *listbox, const char* name){
     const char *widget_name;
     GtkWidget *item;
-    GList *row = gtk_container_get_children(GTK_CONTAINER(listbox));
+    GList *rows = gtk_container_get_children(GTK_CONTAINER(listbox));
 
-    while (row){
-        item = gtk_bin_get_child(GTK_BIN(row->data));
-        widget_name = gtk_widget_get_name(item);
+    while (rows){
+        widget_name = gtk_widget_get_name(rows->data);
         if (strcmp(widget_name, name) == 0){
-            return row->data;
+            return rows->data;
         }
-        row = g_list_next(row);
+        rows = g_list_next(rows);
     }
     return NULL;
 }

@@ -51,8 +51,7 @@ struct _SrainChan {
     GtkBox *msg_list_box;    // SrainMsgList container
     SrainMsgList *msg_list;
 
-    GtkRevealer *user_list_revealer;
-    GtkViewport *user_list_viewport;    // SrainUserList container
+    GtkRevealer *user_list_revealer;    // SrainUserList container
     SrainUserList *user_list;
 
     /* input entry */
@@ -240,7 +239,7 @@ static void srain_chan_init(SrainChan *self){
 
     /* init user list */
     self->user_list = srain_user_list_new();
-    gtk_container_add(GTK_CONTAINER(self->user_list_viewport),
+    gtk_container_add(GTK_CONTAINER(self->user_list_revealer),
             GTK_WIDGET(self->user_list));
     gtk_widget_show(GTK_WIDGET(self->user_list));
 
@@ -309,7 +308,6 @@ static void srain_chan_class_init(SrainChanClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, msg_list_box);
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, user_list_revealer);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, user_list_viewport);
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, input_entry);
 

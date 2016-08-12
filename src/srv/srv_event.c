@@ -161,7 +161,6 @@ void srv_event_join(irc_session_t *irc_session, const char *event,
             sess->chans = g_list_append(sess->chans, strdup(chan));
     }
 
-    // TODO: prefix?
     srv_hdr_ui_user_list_add(sess->host, chan, origin, USER_CHIGUA);
 
     snprintf(msg, sizeof(msg), _("%s has joined %s"), origin, chan);
@@ -218,6 +217,17 @@ void srv_event_mode(irc_session_t *irc_session, const char *event,
     snprintf(msg, sizeof(msg), _("mode %s %s %s by %s"),
             chan, mode, mode_args, origin);
     srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_NORMAL);
+
+    // TODO: fix srian_user_list_rename plz
+    switch (mode[1]){
+        case 'q':
+        case 'a':
+        case 'o':
+        case 'h':
+        case 'v':
+        default:
+            break;
+    }
 }
 
 void srv_event_umode(irc_session_t *irc_session, const char *event,
@@ -458,14 +468,32 @@ void srv_event_numeric (irc_session_t *irc_session, unsigned int event,
 
                 nickptr = strtok((char *)names, " ");
                 while (nickptr){
-                    // TODO: DO NOT IGNORE prefix
-                    if (nickptr[0] == '~'
-                            || nickptr[0] == '&'
-                            || nickptr[0] == '@'
-                            || nickptr[0] == '%'
-                            || nickptr[0] == '+')
-                        nickptr++;
-                    srv_hdr_ui_user_list_add(sess->host, chan, nickptr, USER_CHIGUA);
+                    UserType type;
+                    switch (nickptr[0]){
+                        case '~':
+                            nickptr++;
+                            type = USER_OWNER;
+                            break;
+                        case '&':
+                            nickptr++;
+                            type = USER_ADMIN;
+                            break;
+                        case '@':
+                            nickptr++;
+                            type = USER_FULL_OP;
+                            break;
+                        case '%':
+                            nickptr++;
+                            type = USER_HALF_OP;
+                            break;
+                        case '+':
+                            nickptr++;
+                            type = USER_VOICED;
+                            break;
+                        default:
+                            type = USER_CHIGUA;
+                    }
+                    srv_hdr_ui_user_list_add(sess->host, chan, nickptr, type);
                     nickptr = strtok(NULL, " ");
                 }
                 break;
