@@ -101,7 +101,7 @@ static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_da
     line = strtok(sel_msg, "\n");
     while (line){
         str = g_string_new("");
-        g_string_printf(str, _("%s <Forward from %s@%s>"), line,
+        g_string_printf(str, _("%s <fwd %s@%s>"), line,
                 gtk_label_get_text(smsg->nick_label),
                 srain_chan_get_chan_name(srain_window_get_cur_chan(srain_win)));
         line = strtok(NULL, "\n");
@@ -150,15 +150,12 @@ static void msg_label_on_popup(GtkLabel *label, GtkMenu *menu,
     SrainChan *chan;
 
     chan = srain_window_get_cur_chan(srain_win);
+
     chans = srain_window_get_chans_by_srv_name(srain_win,
             srain_chan_get_srv_name(chan));
-    if (g_list_length(chans) == 1){
-        g_list_free(chans);
-        return;
-    } else {
-        /* Skip META_SERVER */
-        chans = g_list_next(chans);
-    }
+    if (!chans) return;
+    /* Skip META_SERVER */
+    chans = g_list_next(chans);
 
     gtk_menu_item_set_submenu(forward_menu_item, GTK_WIDGET(forward_submenu));
 
@@ -180,7 +177,7 @@ static gboolean nick_button_on_popup(GtkWidget *widget,
         GdkEventButton *event, gpointer user_data){
     GtkLabel *nick_label;
 
-    nick_label = user_data;
+    nick_label = GTK_LABEL(user_data);
     if (event->button == 3){
         nick_menu_popup(event, gtk_label_get_text(nick_label));
 
@@ -296,9 +293,9 @@ static void srain_recv_msg_init(SrainRecvMsg *self){
     g_signal_connect(self->nick_button, "clicked",
             G_CALLBACK(nick_button_on_click), self->nick_label);
     g_signal_connect(self->nick_button, "button-press-event",
-            G_CALLBACK(nick_button_on_popup), self);
+            G_CALLBACK(nick_button_on_popup), self->nick_label);
     g_signal_connect(self->msg_label, "populate-popup",
-            G_CALLBACK(msg_label_on_popup), self->nick_label);
+            G_CALLBACK(msg_label_on_popup), self);
 
 }
 
