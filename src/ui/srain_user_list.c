@@ -13,9 +13,10 @@
 #include <string.h>
 #include <strings.h>
 
-#include "ui_common.h"
-#include "srain_user_list.h"
 #include "theme.h"
+#include "ui_common.h"
+#include "nick_menu.h"
+#include "srain_user_list.h"
 
 #include "log.h"
 #include "i18n.h"
@@ -44,7 +45,7 @@ static gint list_sort_func(GtkListBoxRow *row1, GtkListBoxRow *row2,
     UserType type2;
 
     type1 = (UserType)g_object_get_data(G_OBJECT(row1), "user-type");
-    type2 = (UserType)g_object_get_data(G_OBJECT(row1), "user-type");
+    type2 = (UserType)g_object_get_data(G_OBJECT(row2), "user-type");
 
     if (type1 != type2) return type1 > type2;
 
@@ -57,7 +58,10 @@ static gint list_sort_func(GtkListBoxRow *row1, GtkListBoxRow *row2,
 static void srain_user_list_update_stat(SrainUserList *list){
     char stat[128];
 
-    snprintf(stat, sizeof(stat), _("Users: %d, %d@, %d%% %d+"),
+    snprintf(stat, sizeof(stat),
+            _("Users: %d, <span color=\"#157915\">%d@</span>,"
+                         "<span color=\"#856117\">%d%%</span>,"
+                         "<span color=\"#451984\">%d+</span>"),
             list->num_total,
             // list->num_type[USER_OWNER],
             // list->num_type[USER_ADMIN],
@@ -67,7 +71,25 @@ static void srain_user_list_update_stat(SrainUserList *list){
             );
 
     // TODO: set markup
-    gtk_label_set_text(list->stat_label, stat);
+    gtk_label_set_markup(list->stat_label, stat);
+}
+
+static gboolean list_box_on_popup(GtkWidget *widget,
+        GdkEventButton *event, gpointer user_data){
+    GList *rows;
+    GtkListBox *list_box;
+
+    list_box = user_data;
+
+    rows = gtk_list_box_get_selected_rows(list_box);
+    if (!rows) return FALSE;
+
+    if (event->button == 3){
+        nick_menu_popup(event, gtk_widget_get_name(rows->data));
+
+        return TRUE;
+    }
+    return FALSE;
 }
 
 static void srain_user_list_init(SrainUserList *self){
@@ -82,6 +104,9 @@ static void srain_user_list_init(SrainUserList *self){
             list_sort_func, NULL, NULL);
 
     srain_user_list_update_stat(self);
+
+    g_signal_connect(self->list_box, "button-press-event",
+            G_CALLBACK(list_box_on_popup), self->list_box);
 }
 
 static void srain_user_list_class_init(SrainUserListClass *class){
@@ -106,9 +131,9 @@ SrainUserList* srain_user_list_new(void){
  * @return 0 if successed, -1 if failed
  */
 int srain_user_list_add(SrainUserList *list, const char *nick, UserType type){
+    GtkBox *box;
     GtkLabel *label;
-    // GtkImage *image;
-    // GtkButton *button;
+    GtkImage *image;
     GtkListBoxRow *row;
 
     if (type >= USER_TYPE_MAX){
@@ -123,15 +148,49 @@ int srain_user_list_add(SrainUserList *list, const char *nick, UserType type){
     }
 
     label = GTK_LABEL(gtk_label_new(nick));
-    gtk_label_set_xalign(label, 0.05);
+    image = GTK_IMAGE(gtk_image_new());
 
-    row = gtk_list_box_add_unfocusable_row(GTK_LIST_BOX(list->list_box), GTK_WIDGET(label));
+    switch (type){
+        case USER_ADMIN:
+        case USER_OWNER:
+        case USER_FULL_OP:
+            gtk_image_set_from_icon_name(image, "srain-user-full-op",
+                        GTK_ICON_SIZE_BUTTON);
+            break;
+        case USER_HALF_OP:
+            gtk_image_set_from_icon_name(image, "srain-user-half-op",
+                        GTK_ICON_SIZE_BUTTON);
+            break;
+        case USER_VOICED:
+            gtk_image_set_from_icon_name(image, "srain-user-voiced",
+                        GTK_ICON_SIZE_BUTTON);
+            break;
+        case USER_CHIGUA:
+        default:
+            gtk_image_set_from_icon_name(image, "srain-user-chigua",
+                        GTK_ICON_SIZE_BUTTON);
+            break;
+    }
+
+    box = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 2));
+    gtk_box_pack_start(box, GTK_WIDGET(image), FALSE, FALSE, 0);
+    gtk_box_pack_start(box, GTK_WIDGET(label), FALSE, TRUE, 0);
+    gtk_widget_set_margin_start(GTK_WIDGET(box), 4);
+    gtk_widget_set_margin_top(GTK_WIDGET(box), 2);
+    gtk_widget_set_margin_bottom(GTK_WIDGET(box), 2);
+    gtk_widget_show_all(GTK_WIDGET(box));
+
+    row = gtk_list_box_add_unfocusable_row(GTK_LIST_BOX(list->list_box), GTK_WIDGET(box));
+
     gtk_widget_set_name(GTK_WIDGET(row), nick);
     g_object_set_data(G_OBJECT(row), "user-type", (void *)type);
+    g_object_set_data(G_OBJECT(row), "label", label);
+    g_object_set_data(G_OBJECT(row), "image", label);
 
     list->num_total++;
     list->num_type[type]++;
 
+    gtk_list_box_invalidate_sort(list->list_box);
     srain_user_list_update_stat(list);
 
     return 0;
@@ -181,6 +240,7 @@ int srain_user_list_rename(SrainUserList *list, const char *old_nick,
                            const char *new_nick, UserType type){
     UserType old_type;
     GtkLabel *label;
+    GtkImage *image;
     GtkListBoxRow *row;
 
     if (type >= USER_TYPE_MAX){
@@ -202,17 +262,42 @@ int srain_user_list_rename(SrainUserList *list, const char *old_nick,
     if (strcmp(new_nick, old_nick)){
         /* Rename */
         gtk_widget_set_name(GTK_WIDGET(row), new_nick);
-        label = GTK_LABEL(gtk_bin_get_child(GTK_BIN(row)));
+        label = GTK_LABEL(g_object_get_data(G_OBJECT(row), "label"));
         gtk_label_set_text(label, new_nick);
     } else {
         /* Change someone's UserType */
         old_type = (UserType)g_object_get_data(G_OBJECT(row), "user-type");
         g_object_set_data(G_OBJECT(row), "user-type", (void *)type);
 
+        image = GTK_IMAGE(g_object_get_data(G_OBJECT(row), "image"));
+
+        switch (type){
+            case USER_ADMIN:
+            case USER_OWNER:
+            case USER_FULL_OP:
+                gtk_image_set_from_icon_name(image, "srain-user-full-op",
+                        GTK_ICON_SIZE_BUTTON);
+                break;
+            case USER_HALF_OP:
+                gtk_image_set_from_icon_name(image, "srain-user-half-op",
+                        GTK_ICON_SIZE_BUTTON);
+                break;
+            case USER_VOICED:
+                gtk_image_set_from_icon_name(image, "srain-user-voiced",
+                        GTK_ICON_SIZE_BUTTON);
+                break;
+            case USER_CHIGUA:
+            default:
+                gtk_image_set_from_icon_name(image, "srain-user-chigua",
+                        GTK_ICON_SIZE_BUTTON);
+                break;
+        }
+
         list->num_type[old_type]--;
         list->num_type[type]++;
     }
 
+    gtk_list_box_invalidate_sort(list->list_box);
     srain_user_list_update_stat(list);
 
     return 0;
