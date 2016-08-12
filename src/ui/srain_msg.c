@@ -292,8 +292,8 @@ SrainSysMsg* srain_sys_msg_new(const char *msg, SysMsgType type){
         case SYS_MSG_ERROR:
             gtk_widget_set_name(GTK_WIDGET(smsg), "error_sys_msg_box");
             break;
-        case SYS_MSG_COMMAND:
-            gtk_widget_set_name(GTK_WIDGET(smsg), "command_sys_msg_box");
+        case SYS_MSG_NOTICE:
+            gtk_widget_set_name(GTK_WIDGET(smsg), "notice_sys_msg_box");
             break;
         case SYS_MSG_ACTION:
             gtk_widget_set_name(GTK_WIDGET(smsg), "action_sys_msg_box");

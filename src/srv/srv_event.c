@@ -13,6 +13,10 @@
 #include <string.h>
 #include <strings.h>
 
+#include "libircclient.h"
+#include "libirc_rfcnumeric.h"
+#include "norfc1459_numeric.h"
+
 #include "srv_session.h"
 #include "srv_event.h"
 #include "srv_hdr.h"
@@ -319,6 +323,7 @@ void srv_event_privmsg(irc_session_t *irc_session, const char *event,
 
 void srv_event_notice(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
+    char buf[512];
     srv_session_t *sess;
 
     sess = irc_get_ctx(irc_session);
@@ -330,14 +335,15 @@ void srv_event_notice(irc_session_t *irc_session, const char *event,
     char *msg = strdup(count >= 2 ? params[1] : "");
 
     strip(msg);
-
-    srv_hdr_ui_recv_msg(sess->host, origin, origin, "", msg);
-
+    snprintf(buf, sizeof(buf), _("%s | %s"), origin, msg);
     free(msg);
+
+    srv_hdr_ui_sys_msg(sess->host, origin, buf, SYS_MSG_NOTICE);
 }
 
 void srv_event_channel_notice(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
+    char buf[512];
     srv_session_t *sess;
 
     sess = irc_get_ctx(irc_session);
@@ -349,10 +355,10 @@ void srv_event_channel_notice(irc_session_t *irc_session, const char *event,
     char *msg = strdup(count >= 2 ? params[1] : "");
 
     strip(msg);
-
-    srv_hdr_ui_recv_msg(sess->host, chan, origin, "", msg);
-
+    snprintf(buf, sizeof(buf), _("%s | %s"), origin, msg);
     free(msg);
+
+    srv_hdr_ui_sys_msg(sess->host, chan, buf, SYS_MSG_NOTICE);
 }
 
 void srv_event_invite(irc_session_t *irc_session, const char *event,
@@ -415,9 +421,9 @@ void srv_event_numeric (irc_session_t *irc_session, unsigned int event,
         case LIBIRC_RFC_RPL_LUSERCLIENT:
         case LIBIRC_RFC_RPL_LUSERME:
         case LIBIRC_RFC_RPL_ADMINME:
-        case 250:
-        case 265:
-        case 266:
+        case NORFC1459_RPL_STATSDLINE:
+        case NORFC1459_RPL_LOCALUSERS:
+        case NORFC1459_RPL_GLOBALUSERS:
             {
                 int i = 1;
                 GString *buf = g_string_new(NULL);
@@ -498,7 +504,7 @@ void srv_event_numeric (irc_session_t *irc_session, unsigned int event,
                     params[1], params[2], params[3]);
             srv_hdr_ui_sys_msg(sess->host, "", buf, SYS_MSG_NORMAL);
             break;
-            // TODO 378 330
+            // TODO: NORFC1459_RPL_WHOWAS_TIME NORFC1459_RPL_WHOISHOST
         case LIBIRC_RFC_RPL_ENDOFWHOIS:
             CHECK_COUNT(3);
             srv_hdr_ui_sys_msg(sess->host, "", params[2], SYS_MSG_NORMAL);
