@@ -371,9 +371,10 @@ int ui_rm_chan_sync(const char *srv_name, const char *chan_name){
  * @brief Add a system message to sepcified channel
  *
  * @param srv_name
- * @param chan_name If no such channel, fallback to current one
+ * @param chan_name If no such channel, fallback to META_SERVER
  * @param msg
- * @param type If it is SYS_MSG_ACTION, sidebar should be updated
+ * @param type If it is SYS_MSG_ACTION or SYS_MSG_ERROR,
+ *          sidebar should be updated
  */
 void ui_sys_msg_sync(const char *srv_name, const char *chan_name,
         const char *msg, SysMsgType type){
@@ -381,7 +382,8 @@ void ui_sys_msg_sync(const char *srv_name, const char *chan_name,
     SrainMsgList *list;
 
     chan = srain_window_get_chan_by_name(srain_win, srv_name, chan_name);
-    if (chan == NULL) chan = srain_window_get_cur_chan(srain_win);
+    if (!chan)
+        chan = srain_window_get_chan_by_name(srain_win, srv_name, META_SERVER);
     g_return_if_fail(chan);
 
     list = srain_chan_get_msg_list(chan);
