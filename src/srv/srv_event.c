@@ -458,7 +458,7 @@ void srv_event_numeric (irc_session_t *irc_session, unsigned int event,
                 break;
             }
 
-            /************************ Whois message ************************/
+            /************************ NAMES message ************************/
         case LIBIRC_RFC_RPL_NAMREPLY:
             {
                 CHECK_COUNT(4);

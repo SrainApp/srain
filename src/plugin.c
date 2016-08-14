@@ -92,7 +92,6 @@ char* plugin_upload(const char *path){
  * @param token
  */
 int plugin_avatar(const char *nick, const char *token){
-    char *path;
     PyObject *py_nick;
     PyObject *py_token;
     PyObject *py_args;

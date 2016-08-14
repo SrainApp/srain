@@ -169,26 +169,6 @@ static void option_togglebutton_on_click(GtkWidget *widget, gpointer user_data){
             gtk_toggle_button_get_active(button));
 }
 
-static gint online_listbox_on_dbclick(GtkWidget *widget, GdkEventButton *event){
-    GString *cmd;
-    GtkLabel *label;
-    GtkListBoxRow *row;
-
-    if(event->button == 1 && event->type == GDK_2BUTTON_PRESS){
-        row = gtk_list_box_get_selected_row(GTK_LIST_BOX(widget));
-        if (row){
-            label = GTK_LABEL(gtk_bin_get_child(GTK_BIN(row)));
-            cmd = g_string_new(NULL);
-
-            // server = g_object_get_data(G_OBJECT(chan), "server");
-            g_string_printf(cmd, "/whois %s", gtk_label_get_text(label));
-            // irc_server_cmd(NULL, NULL, cmd->str);
-            g_string_free(cmd, TRUE);
-        }
-    }
-    return FALSE;
-}
-
 static int is_blank(const char *str){
     while (*str){
         if (*str != '\t' && *str != ' ')

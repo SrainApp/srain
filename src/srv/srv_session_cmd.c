@@ -133,6 +133,7 @@ int srv_session_cmd(srv_session_t *session, const char *source, char *cmd, int b
     /* ================================================================
      * In the following commands, `source` and `session` MUST be vaild,
      * if session is NULL, use the last uesd session */
+    // TODO: buggy
     if (!srv_session_is_session(session)) session = last_sess;
     if (!srv_session_is_session(session)) {
         ERR_FR("Session %p is invaild", session);
