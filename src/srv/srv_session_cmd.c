@@ -188,6 +188,13 @@ int srv_session_cmd(srv_session_t *session, const char *source, char *cmd, int b
         return srv_session_quit(session, reason);
     }
 
+    /* Usage: /topic [topic] */
+    else if (IS_CMD(cmd, "/topic")){
+        const char *chan = source;
+        char *topic = strtok(cmd + strlen("/topic"), " ");
+        return srv_session_topic(session, chan, topic);
+    }
+
     /* Usage: /msg <target> <message> */
     else if (IS_CMD(cmd, "/msg")){
         char *to = strtok(cmd + strlen("/msg"), " ");

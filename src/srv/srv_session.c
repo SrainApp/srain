@@ -422,3 +422,11 @@ int srv_session_mode(srv_session_t *session, const char *target, const char *mod
 
     return res;
 }
+
+int srv_session_topic(srv_session_t *session, const char *chan, const char *topic){
+    int res;
+    if ((res = irc_cmd_topic(session->irc_session, chan, topic)) < 0){
+        srv_session_err_hdr(session);
+    }
+    return res;
+}
