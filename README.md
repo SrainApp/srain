@@ -10,7 +10,7 @@ It does not look like an IRC client :-)
 - pkg-config    (makedepends)
 - gettext       (makedepends)
 - imagemagick   (makedepends)
-- gtk >= 3.20
+- gtk >= 3.16
 - glib2
 - python >= 3.2
 - libcurl

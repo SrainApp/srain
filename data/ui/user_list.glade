@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Generated with glade 3.20.0 -->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk+" version="3.16"/>
   <template class="SrainUserList" parent="GtkBox">
     <property name="name">user_list_box</property>
     <property name="visible">True</property>
