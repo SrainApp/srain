@@ -88,5 +88,6 @@ int main(int argc, char **argv){
     ui_init(argc, argv);
 #endif
 
+    srv_finalize();
     plugin_finalize();
 }

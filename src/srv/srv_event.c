@@ -129,8 +129,10 @@ void srv_event_quit(irc_session_t *irc_session, const char *event,
 
     /* You quit */
     if (strncasecmp(origin, sess->nickname, NICK_LEN) == 0){
+        LOG_FR("session: %s, origin: %s, reason: %s", sess->host, origin, reason);
         /* Remove all chans belong to this session */
         srv_hdr_ui_rm_chan(sess->host, "");
+        sess->stat = SESS_CLOSE;
         srv_session_free(sess);
     }
 }

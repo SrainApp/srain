@@ -26,7 +26,7 @@ typedef enum {
     SESS_NOINUSE = 0,
     SESS_INUSE,
     SESS_CONNECT,
-    SESS_LOGIN,
+    SESS_CLOSE,
     /*...*/
 } session_stat_t;
 
@@ -62,6 +62,7 @@ int srv_session_me(srv_session_t *session, const char *target, const char *msg);
 int srv_session_join(srv_session_t *session, const char *chan, const char *passwd);
 int srv_session_part(srv_session_t *session, const char *chan);
 int srv_session_quit(srv_session_t *session, const char *reason);
+void srv_session_quit_all();
 int srv_session_nick(srv_session_t *session, const char *new_nick);
 int srv_session_whois(srv_session_t *session, const char *nick);
 int srv_session_invite(srv_session_t *session, const char *nick, const char *chan);

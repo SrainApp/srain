@@ -82,9 +82,7 @@ static void srv_session_err_hdr(srv_session_t *session){
     errmsg = irc_strerror(irc_errno(session->irc_session));
 
     /* Ignore it */
-    if (errno == LIBIRC_ERR_OK ||
-            errno == LIBIRC_ERR_STATE)
-        return;
+    if (errno == LIBIRC_ERR_OK) return;
 
     /* Error message should be reported */
     ERR_FR("session: %s, errno: %d, errmsg: %s",
@@ -92,6 +90,16 @@ static void srv_session_err_hdr(srv_session_t *session){
 
     snprintf(msg, sizeof(msg), _("ERROR: %s"), errmsg);
     srv_hdr_ui_sys_msg(session->host, META_SERVER, msg, SYS_MSG_ERROR);
+
+    /* Error occurs when session is not connnect yet */
+    if (session->stat == SESS_INUSE){
+        srv_session_free(session);
+        return;
+    }
+    /* Connection should be closed: you receive a QUIT message */
+    if (session->stat == SESS_CLOSE){
+        return;
+    }
 
     switch (errno){
         /* Nothing to do */
@@ -119,6 +127,8 @@ static void srv_session_err_hdr(srv_session_t *session){
         case LIBIRC_ERR_TERMINATED:
             srv_session_reconnect(session);
             sleep(5);
+            break;
+        case LIBIRC_ERR_STATE:
             break;
     }
 }
@@ -296,9 +306,9 @@ int srv_session_free(srv_session_t *session){
     int i;
 
     i = srv_session_get_index(session);
-    if (i == -1) {
-        return -1;
-    }
+    if (i == -1) return -1;
+    if (session->stat == SESS_NOINUSE) return -1;
+
     session->stat = SESS_NOINUSE;
 
     LOG_FR("Free session %s", session->host);
@@ -374,6 +384,23 @@ int srv_session_quit(srv_session_t *session, const char *reason){
         srv_session_err_hdr(session);
     }
     return res;
+}
+
+void srv_session_quit_all(){
+    int i;
+
+    for (i = 0; i < MAX_SESSIONS; i++){
+        if (sessions[i].stat == SESS_CONNECT) {
+            srv_session_quit(&sessions[i], PACKAGE_NAME PACKAGE_VERSION " close.");
+        }
+    }
+
+    /* Wait 1 second for QUIT message */
+    sleep(1);
+    /* FIXME:
+     * It seems that ngircd doesn't return you a QUIT message when you send QUIT
+     * message...
+     */
 }
 
 int srv_session_nick(srv_session_t *session, const char *new_nick){

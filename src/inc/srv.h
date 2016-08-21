@@ -2,6 +2,7 @@
 #define __SRV_H
 
 void srv_init();
+void srv_finalize();
 int srv_connect(const char *host, int port, const char *passwd,
         const char *nickname, const char *username, const char *realname, int ssl);
 int srv_send(const char *srv_name, const char *target, const char *msg);

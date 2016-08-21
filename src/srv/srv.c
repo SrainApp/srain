@@ -31,6 +31,11 @@ void srv_init(){
 #endif
 }
 
+void srv_finalize(){
+    LOG_FR("...");
+    srv_session_quit_all();
+}
+
 /**
  * @brief Connect to a IRC server
  *
