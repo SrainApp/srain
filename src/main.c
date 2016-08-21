@@ -12,6 +12,7 @@
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <signal.h>
 
 #include "srv.h"
 #include "srv_test.h"
@@ -74,8 +75,16 @@ static int create_user_file(){
     return 0;
 }
 
+void quit(){
+    srv_finalize();
+    plugin_finalize();
+
+    exit(0);
+}
+
 int main(int argc, char **argv){
     create_user_file();
+    signal(SIGINT, quit);
 
     i18n_init();
     plugin_init();
@@ -88,6 +97,5 @@ int main(int argc, char **argv){
     ui_init(argc, argv);
 #endif
 
-    srv_finalize();
-    plugin_finalize();
+    quit();
 }
