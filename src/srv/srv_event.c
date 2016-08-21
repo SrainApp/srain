@@ -25,6 +25,7 @@
 #include "log.h"
 #include "filter.h"
 #include "meta.h"
+#include "chat_log.h"
 
 #define PRINT_EVENT_PARAM \
     do { \
@@ -106,6 +107,8 @@ void srv_event_nick(irc_session_t *irc_session, const char *event,
 
     snprintf(msg, sizeof(msg), _("%s is now known as %s"), origin, new_nick);
     srv_hdr_ui_user_list_rename(sess->host, origin, new_nick, 0, msg);
+    // TODO: sent to channel
+    chat_log_log(sess->host, origin, msg);
 
     if (strncasecmp(origin, sess->nickname, NICK_LEN) == 0){
         strncpy(sess->nickname, new_nick, NICK_LEN);
@@ -126,6 +129,8 @@ void srv_event_quit(irc_session_t *irc_session, const char *event,
 
     snprintf(msg, sizeof(msg), _("%s has quit: %s"), origin, reason);
     srv_hdr_ui_user_list_rm_all(sess->host, origin, msg);
+    // TODO: sent to channel
+    chat_log_log(sess->host, origin, msg);
 
     /* You quit */
     if (strncasecmp(origin, sess->nickname, NICK_LEN) == 0){
@@ -167,6 +172,7 @@ void srv_event_join(irc_session_t *irc_session, const char *event,
 
     snprintf(msg, sizeof(msg), _("%s has joined %s"), origin, chan);
     srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_NORMAL);
+    chat_log_log(sess->host, chan, msg);
 }
 
 void srv_event_part(irc_session_t *irc_session, const char *event,
@@ -182,9 +188,11 @@ void srv_event_part(irc_session_t *irc_session, const char *event,
     const char *chan = params[0];
     const char *reason = count >= 2 ? params[1] : "";;
 
+    srv_hdr_ui_user_list_rm(sess->host, chan, origin);
+
     snprintf(msg, sizeof(msg), _("%s has left %s: %s"), origin, chan, reason);
     srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_NORMAL);
-    srv_hdr_ui_user_list_rm(sess->host, chan, origin);
+    chat_log_log(sess->host, chan, msg);
 
     /* YOU has left a channel */
     if (strncasecmp(sess->nickname, origin, NICK_LEN) == 0){
@@ -219,6 +227,7 @@ void srv_event_mode(irc_session_t *irc_session, const char *event,
     snprintf(msg, sizeof(msg), _("mode %s %s %s by %s"),
             chan, mode, mode_args, origin);
     srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_NORMAL);
+    chat_log_log(sess->host, chan, msg);
 
     // TODO: fix srian_user_list_rename plz
     switch (mode[1]){
@@ -247,10 +256,13 @@ void srv_event_umode(irc_session_t *irc_session, const char *event,
     snprintf(msg, sizeof(msg), _("mode %s %s by %s"), origin, mode, origin);
 
     srv_hdr_ui_sys_msg(sess->host, "", msg, SYS_MSG_NORMAL);
+    // TODO: How to log it?
+    // chat_log_log(sess->host, chan, msg);
 }
 
 void srv_event_topic(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
+    char msg[512];
     srv_session_t *sess;
 
     sess = irc_get_ctx(irc_session);
@@ -262,6 +274,10 @@ void srv_event_topic(irc_session_t *irc_session, const char *event,
     const char *topic = count >= 2 ? params[1] : "";
 
     srv_hdr_ui_set_topic(sess->host, chan, topic);
+
+    snprintf(msg, sizeof(msg), _("Topic for %s is \"%s\""), chan, topic);
+    srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_NORMAL);
+    chat_log_log(sess->host, chan, msg);
 }
 
 void srv_event_kick(irc_session_t *irc_session, const char *event,
@@ -281,13 +297,14 @@ void srv_event_kick(irc_session_t *irc_session, const char *event,
     snprintf(msg, sizeof(msg), _("%s are kicked from %s by %s: %s"),
             kick_nick, chan, origin, reason);
     srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_ERROR);
+    chat_log_log(sess->host, chan, msg);
 
     srv_hdr_ui_user_list_rm(sess->host, chan, kick_nick);
 }
 
 void srv_event_channel(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
-    char vmsg[MSG_LEN];
+    char vmsg[512];
     srv_session_t *sess;
 
     sess = irc_get_ctx(irc_session);
@@ -297,9 +314,11 @@ void srv_event_channel(irc_session_t *irc_session, const char *event,
 
     const char *chan = params[0];
     const char *msg = count >= 2 ? params[1] : "";
+    strncpy(vmsg, msg, sizeof(vmsg));
 
-    strncpy(vmsg, msg, MSG_LEN);
     strip(vmsg);
+
+    chat_log_fmt(sess->host, chan, "<%s> %s", origin, vmsg);
 
     char nick[NICK_LEN] = { 0 };
     filter_relaybot_trans(origin, nick, vmsg);
@@ -327,6 +346,8 @@ void srv_event_privmsg(irc_session_t *irc_session, const char *event,
 
     strip(msg);
 
+    chat_log_fmt(sess->host, origin, "<%s> %s", origin, msg);
+
     if (!filter_is_ignore(origin))
         srv_hdr_ui_recv_msg(sess->host, origin, origin, "", msg);
 
@@ -346,11 +367,16 @@ void srv_event_notice(irc_session_t *irc_session, const char *event,
     // const char *nick = params[0];
     char *msg = strdup(count >= 2 ? params[1] : "");
 
+    // TODO: how to represent a NOTICE message?
+
     strip(msg);
+
     snprintf(buf, sizeof(buf), _("%s | %s"), origin, msg);
-    free(msg);
 
     srv_hdr_ui_sys_msg(sess->host, origin, buf, SYS_MSG_NOTICE);
+    chat_log_fmt(sess->host, origin, "[%s] %s", origin, buf);
+
+    free(msg);
 }
 
 void srv_event_channel_notice(irc_session_t *irc_session, const char *event,
@@ -367,10 +393,13 @@ void srv_event_channel_notice(irc_session_t *irc_session, const char *event,
     char *msg = strdup(count >= 2 ? params[1] : "");
 
     strip(msg);
+
     snprintf(buf, sizeof(buf), _("%s | %s"), origin, msg);
-    free(msg);
 
     srv_hdr_ui_sys_msg(sess->host, chan, buf, SYS_MSG_NOTICE);
+    chat_log_fmt(sess->host, chan, "[%s] %s", origin, buf);
+
+    free(msg);
 }
 
 void srv_event_invite(irc_session_t *irc_session, const char *event,
@@ -386,11 +415,14 @@ void srv_event_invite(irc_session_t *irc_session, const char *event,
 
     snprintf(msg, sizeof(msg), _("%s invites you into %s"), origin, chan);
     srv_hdr_ui_sys_msg(sess->host, "", msg, SYS_MSG_NORMAL);
+
+    // TODO: How to log it?
+    // chat_log_log(sess->host, chan, msg);
 }
 
 void srv_event_ctcp_action(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
-    char msg[512];
+    char buf[512];
     srv_session_t *sess;
 
     sess = irc_get_ctx(irc_session);
@@ -398,11 +430,15 @@ void srv_event_ctcp_action(irc_session_t *irc_session, const char *event,
 
     CHECK_COUNT(2);
     const char *chan = params[0];
-    const char *msg1 = params[1];
-    // TODO: strip ?
+    char *msg = strdup(params[1]);
 
-    snprintf(msg, sizeof(msg), _("*** %s %s ***"), origin, msg1);
-    srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_ACTION);
+    strip(msg);
+
+    snprintf(buf, sizeof(buf), _("*** %s %s"), origin, msg);
+    srv_hdr_ui_sys_msg(sess->host, chan, buf, SYS_MSG_ACTION);
+    chat_log_log(sess->host, chan, buf);
+
+    free(msg);
 }
 
 void srv_event_numeric (irc_session_t *irc_session, unsigned int event,

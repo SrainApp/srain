@@ -20,6 +20,7 @@
 #include "log.h"
 #include "i18n.h"
 #include "meta.h"
+#include "chat_log.h"
 
 srv_session_t sessions[MAX_SESSIONS] = { 0 };
 irc_callbacks_t cbs;
@@ -349,6 +350,7 @@ int srv_session_send(srv_session_t *session,
     if ((res = irc_cmd_msg(session->irc_session, target, msg)) < 0){
         srv_session_err_hdr(session);
     }
+    chat_log_fmt(session->host, target, "<%s> %s", session->nickname, msg);
     return res;
 }
 
@@ -358,6 +360,8 @@ int srv_session_me(srv_session_t *session,
     if ((res = irc_cmd_me(session->irc_session, target, msg)) < 0){
         srv_session_err_hdr(session);
     }
+
+    chat_log_fmt(session->host, target, "*** %s %s", session->nickname, msg);
     return res;
 }
 

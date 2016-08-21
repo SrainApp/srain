@@ -28,6 +28,7 @@
  *          - $XDG_CONFIG_HOME/srain/
  *          - $XDG_CONFIG_HOME/srain/srainrc
  *          - $XDG_CACHE_HOME/srain/
+ *          - $XDG_DATA_HOME/srain/logs
  *
  * @return 0 if all required files are created or already existent
  */
@@ -37,12 +38,14 @@ static int create_user_file(){
     char *congif_dir;
     char *cache_dir;
     char *rc_file;
+    char *data_dir;
+    char *logs_dir;
 
     congif_dir = g_build_filename(g_get_user_config_dir(), "srain", NULL);
     res = mkdir(congif_dir, 0700);
     if (res == -1) {
         if (errno != EEXIST){
-            ERR_FR("failed to create directory '%s', errno %d", congif_dir, errno);
+            ERR_FR("Failed to create directory '%s', errno %d", congif_dir, errno);
             return errno;
         }
     }
@@ -54,7 +57,7 @@ static int create_user_file(){
     if (!fp){
         fp = fopen(rc_file, "w");
         if (!fp){
-            ERR_FR("failed to create file '%s', errno %d", rc_file, errno);
+            ERR_FR("Failed to create file '%s', errno %d", rc_file, errno);
             exit(errno);
         }
     }
@@ -65,12 +68,35 @@ static int create_user_file(){
     res = mkdir(cache_dir, 0700);
     if (res == -1) {
         if (errno != EEXIST){
-            ERR_FR("failed to create directory '%s', errno %d", cache_dir, errno);
+            ERR_FR("Failed to create directory '%s', errno %d", cache_dir, errno);
             return errno;
         }
     }
     g_free(cache_dir);
     cache_dir = NULL;
+
+    data_dir = g_build_filename(g_get_user_data_dir(), "srain", NULL);
+    LOG_FR("%s", data_dir);
+    res = mkdir(data_dir, 0700);
+    if (res == -1) {
+        if (errno != EEXIST){
+            ERR_FR("Failed to create directory '%s', errno %d", data_dir, errno);
+            return errno;
+        }
+    }
+    g_free(data_dir);
+    data_dir = NULL;
+
+    logs_dir = g_build_filename(g_get_user_data_dir(), "srain", "logs", NULL);
+    res = mkdir(logs_dir, 0700);
+    if (res == -1) {
+        if (errno != EEXIST){
+            ERR_FR("Failed to create directory '%s', errno %d", logs_dir, errno);
+            return errno;
+        }
+    }
+    g_free(logs_dir);
+    logs_dir = NULL;
 
     return 0;
 }
