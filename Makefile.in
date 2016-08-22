@@ -99,6 +99,9 @@ install: mo
 		$(INSTALL) -Dm644 "build/locale/$$i/LC_MESSAGES/srain.mo" \
 			"$(DESTDIR)$(PREFIX)/share/locale/$$i/LC_MESSAGES/srain.mo"; \
 	done
+	# Install desktop file
+	$(INSTALL) -Dm644 "data/Srain.desktop" \
+		"$(DESTDIR)$(PREFIX)/share/applications/Srain.desktop"
 
 uitest:
 	$(MAKE) TEST_FLAG=UI_TEST
