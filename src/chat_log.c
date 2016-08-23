@@ -9,14 +9,12 @@
 // #define __DBG_ON
 #define __LOG_ON
 
-#include <sys/stat.h>
 #include <stdio.h>
-#include <errno.h>
 #include <string.h>
 #include <glib.h>
 
 #include "meta.h"
-#include "get_path.h"
+#include "file_helper.h"
 #include "log.h"
 
 // TODO: remove me
@@ -29,39 +27,9 @@ static void get_cur_time(const char *fmt, char *timestr){
     timestr[31] = '\0';
 }
 
-FILE *get_log_file(const char *srv_name, const char *filename){
-    int res;
-    char *path;
-    FILE *fp;
-
-    path = g_build_filename(g_get_user_data_dir(),
-            PACKAGE, "logs", srv_name, filename, NULL);
-
-    if (!g_file_test(path, G_FILE_TEST_EXISTS)){
-        char *dir;
-
-        /* Create if dir non-exist */
-        dir = g_build_filename(g_get_user_data_dir(),
-                PACKAGE, "logs", srv_name, NULL);
-        res = mkdir(dir, 0700);
-        if (res == -1) {
-            if (errno != EEXIST){
-                ERR_FR("Failed to create directory '%s', errno %d", dir, errno);
-                g_free(dir);
-                return NULL;
-            }
-        }
-        g_free(dir);
-    }
-
-    fp = fopen(path, "a+");
-    g_free(path);
-
-    return fp;
-}
-
 void chat_log_log(const char *srv_name, const char *chan_name, const char *msg){
     FILE *fp;
+    char *file;
     char timestr[32];
     char datestr[32];
     GString *basename;
@@ -74,10 +42,23 @@ void chat_log_log(const char *srv_name, const char *chan_name, const char *msg){
     basename = g_string_new("");
     g_string_append_printf(basename, "%s.%s.log", datestr, chan_name);
 
-    fp = get_log_file(srv_name, basename->str);
+    file = create_log_file(srv_name, basename->str);
+    if (!file){
+        ERR_FR("Failed to create log file");
+        goto cleanup1;
+    }
+
+    fp = fopen(file, "a+");
+    if (!fp){
+        ERR_FR("Failed to open file '%s'", file)
+        goto cleanup2;
+    }
     fprintf(fp,"[%s] %s\n", timestr, msg);
 
     fclose(fp);
+cleanup2:
+    g_free(file);
+cleanup1:
     g_string_free(basename, TRUE);
 }
 

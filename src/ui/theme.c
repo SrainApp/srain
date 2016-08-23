@@ -8,14 +8,14 @@
 
 #include <gtk/gtk.h>
 
-#include "get_path.h"
+#include "file_helper.h"
 
 GtkStyleProvider *provider = NULL;
 
 void theme_init(){
     char *theme_file;
 
-    theme_file = get_theme_path("default.css");
+    theme_file = get_theme_file("default.css");
     if (!theme_file){
         return;
     }

@@ -20,7 +20,7 @@
 
 #include "meta.h"
 #include "log.h"
-#include "get_path.h"
+#include "file_helper.h"
 
 void _rc_read(){
     FILE *fp;
@@ -29,7 +29,7 @@ void _rc_read(){
     ssize_t read;
     char *rc_file;
 
-    rc_file = get_config_path("srainrc");
+    rc_file = get_config_file("srainrc");
     if (!rc_file) return;
 
     fp = fopen(rc_file, "r");
@@ -63,7 +63,7 @@ int rc_read(){
     char *rc_file;
     struct stat st;
 
-    rc_file = get_config_path("srainrc");
+    rc_file = get_config_file("srainrc");
     if (!rc_file) return -1;
 
     if (stat(rc_file, &st) != 0) {

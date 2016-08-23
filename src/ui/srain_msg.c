@@ -25,7 +25,7 @@
 #include "markup.h"
 #include "download.h"
 #include "log.h"
-#include "get_path.h"
+#include "file_helper.h"
 #include "i18n.h"
 #include "meta.h"
 
@@ -348,9 +348,9 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *m
     }
 
     avatar_simg = srain_image_new();
-    avatar_path = get_avatar_path(nick);
+    avatar_path = get_avatar_file(nick);
 
-    if (!avatar_path) avatar_path = get_pixmap_path("srain-avatar.png");
+    if (!avatar_path) avatar_path = get_pixmap_file("srain-avatar.png");
     if (avatar_path){
         srain_image_set_from_file(avatar_simg, avatar_path, 36, SRAIN_IMAGE_AUTOLOAD);
         g_free(avatar_path);
