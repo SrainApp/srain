@@ -28,10 +28,10 @@ extern SrainApp *srain_app;
 extern SrainWindow *srain_win;
 
 /* Raw interface of srv module */
-ServerJoinFunc _ui_hdr_srv_join;
-ServerPartFunc _ui_hdr_srv_part;
-ServerSendFunc _ui_hdr_srv_send;
-ServerCmdFunc  _ui_hdr_srv_cmd;
+SRVJoinFunc _ui_hdr_srv_join;
+SRVPartFunc _ui_hdr_srv_part;
+SRVSendFunc _ui_hdr_srv_send;
+SRVCmdFunc  _ui_hdr_srv_cmd;
 
 void ui_hdr_init(){
 #ifdef UI_TEST

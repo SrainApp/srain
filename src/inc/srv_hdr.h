@@ -4,16 +4,6 @@
 #include "ui.h"
 #include "srv_session.h"
 
-typedef void (*UIAddChanFunc) (const char *server_name, const char *chan_name);
-typedef void (*UIRmChanFunc) (const char *server_name, const char *chan_name);
-typedef void (*UISysMsgFunc) (const char *server_name, const char *chan_name, const char *msg, SysMsgType type);
-typedef void (*UISendMsgFunc) (const char *server_name, const char *chan_name, const char *msg);
-typedef void (*UIRecvMsgFunc) (const char *server_name, const char *chan_name, const char *nick, const char *id, const char *msg);
-typedef void (*UIUserListAddFunc) (const char *server_name, const char *chan_name, const char *nick, UserType type);
-typedef void (*UIUserListRmFunc) (const char *server_name, const char *chan_name, const char *nick);
-typedef void (*UIUserListRenameFunc) (const char *server_name, const char *chan_name, const char *old_nick, const char *new_nick, UserType type);
-typedef void (*UISetTopicFunc) (const char *server_name, const char *chan_name, const char *topic);
-
 void srv_hdr_init();
 
 /* UI handler for SRV module */
