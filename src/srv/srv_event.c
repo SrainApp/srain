@@ -75,7 +75,8 @@ static void strip(char *str){
 
 void srv_event_connect(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
-    GList *list;
+    GList *chan_list;
+    channel_t *chan;
     srv_session_t *sess;
 
     sess = irc_get_ctx(irc_session);
@@ -86,10 +87,11 @@ void srv_event_connect(irc_session_t *irc_session, const char *event,
 
     LOG_FR("Connected to %s", sess->host);
 
-    list = sess->chans;
-    while (list){
-        srv_session_join(sess, list->data, NULL);
-        list = g_list_next(list);
+    chan_list = sess->chan_list;
+    while (chan_list){
+        chan = chan_list->data;
+        srv_session_join(sess, chan->name, NULL);
+        chan_list = g_list_next(chan_list);
     }
 }
 
@@ -97,6 +99,8 @@ void srv_event_nick(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
     char msg[512];
     srv_session_t *sess;
+    channel_t *chan;
+    GList *chan_list;
 
     sess = irc_get_ctx(irc_session);
 
@@ -106,9 +110,21 @@ void srv_event_nick(irc_session_t *irc_session, const char *event,
     const char *new_nick = params[0];
 
     snprintf(msg, sizeof(msg), _("%s is now known as %s"), origin, new_nick);
-    srv_hdr_ui_user_list_rename(sess->host, origin, new_nick, 0, msg);
-    // TODO: sent to channel
-    chat_log_log(sess->host, origin, msg);
+
+    chan_list = sess->chan_list;
+    while (chan_list){
+        chan = chan_list->data;
+        if (srv_session_user_exist(sess, chan->name, origin)){
+            srv_session_rm_user(sess, chan->name, origin);
+            srv_session_add_user(sess, chan->name, new_nick);
+
+            srv_hdr_ui_user_list_rename(sess->host, chan->name, origin, new_nick, 0);
+            srv_hdr_ui_sys_msg(sess->host, chan->name, msg, SYS_MSG_NORMAL);
+
+            chat_log_log(sess->host, chan->name, msg);
+        }
+        chan_list = g_list_next(chan_list);
+    }
 
     if (strncasecmp(origin, sess->nickname, NICK_LEN) == 0){
         strncpy(sess->nickname, new_nick, NICK_LEN);
@@ -119,6 +135,8 @@ void srv_event_quit(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
     char msg[512];
     srv_session_t *sess;
+    channel_t *chan;
+    GList *chan_list;
 
     sess = irc_get_ctx(irc_session);
 
@@ -128,9 +146,20 @@ void srv_event_quit(irc_session_t *irc_session, const char *event,
     const char *reason = count >= 1 ? params[0] : "";
 
     snprintf(msg, sizeof(msg), _("%s has quit: %s"), origin, reason);
-    srv_hdr_ui_user_list_rm_all(sess->host, origin, msg);
-    // TODO: sent to channel
-    chat_log_log(sess->host, origin, msg);
+
+    chan_list = sess->chan_list;
+    while (chan_list){
+        chan = chan_list->data;
+        if (srv_session_user_exist(sess, chan->name, origin)){
+            srv_session_rm_user(sess, chan->name, origin);
+
+            srv_hdr_ui_user_list_rm(sess->host, chan->name, origin);
+            srv_hdr_ui_sys_msg(sess->host, chan->name, msg, SYS_MSG_NORMAL);
+
+            chat_log_log(sess->host, chan->name, msg);
+        }
+        chan_list = g_list_next(chan_list);
+    }
 
     /* You quit */
     if (strncasecmp(origin, sess->nickname, NICK_LEN) == 0){
@@ -158,16 +187,13 @@ void srv_event_join(irc_session_t *irc_session, const char *event,
     if (strncasecmp(sess->nickname, origin, NICK_LEN) == 0){
         srv_hdr_ui_add_chan(sess->host, chan);
 
-        /* Append to seesion channel list */
-        GList *list = sess->chans;
-        while (list){
-            if (strcasecmp(list->data, chan) == 0) break;
-            list = g_list_next(list);
-        }
-        if (!list)
-            sess->chans = g_list_append(sess->chans, strdup(chan));
+        srv_session_add_chan(sess, chan);
     }
 
+    /* SRV user set */
+    srv_session_add_user(sess, chan, origin);
+
+    /* UI user list */
     srv_hdr_ui_user_list_add(sess->host, chan, origin, USER_CHIGUA);
 
     snprintf(msg, sizeof(msg), _("%s has joined %s"), origin, chan);
@@ -190,6 +216,8 @@ void srv_event_part(irc_session_t *irc_session, const char *event,
 
     srv_hdr_ui_user_list_rm(sess->host, chan, origin);
 
+    srv_session_rm_user(sess, chan, origin);
+
     snprintf(msg, sizeof(msg), _("%s has left %s: %s"), origin, chan, reason);
     srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_NORMAL);
     chat_log_log(sess->host, chan, msg);
@@ -197,16 +225,7 @@ void srv_event_part(irc_session_t *irc_session, const char *event,
     /* YOU has left a channel */
     if (strncasecmp(sess->nickname, origin, NICK_LEN) == 0){
         srv_hdr_ui_rm_chan(sess->host, chan);
-        /* Remove from seesion channel list */
-        GList *list = sess->chans;
-        while (list){
-            if (strcasecmp(list->data, chan) == 0){
-                free(list->data);
-                sess->chans = g_list_remove(sess->chans, list->data);
-                break;
-            }
-            list = g_list_next(list);
-        }
+        srv_session_rm_chan(sess, chan);
     }
 }
 
@@ -214,22 +233,34 @@ void srv_event_mode(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
     char msg[512];
     srv_session_t *sess;
+    channel_t *chan;
+    GList *chan_list;
 
     sess = irc_get_ctx(irc_session);
 
     PRINT_EVENT_PARAM;
     CHECK_COUNT(2);
 
-    const char *chan = params[0];
+    const char *chan_name = params[0];
     const char *mode = params[1];
     const char *mode_args = count >= 3 ? params[2] : "";
 
     snprintf(msg, sizeof(msg), _("mode %s %s %s by %s"),
-            chan, mode, mode_args, origin);
-    srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_NORMAL);
-    chat_log_log(sess->host, chan, msg);
+            chan_name, mode, mode_args, origin);
 
     // TODO: fix srian_user_list_rename plz
+    //
+    chan_list = sess->chan_list;
+    while (chan_list){
+        chan = chan_list->data;
+        if (srv_session_user_exist(sess, chan->name, origin)){
+            srv_hdr_ui_user_list_rename(sess->host, chan->name, origin, origin, 0);
+            srv_hdr_ui_sys_msg(sess->host, chan->name, msg, SYS_MSG_NORMAL);
+            chat_log_log(sess->host, chan->name, msg);
+        }
+        chan_list = g_list_next(chan_list);
+    }
+
     switch (mode[1]){
         case 'q':
         case 'a':
@@ -532,6 +563,7 @@ void srv_event_numeric (irc_session_t *irc_session, unsigned int event,
                             type = USER_CHIGUA;
                     }
                     srv_hdr_ui_user_list_add(sess->host, chan, nickptr, type);
+                    srv_session_add_user(sess, chan, nickptr);
                     nickptr = strtok(NULL, " ");
                 }
                 break;

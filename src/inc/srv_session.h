@@ -30,6 +30,12 @@ typedef enum {
     /*...*/
 } session_stat_t;
 
+typedef struct{
+    char name[CHAN_LEN];
+    int joined; // Whether you actually join in this channel
+    GList *user_list;
+} channel_t;
+
 typedef struct {
     // Session status
     session_stat_t stat;
@@ -43,7 +49,7 @@ typedef struct {
     char username[NICK_LEN];
     char realname[NICK_LEN];
 
-    GList *chans;
+    GList *chan_list;   // List of channel_t
 
     irc_session_t *irc_session;
 } srv_session_t;
@@ -69,5 +75,12 @@ int srv_session_invite(srv_session_t *session, const char *nick, const char *cha
 int srv_session_kick(srv_session_t *session, const char *nick, const char *chan, const char *reason);
 int srv_session_mode(srv_session_t *session, const char *target, const char *mode);
 int srv_session_topic(srv_session_t *session, const char *chan, const char *topic);
+
+/* Handle session's channel list and user list */
+int srv_session_add_chan(srv_session_t *session, const char *chan);
+int srv_session_rm_chan(srv_session_t *session, const char *chan);
+int srv_session_add_user(srv_session_t *session, const char *chan, const char *nick);
+int srv_session_rm_user(srv_session_t *session, const char *chan, const char *nick);
+int srv_session_user_exist(srv_session_t *session, const char *chan, const char *nick);
 
 #endif /* __SRV_SESSION_H */

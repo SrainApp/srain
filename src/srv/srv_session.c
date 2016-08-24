@@ -268,7 +268,7 @@ srv_session_t* srv_session_new(const char *host, int port, const char *passwd,
 
     sess->stat = SESS_INUSE;
     sess->port = port;
-    sess->chans = NULL;
+    sess->chan_list = NULL;
     if (ssl != SSL_OFF)
         sess->prefix[0] = '#';
     else
@@ -317,15 +317,12 @@ int srv_session_free(srv_session_t *session){
     irc_disconnect(session->irc_session);
     irc_destroy_session(session->irc_session);
 
-    GList *list = sessions[i].chans;
-    while (list){
-        free(list->data);
-        list = g_list_next(list);
-    }
+    // TODO: free user set
+    g_list_free_full(sessions[i].chan_list, g_free);
 
     sessions[i] = (srv_session_t) { 0 };
     sessions[i].stat = SESS_NOINUSE;
-    sessions[i].chans = NULL;
+    sessions[i].chan_list = NULL;
 
     return 0;
 }
@@ -460,4 +457,139 @@ int srv_session_topic(srv_session_t *session, const char *chan, const char *topi
         srv_session_err_hdr(session);
     }
     return res;
+}
+
+/* Append to seesion channel list */
+int srv_session_add_chan(srv_session_t *session, const char *chan_name){
+    GList *chan_list;
+    channel_t *chan;
+
+    chan_list = session->chan_list;
+    while (chan_list){
+        chan = chan_list->data;
+        /* Occur when rejoin */
+        if (strcasecmp(chan->name, chan_name) == 0) break;
+        chan_list = g_list_next(chan_list);
+    }
+
+    if (chan_list){
+        DBG_FR("%s already exist, session: %s", chan_name, session->host)
+        return -1;
+    }
+
+    chan = g_malloc0(sizeof(channel_t));
+
+    chan->joined = 0;
+    chan->user_list = NULL;
+    strncpy(chan->name, chan_name, CHAN_LEN);
+
+    session->chan_list = g_list_append(session->chan_list, chan);
+
+    return 0;
+}
+
+/* Remove from seesion channel list */
+int srv_session_rm_chan(srv_session_t *session, const char *chan_name){
+    GList *chan_list;
+    channel_t *chan;
+
+    chan_list = session->chan_list;
+    while (chan_list){
+        chan = chan_list->data;
+        if (strcasecmp(chan->name, chan_name) == 0){
+            /* Free user list */
+            g_list_free_full(chan->user_list, g_free);
+            g_free(chan);
+            session->chan_list = g_list_remove(session->chan_list, chan);
+
+            return 0;
+        }
+        chan_list = g_list_next(chan_list);
+    }
+
+    DBG_FR("%s not found, session: %s", chan_name, session->host)
+
+    return -1;
+}
+
+static channel_t* get_chan_by_name(srv_session_t *session, const char *chan_name){
+    GList *chan_list;
+    channel_t *chan;
+
+    chan_list = session->chan_list;
+    while (chan_list){
+        chan = chan_list->data;
+        if (strcasecmp(chan->name, chan_name) == 0){
+            return chan;
+        }
+        chan_list = g_list_next(chan_list);
+    }
+
+    DBG_FR("%s no found, session: %s", chan_name, session->host);
+
+    return NULL;
+}
+
+int srv_session_add_user(srv_session_t *session, const char *chan_name,
+        const char *nick){
+    channel_t *chan;
+    GList *user_list;
+
+    chan = get_chan_by_name(session, chan_name);
+    if (!chan) return -1;
+
+    user_list = chan->user_list;
+    while (user_list){
+        if (strcasecmp(user_list->data, nick) == 0){
+            DBG_FR("%s already exist, session: %s, chan_name: %s",
+                    nick, session->host, chan_name);
+            return -1;
+        }
+        user_list = g_list_next(user_list);
+    }
+    chan->user_list = g_list_append(chan->user_list, g_strdup(nick));
+
+    return 0;
+}
+
+int srv_session_rm_user(srv_session_t *session, const char *chan_name,
+        const char *nick){
+    channel_t *chan;
+    GList *user_list;
+
+    chan = get_chan_by_name(session, chan_name);
+    if (!chan) return -1;
+
+    user_list = chan->user_list;
+    while (user_list){
+        if (strcasecmp(user_list->data, nick) == 0){
+            g_free(user_list->data);
+            chan->user_list = g_list_remove(chan->user_list, user_list->data);
+            return 0;
+        }
+        user_list = g_list_next(user_list);
+    }
+
+    DBG_FR("%s not found, session: %s, chan_name: %s",
+            nick, session->host, chan_name);
+
+    return -1;
+}
+
+int srv_session_user_exist(srv_session_t *session, const char *chan_name,
+        const char *nick){
+    channel_t *chan;
+    GList *user_list;
+
+    chan = get_chan_by_name(session, chan_name);
+    if (!chan) return 0;
+
+    user_list = chan->user_list;
+    while (user_list){
+        if (strcasecmp(user_list->data, nick) == 0){
+            return 1;
+        }
+        user_list = g_list_next(user_list);
+    }
+    return 0;
 }

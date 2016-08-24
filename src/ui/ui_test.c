@@ -106,22 +106,21 @@ void ui_test(){
                 "la") == 0);
 
     // Test ui_user_list_rename: la2, la4
-    ui_user_list_rename_sync("chat.freenode.net",
-                "la2", "la", USER_FULL_OP, "la2 -> la");
-
+    ui_user_list_rename_sync("chat.freenode.net", "#srain",
+                "la2", "la", USER_FULL_OP);
     // Test srain_user_list_rename: la2, la4
-    ui_user_list_rename_sync("chat.freenode.net",
-                "la2", "la", USER_FULL_OP, "la2 -> la") ;
-    ui_user_list_rename_sync("chat.freenode.net",
-                "la4", "la", USER_FULL_OP, "la4 -> la");
-    ui_user_list_rename_sync("chat.freenode.net",
-                "la5", "la6", USER_FULL_OP, "la5 -> la6");
-    ui_user_list_rename_sync("chat.freenode.net",
-                "la", "la2", USER_CHIGUA, "la -> la2");
-    ui_user_list_rename_sync("chat.freenode.net",
-                "la2", "la2", USER_CHIGUA, "la2 -> la2");
-    ui_user_list_rename_sync("chat.freenode.net",
-                "la2", "la2", USER_FULL_OP, "la2 -> la2");
+    ui_user_list_rename_sync("chat.freenode.net", "#srain",
+                "la2", "la", USER_FULL_OP);
+    ui_user_list_rename_sync("chat.freenode.net", "#srain",
+                "la4", "la", USER_FULL_OP);
+    ui_user_list_rename_sync("chat.freenode.net", "#srain",
+                "la5", "la6", USER_FULL_OP);
+    ui_user_list_rename_sync("chat.freenode.net", "#srain",
+                "la", "la2", USER_CHIGUA);
+    ui_user_list_rename_sync("chat.freenode.net", "#srain",
+                "la2", "la2", USER_CHIGUA);
+    ui_user_list_rename_sync("chat.freenode.net", "#srain",
+                "la2", "la2", USER_FULL_OP);
 
     // Clear list
     assert(ui_user_list_rm_sync("chat.freenode.net", "#srain",

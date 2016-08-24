@@ -12,7 +12,6 @@ void srv_hdr_init(){
     srv_hdr_ui_recv_msg = srv_test_ui_recv_msg;
     srv_hdr_ui_user_list_add = srv_test_ui_user_list_add;
     srv_hdr_ui_user_list_rm = srv_test_ui_user_list_rm;
-    srv_hdr_ui_user_list_rm_all = srv_test_ui_user_list_rm_all;
     srv_hdr_ui_user_list_rename = srv_test_ui_user_list_rename;
     srv_hdr_ui_set_topic = srv_test_ui_set_topic;
 #else
@@ -23,7 +22,6 @@ void srv_hdr_init(){
     srv_hdr_ui_recv_msg = ui_recv_msg;
     srv_hdr_ui_user_list_add = ui_user_list_add;
     srv_hdr_ui_user_list_rm = ui_user_list_rm;
-    srv_hdr_ui_user_list_rm_all = ui_user_list_rm_all;
     srv_hdr_ui_user_list_rename = ui_user_list_rename;
     srv_hdr_ui_set_topic = ui_set_topic;
 #endif

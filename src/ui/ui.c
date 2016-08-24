@@ -99,21 +99,14 @@ int ui_idle(CommonUIData *data){
         const char *nick = data->nick;
         ui_user_list_rm_sync(srv_name, chan_name, nick);
     }
-    else if (data->ui_interface == ui_user_list_rm_all_sync){
-        DBG_FR("ui_user_list_rm_all_sync");
-        const char *srv_name = data->srv_name;
-        const char *nick = data->nick;
-        const char *reason = data->msg;
-        ui_user_list_rm_all_sync(srv_name, nick, reason);
-    }
     else if (data->ui_interface == ui_user_list_rename_sync){
         DBG_FR("ui_user_list_rename_sync");
         const char *srv_name = data->srv_name;
+        const char *chan_name = data->chan_name;
         const char *nick = data->nick;
         const char *new_nick = data->nick2;
-        const char *reason = data->msg;
         UserType type = data->type;
-        ui_user_list_rename_sync(srv_name, nick, new_nick, type, reason);
+        ui_user_list_rename_sync(srv_name, chan_name, nick, new_nick, type);
     }
     else if (data->ui_interface == ui_set_topic_sync){
         DBG_FR("ui_set_topic_sync");
@@ -263,37 +256,20 @@ void ui_user_list_rm(const char *srv_name, const char *chan_name,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 
-void ui_user_list_rm_all(const char *srv_name, const char *nick,
-        const char *reason){
+void ui_user_list_rename(const char *srv_name, const char *chan_name,
+        const char *old_nick, const char *new_nick, UserType type){
     CommonUIData *data = g_malloc0(sizeof(CommonUIData));
 
     g_return_if_fail(srv_name);
-    g_return_if_fail(nick);
-    g_return_if_fail(reason);
-
-    data->ui_interface = ui_user_list_rm_all_sync;
-    strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
-    strncpy(data->nick, nick, sizeof(data->nick));
-    strncpy(data->msg, reason, sizeof(data->msg));
-
-    gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE,
-            (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
-}
-
-void ui_user_list_rename(const char *srv_name, const char *old_nick,
-        const char *new_nick, UserType type, const char *msg){
-    CommonUIData *data = g_malloc0(sizeof(CommonUIData));
-
-    g_return_if_fail(srv_name);
+    g_return_if_fail(chan_name);
     g_return_if_fail(old_nick);
     g_return_if_fail(new_nick);
-    g_return_if_fail(msg);
 
     data->ui_interface = ui_user_list_rename_sync;
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
+    strncpy(data->chan_name, chan_name, sizeof(data->chan_name));
     strncpy(data->nick, old_nick, sizeof(data->nick));
     strncpy(data->nick2, new_nick, sizeof(data->nick2));
-    strncpy(data->msg, msg, sizeof(data->msg));
     data->type = type;
 
     gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE,
@@ -525,71 +501,33 @@ int ui_user_list_rm_sync(const char *srv_name, const char *chan_name,
 }
 
 /**
- * @brief Remove a nick from all channels' user list
- *
- * @param srv_name
- * @param nick
- * @param reason When nick was removed form a channel, send `reason`
- *          to this channel using `ui_sys_msg()`
- */
-void ui_user_list_rm_all_sync(const char *srv_name, const char *nick,
-        const char *reason){
-    const char *chan_name;
-    GList *chans;
-
-    DBG_FR("%s %s %s", srv_name, nick, reason);
-
-    chans = srain_window_get_chans_by_srv_name(srain_win, srv_name);
-    while (chans){
-        chan_name = srain_chan_get_chan_name(SRAIN_CHAN(chans->data));
-        if (ui_user_list_rm_sync(srv_name, chan_name, nick) == 0){
-            ui_sys_msg(srv_name, chan_name, reason, SYS_MSG_NORMAL);
-        }
-
-        chans = g_list_next(chans);
-    }
-
-    g_list_free(chans);
-}
-
-/**
  * @brief Rename a item in all channels' user list
  *
  * @param srv_name
+ * @param chan_name
  * @param old_nick
  * @param new_nick
  * @param type
  * @param msg When nick was renamed in a channel, send `reason`
  *          to this channel using `ui_sys_msg()`
  */
-void ui_user_list_rename_sync(const char *srv_name, const char *old_nick,
-        const char *new_nick, UserType type, const char *msg){
-    const char *chan_name;
-    GList *chans;
+void ui_user_list_rename_sync(const char *srv_name, const char *chan_name, 
+        const char *old_nick, const char *new_nick, UserType type){
     SrainChan *chan;
     SrainUserList *list;
     SrainEntryCompletion *comp;
 
-    chans = srain_window_get_chans_by_srv_name(srain_win, srv_name);
-    g_return_if_fail(chans);
+    chan = srain_window_get_chan_by_name(srain_win, srv_name, chan_name);
+    g_return_if_fail(chan);
 
-    while (chans){
-        chan = SRAIN_CHAN(chans->data);
-        chan_name = srain_chan_get_chan_name(chan);
-        list = srain_chan_get_user_list(chan);
+    chan_name = srain_chan_get_chan_name(chan);
+    list = srain_chan_get_user_list(chan);
 
-        if (srain_user_list_rename(list, old_nick, new_nick, type) == 0){
-            comp = srain_chan_get_entry_completion(chan);
-            srain_entry_completion_add_keyword(comp, old_nick, KEYWORD_NORMAL);
-            srain_entry_completion_rm_keyword(comp, new_nick);
-
-            ui_sys_msg(srv_name, chan_name, msg, SYS_MSG_NORMAL);
-        }
-
-        chans = g_list_next(chans);
+    if (srain_user_list_rename(list, old_nick, new_nick, type) == 0){
+        comp = srain_chan_get_entry_completion(chan);
+        srain_entry_completion_add_keyword(comp, old_nick, KEYWORD_NORMAL);
+        srain_entry_completion_rm_keyword(comp, new_nick);
     }
-
-    g_list_free(chans);
 }
 
 /**
