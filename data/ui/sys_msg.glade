@@ -18,6 +18,7 @@
         <property name="xpad">4</property>
         <property name="ypad">4</property>
         <property name="use_markup">True</property>
+        <property name="wrap">True</property>
         <property name="selectable">True</property>
         <attributes>
           <attribute name="weight" value="normal"/>

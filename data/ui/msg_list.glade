@@ -5,7 +5,7 @@
   <template class="SrainMsgList" parent="GtkScrolledWindow">
     <property name="visible">True</property>
     <property name="can_focus">True</property>
-    <property name="vscrollbar_policy">always</property>
+    <property name="hscrollbar_policy">never</property>
     <child>
       <object class="GtkViewport" id="viewport">
         <property name="visible">True</property>
