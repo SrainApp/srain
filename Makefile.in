@@ -25,14 +25,14 @@ INSTALL = install -v
 TARGET = build/srain
 
 default: src/Makefile data/ui/Makefile
-	$(MAKE) -C src
 	$(MAKE) -C data/ui
+	$(MAKE) -C src
 
 install: install-bin install-data install-po
 
 install-bin: $(TARGET)
-	$(MAKE) -C src
 	$(MAKE) -C data/ui
+	$(MAKE) -C src
 	$(INSTALL) -Dm755 "$<" "$(DESTDIR)$(PREFIX)/bin/srain"
 
 install-data: data/Makefile

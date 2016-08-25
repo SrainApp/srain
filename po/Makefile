@@ -11,24 +11,25 @@ SRCS = $(wildcard ../src/*.c ../src/*/*.c ../build/resources.c)
 UIS = $(wildcard ../data/ui/*.glade)
 LANGS = $(shell cat LANGS)
 
+default: mo
+
 srain.pot: $(SRCS) $(UIS)
 	xgettext $(XGETTEXTFLAG) -LGlade -ktranslatable -o $@ $(UIS)
 	xgettext $(XGETTEXTFLAG) -LC -k_ -o $@ $(SRCS) -j
 
 po: srain.pot LANGS
 	for i in $(LANGS); do \
-		if test -f po/$$i.po; then \
-			msgmerge -U po/$$i.po $<; \
+		if test -f $$i.po; then \
+			msgmerge -U $$i.po $<; \
 		else \
 			msginit -l $$i.UTF-8 --no-translator \
-					-i $< -o po/$$i.po; \
+					-i $< -o $$i.po; \
 		fi; \
 	done
 
-mo: LANGS
+mo: LANGS po
 	for i in $(LANGS); do \
-		mkdir -p build/locale/$$i/LC_MESSAGES || ture; \
-		msgfmt po/$$i.po -o build/locale/$$i/LC_MESSAGES/srain.mo; \
-		$(INSTALL) -Dm644 build/locale/$$i/LC_MESSAGES/srain.mo \
-			$(DESTDIR)$(PREFIX)/share/locale/$$i/LC_MESSAGES/srain.mo; \
+		msgfmt $$i.po -o ../build/srain.mo; \
+		$(INSTALL) -Dm644 "../build/srain.mo" \
+			"$(DESTDIR)$(PREFIX)/share/locale/$$i/LC_MESSAGES/srain.mo"; \
 	done
