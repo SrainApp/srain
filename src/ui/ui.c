@@ -527,6 +527,11 @@ void ui_ren_user_sync(const char *srv_name, const char *chat_name,
     chat = srain_window_get_chat_by_name(srain_win, srv_name, chat_name);
     g_return_if_fail(chat);
 
+    /* Your nick changed */
+    if (strcmp(old_nick, srain_chat_get_nick(chat)) == 0){
+        srain_chat_set_nick(chat, new_nick);
+    }
+
     chat_name = srain_chat_get_chat_name(chat);
     list = srain_chat_get_user_list(chat);
 
