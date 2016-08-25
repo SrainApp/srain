@@ -34,6 +34,7 @@ struct _SrainChan {
 
     char *server_name;
     char *chan_name;
+    ChatType type;
 
     /* header */
     GtkLabel* name_label;
@@ -55,6 +56,7 @@ struct _SrainChan {
     SrainUserList *user_list;
 
     /* input entry */
+    GtkLabel *nick_label;
     GtkEntry *input_entry;
     SrainEntryCompletion *completion;
     GtkButton *upload_image_button;
@@ -289,21 +291,24 @@ static void srain_chan_class_init(SrainChanClass *class){
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, user_list_revealer);
 
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, nick_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, input_entry);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, upload_image_button);
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, option_popover);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, option_box);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, show_topic_togglebutton);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, show_user_list_togglebutton);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, leave_button);
-
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, upload_image_button);
 }
 
-SrainChan* srain_chan_new(const char *server_name, const char *chan_name){
+SrainChan* srain_chan_new(const char *server_name, const char *chan_name,
+        ChatType type){
     SrainChan *chan;
 
     chan = g_object_new(SRAIN_TYPE_CHAN, NULL);
+
+    chan->type =type;
 
     gtk_label_set_text(chan->name_label, chan_name);
     gtk_widget_set_name(GTK_WIDGET(chan), chan_name);
@@ -350,49 +355,38 @@ void srain_chan_fcous_entry(SrainChan *chan){
 }
 
 SrainUserList* srain_chan_get_user_list(SrainChan *chan){
-    if (SRAIN_IS_CHAN(chan)) {
-        return chan->user_list;
-    }
-
-    return NULL;
+    return chan->user_list;
 }
 
 SrainMsgList* srain_chan_get_msg_list(SrainChan *chan){
-    if (SRAIN_IS_CHAN(chan)) {
-        return chan->msg_list;
-    }
-
-    return NULL;
+    return chan->msg_list;
 }
 
 SrainEntryCompletion* srain_chan_get_entry_completion(SrainChan *chan){
-    if (SRAIN_IS_CHAN(chan)) {
         return chan->completion;
-    }
-
-    return NULL;
 }
 
 const char* srain_chan_get_name(SrainChan *chan){
-    if (SRAIN_IS_CHAN(chan)) {
         return chan->chan_name;
-    }
 
-    return NULL;
 }
 
 const char* srain_chan_get_srv_name(SrainChan *chan){
-    if (SRAIN_IS_CHAN(chan)) {
-        return chan->server_name;
-    }
-
-    return NULL;
+    return chan->server_name;
 }
 
 const char* srain_chan_get_chan_name(SrainChan *chan){
-    if (SRAIN_IS_CHAN(chan)) {
-        return chan->chan_name;
-    }
+    return chan->chan_name;
+}
 
-    return NULL;
+void srain_chan_set_nick(SrainChan *chan, const char *nick){
+    gtk_label_set_text(chan->nick_label, nick);
+}
+
+const char* srain_chan_get_nick(SrainChan *chan){
+    return gtk_label_get_text(chan->nick_label);
+}
+
+ChatType srain_chan_get_chat_type(SrainChan *chan){
+    return chan->type;
 }

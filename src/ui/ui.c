@@ -52,7 +52,9 @@ int ui_idle(CommonUIData *data){
     if (data->ui_interface == ui_add_chan_sync){
         const char *srv_name = data->srv_name;
         const char *chan_name = data->chan_name;
-        ui_add_chan_sync(srv_name, chan_name);
+        const char *nick = data->nick;
+        ChatType type = data->type;
+        ui_add_chan_sync(srv_name, chan_name, nick, type);
     }
     else if (data->ui_interface == ui_rm_chan_sync){
         DBG_FR("ui_rm_chan_sync");
@@ -137,15 +139,19 @@ int ui_idle(CommonUIData *data){
     } while (0)
 */
 
-void ui_add_chan(const char *srv_name, const char *chan_name){
+void ui_add_chan(const char *srv_name, const char *chan_name,
+        const char *nick, ChatType type){
     CommonUIData *data = g_malloc0(sizeof(CommonUIData));
 
     g_return_if_fail(srv_name);
     g_return_if_fail(chan_name);
+    g_return_if_fail(nick);
 
     data->ui_interface = ui_add_chan_sync;
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
     strncpy(data->chan_name, chan_name, sizeof(data->chan_name));
+    strncpy(data->nick, nick, sizeof(data->nick));
+    data->type = type;
 
     gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
@@ -305,9 +311,16 @@ void ui_set_topic(const char *srv_name, const char *chan_name,
  *
  * @return 0 if successful, -1 if failed
  */
-int ui_add_chan_sync(const char *srv_name, const char *chan_name){
-    return srain_window_add_chan(srain_win, srv_name, chan_name)
-        ? 0 : -1;
+int ui_add_chan_sync(const char *srv_name, const char *chan_name,
+        const char *nick, ChatType type){
+    SrainChan *chan;
+    chan = srain_window_add_chan(srain_win, srv_name, chan_name, type);
+
+    if (chan){
+        srain_chan_set_nick(chan, nick);
+    }
+
+    return chan != NULL ? 0 : -1;
 }
 
 /**

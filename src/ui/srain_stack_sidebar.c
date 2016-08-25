@@ -102,6 +102,7 @@ static void
 add_child(GtkWidget *child, SrainStackSidebar *sidebar){
     const char *chan_name;
     const char *server_name;
+    ChatType type;
     GtkListBoxRow *row;
     SrainStackSidebarItem *item;
 
@@ -110,7 +111,8 @@ add_child(GtkWidget *child, SrainStackSidebar *sidebar){
 
     chan_name = srain_chan_get_name(SRAIN_CHAN(child));
     server_name = srain_chan_get_srv_name(SRAIN_CHAN(child));
-    item = srain_stack_sidebar_item_new(server_name, chan_name);
+    type = srain_chan_get_chat_type(SRAIN_CHAN(child));
+    item = srain_stack_sidebar_item_new(server_name, chan_name, type);
 
     // gtk_widget_set_halign(item, GTK_ALIGN_START);
     // gtk_widget_set_valign(item, GTK_ALIGN_CENTER);

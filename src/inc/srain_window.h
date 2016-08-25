@@ -15,7 +15,7 @@ typedef struct _SrainWindowClass SrainWindowClass;
 GType srain_window_get_type(void);
 SrainWindow *srain_window_new(SrainApp *app);
 
-SrainChan* srain_window_add_chan(SrainWindow *win, const char *srv_name, const char *chan_name);
+SrainChan* srain_window_add_chan(SrainWindow *win, const char *srv_name, const char *chan_name, ChatType type);
 void srain_window_rm_chan(SrainWindow *win, SrainChan *chan);
 SrainChan *srain_window_get_cur_chan(SrainWindow *win);
 SrainChan *srain_window_get_chan_by_name(SrainWindow *win, const char *server_name, const char *chan_name);

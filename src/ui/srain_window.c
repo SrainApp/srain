@@ -343,8 +343,8 @@ SrainWindow* srain_window_new(SrainApp *app){
     return g_object_new(SRAIN_TYPE_WINDOW, "application", app, NULL);
 }
 
-SrainChan* srain_window_add_chan(SrainWindow *win,
-        const char *server_name, const char *chan_name){
+SrainChan* srain_window_add_chan(SrainWindow *win, const char *server_name,
+        const char *chan_name, ChatType type){
     SrainChan *chan;
 
     if (srain_window_get_chan_by_name(win, server_name, chan_name)){
@@ -353,7 +353,7 @@ SrainChan* srain_window_add_chan(SrainWindow *win,
         return NULL;
     }
 
-    chan = srain_chan_new(server_name, chan_name);
+    chan = srain_chan_new(server_name, chan_name, type);
 
     GString *gstr = g_string_new("");
     g_string_printf(gstr, "%s %s", server_name, chan_name);

@@ -295,7 +295,7 @@ srv_session_t* srv_session_new(const char *host, int port, const char *passwd,
 
     DBG_FR("Alloc session: %p for %s", sess, sess->host);
 
-    srv_hdr_ui_add_chan(host, META_SERVER);
+    srv_hdr_ui_add_chan(host, META_SERVER, sess->nickname, CHAT_SERVER);
     return sess;
 }
 

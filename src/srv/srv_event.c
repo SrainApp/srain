@@ -185,7 +185,7 @@ void srv_event_join(irc_session_t *irc_session, const char *event,
 
     /* YOU has join a channel */
     if (strncasecmp(sess->nickname, origin, NICK_LEN) == 0){
-        srv_hdr_ui_add_chan(sess->host, chan);
+        srv_hdr_ui_add_chan(sess->host, chan, origin, CHAT_CHANNEL);
 
         srv_session_add_chan(sess, chan);
     }

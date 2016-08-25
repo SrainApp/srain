@@ -9,8 +9,10 @@
 #include "log.h"
 #include "meta.h"
 
-void srv_test_ui_add_chan(const char *srv_name, const char *chan_name){
-    LOG_FR("srv_name: %s, chan_name: %s", srv_name, chan_name);
+void srv_test_ui_add_chan(const char *srv_name, const char *chan_name,
+        const char *nick, ChatType type){
+    LOG_FR("srv_name: %s, chan_name: %s, nick: %s, type: %d",
+            srv_name, chan_name, nick, type);
 }
 
 void srv_test_ui_rm_chan(const char *srv_name, const char *chan_name){

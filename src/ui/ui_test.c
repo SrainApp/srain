@@ -35,22 +35,22 @@ int ui_test_srv_cmd(const char *srv_name, const char *chan_name, char *cmd, int 
 
 void ui_test(){
     // TODO: add assert
-    assert(ui_add_chan_sync("irc.freenode.net", "#srain") == 0);
-    assert(ui_add_chan_sync("irc.freenode.net", "#la") == 0);
-    assert(ui_add_chan_sync("irc.freenode.net", "#srain") == -1);
+    assert(ui_add_chan_sync("irc.freenode.net", "#srain", "la", CHAT_CHANNEL) == 0);
+    assert(ui_add_chan_sync("irc.freenode.net", "#la", "la", CHAT_CHANNEL) == 0);
+    assert(ui_add_chan_sync("irc.freenode.net", "#srain", "la", CHAT_CHANNEL) == -1);
     assert(ui_rm_chan_sync("irc.freenode.net", "#sraiN") == -1);
     assert(ui_rm_chan_sync("irc.freenode.net", "#srain") == 0);
     assert(ui_rm_chan_sync("irc.freenode.net", "#la") == 0);
 
-    assert(ui_add_chan_sync("irc.freenode.net", "#srain") == 0);
-    assert(ui_add_chan_sync("chat.freenode.net", "#srain") == 0);
-    assert(ui_add_chan_sync("irc.freenode.net", "#srain2") == 0);
+    assert(ui_add_chan_sync("irc.freenode.net", "#srain", "la", CHAT_CHANNEL) == 0);
+    assert(ui_add_chan_sync("chat.freenode.net", "#srain", "la", CHAT_CHANNEL) == 0);
+    assert(ui_add_chan_sync("irc.freenode.net", "#srain2", "la", CHAT_CHANNEL) == 0);
 
     // irc.freenode.net #srain
     // chat.freenode.net #srain
     // irc.freenode.net #srain2
 
-    assert(ui_add_chan_sync("irc.freenode.net", "#summer-time-record") == 0);
+    assert(ui_add_chan_sync("irc.freenode.net", "#summer-time-record", "la", CHAT_CHANNEL) == 0);
     ui_set_topic_sync("irc.freenode.net", "#summer-time-record",
             "Summer Time Record （夏令时记录）");
 

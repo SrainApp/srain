@@ -1,11 +1,12 @@
 #ifndef __UI_H
 #define __UI_H
 
+#include "srain_chan.h"
 #include "srain_msg.h"
 #include "srain_user_list.h"
 
 /* Interface function pointers */
-typedef void (*UIAddChanFunc)        (const char *server_name, const char *chan_name);
+typedef void (*UIAddChanFunc)        (const char *server_name, const char *chan_name, const char *nick, ChatType type);
 typedef void (*UIRmChanFunc)         (const char *server_name, const char *chan_name);
 typedef void (*UISysMsgFunc)         (const char *server_name, const char *chan_name, const char *msg, SysMsgType type);
 typedef void (*UISendMsgFunc)        (const char *server_name, const char *chan_name, const char *msg);
@@ -16,7 +17,7 @@ typedef void (*UIUserListRenameFunc) (const char *server_name, const char *chan_
 typedef void (*UISetTopicFunc)       (const char *server_name, const char *chan_name, const char *topic);
 
 /* Macros for defining interface function */
-#define DECLARE_UIAddChanFunc(func) void func (const char *server_name, const char *chan_name);
+#define DECLARE_UIAddChanFunc(func) void func (const char *server_name, const char *chan_name, const char *nick, ChatType type);
 #define DECLARE_UIRmChanFunc(func) void func (const char *server_name, const char *chan_name);
 #define DECLARE_UISysMsgFunc(func) void func (const char *server_name, const char *chan_name, const char *msg, SysMsgType type);
 #define DECLARE_UISendMsgFunc(func) void func (const char *server_name, const char *chan_name, const char *msg);
@@ -40,7 +41,7 @@ DECLARE_UIUserListRenameFunc(ui_user_list_rename);
 DECLARE_UISetTopicFunc(ui_set_topic);
 
 /* Synchronous functions, export them for testing */
-int ui_add_chan_sync(const char *srv_name, const char *chan_name);
+int ui_add_chan_sync(const char *srv_name, const char *chan_name, const char *nick, ChatType type);
 int ui_rm_chan_sync(const char *srv_name, const char *chan_name);
 
 void ui_sys_msg_sync(const char *srv_name, const char *chan_name, const char *msg, SysMsgType type);
