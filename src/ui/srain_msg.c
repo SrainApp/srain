@@ -18,7 +18,7 @@
 #include "ui_hdr.h"
 #include "nick_menu.h"
 #include "srain_window.h"
-#include "srain_chan.h"
+#include "srain_chat.h"
 #include "srain_msg.h"
 #include "srain_image.h"
 
@@ -88,14 +88,14 @@ static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_da
     char *line;
     const char *srv_name;
     GString *str;
-    SrainChan *chan;
+    SrainChat *chat;
     SrainRecvMsg *smsg;
 
     smsg = SRAIN_RECV_MSG(user_data);
     if ((sel_msg = label_get_selection(smsg->msg_label)) == NULL) return;
 
-    srv_name = srain_chan_get_srv_name(srain_window_get_cur_chan(srain_win));
-    chan = srain_window_get_chan_by_name(srain_win, srv_name,
+    srv_name = srain_chat_get_srv_name(srain_window_get_cur_chat(srain_win));
+    chat = srain_window_get_chat_by_name(srain_win, srv_name,
             gtk_menu_item_get_label(GTK_MENU_ITEM(widget)));
 
     line = strtok(sel_msg, "\n");
@@ -103,17 +103,17 @@ static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_da
         str = g_string_new("");
         g_string_printf(str, _("%s <fwd %s@%s>"), line,
                 gtk_label_get_text(smsg->nick_label),
-                srain_chan_get_chan_name(srain_window_get_cur_chan(srain_win)));
+                srain_chat_get_chat_name(srain_window_get_cur_chat(srain_win)));
         line = strtok(NULL, "\n");
 
         ui_send_msg_sync(
-                srain_chan_get_srv_name(chan),
-                srain_chan_get_chan_name(chan),
+                srain_chat_get_srv_name(chat),
+                srain_chat_get_chat_name(chat),
                 str->str);
-        if (ui_hdr_srv_send(chan, str->str) < 0){
+        if (ui_hdr_srv_send(chat, str->str) < 0){
             ui_sys_msg_sync(
-                    srain_chan_get_srv_name(chan),
-                    srain_chan_get_chan_name(chan),
+                    srain_chat_get_srv_name(chat),
+                    srain_chat_get_chat_name(chat),
                     _("Failed to send message"),
                     SYS_MSG_ERROR);
         }
@@ -144,33 +144,33 @@ static void msg_label_on_popup(GtkLabel *label, GtkMenu *menu,
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), GTK_WIDGET(forward_menu_item));
 
     /* Create submenu of forward_menu_item */
-    GList *chans;
+    GList *chats;
     GtkMenuItem *item;
     GtkMenu *forward_submenu = GTK_MENU(gtk_menu_new());
-    SrainChan *chan;
+    SrainChat *chat;
 
-    chan = srain_window_get_cur_chan(srain_win);
+    chat = srain_window_get_cur_chat(srain_win);
 
-    chans = srain_window_get_chans_by_srv_name(srain_win,
-            srain_chan_get_srv_name(chan));
-    if (!chans) return;
+    chats = srain_window_get_chats_by_srv_name(srain_win,
+            srain_chat_get_srv_name(chat));
+    if (!chats) return;
     /* Skip META_SERVER */
-    chans = g_list_next(chans);
+    chats = g_list_next(chats);
 
     gtk_menu_item_set_submenu(forward_menu_item, GTK_WIDGET(forward_submenu));
 
-    while (chans){
+    while (chats){
         item = GTK_MENU_ITEM(gtk_menu_item_new_with_label(
-                    srain_chan_get_chan_name(chans->data)));
+                    srain_chat_get_chat_name(chats->data)));
         gtk_widget_show(GTK_WIDGET(item));
         g_signal_connect(item, "activate",
                 G_CALLBACK(froward_submenu_item_on_activate), smsg);
         gtk_menu_shell_append(GTK_MENU_SHELL(forward_submenu), GTK_WIDGET(item));
 
-        chans = g_list_next(chans);
+        chats = g_list_next(chats);
     }
 
-    g_list_free(chans);
+    g_list_free(chats);
 }
 
 static gboolean nick_button_on_popup(GtkWidget *widget,
@@ -194,7 +194,7 @@ static void nick_button_on_click(GtkWidget *widget, gpointer *user_data){
     str = g_string_new(gtk_label_get_text(nick_label));
     str = g_string_append(str, ": ");
 
-    srain_chan_insert_text(srain_window_get_cur_chan(srain_win), str->str, 0);
+    srain_chat_insert_text(srain_window_get_cur_chat(srain_win), str->str, 0);
     g_string_free(str, TRUE);
 }
 

@@ -7,8 +7,8 @@
 void srv_hdr_init();
 
 /* UI handler for SRV module */
-UIAddChanFunc srv_hdr_ui_add_chan;
-UIRmChanFunc srv_hdr_ui_rm_chan;
+UIAddChatFunc srv_hdr_ui_add_chat;
+UIRmChatFunc srv_hdr_ui_rm_chat;
 UISysMsgFunc srv_hdr_ui_sys_msg;
 UISendMsgFunc srv_hdr_ui_send_msg;
 UIRecvMsgFunc srv_hdr_ui_recv_msg;

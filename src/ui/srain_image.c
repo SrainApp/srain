@@ -127,7 +127,7 @@ static void eventbox_on_click(gpointer user_data , GdkEventButton *event){
                 || img_height >= rect.height){
             /* FIXME:
              * If the img_ratio is much larger or smaller than 1,
-             * the new pixbuf's aspect ratio may changed
+             * the new pixbuf's aspect ratio may chatged
              * because of loss of precision
              * gdk_pixbuf_scale() can deal with this.
              */

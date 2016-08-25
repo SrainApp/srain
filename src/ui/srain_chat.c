@@ -1,5 +1,5 @@
 /**
- * @file srain_chan.c
+ * @file srain_chat.c
  * @brief Complex widget used to reprsenting a session
  * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
@@ -16,7 +16,7 @@
 #include "ui.h"
 #include "ui_common.h"
 #include "ui_hdr.h"
-#include "srain_chan.h"
+#include "srain_chat.h"
 #include "srain_entry_completion.h"
 #include "srain_msg_list.h"
 #include "srain_user_list.h"
@@ -29,11 +29,11 @@
 
 #include "cmd_list.h"
 
-struct _SrainChan {
+struct _SrainChat {
     GtkBox parent;
 
     char *server_name;
-    char *chan_name;
+    char *chat_name;
     ChatType type;
 
     /* header */
@@ -64,11 +64,11 @@ struct _SrainChan {
     GtkWidget *last_msg;
 };
 
-struct _SrainChanClass {
+struct _SrainChatClass {
     GtkBoxClass parent_class;
 };
 
-G_DEFINE_TYPE(SrainChan, srain_chan, GTK_TYPE_BOX);
+G_DEFINE_TYPE(SrainChat, srain_chat, GTK_TYPE_BOX);
 
 static void popover_button_on_click(gpointer user_data){
     GtkPopover *popover;
@@ -79,23 +79,23 @@ static void popover_button_on_click(gpointer user_data){
 }
 
 static gboolean entry_on_key_press(gpointer user_data, GdkEventKey *event){
-    SrainChan *chan;
+    SrainChat *chat;
 
-    chan = user_data;
+    chat = user_data;
     switch (event->keyval){
         case GDK_KEY_Down:
             // TODO: use up/down to switch history message?
-            srain_msg_list_scroll_down(chan->msg_list, 30);
+            srain_msg_list_scroll_down(chat->msg_list, 30);
             break;
         case GDK_KEY_Up:
-            srain_msg_list_scroll_up(chan->msg_list, 30);
+            srain_msg_list_scroll_up(chat->msg_list, 30);
             break;
         case GDK_KEY_Tab:
-            srain_entry_completion_complete(chan->completion);
+            srain_entry_completion_complete(chat->completion);
             break;
         case GDK_KEY_n:
             if (event->state & GDK_CONTROL_MASK){
-                srain_entry_completion_complete(chan->completion);
+                srain_entry_completion_complete(chat->completion);
                 break;
             }
         default:
@@ -154,11 +154,11 @@ static void upload_image_button_on_click(GtkWidget *widget, gpointer user_data){
 }
 
 static void leave_button_on_click(GtkWidget *widget, gpointer user_data){
-    SrainChan *chan;
+    SrainChat *chat;
 
-    chan = user_data;
+    chat = user_data;
     // TODO: unquery
-    ui_hdr_srv_part(chan, "Leaving");
+    ui_hdr_srv_part(chat, "Leaving");
 }
 
 static void option_togglebutton_on_click(GtkWidget *widget, gpointer user_data){
@@ -180,40 +180,40 @@ static int is_blank(const char *str){
     return 1;
 }
 
-static void input_entry_on_activate(SrainChan *chan){
+static void input_entry_on_activate(SrainChat *chat){
     char *input;
-    const char *chan_name;
+    const char *chat_name;
 
-    input = strdup(gtk_entry_get_text(chan->input_entry));
-    chan_name = gtk_widget_get_name(GTK_WIDGET(chan));
+    input = strdup(gtk_entry_get_text(chat->input_entry));
+    chat_name = gtk_widget_get_name(GTK_WIDGET(chat));
 
     if (is_blank(input)) goto ret;
 
-    LOG_FR("chan: %s, text: '%s'", chan_name, input);
+    LOG_FR("chat: %s, text: '%s'", chat_name, input);
 
     if (input[0] == '/'){
-        ui_hdr_srv_cmd(chan, input, 0);
+        ui_hdr_srv_cmd(chat, input, 0);
     } else {
         ui_send_msg_sync(
-                    srain_chan_get_srv_name(chan),
-                    srain_chan_get_chan_name(chan),
+                    srain_chat_get_srv_name(chat),
+                    srain_chat_get_chat_name(chat),
                     input);
-        if (ui_hdr_srv_send(chan, input) < 0){
+        if (ui_hdr_srv_send(chat, input) < 0){
             ui_sys_msg_sync(
-                    srain_chan_get_srv_name(chan),
-                    srain_chan_get_chan_name(chan),
+                    srain_chat_get_srv_name(chat),
+                    srain_chat_get_chat_name(chat),
                     _("Failed to send message"),
                     SYS_MSG_ERROR);
         }
     }
 
 ret:
-    gtk_entry_set_text(chan->input_entry, "");
+    gtk_entry_set_text(chat->input_entry, "");
     free(input);
     return;
 }
 
-static void srain_chan_init(SrainChan *self){
+static void srain_chat_init(SrainChat *self){
     gtk_widget_init_template(GTK_WIDGET(self));
 
     /* init completion list */
@@ -267,126 +267,127 @@ static void srain_chan_init(SrainChan *self){
 
 }
 
-static void srain_chan_finalize(GObject *object){
+static void srain_chat_finalize(GObject *object){
     free(SRAIN_CHAN(object)->server_name);
-    free(SRAIN_CHAN(object)->chan_name);
+    free(SRAIN_CHAN(object)->chat_name);
 
-    G_OBJECT_CLASS(srain_chan_parent_class)->finalize(object);
+    G_OBJECT_CLASS(srain_chat_parent_class)->finalize(object);
 }
 
-static void srain_chan_class_init(SrainChanClass *class){
+static void srain_chat_class_init(SrainChatClass *class){
     GObjectClass *object_class = G_OBJECT_CLASS (class);
 
-    object_class->finalize = srain_chan_finalize;
+    object_class->finalize = srain_chat_finalize;
 
     gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
-            "/org/gtk/srain/chan.glade");
+            "/org/gtk/srain/chat.glade");
 
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, name_label);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, topic_revealer);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, topic_label);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, option_button);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, name_label);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, topic_revealer);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, topic_label);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, option_button);
 
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, msg_list_box);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, msg_list_box);
 
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, user_list_revealer);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, user_list_revealer);
 
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, nick_label);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, input_entry);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, upload_image_button);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, nick_label);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, input_entry);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, upload_image_button);
 
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, option_popover);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, option_box);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, show_topic_togglebutton);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, show_user_list_togglebutton);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChan, leave_button);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, option_popover);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, option_box);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, show_topic_togglebutton);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, show_user_list_togglebutton);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, leave_button);
 }
 
-SrainChan* srain_chan_new(const char *server_name, const char *chan_name,
+SrainChat* srain_chat_new(const char *server_name, const char *chat_name,
         ChatType type){
-    SrainChan *chan;
+    SrainChat *chat;
 
-    chan = g_object_new(SRAIN_TYPE_CHAN, NULL);
+    ERR_FR("%s %d", chat_name, type)
+    chat = g_object_new(SRAIN_TYPE_CHAN, NULL);
 
-    chan->type =type;
+    chat->type =type;
 
-    gtk_label_set_text(chan->name_label, chan_name);
-    gtk_widget_set_name(GTK_WIDGET(chan), chan_name);
+    gtk_label_set_text(chat->name_label, chat_name);
+    gtk_widget_set_name(GTK_WIDGET(chat), chat_name);
 
-    chan->chan_name = strdup(chan_name);
-    chan->server_name = strdup(server_name);
+    chat->chat_name = strdup(chat_name);
+    chat->server_name = strdup(server_name);
 
-    return chan;
+    return chat;
 }
 
-void srain_chan_set_topic(SrainChan *chan, const char *topic){
+void srain_chat_set_topic(SrainChat *chat, const char *topic){
     GString *markuped_topic;
 
     markuped_topic = markup(topic, NULL);
     if (markuped_topic){
-        gtk_label_set_markup(chan->topic_label, markuped_topic->str);
+        gtk_label_set_markup(chat->topic_label, markuped_topic->str);
         g_string_free(markuped_topic, TRUE);
     } else {
-        gtk_label_set_text(chan->topic_label, topic);
+        gtk_label_set_text(chat->topic_label, topic);
     }
 }
 
 /**
- * @brief Insert text into a SrainChan's input entry
+ * @brief Insert text into a SrainChat's input entry
  *
- * @param chan
+ * @param chat
  * @param text
  * @param pos If the pos = -1, insert at current position
  */
-void srain_chan_insert_text(SrainChan *chan, const char *text, int pos){
+void srain_chat_insert_text(SrainChat *chat, const char *text, int pos){
     GtkEntryBuffer *buf;
 
-    buf = gtk_entry_get_buffer(chan->input_entry);
+    buf = gtk_entry_get_buffer(chat->input_entry);
     if (pos == -1)
-        pos = gtk_editable_get_position(GTK_EDITABLE(chan->input_entry));
+        pos = gtk_editable_get_position(GTK_EDITABLE(chat->input_entry));
 
     gtk_entry_buffer_insert_text(buf, pos, text, -1);
-    gtk_editable_set_position(GTK_EDITABLE(chan->input_entry),
+    gtk_editable_set_position(GTK_EDITABLE(chat->input_entry),
             pos + strlen(text));
 }
 
-void srain_chan_fcous_entry(SrainChan *chan){
-    gtk_widget_grab_focus(GTK_WIDGET(chan->input_entry));
+void srain_chat_fcous_entry(SrainChat *chat){
+    gtk_widget_grab_focus(GTK_WIDGET(chat->input_entry));
 }
 
-SrainUserList* srain_chan_get_user_list(SrainChan *chan){
-    return chan->user_list;
+SrainUserList* srain_chat_get_user_list(SrainChat *chat){
+    return chat->user_list;
 }
 
-SrainMsgList* srain_chan_get_msg_list(SrainChan *chan){
-    return chan->msg_list;
+SrainMsgList* srain_chat_get_msg_list(SrainChat *chat){
+    return chat->msg_list;
 }
 
-SrainEntryCompletion* srain_chan_get_entry_completion(SrainChan *chan){
-        return chan->completion;
+SrainEntryCompletion* srain_chat_get_entry_completion(SrainChat *chat){
+        return chat->completion;
 }
 
-const char* srain_chan_get_name(SrainChan *chan){
-        return chan->chan_name;
+const char* srain_chat_get_name(SrainChat *chat){
+        return chat->chat_name;
 
 }
 
-const char* srain_chan_get_srv_name(SrainChan *chan){
-    return chan->server_name;
+const char* srain_chat_get_srv_name(SrainChat *chat){
+    return chat->server_name;
 }
 
-const char* srain_chan_get_chan_name(SrainChan *chan){
-    return chan->chan_name;
+const char* srain_chat_get_chat_name(SrainChat *chat){
+    return chat->chat_name;
 }
 
-void srain_chan_set_nick(SrainChan *chan, const char *nick){
-    gtk_label_set_text(chan->nick_label, nick);
+void srain_chat_set_nick(SrainChat *chat, const char *nick){
+    gtk_label_set_text(chat->nick_label, nick);
 }
 
-const char* srain_chan_get_nick(SrainChan *chan){
-    return gtk_label_get_text(chan->nick_label);
+const char* srain_chat_get_nick(SrainChat *chat){
+    return gtk_label_get_text(chat->nick_label);
 }
 
-ChatType srain_chan_get_chat_type(SrainChan *chan){
-    return chan->type;
+ChatType srain_chat_get_chat_type(SrainChat *chat){
+    return chat->type;
 }

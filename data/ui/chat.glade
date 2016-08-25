@@ -12,7 +12,7 @@
     <property name="can_focus">False</property>
     <property name="icon_name">srain-photo</property>
   </object>
-  <template class="SrainChan" parent="GtkBox">
+  <template class="SrainChat" parent="GtkBox">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="orientation">vertical</property>
@@ -110,8 +110,7 @@
       </packing>
     </child>
     <child>
-      <object class="GtkBox" id="chan_box">
-        <property name="name">chan_box</property>
+      <object class="GtkBox" id="chat_box">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <child>
@@ -169,6 +168,25 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <child>
+          <object class="GtkLabel" id="nick_label">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="margin_left">4</property>
+            <property name="margin_right">4</property>
+            <property name="margin_top">4</property>
+            <property name="margin_bottom">4</property>
+            <property name="single_line_mode">True</property>
+            <style>
+              <class name="dim-label"/>
+            </style>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
           <object class="GtkEntry" id="input_entry">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
@@ -197,7 +215,8 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">1</property>
+            <property name="pack_type">end</property>
+            <property name="position">2</property>
           </packing>
         </child>
       </object>

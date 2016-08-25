@@ -165,7 +165,7 @@ void srv_event_quit(irc_session_t *irc_session, const char *event,
     if (strncasecmp(origin, sess->nickname, NICK_LEN) == 0){
         LOG_FR("session: %s, origin: %s, reason: %s", sess->host, origin, reason);
         /* Remove all chans belong to this session */
-        srv_hdr_ui_rm_chan(sess->host, "");
+        srv_hdr_ui_rm_chat(sess->host, "");
         sess->stat = SESS_CLOSE;
         srv_session_free(sess);
     }
@@ -185,7 +185,7 @@ void srv_event_join(irc_session_t *irc_session, const char *event,
 
     /* YOU has join a channel */
     if (strncasecmp(sess->nickname, origin, NICK_LEN) == 0){
-        srv_hdr_ui_add_chan(sess->host, chan, origin, CHAT_CHANNEL);
+        srv_hdr_ui_add_chat(sess->host, chan, origin, CHAT_CHANNEL);
 
         srv_session_add_chan(sess, chan);
     }
@@ -224,7 +224,7 @@ void srv_event_part(irc_session_t *irc_session, const char *event,
 
     /* YOU has left a channel */
     if (strncasecmp(sess->nickname, origin, NICK_LEN) == 0){
-        srv_hdr_ui_rm_chan(sess->host, chan);
+        srv_hdr_ui_rm_chat(sess->host, chan);
         srv_session_rm_chan(sess, chan);
     }
 }

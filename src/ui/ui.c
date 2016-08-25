@@ -13,7 +13,7 @@
 #include "ui.h"
 #include "ui_hdr.h"
 #include "srain_app.h"
-#include "srain_chan.h"
+#include "srain_chat.h"
 #include "srain_window.h"
 #include "theme.h"
 
@@ -26,7 +26,7 @@
 typedef struct {
     void *ui_interface;
     char srv_name[HOST_LEN];
-    char chan_name[CHAN_LEN];
+    char chat_name[CHAN_LEN];
     char nick[NICK_LEN];
     char nick2[NICK_LEN];
     char msg[MSG_LEN];
@@ -49,73 +49,73 @@ int ui_idle(CommonUIData *data){
     DBG_FR("Idle call, data: %p", data);
     DBG_FR("func: %p", data->ui_interface);
 
-    if (data->ui_interface == ui_add_chan_sync){
+    if (data->ui_interface == ui_add_chat_sync){
         const char *srv_name = data->srv_name;
-        const char *chan_name = data->chan_name;
+        const char *chat_name = data->chat_name;
         const char *nick = data->nick;
         ChatType type = data->type;
-        ui_add_chan_sync(srv_name, chan_name, nick, type);
+        ui_add_chat_sync(srv_name, chat_name, nick, type);
     }
-    else if (data->ui_interface == ui_rm_chan_sync){
-        DBG_FR("ui_rm_chan_sync");
+    else if (data->ui_interface == ui_rm_chat_sync){
+        DBG_FR("ui_rm_chat_sync");
         const char *srv_name = data->srv_name;
-        const char *chan_name = data->chan_name;
-        ui_rm_chan_sync(srv_name, chan_name);
+        const char *chat_name = data->chat_name;
+        ui_rm_chat_sync(srv_name, chat_name);
     }
     else if (data->ui_interface == ui_sys_msg_sync){
         DBG_FR("ui_sys_msg_sync");
         const char *srv_name = data->srv_name;
-        const char *chan_name = data->chan_name;
+        const char *chat_name = data->chat_name;
         const char *msg = data->msg;
         SysMsgType type = data->type;
-        ui_sys_msg_sync(srv_name, chan_name, msg, type);
+        ui_sys_msg_sync(srv_name, chat_name, msg, type);
     }
     else if (data->ui_interface == ui_send_msg_sync){
         DBG_FR("ui_send_msg_sync");
         const char *srv_name = data->srv_name;
-        const char *chan_name = data->chan_name;
+        const char *chat_name = data->chat_name;
         const char *msg = data->msg;
-        ui_send_msg_sync(srv_name, chan_name, msg);
+        ui_send_msg_sync(srv_name, chat_name, msg);
     }
     else if (data->ui_interface == ui_recv_msg_sync){
         DBG_FR("ui_recv_msg_sync");
         const char *srv_name = data->srv_name;
-        const char *chan_name = data->chan_name;
+        const char *chat_name = data->chat_name;
         const char *nick = data->nick;
         const char *id = data->nick2;
         const char *msg = data->msg;
-        ui_recv_msg_sync(srv_name, chan_name, nick, id, msg);
+        ui_recv_msg_sync(srv_name, chat_name, nick, id, msg);
     }
     else if (data->ui_interface == ui_user_list_add_sync){
         DBG_FR("ui_user_list_add_sync");
         const char *srv_name = data->srv_name;
-        const char *chan_name = data->chan_name;
+        const char *chat_name = data->chat_name;
         const char *nick = data->nick;
         UserType type = data->type;
-        ui_user_list_add_sync(srv_name, chan_name, nick, type);
+        ui_user_list_add_sync(srv_name, chat_name, nick, type);
     }
     else if (data->ui_interface == ui_user_list_rm_sync){
         DBG_FR("ui_user_list_rm_sync");
         const char *srv_name = data->srv_name;
-        const char *chan_name = data->chan_name;
+        const char *chat_name = data->chat_name;
         const char *nick = data->nick;
-        ui_user_list_rm_sync(srv_name, chan_name, nick);
+        ui_user_list_rm_sync(srv_name, chat_name, nick);
     }
     else if (data->ui_interface == ui_user_list_rename_sync){
         DBG_FR("ui_user_list_rename_sync");
         const char *srv_name = data->srv_name;
-        const char *chan_name = data->chan_name;
+        const char *chat_name = data->chat_name;
         const char *nick = data->nick;
         const char *new_nick = data->nick2;
         UserType type = data->type;
-        ui_user_list_rename_sync(srv_name, chan_name, nick, new_nick, type);
+        ui_user_list_rename_sync(srv_name, chat_name, nick, new_nick, type);
     }
     else if (data->ui_interface == ui_set_topic_sync){
         DBG_FR("ui_set_topic_sync");
         const char *srv_name = data->srv_name;
-        const char *chan_name = data->chan_name;
+        const char *chat_name = data->chat_name;
         const char *topic = data->msg;
-        ui_set_topic_sync(srv_name, chan_name, topic);
+        ui_set_topic_sync(srv_name, chat_name, topic);
     }
     else {
         ERR_FR("Invaild function pointer :(");
@@ -139,17 +139,17 @@ int ui_idle(CommonUIData *data){
     } while (0)
 */
 
-void ui_add_chan(const char *srv_name, const char *chan_name,
+void ui_add_chat(const char *srv_name, const char *chat_name,
         const char *nick, ChatType type){
     CommonUIData *data = g_malloc0(sizeof(CommonUIData));
 
     g_return_if_fail(srv_name);
-    g_return_if_fail(chan_name);
+    g_return_if_fail(chat_name);
     g_return_if_fail(nick);
 
-    data->ui_interface = ui_add_chan_sync;
+    data->ui_interface = ui_add_chat_sync;
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
-    strncpy(data->chan_name, chan_name, sizeof(data->chan_name));
+    strncpy(data->chat_name, chat_name, sizeof(data->chat_name));
     strncpy(data->nick, nick, sizeof(data->nick));
     data->type = type;
 
@@ -157,31 +157,31 @@ void ui_add_chan(const char *srv_name, const char *chan_name,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 
-void ui_rm_chan(const char *srv_name, const char *chan_name){
+void ui_rm_chat(const char *srv_name, const char *chat_name){
     CommonUIData *data = g_malloc0(sizeof(CommonUIData));
 
     g_return_if_fail(srv_name);
-    g_return_if_fail(chan_name);
+    g_return_if_fail(chat_name);
 
-    data->ui_interface = ui_rm_chan_sync;
+    data->ui_interface = ui_rm_chat_sync;
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
-    strncpy(data->chan_name, chan_name, sizeof(data->chan_name));
+    strncpy(data->chat_name, chat_name, sizeof(data->chat_name));
 
     gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 
-void ui_sys_msg(const char *srv_name, const char *chan_name,
+void ui_sys_msg(const char *srv_name, const char *chat_name,
         const char *msg, SysMsgType type){
     CommonUIData *data = g_malloc0(sizeof(CommonUIData));
 
     g_return_if_fail(srv_name);
-    g_return_if_fail(chan_name);
+    g_return_if_fail(chat_name);
     g_return_if_fail(msg);
 
     data->ui_interface = ui_sys_msg_sync;
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
-    strncpy(data->chan_name, chan_name, sizeof(data->chan_name));
+    strncpy(data->chat_name, chat_name, sizeof(data->chat_name));
     strncpy(data->msg, msg, sizeof(data->msg));
     data->type = type;
 
@@ -189,36 +189,36 @@ void ui_sys_msg(const char *srv_name, const char *chan_name,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 
-void ui_send_msg(const char *srv_name, const char *chan_name,
+void ui_send_msg(const char *srv_name, const char *chat_name,
         const char *msg){
     CommonUIData *data = g_malloc0(sizeof(CommonUIData));
 
     g_return_if_fail(srv_name);
-    g_return_if_fail(chan_name);
+    g_return_if_fail(chat_name);
     g_return_if_fail(msg);
 
     data->ui_interface = ui_send_msg_sync;
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
-    strncpy(data->chan_name, chan_name, sizeof(data->chan_name));
+    strncpy(data->chat_name, chat_name, sizeof(data->chat_name));
     strncpy(data->msg, msg, sizeof(data->msg));
 
     gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 
-void ui_recv_msg(const char *srv_name, const char *chan_name,
+void ui_recv_msg(const char *srv_name, const char *chat_name,
         const char *nick, const char *id, const char *msg){
     CommonUIData *data = g_malloc0(sizeof(CommonUIData));
 
     g_return_if_fail(srv_name);
-    g_return_if_fail(chan_name);
+    g_return_if_fail(chat_name);
     g_return_if_fail(nick);
     g_return_if_fail(msg);
     g_return_if_fail(id);
 
     data->ui_interface = ui_recv_msg_sync;
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
-    strncpy(data->chan_name, chan_name, sizeof(data->chan_name));
+    strncpy(data->chat_name, chat_name, sizeof(data->chat_name));
     strncpy(data->nick, nick, sizeof(data->nick));
     strncpy(data->nick2, id, sizeof(data->msg));
     strncpy(data->msg, msg, sizeof(data->msg));
@@ -227,17 +227,17 @@ void ui_recv_msg(const char *srv_name, const char *chan_name,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 
-void ui_user_list_add(const char *srv_name, const char *chan_name,
+void ui_user_list_add(const char *srv_name, const char *chat_name,
  const char *nick, UserType type){
     CommonUIData *data = g_malloc0(sizeof(CommonUIData));
 
     g_return_if_fail(srv_name);
-    g_return_if_fail(chan_name);
+    g_return_if_fail(chat_name);
     g_return_if_fail(nick);
 
     data->ui_interface = ui_user_list_add_sync;
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
-    strncpy(data->chan_name, chan_name, sizeof(data->chan_name));
+    strncpy(data->chat_name, chat_name, sizeof(data->chat_name));
     strncpy(data->nick, nick, sizeof(data->nick));
     data->type = type;
 
@@ -245,35 +245,35 @@ void ui_user_list_add(const char *srv_name, const char *chan_name,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 
-void ui_user_list_rm(const char *srv_name, const char *chan_name,
+void ui_user_list_rm(const char *srv_name, const char *chat_name,
         const char *nick){
     CommonUIData *data = g_malloc0(sizeof(CommonUIData));
 
     g_return_if_fail(srv_name);
-    g_return_if_fail(chan_name);
+    g_return_if_fail(chat_name);
     g_return_if_fail(nick);
 
     data->ui_interface = ui_user_list_rm_sync;
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
-    strncpy(data->chan_name, chan_name, sizeof(data->chan_name));
+    strncpy(data->chat_name, chat_name, sizeof(data->chat_name));
     strncpy(data->nick, nick, sizeof(data->nick));
 
     gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 
-void ui_user_list_rename(const char *srv_name, const char *chan_name,
+void ui_user_list_rename(const char *srv_name, const char *chat_name,
         const char *old_nick, const char *new_nick, UserType type){
     CommonUIData *data = g_malloc0(sizeof(CommonUIData));
 
     g_return_if_fail(srv_name);
-    g_return_if_fail(chan_name);
+    g_return_if_fail(chat_name);
     g_return_if_fail(old_nick);
     g_return_if_fail(new_nick);
 
     data->ui_interface = ui_user_list_rename_sync;
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
-    strncpy(data->chan_name, chan_name, sizeof(data->chan_name));
+    strncpy(data->chat_name, chat_name, sizeof(data->chat_name));
     strncpy(data->nick, old_nick, sizeof(data->nick));
     strncpy(data->nick2, new_nick, sizeof(data->nick2));
     data->type = type;
@@ -282,17 +282,17 @@ void ui_user_list_rename(const char *srv_name, const char *chan_name,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 
-void ui_set_topic(const char *srv_name, const char *chan_name,
+void ui_set_topic(const char *srv_name, const char *chat_name,
         const char *topic){
     CommonUIData *data = g_malloc0(sizeof(CommonUIData));
 
     g_return_if_fail(srv_name);
-    g_return_if_fail(chan_name);
+    g_return_if_fail(chat_name);
     g_return_if_fail(topic);
 
     data->ui_interface = ui_set_topic_sync;
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
-    strncpy(data->chan_name, chan_name, sizeof(data->chan_name));
+    strncpy(data->chat_name, chat_name, sizeof(data->chat_name));
     strncpy(data->msg, topic, sizeof(data->msg));
 
     gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE,
@@ -304,177 +304,177 @@ void ui_set_topic(const char *srv_name, const char *chan_name,
 /* ================================================================================ */
 
 /**
- * @brief Add a channel to main window
+ * @brief Add a chatnel to main window
  *
  * @param srv_name Server's name, can't contains whitespace
- * @param chan_name Channel's name, can't contains whitespace
+ * @param chat_name Chatnel's name, can't contains whitespace
  *
  * @return 0 if successful, -1 if failed
  */
-int ui_add_chan_sync(const char *srv_name, const char *chan_name,
+int ui_add_chat_sync(const char *srv_name, const char *chat_name,
         const char *nick, ChatType type){
-    SrainChan *chan;
-    chan = srain_window_add_chan(srain_win, srv_name, chan_name, type);
+    SrainChat *chat;
+    chat = srain_window_add_chat(srain_win, srv_name, chat_name, type);
 
-    if (chan){
-        srain_chan_set_nick(chan, nick);
+    if (chat){
+        srain_chat_set_nick(chat, nick);
     }
 
-    return chan != NULL ? 0 : -1;
+    return chat != NULL ? 0 : -1;
 }
 
 /**
- * @brief Remove a channel from main window
+ * @brief Remove a chatnel from main window
  *
  * @param srv_name Server's name, can't contains whitespace
- * @param chan_name Channel's name, if chan_name == ""(empty string), remove
- *          all channel with the srv_name given as the argument
+ * @param chat_name Chatnel's name, if chat_name == ""(empty string), remove
+ *          all chatnel with the srv_name given as the argument
  *
  * @return 0 if successful, -1 if failed
  */
-int ui_rm_chan_sync(const char *srv_name, const char *chan_name){
-    GList *chans;
-    SrainChan *chan;
+int ui_rm_chat_sync(const char *srv_name, const char *chat_name){
+    GList *chats;
+    SrainChat *chat;
 
-    if (strcmp(chan_name, "") == 0){
-        chans = srain_window_get_chans_by_srv_name(srain_win, srv_name);
-        while (chans){
-            srain_window_rm_chan(srain_win, chans->data);
-            chans = g_list_next(chans);
+    if (strcmp(chat_name, "") == 0){
+        chats = srain_window_get_chats_by_srv_name(srain_win, srv_name);
+        while (chats){
+            srain_window_rm_chat(srain_win, chats->data);
+            chats = g_list_next(chats);
         }
 
-        g_list_free(chans);
+        g_list_free(chats);
     } else {
-        chan = srain_window_get_chan_by_name(srain_win, srv_name, chan_name);
-        if (chan == NULL){
-            ERR_FR("No such channel: %s %s", srv_name, chan_name);
+        chat = srain_window_get_chat_by_name(srain_win, srv_name, chat_name);
+        if (chat == NULL){
+            ERR_FR("No such chatnel: %s %s", srv_name, chat_name);
             return -1;
         }
-        srain_window_rm_chan(srain_win, chan);
+        srain_window_rm_chat(srain_win, chat);
     }
 
     return 0;
 }
 
 /**
- * @brief Add a system message to sepcified channel
+ * @brief Add a system message to sepcified chatnel
  *
  * @param srv_name
- * @param chan_name
+ * @param chat_name
  * @param msg
  * @param type SrainStackSidebar should be updated
  *             when type = SYS_MSG_ACTION or SYS_MSG_ERROR or SYS_MSG_NOTICE
  */
-void ui_sys_msg_sync(const char *srv_name, const char *chan_name,
+void ui_sys_msg_sync(const char *srv_name, const char *chat_name,
         const char *msg, SysMsgType type){
-    SrainChan *chan;
+    SrainChat *chat;
     SrainMsgList *list;
 
-    chan = srain_window_get_chan_by_name(srain_win, srv_name, chan_name);
+    chat = srain_window_get_chat_by_name(srain_win, srv_name, chat_name);
 
-    if (!chan){
+    if (!chat){
         if (type == SYS_MSG_ERROR){
-            chan = srain_window_get_cur_chan(srain_win);
+            chat = srain_window_get_cur_chat(srain_win);
 
-            /* Current SrainChan doesn't belong to `srv_name` */
-            if (strcmp(srain_chan_get_srv_name(chan), srv_name)){
-                chan = srain_window_get_chan_by_name(srain_win, srv_name, META_SERVER);
+            /* Current SrainChat doesn't belong to `srv_name` */
+            if (strcmp(srain_chat_get_srv_name(chat), srv_name)){
+                chat = srain_window_get_chat_by_name(srain_win, srv_name, META_SERVER);
             }
         } else {
-            chan = srain_window_get_chan_by_name(srain_win, srv_name, META_SERVER);
+            chat = srain_window_get_chat_by_name(srain_win, srv_name, META_SERVER);
         }
     }
 
-    g_return_if_fail(chan);
+    g_return_if_fail(chat);
 
-    list = srain_chan_get_msg_list(chan);
+    list = srain_chat_get_msg_list(chat);
     srain_msg_list_sys_msg_add(list, msg, type);
 
     if (type == SYS_MSG_ACTION
             || type == SYS_MSG_ERROR
             || type == SYS_MSG_NOTICE){
-        srain_window_stack_sidebar_update(srain_win, chan, NULL, msg);
+        srain_window_stack_sidebar_update(srain_win, chat, NULL, msg);
     }
 }
 
 /**
- * @brief Add a message to sepcified channel (sent by yourself)
+ * @brief Add a message to sepcified chatnel (sent by yourself)
  *
- * @param chan This channel must be existent
+ * @param chat This chatnel must be existent
  * @param msg
  */
-void ui_send_msg_sync(const char *srv_name, const char *chan_name, const char *msg){
-    SrainChan *chan;
+void ui_send_msg_sync(const char *srv_name, const char *chat_name, const char *msg){
+    SrainChat *chat;
     SrainMsgList *list;
 
-    chan = srain_window_get_chan_by_name(srain_win, srv_name, chan_name);
-    g_return_if_fail(chan);
-    list = srain_chan_get_msg_list(chan);
+    chat = srain_window_get_chat_by_name(srain_win, srv_name, chat_name);
+    g_return_if_fail(chat);
+    list = srain_chat_get_msg_list(chat);
 
     srain_msg_list_send_msg_add(list, msg);
-    srain_window_stack_sidebar_update(srain_win, chan, _("You"), msg);
+    srain_window_stack_sidebar_update(srain_win, chat, _("You"), msg);
 }
 
 /**
- * @brief Add a message to sepcified channel (sent by others),
- *      The nick will be added into the completion list of this channel,
+ * @brief Add a message to sepcified chatnel (sent by others),
+ *      The nick will be added into the completion list of this chatnel,
  *      The sidebar should be updated
  *
- * @param chan_name If no such channel, fallback to META_SERVER
+ * @param chat_name If no such chatnel, fallback to META_SERVER
  * @param nick
  * @param id
  * @param msg
  */
-void ui_recv_msg_sync(const char *srv_name, const char *chan_name,
+void ui_recv_msg_sync(const char *srv_name, const char *chat_name,
         const char *nick, const char *id, const char *msg){
-    SrainChan *chan;
+    SrainChat *chat;
     SrainMsgList *list;
     SrainEntryCompletion *comp;
 
-    chan = srain_window_get_chan_by_name(srain_win, srv_name, chan_name);
-    if (!chan)
-        chan = srain_window_get_chan_by_name(srain_win, srv_name, META_SERVER);
-    g_return_if_fail(chan);
+    chat = srain_window_get_chat_by_name(srain_win, srv_name, chat_name);
+    if (!chat)
+        chat = srain_window_get_chat_by_name(srain_win, srv_name, META_SERVER);
+    g_return_if_fail(chat);
 
-    list = srain_chan_get_msg_list(chan);
+    list = srain_chat_get_msg_list(chat);
 
     srain_msg_list_recv_msg_add(list, nick, id, msg);
-    srain_window_stack_sidebar_update(srain_win, chan, nick, msg);
+    srain_window_stack_sidebar_update(srain_win, chat, nick, msg);
 
     if (strlen(id) != 0){
-        comp = srain_chan_get_entry_completion(chan);
+        comp = srain_chat_get_entry_completion(chat);
         if (!comp) return;
         srain_entry_completion_add_keyword(comp, nick, KEYWORD_TMP);
     }
 }
 
 /**
- * @brief Add a nick into a specified channel's user list
+ * @brief Add a nick into a specified chatnel's user list
  *
  * @param srv_name
- * @param chan_name
+ * @param chat_name
  * @param nick
  * @param type
  *
  * @return 0 if successful, -1 if failed
  */
-int ui_user_list_add_sync(const char *srv_name, const char *chan_name,
+int ui_user_list_add_sync(const char *srv_name, const char *chat_name,
         const char *nick, UserType type){
     int res;
-    SrainChan *chan;
+    SrainChat *chat;
     SrainUserList *list;
     SrainEntryCompletion *comp;
 
-    chan = srain_window_get_chan_by_name(srain_win, srv_name, chan_name);
-    if (chan == NULL){
-        ERR_FR("No such channel: %s %s", srv_name, chan_name);
+    chat = srain_window_get_chat_by_name(srain_win, srv_name, chat_name);
+    if (chat == NULL){
+        ERR_FR("No such chatnel: %s %s", srv_name, chat_name);
         return -1;
     }
 
-    list = srain_chan_get_user_list(chan);
+    list = srain_chat_get_user_list(chat);
 
     if ((res = srain_user_list_add(list, nick, type)) == 0){
-        comp = srain_chan_get_entry_completion(chan);
+        comp = srain_chat_get_entry_completion(chat);
         srain_entry_completion_add_keyword(comp, nick, KEYWORD_NORMAL);
     };
 
@@ -482,31 +482,31 @@ int ui_user_list_add_sync(const char *srv_name, const char *chan_name,
 }
 
 /**
- * @brief Remove a nick from a specified channel's user list
+ * @brief Remove a nick from a specified chatnel's user list
  *
  * @param srv_name
- * @param chan_name
+ * @param chat_name
  * @param nick
  *
  * @return 0 if successful, -1 if failed
  */
-int ui_user_list_rm_sync(const char *srv_name, const char *chan_name,
+int ui_user_list_rm_sync(const char *srv_name, const char *chat_name,
         const char *nick){
     int res;
-    SrainChan *chan;
+    SrainChat *chat;
     SrainUserList *list;
     SrainEntryCompletion *comp;
 
-    chan = srain_window_get_chan_by_name(srain_win, srv_name, chan_name);
-    if (chan == NULL){
-        ERR_FR("No such channel: %s %s", srv_name, chan_name);
+    chat = srain_window_get_chat_by_name(srain_win, srv_name, chat_name);
+    if (chat == NULL){
+        ERR_FR("No such chatnel: %s %s", srv_name, chat_name);
         return -1;
     }
 
-    list = srain_chan_get_user_list(chan);
+    list = srain_chat_get_user_list(chat);
 
     if ((res = srain_user_list_rm(list, nick)) == 0){
-        comp = srain_chan_get_entry_completion(chan);
+        comp = srain_chat_get_entry_completion(chat);
         srain_entry_completion_rm_keyword(comp, nick);
     }
 
@@ -514,30 +514,30 @@ int ui_user_list_rm_sync(const char *srv_name, const char *chan_name,
 }
 
 /**
- * @brief Rename a item in all channels' user list
+ * @brief Rename a item in all chatnels' user list
  *
  * @param srv_name
- * @param chan_name
+ * @param chat_name
  * @param old_nick
  * @param new_nick
  * @param type
- * @param msg When nick was renamed in a channel, send `reason`
- *          to this channel using `ui_sys_msg()`
+ * @param msg When nick was renamed in a chatnel, send `reason`
+ *          to this chatnel using `ui_sys_msg()`
  */
-void ui_user_list_rename_sync(const char *srv_name, const char *chan_name, 
+void ui_user_list_rename_sync(const char *srv_name, const char *chat_name, 
         const char *old_nick, const char *new_nick, UserType type){
-    SrainChan *chan;
+    SrainChat *chat;
     SrainUserList *list;
     SrainEntryCompletion *comp;
 
-    chan = srain_window_get_chan_by_name(srain_win, srv_name, chan_name);
-    g_return_if_fail(chan);
+    chat = srain_window_get_chat_by_name(srain_win, srv_name, chat_name);
+    g_return_if_fail(chat);
 
-    chan_name = srain_chan_get_chan_name(chan);
-    list = srain_chan_get_user_list(chan);
+    chat_name = srain_chat_get_chat_name(chat);
+    list = srain_chat_get_user_list(chat);
 
     if (srain_user_list_rename(list, old_nick, new_nick, type) == 0){
-        comp = srain_chan_get_entry_completion(chan);
+        comp = srain_chat_get_entry_completion(chat);
         srain_entry_completion_add_keyword(comp, old_nick, KEYWORD_NORMAL);
         srain_entry_completion_rm_keyword(comp, new_nick);
     }
@@ -547,13 +547,13 @@ void ui_user_list_rename_sync(const char *srv_name, const char *chan_name,
  * @brief Set topic
  *
  * @param srv_name
- * @param chan_name
+ * @param chat_name
  * @param topic
  */
-void ui_set_topic_sync(const char *srv_name, const char *chan_name, const char *topic){
-    SrainChan *chan;
+void ui_set_topic_sync(const char *srv_name, const char *chat_name, const char *topic){
+    SrainChat *chat;
 
-    chan = srain_window_get_chan_by_name(srain_win, srv_name, chan_name);
-    g_return_if_fail(chan);
-    srain_chan_set_topic(chan, topic);
+    chat = srain_window_get_chat_by_name(srain_win, srv_name, chat_name);
+    g_return_if_fail(chat);
+    srain_chat_set_topic(chat, topic);
 }

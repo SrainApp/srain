@@ -63,11 +63,12 @@ bt: $(TARGET)
 	#		$(MAKE) run
 
 clean:
-	$(DEL) build/srain
-	$(DEL) build/*.o
+	$(DEL) build/*
+
+cleanobj:
 	$(DEL) build/*.c
-	$(DEL) build/bin
-	$(DEL) build/share
+	$(DEL) build/*.o
+	$(DEL) build/srain
 
 todo:
 	grep --color=auto -r -E "TODO|FIXME" src/

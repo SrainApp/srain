@@ -14,47 +14,47 @@
 #include "ui.h"
 #include "log.h"
 
-int ui_test_srv_join(const char *srv_name, const char *chan_name,
+int ui_test_srv_join(const char *srv_name, const char *chat_name,
         const char *passwd){
     return 0;
 }
 
-int ui_test_srv_part(const char *srv_name, const char *chan_name,
+int ui_test_srv_part(const char *srv_name, const char *chat_name,
         const char *reason){
     return 0;
 }
 
-int ui_test_srv_send(const char *srv_name, const char *chan_name, const char *msg){
+int ui_test_srv_send(const char *srv_name, const char *chat_name, const char *msg){
     return 0;
 }
 
-int ui_test_srv_cmd(const char *srv_name, const char *chan_name, char *cmd, int block){
+int ui_test_srv_cmd(const char *srv_name, const char *chat_name, char *cmd, int block){
     return 0;
 }
 
 
 void ui_test(){
     // TODO: add assert
-    assert(ui_add_chan_sync("irc.freenode.net", "#srain", "la", CHAT_CHANNEL) == 0);
-    assert(ui_add_chan_sync("irc.freenode.net", "#la", "la", CHAT_CHANNEL) == 0);
-    assert(ui_add_chan_sync("irc.freenode.net", "#srain", "la", CHAT_CHANNEL) == -1);
-    assert(ui_rm_chan_sync("irc.freenode.net", "#sraiN") == -1);
-    assert(ui_rm_chan_sync("irc.freenode.net", "#srain") == 0);
-    assert(ui_rm_chan_sync("irc.freenode.net", "#la") == 0);
+    assert(ui_add_chat_sync("irc.freenode.net", "#srain", "la", CHAT_CHANNEL) == 0);
+    assert(ui_add_chat_sync("irc.freenode.net", "#la", "la", CHAT_CHANNEL) == 0);
+    assert(ui_add_chat_sync("irc.freenode.net", "#srain", "la", CHAT_CHANNEL) == -1);
+    assert(ui_rm_chat_sync("irc.freenode.net", "#sraiN") == -1);
+    assert(ui_rm_chat_sync("irc.freenode.net", "#srain") == 0);
+    assert(ui_rm_chat_sync("irc.freenode.net", "#la") == 0);
 
-    assert(ui_add_chan_sync("irc.freenode.net", "#srain", "la", CHAT_CHANNEL) == 0);
-    assert(ui_add_chan_sync("chat.freenode.net", "#srain", "la", CHAT_CHANNEL) == 0);
-    assert(ui_add_chan_sync("irc.freenode.net", "#srain2", "la", CHAT_CHANNEL) == 0);
+    assert(ui_add_chat_sync("irc.freenode.net", "#srain", "la", CHAT_CHANNEL) == 0);
+    assert(ui_add_chat_sync("chat.freenode.net", "#srain", "la", CHAT_CHANNEL) == 0);
+    assert(ui_add_chat_sync("irc.freenode.net", "#srain2", "la", CHAT_CHANNEL) == 0);
 
     // irc.freenode.net #srain
     // chat.freenode.net #srain
     // irc.freenode.net #srain2
 
-    assert(ui_add_chan_sync("irc.freenode.net", "#summer-time-record", "la", CHAT_CHANNEL) == 0);
+    assert(ui_add_chat_sync("irc.freenode.net", "#summer-time-record", "la", CHAT_CHANNEL) == 0);
     ui_set_topic_sync("irc.freenode.net", "#summer-time-record",
             "Summer Time Record （夏令时记录）");
 
-    ui_sys_msg_sync("no.exist.net", "#summer-time-record", "follback to cur chan", SYS_MSG_NORMAL);
+    ui_sys_msg_sync("no.exist.net", "#summer-time-record", "follback to cur chat", SYS_MSG_NORMAL);
     ui_send_msg_sync("no.exist.net", "#summer-time-record", "msg");
     ui_recv_msg_sync("no.exist.net", "#summer-time-record", "nick", "id", "msg");
 

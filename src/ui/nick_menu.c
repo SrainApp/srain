@@ -4,7 +4,7 @@
 #include "ui_hdr.h"
 #include "srain_app.h"
 #include "srain_window.h"
-#include "srain_chan.h"
+#include "srain_chat.h"
 
 #include "log.h"
 
@@ -35,13 +35,13 @@ static void nick_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
         return;
     }
 
-    ui_hdr_srv_cmd(srain_window_get_cur_chan(srain_win), cmd->str, 0);
+    ui_hdr_srv_cmd(srain_window_get_cur_chat(srain_win), cmd->str, 0);
 
     g_string_free(cmd, TRUE);
 }
 
 void nick_menu_popup(GdkEventButton *event, const char *nick){
-    GList *chans;
+    GList *chats;
     GtkBuilder *builder;
     GtkMenu *nick_menu;
     GtkMenuItem *item;
@@ -49,7 +49,7 @@ void nick_menu_popup(GdkEventButton *event, const char *nick){
     GtkMenuItem *kick_menu_item;
     GtkMenuItem *chat_menu_item;
     GtkMenuItem *invite_menu_item;
-    SrainChan *chan;
+    SrainChat *chat;
 
     builder = gtk_builder_new_from_resource ("/org/gtk/srain/nick_menu.glade");
 
@@ -67,29 +67,29 @@ void nick_menu_popup(GdkEventButton *event, const char *nick){
             G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
 
     /******************************************/
-    chan = srain_window_get_cur_chan(srain_win);
-    chans = srain_window_get_chans_by_srv_name(srain_win,
-            srain_chan_get_srv_name(chan));
+    chat = srain_window_get_cur_chat(srain_win);
+    chats = srain_window_get_chats_by_srv_name(srain_win,
+            srain_chat_get_srv_name(chat));
 
     /* Skip META_SERVER */
-    chans = g_list_next(chans);
+    chats = g_list_next(chats);
 
     /* Create subitem of invite_menu_item */
     GtkMenu *invite_submenu = GTK_MENU(gtk_menu_new());
     gtk_menu_item_set_submenu(invite_menu_item, GTK_WIDGET(invite_submenu));
 
-    while (chans){
+    while (chats){
         item  = GTK_MENU_ITEM(gtk_menu_item_new_with_label(
-                    srain_chan_get_chan_name(chans->data)));
+                    srain_chat_get_chat_name(chats->data)));
         gtk_widget_show(GTK_WIDGET(item));
         gtk_widget_set_name(GTK_WIDGET(item), "invite_submenu_item");
         g_signal_connect(item, "activate",
                 G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
         gtk_menu_shell_append(GTK_MENU_SHELL(invite_submenu), GTK_WIDGET(item));
 
-        chans = g_list_next(chans);
+        chats = g_list_next(chats);
     }
-    g_list_free(chans);
+    g_list_free(chats);
 
     gtk_menu_popup(nick_menu, NULL, NULL, NULL, NULL,
             event->button, event->time);

@@ -35,7 +35,7 @@
 #include <gtk/gtk.h>
 #include "srain_stack_sidebar.h"
 #include "srain_stack_sidebar_item.h"
-#include "srain_chan.h"
+#include "srain_chat.h"
 #include "ui_common.h"
 #include "log.h"
 
@@ -68,7 +68,7 @@ listbox_on_row_selected(GtkListBox *box, GtkListBoxRow *row, gpointer user_data)
     gtk_stack_set_visible_child(sidebar->stack, child);
 
     srain_stack_sidebar_item_count_clear(item);
-    srain_chan_fcous_entry(SRAIN_CHAN(child));
+    srain_chat_fcous_entry(SRAIN_CHAN(child));
 }
 
 static void
@@ -100,7 +100,7 @@ srain_stack_sidebar_init(SrainStackSidebar *self){
 
 static void
 add_child(GtkWidget *child, SrainStackSidebar *sidebar){
-    const char *chan_name;
+    const char *chat_name;
     const char *server_name;
     ChatType type;
     GtkListBoxRow *row;
@@ -109,10 +109,10 @@ add_child(GtkWidget *child, SrainStackSidebar *sidebar){
     if (g_hash_table_lookup(sidebar->rows, child))
         return;
 
-    chan_name = srain_chan_get_name(SRAIN_CHAN(child));
-    server_name = srain_chan_get_srv_name(SRAIN_CHAN(child));
-    type = srain_chan_get_chat_type(SRAIN_CHAN(child));
-    item = srain_stack_sidebar_item_new(server_name, chan_name, type);
+    chat_name = srain_chat_get_name(SRAIN_CHAN(child));
+    server_name = srain_chat_get_srv_name(SRAIN_CHAN(child));
+    type = srain_chat_get_chat_type(SRAIN_CHAN(child));
+    item = srain_stack_sidebar_item_new(server_name, chat_name, type);
 
     // gtk_widget_set_halign(item, GTK_ALIGN_START);
     // gtk_widget_set_valign(item, GTK_ALIGN_CENTER);
@@ -154,7 +154,7 @@ clear_sidebar(SrainStackSidebar *sidebar){
 }
 
 static void
-on_child_changed(GtkWidget *widget, GParamSpec *pspec, SrainStackSidebar *sidebar){
+on_child_chatged(GtkWidget *widget, GParamSpec *pspec, SrainStackSidebar *sidebar){
     GtkWidget *child;
     GtkWidget *row;
 
@@ -179,7 +179,7 @@ static void
 disconnect_stack_signals(SrainStackSidebar *sidebar){
     g_signal_handlers_disconnect_by_func(sidebar->stack, on_stack_child_added, sidebar);
     g_signal_handlers_disconnect_by_func(sidebar->stack, on_stack_child_removed, sidebar);
-    g_signal_handlers_disconnect_by_func(sidebar->stack, on_child_changed, sidebar);
+    g_signal_handlers_disconnect_by_func(sidebar->stack, on_child_chatged, sidebar);
     g_signal_handlers_disconnect_by_func(sidebar->stack, disconnect_stack_signals, sidebar);
 }
 
@@ -187,7 +187,7 @@ static void
 connect_stack_signals(SrainStackSidebar *sidebar){
     g_signal_connect_after(sidebar->stack, "add", G_CALLBACK(on_stack_child_added), sidebar);
     g_signal_connect_after(sidebar->stack, "remove", G_CALLBACK(on_stack_child_removed), sidebar);
-    g_signal_connect(sidebar->stack, "notify::visible-child", G_CALLBACK(on_child_changed), sidebar);
+    g_signal_connect(sidebar->stack, "notify::visible-child", G_CALLBACK(on_child_chatged), sidebar);
     g_signal_connect_swapped(sidebar->stack, "destroy", G_CALLBACK(disconnect_stack_signals), sidebar);
 }
 
@@ -243,12 +243,12 @@ srain_stack_sidebar_get_stack(SrainStackSidebar *sidebar){
 }
 
 void
-srain_stack_sidebar_update(SrainStackSidebar *sidebar, SrainChan *chan,
+srain_stack_sidebar_update(SrainStackSidebar *sidebar, SrainChat *chat,
         const char *nick, const char *msg, int is_visible){
     GtkListBoxRow *row;
     SrainStackSidebarItem *item;
 
-    row = g_hash_table_lookup(sidebar->rows, chan);
+    row = g_hash_table_lookup(sidebar->rows, chat);
     if (!row) return;
 
     item = SRAIN_STACK_SIDEBAR_ITEM(gtk_bin_get_child(GTK_BIN(row)));

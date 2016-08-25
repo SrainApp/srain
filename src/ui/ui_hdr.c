@@ -15,7 +15,7 @@
 
 #include "srain_app.h"
 #include "srain_window.h"
-#include "srain_chan.h"
+#include "srain_chat.h"
 #include "ui_hdr.h"
 #include "ui_test.h"
 
@@ -51,82 +51,82 @@ void ui_hdr_init(){
  * @brief Server Interface to execute a command
  *
  * @param source where this cmd comes from,
- *      if NULL, command echo may appear in the current SrainChan
+ *      if NULL, command echo may appear in the current SrainChat
  * @param cmd the command you want to execute
  *
  * @return 0 if successed, -1 if failed
  */
-int ui_hdr_srv_cmd(SrainChan *chan, char *cmd, int block){
+int ui_hdr_srv_cmd(SrainChat *chat, char *cmd, int block){
     int res;
     char *cmd2;
     const char *srv_name;
-    const char *chan_name;
+    const char *chat_name;
 
     cmd2 = strdup(cmd);
 
-    if (chan == NULL){
-        chan = srain_window_get_cur_chan(srain_win);
+    if (chat == NULL){
+        chat = srain_window_get_cur_chat(srain_win);
     }
 
-    if (chan){
-        srv_name = srain_chan_get_srv_name(chan);
-        chan_name = srain_chan_get_name(chan);
+    if (chat){
+        srv_name = srain_chat_get_srv_name(chat);
+        chat_name = srain_chat_get_name(chat);
     } else {
-        srv_name = chan_name = NULL;
+        srv_name = chat_name = NULL;
     }
 
-    DBG_FR("srv_name: %s, chan_name: %s, cmd: '%s', block: %d",
-            srv_name, chan_name, cmd, block);
-    res = _ui_hdr_srv_cmd(srv_name, chan_name, cmd2, block);
+    DBG_FR("srv_name: %s, chat_name: %s, cmd: '%s', block: %d",
+            srv_name, chat_name, cmd, block);
+    res = _ui_hdr_srv_cmd(srv_name, chat_name, cmd2, block);
 
     free(cmd2);
     return res;
 }
 
 /**
- * @brief join a channel of current server
+ * @brief join a chatnel of current server
  *
- * @param chan_name
+ * @param chat_name
  */
-int ui_hdr_srv_join(const char *chan_name, const char *passwd){
+int ui_hdr_srv_join(const char *chat_name, const char *passwd){
     const char *srv_name;
-    SrainChan *chan;
+    SrainChat *chat;
 
-    chan = srain_window_get_cur_chan(srain_win);
-    srv_name = srain_chan_get_srv_name(chan);
+    chat = srain_window_get_cur_chat(srain_win);
+    srv_name = srain_chat_get_srv_name(chat);
 
-    DBG_FR("srv_name: %s, chan_name: %s, passwd: %s",
-            srv_name, chan_name, passwd);
+    DBG_FR("srv_name: %s, chat_name: %s, passwd: %s",
+            srv_name, chat_name, passwd);
 
-    return _ui_hdr_srv_join(srv_name, chan_name, passwd);
+    return _ui_hdr_srv_join(srv_name, chat_name, passwd);
 }
 
-int ui_hdr_srv_part(SrainChan *chan, const char *reason){
+int ui_hdr_srv_part(SrainChat *chat, const char *reason){
     const char *srv_name;
-    const char *chan_name;
+    const char *chat_name;
 
-    srv_name = srain_chan_get_srv_name(chan);
-    chan_name = srain_chan_get_name(chan);
+    srv_name = srain_chat_get_srv_name(chat);
+    chat_name = srain_chat_get_name(chat);
 
-    DBG_FR("srv_name: %s, chan_name: %s, reason: %s",
-            srv_name, chan_name, reason);
+    DBG_FR("srv_name: %s, chat_name: %s, reason: %s",
+            srv_name, chat_name, reason);
 
-    return _ui_hdr_srv_part(srv_name, chan_name, reason);
+    return _ui_hdr_srv_part(srv_name, chat_name, reason);
 }
 
-int ui_hdr_srv_send(SrainChan *chan, const char *msg){
-    const char *chan_name;
+int ui_hdr_srv_send(SrainChat *chat, const char *msg){
+    const char *chat_name;
     const char *srv_name;
 
-    if (chan == NULL){
-        ERR_FR("chan: NULL, msg: %s", msg);
+    if (chat == NULL){
+        ERR_FR("chat: NULL, msg: %s", msg);
         return -1;
     }
 
-    srv_name = srain_chan_get_srv_name(chan);
-    chan_name = srain_chan_get_name(chan);
+    srv_name = srain_chat_get_srv_name(chat);
+    chat_name = srain_chat_get_name(chat);
 
-    DBG_FR("srv_name: %s, chan_name: %s, msg: '%s'", srv_name, chan_name, msg);
+    DBG_FR("srv_name: %s, chat_name: %s, msg: '%s'", srv_name, chat_name, msg);
 
-    return _ui_hdr_srv_send(srv_name, chan_name, msg);
+    return _ui_hdr_srv_send(srv_name, chat_name, msg);
 }

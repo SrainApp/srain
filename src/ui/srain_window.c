@@ -17,7 +17,7 @@
 #include "theme.h"
 #include "srain_app.h"
 #include "srain_window.h"
-#include "srain_chan.h"
+#include "srain_chat.h"
 #include "srain_stack_sidebar.h"
 #include "tray_icon.h"
 
@@ -27,7 +27,7 @@
 
 typedef struct {
     // join_popover
-    GtkEntry *join_chan_entry;
+    GtkEntry *join_chat_entry;
     GtkEntry *join_pwd_entry;
 } JoinEntries;
 
@@ -61,7 +61,7 @@ struct _SrainWindow {
 
     // join_popover
     GtkPopover *join_popover;
-    GtkEntry *join_chan_entry;
+    GtkEntry *join_chat_entry;
     GtkEntry *join_pwd_entry;
     GtkButton *join_button;
     JoinEntries join_entries;
@@ -137,22 +137,22 @@ static void popover_entry_on_activate(GtkWidget *widget, gpointer user_data){
 }
 
 static void join_button_on_click(gpointer user_data){
-    const char *chan;
+    const char *chat;
     const char *pwd;
     GString *cmd;
     JoinEntries *join_entries;
 
     join_entries = user_data;
 
-    chan = gtk_entry_get_text(join_entries->join_chan_entry);
+    chat = gtk_entry_get_text(join_entries->join_chat_entry);
     pwd = gtk_entry_get_text(join_entries->join_pwd_entry);
 
     cmd = g_string_new("");
-    g_string_printf(cmd, "/join %s %s", chan, pwd);
-    ui_hdr_srv_cmd(srain_window_get_cur_chan(srain_win), cmd->str, 0);
+    g_string_printf(cmd, "/join %s %s", chat, pwd);
+    ui_hdr_srv_cmd(srain_window_get_cur_chat(srain_win), cmd->str, 0);
     g_string_free(cmd, TRUE);
 
-    gtk_entry_set_text(join_entries->join_chan_entry, "");
+    gtk_entry_set_text(join_entries->join_chat_entry, "");
     gtk_entry_set_text(join_entries->join_pwd_entry, "");
 
 }
@@ -187,7 +187,7 @@ static void conn_button_on_click(gpointer user_data){
     if (ssl && !no_verify) g_string_append_printf(cmd, "ssl=on,");
     if (ssl && no_verify) g_string_append_printf(cmd, "ssl=noverify,");
 
-    ui_hdr_srv_cmd(srain_window_get_cur_chan(srain_win), strdup(cmd->str), 0);
+    ui_hdr_srv_cmd(srain_window_get_cur_chat(srain_win), strdup(cmd->str), 0);
 
     g_string_free(cmd, TRUE);
 
@@ -232,7 +232,7 @@ static void srain_window_init(SrainWindow *self){
     gtk_widget_init_template(GTK_WIDGET(self));
 
     // Filling entries
-    self->join_entries.join_chan_entry = self->join_chan_entry;
+    self->join_entries.join_chat_entry = self->join_chat_entry;
     self->join_entries.join_pwd_entry = self->join_pwd_entry;
     self->conn_entries.conn_addr_entry = self->conn_addr_entry;
     self->conn_entries.conn_port_entry = self->conn_port_entry;
@@ -277,7 +277,7 @@ static void srain_window_init(SrainWindow *self){
             G_CALLBACK(conn_button_on_click), &(self->conn_entries));
 
     // Press ENTER to move focus or submit entries' messages
-    g_signal_connect(self->join_chan_entry, "activate",
+    g_signal_connect(self->join_chat_entry, "activate",
             G_CALLBACK(popover_entry_on_activate), self->join_button);
     g_signal_connect(self->join_pwd_entry, "activate",
             G_CALLBACK(popover_entry_on_activate), self->join_button);
@@ -326,7 +326,7 @@ static void srain_window_class_init(SrainWindowClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, sidebar_box);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, join_popover);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, conn_popover);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, join_chan_entry);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, join_chat_entry);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, join_pwd_entry);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, join_button);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, conn_addr_entry);
@@ -343,92 +343,92 @@ SrainWindow* srain_window_new(SrainApp *app){
     return g_object_new(SRAIN_TYPE_WINDOW, "application", app, NULL);
 }
 
-SrainChan* srain_window_add_chan(SrainWindow *win, const char *server_name,
-        const char *chan_name, ChatType type){
-    SrainChan *chan;
+SrainChat* srain_window_add_chat(SrainWindow *win, const char *server_name,
+        const char *chat_name, ChatType type){
+    SrainChat *chat;
 
-    if (srain_window_get_chan_by_name(win, server_name, chan_name)){
-        ERR_FR("server_name: %s, chan_name: %s, already exist",
-                server_name, chan_name);
+    if (srain_window_get_chat_by_name(win, server_name, chat_name)){
+        ERR_FR("server_name: %s, chat_name: %s, already exist",
+                server_name, chat_name);
         return NULL;
     }
 
-    chan = srain_chan_new(server_name, chan_name, type);
+    chat = srain_chat_new(server_name, chat_name, type);
 
     GString *gstr = g_string_new("");
-    g_string_printf(gstr, "%s %s", server_name, chan_name);
-    gtk_stack_add_named(win->stack, GTK_WIDGET(chan), gstr->str);
+    g_string_printf(gstr, "%s %s", server_name, chat_name);
+    gtk_stack_add_named(win->stack, GTK_WIDGET(chat), gstr->str);
     g_string_free(gstr, TRUE);
 
     theme_apply(GTK_WIDGET(win));
 
-    gtk_stack_set_visible_child (win->stack, GTK_WIDGET(chan));
-    return chan;
+    gtk_stack_set_visible_child (win->stack, GTK_WIDGET(chat));
+    return chat;
 }
 
-void srain_window_rm_chan(SrainWindow *win, SrainChan *chan){
-    char *chan_name;
+void srain_window_rm_chat(SrainWindow *win, SrainChat *chat){
+    char *chat_name;
     char *server_name;
 
-    chan_name = g_object_get_data(G_OBJECT(chan), "chan-name");
-    server_name = g_object_get_data(G_OBJECT(chan), "server-name");
-    free(chan_name);
+    chat_name = g_object_get_data(G_OBJECT(chat), "chat-name");
+    server_name = g_object_get_data(G_OBJECT(chat), "server-name");
+    free(chat_name);
     free(server_name);
 
-    srain_user_list_clear(srain_chan_get_user_list(chan));
-    gtk_container_remove(GTK_CONTAINER(win->stack), GTK_WIDGET(chan));
+    srain_user_list_clear(srain_chat_get_user_list(chat));
+    gtk_container_remove(GTK_CONTAINER(win->stack), GTK_WIDGET(chat));
 }
 
-SrainChan* srain_window_get_cur_chan(SrainWindow *win){
-    SrainChan *chan = NULL;
+SrainChat* srain_window_get_cur_chat(SrainWindow *win){
+    SrainChat *chat = NULL;
 
-    chan = SRAIN_CHAN(gtk_stack_get_visible_child(win->stack));
+    chat = SRAIN_CHAN(gtk_stack_get_visible_child(win->stack));
 
     // TODO:
-    //  if (chan == NULL) ERR_FR("no visible chan");
+    //  if (chat == NULL) ERR_FR("no visible chat");
 
-    return chan;
+    return chat;
 }
 
-SrainChan* srain_window_get_chan_by_name(SrainWindow *win,
-        const char *server_name, const char *chan_name){
-    SrainChan *chan = NULL;
+SrainChat* srain_window_get_chat_by_name(SrainWindow *win,
+        const char *server_name, const char *chat_name){
+    SrainChat *chat = NULL;
 
     GString *name = g_string_new("");
-    g_string_printf(name, "%s %s", server_name, chan_name);
-    chan = SRAIN_CHAN(gtk_stack_get_child_by_name(win->stack, name->str));
+    g_string_printf(name, "%s %s", server_name, chat_name);
+    chat = SRAIN_CHAN(gtk_stack_get_child_by_name(win->stack, name->str));
     g_string_free(name, TRUE);
 
-    return chan;
+    return chat;
 }
 
 /**
- * @brief Find out all SrainChans with the server_name given as argument
+ * @brief Find out all SrainChats with the server_name given as argument
  *
  * @param win
  * @param server_name
  *
  * @return a GList, may be NULL, should be freed by caller
  */
-GList* srain_window_get_chans_by_srv_name(SrainWindow *win,
+GList* srain_window_get_chats_by_srv_name(SrainWindow *win,
         const char *server_name){
-    GList *all_chans;
-    GList *chans = NULL;
-    SrainChan *chan = NULL;
+    GList *all_chats;
+    GList *chats = NULL;
+    SrainChat *chat = NULL;
 
-    all_chans = gtk_container_get_children(GTK_CONTAINER(win->stack));
-    while (all_chans){
-        chan = SRAIN_CHAN(all_chans->data);
+    all_chats = gtk_container_get_children(GTK_CONTAINER(win->stack));
+    while (all_chats){
+        chat = SRAIN_CHAN(all_chats->data);
 
         if (strncmp(server_name,
-                    srain_chan_get_srv_name(chan),
+                    srain_chat_get_srv_name(chat),
                     strlen(server_name)) == 0){
-            chans = g_list_append(chans, chan);
+            chats = g_list_append(chats, chat);
         }
-        all_chans = g_list_next(all_chans);
+        all_chats = g_list_next(all_chats);
     }
 
-    return chans;
+    return chats;
 }
 
 void srain_window_spinner_toggle(SrainWindow *win, gboolean is_busy){
@@ -437,11 +437,11 @@ void srain_window_spinner_toggle(SrainWindow *win, gboolean is_busy){
         : gtk_spinner_stop(win->spinner);
 }
 
-void srain_window_stack_sidebar_update(SrainWindow *win, SrainChan *chan,
+void srain_window_stack_sidebar_update(SrainWindow *win, SrainChat *chat,
         const char *nick, const char *msg){
-    if (SRAIN_CHAN(gtk_stack_get_visible_child(win->stack)) != chan){
-        srain_stack_sidebar_update(win->sidebar, chan, nick, msg, 0);
+    if (SRAIN_CHAN(gtk_stack_get_visible_child(win->stack)) != chat){
+        srain_stack_sidebar_update(win->sidebar, chat, nick, msg, 0);
     } else {
-        srain_stack_sidebar_update(win->sidebar, chan, nick, msg, 1);
+        srain_stack_sidebar_update(win->sidebar, chat, nick, msg, 1);
     }
 }

@@ -146,7 +146,7 @@ int srv_session_cmd(srv_session_t *session, const char *source, char *cmd, int b
     if (IS_CMD(cmd, "/query")){
         char *target = strtok(cmd + strlen("/query"), " ");
         if (IS_CHAN(target)) goto bad;
-        srv_hdr_ui_add_chan(session->host, target, session->nickname, CHAT_PRIVATE);
+        srv_hdr_ui_add_chat(session->host, target, session->nickname, CHAT_PRIVATE);
         srv_session_whois(session, target);
     }
 
@@ -155,7 +155,7 @@ int srv_session_cmd(srv_session_t *session, const char *source, char *cmd, int b
         char *target = strtok(cmd + strlen("/unquery"), " ");
         if (!target) target = (char *)source;
         if (IS_CHAN(target)) goto bad;
-        srv_hdr_ui_rm_chan(session->host, target);
+        srv_hdr_ui_rm_chat(session->host, target);
     }
 
     /* Usage: /join <channel> [password] */

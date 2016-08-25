@@ -19,7 +19,7 @@
 struct _SrainStackSidebarItem {
     GtkBox parent;
     GtkImage *image;
-    GtkLabel *chan_label;
+    GtkLabel *chat_label;
     GtkLabel *server_label;
     GtkLabel *recentmsg_label;
     GtkLabel *count_label;
@@ -39,22 +39,22 @@ static void srain_stack_sidebar_item_class_init(SrainStackSidebarItemClass *clas
     gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
             "/org/gtk/srain/stack_sidebar_item.glade");
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainStackSidebarItem, image);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainStackSidebarItem, chan_label);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainStackSidebarItem, chat_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainStackSidebarItem, recentmsg_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainStackSidebarItem, server_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainStackSidebarItem, count_label);
 }
 
 SrainStackSidebarItem *srain_stack_sidebar_item_new(const char *server_name,
-        const char *chan_name, ChatType type){
+        const char *chat_name, ChatType type){
     SrainStackSidebarItem *item;
 
-    g_return_val_if_fail(chan_name, NULL);
+    g_return_val_if_fail(chat_name, NULL);
     g_return_val_if_fail(server_name, NULL);
 
     item = g_object_new(SRAIN_TYPE_STACK_SIDEBAR_ITEM, NULL);
 
-    gtk_label_set_text(item->chan_label, chan_name);
+    gtk_label_set_text(item->chat_label, chat_name);
     gtk_label_set_text(item->server_label, server_name);
 
     switch (type){

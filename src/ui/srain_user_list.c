@@ -1,6 +1,6 @@
 /**
  * @file srain_user_list.c
- * @brief Listbox used to display user list of channel
+ * @brief Listbox used to display user list of chatnel
  * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-04-03
@@ -234,7 +234,7 @@ int srain_user_list_rm(SrainUserList *list, const char *nick){
  *
  * @return 0 if successed, -1 if failed
  *
- * If `old_nick` == `new_nick`, change its user type.
+ * If `old_nick` == `new_nick`, chatge its user type.
  */
 int srain_user_list_rename(SrainUserList *list, const char *old_nick,
                            const char *new_nick, UserType type){
@@ -265,7 +265,7 @@ int srain_user_list_rename(SrainUserList *list, const char *old_nick,
         label = GTK_LABEL(g_object_get_data(G_OBJECT(row), "label"));
         gtk_label_set_text(label, new_nick);
     } else {
-        /* Change someone's UserType */
+        /* Chatge someone's UserType */
         old_type = (UserType)g_object_get_data(G_OBJECT(row), "user-type");
         g_object_set_data(G_OBJECT(row), "user-type", (void *)type);
 

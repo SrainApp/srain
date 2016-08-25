@@ -7,7 +7,7 @@
     <property name="can_focus">False</property>
     <property name="icon_name">srain-black</property>
   </object>
-  <object class="GtkImage" id="chan_image">
+  <object class="GtkImage" id="chat_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="icon_name">srain-chan</property>
@@ -70,7 +70,7 @@
                 <property name="focus_on_click">False</property>
                 <property name="receives_default">True</property>
                 <property name="tooltip_text" translatable="yes">Join</property>
-                <property name="image">chan_image</property>
+                <property name="image">chat_image</property>
                 <property name="relief">none</property>
               </object>
               <packing>
@@ -354,7 +354,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry" id="join_chan_entry">
+              <object class="GtkEntry" id="join_chat_entry">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
               </object>

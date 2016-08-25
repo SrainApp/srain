@@ -14,7 +14,6 @@
 #include "ui_test.h"
 #include "srain_app.h"
 #include "srain_window.h"
-#include "srain_chan.h"
 
 #include "meta.h"
 #include "rc.h"
