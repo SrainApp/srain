@@ -33,11 +33,11 @@
 /* SrainMsg {{ */
 #normal_sys_msg_box #msg_label,
 #error_sys_msg_box #msg_label,
-#notice_sys_msg_box #msg_label,
+#command_sys_msg_box #msg_label,
 #action_sys_msg_box #msg_label,
 #normal_sys_msg_box #msg_label selection,
 #error_sys_msg_box #msg_label selection,
-#notice_sys_msg_box #msg_label selection,
+#command_sys_msg_box #msg_label selection,
 #action_sys_msg_box #msg_label selection {
     color: @sys_msg_text_color;
     border-radius: 4px;
@@ -45,7 +45,7 @@
 
 #normal_sys_msg_box #msg_label { background-color: @normal_sys_msg_color; }
 #error_sys_msg_box #msg_label { background-color: @error_sys_msg_color; }
-#notice_sys_msg_box #msg_label { background-color: @notice_sys_msg_color; }
+#command_sys_msg_box #msg_label { background-color: @command_sys_msg_color; }
 #action_sys_msg_box #msg_label { background-color: @action_sys_msg_color; }
 #normal_send_msg_box #padding_box,
 #normal_recv_msg_box #padding_box {

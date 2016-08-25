@@ -7,9 +7,8 @@
 typedef enum {
     SYS_MSG_NORMAL,
     SYS_MSG_ERROR,
-    SYS_MSG_NOTICE,
-    SYS_MSG_ACTION,
-    /* ... */
+    SYS_MSG_COMMAND,
+    SYS_MSG_ACTION
 } SysMsgType;
 
 struct _SrainSysMsg {

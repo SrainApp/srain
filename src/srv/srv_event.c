@@ -17,6 +17,7 @@
 #include "libirc_rfcnumeric.h"
 #include "norfc1459_numeric.h"
 
+
 #include "srv_session.h"
 #include "srv_event.h"
 #include "srv_hdr.h"
@@ -387,7 +388,6 @@ void srv_event_privmsg(irc_session_t *irc_session, const char *event,
 
 void srv_event_notice(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
-    char buf[512];
     srv_session_t *sess;
 
     sess = irc_get_ctx(irc_session);
@@ -402,17 +402,14 @@ void srv_event_notice(irc_session_t *irc_session, const char *event,
 
     strip(msg);
 
-    snprintf(buf, sizeof(buf), _("%s | %s"), origin, msg);
-
-    srv_hdr_ui_sys_msg(sess->host, origin, buf, SYS_MSG_NOTICE);
-    chat_log_fmt(sess->host, origin, "[%s] %s", origin, buf);
+    srv_hdr_ui_recv_msg(sess->host, origin, origin, "", msg);
+    chat_log_fmt(sess->host, origin, "[%s] %s", origin, msg);
 
     free(msg);
 }
 
 void srv_event_channel_notice(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
-    char buf[512];
     srv_session_t *sess;
 
     sess = irc_get_ctx(irc_session);
@@ -425,10 +422,8 @@ void srv_event_channel_notice(irc_session_t *irc_session, const char *event,
 
     strip(msg);
 
-    snprintf(buf, sizeof(buf), _("%s | %s"), origin, msg);
-
-    srv_hdr_ui_sys_msg(sess->host, chan, buf, SYS_MSG_NOTICE);
-    chat_log_fmt(sess->host, chan, "[%s] %s", origin, buf);
+    srv_hdr_ui_recv_msg(sess->host, chan, origin, "", msg);
+    chat_log_fmt(sess->host, chan, "[%s] %s", origin, msg);
 
     free(msg);
 }

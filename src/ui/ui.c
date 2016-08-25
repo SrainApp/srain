@@ -363,7 +363,7 @@ int ui_rm_chat_sync(const char *srv_name, const char *chat_name){
  * @param chat_name
  * @param msg
  * @param type SrainStackSidebar should be updated
- *             when type = SYS_MSG_ACTION or SYS_MSG_ERROR or SYS_MSG_NOTICE
+ *             when type = SYS_MSG_ACTION or SYS_MSG_ERROR
  */
 void ui_sys_msg_sync(const char *srv_name, const char *chat_name,
         const char *msg, SysMsgType type){
@@ -371,16 +371,11 @@ void ui_sys_msg_sync(const char *srv_name, const char *chat_name,
     SrainMsgList *list;
 
     chat = srain_window_get_chat_by_name(srain_win, srv_name, chat_name);
-
     if (!chat){
-        if (type == SYS_MSG_ERROR){
-            chat = srain_window_get_cur_chat(srain_win);
+        chat = srain_window_get_cur_chat(srain_win);
 
-            /* Current SrainChat doesn't belong to `srv_name` */
-            if (strcmp(srain_chat_get_srv_name(chat), srv_name)){
-                chat = srain_window_get_chat_by_name(srain_win, srv_name, META_SERVER);
-            }
-        } else {
+        /* Current SrainChat doesn't belong to `srv_name` */
+        if (strcmp(srain_chat_get_srv_name(chat), srv_name) != 0){
             chat = srain_window_get_chat_by_name(srain_win, srv_name, META_SERVER);
         }
     }
@@ -391,8 +386,7 @@ void ui_sys_msg_sync(const char *srv_name, const char *chat_name,
     srain_msg_list_sys_msg_add(list, msg, type);
 
     if (type == SYS_MSG_ACTION
-            || type == SYS_MSG_ERROR
-            || type == SYS_MSG_NOTICE){
+            || type == SYS_MSG_ERROR){
         srain_window_stack_sidebar_update(srain_win, chat, NULL, msg);
     }
 }
