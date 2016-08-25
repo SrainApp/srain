@@ -234,42 +234,53 @@ void srv_event_mode(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
     char msg[512];
     srv_session_t *sess;
-    channel_t *chan;
-    GList *chan_list;
 
     sess = irc_get_ctx(irc_session);
 
     PRINT_EVENT_PARAM;
     CHECK_COUNT(2);
 
-    const char *chan_name = params[0];
+    const char *chan = params[0];
     const char *mode = params[1];
     const char *mode_args = count >= 3 ? params[2] : "";
 
     snprintf(msg, sizeof(msg), _("mode %s %s %s by %s"),
-            chan_name, mode, mode_args, origin);
+            chan, mode, mode_args, origin);
 
-    // TODO: fix srian_user_list_rename plz
-    //
-    chan_list = sess->chan_list;
-    while (chan_list){
-        chan = chan_list->data;
-        if (srv_session_user_exist(sess, chan->name, origin)){
-            srv_hdr_ui_ren_user(sess->host, chan->name, origin, origin, 0);
-            srv_hdr_ui_sys_msg(sess->host, chan->name, msg, SYS_MSG_NORMAL);
-            chat_log_log(sess->host, chan->name, msg);
-        }
-        chan_list = g_list_next(chan_list);
+    srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_NORMAL);
+    chat_log_log(sess->host, chan, msg);
+
+    if (mode[0] == '-'){
+        srv_hdr_ui_ren_user(sess->host, chan, mode_args, mode_args, USER_CHIGUA);
     }
-
-    switch (mode[1]){
-        case 'q':
-        case 'a':
-        case 'o':
-        case 'h':
-        case 'v':
-        default:
-            break;
+    else if (mode[0] == '+'){
+        switch (mode[1]){
+            case 'q':
+                srv_hdr_ui_ren_user(sess->host, chan, mode_args, mode_args,
+                        USER_OWNER);
+                break;
+            case 'a':
+                srv_hdr_ui_ren_user(sess->host, chan, mode_args, mode_args,
+                        USER_ADMIN);
+                break;
+            case 'o':
+                srv_hdr_ui_ren_user(sess->host, chan, mode_args, mode_args,
+                        USER_FULL_OP);
+                break;
+            case 'h':
+                srv_hdr_ui_ren_user(sess->host, chan, mode_args, mode_args,
+                        USER_HALF_OP);
+                break;
+            case 'v':
+                srv_hdr_ui_ren_user(sess->host, chan, mode_args, mode_args,
+                        USER_VOICED);
+                break;
+            default:
+                break;
+        }
+    } else {
+        ERR_FR("Wrong mode: %s. chan: %s, mode_args: %s",
+                mode, chan, mode_args);
     }
 }
 

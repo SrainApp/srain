@@ -185,7 +185,7 @@ int srain_user_list_add(SrainUserList *list, const char *nick, UserType type){
     gtk_widget_set_name(GTK_WIDGET(row), nick);
     g_object_set_data(G_OBJECT(row), "user-type", (void *)type);
     g_object_set_data(G_OBJECT(row), "label", label);
-    g_object_set_data(G_OBJECT(row), "image", label);
+    g_object_set_data(G_OBJECT(row), "image", image);
 
     list->num_total++;
     list->num_type[type]++;
@@ -249,7 +249,7 @@ int srain_user_list_rename(SrainUserList *list, const char *old_nick,
     }
 
     row = gtk_list_box_get_row_by_name(GTK_LIST_BOX(list->list_box), new_nick);
-    if (row && strcasecmp(old_nick, new_nick) != 0){
+    if (row && strcmp(old_nick, new_nick) != 0){
         DBG_FR("GtkListBoxRow %s already exist", new_nick);
         return -1;
     }
