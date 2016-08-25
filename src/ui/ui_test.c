@@ -79,79 +79,79 @@ void ui_test(){
     ui_recv_msg_sync("irc.freenode.net", "#summer-time-record",
             "ヒビヤ", "", "バスッ!");
 
-    // Test ui_user_list_add
-    assert(ui_user_list_add_sync("chat.freenode.net", "#non-exist",
+    // Test ui_add_user
+    assert(ui_add_user_sync("chat.freenode.net", "#non-exist",
                 "la", USER_FULL_OP) == -1);
 
     // Test srain_user_list_add
-    assert(ui_user_list_add_sync("chat.freenode.net", "#srain",
+    assert(ui_add_user_sync("chat.freenode.net", "#srain",
                 "la", USER_FULL_OP) == 0);
-    assert(ui_user_list_add_sync("chat.freenode.net", "#srain",
+    assert(ui_add_user_sync("chat.freenode.net", "#srain",
                 "la2", USER_CHIGUA) == 0);
-    assert(ui_user_list_add_sync("chat.freenode.net", "#srain",
+    assert(ui_add_user_sync("chat.freenode.net", "#srain",
                 "la", USER_FULL_OP) == -1);
-    assert(ui_user_list_add_sync("chat.freenode.net", "#srain",
+    assert(ui_add_user_sync("chat.freenode.net", "#srain",
                 "la", USER_CHIGUA) == -1);
-    assert(ui_user_list_add_sync("chat.freenode.net", "#srain",
+    assert(ui_add_user_sync("chat.freenode.net", "#srain",
                 "la4", USER_CHIGUA) == 0);
 
-    // Test ui_user_list_rm: la, la2, la4
-    assert(ui_user_list_rm_sync("chat.freenode.net", "#non-exist",
+    // Test ui_rm_user: la, la2, la4
+    assert(ui_rm_user_sync("chat.freenode.net", "#non-exist",
                 "la") == -1);
 
     // Test srain_user_list_rm: la, la2, la4
-    assert(ui_user_list_rm_sync("chat.freenode.net", "#srain",
+    assert(ui_rm_user_sync("chat.freenode.net", "#srain",
                 "la3") == -1);
-    assert(ui_user_list_rm_sync("chat.freenode.net", "#srain",
+    assert(ui_rm_user_sync("chat.freenode.net", "#srain",
                 "la") == 0);
 
-    // Test ui_user_list_rename: la2, la4
-    ui_user_list_rename_sync("chat.freenode.net", "#srain",
+    // Test ui_ren_user: la2, la4
+    ui_ren_user_sync("chat.freenode.net", "#srain",
                 "la2", "la", USER_FULL_OP);
     // Test srain_user_list_rename: la2, la4
-    ui_user_list_rename_sync("chat.freenode.net", "#srain",
+    ui_ren_user_sync("chat.freenode.net", "#srain",
                 "la2", "la", USER_FULL_OP);
-    ui_user_list_rename_sync("chat.freenode.net", "#srain",
+    ui_ren_user_sync("chat.freenode.net", "#srain",
                 "la4", "la", USER_FULL_OP);
-    ui_user_list_rename_sync("chat.freenode.net", "#srain",
+    ui_ren_user_sync("chat.freenode.net", "#srain",
                 "la5", "la6", USER_FULL_OP);
-    ui_user_list_rename_sync("chat.freenode.net", "#srain",
+    ui_ren_user_sync("chat.freenode.net", "#srain",
                 "la", "la2", USER_CHIGUA);
-    ui_user_list_rename_sync("chat.freenode.net", "#srain",
+    ui_ren_user_sync("chat.freenode.net", "#srain",
                 "la2", "la2", USER_CHIGUA);
-    ui_user_list_rename_sync("chat.freenode.net", "#srain",
+    ui_ren_user_sync("chat.freenode.net", "#srain",
                 "la2", "la2", USER_FULL_OP);
 
     // Clear list
-    assert(ui_user_list_rm_sync("chat.freenode.net", "#srain",
+    assert(ui_rm_user_sync("chat.freenode.net", "#srain",
                 "la2") == 0);
-    assert(ui_user_list_rm_sync("chat.freenode.net", "#srain",
+    assert(ui_rm_user_sync("chat.freenode.net", "#srain",
                 "la4") == 0);
 
     // Test SrainUserList sort function: <empty>
-    assert(ui_user_list_add_sync("chat.freenode.net", "#srain",
+    assert(ui_add_user_sync("chat.freenode.net", "#srain",
                 "chigua", USER_CHIGUA) == 0);
-    assert(ui_user_list_add_sync("chat.freenode.net", "#srain",
+    assert(ui_add_user_sync("chat.freenode.net", "#srain",
                 "owner", USER_OWNER) == 0);
-    assert(ui_user_list_add_sync("chat.freenode.net", "#srain",
+    assert(ui_add_user_sync("chat.freenode.net", "#srain",
                 "voiced2", USER_VOICED) == 0);
-    assert(ui_user_list_add_sync("chat.freenode.net", "#srain",
+    assert(ui_add_user_sync("chat.freenode.net", "#srain",
                 "owner2", USER_OWNER) == 0);
-    assert(ui_user_list_add_sync("chat.freenode.net", "#srain",
+    assert(ui_add_user_sync("chat.freenode.net", "#srain",
                 "admin2", USER_ADMIN) == 0);
-    assert(ui_user_list_add_sync("chat.freenode.net", "#srain",
+    assert(ui_add_user_sync("chat.freenode.net", "#srain",
                 "voiced", USER_VOICED) == 0);
-    assert(ui_user_list_add_sync("chat.freenode.net", "#srain",
+    assert(ui_add_user_sync("chat.freenode.net", "#srain",
                 "chigua2", USER_CHIGUA) == 0);
-    assert(ui_user_list_add_sync("chat.freenode.net", "#srain",
+    assert(ui_add_user_sync("chat.freenode.net", "#srain",
                 "full-op2", USER_FULL_OP) == 0);
-    assert(ui_user_list_add_sync("chat.freenode.net", "#srain",
+    assert(ui_add_user_sync("chat.freenode.net", "#srain",
                 "half-op", USER_HALF_OP) == 0);
-    assert(ui_user_list_add_sync("chat.freenode.net", "#srain",
+    assert(ui_add_user_sync("chat.freenode.net", "#srain",
                 "half-op2", USER_HALF_OP) == 0);
-    assert(ui_user_list_add_sync("chat.freenode.net", "#srain",
+    assert(ui_add_user_sync("chat.freenode.net", "#srain",
                 "admin", USER_ADMIN) == 0);
-    assert(ui_user_list_add_sync("chat.freenode.net", "#srain",
+    assert(ui_add_user_sync("chat.freenode.net", "#srain",
                 "full-op", USER_FULL_OP) == 0);
 }
 

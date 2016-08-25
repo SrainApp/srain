@@ -119,7 +119,7 @@ void srv_event_nick(irc_session_t *irc_session, const char *event,
             srv_session_rm_user(sess, chan->name, origin);
             srv_session_add_user(sess, chan->name, new_nick);
 
-            srv_hdr_ui_user_list_rename(sess->host, chan->name, origin, new_nick, 0);
+            srv_hdr_ui_ren_user(sess->host, chan->name, origin, new_nick, 0);
             srv_hdr_ui_sys_msg(sess->host, chan->name, msg, SYS_MSG_NORMAL);
 
             chat_log_log(sess->host, chan->name, msg);
@@ -154,7 +154,7 @@ void srv_event_quit(irc_session_t *irc_session, const char *event,
         if (srv_session_user_exist(sess, chan->name, origin)){
             srv_session_rm_user(sess, chan->name, origin);
 
-            srv_hdr_ui_user_list_rm(sess->host, chan->name, origin);
+            srv_hdr_ui_rm_user(sess->host, chan->name, origin);
             srv_hdr_ui_sys_msg(sess->host, chan->name, msg, SYS_MSG_NORMAL);
 
             chat_log_log(sess->host, chan->name, msg);
@@ -195,7 +195,7 @@ void srv_event_join(irc_session_t *irc_session, const char *event,
     srv_session_add_user(sess, chan, origin);
 
     /* UI user list */
-    srv_hdr_ui_user_list_add(sess->host, chan, origin, USER_CHIGUA);
+    srv_hdr_ui_add_user(sess->host, chan, origin, USER_CHIGUA);
 
     snprintf(msg, sizeof(msg), _("%s has joined %s"), origin, chan);
     srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_NORMAL);
@@ -215,7 +215,7 @@ void srv_event_part(irc_session_t *irc_session, const char *event,
     const char *chan = params[0];
     const char *reason = count >= 2 ? params[1] : "";;
 
-    srv_hdr_ui_user_list_rm(sess->host, chan, origin);
+    srv_hdr_ui_rm_user(sess->host, chan, origin);
 
     srv_session_rm_user(sess, chan, origin);
 
@@ -255,7 +255,7 @@ void srv_event_mode(irc_session_t *irc_session, const char *event,
     while (chan_list){
         chan = chan_list->data;
         if (srv_session_user_exist(sess, chan->name, origin)){
-            srv_hdr_ui_user_list_rename(sess->host, chan->name, origin, origin, 0);
+            srv_hdr_ui_ren_user(sess->host, chan->name, origin, origin, 0);
             srv_hdr_ui_sys_msg(sess->host, chan->name, msg, SYS_MSG_NORMAL);
             chat_log_log(sess->host, chan->name, msg);
         }
@@ -331,7 +331,7 @@ void srv_event_kick(irc_session_t *irc_session, const char *event,
     srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_ERROR);
     chat_log_log(sess->host, chan, msg);
 
-    srv_hdr_ui_user_list_rm(sess->host, chan, kick_nick);
+    srv_hdr_ui_rm_user(sess->host, chan, kick_nick);
 }
 
 void srv_event_channel(irc_session_t *irc_session, const char *event,
@@ -557,7 +557,7 @@ void srv_event_numeric (irc_session_t *irc_session, unsigned int event,
                         default:
                             type = USER_CHIGUA;
                     }
-                    srv_hdr_ui_user_list_add(sess->host, chan, nickptr, type);
+                    srv_hdr_ui_add_user(sess->host, chan, nickptr, type);
                     srv_session_add_user(sess, chan, nickptr);
                     nickptr = strtok(NULL, " ");
                 }

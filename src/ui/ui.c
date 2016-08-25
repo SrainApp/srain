@@ -86,29 +86,29 @@ int ui_idle(CommonUIData *data){
         const char *msg = data->msg;
         ui_recv_msg_sync(srv_name, chat_name, nick, id, msg);
     }
-    else if (data->ui_interface == ui_user_list_add_sync){
-        DBG_FR("ui_user_list_add_sync");
+    else if (data->ui_interface == ui_add_user_sync){
+        DBG_FR("ui_add_user_sync");
         const char *srv_name = data->srv_name;
         const char *chat_name = data->chat_name;
         const char *nick = data->nick;
         UserType type = data->type;
-        ui_user_list_add_sync(srv_name, chat_name, nick, type);
+        ui_add_user_sync(srv_name, chat_name, nick, type);
     }
-    else if (data->ui_interface == ui_user_list_rm_sync){
-        DBG_FR("ui_user_list_rm_sync");
+    else if (data->ui_interface == ui_rm_user_sync){
+        DBG_FR("ui_rm_user_sync");
         const char *srv_name = data->srv_name;
         const char *chat_name = data->chat_name;
         const char *nick = data->nick;
-        ui_user_list_rm_sync(srv_name, chat_name, nick);
+        ui_rm_user_sync(srv_name, chat_name, nick);
     }
-    else if (data->ui_interface == ui_user_list_rename_sync){
-        DBG_FR("ui_user_list_rename_sync");
+    else if (data->ui_interface == ui_ren_user_sync){
+        DBG_FR("ui_ren_user_sync");
         const char *srv_name = data->srv_name;
         const char *chat_name = data->chat_name;
         const char *nick = data->nick;
         const char *new_nick = data->nick2;
         UserType type = data->type;
-        ui_user_list_rename_sync(srv_name, chat_name, nick, new_nick, type);
+        ui_ren_user_sync(srv_name, chat_name, nick, new_nick, type);
     }
     else if (data->ui_interface == ui_set_topic_sync){
         DBG_FR("ui_set_topic_sync");
@@ -227,7 +227,7 @@ void ui_recv_msg(const char *srv_name, const char *chat_name,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 
-void ui_user_list_add(const char *srv_name, const char *chat_name,
+void ui_add_user(const char *srv_name, const char *chat_name,
  const char *nick, UserType type){
     CommonUIData *data = g_malloc0(sizeof(CommonUIData));
 
@@ -235,7 +235,7 @@ void ui_user_list_add(const char *srv_name, const char *chat_name,
     g_return_if_fail(chat_name);
     g_return_if_fail(nick);
 
-    data->ui_interface = ui_user_list_add_sync;
+    data->ui_interface = ui_add_user_sync;
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
     strncpy(data->chat_name, chat_name, sizeof(data->chat_name));
     strncpy(data->nick, nick, sizeof(data->nick));
@@ -245,7 +245,7 @@ void ui_user_list_add(const char *srv_name, const char *chat_name,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 
-void ui_user_list_rm(const char *srv_name, const char *chat_name,
+void ui_rm_user(const char *srv_name, const char *chat_name,
         const char *nick){
     CommonUIData *data = g_malloc0(sizeof(CommonUIData));
 
@@ -253,7 +253,7 @@ void ui_user_list_rm(const char *srv_name, const char *chat_name,
     g_return_if_fail(chat_name);
     g_return_if_fail(nick);
 
-    data->ui_interface = ui_user_list_rm_sync;
+    data->ui_interface = ui_rm_user_sync;
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
     strncpy(data->chat_name, chat_name, sizeof(data->chat_name));
     strncpy(data->nick, nick, sizeof(data->nick));
@@ -262,7 +262,7 @@ void ui_user_list_rm(const char *srv_name, const char *chat_name,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 
-void ui_user_list_rename(const char *srv_name, const char *chat_name,
+void ui_ren_user(const char *srv_name, const char *chat_name,
         const char *old_nick, const char *new_nick, UserType type){
     CommonUIData *data = g_malloc0(sizeof(CommonUIData));
 
@@ -271,7 +271,7 @@ void ui_user_list_rename(const char *srv_name, const char *chat_name,
     g_return_if_fail(old_nick);
     g_return_if_fail(new_nick);
 
-    data->ui_interface = ui_user_list_rename_sync;
+    data->ui_interface = ui_ren_user_sync;
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
     strncpy(data->chat_name, chat_name, sizeof(data->chat_name));
     strncpy(data->nick, old_nick, sizeof(data->nick));
@@ -452,7 +452,7 @@ void ui_recv_msg_sync(const char *srv_name, const char *chat_name,
  *
  * @return 0 if successful, -1 if failed
  */
-int ui_user_list_add_sync(const char *srv_name, const char *chat_name,
+int ui_add_user_sync(const char *srv_name, const char *chat_name,
         const char *nick, UserType type){
     int res;
     SrainChat *chat;
@@ -484,7 +484,7 @@ int ui_user_list_add_sync(const char *srv_name, const char *chat_name,
  *
  * @return 0 if successful, -1 if failed
  */
-int ui_user_list_rm_sync(const char *srv_name, const char *chat_name,
+int ui_rm_user_sync(const char *srv_name, const char *chat_name,
         const char *nick){
     int res;
     SrainChat *chat;
@@ -518,7 +518,7 @@ int ui_user_list_rm_sync(const char *srv_name, const char *chat_name,
  * @param msg When nick was renamed in a chatnel, send `reason`
  *          to this chatnel using `ui_sys_msg()`
  */
-void ui_user_list_rename_sync(const char *srv_name, const char *chat_name, 
+void ui_ren_user_sync(const char *srv_name, const char *chat_name,
         const char *old_nick, const char *new_nick, UserType type){
     SrainChat *chat;
     SrainUserList *list;
