@@ -10,7 +10,7 @@ PACKAGE = srain
 PACKAGE_NAME = Srain
 PACKAGE_BUILD = $(shell [ -d .git ] || \
 				git rev-parse --git-dir > /dev/null 2>&1 && \
-				echo -n -git@`git rev-parse --short HEAD`)
+				echo -n -git@0.`git rev-list --count HEAD`.`git describe --always`)
 PACKAGE_VERSION = 0.05$(PACKAGE_BUILD)
 PACKAGE_AUTHOR = Shengyu Zhang
 PACKAGE_EMAIL = lastavengesr@outlook.com
@@ -20,88 +20,26 @@ PACKAGE_DATA_DIR = $(PREFIX)
 
 MAKE = make
 DEL = rm -rf
-CC = gcc
 INSTALL = install -v
-TEST_FLAG = NO_TEST
-DEFS = -D PACKAGE='"$(PACKAGE)"' \
-	   -D PACKAGE_NAME='"$(PACKAGE_NAME)"' \
-	   -D PACKAGE_VERSION='"$(PACKAGE_VERSION)"' \
-	   -D PACKAGE_AUTHOR='"$(PACKAGE_AUTHOR)"' \
-	   -D PACKAGE_EMAIL='"$(PACKAGE_EMAIL)"' \
-	   -D PACKAGE_DESC='"$(PACKAGE_DESC)"' \
-	   -D PACKAGE_WEBSITE='"$(PACKAGE_WEBSITE)"' \
-	   -D PACKAGE_DATA_DIR='"$(PACKAGE_DATA_DIR)"' \
-	   -D $(TEST_FLAG)
-CFLAGS = -O2 -Wall -I$(PWD)/src/inc
-GTK3FLAGS = $(shell pkg-config --cflags gtk+-3.0)
-GTK3LIBS = $(shell pkg-config --libs gtk+-3.0)
-PY3FLAGS = $(shell pkg-config --cflags python3)
-PY3LIBS = $(shell pkg-config --libs python3)
-CURLLIBS = $(shell pkg-config --libs libcurl)
-# LIBIRCCLINETFLAGS = $(shell pkg-config --cflags libircclient)
-# LIBIRCCLINETLIBS = $(shell pkg-config --libs libircclient)
-LIBIRCCLINETFLAGS = -lircclient
-LIBIRCCLINETLIBS = -I/usr/include/libircclient
-
-CFLAGS += $(DEFS) $(GTK3FLAGS) $(PY3FLAGS) $(LIBIRCCLINETFLAGS) \
-		  $(GTK3LIBS) $(PY3LIBS) $(CURLLIBS) $(LIBIRCCLINETLIBS)
 
 TARGET = build/srain
-SRCS = $(wildcard src/*.c src/*/*.c build/resources.c)
-OBJS = $(patsubst %.c, build/%.o, $(notdir $(SRCS)))
-UIS = $(wildcard data/ui/*.glade)
 
-default: Makefile src/Makefile data/ui/Makefile
-	$(MAKE) po
-	$(MAKE) mo
+default: src/Makefile data/ui/Makefile
 	$(MAKE) -C src
 	$(MAKE) -C data/ui
-	$(MAKE) $(TARGET)
 
-install: mo
-	$(INSTALL) -Dm755 "build/srain" "$(DESTDIR)$(PREFIX)/bin/srain"
-	# Install icons
-	cd data/icons; \
-	for png in *.png; do \
-		$(INSTALL) -Dm644 "$$png" \
-			"$(DESTDIR)$(PREFIX)/share/icons/hicolor/16x16/apps/$$png"; \
-	done
-	# Install pixmaps
-	cd data/pixmaps; \
-	for png in *.png; do \
-		$(INSTALL) -Dm644 "$$png" \
-			"$(DESTDIR)$(PREFIX)/share/srain/pixmaps/$$png"; \
-	done
-	# Install application logos
-	cd data/pixmaps; \
-	for png in srain*.png; do \
-		for size in 14x14 16x16 22x22 24x24 32x32 36x36 48x48 64x64 72x72 96x96 128x128 192x192 256x256 512x512; do \
-			convert "$$png" -resize $$size "tmp.png"; \
-			$(INSTALL) -Dm644 "tmp.png" \
-				"$(DESTDIR)$(PREFIX)/share/icons/hicolor/$$size/apps/$$png"; \
-		done; \
-	done; \
-	rm tmp.png
-	# Install themes
-	cd data/themes; \
-	for css in *.css; do \
-		$(INSTALL) -Dm644 "$$css" \
-			"$(DESTDIR)$(PREFIX)/share/srain/themes/$$css"; \
-	done
-	# Install plugins
-	cd data/plugins; \
-	for py in *.py; do \
-		$(INSTALL) -Dm644 "$$py" \
-			"$(DESTDIR)$(PREFIX)/share/srain/plugins/$$py"; \
-	done
-	# Install mo files
-	for i in $(shell cat po/LANGS); do \
-		$(INSTALL) -Dm644 "build/locale/$$i/LC_MESSAGES/srain.mo" \
-			"$(DESTDIR)$(PREFIX)/share/locale/$$i/LC_MESSAGES/srain.mo"; \
-	done
-	# Install desktop file
-	$(INSTALL) -Dm644 "data/Srain.desktop" \
-		"$(DESTDIR)$(PREFIX)/share/applications/Srain.desktop"
+install: install-bin install-data install-po
+
+install-bin: $(TARGET)
+	$(MAKE) -C src
+	$(MAKE) -C data/ui
+	$(INSTALL) -Dm755 "$<" "$(DESTDIR)$(PREFIX)/bin/srain"
+
+install-data: data/Makefile
+	$(MAKE) -C data
+
+install-po: po/Makefile
+	$(MAKE) -C po
 
 uitest:
 	$(MAKE) TEST_FLAG=UI_TEST
@@ -113,9 +51,10 @@ irctest:
 
 run: default
 	$(MAKE) PREFIX=$(PWD)/build
-	$(MAKE) PREFIX=$(PWD)/build install
+	$(MAKE) install-bin
 	cp srainrc.example build/srainrc
-	cd build; XDG_DATA_DIRS=$(PWD)/build/share:/usr/share/ ./bin/srain
+	cd build; \
+	XDG_DATA_DIRS=$(PWD)/build/share:/usr/share/ ./bin/srain
 
 bt: $(TARGET)
 	cd build && yes | gdb ./srain -ex 'r' -ex 'bt' -ex 'q'
@@ -130,34 +69,5 @@ clean:
 	$(DEL) build/bin
 	$(DEL) build/share
 
-XGETTEXTFLAG = --sort-output --from-code=UTF-8 \
-			   --package-name=$(PACKAGE_NAME) \
-			   --package-version=$(PACKAGE_VERSION) \
-			   --msgid-bugs-address=$(PACKAGE_EMAIL)
-
-po/srain.pot: $(SRCS) $(UIS) Makefile
-	xgettext $(XGETTEXTFLAG) -LGlade -ktranslatable -o $@ $(UIS)
-	xgettext $(XGETTEXTFLAG) -LC -k_ -o $@ $(SRCS) -j
-
-po: po/srain.pot po/LANGS
-	for i in $(shell cat po/LANGS); do \
-		if test -f "po/$$i.po"; then \
-			msgmerge -U po/$$i.po $<; \
-		else \
-			msginit -l $$i.UTF-8 --no-translator \
-					-i $< -o po/$$i.po; \
-		fi; \
-	done
-
-mo:
-	for i in $(shell cat po/LANGS); do \
-		mkdir -p build/locale/$$i/LC_MESSAGES || ture; \
-		msgfmt po/$$i.po -o build/locale/$$i/LC_MESSAGES/srain.mo; \
-	done
-
 todo:
 	grep --color=auto -r -E "TODO|FIXME" src/
-
-# Compile multiple object files to execute file
-$(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) $^ -o $@
