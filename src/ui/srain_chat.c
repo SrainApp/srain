@@ -306,7 +306,6 @@ SrainChat* srain_chat_new(const char *server_name, const char *chat_name,
         ChatType type){
     SrainChat *chat;
 
-    ERR_FR("%s %d", chat_name, type)
     chat = g_object_new(SRAIN_TYPE_CHAN, NULL);
 
     chat->type =type;
@@ -316,6 +315,20 @@ SrainChat* srain_chat_new(const char *server_name, const char *chat_name,
 
     chat->chat_name = strdup(chat_name);
     chat->server_name = strdup(server_name);
+
+    switch (chat->type){
+        case CHAT_SERVER:
+            gtk_button_set_label(chat->leave_button, _("Quit"));
+            break;
+        case CHAT_CHANNEL:
+            gtk_button_set_label(chat->leave_button, _("Leave"));
+            break;
+        case CHAT_PRIVATE:
+            gtk_button_set_label(chat->leave_button, _("Close"));
+            break;
+        default:
+            break;
+    }
 
     return chat;
 }

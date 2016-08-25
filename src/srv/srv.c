@@ -9,6 +9,8 @@
 #define __LOG_ON
 // #define __DBG_ON
 
+#include <string.h>
+
 #include "srv_session.h"
 #include "srv_session_cmd.h"
 #include "srv_hdr.h"
@@ -88,7 +90,7 @@ int srv_cmd(const char *srv_name, const char *source, char *cmd, int block){
     return srv_session_cmd(session, source, cmd, block);
 }
 
-int srv_join(const char *srv_name, const char *chan, const char *passwd){
+int srv_join(const char *srv_name, const char *chat, const char *passwd){
     srv_session_t *session;
 
     session = srv_session_get_by_host(srv_name);
@@ -97,10 +99,18 @@ int srv_join(const char *srv_name, const char *chan, const char *passwd){
         return -1;
     }
 
-    return srv_session_join(session, chan, passwd);
+    if (IS_CHAN(chat)){
+        return srv_session_join(session, chat, passwd);
+    }
+    else if (strcmp(chat, META_SERVER) == 0){
+        return -1;
+    } else {
+        srv_hdr_ui_add_chat(session->host, chat, session->nickname, CHAT_PRIVATE);
+        return 0;
+    }
 }
 
-int srv_part(const char *srv_name, const char *chan, const char *reason){
+int srv_part(const char *srv_name, const char *chat, const char *reason){
     srv_session_t *session;
 
     session = srv_session_get_by_host(srv_name);
@@ -108,8 +118,15 @@ int srv_part(const char *srv_name, const char *chan, const char *reason){
         WARN_FR("No such session %s", srv_name);
         return -1;
     }
-
-    return srv_session_part(session, chan);
+    if (IS_CHAN(chat)){
+        return srv_session_part(session, chat);
+    }
+    else if (strcmp(chat, META_SERVER) == 0){
+        return srv_session_quit(session, NULL);
+    } else {
+        srv_hdr_ui_rm_chat(session->host, chat);
+        return 0;
+    }
 }
 
 int srv_quit(const char *srv_name, const char *reason){

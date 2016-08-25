@@ -147,10 +147,7 @@ static void join_button_on_click(gpointer user_data){
     chat = gtk_entry_get_text(join_entries->join_chat_entry);
     pwd = gtk_entry_get_text(join_entries->join_pwd_entry);
 
-    cmd = g_string_new("");
-    g_string_printf(cmd, "/join %s %s", chat, pwd);
-    ui_hdr_srv_cmd(srain_window_get_cur_chat(srain_win), cmd->str, 0);
-    g_string_free(cmd, TRUE);
+    ui_hdr_srv_join(chat, pwd);
 
     gtk_entry_set_text(join_entries->join_chat_entry, "");
     gtk_entry_set_text(join_entries->join_pwd_entry, "");

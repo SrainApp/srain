@@ -253,7 +253,7 @@
               <object class="GtkLabel" id="conn_real_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">RealName:</property>
+                <property name="label" translatable="yes">Description:</property>
               </object>
               <packing>
                 <property name="left_attach">0</property>
@@ -346,7 +346,7 @@
               <object class="GtkLabel" id="join_chan_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Channel:</property>
+                <property name="label" translatable="yes">Channel/Nickname:</property>
               </object>
               <packing>
                 <property name="left_attach">0</property>
@@ -367,7 +367,7 @@
               <object class="GtkLabel" id="join_pwd_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Password:</property>
+                <property name="label" translatable="yes">Password(optional):</property>
               </object>
               <packing>
                 <property name="left_attach">0</property>

@@ -381,6 +381,9 @@ int srv_session_part(srv_session_t *session, const char *chan){
 
 int srv_session_quit(srv_session_t *session, const char *reason){
     int res;
+
+    if (!reason) reason = PACKAGE_NAME PACKAGE_VERSION " close.";
+
     if ((res = irc_cmd_quit(session->irc_session, reason)) < 0){
         srv_session_err_hdr(session);
     }
@@ -392,7 +395,7 @@ void srv_session_quit_all(){
 
     for (i = 0; i < MAX_SESSIONS; i++){
         if (sessions[i].stat == SESS_CONNECT) {
-            srv_session_quit(&sessions[i], PACKAGE_NAME PACKAGE_VERSION " close.");
+            srv_session_quit(&sessions[i], NULL);
         }
     }
 
