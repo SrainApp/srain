@@ -1,10 +1,23 @@
 # 2016-08-01 Version 0.05:
 
-- Port to libircclient
-- New translations: zh_CN
-- More friendly User interface
-- Support to quote and forward message
-- Fixed a lot of bugs
+- Changed
+    - Port to libircclient
+        - SSL connection support
+        - Server password support
+        - Channel password support
+- Added:
+    - convenience GtkPopover for connecting and joining
+    - nick popmenu
+    - translations: zh_CN
+    - Forward message
+    - Chat log
+    - Colorful user list icon
+    - Mentioned highlight
+    - Desktop notification
+- Improved:
+    - More friendly User interface
+    - Stronger {upload,avatar} plugin
+    - Fixed a lot of bugs
 
 0.05 is the first stable release of Srain, enjoy~
 
