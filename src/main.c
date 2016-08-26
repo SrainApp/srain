@@ -124,4 +124,6 @@ int main(int argc, char **argv){
 #endif
 
     quit();
+
+    return 0;
 }

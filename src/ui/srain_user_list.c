@@ -234,7 +234,7 @@ int srain_user_list_rm(SrainUserList *list, const char *nick){
  *
  * @return 0 if successed, -1 if failed
  *
- * If `old_nick` == `new_nick`, chatge its user type.
+ * If `old_nick` == `new_nick`, change its user type.
  */
 int srain_user_list_rename(SrainUserList *list, const char *old_nick,
                            const char *new_nick, UserType type){
