@@ -22,6 +22,8 @@ SrainChat *srain_window_get_chat_by_name(SrainWindow *win, const char *server_na
 GList* srain_window_get_chats_by_srv_name(SrainWindow *win, const char *server_name);
 void srain_window_spinner_toggle(SrainWindow *win, gboolean is_busy);
 void srain_window_stack_sidebar_update(SrainWindow *win, SrainChat *chat, const char *nick, const char *msg);
+int srain_window_is_active(SrainWindow *win);
+void srain_window_tray_icon_stress(SrainWindow *win, int stress);
 
 /* Only one SrainWindow instance in one application */
 extern SrainWindow *srain_win;

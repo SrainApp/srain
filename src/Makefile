@@ -20,14 +20,18 @@ GTK3FLAGS = $(shell pkg-config --cflags gtk+-3.0)
 GTK3LIBS = $(shell pkg-config --libs gtk+-3.0)
 PY3FLAGS = $(shell pkg-config --cflags python3)
 PY3LIBS = $(shell pkg-config --libs python3)
+CURLFLAGS = $(shell pkg-config --cflags libcurl)
 CURLLIBS = $(shell pkg-config --libs libcurl)
 # LIBIRCCLINETFLAGS = $(shell pkg-config --cflags libircclient)
 # LIBIRCCLINETLIBS = $(shell pkg-config --libs libircclient)
 LIBIRCCLINETFLAGS = -lircclient
 LIBIRCCLINETLIBS = -I/usr/include/libircclient
+LIBNOTIFYFLAGS = $(shell pkg-config --cflags libnotify)
+LIBNOTIFYLIBS = $(shell pkg-config --libs libnotify)
 
-CFLAGS += $(DEFS) $(GTK3FLAGS) $(PY3FLAGS) $(LIBIRCCLINETFLAGS) \
-		  $(GTK3LIBS) $(PY3LIBS) $(CURLLIBS) $(LIBIRCCLINETLIBS)
+CFLAGS += $(DEFS) $(GTK3FLAGS)  $(GTK3LIBS) $(PY3FLAGS) $(PY3LIBS) \
+		  $(CURLFLAGS) $(CURLLIBS) $(LIBIRCCLINETFLAGS) $(LIBIRCCLINETLIBS) \
+		  $(LIBNOTIFYFLAGS) $(LIBNOTIFYLIBS)
 
 TARGET = ../build/srain
 SRCS = $(wildcard *.c */*.c ../build/resources.c)

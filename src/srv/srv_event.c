@@ -409,11 +409,17 @@ void srv_event_notice(irc_session_t *irc_session, const char *event,
     // const char *nick = params[0];
     char *msg = strdup(count >= 2 ? params[1] : "");
 
-    // TODO: how to represent a NOTICE message?
-
     strip(msg);
 
-    srv_hdr_ui_recv_msg(sess->host, origin, origin, "", msg);
+    /* FIXME: Freenode specified :-(
+     * This notice messaage is sent by Freenode's offical bot
+     */
+    if (strcmp(origin, "NickServ") == 0
+            || strcmp(origin, "ChanServ") == 0){
+        srv_hdr_ui_recv_msg(sess->host, origin, origin, sess->host, msg);
+    } else {
+        srv_hdr_ui_recv_msg(sess->host, origin, origin, "", msg);
+    }
     chat_log_fmt(sess->host, origin, "[%s] %s", origin, msg);
 
     free(msg);

@@ -16,6 +16,7 @@
 #include "srain_chat.h"
 #include "srain_window.h"
 #include "theme.h"
+#include "snotify.h"
 
 #include "srv_session.h"
 
@@ -36,8 +37,11 @@ typedef struct {
 void ui_init(int argc, char **argv){
     ui_hdr_init();
     theme_init();
+    snotify_init();
 
     g_application_run(G_APPLICATION(srain_app_new()), argc, argv);
+
+    snotify_finalize();
 }
 
 void ui_idle_destroy_data(void *data){
@@ -388,6 +392,12 @@ void ui_sys_msg_sync(const char *srv_name, const char *chat_name,
     if (type == SYS_MSG_ACTION
             || type == SYS_MSG_ERROR){
         srain_window_stack_sidebar_update(srain_win, chat, NULL, msg);
+
+        /* Desktop notification */
+        if (strstr(msg, srain_chat_get_nick(chat))){
+            snotify_notify(type == SYS_MSG_ACTION ? _("ACTION") : _("ERROR"), 
+                    msg, "dialog-information");
+        }
     }
 }
 
@@ -435,11 +445,20 @@ void ui_recv_msg_sync(const char *srv_name, const char *chat_name,
     srain_msg_list_recv_msg_add(list, nick, id, msg);
     srain_window_stack_sidebar_update(srain_win, chat, nick, msg);
 
+    /* Desktop notification
+     * `srv_name` == `id` means this message is sent by server.
+     */
+    if (strcmp(srv_name, id) != 0
+            && strstr(msg, srain_chat_get_nick(chat))){
+        snotify_notify(nick, msg, "dialog-information");
+    }
+
     if (strlen(id) != 0){
         comp = srain_chat_get_entry_completion(chat);
         if (!comp) return;
         srain_entry_completion_add_keyword(comp, nick, KEYWORD_TMP);
     }
+
 }
 
 /**

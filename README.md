@@ -11,10 +11,10 @@ It does not look like an IRC client :-)
 - gettext       (makedepends)
 - imagemagick   (makedepends)
 - gtk >= 3.16
-- glib2
 - python >= 3.2
 - libcurl
 - libircclient >= 1.8
+- libnotify
 
 # Build & Debug
 

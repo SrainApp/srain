@@ -30,10 +30,10 @@ default: src/Makefile data/ui/Makefile
 
 install: install-bin install-data install-po
 
-install-bin: $(TARGET)
+install-bin:
 	$(MAKE) -C data/ui
 	$(MAKE) -C src
-	$(INSTALL) -Dm755 "$<" "$(DESTDIR)$(PREFIX)/bin/srain"
+	$(INSTALL) -Dm755 "$(TARGET)" "$(DESTDIR)$(PREFIX)/bin/srain"
 
 install-data: data/Makefile
 	$(MAKE) -C data

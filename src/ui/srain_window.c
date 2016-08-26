@@ -89,6 +89,16 @@ static void quit_menu_item_on_activate(){
     srain_app_quit(srain_app);
 }
 
+static void monitor_active_window(GObject *object, GParamSpec *pspec,
+        gpointer data ) {
+   if (srain_window_is_active(SRAIN_WINDOW(object))){
+       /* Stop stress the icon */
+       srain_window_tray_icon_stress(SRAIN_WINDOW(object), 0);
+   } else {
+
+   }
+}
+
 static void show_about_dialog(gpointer user_data){
     GtkWidget *window = user_data;
     const gchar *authors[] = { PACKAGE_AUTHOR " <" PACKAGE_EMAIL ">", NULL };
@@ -139,7 +149,6 @@ static void popover_entry_on_activate(GtkWidget *widget, gpointer user_data){
 static void join_button_on_click(gpointer user_data){
     const char *chat;
     const char *pwd;
-    GString *cmd;
     JoinEntries *join_entries;
 
     join_entries = user_data;
@@ -254,6 +263,11 @@ static void srain_window_init(SrainWindow *self){
             G_CALLBACK(quit_menu_item_on_activate), NULL);
     g_signal_connect_swapped(self->about_menu_item, "activate",
             G_CALLBACK(show_about_dialog), self);
+
+
+    /* :-| OK 为什么我没看到 is-active 属性 和 notify 的用法 */
+    g_signal_connect(self, "notify::is-active",
+            G_CALLBACK(monitor_active_window), NULL);
 
     // Click to show/hide GtkPopover
     g_signal_connect_swapped(self->about_button, "clicked",
@@ -441,4 +455,16 @@ void srain_window_stack_sidebar_update(SrainWindow *win, SrainChat *chat,
     } else {
         srain_stack_sidebar_update(win->sidebar, chat, nick, msg, 1);
     }
+}
+
+void srain_window_tray_icon_stress(SrainWindow *win, int stress){
+    gtk_status_icon_set_from_icon_name(win->tray_icon, stress ? "srain-red": "srain");
+}
+
+int srain_window_is_active(SrainWindow *win){
+    int active;
+
+    g_object_get(G_OBJECT(win), "is-active", &active, NULL);
+
+    return active;
 }
