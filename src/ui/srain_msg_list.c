@@ -219,11 +219,17 @@ SrainMsgList* srain_msg_list_new(void){
     return g_object_new(SRAIN_TYPE_MSG_LIST, NULL);
 }
 
-void srain_msg_list_sys_msg_add(SrainMsgList *list, const char *msg, SysMsgType type){
+void srain_msg_list_sys_msg_add(SrainMsgList *list, const char *msg,
+        SysMsgType type, int is_mentioned){
+    GtkListBoxRow *row;
     SrainSysMsg *smsg;
 
     smsg = srain_sys_msg_new(msg, type);
-    gtk_list_box_add_unfocusable_row(list->list_box, GTK_WIDGET(smsg));
+    row = gtk_list_box_add_unfocusable_row(list->list_box, GTK_WIDGET(smsg));
+
+    if (is_mentioned){
+       gtk_widget_set_name(GTK_WIDGET(row), "mentioned_msg");
+    }
 
     list->last_msg = GTK_WIDGET(smsg);
 
@@ -243,11 +249,15 @@ void srain_msg_list_send_msg_add(SrainMsgList *list, const char *msg){
 }
 
 void _srain_msg_list_recv_msg_add(SrainMsgList *list, const char *nick,
-        const char *id, const char *msg){
+        const char *id, const char *msg, int is_mentioned){
+    GtkListBoxRow *row;
     SrainRecvMsg *smsg;
 
     smsg = srain_recv_msg_new(nick, id, msg);
-    gtk_list_box_add_unfocusable_row(list->list_box, GTK_WIDGET(smsg));
+    row = gtk_list_box_add_unfocusable_row(list->list_box, GTK_WIDGET(smsg));
+    if (is_mentioned){
+       gtk_widget_set_name(GTK_WIDGET(row), "mentioned_msg");
+    }
 
     list->last_msg = GTK_WIDGET(smsg);
 
@@ -258,7 +268,7 @@ void _srain_msg_list_recv_msg_add(SrainMsgList *list, const char *nick,
  * If its time is same to the last msg, combine them.
  */
 void srain_msg_list_recv_msg_add(SrainMsgList *list, const char *nick,
-        const char *id, const char *msg){
+        const char *id, const char *msg, int is_mentioned){
     char timestr[32];
     const char *old_msg;
     const char *old_timestr;
@@ -281,7 +291,8 @@ void srain_msg_list_recv_msg_add(SrainMsgList *list, const char *nick,
          *  - less then 512 char
          * can be combine
          */
-        if (strncmp(timestr, old_timestr, 32) == 0
+        if (!is_mentioned
+                && strncmp(timestr, old_timestr, 32) == 0
                 && strncmp(nick, old_nick, NICK_LEN) == 0
                 && strlen(old_msg) < 512){
             new_msg = g_string_new(old_msg);
@@ -303,5 +314,5 @@ void srain_msg_list_recv_msg_add(SrainMsgList *list, const char *nick,
         }
     }
 
-    _srain_msg_list_recv_msg_add(list, nick, id, msg);
+    _srain_msg_list_recv_msg_add(list, nick, id, msg, is_mentioned);
 }

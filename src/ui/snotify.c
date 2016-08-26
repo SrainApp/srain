@@ -12,14 +12,10 @@
 #include <libnotify/notify.h>
 #include <glib.h>
 
-#include "srain_window.h"
-
 #include "meta.h"
 #include "log.h"
 
 #define SNOTIFY_TIMEOUT 2000
-
-extern SrainWindow *srain_win;
 
 void snotify_init(){
     notify_init(PACKAGE_NAME);
@@ -27,11 +23,6 @@ void snotify_init(){
 
 void snotify_notify(const char *title, const char *msg, const char *icon){
     NotifyNotification *notify;
-
-    /* Do not sent notification when window is active */
-    if (srain_window_is_active(srain_win)) return;
-
-    srain_window_tray_icon_stress(srain_win, 1);
 
     notify = notify_notification_new (title, msg, icon);
     /* 3 seconds */

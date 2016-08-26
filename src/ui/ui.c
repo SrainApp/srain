@@ -371,6 +371,9 @@ int ui_rm_chat_sync(const char *srv_name, const char *chat_name){
  */
 void ui_sys_msg_sync(const char *srv_name, const char *chat_name,
         const char *msg, SysMsgType type){
+    int is_mentioned;
+    int is_noitfy;
+    const char *your_nick;
     SrainChat *chat;
     SrainMsgList *list;
 
@@ -386,17 +389,30 @@ void ui_sys_msg_sync(const char *srv_name, const char *chat_name,
 
     g_return_if_fail(chat);
 
-    list = srain_chat_get_msg_list(chat);
-    srain_msg_list_sys_msg_add(list, msg, type);
+    your_nick = srain_chat_get_nick(chat);
 
-    if (type == SYS_MSG_ACTION
-            || type == SYS_MSG_ERROR){
+    /* is_mentioned = Message doesn't send by other user or server (It means a channel mesage)
+     *                && you nick appeared in the message */
+    is_mentioned = strlen(your_nick) != 0 && strstr(msg, your_nick) != NULL;
+
+    /* `srv_name` == `id` means this message is sent by server.
+     * is_notify = (Message sent by other user || your are mentioned in a channel)
+     *             && window is not active   */
+    is_noitfy = (strlen(your_nick) == 0 || is_mentioned)
+        && !srain_window_is_active(srain_win);
+
+    list = srain_chat_get_msg_list(chat);
+    srain_msg_list_sys_msg_add(list, msg, type,
+            type != SYS_MSG_NORMAL && is_mentioned);
+
+    if (type != SYS_MSG_NORMAL){
         srain_window_stack_sidebar_update(srain_win, chat, NULL, msg);
 
         /* Desktop notification */
-        if (strstr(msg, srain_chat_get_nick(chat))){
-            snotify_notify(type == SYS_MSG_ACTION ? _("ACTION") : _("ERROR"), 
+        if (is_noitfy){
+            snotify_notify(type == SYS_MSG_ACTION ? _("ACTION") : _("ERROR"),
                     msg, "dialog-information");
+            srain_window_tray_icon_stress(srain_win, 1);
         }
     }
 }
@@ -431,6 +447,9 @@ void ui_send_msg_sync(const char *srv_name, const char *chat_name, const char *m
  */
 void ui_recv_msg_sync(const char *srv_name, const char *chat_name,
         const char *nick, const char *id, const char *msg){
+    int is_mentioned = 0;
+    int is_noitfy = 0;
+    const char *your_nick;
     SrainChat *chat;
     SrainMsgList *list;
     SrainEntryCompletion *comp;
@@ -440,19 +459,30 @@ void ui_recv_msg_sync(const char *srv_name, const char *chat_name,
         chat = srain_window_get_chat_by_name(srain_win, srv_name, META_SERVER);
     g_return_if_fail(chat);
 
+    your_nick = srain_chat_get_nick(chat);
+
+    /* is_mentioned = Message doesn't send by other user or server (It means a channel mesage)
+     *                && you nick appeared in the message */
+    is_mentioned = strlen(your_nick) != 0 && strstr(msg, your_nick) != NULL;
+
+    /* `srv_name` == `id` means this message is sent by server.
+     * is_notify = Message doesn't send by server
+     *             && (Message sent by other user || your are mentioned in a channel)
+     *           && window is not active   */
+    is_noitfy = strcmp(srv_name, id) != 0
+        && (strlen(your_nick) == 0 || is_mentioned)
+        && !srain_window_is_active(srain_win);
+
     list = srain_chat_get_msg_list(chat);
+    srain_msg_list_recv_msg_add(list, nick, id, msg, is_mentioned);
 
-    srain_msg_list_recv_msg_add(list, nick, id, msg);
-    srain_window_stack_sidebar_update(srain_win, chat, nick, msg);
-
-    /* Desktop notification
-     * `srv_name` == `id` means this message is sent by server.
-     */
-    if (strcmp(srv_name, id) != 0
-            && strstr(msg, srain_chat_get_nick(chat))){
+    /* Do not sent notification when window is active */
+    if (is_noitfy){
         snotify_notify(nick, msg, "dialog-information");
+        srain_window_tray_icon_stress(srain_win, 1);
     }
 
+    srain_window_stack_sidebar_update(srain_win, chat, nick, msg);
     if (strlen(id) != 0){
         comp = srain_chat_get_entry_completion(chat);
         if (!comp) return;

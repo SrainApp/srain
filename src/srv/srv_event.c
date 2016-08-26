@@ -477,7 +477,7 @@ void srv_event_ctcp_action(irc_session_t *irc_session, const char *event,
 
     strip(msg);
 
-    snprintf(buf, sizeof(buf), _("*** %s %s"), origin, msg);
+    snprintf(buf, sizeof(buf), _("*** %s %s ***"), origin, msg);
     srv_hdr_ui_sys_msg(sess->host, chan, buf, SYS_MSG_ACTION);
     chat_log_log(sess->host, chan, buf);
 

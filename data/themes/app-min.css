@@ -75,6 +75,8 @@
     from(@msglist_color1), to(@msglist_color2));
 }
 
+#msg_list_box #mentioned_msg { background-color: darker(@msglist_color1); }
+
 /* SrainUserList Container */
 /* TODO: does not work */
 #user_list_box button,
