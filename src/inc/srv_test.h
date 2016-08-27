@@ -5,7 +5,7 @@
 
 void srv_test();
 
-DECLARE_UIAddChatFunc(srv_test_ui_add_chan);
+DECLARE_UIAddChatFunc(srv_test_ui_add_chat);
 DECLARE_UIRmChatFunc(srv_test_ui_rm_chat);
 DECLARE_UISysMsgFunc(srv_test_ui_sys_msg);
 DECLARE_UISendMsgFunc(srv_test_ui_send_msg);

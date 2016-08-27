@@ -86,7 +86,7 @@ static void srv_session_err_hdr(srv_session_t *session){
     errmsg = irc_strerror(irc_errno(session->irc_session));
 
     /* Ignore it */
-    if (errno == LIBIRC_ERR_OK) return;
+    if (errno == LIBIRC_ERR_OK || errno == LIBIRC_ERR_STATE) return;
 
     /* Error message should be reported */
     ERR_FR("session: %s, errno: %d, errmsg: %s",
@@ -132,8 +132,8 @@ static void srv_session_err_hdr(srv_session_t *session){
             srv_session_reconnect(session);
             sleep(5);
             break;
-        case LIBIRC_ERR_STATE:
-            break;
+        // case LIBIRC_ERR_OK:
+        // case LIBIRC_ERR_STATE:
     }
 }
 
