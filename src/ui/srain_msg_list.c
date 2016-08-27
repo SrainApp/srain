@@ -102,7 +102,7 @@ static void scrolled_window_on_edge_reached(GtkScrolledWindow *swin,
 }
 
 /**
- * @brief scroll_to_bottom
+ * @brief scroll_to_bottom_idle
  *
  * @param list
  *
@@ -111,11 +111,11 @@ static void scrolled_window_on_edge_reached(GtkScrolledWindow *swin,
  * This function must be called as a idle.
  *
  */
-static gboolean scroll_to_bottom(SrainMsgList *list){
+static gboolean scroll_to_bottom_idle(SrainMsgList *list){
     GtkAdjustment *adj;
 
     /* if this instance has been freed */
-    if (!SRAIN_IS_MSG_LIST(list)) return FALSE;
+    g_return_val_if_fail(SRAIN_IS_MSG_LIST(list), FALSE);
 
     adj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(list));
     gtk_adjustment_set_value(adj, gtk_adjustment_get_upper(adj) -
@@ -160,7 +160,7 @@ static void smart_scroll(SrainMsgList *list, int force){
     }
 
     if (force){
-        gdk_threads_add_idle((GSourceFunc)scroll_to_bottom, list);
+        gdk_threads_add_idle((GSourceFunc)scroll_to_bottom_idle, list);
         return;
     }
 
@@ -173,7 +173,7 @@ static void smart_scroll(SrainMsgList *list, int force){
         max_val = gtk_adjustment_get_upper(adj) - page_size;
 
         if (val + page_size > max_val){
-            gdk_threads_add_idle((GSourceFunc)scroll_to_bottom, list);
+            gdk_threads_add_idle((GSourceFunc)scroll_to_bottom_idle, list);
         }
     }
 }

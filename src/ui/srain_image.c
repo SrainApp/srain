@@ -186,6 +186,10 @@ static void srain_image_set_from_self(SrainImage *simg){
 }
 
 static gboolean set_image_idle(SrainImage *simg){
+
+    /* Check whether object alve now */
+    g_return_val_if_fail(SRAIN_IS_IMAGE(simg), FALSE);
+
     free(simg->url);
     simg->url = NULL;
 

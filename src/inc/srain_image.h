@@ -5,6 +5,7 @@
 
 #define SRAIN_TYPE_IMAGE (srain_image_get_type())
 #define SRAIN_IMAGE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SRAIN_TYPE_IMAGE, SrainImage))
+#define SRAIN_IS_IMAGE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), SRAIN_TYPE_IMAGE))
 
 /* SrainImageType's possible value:
  * - SRAIN_IMAGE_ENLARGE: show a enlarged image in a

@@ -317,6 +317,9 @@ static gboolean set_avatar_retry_timeout(gpointer user_data){
     char *avatar_path;
     SrainRecvMsg *smsg;
 
+    /* Check whether object is alive now */
+    g_return_val_if_fail(SRAIN_IS_MSG_LIST(user_data), FALSE);
+
     smsg = SRAIN_RECV_MSG(user_data);
 
     left = (long) g_object_get_data(G_OBJECT(smsg), "left-times");
