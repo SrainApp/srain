@@ -315,10 +315,11 @@ static void srain_recv_msg_class_init(SrainRecvMsgClass *class){
 static gboolean set_avatar_retry_timeout(gpointer user_data){
     long left;
     char *avatar_path;
+    GdkPixbuf *pixbuf;
     SrainRecvMsg *smsg;
 
     /* Check whether object is alive now */
-    g_return_val_if_fail(SRAIN_IS_MSG_LIST(user_data), FALSE);
+    g_return_val_if_fail(SRAIN_IS_RECV_MSG(user_data), FALSE);
 
     smsg = SRAIN_RECV_MSG(user_data);
 
@@ -328,7 +329,13 @@ static gboolean set_avatar_retry_timeout(gpointer user_data){
     avatar_path = get_avatar_file(gtk_label_get_text(smsg->nick_label));
 
     if (avatar_path){
-        gtk_image_set_from_file(smsg->avatar_image, avatar_path);
+        gtk_widget_show(GTK_WIDGET(smsg->avatar_image));
+        pixbuf = gdk_pixbuf_new_from_file_at_size(
+                avatar_path, 36, 36, NULL);
+        if (pixbuf){
+            gtk_image_set_from_pixbuf(smsg->avatar_image, pixbuf);
+            g_object_unref(pixbuf);
+        }
         g_free(avatar_path);
     } else {
         g_object_set_data(G_OBJECT(smsg), "left-times", (void *)(left - 1));
@@ -343,6 +350,7 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *m
     char *avatar_path;
     GString *markuped_msg;
     GString *img_url;
+    GdkPixbuf *pixbuf;
     SrainImage *simg;
     SrainRecvMsg *smsg;
 
@@ -376,7 +384,13 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *m
     avatar_path = get_avatar_file(nick);
 
     if (avatar_path){
-        gtk_image_set_from_file(smsg->avatar_image, avatar_path);
+        gtk_widget_show(GTK_WIDGET(smsg->avatar_image));
+        pixbuf = gdk_pixbuf_new_from_file_at_size(
+                avatar_path, 36, 36, NULL);
+        if (pixbuf){
+            gtk_image_set_from_pixbuf(smsg->avatar_image, pixbuf);
+            g_object_unref(pixbuf);
+        }
         g_free(avatar_path);
     } else {
         g_object_set_data(G_OBJECT(smsg), "left-times", (void *)5);

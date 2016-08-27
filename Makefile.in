@@ -1,6 +1,7 @@
 # Makefile
 
-.PHONY: install run clean todo po
+.PHONY: install run bt clean cleanobj todo install-bin install-po install-data \
+		irctest uitest
 
 # Export all variables
 export
@@ -30,9 +31,7 @@ default: src/Makefile data/ui/Makefile
 
 install: install-bin install-data install-po
 
-install-bin:
-	$(MAKE) -C data/ui
-	$(MAKE) -C src
+install-bin: default
 	$(INSTALL) -Dm755 "$(TARGET)" "$(DESTDIR)$(PREFIX)/bin/srain"
 
 install-data: data/Makefile
@@ -52,6 +51,7 @@ irctest:
 run: default
 	$(MAKE) PREFIX=$(PWD)/build
 	$(MAKE) install-bin
+	$(MAKE) install-po
 	cp srainrc.example build/srainrc
 	cd build; \
 	XDG_DATA_DIRS=$(PWD)/build/share:/usr/share/ ./bin/srain

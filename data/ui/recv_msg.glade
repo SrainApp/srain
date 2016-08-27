@@ -21,8 +21,8 @@
           <object class="GtkImage" id="avatar_image">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="pixel_size">36</property>
             <property name="icon_name">srain-avatar</property>
-            <property name="icon_size">5</property>
           </object>
           <packing>
             <property name="expand">False</property>

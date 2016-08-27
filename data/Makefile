@@ -34,8 +34,8 @@ pixmaps:
 		$(INSTALL) -Dm644 "$$i" "$(DESTDIR)$(PREFIX)/share/srain/pixmaps/$$i"; \
 	done
 	# Install applicaion logos
-	cd pixmaps; \
-	for i in srain*.png; do \
+	cd pixmaps/logos; \
+	for i in *.png; do \
 		for size in $(SIZE); do \
 			convert "$$i" -resize $$size "/tmp/srain-tmp.png"; \
 			$(INSTALL) -Dm644 "/tmp/srain-tmp.png" \
