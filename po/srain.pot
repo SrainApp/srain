@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Srain 0.05-git@0.337.39bfd2e\n"
+"Project-Id-Version: Srain 0.05-git@0.339.9de43e7\n"
 "Report-Msgid-Bugs-To: lastavengesr@outlook.com\n"
-"POT-Creation-Date: 2016-08-26 14:12+0800\n"
+"POT-Creation-Date: 2016-08-27 13:43+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,12 +24,22 @@ msgid ""
 "Running against GTK+ %d.%d.%d"
 msgstr ""
 
-#: ../src/srv/srv_event.c:596
+#: ../src/srv/srv_event.c:629
+#, c-format
+msgid "%s %s"
+msgstr ""
+
+#: ../src/srv/srv_event.c:622
+#, c-format
+msgid "%s %s %s"
+msgstr ""
+
+#: ../src/srv/srv_event.c:595
 #, c-format
 msgid "%s <%s@%s> %s"
 msgstr ""
 
-#: ../src/ui/srain_msg.c:104
+#: ../src/ui/srain_msg.c:105
 #, c-format
 msgid "%s <fwd %s@%s>"
 msgstr ""
@@ -54,22 +64,22 @@ msgstr ""
 msgid "%s has quit: %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:459
+#: ../src/srv/srv_event.c:463
 #, c-format
 msgid "%s invites you into %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:607
+#: ../src/srv/srv_event.c:610
 #, c-format
 msgid "%s is attached to %s at \"%s\""
 msgstr ""
 
-#: ../src/srv/srv_event.c:613
+#: ../src/srv/srv_event.c:616
 #, c-format
 msgid "%s is idle for %s seconds since %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:602
+#: ../src/srv/srv_event.c:605
 #, c-format
 msgid "%s is member of %s"
 msgstr ""
@@ -84,11 +94,11 @@ msgstr ""
 msgid "%s: wrong parameters"
 msgstr ""
 
-#: ../data/ui/recv_msg.glade:107
+#: ../data/ui/recv_msg.glade:119
 msgid "(This message can not be showed correctly)."
 msgstr ""
 
-#: ../src/srv/srv_session_cmd.c:212 ../src/srv/srv_event.c:480
+#: ../src/srv/srv_session_cmd.c:212 ../src/srv/srv_event.c:484
 #, c-format
 msgid "*** %s %s ***"
 msgstr ""
@@ -142,7 +152,7 @@ msgstr ""
 msgid "Connect"
 msgstr ""
 
-#: ../src/ui/srain_msg.c:135
+#: ../src/ui/srain_msg.c:136
 msgid "Copy message"
 msgstr ""
 
@@ -154,17 +164,17 @@ msgstr ""
 msgid "ERROR"
 msgstr ""
 
-#: ../src/srv/srv_session.c:92
+#: ../src/srv/srv_session.c:95
 #, c-format
 msgid "ERROR: %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:628
+#: ../src/srv/srv_event.c:656
 #, c-format
 msgid "ERROR[%3d]: %s"
 msgstr ""
 
-#: ../src/ui/srain_msg.c:117 ../src/ui/srain_chat.c:205
+#: ../src/ui/srain_msg.c:118 ../src/ui/srain_chat.c:205
 msgid "Failed to send message"
 msgstr ""
 
@@ -172,7 +182,7 @@ msgstr ""
 msgid "Failed to upload image"
 msgstr ""
 
-#: ../src/ui/srain_msg.c:142
+#: ../src/ui/srain_msg.c:143
 msgid "Forward to..."
 msgstr ""
 
@@ -233,7 +243,7 @@ msgstr ""
 msgid "Please visit"
 msgstr ""
 
-#: ../src/plugin.c:50
+#: ../src/plugin.c:128
 msgid "Plugin no loaded"
 msgstr ""
 
@@ -245,7 +255,7 @@ msgstr ""
 msgid "Quit"
 msgstr ""
 
-#: ../src/srv/srv_session.c:59
+#: ../src/srv/srv_session.c:62
 #, c-format
 msgid "Reconnecting to %s ..."
 msgstr ""

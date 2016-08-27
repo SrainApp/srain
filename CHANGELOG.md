@@ -1,4 +1,4 @@
-# 2016-08-01 Version 0.05:
+# 2016-08-27 Version 0.05:
 
 - Changed
     - Port to libircclient
@@ -6,9 +6,9 @@
         - Server password support
         - Channel password support
 - Added:
-    - convenience GtkPopover for connecting and joining
-    - nick popmenu
-    - translations: zh_CN
+    - Convenience GtkPopover for connecting and joining
+    - Nick popmenu
+    - Translations: zh_CN
     - Forward message
     - Chat log
     - Colorful user list icon

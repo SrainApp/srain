@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 0.03\n"
 "Report-Msgid-Bugs-To: lastavengesr@outlook.com\n"
-"POT-Creation-Date: 2016-08-26 14:12+0800\n"
+"POT-Creation-Date: 2016-08-27 13:43+0800\n"
 "PO-Revision-Date: 2016-07-16 13:06+0800\n"
 "Last-Translator: Shengyu Zhang <lastavengers@outlook.com>\n"
 "Language-Team: none\n"
@@ -26,12 +26,22 @@ msgstr ""
 "%s\n"
 "运行于 GTK+ %d.%d.%d 上"
 
-#: ../src/srv/srv_event.c:596
+#: ../src/srv/srv_event.c:629
+#, c-format
+msgid "%s %s"
+msgstr ""
+
+#: ../src/srv/srv_event.c:622
+#, c-format
+msgid "%s %s %s"
+msgstr ""
+
+#: ../src/srv/srv_event.c:595
 #, c-format
 msgid "%s <%s@%s> %s"
 msgstr ""
 
-#: ../src/ui/srain_msg.c:104
+#: ../src/ui/srain_msg.c:105
 #, c-format
 msgid "%s <fwd %s@%s>"
 msgstr "%s <fwd %s@%s>"
@@ -56,22 +66,22 @@ msgstr "%s 离开了聊天室 %s：%s"
 msgid "%s has quit: %s"
 msgstr "%s 退出了聊天室：%s"
 
-#: ../src/srv/srv_event.c:459
+#: ../src/srv/srv_event.c:463
 #, c-format
 msgid "%s invites you into %s"
 msgstr "%s 邀请你加入 %s"
 
-#: ../src/srv/srv_event.c:607
+#: ../src/srv/srv_event.c:610
 #, c-format
 msgid "%s is attached to %s at \"%s\""
 msgstr "%s 连接的服务器是 %s，位于 \"%s\""
 
-#: ../src/srv/srv_event.c:613
+#: ../src/srv/srv_event.c:616
 #, c-format
 msgid "%s is idle for %s seconds since %s"
 msgstr "%s 已经一动不动 %s 秒了…… %s"
 
-#: ../src/srv/srv_event.c:602
+#: ../src/srv/srv_event.c:605
 #, c-format
 msgid "%s is member of %s"
 msgstr "%s 在聊天室 %s 中"
@@ -86,11 +96,11 @@ msgstr "%s 将昵称更改为 %s"
 msgid "%s: wrong parameters"
 msgstr "%s: 参数错误"
 
-#: ../data/ui/recv_msg.glade:107
+#: ../data/ui/recv_msg.glade:119
 msgid "(This message can not be showed correctly)."
 msgstr "(这条消息无法正确显示。)"
 
-#: ../src/srv/srv_session_cmd.c:212 ../src/srv/srv_event.c:480
+#: ../src/srv/srv_session_cmd.c:212 ../src/srv/srv_event.c:484
 #, c-format
 msgid "*** %s %s ***"
 msgstr ""
@@ -147,13 +157,13 @@ msgstr "聊天"
 
 #: ../src/ui/srain_chat.c:327
 msgid "Close"
-msgstr ""
+msgstr "关闭"
 
 #: ../data/ui/window.glade:56 ../data/ui/window.glade:315
 msgid "Connect"
 msgstr "连接"
 
-#: ../src/ui/srain_msg.c:135
+#: ../src/ui/srain_msg.c:136
 msgid "Copy message"
 msgstr "复制消息"
 
@@ -165,17 +175,17 @@ msgstr "描述："
 msgid "ERROR"
 msgstr "错误"
 
-#: ../src/srv/srv_session.c:92
+#: ../src/srv/srv_session.c:95
 #, c-format
 msgid "ERROR: %s"
 msgstr "错误: %s"
 
-#: ../src/srv/srv_event.c:628
+#: ../src/srv/srv_event.c:656
 #, c-format
 msgid "ERROR[%3d]: %s"
 msgstr "错误[%3d]: %s"
 
-#: ../src/ui/srain_msg.c:117 ../src/ui/srain_chat.c:205
+#: ../src/ui/srain_msg.c:118 ../src/ui/srain_chat.c:205
 msgid "Failed to send message"
 msgstr "无法发送消息"
 
@@ -183,7 +193,7 @@ msgstr "无法发送消息"
 msgid "Failed to upload image"
 msgstr "无法上传图片"
 
-#: ../src/ui/srain_msg.c:142
+#: ../src/ui/srain_msg.c:143
 msgid "Forward to..."
 msgstr "转发到……"
 
@@ -244,7 +254,7 @@ msgstr "密码："
 msgid "Please visit"
 msgstr "请访问 "
 
-#: ../src/plugin.c:50
+#: ../src/plugin.c:128
 msgid "Plugin no loaded"
 msgstr "插件未加载"
 
@@ -256,7 +266,7 @@ msgstr "端口："
 msgid "Quit"
 msgstr "退出"
 
-#: ../src/srv/srv_session.c:59
+#: ../src/srv/srv_session.c:62
 #, c-format
 msgid "Reconnecting to %s ..."
 msgstr "正在重新连接到 %s ……"
