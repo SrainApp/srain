@@ -12,6 +12,7 @@
 
 #include "ui.h"
 #include "ui_hdr.h"
+#include "ui_common.h"
 #include "srain_app.h"
 #include "srain_chat.h"
 #include "srain_window.h"
@@ -382,12 +383,19 @@ void ui_sys_msg_sync(const char *srv_name, const char *chat_name,
         chat = srain_window_get_cur_chat(srain_win);
 
         /* Current SrainChat doesn't belong to `srv_name` */
-        if (strcmp(srain_chat_get_srv_name(chat), srv_name) != 0){
+        if (chat && strcmp(srain_chat_get_srv_name(chat), srv_name) != 0){
             chat = srain_window_get_chat_by_name(srain_win, srv_name, META_SERVER);
         }
     }
 
-    g_return_if_fail(chat);
+    if (!chat){
+        if (type == SYS_MSG_ERROR){
+            char buf[512];
+            snprintf(buf, sizeof(buf), _("<b>Session</b>: %s\n\n%s\n"), srv_name, msg);
+            show_msg_dialog(_("ERROR"), buf);
+        }
+        return;
+    }
 
     your_nick = srain_chat_get_nick(chat);
 
