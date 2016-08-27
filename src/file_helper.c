@@ -119,7 +119,7 @@ char *get_avatar_file(const char *fname){
         return path;
     }
 
-    WARN_FR("'%s' not found", path);
+    // WARN_FR("'%s' not found", path);
     g_free(path);
 
     return NULL;

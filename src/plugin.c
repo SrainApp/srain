@@ -6,6 +6,12 @@
  * @date 2016-04-07
  */
 
+/*
+ * Ref:
+ * - https://docs.python.org/3/c-api/init.html#thread-state-and-the-global-interpreter-lock
+ * - http://www.slideshare.net/YiLungTsai/embed-python
+ *
+ */
 // #define __DBG_ON
 #define __LOG_ON
 
@@ -15,6 +21,7 @@
 #include "i18n.h"
 #include "meta.h"
 #include "log.h"
+#include "file_helper.h"
 
 #define PLUGIN_COUNT    2
 #define PLUGIN_UPLOAD   0
@@ -26,96 +33,12 @@ typedef struct {
     PyObject *func;
 } Plugin;
 
+static PyThreadState *save;
+
 Plugin plugins[PLUGIN_COUNT] = {
     {"upload", "upload", NULL},
     {"avatar", "avatar", NULL},
 };
-
-/**
- * @brief Given a file path, upload it to internet
- *
- * @param path
- *
- * @return A URL of the uploaded file
- *
- * NOTE: This function is blocked.
- */
-char* plugin_upload(const char *path){
-    char *url;
-    PyObject *py_args;
-    PyObject *py_path;
-    PyObject *py_url;
-
-    if (!plugins[PLUGIN_UPLOAD].func)
-        return _("Plugin no loaded");
-
-    /* Build arguments */
-    py_path = PyUnicode_DecodeFSDefault(path);
-    if (!py_path){
-        PyErr_Print();
-        ERR_FR("Failed to convert %s", path);
-        return NULL;
-    }
-
-    py_args = PyTuple_New(1);
-    PyTuple_SetItem(py_args, 0, py_path);
-
-    /* Call python function */
-    py_url = PyObject_CallObject(plugins[PLUGIN_UPLOAD].func, py_args);
-    Py_DECREF(py_args);
-
-    if (!py_url){
-        PyErr_Print();
-        ERR_FR("Function `%s` failed", plugins[PLUGIN_UPLOAD].func_name);
-        return NULL;
-    }
-
-    url = PyUnicode_AsUTF8(py_url);
-    Py_DECREF(py_url);
-    // TODO: leak?
-
-    if (!url){
-        PyErr_Print();
-        ERR_FR("Failed to convert URL to UTF-8");
-        return NULL;
-    }
-
-    LOG_FR("url: %s", url);
-
-    return strdup(url);
-}
-
-/**
- * @brief Download `nick`'s avatar according to `token`
- *
- * @param nick
- * @param token
- */
-int plugin_avatar(const char *nick, const char *token){
-    PyObject *py_nick;
-    PyObject *py_token;
-    PyObject *py_args;
-
-    if (!plugins[PLUGIN_AVATAR].func) return -1;
-    if (!nick || !token) return -1;
-
-    /* Build arguments */
-    py_nick = PyUnicode_FromString(nick);
-    if (!py_nick) return -1;
-    py_token = PyUnicode_FromString(token);
-    if (!py_token) return -1;
-
-    py_args = PyTuple_New(2);
-    PyTuple_SetItem(py_args, 0, py_nick);
-    PyTuple_SetItem(py_args, 1, py_token);
-
-    /* Call python function */
-    PyObject_CallObject(plugins[PLUGIN_AVATAR].func, py_args);
-    PyErr_Print();
-    Py_DECREF(py_args);
-
-    return 0;
-}
 
 void plugin_init(){
     PyObject *py_name;
@@ -125,6 +48,8 @@ void plugin_init(){
     LOG_FR("...");
 
     Py_Initialize();
+    PyEval_InitThreads();
+
     PyRun_SimpleString("import sys");
 
     GString *plugin_path = g_string_new("");
@@ -165,6 +90,8 @@ void plugin_init(){
 
         plugins[i].func = py_func;
     }
+
+    save = PyEval_SaveThread();
 }
 
 void plugin_finalize(){
@@ -178,5 +105,154 @@ void plugin_finalize(){
         }
     }
 
+    PyEval_RestoreThread(save);
     Py_Finalize();
+}
+
+/**
+ * @brief Given a file path, upload it to internet
+ *
+ * @param path
+ *
+ * @return A URL of the uploaded file
+ *
+ * NOTE: This function is blocked.
+ */
+char* plugin_upload(const char *path){
+    char *url;
+    PyObject *py_args;
+    PyObject *py_path;
+    PyObject *py_url;
+
+    if (!plugins[PLUGIN_UPLOAD].func)
+        return _("Plugin no loaded");
+
+    PyGILState_STATE gstate = PyGILState_Ensure();
+
+    /* Build arguments */
+    py_path = PyUnicode_DecodeFSDefault(path);
+    if (!py_path){
+        PyErr_Print();
+        ERR_FR("Failed to convert %s", path);
+        goto bad;
+    }
+
+    py_args = PyTuple_New(1);
+    PyTuple_SetItem(py_args, 0, py_path);
+
+    /* Call python function */
+    py_url = PyObject_CallObject(plugins[PLUGIN_UPLOAD].func, py_args);
+    Py_DECREF(py_args);
+
+    if (!py_url){
+        PyErr_Print();
+        ERR_FR("Function `%s` failed", plugins[PLUGIN_UPLOAD].func_name);
+        goto bad;
+    }
+
+    url = PyUnicode_AsUTF8(py_url);
+    Py_DECREF(py_url);
+
+    if (!url){
+        PyErr_Print();
+        ERR_FR("Failed to convert URL to UTF-8");
+        goto bad;
+    }
+
+    LOG_FR("url: %s", url);
+
+    PyGILState_Release(gstate);
+    return strdup(url);
+bad:
+    PyGILState_Release(gstate);
+    return NULL;
+}
+
+/**
+ * @brief Download `nick`'s avatar according to `token`
+ *
+ * @param nick
+ * @param token
+ */
+typedef struct {
+    char *nick;
+    char *token;
+} PluginAvatarData;
+
+int _plugin_avatar(PluginAvatarData *data){
+    int ret;
+    char *path;
+    const char *nick;
+    const char *token;
+    PyObject *py_nick;
+    PyObject *py_token;
+    PyObject *py_path;
+    PyObject *py_args;
+
+    nick = data->nick;
+    token = data->token;
+    path = g_build_filename(g_get_user_cache_dir(), PACKAGE, "avatars", NULL);
+
+    ret = -1;
+
+    if (!plugins[PLUGIN_AVATAR].func) return -1;
+
+    PyGILState_STATE gstate = PyGILState_Ensure();
+
+    if (!nick || !token || !path) goto bad;
+
+    /* Build arguments */
+    py_nick = PyUnicode_FromString(nick);
+    if (!py_nick) goto bad;
+
+    py_token = PyUnicode_FromString(token);
+    if (!py_token) {
+        Py_DECREF(py_nick);
+        goto bad;
+    }
+
+    py_path = PyUnicode_FromString(path);
+    if (!py_path) {
+        Py_DECREF(py_nick);
+        Py_DECREF(py_token);
+        goto bad;
+    }
+
+    py_args = PyTuple_New(3);
+    PyTuple_SetItem(py_args, 0, py_nick);
+    PyTuple_SetItem(py_args, 1, py_token);
+    PyTuple_SetItem(py_args, 2, py_path);
+
+    PyObject_CallObject(plugins[PLUGIN_AVATAR].func, py_args);
+    PyErr_Print();
+    Py_DECREF(py_args);
+
+    ret = 0;
+bad:
+    g_free(data->nick);
+    g_free(data->token);
+    g_free(path);
+    g_free(data);
+    PyGILState_Release(gstate);
+    return ret;
+}
+
+int plugin_avatar(const char *nick, const char *token){
+    PluginAvatarData *data;
+
+    char *file = get_avatar_file(nick);
+    /* Avatar is already exist */
+    if (file){
+        DBG_FR("File '%s' is already exist", file);
+        g_free(file);
+        return -1;
+    }
+
+    data = g_malloc0(sizeof(PluginAvatarData));
+    data->nick = g_strdup(nick);
+    data->token = g_strdup(token);
+
+    g_thread_new(NULL, (GThreadFunc)_plugin_avatar, data);
+
+    return 0;
 }

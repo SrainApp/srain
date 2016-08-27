@@ -1,8 +1,7 @@
 #ifndef __SRV_EVENT_H
 #define __SRV_EVENT_H
 
-#include "libircclient.h"
-#include "libirc_rfcnumeric.h"
+#include <libircclient.h>
 
 void srv_event_connect(irc_session_t *session, const char *event,
         const char *origin, const char **params, unsigned int count);

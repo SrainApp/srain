@@ -56,7 +56,7 @@ SrainSendMsg *srain_send_msg_new(const char *msg);
 /* ================ SRAIN_RECV_MSG ================ */
 struct _SrainRecvMsg {
     GtkBox parent;
-    GtkBox *avatar_box;
+    GtkImage *avatar_image;
     GtkBox *padding_box;
     GtkLabel *msg_label;
     GtkLabel *time_label;

@@ -1,5 +1,7 @@
-#ifndef __NORFC1459_NUMERIC_H
-#define __NORFC1459_NUMERIC_H
+#ifndef __LIBIRCCLIENT_EX_H
+#define __LIBIRCCLIENT_EX_H
+
+#include <libircclient.h>
 
 #define NORFC1459_RPL_STATSDLINE    250
 #define NORFC1459_RPL_LOCALUSERS    265
@@ -7,5 +9,8 @@
 #define NORFC1459_RPL_CHANNEL_URL   328
 #define NORFC1459_RPL_WHOWAS_TIME 	330
 #define NORFC1459_RPL_WHOISHOST     378
+#define NORFC1459_RPL_WHOISSECURE   671
 
-#endif /* __NORFC1459_NUMERIC_H */
+int irc_cmd_who (irc_session_t *session, const char *nick);
+
+#endif /* __LIBIRCCLIENT_EX_H */

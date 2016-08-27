@@ -23,6 +23,7 @@
 #include "srain_image.h"
 
 #include "markup.h"
+#include "plugin.h"
 #include "download.h"
 #include "log.h"
 #include "file_helper.h"
@@ -302,7 +303,7 @@ static void srain_recv_msg_init(SrainRecvMsg *self){
 static void srain_recv_msg_class_init(SrainRecvMsgClass *class){
     gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
             "/org/gtk/srain/recv_msg.glade");
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, avatar_box);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, avatar_image);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, padding_box);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, msg_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, time_label);
@@ -311,13 +312,35 @@ static void srain_recv_msg_class_init(SrainRecvMsgClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, nick_button);
 }
 
+static gboolean set_avatar_retry(gpointer user_data){
+    long left;
+    char *avatar_path;
+    SrainRecvMsg *smsg;
+
+    smsg = SRAIN_RECV_MSG(user_data);
+
+    left = (long) g_object_get_data(G_OBJECT(smsg), "left-times");
+    if (left == 0) return TRUE;
+
+    avatar_path = get_avatar_file(gtk_label_get_text(smsg->nick_label));
+
+    if (avatar_path){
+        gtk_image_set_from_file(smsg->avatar_image, avatar_path);
+        g_free(avatar_path);
+    } else {
+        g_object_set_data(G_OBJECT(smsg), "left-times", (void *)(left - 1));
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
 SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *msg){
     char timestr[32];
     char *avatar_path;
     GString *markuped_msg;
     GString *img_url;
     SrainImage *simg;
-    SrainImage *avatar_simg;
     SrainRecvMsg *smsg;
 
     smsg = g_object_new(SRAIN_TYPE_RECV_MSG, NULL);
@@ -347,17 +370,15 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *m
         gtk_widget_show(GTK_WIDGET(simg));
     }
 
-    avatar_simg = srain_image_new();
     avatar_path = get_avatar_file(nick);
 
-    if (!avatar_path) avatar_path = get_pixmap_file("srain-avatar.png");
     if (avatar_path){
-        srain_image_set_from_file(avatar_simg, avatar_path, 36, SRAIN_IMAGE_AUTOLOAD);
+        gtk_image_set_from_file(smsg->avatar_image, avatar_path);
         g_free(avatar_path);
+    } else {
+        g_object_set_data(G_OBJECT(smsg), "left-times", (void *)5);
+        g_timeout_add(5000, (GSourceFunc)set_avatar_retry, smsg);
     }
-
-    gtk_container_add(GTK_CONTAINER(smsg->avatar_box), GTK_WIDGET(avatar_simg));
-    gtk_widget_show(GTK_WIDGET(avatar_simg));
 
     return smsg;
 }

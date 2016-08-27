@@ -13,10 +13,9 @@
 #include <string.h>
 #include <strings.h>
 
-#include "libircclient.h"
-#include "libirc_rfcnumeric.h"
-#include "norfc1459_numeric.h"
-
+#include <libircclient.h>
+#include <libirc_rfcnumeric.h>
+#include "libircclient_ex.h"
 
 #include "srv_session.h"
 #include "srv_event.h"
@@ -27,6 +26,7 @@
 #include "filter.h"
 #include "meta.h"
 #include "chat_log.h"
+#include "plugin.h"
 
 #define PRINT_EVENT_PARAM \
     do { \
@@ -368,11 +368,15 @@ void srv_event_channel(irc_session_t *irc_session, const char *event,
 
     /* A message sent by relay bot */
     if (strlen(nick) > 0){
-        if (!filter_is_ignore(nick))
+        if (!filter_is_ignore(nick)){
+            srv_session_who(sess, nick);
             srv_hdr_ui_recv_msg(sess->host, chan, nick, origin, vmsg);
+        }
     } else {
-        if (!filter_is_ignore(origin))
+        if (!filter_is_ignore(origin)){
+            srv_session_who(sess, origin);
             srv_hdr_ui_recv_msg(sess->host, chan, origin, "", vmsg);
+        }
     }
 }
 
@@ -486,15 +490,10 @@ void srv_event_ctcp_action(irc_session_t *irc_session, const char *event,
 
 void srv_event_numeric (irc_session_t *irc_session, unsigned int event,
         const char *origin, const char **params, unsigned int count){
-    int i;
     char buf[512];
     srv_session_t *sess;
 
     sess = irc_get_ctx(irc_session);
-
-    DBG_F("session: %s, event: %d, origin: %s, count: %u, params: [",
-            sess->host, event, origin, count);
-    for (i = 0; i < count; i++) DBG("'%s', ", params[i]); DBG("]\n");
 
     switch (event){
             /************************ Server Message ************************/
@@ -596,6 +595,10 @@ void srv_event_numeric (irc_session_t *irc_session, unsigned int event,
             snprintf(buf, sizeof(buf), _("%s <%s@%s> %s"), params[1], params[2],
                     params[3], params[5]);
             srv_hdr_ui_sys_msg(sess->host, "", buf, SYS_MSG_NORMAL);
+            const char *nick = params[1];
+            const char *realname = params[5];
+            /* Use Real Name as avatar token :-( */
+            plugin_avatar(nick, realname);
             break;
         case LIBIRC_RFC_RPL_WHOISCHANNELS:
             CHECK_COUNT(3);
@@ -614,10 +617,35 @@ void srv_event_numeric (irc_session_t *irc_session, unsigned int event,
                     params[1], params[2], params[3]);
             srv_hdr_ui_sys_msg(sess->host, "", buf, SYS_MSG_NORMAL);
             break;
-            // TODO: NORFC1459_RPL_WHOWAS_TIME NORFC1459_RPL_WHOISHOST
+        case NORFC1459_RPL_WHOWAS_TIME:
+            CHECK_COUNT(4);
+            snprintf(buf, sizeof(buf), _("%s %s %s"),
+                    params[1], params[3], params[2]);
+            srv_hdr_ui_sys_msg(sess->host, "", buf, SYS_MSG_NORMAL);
+            break;
+        case NORFC1459_RPL_WHOISHOST:
+        case NORFC1459_RPL_WHOISSECURE:
+            CHECK_COUNT(3);
+            snprintf(buf, sizeof(buf), _("%s %s"), params[1], params[2]);
+            srv_hdr_ui_sys_msg(sess->host, "", buf, SYS_MSG_NORMAL);
+            break;
         case LIBIRC_RFC_RPL_ENDOFWHOIS:
             CHECK_COUNT(3);
             srv_hdr_ui_sys_msg(sess->host, "", params[2], SYS_MSG_NORMAL);
+            break;
+
+            /************************ NAMES message ************************/
+        case LIBIRC_RFC_RPL_WHOREPLY:
+            CHECK_COUNT(8);
+            /* params[count - 1] = "<hopcount> <realname>", Skip ' ' */
+            const char *nick2 = params[5];
+            const char *realname2 = strchr(params[count - 1], ' ');
+            if (realname2) realname2++;
+            else break;
+            /* Use Real Name as avatar token :-( */
+            plugin_avatar(nick2, realname2);
+            break;
+        case LIBIRC_RFC_RPL_ENDOFWHO:
             break;
     }
 
@@ -629,4 +657,9 @@ void srv_event_numeric (irc_session_t *irc_session, unsigned int event,
         srv_hdr_ui_sys_msg(sess->host, "", msg, SYS_MSG_ERROR);
         return;
     }
+
+    int i;
+    LOG_FR("Drop message, session: %s, event: %d, origin: %s, count: %u, params: [",
+            sess->host, event, origin, count);
+    for (i = 0; i < count; i++) LOG("'%s', ", params[i]); LOG("]\n");
 }

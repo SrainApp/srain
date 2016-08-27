@@ -3,8 +3,7 @@
 
 #include <glib.h>
 
-#include "libircclient.h"
-#include "libirc_rfcnumeric.h"
+#include <libircclient.h>
 
 #define MAX_SESSIONS    10
 #define HOST_LEN        128
@@ -71,6 +70,7 @@ int srv_session_quit(srv_session_t *session, const char *reason);
 void srv_session_quit_all();
 int srv_session_nick(srv_session_t *session, const char *new_nick);
 int srv_session_whois(srv_session_t *session, const char *nick);
+int srv_session_who(srv_session_t *session, const char *nick);
 int srv_session_invite(srv_session_t *session, const char *nick, const char *chan);
 int srv_session_kick(srv_session_t *session, const char *nick, const char *chan, const char *reason);
 int srv_session_mode(srv_session_t *session, const char *target, const char *mode);

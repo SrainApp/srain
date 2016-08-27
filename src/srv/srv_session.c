@@ -13,6 +13,9 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <libircclient.h>
+#include "libircclient_ex.h"
+
 #include "srv_session.h"
 #include "srv_event.h"
 #include "srv_hdr.h"
@@ -418,6 +421,14 @@ int srv_session_nick(srv_session_t *session, const char *new_nick){
 int srv_session_whois(srv_session_t *session, const char *nick){
     int res;
     if ((res = irc_cmd_whois(session->irc_session, nick)) < 0){
+        srv_session_err_hdr(session);
+    }
+    return res;
+}
+
+int srv_session_who(srv_session_t *session, const char *nick){
+    int res;
+    if ((res = irc_cmd_who(session->irc_session, nick)) < 0){
         srv_session_err_hdr(session);
     }
     return res;
