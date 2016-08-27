@@ -312,7 +312,7 @@ static void srain_recv_msg_class_init(SrainRecvMsgClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, nick_button);
 }
 
-static gboolean set_avatar_retry(gpointer user_data){
+static gboolean set_avatar_retry_timeout(gpointer user_data){
     long left;
     char *avatar_path;
     SrainRecvMsg *smsg;
@@ -377,7 +377,7 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *m
         g_free(avatar_path);
     } else {
         g_object_set_data(G_OBJECT(smsg), "left-times", (void *)5);
-        g_timeout_add(5000, (GSourceFunc)set_avatar_retry, smsg);
+        g_timeout_add(5000, (GSourceFunc)set_avatar_retry_timeout, smsg);
     }
 
     return smsg;

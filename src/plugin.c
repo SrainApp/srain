@@ -124,11 +124,14 @@ char* plugin_upload(const char *path){
     PyObject *py_path;
     PyObject *py_url;
 
-    if (!plugins[PLUGIN_UPLOAD].func)
-        return _("Plugin no loaded");
+    if (!plugins[PLUGIN_UPLOAD].func){
+        ERR_FR("Plugin no loaded");
+        return NULL;
+    }
 
     PyGILState_STATE gstate = PyGILState_Ensure();
 
+    url = NULL;
     /* Build arguments */
     py_path = PyUnicode_DecodeFSDefault(path);
     if (!py_path){
@@ -151,21 +154,21 @@ char* plugin_upload(const char *path){
     }
 
     url = PyUnicode_AsUTF8(py_url);
-    Py_DECREF(py_url);
 
     if (!url){
         PyErr_Print();
+        Py_DECREF(py_url);
         ERR_FR("Failed to convert URL to UTF-8");
         goto bad;
     }
 
-    LOG_FR("url: %s", url);
+    url = g_strdup(url);
 
-    PyGILState_Release(gstate);
-    return strdup(url);
+    Py_DECREF(py_url);
+
 bad:
     PyGILState_Release(gstate);
-    return NULL;
+    return url;
 }
 
 /**

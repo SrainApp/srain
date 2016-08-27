@@ -105,18 +105,21 @@ static gboolean entry_on_key_press(gpointer user_data, GdkEventKey *event){
     return TRUE;
 }
 
-static void upload_image_idle(GtkEntry *entry){
+static gboolean upload_image_idle(GtkEntry *entry){
     char *url;
 
     url = g_object_get_data(G_OBJECT(entry), "image-url");
     if (url){
         gtk_entry_set_text(entry, url);
-        free(url);
+        g_free(url);
     } else {
         gtk_entry_set_text(entry, _("Failed to upload image"));
     }
 
     gtk_widget_set_sensitive(GTK_WIDGET(entry), TRUE);
+
+    /* NOTE: DON'T FORGET to return FALSE!!! */
+    return FALSE;
 }
 
 static void upload_image_async(GtkEntry *entry){
