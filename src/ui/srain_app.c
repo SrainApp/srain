@@ -12,6 +12,7 @@
 
 #include "theme.h"
 #include "ui_test.h"
+#include "ui_common.h"
 #include "srain_app.h"
 #include "srain_window.h"
 
@@ -41,32 +42,15 @@ static void srain_app_activate(GtkApplication *app){
 
         if (rc_read() < 0) {
             /* Show a message dialog if no command runned in rc file */
-            GtkMessageDialog *dia = GTK_MESSAGE_DIALOG(
-                    gtk_message_dialog_new(GTK_WINDOW(srain_win),
-                        GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-                        GTK_MESSAGE_INFO,
-                        GTK_BUTTONS_OK,
-                        NULL
-                        )
-                    );
-            gtk_message_dialog_set_markup(GTK_MESSAGE_DIALOG(dia),
-                    _("<big><b>Welcome to Srain :)</b></big>\n\n"
-                        "Click the \"Connect\" button on the header bar to connect to a IRC server."
-                        "\n\n"
-                        "If you want to execute some commands automatically when startup, please "
-                        "add your commands into <u>~/.config/srain/srainrc</u>."
-                        "\n\n"
-                        "Need help? Please visit "
-                        "<a href=\"https://github.com/lastavenger/srain/wiki\">Srain's website</a>."
-                        "\n"
-                        )
-                    );
-
-            /* Without this, message dialog cannot be displayed on the center */
-            while (gtk_events_pending()) gtk_main_iteration();
-
-            gtk_dialog_run(GTK_DIALOG(dia));
-            gtk_widget_destroy(GTK_WIDGET(dia));
+            show_msg_dialog(_("Welcome"), _("<big><b>Welcome to Srain :)</b></big>\n\n"
+                "Click the \"Connect\" button on the header bar to connect to a IRC server."
+                "\n\n"
+                "If you want to execute some commands automatically when startup, please "
+                "add your commands into <u>~/.config/srain/srainrc</u>."
+                "\n\n"
+                "Need help? Please visit "
+                "<a href=\"https://github.com/lastavenger/srain/wiki\">Srain's website</a>."
+                "\n"));
         }
     }
 }
