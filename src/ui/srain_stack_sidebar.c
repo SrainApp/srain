@@ -33,10 +33,12 @@
 #define __LOG_ON
 
 #include <gtk/gtk.h>
+
 #include "srain_stack_sidebar.h"
 #include "srain_stack_sidebar_item.h"
 #include "srain_chat.h"
 #include "ui_common.h"
+
 #include "log.h"
 
 struct _SrainStackSidebar {
@@ -68,8 +70,33 @@ listbox_on_row_selected(GtkListBox *box, GtkListBoxRow *row, gpointer user_data)
     gtk_stack_set_visible_child(sidebar->stack, child);
 
     srain_stack_sidebar_item_count_clear(item);
-    srain_chat_fcous_entry(SRAIN_CHAN(child));
+    srain_chat_fcous_entry(SRAIN_CHAT(child));
 }
+
+static gboolean
+list_box_on_popup(GtkWidget *widget, GdkEventButton *event, gpointer user_data){
+    GtkListBox *list_box;
+    GtkListBoxRow *row;
+    SrainChat *child;
+    SrainStackSidebarItem *item;
+
+    list_box = GTK_LIST_BOX(widget);
+
+    if (event->button == 3){
+        row = gtk_list_box_get_selected_row(list_box);
+        if (!row) return FALSE;
+
+        item = SRAIN_STACK_SIDEBAR_ITEM(gtk_bin_get_child(GTK_BIN(row)));
+        child = g_object_get_data(G_OBJECT(item), "stack-child");
+
+        gtk_menu_popup(srain_chat_get_menu(child), NULL, NULL, NULL, NULL,
+                event->button, event->time);
+
+        return TRUE;
+    }
+    return FALSE;
+}
+
 
 static void
 srain_stack_sidebar_init(SrainStackSidebar *self){
@@ -91,6 +118,8 @@ srain_stack_sidebar_init(SrainStackSidebar *self){
 
     g_signal_connect(self->list, "row-selected",
             G_CALLBACK(listbox_on_row_selected), self);
+    g_signal_connect(self->list, "button-press-event",
+            G_CALLBACK(list_box_on_popup), NULL);
 
     style = gtk_widget_get_style_context(GTK_WIDGET(self));
     gtk_style_context_add_class(style, "sidebar"); // ?
@@ -109,9 +138,9 @@ add_child(GtkWidget *child, SrainStackSidebar *sidebar){
     if (g_hash_table_lookup(sidebar->rows, child))
         return;
 
-    chat_name = srain_chat_get_name(SRAIN_CHAN(child));
-    server_name = srain_chat_get_srv_name(SRAIN_CHAN(child));
-    type = srain_chat_get_chat_type(SRAIN_CHAN(child));
+    chat_name = srain_chat_get_name(SRAIN_CHAT(child));
+    server_name = srain_chat_get_srv_name(SRAIN_CHAT(child));
+    type = srain_chat_get_chat_type(SRAIN_CHAT(child));
     item = srain_stack_sidebar_item_new(server_name, chat_name, type);
 
     // gtk_widget_set_halign(item, GTK_ALIGN_START);

@@ -2,10 +2,30 @@
 <!-- Generated with glade 3.20.0 -->
 <interface>
   <requires lib="gtk+" version="3.16"/>
-  <object class="GtkImage" id="option_button_image">
+  <object class="GtkMenu" id="menu">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="icon_name">preferences-other</property>
+    <child>
+      <object class="GtkMenuItem" id="toggle_topic_menu_item">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Show/hide topic</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="toggle_user_list_menu_item">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Show/hide user list</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="close_menu_item">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Close</property>
+      </object>
+    </child>
   </object>
   <object class="GtkImage" id="upload_image_button_image">
     <property name="visible">True</property>
@@ -31,30 +51,37 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="halign">start</property>
-                <property name="margin_left">6</property>
+                <property name="margin_left">8</property>
+                <property name="margin_right">8</property>
+                <property name="margin_top">8</property>
+                <property name="margin_bottom">8</property>
                 <attributes>
+                  <attribute name="font-desc" value="&lt;输入值&gt; 11"/>
                   <attribute name="weight" value="semibold"/>
                 </attributes>
               </object>
               <packing>
-                <property name="expand">False</property>
+                <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">0</property>
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="option_button">
+              <object class="GtkMenuButton" id="menu_button">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="focus_on_click">False</property>
                 <property name="receives_default">True</property>
-                <property name="image">option_button_image</property>
                 <property name="relief">none</property>
+                <property name="popup">menu</property>
+                <property name="use_popover">False</property>
+                <child>
+                  <placeholder/>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="pack_type">end</property>
                 <property name="position">1</property>
               </packing>
             </child>
@@ -74,7 +101,9 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="halign">start</property>
-                <property name="margin_left">6</property>
+                <property name="margin_left">8</property>
+                <property name="margin_right">8</property>
+                <property name="margin_bottom">8</property>
                 <property name="use_markup">True</property>
                 <property name="wrap">True</property>
                 <property name="wrap_mode">char</property>
@@ -99,7 +128,7 @@
       </packing>
     </child>
     <child>
-      <object class="GtkSeparator" id="separator1">
+      <object class="GtkSeparator">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
       </object>
@@ -130,6 +159,18 @@
           </packing>
         </child>
         <child>
+          <object class="GtkSeparator">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
           <object class="GtkRevealer" id="user_list_revealer">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
@@ -152,7 +193,7 @@
       </packing>
     </child>
     <child>
-      <object class="GtkSeparator" id="separator2">
+      <object class="GtkSeparator">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
       </object>
@@ -224,61 +265,4 @@
       </packing>
     </child>
   </template>
-  <object class="GtkPopover" id="option_popover">
-    <property name="can_focus">False</property>
-    <property name="relative_to">option_button</property>
-    <child>
-      <object class="GtkBox" id="option_box">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="orientation">vertical</property>
-        <property name="spacing">4</property>
-        <child>
-          <object class="GtkToggleButton" id="show_topic_togglebutton">
-            <property name="label" translatable="yes">Show topic</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="focus_on_click">False</property>
-            <property name="receives_default">True</property>
-            <property name="relief">none</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkToggleButton" id="show_user_list_togglebutton">
-            <property name="label" translatable="yes">Show user list</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="focus_on_click">False</property>
-            <property name="receives_default">True</property>
-            <property name="relief">none</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkButton" id="leave_button">
-            <property name="label" translatable="yes">Leave</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="focus_on_click">False</property>
-            <property name="receives_default">True</property>
-            <property name="relief">none</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">2</property>
-          </packing>
-        </child>
-      </object>
-    </child>
-  </object>
 </interface>

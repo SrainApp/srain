@@ -154,7 +154,7 @@ static void smart_scroll(SrainMsgList *list, int force){
     }
 
     chat = srain_window_get_cur_chat(win);
-    if (!SRAIN_IS_CHAN(chat)){
+    if (!SRAIN_IS_CHAT(chat)){
         ERR_FR("Current chat is no a SrainChat");
         return;
     }

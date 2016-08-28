@@ -393,7 +393,7 @@ void srain_window_rm_chat(SrainWindow *win, SrainChat *chat){
 SrainChat* srain_window_get_cur_chat(SrainWindow *win){
     SrainChat *chat = NULL;
 
-    chat = SRAIN_CHAN(gtk_stack_get_visible_child(win->stack));
+    chat = SRAIN_CHAT(gtk_stack_get_visible_child(win->stack));
 
     // TODO:
     //  if (chat == NULL) ERR_FR("no visible chat");
@@ -407,7 +407,7 @@ SrainChat* srain_window_get_chat_by_name(SrainWindow *win,
 
     GString *name = g_string_new("");
     g_string_printf(name, "%s %s", server_name, chat_name);
-    chat = SRAIN_CHAN(gtk_stack_get_child_by_name(win->stack, name->str));
+    chat = SRAIN_CHAT(gtk_stack_get_child_by_name(win->stack, name->str));
     g_string_free(name, TRUE);
 
     return chat;
@@ -429,7 +429,7 @@ GList* srain_window_get_chats_by_srv_name(SrainWindow *win,
 
     all_chats = gtk_container_get_children(GTK_CONTAINER(win->stack));
     while (all_chats){
-        chat = SRAIN_CHAN(all_chats->data);
+        chat = SRAIN_CHAT(all_chats->data);
 
         if (strncmp(server_name,
                     srain_chat_get_srv_name(chat),
@@ -450,7 +450,7 @@ void srain_window_spinner_toggle(SrainWindow *win, gboolean is_busy){
 
 void srain_window_stack_sidebar_update(SrainWindow *win, SrainChat *chat,
         const char *nick, const char *msg){
-    if (SRAIN_CHAN(gtk_stack_get_visible_child(win->stack)) != chat){
+    if (SRAIN_CHAT(gtk_stack_get_visible_child(win->stack)) != chat){
         srain_stack_sidebar_update(win->sidebar, chat, nick, msg, 0);
     } else {
         srain_stack_sidebar_update(win->sidebar, chat, nick, msg, 1);

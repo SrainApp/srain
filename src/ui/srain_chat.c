@@ -38,16 +38,14 @@ struct _SrainChat {
 
     /* header */
     GtkLabel* name_label;
+    GtkMenu *menu;
     GtkRevealer *topic_revealer;
     GtkLabel *topic_label;
-    GtkButton *option_button;
 
-    /* option box */
-    GtkPopover *option_popover;
-    GtkBox *option_box;
-    GtkToggleButton *show_topic_togglebutton;
-    GtkToggleButton *show_user_list_togglebutton;
-    GtkButton *leave_button;
+    /* Menu */
+    GtkMenuItem *toggle_topic_menu_item;
+    GtkMenuItem *toggle_user_list_menu_item;
+    GtkMenuItem *close_menu_item;
 
     GtkBox *msg_list_box;    // SrainMsgList container
     SrainMsgList *msg_list;
@@ -70,12 +68,22 @@ struct _SrainChatClass {
 
 G_DEFINE_TYPE(SrainChat, srain_chat, GTK_TYPE_BOX);
 
-static void popover_button_on_click(gpointer user_data){
-    GtkPopover *popover;
+static void toggle_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
+    GtkRevealer *revealer;
 
-    popover = user_data;
-    gtk_widget_set_visible(GTK_WIDGET(popover),
-            !gtk_widget_get_visible(GTK_WIDGET(popover)));
+    revealer = user_data;
+
+    gtk_revealer_set_reveal_child(revealer,
+            !gtk_revealer_get_reveal_child(revealer));
+}
+
+static void close_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
+    SrainChat *chat;
+
+    g_return_if_fail(SRAIN_IS_CHAT(user_data));
+    chat = user_data;
+
+    ui_hdr_srv_part(chat, "");
 }
 
 static gboolean entry_on_key_press(gpointer user_data, GdkEventKey *event){
@@ -160,24 +168,6 @@ static void upload_image_button_on_click(GtkWidget *widget, gpointer user_data){
 
 }
 
-static void leave_button_on_click(GtkWidget *widget, gpointer user_data){
-    SrainChat *chat;
-
-    chat = user_data;
-    // TODO: unquery
-    ui_hdr_srv_part(chat, "Leaving");
-}
-
-static void option_togglebutton_on_click(GtkWidget *widget, gpointer user_data){
-    GtkRevealer *revealer;
-    GtkToggleButton *button;
-
-    revealer = user_data;
-    button = GTK_TOGGLE_BUTTON(widget);
-    gtk_revealer_set_reveal_child(revealer,
-            gtk_toggle_button_get_active(button));
-}
-
 static int is_blank(const char *str){
     while (*str){
         if (*str != '\t' && *str != ' ')
@@ -240,27 +230,18 @@ static void srain_chat_init(SrainChat *self){
 
     self->last_msg = NULL;
 
+    /* Menu */
+    g_signal_connect(self->toggle_topic_menu_item, "activate",
+            G_CALLBACK(toggle_menu_item_on_activate), self->topic_revealer);
+    g_signal_connect(self->toggle_user_list_menu_item, "activate",
+            G_CALLBACK(toggle_menu_item_on_activate), self->user_list_revealer);
+    g_signal_connect(self->close_menu_item, "activate",
+            G_CALLBACK(close_menu_item_on_activate), self);
+
     g_signal_connect_swapped(self->input_entry, "activate",
             G_CALLBACK(input_entry_on_activate), self);
     g_signal_connect_swapped(self->input_entry, "key_press_event",
             G_CALLBACK(entry_on_key_press), self);
-
-    g_signal_connect(self->leave_button, "clicked",
-            G_CALLBACK(leave_button_on_click), self);
-    g_signal_connect(self->show_topic_togglebutton, "clicked",
-            G_CALLBACK(option_togglebutton_on_click), self->topic_revealer);
-    g_signal_connect(self->show_user_list_togglebutton, "clicked",
-            G_CALLBACK(option_togglebutton_on_click), self->user_list_revealer);
-
-    // Click to show/hide GtkPopover
-    g_signal_connect_swapped(self->option_button, "clicked",
-            G_CALLBACK(popover_button_on_click), self->option_popover);
-    g_signal_connect_swapped(self->show_topic_togglebutton, "clicked",
-            G_CALLBACK(popover_button_on_click), self->option_popover);
-    g_signal_connect_swapped(self->show_user_list_togglebutton, "clicked",
-            G_CALLBACK(popover_button_on_click), self->option_popover);
-    g_signal_connect_swapped(self->leave_button, "clicked",
-            G_CALLBACK(popover_button_on_click), self->option_popover);
 
     g_signal_connect(self->upload_image_button, "clicked",
             G_CALLBACK(upload_image_button_on_click), self->input_entry);
@@ -275,8 +256,8 @@ static void srain_chat_init(SrainChat *self){
 }
 
 static void srain_chat_finalize(GObject *object){
-    free(SRAIN_CHAN(object)->server_name);
-    free(SRAIN_CHAN(object)->chat_name);
+    free(SRAIN_CHAT(object)->server_name);
+    free(SRAIN_CHAT(object)->chat_name);
 
     G_OBJECT_CLASS(srain_chat_parent_class)->finalize(object);
 }
@@ -290,9 +271,13 @@ static void srain_chat_class_init(SrainChatClass *class){
             "/org/gtk/srain/chat.glade");
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, name_label);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, menu);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, topic_revealer);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, topic_label);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, option_button);
+
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, toggle_topic_menu_item);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, close_menu_item);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, toggle_user_list_menu_item);
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, msg_list_box);
 
@@ -301,19 +286,13 @@ static void srain_chat_class_init(SrainChatClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, nick_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, input_entry);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, upload_image_button);
-
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, option_popover);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, option_box);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, show_topic_togglebutton);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, show_user_list_togglebutton);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, leave_button);
 }
 
 SrainChat* srain_chat_new(const char *server_name, const char *chat_name,
         ChatType type){
     SrainChat *chat;
 
-    chat = g_object_new(SRAIN_TYPE_CHAN, NULL);
+    chat = g_object_new(SRAIN_TYPE_CHAT, NULL);
 
     chat->type =type;
 
@@ -325,13 +304,13 @@ SrainChat* srain_chat_new(const char *server_name, const char *chat_name,
 
     switch (chat->type){
         case CHAT_SERVER:
-            gtk_button_set_label(chat->leave_button, _("Quit"));
+            gtk_menu_item_set_label(chat->close_menu_item, _("Disconnect"));
             break;
         case CHAT_CHANNEL:
-            gtk_button_set_label(chat->leave_button, _("Leave"));
+            gtk_menu_item_set_label(chat->close_menu_item, _("Leave"));
             break;
         case CHAT_PRIVATE:
-            gtk_button_set_label(chat->leave_button, _("Close"));
+            gtk_menu_item_set_label(chat->close_menu_item, _("Close"));
             break;
         default:
             break;
@@ -384,12 +363,11 @@ SrainMsgList* srain_chat_get_msg_list(SrainChat *chat){
 }
 
 SrainEntryCompletion* srain_chat_get_entry_completion(SrainChat *chat){
-        return chat->completion;
+    return chat->completion;
 }
 
 const char* srain_chat_get_name(SrainChat *chat){
-        return chat->chat_name;
-
+    return chat->chat_name;
 }
 
 const char* srain_chat_get_srv_name(SrainChat *chat){
@@ -410,4 +388,8 @@ const char* srain_chat_get_nick(SrainChat *chat){
 
 ChatType srain_chat_get_chat_type(SrainChat *chat){
     return chat->type;
+}
+
+GtkMenu* srain_chat_get_menu(SrainChat *chat){
+    return chat->menu;
 }
