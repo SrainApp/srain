@@ -21,7 +21,6 @@
 #include "i18n.h"
 #include "meta.h"
 #include "log.h"
-#include "file_helper.h"
 
 #define PLUGIN_COUNT    2
 #define PLUGIN_UPLOAD   0
@@ -242,14 +241,6 @@ bad:
 
 int plugin_avatar(const char *nick, const char *token){
     PluginAvatarData *data;
-
-    char *file = get_avatar_file(nick);
-    /* Avatar is already exist */
-    if (file){
-        DBG_FR("File '%s' is already exist", file);
-        g_free(file);
-        return -1;
-    }
 
     data = g_malloc0(sizeof(PluginAvatarData));
     data->nick = g_strdup(nick);

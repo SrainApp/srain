@@ -27,6 +27,7 @@
 #include "meta.h"
 #include "chat_log.h"
 #include "plugin.h"
+#include "file_helper.h"
 
 #define PRINT_EVENT_PARAM \
     do { \
@@ -366,15 +367,22 @@ void srv_event_channel(irc_session_t *irc_session, const char *event,
     char nick[NICK_LEN] = { 0 };
     filter_relaybot_trans(origin, nick, vmsg);
 
+    char *file;
     /* A message sent by relay bot */
     if (strlen(nick) > 0){
         if (!filter_is_ignore(nick)){
-            srv_session_who(sess, nick);
+            file = get_avatar_file(nick);
+            if (file) g_free(file);
+            else srv_session_who(sess, nick);
+
             srv_hdr_ui_recv_msg(sess->host, chan, nick, origin, vmsg);
         }
     } else {
         if (!filter_is_ignore(origin)){
-            srv_session_who(sess, origin);
+            file = get_avatar_file(nick);
+            if (file) g_free(file);
+            else srv_session_who(sess, nick);
+
             srv_hdr_ui_recv_msg(sess->host, chan, origin, "", vmsg);
         }
     }
@@ -591,15 +599,17 @@ void srv_event_numeric (irc_session_t *irc_session, unsigned int event,
 
             /************************ Whois message ************************/
         case LIBIRC_RFC_RPL_WHOISUSER:
-            CHECK_COUNT(6);
-            snprintf(buf, sizeof(buf), _("%s <%s@%s> %s"), params[1], params[2],
-                    params[3], params[5]);
-            srv_hdr_ui_sys_msg(sess->host, "", buf, SYS_MSG_NORMAL);
-            const char *nick = params[1];
-            const char *realname = params[5];
-            /* Use Real Name as avatar token :-( */
-            plugin_avatar(nick, realname);
-            break;
+            {
+                CHECK_COUNT(6);
+                snprintf(buf, sizeof(buf), _("%s <%s@%s> %s"), params[1], params[2],
+                        params[3], params[5]);
+                srv_hdr_ui_sys_msg(sess->host, "", buf, SYS_MSG_NORMAL);
+                const char *nick = params[1];
+                const char *realname = params[5];
+                /* Use Real Name as avatar token :-( */
+                plugin_avatar(nick, realname);
+                break;
+            }
         case LIBIRC_RFC_RPL_WHOISCHANNELS:
             CHECK_COUNT(3);
             snprintf(buf, sizeof(buf), _("%s is member of %s"), params[1], params[2]);
@@ -636,30 +646,35 @@ void srv_event_numeric (irc_session_t *irc_session, unsigned int event,
 
             /************************ NAMES message ************************/
         case LIBIRC_RFC_RPL_WHOREPLY:
-            CHECK_COUNT(8);
-            /* params[count - 1] = "<hopcount> <realname>", Skip ' ' */
-            const char *nick2 = params[5];
-            const char *realname2 = strchr(params[count - 1], ' ');
-            if (realname2) realname2++;
-            else break;
-            /* Use Real Name as avatar token :-( */
-            plugin_avatar(nick2, realname2);
-            break;
+            {
+                CHECK_COUNT(8);
+                /* params[count - 1] = "<hopcount> <realname>", Skip ' ' */
+                const char *nick = params[5];
+                const char *realname = strchr(params[count - 1], ' ');
+                if (realname) realname++;
+                else break;
+                /* Use Real Name as avatar token :-( */
+                plugin_avatar(nick, realname);
+                break;
+            }
         case LIBIRC_RFC_RPL_ENDOFWHO:
             break;
+        default:
+            {
+                // Error message
+                if (event >= 400 && event < 600){
+                    char msg[512];
+
+                    snprintf(msg, sizeof(msg), _("ERROR[%3d]: %s"), event, params[count-1]);
+                    srv_hdr_ui_sys_msg(sess->host, "", msg, SYS_MSG_ERROR);
+                    return;
+                }
+
+                int i;
+                LOG_FR("Drop message, session: %s, event: %d, origin: %s, count: %u, params: [",
+                        sess->host, event, origin, count);
+                for (i = 0; i < count; i++) LOG("'%s', ", params[i]); LOG("]\n");
+            }
     }
 
-    // Error message
-    if (event >= 400 && event < 600){
-        char msg[512];
-
-        snprintf(msg, sizeof(msg), _("ERROR[%3d]: %s"), event, params[count-1]);
-        srv_hdr_ui_sys_msg(sess->host, "", msg, SYS_MSG_ERROR);
-        return;
-    }
-
-    int i;
-    LOG_FR("Drop message, session: %s, event: %d, origin: %s, count: %u, params: [",
-            sess->host, event, origin, count);
-    for (i = 0; i < count; i++) LOG("'%s', ", params[i]); LOG("]\n");
 }
