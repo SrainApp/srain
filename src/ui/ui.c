@@ -54,38 +54,31 @@ int ui_idle(CommonUIData *data){
     DBG_FR("Idle call, data: %p", data);
     DBG_FR("func: %p", data->ui_interface);
 
+    const char *srv_name = data->srv_name;
+    const char *chat_name = data->chat_name;
+
     if (data->ui_interface == ui_add_chat_sync){
-        const char *srv_name = data->srv_name;
-        const char *chat_name = data->chat_name;
         const char *nick = data->nick;
         ChatType type = data->type;
         ui_add_chat_sync(srv_name, chat_name, nick, type);
     }
     else if (data->ui_interface == ui_rm_chat_sync){
         DBG_FR("ui_rm_chat_sync");
-        const char *srv_name = data->srv_name;
-        const char *chat_name = data->chat_name;
         ui_rm_chat_sync(srv_name, chat_name);
     }
     else if (data->ui_interface == ui_sys_msg_sync){
         DBG_FR("ui_sys_msg_sync");
-        const char *srv_name = data->srv_name;
-        const char *chat_name = data->chat_name;
         const char *msg = data->msg;
         SysMsgType type = data->type;
         ui_sys_msg_sync(srv_name, chat_name, msg, type);
     }
     else if (data->ui_interface == ui_send_msg_sync){
         DBG_FR("ui_send_msg_sync");
-        const char *srv_name = data->srv_name;
-        const char *chat_name = data->chat_name;
         const char *msg = data->msg;
         ui_send_msg_sync(srv_name, chat_name, msg);
     }
     else if (data->ui_interface == ui_recv_msg_sync){
         DBG_FR("ui_recv_msg_sync");
-        const char *srv_name = data->srv_name;
-        const char *chat_name = data->chat_name;
         const char *nick = data->nick;
         const char *id = data->nick2;
         const char *msg = data->msg;
@@ -93,23 +86,17 @@ int ui_idle(CommonUIData *data){
     }
     else if (data->ui_interface == ui_add_user_sync){
         DBG_FR("ui_add_user_sync");
-        const char *srv_name = data->srv_name;
-        const char *chat_name = data->chat_name;
         const char *nick = data->nick;
         UserType type = data->type;
         ui_add_user_sync(srv_name, chat_name, nick, type);
     }
     else if (data->ui_interface == ui_rm_user_sync){
         DBG_FR("ui_rm_user_sync");
-        const char *srv_name = data->srv_name;
-        const char *chat_name = data->chat_name;
         const char *nick = data->nick;
         ui_rm_user_sync(srv_name, chat_name, nick);
     }
     else if (data->ui_interface == ui_ren_user_sync){
         DBG_FR("ui_ren_user_sync");
-        const char *srv_name = data->srv_name;
-        const char *chat_name = data->chat_name;
         const char *nick = data->nick;
         const char *new_nick = data->nick2;
         UserType type = data->type;
@@ -117,8 +104,6 @@ int ui_idle(CommonUIData *data){
     }
     else if (data->ui_interface == ui_set_topic_sync){
         DBG_FR("ui_set_topic_sync");
-        const char *srv_name = data->srv_name;
-        const char *chat_name = data->chat_name;
         const char *topic = data->msg;
         ui_set_topic_sync(srv_name, chat_name, topic);
     }
@@ -391,7 +376,8 @@ void ui_sys_msg_sync(const char *srv_name, const char *chat_name,
     if (!chat){
         if (type == SYS_MSG_ERROR){
             char buf[512];
-            snprintf(buf, sizeof(buf), _("<b>Session</b>: %s\n\n%s\n"), srv_name, msg);
+            snprintf(buf, sizeof(buf), _("<b>Session:</b> %s\n<b>Error message:</b> %s"),
+                    srv_name, msg);
             show_msg_dialog(_("ERROR"), buf);
         }
         return;

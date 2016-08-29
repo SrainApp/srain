@@ -62,7 +62,6 @@ int ui_hdr_srv_cmd(SrainChat *chat, char *cmd, int block){
     const char *srv_name;
     const char *chat_name;
 
-    cmd2 = strdup(cmd);
 
     if (chat == NULL){
         chat = srain_window_get_cur_chat(srain_win);
@@ -77,9 +76,11 @@ int ui_hdr_srv_cmd(SrainChat *chat, char *cmd, int block){
 
     DBG_FR("srv_name: %s, chat_name: %s, cmd: '%s', block: %d",
             srv_name, chat_name, cmd, block);
-    res = _ui_hdr_srv_cmd(srv_name, chat_name, cmd2, block);
 
+    cmd2 = strdup(cmd);
+    res = _ui_hdr_srv_cmd(srv_name, chat_name, cmd2, block);
     free(cmd2);
+
     return res;
 }
 
@@ -93,6 +94,7 @@ int ui_hdr_srv_join(const char *chat_name, const char *passwd){
     SrainChat *chat;
 
     chat = srain_window_get_cur_chat(srain_win);
+    g_return_val_if_fail(chat, -1);
     srv_name = srain_chat_get_srv_name(chat);
 
     DBG_FR("srv_name: %s, chat_name: %s, passwd: %s",

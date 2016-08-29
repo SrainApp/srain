@@ -16,9 +16,11 @@
 #include <gtk/gtk.h>
 #include <sys/stat.h>
 
+#include "ui.h"
 #include "ui_hdr.h"
 
 #include "meta.h"
+#include "i18n.h"
 #include "log.h"
 #include "file_helper.h"
 
@@ -49,7 +51,11 @@ void _rc_read(){
             strtok(line, "\n");
             LOG_FR("Read: '%s'", line);
             if (ui_hdr_srv_cmd(NULL, line, 1) < 0){
-                ERR_FR("Command failed");
+                ERR_FR("Command failed: %s", line);
+
+                char msg[512];
+                snprintf(msg, sizeof(msg), _("Command \"%s\" failed"), line);
+                ui_sys_msg(_("Null"), "", msg, SYS_MSG_ERROR);
                 break;
             }
         }

@@ -141,10 +141,8 @@ static void upload_image_async(GtkEntry *entry){
     filename = gtk_entry_get_text(entry);
     url = plugin_upload(filename);
 
-    if (url) {
-        g_object_set_data(G_OBJECT(entry), "image-url", url);
-        gdk_threads_add_idle((GSourceFunc)upload_image_idle, entry);
-    }
+    g_object_set_data(G_OBJECT(entry), "image-url", url);
+    gdk_threads_add_idle((GSourceFunc)upload_image_idle, entry);
 }
 
 static void upload_image_button_on_click(GtkWidget *widget, gpointer user_data){
