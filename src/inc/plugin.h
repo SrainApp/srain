@@ -6,6 +6,7 @@
 void plugin_init();
 void plugin_finalize();
 char* plugin_upload(const char *path);
+int plugin_avatar_has_queried(const char *nick);
 int plugin_avatar(const char *nick, const char *token);
 
 #endif /* __PLUGIN_H */

@@ -24,7 +24,7 @@ import threading
 from urllib.parse import urlencode
 
 size = 36
-timeout = 10
+timeout = 20
 
 def test():
     pass

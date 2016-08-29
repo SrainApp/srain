@@ -14,6 +14,7 @@ import requests
 from urllib.parse import quote
 
 url = 'http://img.vim-cn.com'
+timeout = 30
 
 def test():
     img = '../pixmaps/srain-avatar.png'
@@ -25,7 +26,7 @@ def test():
 
 def upload(img):
     with open(img,'rb') as f:
-        res = requests.post(url,files = {'name': (quote(img), f)}, timeout = 10)
+        res = requests.post(url,files = {'name': (quote(img), f)}, timeout = timeout)
         if (res.text.startswith('http')):
             return res.text.strip('\n')
         else:

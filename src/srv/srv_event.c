@@ -27,7 +27,6 @@
 #include "meta.h"
 #include "chat_log.h"
 #include "plugin.h"
-#include "file_helper.h"
 
 #define PRINT_EVENT_PARAM \
     do { \
@@ -367,21 +366,18 @@ void srv_event_channel(irc_session_t *irc_session, const char *event,
     char nick[NICK_LEN] = { 0 };
     filter_relaybot_trans(origin, nick, vmsg);
 
-    char *file;
     /* A message sent by relay bot */
     if (strlen(nick) > 0){
         if (!filter_is_ignore(nick)){
-            file = get_avatar_file(nick);
-            if (file) g_free(file);
-            else srv_session_who(sess, nick);
+            if (!plugin_avatar_has_queried(nick))
+                srv_session_who(sess, nick);
 
             srv_hdr_ui_recv_msg(sess->host, chan, nick, origin, vmsg);
         }
     } else {
         if (!filter_is_ignore(origin)){
-            file = get_avatar_file(nick);
-            if (file) g_free(file);
-            else srv_session_who(sess, nick);
+            if (!plugin_avatar_has_queried(origin))
+                srv_session_who(sess, origin);
 
             srv_hdr_ui_recv_msg(sess->host, chan, origin, "", vmsg);
         }

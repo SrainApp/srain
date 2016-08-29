@@ -12,6 +12,7 @@
  * - http://www.slideshare.net/YiLungTsai/embed-python
  *
  */
+
 // #define __DBG_ON
 #define __LOG_ON
 
@@ -33,6 +34,8 @@ typedef struct {
 } Plugin;
 
 static PyThreadState *save;
+/* Hash table to make sure that only one avatar query for one nick */
+static GHashTable *avatars_hash;
 
 Plugin plugins[PLUGIN_COUNT] = {
     {"upload", "upload", NULL},
@@ -91,6 +94,8 @@ void plugin_init(){
     }
 
     save = PyEval_SaveThread();
+
+    avatars_hash = g_hash_table_new(g_str_hash, g_str_equal);
 }
 
 void plugin_finalize(){
@@ -104,6 +109,8 @@ void plugin_finalize(){
         }
     }
 
+    g_hash_table_destroy(avatars_hash);
+
     PyEval_RestoreThread(save);
     Py_Finalize();
 }
@@ -113,7 +120,8 @@ void plugin_finalize(){
  *
  * @param path
  *
- * @return A URL of the uploaded file
+ * @return If successed, return a URL of the uploaded file,
+ *         If plugin not loaded or some error occured, return NULL.
  *
  * NOTE: This function is blocked.
  */
@@ -170,12 +178,6 @@ bad:
     return url;
 }
 
-/**
- * @brief Download `nick`'s avatar according to `token`
- *
- * @param nick
- * @param token
- */
 typedef struct {
     char *nick;
     char *token;
@@ -237,6 +239,28 @@ bad:
     g_free(data);
     PyGILState_Release(gstate);
     return ret;
+}
+
+/**
+ * @brief Download `nick`'s avatar according to `token`
+ *
+ * @param nick
+ * @param token
+ *
+ * @return 0
+ *
+ * NOTE: This function is async, always return 0
+ */
+
+int plugin_avatar_has_queried(const char *nick){
+    if (g_hash_table_lookup(avatars_hash, nick)){
+        DBG_FR("%s has queried", nick);
+        return 1;
+    } else {
+        DBG_FR("%s hasn't queried yet", nick);
+        g_hash_table_insert(avatars_hash, (char *)nick, (void *)1);
+        return 0;
+    }
 }
 
 int plugin_avatar(const char *nick, const char *token){
