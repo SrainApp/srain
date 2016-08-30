@@ -1,4 +1,4 @@
-<img src="/data/pixmaps/srain.png" width=8%> Srain
+<img src="./data/icons/raw/srain.png" width=8%> Srain
 =====
 
 It does not look like an IRC client :-)
@@ -30,8 +30,14 @@ It does not look like an IRC client :-)
     yaourt -S srain-git # git version
     yaourt -S srain     # latest release
 
+or
+
+    # Add archlinuxcn mirror, then
+    pacman -S archlinuxcn/srain-git
+
 ## For other linux distributions:
 
+    # Intall the above dependencies, then
     mkdir build
     ./configure --prefix=/usr/local --disable-debug
     make
@@ -39,9 +45,10 @@ It does not look like an IRC client :-)
 
 # Feature
 
+- Beautiful User Interface
 - Relay bot message transform
 - Preview image from URL
-- Get avatar from github (plugin)
+- Get avatar according to user's real name (plugin)
 - Auto upload image to pastebin (plugin)
 
 # Screenshot
