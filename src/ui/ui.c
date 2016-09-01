@@ -210,7 +210,7 @@ void ui_recv_msg(const char *srv_name, const char *chat_name,
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
     strncpy(data->chat_name, chat_name, sizeof(data->chat_name));
     strncpy(data->nick, nick, sizeof(data->nick));
-    strncpy(data->nick2, id, sizeof(data->msg));
+    strncpy(data->nick2, id, sizeof(data->nick2));
     strncpy(data->msg, msg, sizeof(data->msg));
 
     gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE,
