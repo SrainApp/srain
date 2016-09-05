@@ -18,6 +18,9 @@ static void nick_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
     if (strcmp(gtk_widget_get_name(widget), "whois_menu_item") == 0){
         g_string_printf(cmd, "/whois %s", nick);
     }
+    else if (strcmp(gtk_widget_get_name(widget), "ignore_menu_item") == 0){
+        g_string_printf(cmd, "/ignore %s", nick);
+    }
     else if (strcmp(gtk_widget_get_name(widget), "kick_menu_item") == 0){
         g_string_printf(cmd, "/kick %s", nick);
     }
@@ -46,6 +49,7 @@ void nick_menu_popup(GdkEventButton *event, const char *nick){
     GtkMenu *nick_menu;
     GtkMenuItem *item;
     GtkMenuItem *whois_menu_item;
+    GtkMenuItem *ignore_menu_item;
     GtkMenuItem *kick_menu_item;
     GtkMenuItem *chat_menu_item;
     GtkMenuItem *invite_menu_item;
@@ -55,11 +59,14 @@ void nick_menu_popup(GdkEventButton *event, const char *nick){
 
     nick_menu = (GtkMenu *)gtk_builder_get_object(builder, "nick_menu");
     whois_menu_item = (GtkMenuItem *)gtk_builder_get_object(builder, "whois_menu_item");
+    ignore_menu_item = (GtkMenuItem *)gtk_builder_get_object(builder, "ignore_menu_item");
     kick_menu_item = (GtkMenuItem *)gtk_builder_get_object(builder, "kick_menu_item");
     chat_menu_item = (GtkMenuItem *)gtk_builder_get_object(builder, "chat_menu_item");
     invite_menu_item = (GtkMenuItem *)gtk_builder_get_object(builder, "invite_menu_item");
 
     g_signal_connect(whois_menu_item, "activate",
+            G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
+    g_signal_connect(ignore_menu_item, "activate",
             G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
     g_signal_connect(kick_menu_item, "activate",
             G_CALLBACK(nick_menu_item_on_activate), (char *)nick);

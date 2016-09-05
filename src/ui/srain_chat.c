@@ -302,13 +302,13 @@ SrainChat* srain_chat_new(const char *server_name, const char *chat_name,
 
     switch (chat->type){
         case CHAT_SERVER:
-            gtk_menu_item_set_label(chat->close_menu_item, _("Disconnect"));
+            gtk_menu_item_set_label(chat->close_menu_item, _("Disconnect (_C)"));
             break;
         case CHAT_CHANNEL:
-            gtk_menu_item_set_label(chat->close_menu_item, _("Leave"));
+            gtk_menu_item_set_label(chat->close_menu_item, _("Leave (_C)"));
             break;
         case CHAT_PRIVATE:
-            gtk_menu_item_set_label(chat->close_menu_item, _("Close"));
+            gtk_menu_item_set_label(chat->close_menu_item, _("_Close"));
             break;
         default:
             break;
