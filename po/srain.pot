@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Srain 0.05-git@0.339.9de43e7\n"
+"Project-Id-Version: Srain 0.05-git@0.355.f9f1a55\n"
 "Report-Msgid-Bugs-To: lastavengesr@outlook.com\n"
-"POT-Creation-Date: 2016-08-27 13:43+0800\n"
+"POT-Creation-Date: 2016-09-06 00:30+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,17 +24,17 @@ msgid ""
 "Running against GTK+ %d.%d.%d"
 msgstr ""
 
-#: ../src/srv/srv_event.c:629
+#: ../src/srv/srv_event.c:635
 #, c-format
 msgid "%s %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:622
+#: ../src/srv/srv_event.c:628
 #, c-format
 msgid "%s %s %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:595
+#: ../src/srv/srv_event.c:600
 #, c-format
 msgid "%s <%s@%s> %s"
 msgstr ""
@@ -64,22 +64,22 @@ msgstr ""
 msgid "%s has quit: %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:463
+#: ../src/srv/srv_event.c:467
 #, c-format
 msgid "%s invites you into %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:610
+#: ../src/srv/srv_event.c:616
 #, c-format
 msgid "%s is attached to %s at \"%s\""
 msgstr ""
 
-#: ../src/srv/srv_event.c:616
+#: ../src/srv/srv_event.c:622
 #, c-format
 msgid "%s is idle for %s seconds since %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:605
+#: ../src/srv/srv_event.c:611
 #, c-format
 msgid "%s is member of %s"
 msgstr ""
@@ -89,7 +89,7 @@ msgstr ""
 msgid "%s is now known as %s"
 msgstr ""
 
-#: ../src/srv/srv_session_cmd.c:285
+#: ../src/srv/srv_session_cmd.c:288
 #, c-format
 msgid "%s: wrong parameters"
 msgstr ""
@@ -98,12 +98,19 @@ msgstr ""
 msgid "(This message can not be showed correctly)."
 msgstr ""
 
-#: ../src/srv/srv_session_cmd.c:212 ../src/srv/srv_event.c:484
+#: ../src/srv/srv_session_cmd.c:215 ../src/srv/srv_event.c:488
 #, c-format
 msgid "*** %s %s ***"
 msgstr ""
 
-#: ../src/ui/srain_app.c:53
+#: ../src/ui/ui.c:379
+#, c-format
+msgid ""
+"<b>Session:</b> %s\n"
+"<b>Error message:</b> %s"
+msgstr ""
+
+#: ../src/ui/srain_app.c:45
 msgid ""
 "<big><b>Welcome to Srain :)</b></big>\n"
 "\n"
@@ -116,11 +123,11 @@ msgid ""
 "\">Srain's website</a>.\n"
 msgstr ""
 
-#: ../src/ui/ui.c:413
+#: ../src/ui/ui.c:407
 msgid "ACTION"
 msgstr ""
 
-#: ../data/ui/window.glade:40 ../data/ui/window.glade:426
+#: ../data/ui/window.glade:42 ../data/ui/window.glade:439
 msgid "About"
 msgstr ""
 
@@ -128,27 +135,24 @@ msgstr ""
 msgid "About Srain"
 msgstr ""
 
-#: ../data/ui/window.glade:166
+#: ../data/ui/window.glade:179
 msgid "Address:"
 msgstr ""
 
-#: ../src/ui/ui_common.c:95
+#: ../src/ui/ui_common.c:99
 msgid "Cancel"
 msgstr ""
 
-#: ../data/ui/window.glade:349
+#: ../data/ui/window.glade:362
 msgid "Channel/Nickname:"
 msgstr ""
 
-#: ../data/ui/nick_menu.glade:30
-msgid "Chat"
+#: ../src/rc.c:57
+#, c-format
+msgid "Command \"%s\" failed"
 msgstr ""
 
-#: ../src/ui/srain_chat.c:327
-msgid "Close"
-msgstr ""
-
-#: ../data/ui/window.glade:56 ../data/ui/window.glade:315
+#: ../data/ui/window.glade:58 ../data/ui/window.glade:328
 msgid "Connect"
 msgstr ""
 
@@ -156,11 +160,15 @@ msgstr ""
 msgid "Copy message"
 msgstr ""
 
-#: ../data/ui/window.glade:256
+#: ../data/ui/window.glade:269
 msgid "Description:"
 msgstr ""
 
-#: ../src/ui/ui.c:413
+#: ../src/ui/srain_chat.c:305
+msgid "Disconnect (_C)"
+msgstr ""
+
+#: ../src/ui/ui.c:381 ../src/ui/ui.c:407
 msgid "ERROR"
 msgstr ""
 
@@ -169,16 +177,16 @@ msgstr ""
 msgid "ERROR: %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:656
+#: ../src/srv/srv_event.c:664
 #, c-format
 msgid "ERROR[%3d]: %s"
 msgstr ""
 
-#: ../src/ui/srain_msg.c:118 ../src/ui/srain_chat.c:205
+#: ../src/ui/srain_msg.c:118 ../src/ui/srain_chat.c:200
 msgid "Failed to send message"
 msgstr ""
 
-#: ../src/ui/srain_chat.c:116
+#: ../src/ui/srain_chat.c:127
 msgid "Failed to upload image"
 msgstr ""
 
@@ -186,72 +194,68 @@ msgstr ""
 msgid "Forward to..."
 msgstr ""
 
-#: ../data/ui/nick_menu.glade:38
+#: ../data/ui/nick_menu.glade:50
 msgid "Invite to..."
 msgstr ""
 
-#: ../data/ui/window.glade:72 ../data/ui/window.glade:399
+#: ../data/ui/window.glade:74 ../data/ui/window.glade:412
 msgid "Join"
-msgstr ""
-
-#: ../data/ui/nick_menu.glade:22
-msgid "Kick"
 msgstr ""
 
 #: ../src/i18n.c:21
 msgid "Language: English"
 msgstr ""
 
-#: ../data/ui/chat.glade:268 ../src/ui/srain_chat.c:324
-msgid "Leave"
+#: ../src/ui/srain_chat.c:308
+msgid "Leave (_C)"
 msgstr ""
 
 #: ../data/ui/image.glade:11
 msgid "Load image"
 msgstr ""
 
-#: ../data/ui/window.glade:235
+#: ../data/ui/window.glade:248
 msgid "Nickname:"
 msgstr ""
 
-#: ../src/srv/srv_session_cmd.c:276
+#: ../src/srv/srv_session_cmd.c:279
 #, c-format
 msgid "No such commmand: %s"
 msgstr ""
 
-#: ../data/ui/window.glade:289
+#: ../data/ui/window.glade:302
 msgid "No verify certificate"
 msgstr ""
 
-#: ../src/ui/ui_common.c:96
+#: ../src/rc.c:58
+msgid "Null"
+msgstr ""
+
+#: ../src/ui/ui_common.c:100
 msgid "Open"
 msgstr ""
 
-#: ../src/ui/ui_common.c:93
+#: ../src/ui/ui_common.c:97
 msgid "Open File"
 msgstr ""
 
-#: ../data/ui/window.glade:370
+#: ../data/ui/window.glade:383
 msgid "Password(optional):"
 msgstr ""
 
-#: ../data/ui/window.glade:189
+#: ../data/ui/window.glade:202
 msgid "Password:"
 msgstr ""
 
-#: ../src/srv/srv_session_cmd.c:269
+#: ../src/srv/srv_session_cmd.c:272
 msgid "Please visit"
 msgstr ""
 
-#: ../src/plugin.c:128
-msgid "Plugin no loaded"
-msgstr ""
-
-#: ../data/ui/window.glade:213
+#: ../data/ui/window.glade:226
 msgid "Port:"
 msgstr ""
 
-#: ../data/ui/window.glade:434 ../src/ui/srain_chat.c:321
+#: ../data/ui/window.glade:447
 msgid "Quit"
 msgstr ""
 
@@ -260,15 +264,7 @@ msgstr ""
 msgid "Reconnecting to %s ..."
 msgstr ""
 
-#: ../data/ui/chat.glade:238
-msgid "Show topic"
-msgstr ""
-
-#: ../data/ui/chat.glade:253
-msgid "Show user list"
-msgstr ""
-
-#: ../data/ui/window.glade:416
+#: ../data/ui/window.glade:429
 msgid "Srain"
 msgstr ""
 
@@ -277,11 +273,11 @@ msgstr ""
 msgid "Topic for %s is \"%s\""
 msgstr ""
 
-#: ../data/ui/chat.glade:208
+#: ../data/ui/chat.glade:252
 msgid "Upload image"
 msgstr ""
 
-#: ../data/ui/window.glade:276
+#: ../data/ui/window.glade:289
 msgid "Use secure connection"
 msgstr ""
 
@@ -292,12 +288,40 @@ msgid ""
 "span>,<span color=\"#451984\">%d+</span>"
 msgstr ""
 
-#: ../data/ui/nick_menu.glade:14
-msgid "Whois"
+#: ../src/ui/srain_app.c:45
+msgid "Welcome"
 msgstr ""
 
-#: ../src/ui/ui.c:435
+#: ../src/ui/ui.c:429
 msgid "You"
+msgstr ""
+
+#: ../data/ui/nick_menu.glade:41
+msgid "_Chat"
+msgstr ""
+
+#: ../data/ui/chat.glade:28 ../src/ui/srain_chat.c:311
+msgid "_Close"
+msgstr ""
+
+#: ../data/ui/nick_menu.glade:23
+msgid "_Ignore"
+msgstr ""
+
+#: ../data/ui/nick_menu.glade:32
+msgid "_Kick"
+msgstr ""
+
+#: ../data/ui/chat.glade:12
+msgid "_Topic"
+msgstr ""
+
+#: ../data/ui/chat.glade:20
+msgid "_User list"
+msgstr ""
+
+#: ../data/ui/nick_menu.glade:14
+msgid "_Whois"
 msgstr ""
 
 #: ../src/srv/srv_event.c:247
