@@ -23,6 +23,8 @@ void theme_init(){
     provider = GTK_STYLE_PROVIDER(gtk_css_provider_new());
     gtk_css_provider_load_from_path(
             GTK_CSS_PROVIDER(provider), theme_file, NULL);
+
+    g_free(theme_file);
 }
 
 #define _G_MAXUINT -1   // YCM can not found the defintion of G_MAXUINT, help him
