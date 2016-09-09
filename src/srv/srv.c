@@ -110,7 +110,7 @@ int srv_join(const char *srv_name, const char *chat, const char *passwd){
     }
 }
 
-int srv_part(const char *srv_name, const char *chat, const char *reason){
+int srv_part(const char *srv_name, const char *chat){
     srv_session_t *session;
 
     session = srv_session_get_by_host(srv_name);

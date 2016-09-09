@@ -103,17 +103,16 @@ int ui_hdr_srv_join(const char *chat_name, const char *passwd){
     return _ui_hdr_srv_join(srv_name, chat_name, passwd);
 }
 
-int ui_hdr_srv_part(SrainChat *chat, const char *reason){
+int ui_hdr_srv_part(SrainChat *chat){
     const char *srv_name;
     const char *chat_name;
 
     srv_name = srain_chat_get_srv_name(chat);
     chat_name = srain_chat_get_name(chat);
 
-    DBG_FR("srv_name: %s, chat_name: %s, reason: %s",
-            srv_name, chat_name, reason);
+    DBG_FR("srv_name: %s, chat_name: %s", srv_name, chat_name);
 
-    return _ui_hdr_srv_part(srv_name, chat_name, reason);
+    return _ui_hdr_srv_part(srv_name, chat_name);
 }
 
 int ui_hdr_srv_send(SrainChat *chat, const char *msg){

@@ -3,13 +3,13 @@
 
 /* Interface function pointers */
 typedef int (*SRVJoinFunc) (const char *srv_name, const char *chan_name, const char *passwd);
-typedef int (*SRVPartFunc) (const char *srv_name, const char *chan_name, const char *reason);
+typedef int (*SRVPartFunc) (const char *srv_name, const char *chan_name);
 typedef int (*SRVSendFunc) (const char *srv_name, const char *target, const char *msg);
 typedef int (*SRVCmdFunc) (const char *srv_name, const char *source, char *cmd, int block);
 
 /* Macros for defining interface function */
 #define DECLARE_SRVJoinFunc(func) int func (const char *srv_name, const char *chan_name, const char *passwd)
-#define DECLARE_SRVPartFunc(func) int func (const char *srv_name, const char *chan_name, const char *reason)
+#define DECLARE_SRVPartFunc(func) int func (const char *srv_name, const char *chan_name);
 #define DECLARE_SRVSendFunc(func) int func (const char *srv_name, const char *target, const char *msg)
 #define DECLARE_SRVCmdFunc(func) int func (const char *srv_name, const char *source, char *cmd, int block)
 
