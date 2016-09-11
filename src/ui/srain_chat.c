@@ -83,7 +83,7 @@ static void close_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
     g_return_if_fail(SRAIN_IS_CHAT(user_data));
     chat = user_data;
 
-    ui_hdr_srv_part(chat, "");
+    ui_hdr_srv_part(chat);
 }
 
 static gboolean entry_on_key_press(gpointer user_data, GdkEventKey *event){
