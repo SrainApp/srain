@@ -137,6 +137,28 @@ static void srv_session_err_hdr(srv_session_t *session){
     }
 }
 
+int _srv_session_free(srv_session_t *session){
+    int i;
+
+    i = srv_session_get_index(session);
+    if (i == -1) return -1;
+    if (session->stat == SESS_NOINUSE) return -1;
+
+    LOG_FR("Free session %s", session->host);
+
+    irc_disconnect(session->irc_session);
+    irc_destroy_session(session->irc_session);
+
+    // TODO: free user set
+    g_list_free_full(sessions[i].chan_list, g_free);
+
+    sessions[i] = (srv_session_t) { 0 };
+    sessions[i].stat = SESS_NOINUSE;
+    sessions[i].chan_list = NULL;
+
+    return 0;
+}
+
 /**
  * @brief Proecss all sessions' event, This function runs on a separate thread
  * and never return, there is only one thread in a application.
@@ -160,6 +182,10 @@ loop:
 
     for (i = 0; i < MAX_SESSIONS; i++){
         if (sessions[i].stat == SESS_NOINUSE) continue;
+        if (sessions[i].stat == SESS_CLOSE) {
+            _srv_session_free(&sessions[i]);
+            continue;
+        }
         // if (sessions[i].stat == SESS_CONNECT
                 // && !irc_is_connected(sessions[i].irc_session)){
                 // continue;
@@ -176,6 +202,10 @@ loop:
 
     for (i = 0; i < MAX_SESSIONS; i++){
         if (sessions[i].stat == SESS_NOINUSE) continue;
+        if (sessions[i].stat == SESS_CLOSE) {
+            _srv_session_free(&sessions[i]);
+            continue;
+        }
         isess = sessions[i].irc_session;
 
         if (irc_process_select_descriptors(isess, &in_set, &out_set)){
@@ -307,26 +337,7 @@ int srv_session_is_session(srv_session_t *session){
 }
 
 int srv_session_free(srv_session_t *session){
-    int i;
-
-    i = srv_session_get_index(session);
-    if (i == -1) return -1;
-    if (session->stat == SESS_NOINUSE) return -1;
-
-    session->stat = SESS_NOINUSE;
-
-    LOG_FR("Free session %s", session->host);
-
-    irc_disconnect(session->irc_session);
-    irc_destroy_session(session->irc_session);
-
-    // TODO: free user set
-    g_list_free_full(sessions[i].chan_list, g_free);
-
-    sessions[i] = (srv_session_t) { 0 };
-    sessions[i].stat = SESS_NOINUSE;
-    sessions[i].chan_list = NULL;
-
+    session->stat = SESS_CLOSE;
     return 0;
 }
 
