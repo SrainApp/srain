@@ -28,6 +28,7 @@
  *          - $XDG_CONFIG_HOME/srain/
  *          - $XDG_CONFIG_HOME/srain/srainrc
  *          - $XDG_CACHE_HOME/srain/
+ *          - $XDG_CACHE_HOME/srain/avatars
  *          - $XDG_DATA_HOME/srain/logs
  *
  * @return 0 if all required files are created or already existent
@@ -65,6 +66,17 @@ static int create_user_file(){
     rc_file = NULL;
 
     cache_dir = g_build_filename(g_get_user_cache_dir(), "srain", NULL);
+    res = mkdir(cache_dir, 0700);
+    if (res == -1) {
+        if (errno != EEXIST){
+            ERR_FR("Failed to create directory '%s', errno %d", cache_dir, errno);
+            return errno;
+        }
+    }
+    g_free(cache_dir);
+    cache_dir = NULL;
+
+    cache_dir = g_build_filename(g_get_user_cache_dir(), "srain", "avatars", NULL);
     res = mkdir(cache_dir, 0700);
     if (res == -1) {
         if (errno != EEXIST){
