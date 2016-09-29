@@ -39,8 +39,7 @@ or
 
 ## Gentoo
 
-Try [srain-0.05.ebuild](https://github.com/rtlanceroad/gentoo-ebuilds/blob/master/net-irc/srain/srain-0.05.ebuild),
-thx to @xeirrr.
+Look at the [install guide](https://github.com/rtlanceroad/gentoo-srain).
 
 ## For other linux distributions:
 
