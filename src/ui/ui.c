@@ -405,7 +405,7 @@ void ui_sys_msg_sync(const char *srv_name, const char *chat_name,
         /* Desktop notification */
         if (is_noitfy){
             snotify_notify(type == SYS_MSG_ACTION ? _("ACTION") : _("ERROR"),
-                    msg, "dialog-information");
+                    msg, "srain");
             srain_window_tray_icon_stress(srain_win, 1);
         }
     }
@@ -472,7 +472,7 @@ void ui_recv_msg_sync(const char *srv_name, const char *chat_name,
 
     /* Do not sent notification when window is active */
     if (is_noitfy){
-        snotify_notify(nick, msg, "dialog-information");
+        snotify_notify(nick, msg, "srain");
         srain_window_tray_icon_stress(srain_win, 1);
     }
 
