@@ -15,7 +15,7 @@
 #include "meta.h"
 #include "log.h"
 
-#define SNOTIFY_TIMEOUT 2000
+#define SNOTIFY_TIMEOUT 5000
 
 void snotify_init(){
     notify_init(PACKAGE_NAME);
