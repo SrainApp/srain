@@ -84,29 +84,33 @@ Srain 致力于实现一个轻量/美观/易用的现代化 IRC 客户端。
 
 ### UI
 
-    ui_init()
-    ui_connect_to_srv()
-    ui_add_chat()
-    ui_rm_chat()
-    ui_send_msg()
-    ui_recv_msg()
-    ui_sys_msg()
-    ui_add_user()
-    ui_rm_user()
-    ui_ren_user()
-    ui_set_topic()
+```c
+void ui_init        (int argc, char **argv);
+void ui_add_chat    (const char *srv_name, const char *chat_name, const char *nick, ChatType type);
+void ui_rm_chat     (const char *srv_name, const char *chat_name);
+void ui_sys_msg     (const char *srv_name, const char *chat_name, const char *msg, int mention, SysMsgType type);
+void ui_send_msg    (const char *srv_name, const char *chat_name, const char *msg);
+void ui_recv_msg    (const char *srv_name, const char *chat_name, const char *nick, const char *id, const char *msg, int mention);
+void ui_add_user    (const char *srv_name, const char *chat_name, const char *nick, UserType type);
+void ui_rm_user     (const char *srv_name, const char *chat_name, const char *nick);
+void ui_ren_user    (const char *srv_name, const char *chat_name, const char *old_nick, const char *new_nick, UserType type);
+void ui_set_topic   (const char *srv_name, const char *chat_name, const char *topic);
+```
 
 ### SRV
 
-    srv_init()
-    srv_finalize()
-    srv_connnect()
-    srv_cmd()
-    srv_query()
-    srv_unquery()
-    srv_join()
-    srv_part()
-    srv_quit()
-    srv_kick()
-    srv_whois()
-    srv_invite()
+```c
+void srv_init       ();
+void srv_finalize   ();
+void srv_connnect   (const char *host, int port, const char *passwd, const char *nickname, const char *username, const char *realname, int ssl);
+void srv_cmd        (const char *srv_name, const char *source, char *cmd, int block);
+void srv_query      (const char *srv_name, const char *nick);
+void srv_unquery    (const char *srv_name, const char *nick);
+void srv_join       (const char *srv_name, const char *chan_name, const char *passwd);
+void srv_part       (const char *srv_name, const char *chan_name);
+void srv_send       (const char *srv_name, const char *target, const char *msg);
+void srv_quit       (const char *srv_name, const char *reason);
+void srv_kick       (const char *srv_name, const char *chan_name, const char *nick);
+void srv_whois      (const char *srv_name, const char *nick);
+void srv_invite     (const char *srv_name, const char *chan_name, const char *nick);
+```
