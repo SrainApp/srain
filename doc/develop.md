@@ -41,10 +41,11 @@ Srain 致力于实现一个轻量/美观/易用的现代化 IRC 客户端。
 * 注释 & 日志：
     - 按英文规范，句首第一个单词手字符大写，多句时使用标点符号，同样每行不得超过
       80 字符（汉字以两字符计），链接可以不折行
-    - 日志级别：`DGB_FR` `WARN_FR` `ERROR_FR`，输出时包含回车和函数名，目前仅能
-      在编译时使用宏 `__LOG_ON` `__WARN_ON` 控制
+    - 日志级别：`DGB_FR` `LOG_FR` `WARN_FR` `ERROR_FR`，输出时包含回车和函数名，
+      目前仅能 在编译时使用宏 `__DBG_ON` `__LOG_ON` 控制
     - Doxygen 貌似不好用（考虑换 sphinx）
 * Git commit: TODO
+* 单元测试：考虑引入 libcheck
 
 ## Python Plugin
 
