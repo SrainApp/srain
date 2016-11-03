@@ -1,46 +1,48 @@
-Command: ::
+Command::
 
     /server add <srv_name> <host>[:<port>]
         [-ssl on|off|noverify]
         [-realname <realname>]
         [-passwd <passwd>]
 
-Add a server into your server list. It will become the default server 
+Add a server into your server list. It will become the default server
 automaticly.
 
 * ``srv_name``: The name of server that will displayed on UI
 * ``host``: IRC server host
 * ``port``: IRC server port, if no specified, use ``6667``
-    - ``on``: Use secure server connections with SSL 
-    - ``off``: On the contrary
-    - ``noverify``: disables the certificate verification
+
+  - ``on``: Use secure server connections with SSL
+  - ``off``: On the contrary
+  - ``noverify``: disables the certificate verification
+
 * ``-passwd``: The password of the server
 * ``-realname``: Set your realname
 
-Example: ::
-    
+Example::
+
     /server add Freenode irc.freenode.net -ssl noverify -realname 'Srain User'
     /server add Freenode 127.0.0.1:6667
 
-Command: ::
+Command::
 
     /server rm <srv_name>
 
 Remove a server from your server list.
 
-Command: ::
+Command::
 
     /server alter <srv_name>
 
 Alter default server.
 
-Command: ::
+Command::
 
     /server connect [srv_name]
 
 Connect to the server, if  ``srv_name`` no specified, use default server.
 
-Command: ::
+Command::
 
     /relay <nick> [-l <ldelim>] [-r <rdelim>]
     /unrelay <nick>
@@ -50,13 +52,13 @@ By default, use ``<[({`` as delimiter.
 
 * ``-ldelim``, ``-rdelim``: Specifie custom delimiter
 
-Example: ::
+Example::
 
     /relay teleboto
     # Note: there is a whitespace following the ']'
     /relay teleboto -ldelim '[' -rdelim '] '
 
-Command: ::
+Command::
 
     /ignore <nick>
     /unignore <nick>
@@ -66,7 +68,7 @@ Ignore somebody's message.
 **The following commands only influence default server , use** ``/server alter``
 **to chagne default server.**
 
-Command: ::
+Command::
 
     /query <nick> [-noswitch]
     /unquery [<nick>]
@@ -75,7 +77,7 @@ Start/stop private chat with somebody.
 
 * ``-noswitch``: Do not switch to the new chat
 
-Command: ::
+Command::
 
     /join <channel>[,<channel>] [<passwd>[,<passwd>]] [-noswitch]
 
@@ -83,95 +85,95 @@ Join specifie channel(s), channels are separated by commas.
 
 * ``-noswitch``: Do not switch to the new chat
 
-Example: ::
+Example::
 
     /join #archinux-cn,#gzlug,#linuxba
     /join #tuna -noswitch
     # TODO
     /join #channel1,#channe2 passwd1
 
-Command: ::
+Command::
 
     /part [<channel>[,<channel>]] [<reason>]
 
 Leave specified channel(s) with optional reason, channels are separated by
-commas.  If ``channel`` no specified, leave the current channel. 
+commas.  If ``channel`` no specified, leave the current channel.
 
-Example: ::
+Example::
 
     /part #archinux-cn Zzz...
     /part #archlinux-cn,#tuna
 
-Command: ::
+Command::
 
     /quit [<reason>]
 
 Quit current server with optional reason.
 
-Command: ::
+Command::
 
-    /topic [<topic>|-rm] 
+    /topic [<topic>|-rm]
 
 Set the current channel's topic. If ``topic`` no specified, just display the
 current channel's topic.
 
 * ``-rm``: Remove current channel's topic
 
-Example: ::
+Example::
 
     # Just view the topic
-    /topic    
+    /topic
     # Set the topic to "Welcome to Srain!"
     /topic Welcome to Srain!
     # Clear the topic
     /topic -rm
 
-Command: ::
+Command::
 
     /msg <target> <message>
 
 Send message to a target, the target can be channel or somebody's nick. If you
 want to send a message to channel, you should join it first.
 
-Command: ::
+Command::
 
     /me <message>
 
 Send a action message to the current target.
 
-Command: ::
+Command::
 
     /nick <new_nick>
 
 Change you nick.
 
-Command: ::
+Command::
 
     /whois [<nick>]
 
-Get somebody's information on the server.  
+Get somebody's information on the server.
 
-Command: ::
+Command::
 
     /invite <nick> [<channel>]
 
 Invite somebody to join a channel. If ``channel`` no specified, fallback to
 current channel.
 
-Command: ::
+Command::
 
     /kick <nick> [<channel>] [<reason>]
 
 Kick somebody from a channel, with optional reason. If ``channel`` no specified, fallback to
 current channel.
 
-Command: ::
+Command::
 
     /mode <mode>
 
 Change your mode. # TODO
 
-Command: ::
+Command::
 
     /list
 
