@@ -11,6 +11,7 @@ automaticly.
 * ``srv_name``: The name of server that will displayed on UI
 * ``host``: IRC server host
 * ``port``: IRC server port, if no specified, use ``6667``
+* ``-ssl``:
 
   - ``on``: Use secure server connections with SSL
   - ``off``: On the contrary
@@ -70,25 +71,20 @@ Ignore somebody's message.
 
 Command::
 
-    /query <nick> [-noswitch]
+    /query <nick>
     /unquery [<nick>]
 
 Start/stop private chat with somebody.
 
-* ``-noswitch``: Do not switch to the new chat
-
 Command::
 
-    /join <channel>[,<channel>] [<passwd>[,<passwd>]] [-noswitch]
+    /join <channel>[,<channel>] [<passwd>[,<passwd>]]
 
 Join specifie channel(s), channels are separated by commas.
-
-* ``-noswitch``: Do not switch to the new chat
 
 Example::
 
     /join #archinux-cn,#gzlug,#linuxba
-    /join #tuna -noswitch
     # TODO
     /join #channel1,#channe2 passwd1
 
