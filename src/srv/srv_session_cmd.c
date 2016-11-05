@@ -6,8 +6,8 @@
  * @date 2016-07-26
  */
 
-#define __LOG_ON
 // #define __DBG_ON
+#define __LOG_ON
 
 #include <string.h>
 #include <strings.h>
@@ -19,274 +19,306 @@
 #include "meta.h"
 #include "i18n.h"
 #include "filter.h"
+#include "command.h"
 
-#define IS_CMD(x, y) (strncasecmp(x, y, strlen(y)) == 0 && \
-        (x[strlen(y)] == '\0' || x[strlen(y)] == ' '))
+static srv_session_t *session = NULL;
 
-#define GET_PARAM(_params, _param, _var, _default) \
-    do { \
-        if (strncmp(_params, _param "=", sizeof(_param "=") - 1) == 0){ \
-            _var = _params + sizeof(_param "=") - 1; \
-            DBG_FR("GET_PARAM: %s: '%s'", _param, _var); \
-            if (strlen(_var) == 0) _var = _default; \
-        } \
-    } while (0)
+static void wait_until_connected(){
+    if (!session) return;
 
-static void wait_until_connected(srv_session_t *session){
-    DBG_FR("Waiting for session: %s", session->host);
+    DBG_FR("Waiting for session: %s ...", session->host);
     while (session->stat != SESS_CONNECT){
         sleep(1);
     };
-    DBG_FR("Ready :)");
 }
 
-/**
- * @brief Execute a command
- *
- * @param session If null, the last used session will be used
- * @param source If source = NULL, fallback to META_SERVER
- * @param cmd
- * @param block If block == 1 and `session`->stat != SESS_CONN, this function
- *              will blocked until `session`->stat == SESS_CONN
- *              If block == 0 and `session`->stat != SESS_CONN, command may not
- *              sent
- *
- * @return -1 if command fails
- */
-int srv_session_cmd(srv_session_t *session, const char *source, char *cmd, int block){
-    /* The last used session */
-    static srv_session_t *last_sess = NULL;
+static int on_command_connect(SRVCommand *cmd, void *user_data){
+    const char *host = command_get_arg(cmd, 0);
+    const char *nick = command_get_arg(cmd, 1);
+    char *port, *passwd, *ssl, *realname;
+    command_get_opt(cmd, "-port", &port);
+    command_get_opt(cmd, "-passwd", &passwd);
+    command_get_opt(cmd, "-ssl", &ssl);
+    command_get_opt(cmd, "-realname", &realname);
 
-    if (!source) source = META_SERVER;
+    if (!host || !nick) return -1;
+    ssl_opt_t sslopt = SSL_OFF;
+    if (strcmp(ssl, "on") == 0) sslopt = SSL_ON;
+    if (strcmp(ssl, "off") == 0) sslopt = SSL_OFF;
+    if (strcmp(ssl, "noverify") == 0) sslopt = SSL_NO_VERIFY;
 
-    /* Usage: /connect <host> <nick> [port=<port>,passwd=<passwd>,realname=<realname>,ssl=[on|noverify|off]] */
-    if (IS_CMD(cmd, "/connect")){
-        char *host = strtok(cmd + strlen("/connect"), " ");
-        char *nick = strtok(NULL, " ");
-        char *port = "0", *passwd = NULL, *realname = NULL, *ssl = "off";
-        char *params = strtok(NULL, ",");
-        while (params){
-            GET_PARAM(params, "port", port, "0");
-            GET_PARAM(params, "passwd", passwd, NULL);
-            GET_PARAM(params, "realname", realname, PACKAGE_WEBSITE);
-            GET_PARAM(params, "ssl", ssl, "off");
-            params = strtok(NULL, ",");
-        }
+    if (*passwd == '\0') passwd = NULL;
 
-        if (!host || !nick) goto bad;
-
-        ssl_opt_t sslopt = 0;
-        if (strcmp(ssl, "on") == 0) sslopt = SSL_ON;
-        if (strcmp(ssl, "off") == 0) sslopt = SSL_OFF;
-        if (strcmp(ssl, "noverify") == 0) sslopt = SSL_NO_VERIFY;
-
-        srv_session_t *tmp;
-        tmp = srv_session_new(host, atoi(port), passwd, nick,
-                PACKAGE_NAME, realname, sslopt);
-        if (tmp){
-            last_sess = tmp;
-            return 0;
-        } else {
-            return -1;
-        }
-    }
-
-    /* NB: relaybot parameters separated by '|' */
-    else if (IS_CMD(cmd, "/relaybot")){
-        char *bot = strtok(cmd + strlen("/relaybot"), " |");
-        if (bot){
-            DBG_FR("Relaybot: %s", bot);
-            char *ldelim = strtok(NULL, "|");
-            if (ldelim){
-                DBG_FR("Left delim: '%s'", ldelim);
-                char *rdelim = strtok(NULL, "|");
-                if (rdelim){
-                    DBG_FR("Right delim: '%s'", rdelim);
-                    return filter_relaybot_list_add(bot, ldelim, rdelim);
-                }
-            }
-        }
-        goto bad;
-    }
-
-    /* Usage: /unrelaybot <nick> */
-    else if (IS_CMD(cmd, "/unrelaybot")){
-        char *nick = strtok(cmd + strlen("/unrelaybot"), " ");
-        if (!nick) goto bad;
-        return filter_relaybot_list_rm(nick);
-    }
-
-    /* Usage: /ignore <nick> */
-    else if (IS_CMD(cmd, "/ignore")){
-        char *nick = strtok(cmd + strlen("/ignore"), " ");
-        if (!nick) goto bad;
-        return filter_ignore_list_add(nick);
-    }
-
-    /* Usage: /unignore <nick> */
-    else if (IS_CMD(cmd, "/unignore")){
-        char *nick = strtok(cmd + strlen("/unignore"), " ");
-        if (!nick) goto bad;
-        return filter_ignore_list_rm(nick);
-    }
-
-    /* ================================================================
-     * In the following commands, `source` and `session` MUST be vaild,
-     * if session is NULL, use the last uesd session */
-    // TODO: buggy
-    if (!srv_session_is_session(session)) session = last_sess;
-    if (!srv_session_is_session(session)) {
-        ERR_FR("Session %p is invaild", session);
-        return -1;
-    }
-
-    if (block) wait_until_connected(session);
-
-    /* Usage: /query <nickname> */
-    if (IS_CMD(cmd, "/query")){
-        char *target = strtok(cmd + strlen("/query"), " ");
-        if (IS_CHAN(target)) goto bad;
-        srv_hdr_ui_add_chat(session->host, target, "", CHAT_PRIVATE);
-        srv_session_whois(session, target);
-    }
-
-    /* Usage: /unquery [nickname] */
-    else if (IS_CMD(cmd, "/unquery")){
-        char *target = strtok(cmd + strlen("/unquery"), " ");
-        if (!target) target = (char *)source;
-        if (IS_CHAN(target)) goto bad;
-        srv_hdr_ui_rm_chat(session->host, target);
-    }
-
-    /* Usage: /join <channel> [password] */
-    else if (IS_CMD(cmd, "/join")){
-        char *chan = strtok(cmd + strlen("/join"), " ");
-        char *passwd = strtok(NULL, " ");
-        if (!chan) goto bad;
-        return srv_session_join(session, chan, passwd);
-    }
-
-    /* Usage: /part [channel] [reason] */
-    else if (IS_CMD(cmd, "/part")){
-        char *chan = strtok(cmd + strlen("/part"), " ");
-        char *reason = strtok(NULL, "");
-        if (!chan)
-            chan = (char *)source;
-        else if (!IS_CHAN(chan) && !reason){
-            reason = chan;
-            chan = NULL;
-        }
-        // FIXME: libircclent doesn't support part with reason?
-        if (!chan) goto bad;
-        return srv_session_part(session, chan);
-    }
-
-    /* Usage: /quit [reason] */
-    else if (IS_CMD(cmd, "/quit")){
-        char *reason = strtok(cmd + strlen("/quit"), " ");
-        // FIXME: reason doesnt work
-        return srv_session_quit(session, reason);
-    }
-
-    /* Usage: /topic [topic] */
-    else if (IS_CMD(cmd, "/topic")){
-        const char *chan = source;
-        char *topic = strtok(cmd + strlen("/topic"), " ");
-        return srv_session_topic(session, chan, topic);
-    }
-
-    /* Usage: /msg <target> <message> */
-    else if (IS_CMD(cmd, "/msg")){
-        char *to = strtok(cmd + strlen("/msg"), " ");
-        char *msg = strtok(NULL, "");
-        if (!to || !msg) goto bad;
-        srv_hdr_ui_send_msg(session->host, to, msg);
-        return srv_session_send(session, to, msg);
-    }
-
-    /* Usage: /me <message> */
-    else if (IS_CMD(cmd, "/me")){
-        char *msg = strtok(cmd + strlen("/me"), "");
-        char buf[512];
-        if (!msg) goto bad;
-        snprintf(buf, sizeof(buf), _("*** %s %s ***"), session->nickname, msg);
-        srv_hdr_ui_sys_msg(session->host, source, buf, SYS_MSG_ACTION);
-        return srv_session_me(session, source, msg);
-    }
-
-    /* Usage: /nick <new_nick> */
-    else if (IS_CMD(cmd, "/nick")){
-        char *nick = strtok(cmd + strlen("/nick"), " ");
-        if (!nick) goto bad;
-        return srv_session_nick(session, nick);
-
-    }
-
-    /* Usage: /whois [nick] */
-    else if (IS_CMD(cmd, "/whois")){
-        char *nick = strtok(cmd + strlen("/whois"), " ");
-        if (nick == NULL){
-            if (!IS_CHAN(source)) nick = (char *)source;
-            else nick = session->nickname;
-        }
-        return srv_session_whois(session, nick);
-    }
-
-    /* Usage: /whois <nick> [channel] */
-    else if (IS_CMD(cmd, "/invite")){
-        char *nick = strtok(cmd + strlen("/invite"), " ");
-        char *chan = strtok(NULL, " ");
-        if (!chan && IS_CHAN(source)) chan = (char *)source;
-        if (!nick || !chan) goto bad;
-        return srv_session_invite(session, nick, chan);
-    }
-
-    /* Usage: /whois <nick> [channel] [reason] */
-    else if (IS_CMD(cmd, "/kick")){
-        char *nick = strtok(cmd + strlen("/kick"), " ");
-        char *chan = strtok(NULL, " ");
-        char *reason = strtok(NULL, "");
-        if (!IS_CHAN(chan)){
-            reason = chan;
-            chan = (char *)source;
-        }
-        if (!nick && !chan) goto bad;
-        return srv_session_kick(session, nick, chan, reason);
-    }
-
-    /* Usage: /mode <mode>
-     *        /mode <mode> <channel>
-     */
-    else if (IS_CMD(cmd, "/mode")){
-        char *mode = strtok(cmd + strlen("/mode"), " ");
-        char *target = strtok(NULL, "");
-        if (!mode) goto bad;
-        return srv_session_mode(session, target, mode);
-    }
-
-    else if (IS_CMD(cmd, "/help")){
-        srv_hdr_ui_sys_msg(session->host, source,
-                _("Please visit" PACKAGE_WEBSITE "/wiki"),
-                SYS_MSG_NORMAL);
-    }
-
-    /* no command matched */
-    else {
-        char buf[512];
-        snprintf(buf, sizeof(buf), _("No such commmand: %s"), strtok(cmd, " "));
-        srv_hdr_ui_sys_msg(session->host, source, buf, SYS_MSG_ERROR);
-        return -1;
-    }
-
-    return 0;
-bad:
-    if (srv_session_is_session(session)){
-        char buf[512];
-        snprintf(buf, sizeof(buf), _("%s: wrong parameters"), cmd);
-        srv_hdr_ui_sys_msg(session->host, source, buf, SYS_MSG_ERROR);
+    srv_session_t *tmp;
+    tmp = srv_session_new(host, atoi(port), passwd, nick,
+            PACKAGE_NAME, realname, sslopt);
+    if (tmp){
+        session = tmp;
+        return 0;
     } else {
-        WARN_FR("Wrong parameters, session: %p, source: %s, cmd: %s",
-                session, source, cmd);
+        return -1;
     }
-    return -1;
+}
+
+static int on_command_relay(SRVCommand *cmd, void *user_data){
+    char *ldelim, *rdelim;
+    const char *nick = command_get_arg(cmd, 0);
+    command_get_opt(cmd, "-ldelim", &ldelim);
+    command_get_opt(cmd, "-rdelim", &rdelim);
+
+    if (!nick) return -1;
+    return filter_relaybot_list_add(nick, ldelim, rdelim);
+}
+
+static int on_command_unrelay(SRVCommand *cmd, void *user_data){
+    const char *nick = command_get_arg(cmd, 0);
+
+    if (!nick) return -1;
+    return filter_relaybot_list_rm(nick);
+}
+
+static int on_command_ignore(SRVCommand *cmd, void *user_data){
+    const char *nick = command_get_arg(cmd, 0);
+
+    if (!nick) return -1;
+    return filter_ignore_list_add(nick);
+}
+
+static int on_command_unignore(SRVCommand *cmd, void *user_data){
+    const char *nick = command_get_arg(cmd, 0);
+
+    if (!nick) return -1;
+    return filter_ignore_list_rm(nick);
+}
+
+static int on_command_query(SRVCommand *cmd, void *user_data){
+    const char *nick = command_get_arg(cmd, 0);
+
+    if (!nick) return -1;
+    srv_hdr_ui_add_chat(session->host, nick, "", CHAT_PRIVATE);
+    srv_session_whois(session, nick);
+    return 0;
+}
+
+static int on_command_unquery(SRVCommand *cmd, void *user_data){
+    const char *nick = command_get_arg(cmd, 0);
+
+    if (!nick) return -1;
+    srv_hdr_ui_rm_chat(session->host, nick);
+    return 0;
+}
+
+static int on_command_join(SRVCommand *cmd, void *user_data){
+    const char *chan = command_get_arg(cmd, 0);
+    const char *passwd = command_get_arg(cmd, 1);
+
+    if (!chan) return -1;
+    return srv_session_join(session, chan, passwd);
+}
+
+static int on_command_part(SRVCommand *cmd, void *user_data){
+    const char *chan = command_get_arg(cmd, 0);
+    // const char *reason = command_get_arg(cmd, 1);
+
+    if (!chan) chan = user_data;
+    return srv_session_part(session, chan);
+}
+
+static int on_command_quit(SRVCommand *cmd, void *user_data){
+    const char *reason = command_get_arg(cmd, 0);
+
+    return srv_session_quit(session, reason);
+}
+
+static int on_command_topic(SRVCommand *cmd, void *user_data){
+    const char *channel = user_data;
+    const char *topic = command_get_arg(cmd, 0);
+    if (command_get_opt(cmd, "-rm", NULL)) topic = "";
+
+    return srv_session_topic(session, channel, topic);
+}
+
+static int on_command_msg(SRVCommand *cmd, void *user_data){
+    const char *target = command_get_arg(cmd, 0);
+    const char *msg = command_get_arg(cmd, 1);
+
+    if (!target || !msg) return -1;
+    srv_hdr_ui_send_msg(session->host, target, msg);
+    return srv_session_send(session, target, msg);
+}
+
+static int on_command_me(SRVCommand *cmd, void *user_data){
+    const char *source = user_data;
+    const char *msg = command_get_arg(cmd, 0);
+    if (!msg) return -1;
+
+    char buf[512];
+    snprintf(buf, sizeof(buf), _("*** %s %s ***"), session->nickname, msg);
+    srv_hdr_ui_sys_msg(session->host, source, buf, SYS_MSG_ACTION);
+    return srv_session_me(session, source, msg);
+}
+
+static int on_command_nick(SRVCommand *cmd, void *user_data){
+    const char *nick = command_get_arg(cmd, 0);
+
+    if (!nick) return -1;
+    return srv_session_nick(session, nick);
+}
+
+static int on_command_whois(SRVCommand *cmd, void *user_data){
+    const char *nick = command_get_arg(cmd, 0);
+
+    if (!nick) return -1;
+    return srv_session_whois(session, nick);
+}
+
+static int on_command_invite(SRVCommand *cmd, void *user_data){
+    const char *nick = command_get_arg(cmd, 0);
+    const char *chan = command_get_arg(cmd, 1);
+
+    if (!nick) return -1;
+    if (!chan) chan = user_data;
+    return srv_session_whois(session, nick);
+}
+
+static int on_command_kick(SRVCommand *cmd, void *user_data){
+    const char *nick = command_get_arg(cmd, 0);
+    const char *chan = command_get_arg(cmd, 1);
+    const char *reason = command_get_arg(cmd, 3);
+
+    if (!nick || !chan) return -1;
+    return srv_session_kick(session, nick, chan, reason);
+}
+
+static int on_command_mode(SRVCommand *cmd, void *user_data){
+    const char *mode = command_get_arg(cmd, 0);
+    const char *target = command_get_arg(cmd, 1);
+
+    if (!target || !mode) return -1;
+    return srv_session_mode(session, target, mode);
+
+}
+
+static int on_command_list(SRVCommand *cmd, void *user_data){
+    return 0;
+}
+
+static SRVCommandBind cmd_binds[] = {
+    {
+        "/connect", 2, // <hosts> <nick>
+        {"-port", "-ssl", "-passwd", "-realname", NULL},
+        {"6667", "off", "", "Can you can a can?", NULL},
+        on_command_connect
+    },
+    {
+        "/relay", 1, // <nick>
+        {"-ldelim", "-rdelim", NULL},
+        {"", "", NULL},
+        on_command_relay
+    },
+    {
+        "/unrelay", 1, // <nick>
+        {NULL},
+        {NULL},
+        on_command_unrelay
+    },
+    {
+        "/query", 1, // <nick>
+        {NULL},
+        {NULL},
+        on_command_query
+    },
+    {
+        "/unquery", 1, // <nick>
+        {NULL},
+        {NULL},
+        on_command_unquery
+    },
+    {
+        "/join", 1, // <channel>
+        {NULL},
+        {NULL},
+        on_command_join
+    },
+    {
+        "/part", 2, // <channel> <reason>
+        {NULL},
+        {NULL},
+        on_command_part
+    },
+    {
+        "/quit", 1, // <reason>
+        {NULL},
+        {NULL},
+        on_command_quit
+    },
+    {
+        "/topic", 1, // <topic>
+        {"-rm", NULL},
+        {NULL, NULL},
+        on_command_topic
+    },
+    {
+        "/msg", 2, // <target> <message>
+        {NULL},
+        {NULL},
+        on_command_msg
+    },
+    {
+        "/me", 1, // <message>
+        {NULL},
+        {NULL},
+        on_command_me
+    },
+
+    {
+        "/nick", 1, // <new_nick>
+        {NULL},
+        {NULL},
+        on_command_nick
+    },
+    {
+        "/whois", 1, // <nick>
+        {NULL},
+        {NULL},
+        on_command_whois
+    },
+    {
+        "/invite", 2, // <nick> <channel>
+        {NULL},
+        {NULL},
+        on_command_invite
+    },
+    {
+        "/kick", 3, // <nick> <channel> <reason>
+        {NULL},
+        {NULL},
+        on_command_kick
+    },
+    {
+        "/mode", 2, // <target> <mode>
+        {NULL},
+        {NULL},
+        on_command_mode
+    },
+    {
+        "/list", 1, // <channel>
+        {NULL},
+        {NULL},
+        on_command_list
+    },
+    {
+        NULL, 0, {NULL}, {NULL}, NULL
+    },
+};
+
+void srv_session_cmd_init(){
+    commmad_bind(cmd_binds);
+}
+
+int srv_session_cmd(srv_session_t *sess, const char *source, char *cmd, int block){
+    if (source == NULL) source = META_SERVER;
+    if (sess) session = sess;
+    wait_until_connected();
+    return command_proc(cmd, (char *)source);
 }

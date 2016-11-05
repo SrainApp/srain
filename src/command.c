@@ -1,4 +1,12 @@
-#define __DBG_ON
+/**
+ * @file command.c
+ * @brief Flexible command parser
+ * @author Shengyu Zhang <lastavengers@outlook.com>
+ * @version 1.0
+ * @date 2016-11-05
+ */
+
+// #define __DBG_ON
 #define __LOG_ON
 
 #include <glib.h>
@@ -169,13 +177,13 @@ static int command_parse(SRVCommand *cmd){
     if (ptr == NULL) goto missing_arg;
 
     for (int i = 0; i < nopt; i++){
-        LOG_FR("opt: '%s'", cmd->opt_key[i]);
+        DBG_FR("opt: '%s'", cmd->opt_key[i]);
         if (bind->opt_default_val[i] != NULL)
-            LOG_FR("val: '%s'", cmd->opt_val[i]);
+            DBG_FR("val: '%s'", cmd->opt_val[i]);
     }
 
     for (int i = 0; i < bind->argc; i++){
-        LOG_FR("argv: '%s'", cmd->argv[i]);
+        DBG_FR("argv: '%s'", cmd->argv[i]);
     }
     return 0;
 
@@ -201,10 +209,26 @@ too_many_arg:
     return -1;
 }
 
-void commmad_bind(SRVCommandBind *bind) {
-    cmd_binds = bind;
+/**
+ * @brief Bind commmands, let me know the name, arguments count, callback of
+ *        specified commands, you should call this before using any command_*
+ *        function
+ *
+ * @param bind A array of SRVCommandBind structure
+ */
+void commmad_bind(SRVCommandBind *binds) {
+    cmd_binds = binds;
 }
 
+/**
+ * @brief Check and parse command, and call the corresponding callback function
+ *
+ * @param rawcmd A string of command
+ * @param user_data Custom data passing to command callback function
+ *
+ * @return -1 if failed, the reason is various(no such command, no enouch 
+ *         argument, callback function failed, etc.)
+ */
 int command_proc(const char *rawcmd, void *user_data){
     int ret;
     SRVCommand *cmd;
@@ -226,6 +250,14 @@ int command_proc(const char *rawcmd, void *user_data){
     return -1;
 }
 
+/**
+ * @brief Get the nth argument in the command
+ *
+ * @param cmd
+ * @param index
+ *
+ * @return NULL or the nth argument, you do not need to free it
+ */
 const char *command_get_arg(SRVCommand *cmd, unsigned index){
     if (index < cmd->bind->argc){
         return cmd->argv[index];
@@ -233,6 +265,16 @@ const char *command_get_arg(SRVCommand *cmd, unsigned index){
     return NULL;
 }
 
+/**
+ * @brief Get the optional argument in the command 
+ *
+ * @param cmd
+ * @param opt_key The name of optional argument
+ * @param opt_val If this argument has a value, it will return via this param,
+ *        you do not need to free it
+ *
+ * @return -1 if it means there no such optional argument
+ */
 int command_get_opt(SRVCommand *cmd, const char *opt_key, char **opt_val){
     unsigned i = 0;
 

@@ -24,6 +24,7 @@
  */
 void srv_init(){
     srv_hdr_init();
+    srv_session_cmd_init();
     srv_session_init();
     srv_session_proc();
 
