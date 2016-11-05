@@ -1,16 +1,13 @@
 Command::
 
-    /server add <srv_name> <host>[:<port>]
-        [-ssl on|off|noverify]
-        [-realname <realname>]
-        [-passwd <passwd>]
+    /connect [-port <port>] [-ssl on|off|noverify] [-realname <realname>] [-passwd <passwd>] <srv_name> <host>
 
 Add a server into your server list. It will become the default server
 automaticly.
 
 * ``srv_name``: The name of server that will displayed on UI
 * ``host``: IRC server host
-* ``port``: IRC server port, if no specified, use ``6667``
+* ``-port``: IRC server port, if no specified, use ``6667``
 * ``-ssl``:
 
   - ``on``: Use secure server connections with SSL
@@ -22,26 +19,8 @@ automaticly.
 
 Example::
 
-    /server add Freenode irc.freenode.net -ssl noverify -realname 'Srain User'
-    /server add Freenode 127.0.0.1:6667
-
-Command::
-
-    /server rm <srv_name>
-
-Remove a server from your server list.
-
-Command::
-
-    /server alter <srv_name>
-
-Alter default server.
-
-Command::
-
-    /server connect [srv_name]
-
-Connect to the server, if  ``srv_name`` no specified, use default server.
+    /connect -realname 'I am srainbot' -ssl noverify -port 6697 chat.freenode.org srainbot
+    /connect 127.0.0.1 srainbot
 
 Command::
 
@@ -51,23 +30,25 @@ Command::
 Flag ``nick`` as a relay bot, show the real nick of the message sender.
 By default, use ``<[({`` as delimiter.
 
+Note:
+    Default delimiter is not available now.
+
 * ``-ldelim``, ``-rdelim``: Specifie custom delimiter
 
 Example::
 
     /relay teleboto
     # Note: there is a whitespace following the ']'
-    /relay teleboto -ldelim '[' -rdelim '] '
+    /relay -ldelim '[' -rdelim '] ' teleboto
 
 Command::
 
     /ignore <nick>
     /unignore <nick>
 
-Ignore somebody's message.
+Ignore/unignore somebody's message.
 
-**The following commands only influence default server , use** ``/server alter``
-**to chagne default server.**
+**The following commands only influence current server**
 
 Command::
 
@@ -165,12 +146,15 @@ current channel.
 
 Command::
 
-    /mode <mode>
+    /mode <target> <mode>
 
-Change your mode. # TODO
+Change ``target``'s mode.
 
 Command::
 
     /list
 
 List all channels on the default server.
+
+Note:
+    This command is not implemented yet.
