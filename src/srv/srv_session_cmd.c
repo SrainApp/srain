@@ -21,21 +21,14 @@
 #include "filter.h"
 #include "command.h"
 
-static srv_session_t *session = NULL;
-
-static void wait_until_connected(){
-    if (!session) return;
-
-    DBG_FR("Waiting for session: %s ...", session->host);
-    while (session->stat != SESS_CONNECT){
-        sleep(1);
-    };
-}
+static srv_session_t *startup_session;
 
 static int on_command_connect(Command *cmd, void *user_data){
     const char *host = command_get_arg(cmd, 0);
     const char *nick = command_get_arg(cmd, 1);
     char *port, *passwd, *ssl, *realname;
+    srv_session_t *session = user_data;
+
     command_get_opt(cmd, "-port", &port);
     command_get_opt(cmd, "-passwd", &passwd);
     command_get_opt(cmd, "-ssl", &ssl);
@@ -53,7 +46,7 @@ static int on_command_connect(Command *cmd, void *user_data){
     tmp = srv_session_new(host, atoi(port), passwd, nick,
             PACKAGE_NAME, realname, sslopt);
     if (tmp){
-        session = tmp;
+        startup_session = tmp;
         return 0;
     } else {
         return -1;
@@ -63,6 +56,7 @@ static int on_command_connect(Command *cmd, void *user_data){
 static int on_command_relay(Command *cmd, void *user_data){
     char *ldelim, *rdelim;
     const char *nick = command_get_arg(cmd, 0);
+
     command_get_opt(cmd, "-ldelim", &ldelim);
     command_get_opt(cmd, "-rdelim", &rdelim);
 
@@ -93,6 +87,7 @@ static int on_command_unignore(Command *cmd, void *user_data){
 
 static int on_command_query(Command *cmd, void *user_data){
     const char *nick = command_get_arg(cmd, 0);
+    srv_session_t *session = user_data;
 
     if (!nick) return -1;
     srv_hdr_ui_add_chat(session->host, nick, "", CHAT_PRIVATE);
@@ -102,6 +97,7 @@ static int on_command_query(Command *cmd, void *user_data){
 
 static int on_command_unquery(Command *cmd, void *user_data){
     const char *nick = command_get_arg(cmd, 0);
+    srv_session_t *session = user_data;
 
     if (!nick) return -1;
     srv_hdr_ui_rm_chat(session->host, nick);
@@ -111,6 +107,7 @@ static int on_command_unquery(Command *cmd, void *user_data){
 static int on_command_join(Command *cmd, void *user_data){
     const char *chan = command_get_arg(cmd, 0);
     const char *passwd = command_get_arg(cmd, 1);
+    srv_session_t *session = user_data;
 
     if (!chan) return -1;
     return srv_session_join(session, chan, passwd);
@@ -119,6 +116,7 @@ static int on_command_join(Command *cmd, void *user_data){
 static int on_command_part(Command *cmd, void *user_data){
     const char *chan = command_get_arg(cmd, 0);
     // const char *reason = command_get_arg(cmd, 1);
+    srv_session_t *session = user_data;
 
     if (!chan) chan = user_data;
     return srv_session_part(session, chan);
@@ -126,6 +124,7 @@ static int on_command_part(Command *cmd, void *user_data){
 
 static int on_command_quit(Command *cmd, void *user_data){
     const char *reason = command_get_arg(cmd, 0);
+    srv_session_t *session = user_data;
 
     return srv_session_quit(session, reason);
 }
@@ -133,14 +132,16 @@ static int on_command_quit(Command *cmd, void *user_data){
 static int on_command_topic(Command *cmd, void *user_data){
     const char *channel = user_data;
     const char *topic = command_get_arg(cmd, 0);
-    if (command_get_opt(cmd, "-rm", NULL)) topic = "";
+    srv_session_t *session = user_data;
 
+    if (command_get_opt(cmd, "-rm", NULL)) topic = "";
     return srv_session_topic(session, channel, topic);
 }
 
 static int on_command_msg(Command *cmd, void *user_data){
     const char *target = command_get_arg(cmd, 0);
     const char *msg = command_get_arg(cmd, 1);
+    srv_session_t *session = user_data;
 
     if (!target || !msg) return -1;
     srv_hdr_ui_send_msg(session->host, target, msg);
@@ -148,18 +149,21 @@ static int on_command_msg(Command *cmd, void *user_data){
 }
 
 static int on_command_me(Command *cmd, void *user_data){
-    const char *source = user_data;
     const char *msg = command_get_arg(cmd, 0);
+    srv_session_t *session = user_data;
+
     if (!msg) return -1;
 
     char buf[512];
     snprintf(buf, sizeof(buf), _("*** %s %s ***"), session->nickname, msg);
-    srv_hdr_ui_sys_msg(session->host, source, buf, SYS_MSG_ACTION);
-    return srv_session_me(session, source, msg);
+    srv_hdr_ui_sys_msg(session->host, "", buf, SYS_MSG_ACTION);
+    // FIXME
+    return srv_session_me(session, "", msg);
 }
 
 static int on_command_nick(Command *cmd, void *user_data){
     const char *nick = command_get_arg(cmd, 0);
+    srv_session_t *session = user_data;
 
     if (!nick) return -1;
     return srv_session_nick(session, nick);
@@ -167,6 +171,7 @@ static int on_command_nick(Command *cmd, void *user_data){
 
 static int on_command_whois(Command *cmd, void *user_data){
     const char *nick = command_get_arg(cmd, 0);
+    srv_session_t *session = user_data;
 
     if (!nick) return -1;
     return srv_session_whois(session, nick);
@@ -175,6 +180,7 @@ static int on_command_whois(Command *cmd, void *user_data){
 static int on_command_invite(Command *cmd, void *user_data){
     const char *nick = command_get_arg(cmd, 0);
     const char *chan = command_get_arg(cmd, 1);
+    srv_session_t *session = user_data;
 
     if (!nick) return -1;
     if (!chan) chan = user_data;
@@ -185,6 +191,7 @@ static int on_command_kick(Command *cmd, void *user_data){
     const char *nick = command_get_arg(cmd, 0);
     const char *chan = command_get_arg(cmd, 1);
     const char *reason = command_get_arg(cmd, 3);
+    srv_session_t *session = user_data;
 
     if (!nick || !chan) return -1;
     return srv_session_kick(session, nick, chan, reason);
@@ -193,6 +200,7 @@ static int on_command_kick(Command *cmd, void *user_data){
 static int on_command_mode(Command *cmd, void *user_data){
     const char *mode = command_get_arg(cmd, 0);
     const char *target = command_get_arg(cmd, 1);
+    srv_session_t *session = user_data;
 
     if (!target || !mode) return -1;
     return srv_session_mode(session, target, mode);
@@ -324,13 +332,70 @@ static CommandBind cmd_binds[] = {
     },
 };
 
-void srv_session_cmd_init(){
-    commmad_bind(cmd_binds);
+void on_unknown_cmd(const char *cmd, void *user_data){
+    srv_session_t *session = user_data;
+
+    srv_hdr_ui_sys_msg(session->host, "", "No such command '%s'", SYS_MSG_ERROR);
 }
 
-int srv_session_cmd(srv_session_t *sess, const char *source, char *cmd, int block){
+void on_unknown_opt(Command *cmd, const char *opt, void *user_data){
+    srv_session_t *session = user_data;
+
+    srv_hdr_ui_sys_msg(session->host, "", "No such option '%s'", SYS_MSG_ERROR);
+}
+
+void on_missing_opt_val(Command *cmd, const char *opt, void *user_data){
+    srv_session_t *session = user_data;
+
+    srv_hdr_ui_sys_msg(session->host, "", "Option '%s' missing value", SYS_MSG_ERROR);
+}
+
+void on_too_many_opt(Command *cmd, void *user_data){
+    srv_session_t *session = user_data;
+
+    srv_hdr_ui_sys_msg(session->host, "", "Too many options", SYS_MSG_ERROR);
+}
+
+void on_too_many_arg(Command *cmd, void *user_data){
+    srv_session_t *session = user_data;
+
+    srv_hdr_ui_sys_msg(session->host, "", "Too many arguments", SYS_MSG_ERROR);
+}
+
+void on_callback_fail(Command *cmd, void *user_data){
+    srv_session_t *session = user_data;
+
+    srv_hdr_ui_sys_msg(session->host, "", "Command '%s' failed", SYS_MSG_ERROR);
+}
+
+
+static CommandContext cmd_context = {
+    cmd_binds,
+    on_unknown_cmd,
+    on_unknown_opt,
+    on_missing_opt_val,
+    on_too_many_opt,
+    on_too_many_arg,
+    on_callback_fail
+};
+
+void srv_session_cmd_init(){
+    commmad_set_context(&cmd_context);
+}
+
+static void wait_until_connected(srv_session_t *session){
+    if (!session) return;
+
+    DBG_FR("Waiting for session: %s ...", session->host);
+    while (session->stat != SESS_CONNECT){
+        sleep(1);
+    };
+}
+
+int srv_session_cmd(srv_session_t *session, const char *source, char *cmd, int block){
     if (source == NULL) source = META_SERVER;
-    if (sess) session = sess;
-    wait_until_connected();
-    return command_proc(cmd, (char *)source);
+    if (session == NULL) session = startup_session;
+    if (block) wait_until_connected(session);
+
+    return command_proc(cmd, session);
 }

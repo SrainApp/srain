@@ -1,4 +1,5 @@
 /**
+:A
  * @file command.c
  * @brief Flexible command parser
  * @author Shengyu Zhang <lastavengers@outlook.com>
@@ -18,12 +19,15 @@
 
 #include "log.h"
 
-static CommandBind *cmd_binds;
+static CommandContext *cmd_context;
 
 static Command* command_alloc(CommandBind *bind, const char *rawcmd){
     Command *cmd = g_malloc0(sizeof(Command));
+
     cmd->bind = bind;
     cmd->rawcmd = g_strdup(rawcmd);
+
+    g_strchomp(cmd->rawcmd); // Removes trailing whitespace
 
     return cmd;
 }
@@ -35,12 +39,9 @@ static void command_free(Command *cmd){
 }
 
 static int get_arg(char *ptr, char **start, char **end){
-    char *tmp;
     *start = strtok(ptr, " ");
-    tmp = strtok(NULL, "");
-
-    while (tmp && *tmp == ' ') *tmp++ = '\0';
-    *end = tmp;
+    *end = strtok(NULL, "");
+    *end = g_strchug(*end);  // Remove leading whitespace
 
     if (*start == NULL){
         return -1;
@@ -57,7 +58,7 @@ static int get_quote_arg(char *ptr, char **start, char **end){
         return -1;
     }
 
-    while (*ptr == ' ') *ptr++ = '\0';
+    ptr = g_strchug(ptr); // Remove leading whitespace
 
     if (*ptr != '\'') {
         return get_arg(ptr, start, end);
@@ -88,7 +89,7 @@ fail:
     return -1;
 }
 
-static int command_parse(Command *cmd){
+static int command_parse(Command *cmd, void *user_data){
     unsigned nopt = 0;
     char *ptr, *tmp;
     CommandBind *bind = cmd->bind;
@@ -167,35 +168,39 @@ static int command_parse(Command *cmd){
 
     // Don't care
 missing_arg:
-    WARN_FR("Missing argument");
+    // WARN_FR("Missing argument");
     return 0;
 
 unknown_opt:
-    ERR_FR("Unknown option '%s'", cmd->opt_key[nopt]);
+    WARN_FR("Unknown option '%s'", cmd->opt_key[nopt]);
+    cmd_context->on_unknown_opt(cmd, cmd->opt_key[nopt], user_data);
     return -1;
 
 too_many_opt:
-    ERR_FR("Too many options");
+    WARN_FR("Too many options");
+    cmd_context->on_too_many_opt(cmd, user_data);
     return -1;
 
 missing_opt_val:
-    ERR_FR("Missing vaule for option '%s'", cmd->opt_key[nopt]);
+    WARN_FR("Missing vaule for option '%s'", cmd->opt_key[nopt]);
+    cmd_context->on_missing_opt_val(cmd, cmd->opt_key[nopt], user_data);
     return -1;
 
 too_many_arg:
-    ERR_FR("Too many arguments");
+    WARN_FR("Too many arguments");
+    cmd_context->on_too_many_arg(cmd, user_data);
     return -1;
 }
 
 /**
- * @brief Bind commmands, let me know the name, arguments count, callback of
+ * @brief Let me know the name, arguments count, callback of
  *        specified commands, you should call this before using any command_*
  *        function
  *
- * @param bind A array of CommandBind structure
+ * @param ctx A CommandContext
  */
-void commmad_bind(CommandBind *binds) {
-    cmd_binds = binds;
+void commmad_set_context(CommandContext *ctx) {
+    cmd_context = ctx;
 }
 
 /**
@@ -211,12 +216,15 @@ int command_proc(const char *rawcmd, void *user_data){
     int ret;
     Command *cmd;
 
-    for (int i = 0; cmd_binds[i].name != NULL; i++){
-        if (strncasecmp(rawcmd, cmd_binds[i].name, strlen(cmd_binds[i].name)) == 0){
-            cmd = command_alloc(&cmd_binds[i], rawcmd);
-            if (command_parse(cmd) == 0){
+    for (int i = 0; cmd_context->binds[i].name != NULL; i++){
+        if (strncasecmp(rawcmd, cmd_context->binds[i].name, strlen(cmd_context->binds[i].name)) == 0){
+            cmd = command_alloc(&cmd_context->binds[i], rawcmd);
+            if (command_parse(cmd, user_data) == 0){
                 // callback
                 ret = cmd->bind->cb(cmd, user_data);
+                if (ret < 0){
+                    cmd_context->on_callback_fail(cmd, user_data);
+                }
             } else {
                 ret = -1;
             }
@@ -225,6 +233,7 @@ int command_proc(const char *rawcmd, void *user_data){
         }
     }
 
+    cmd_context->on_unknown_cmd(rawcmd, user_data);
     return -1;
 }
 
@@ -376,6 +385,10 @@ static int on_command_topic_test(Command *cmd, void *user_data){
     return 0;
 }
 
+void on_anything_error(){
+    LOG_FR("Some error occured");
+}
+
 static CommandBind cmd_binds_test[] = {
     {
         "/connect", 2,
@@ -392,10 +405,20 @@ static CommandBind cmd_binds_test[] = {
     },
 };
 
+static CommandContext context_test = {
+    cmd_binds_test,
+    on_anything_error,
+    on_anything_error,
+    on_anything_error,
+    on_anything_error,
+    on_anything_error,
+    on_anything_error
+};
+
 void command_test(){
     get_quote_arg_test();
 
-    commmad_bind(cmd_binds_test);
+    commmad_set_context(&context_test);
     assert(command_proc("/connect -ssl  -on 127.0.0.1 la", 0) == -1);
     assert(command_proc("/connect -ssl on -pass 127.0.0.1 la", 0) == -1);
     assert(command_proc("/connect -ssl on 127.0.0.1 la", (void *)1) == 0);

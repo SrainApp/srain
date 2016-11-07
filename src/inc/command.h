@@ -25,7 +25,17 @@ struct _Command {
     char *rawcmd;
 };
 
-void commmad_bind(CommandBind *binds);
+typedef struct {
+    CommandBind *binds;
+    void (*on_unknown_cmd) (const char *cmd, void *user_data);
+    void (*on_unknown_opt) (Command *cmd, const char *opt, void *user_data);
+    void (*on_missing_opt_val) (Command *cmd, const char *opt, void *user_data);
+    void (*on_too_many_opt) (Command *cmd, void *user_data);
+    void (*on_too_many_arg) (Command *cmd, void *user_data);
+    void (*on_callback_fail) (Command *cmd, void *user_data);
+} CommandContext;
+
+void commmad_set_context(CommandContext *ctx);
 int command_proc(const char *rawcmd, void *user_data);
 const char *command_get_arg(Command *cmd, unsigned index);
 int command_get_opt(Command *cmd, const char *opt_key, char **opt_val);
