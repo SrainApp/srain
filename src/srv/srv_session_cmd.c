@@ -223,6 +223,18 @@ static CommandBind cmd_binds[] = {
         on_command_unrelay
     },
     {
+        "/ignore", 1, // <nick>
+        {NULL},
+        {NULL},
+        on_command_ignore
+    },
+    {
+        "/unignore", 1, // <nick>
+        {NULL},
+        {NULL},
+        on_command_unignore
+    },
+    {
         "/query", 1, // <nick>
         {NULL},
         {NULL},
