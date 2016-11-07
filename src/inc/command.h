@@ -4,31 +4,31 @@
 #define COMMAND_MAX_OPTS 20
 #define COMMAND_MAX_ARGS 20
 
-typedef struct _SRVCommand SRVCommand;
+typedef struct _Command Command;
 
-typedef int (SRVCommandCallback) (SRVCommand *cmd, void *user_data);
+typedef int (CommandCallback) (Command *cmd, void *user_data);
 
 typedef struct {
     char *name;
     unsigned argc;
     char *opt_key[COMMAND_MAX_OPTS];
     char *opt_default_val[COMMAND_MAX_OPTS];
-    SRVCommandCallback *cb;
-} SRVCommandBind;
+    CommandCallback *cb;
+} CommandBind;
 
-struct _SRVCommand {
+struct _Command {
     char *argv[COMMAND_MAX_ARGS];
     char *opt_key[COMMAND_MAX_OPTS];
     char *opt_val[COMMAND_MAX_OPTS];
 
-    SRVCommandBind *bind;
+    CommandBind *bind;
     char *rawcmd;
 };
 
-void commmad_bind(SRVCommandBind *binds);
+void commmad_bind(CommandBind *binds);
 int command_proc(const char *rawcmd, void *user_data);
-const char *command_get_arg(SRVCommand *cmd, unsigned index);
-int command_get_opt(SRVCommand *cmd, const char *opt_key, char **opt_val);
+const char *command_get_arg(Command *cmd, unsigned index);
+int command_get_opt(Command *cmd, const char *opt_key, char **opt_val);
 
 void command_test();
 

@@ -32,7 +32,7 @@ static void wait_until_connected(){
     };
 }
 
-static int on_command_connect(SRVCommand *cmd, void *user_data){
+static int on_command_connect(Command *cmd, void *user_data){
     const char *host = command_get_arg(cmd, 0);
     const char *nick = command_get_arg(cmd, 1);
     char *port, *passwd, *ssl, *realname;
@@ -60,7 +60,7 @@ static int on_command_connect(SRVCommand *cmd, void *user_data){
     }
 }
 
-static int on_command_relay(SRVCommand *cmd, void *user_data){
+static int on_command_relay(Command *cmd, void *user_data){
     char *ldelim, *rdelim;
     const char *nick = command_get_arg(cmd, 0);
     command_get_opt(cmd, "-ldelim", &ldelim);
@@ -70,28 +70,28 @@ static int on_command_relay(SRVCommand *cmd, void *user_data){
     return filter_relaybot_list_add(nick, ldelim, rdelim);
 }
 
-static int on_command_unrelay(SRVCommand *cmd, void *user_data){
+static int on_command_unrelay(Command *cmd, void *user_data){
     const char *nick = command_get_arg(cmd, 0);
 
     if (!nick) return -1;
     return filter_relaybot_list_rm(nick);
 }
 
-static int on_command_ignore(SRVCommand *cmd, void *user_data){
+static int on_command_ignore(Command *cmd, void *user_data){
     const char *nick = command_get_arg(cmd, 0);
 
     if (!nick) return -1;
     return filter_ignore_list_add(nick);
 }
 
-static int on_command_unignore(SRVCommand *cmd, void *user_data){
+static int on_command_unignore(Command *cmd, void *user_data){
     const char *nick = command_get_arg(cmd, 0);
 
     if (!nick) return -1;
     return filter_ignore_list_rm(nick);
 }
 
-static int on_command_query(SRVCommand *cmd, void *user_data){
+static int on_command_query(Command *cmd, void *user_data){
     const char *nick = command_get_arg(cmd, 0);
 
     if (!nick) return -1;
@@ -100,7 +100,7 @@ static int on_command_query(SRVCommand *cmd, void *user_data){
     return 0;
 }
 
-static int on_command_unquery(SRVCommand *cmd, void *user_data){
+static int on_command_unquery(Command *cmd, void *user_data){
     const char *nick = command_get_arg(cmd, 0);
 
     if (!nick) return -1;
@@ -108,7 +108,7 @@ static int on_command_unquery(SRVCommand *cmd, void *user_data){
     return 0;
 }
 
-static int on_command_join(SRVCommand *cmd, void *user_data){
+static int on_command_join(Command *cmd, void *user_data){
     const char *chan = command_get_arg(cmd, 0);
     const char *passwd = command_get_arg(cmd, 1);
 
@@ -116,7 +116,7 @@ static int on_command_join(SRVCommand *cmd, void *user_data){
     return srv_session_join(session, chan, passwd);
 }
 
-static int on_command_part(SRVCommand *cmd, void *user_data){
+static int on_command_part(Command *cmd, void *user_data){
     const char *chan = command_get_arg(cmd, 0);
     // const char *reason = command_get_arg(cmd, 1);
 
@@ -124,13 +124,13 @@ static int on_command_part(SRVCommand *cmd, void *user_data){
     return srv_session_part(session, chan);
 }
 
-static int on_command_quit(SRVCommand *cmd, void *user_data){
+static int on_command_quit(Command *cmd, void *user_data){
     const char *reason = command_get_arg(cmd, 0);
 
     return srv_session_quit(session, reason);
 }
 
-static int on_command_topic(SRVCommand *cmd, void *user_data){
+static int on_command_topic(Command *cmd, void *user_data){
     const char *channel = user_data;
     const char *topic = command_get_arg(cmd, 0);
     if (command_get_opt(cmd, "-rm", NULL)) topic = "";
@@ -138,7 +138,7 @@ static int on_command_topic(SRVCommand *cmd, void *user_data){
     return srv_session_topic(session, channel, topic);
 }
 
-static int on_command_msg(SRVCommand *cmd, void *user_data){
+static int on_command_msg(Command *cmd, void *user_data){
     const char *target = command_get_arg(cmd, 0);
     const char *msg = command_get_arg(cmd, 1);
 
@@ -147,7 +147,7 @@ static int on_command_msg(SRVCommand *cmd, void *user_data){
     return srv_session_send(session, target, msg);
 }
 
-static int on_command_me(SRVCommand *cmd, void *user_data){
+static int on_command_me(Command *cmd, void *user_data){
     const char *source = user_data;
     const char *msg = command_get_arg(cmd, 0);
     if (!msg) return -1;
@@ -158,21 +158,21 @@ static int on_command_me(SRVCommand *cmd, void *user_data){
     return srv_session_me(session, source, msg);
 }
 
-static int on_command_nick(SRVCommand *cmd, void *user_data){
+static int on_command_nick(Command *cmd, void *user_data){
     const char *nick = command_get_arg(cmd, 0);
 
     if (!nick) return -1;
     return srv_session_nick(session, nick);
 }
 
-static int on_command_whois(SRVCommand *cmd, void *user_data){
+static int on_command_whois(Command *cmd, void *user_data){
     const char *nick = command_get_arg(cmd, 0);
 
     if (!nick) return -1;
     return srv_session_whois(session, nick);
 }
 
-static int on_command_invite(SRVCommand *cmd, void *user_data){
+static int on_command_invite(Command *cmd, void *user_data){
     const char *nick = command_get_arg(cmd, 0);
     const char *chan = command_get_arg(cmd, 1);
 
@@ -181,7 +181,7 @@ static int on_command_invite(SRVCommand *cmd, void *user_data){
     return srv_session_whois(session, nick);
 }
 
-static int on_command_kick(SRVCommand *cmd, void *user_data){
+static int on_command_kick(Command *cmd, void *user_data){
     const char *nick = command_get_arg(cmd, 0);
     const char *chan = command_get_arg(cmd, 1);
     const char *reason = command_get_arg(cmd, 3);
@@ -190,7 +190,7 @@ static int on_command_kick(SRVCommand *cmd, void *user_data){
     return srv_session_kick(session, nick, chan, reason);
 }
 
-static int on_command_mode(SRVCommand *cmd, void *user_data){
+static int on_command_mode(Command *cmd, void *user_data){
     const char *mode = command_get_arg(cmd, 0);
     const char *target = command_get_arg(cmd, 1);
 
@@ -199,11 +199,11 @@ static int on_command_mode(SRVCommand *cmd, void *user_data){
 
 }
 
-static int on_command_list(SRVCommand *cmd, void *user_data){
+static int on_command_list(Command *cmd, void *user_data){
     return 0;
 }
 
-static SRVCommandBind cmd_binds[] = {
+static CommandBind cmd_binds[] = {
     {
         "/connect", 2, // <hosts> <nick>
         {"-port", "-ssl", "-passwd", "-realname", NULL},

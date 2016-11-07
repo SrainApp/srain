@@ -14,43 +14,21 @@
 #include <strings.h>
 #include <assert.h>
 
+#include "command.h"
+
 #include "log.h"
 
-#define COMMAND_MAX_OPTS 20
-#define COMMAND_MAX_ARGS 20
+static CommandBind *cmd_binds;
 
-typedef struct _SRVCommand SRVCommand;
-
-typedef int (SRVCommandCallback) (SRVCommand *cmd, void *user_data);
-
-typedef struct {
-    char *name;
-    unsigned argc;
-    char *opt_key[COMMAND_MAX_OPTS];
-    char *opt_default_val[COMMAND_MAX_OPTS];
-    SRVCommandCallback *cb;
-} SRVCommandBind;
-
-struct _SRVCommand {
-    char *argv[COMMAND_MAX_ARGS];
-    char *opt_key[COMMAND_MAX_OPTS];
-    char *opt_val[COMMAND_MAX_OPTS];
-
-    SRVCommandBind *bind;
-    char *rawcmd;
-};
-
-static SRVCommandBind *cmd_binds;
-
-static SRVCommand* command_alloc(SRVCommandBind *bind, const char *rawcmd){
-    SRVCommand *cmd = g_malloc0(sizeof(SRVCommand));
+static Command* command_alloc(CommandBind *bind, const char *rawcmd){
+    Command *cmd = g_malloc0(sizeof(Command));
     cmd->bind = bind;
     cmd->rawcmd = g_strdup(rawcmd);
 
     return cmd;
 }
 
-static void command_free(SRVCommand *cmd){
+static void command_free(Command *cmd){
     if (cmd->rawcmd)
         g_free(cmd->rawcmd);
     g_free(cmd);
@@ -110,10 +88,10 @@ fail:
     return -1;
 }
 
-static int command_parse(SRVCommand *cmd){
+static int command_parse(Command *cmd){
     unsigned nopt = 0;
     char *ptr, *tmp;
-    SRVCommandBind *bind = cmd->bind;
+    CommandBind *bind = cmd->bind;
 
     get_arg(cmd->rawcmd, &tmp, &ptr);
 
@@ -214,9 +192,9 @@ too_many_arg:
  *        specified commands, you should call this before using any command_*
  *        function
  *
- * @param bind A array of SRVCommandBind structure
+ * @param bind A array of CommandBind structure
  */
-void commmad_bind(SRVCommandBind *binds) {
+void commmad_bind(CommandBind *binds) {
     cmd_binds = binds;
 }
 
@@ -226,12 +204,12 @@ void commmad_bind(SRVCommandBind *binds) {
  * @param rawcmd A string of command
  * @param user_data Custom data passing to command callback function
  *
- * @return -1 if failed, the reason is various(no such command, no enouch 
+ * @return -1 if failed, the reason is various(no such command, no enouch
  *         argument, callback function failed, etc.)
  */
 int command_proc(const char *rawcmd, void *user_data){
     int ret;
-    SRVCommand *cmd;
+    Command *cmd;
 
     for (int i = 0; cmd_binds[i].name != NULL; i++){
         if (strncasecmp(rawcmd, cmd_binds[i].name, strlen(cmd_binds[i].name)) == 0){
@@ -258,7 +236,7 @@ int command_proc(const char *rawcmd, void *user_data){
  *
  * @return NULL or the nth argument, you do not need to free it
  */
-const char *command_get_arg(SRVCommand *cmd, unsigned index){
+const char *command_get_arg(Command *cmd, unsigned index){
     if (index < cmd->bind->argc){
         return cmd->argv[index];
     }
@@ -266,24 +244,28 @@ const char *command_get_arg(SRVCommand *cmd, unsigned index){
 }
 
 /**
- * @brief Get the optional argument in the command 
+ * @brief Get the optional argument in the command
  *
  * @param cmd
  * @param opt_key The name of optional argument
- * @param opt_val If this argument has a value, it will return via this param,
+ * @param opt_val Can be NULL. If this argument has a value, it will return via this param,
  *        you do not need to free it
  *
- * @return -1 if it means there no such optional argument
+ * @return 1 if this argument is specified in the command,
+ *         0 if this argument is not specified in the command or there no such
+ *         optional argument
  */
-int command_get_opt(SRVCommand *cmd, const char *opt_key, char **opt_val){
+int command_get_opt(Command *cmd, const char *opt_key, char **opt_val){
     unsigned i = 0;
+    int ret = 0;
 
     while (cmd->opt_key[i] != NULL){
         if (strcasecmp(cmd->opt_key[i], opt_key) == 0){
+            ret = 1;
             if (opt_val != NULL){
                 *opt_val = cmd->opt_val[i];
             }
-            return 1;
+            return ret;
         }
         i++;
     }
@@ -295,13 +277,13 @@ int command_get_opt(SRVCommand *cmd, const char *opt_key, char **opt_val){
             if (opt_val != NULL){
                 *opt_val = cmd->bind->opt_default_val[i];
             }
-            return 1;
+            return ret;
         }
         i++;
     }
 
     ERR_FR("No such option '%s'", opt_key);
-    return 0;
+    return ret;
 }
 
 /**
@@ -331,7 +313,7 @@ static void get_quote_arg_test() {
     assert(strcmp(end, "'") == 0);
 }
 
-static int on_command_connect_test(SRVCommand *cmd, void *user_data){
+static int on_command_connect_test(Command *cmd, void *user_data){
     int testcase = (int)user_data;
     switch (testcase){
         case 1:
@@ -363,7 +345,7 @@ static int on_command_connect_test(SRVCommand *cmd, void *user_data){
     return 0;
 }
 
-static int on_command_topic_test(SRVCommand *cmd, void *user_data){
+static int on_command_topic_test(Command *cmd, void *user_data){
     int testcase = (int)user_data;
     switch (testcase){
         case 1:
@@ -394,7 +376,7 @@ static int on_command_topic_test(SRVCommand *cmd, void *user_data){
     return 0;
 }
 
-static SRVCommandBind cmd_binds_test[] = {
+static CommandBind cmd_binds_test[] = {
     {
         "/connect", 2,
         {"-port", "-ssl", "-passwd", "-realname", NULL},
