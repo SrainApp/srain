@@ -110,13 +110,13 @@ static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_da
         ui_send_msg_sync(
                 srain_chat_get_srv_name(chat),
                 srain_chat_get_chat_name(chat),
-                str->str);
+                str->str, 0);
         if (ui_hdr_srv_send(chat, str->str) < 0){
             ui_sys_msg_sync(
                     srain_chat_get_srv_name(chat),
                     srain_chat_get_chat_name(chat),
                     _("Failed to send message"),
-                    SYS_MSG_ERROR);
+                    SYS_MSG_ERROR, 0);
         }
         g_string_free(str, TRUE);
     }
@@ -199,6 +199,31 @@ static void nick_button_on_click(GtkWidget *widget, gpointer *user_data){
     g_string_free(str, TRUE);
 }
 
+/* ================ SRAIN_SRAIN_MSG ================ */
+void srain_msg_set_msg(SrainMsg *smsg, const char *msg) {
+    GString *markuped;
+
+    markuped = markup(msg, NULL);
+    if (markuped){
+        gtk_label_set_markup(smsg->msg_label, markuped->str);
+        g_string_free(markuped, TRUE);
+    } else {
+        gtk_label_set_text(smsg->msg_label, msg);
+    }
+}
+
+void srain_msg_append_msg(SrainMsg *smsg, const char *msg) {
+    GString *new_msg;
+
+    new_msg = g_string_new(gtk_label_get_text(smsg->msg_label));
+    g_string_append(new_msg, "\n");
+    g_string_append(new_msg, msg);
+
+    srain_msg_set_msg(smsg, new_msg->str);
+
+    g_string_free(new_msg, TRUE);
+}
+
 /* ================ SRAIN_SYS_MSG ================ */
 G_DEFINE_TYPE(SrainSysMsg, srain_sys_msg, GTK_TYPE_BOX);
 
@@ -232,7 +257,8 @@ SrainSysMsg* srain_sys_msg_new(const char *msg, SysMsgType type){
         default:
             ERR_FR("unkown SysMsgType");
     }
-    gtk_label_set_text(smsg->msg_label, msg);
+
+    srain_msg_set_msg(SRAIN_MSG(smsg), msg);
 
     return smsg;
 }
@@ -264,14 +290,10 @@ SrainSendMsg* srain_send_msg_new(const char *msg){
     get_cur_time(timestr);
     gtk_label_set_text(smsg->time_label, timestr);
 
-    markuped_msg = markup(msg, &img_url);
-    if (markuped_msg){
-        gtk_label_set_markup(smsg->msg_label, markuped_msg->str);
-        g_string_free(markuped_msg, TRUE);
-    } else {
-        gtk_label_set_text(smsg->msg_label, msg);
-    }
+    srain_msg_set_msg(SRAIN_MSG(smsg), msg);
 
+    /*
+     * TODO: remove
     if (img_url){
         simg = srain_image_new();
         srain_image_set_from_url_async(simg, img_url->str, 300,
@@ -281,6 +303,7 @@ SrainSendMsg* srain_send_msg_new(const char *msg){
         gtk_container_set_border_width(GTK_CONTAINER(simg), 6);
         gtk_widget_show(GTK_WIDGET(simg));
     }
+    */
 
     return smsg;
 }
@@ -361,16 +384,11 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *m
     gtk_label_set_text(smsg->nick_label, nick);
     gtk_label_set_text(smsg->identify_label, id);
 
-    img_url = NULL;
-    markuped_msg = markup(msg, &img_url);
-    if (markuped_msg){
-        gtk_label_set_markup(smsg->msg_label, markuped_msg->str);
-        g_string_free(markuped_msg, TRUE);
-    } else {
-        gtk_label_set_text(smsg->msg_label, msg);
-    }
+    srain_msg_set_msg(SRAIN_MSG(smsg), msg);
 
     /* Image in message */
+    /*
+     * TODO: remove
     if (img_url){
         simg = srain_image_new();
         srain_image_set_from_url_async(simg, img_url->str, 300,
@@ -380,6 +398,7 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *m
         gtk_container_set_border_width(GTK_CONTAINER(simg), 6);
         gtk_widget_show(GTK_WIDGET(simg));
     }
+    */
 
     avatar_path = get_avatar_file(nick);
 

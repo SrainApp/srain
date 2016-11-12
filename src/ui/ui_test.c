@@ -12,23 +12,22 @@
 #include <assert.h>
 
 #include "ui.h"
+#include "srv.h"
 #include "log.h"
 
-int ui_test_srv_join(const char *srv_name, const char *chat_name,
-        const char *passwd){
+int ui_test_srv_join(SIGN_SRV_JOIN){
     return 0;
 }
 
-int ui_test_srv_part(const char *srv_name, const char *chat_name,
-        const char *reason){
+int ui_test_srv_part(SIGN_SRV_PART){
     return 0;
 }
 
-int ui_test_srv_send(const char *srv_name, const char *chat_name, const char *msg){
+int ui_test_srv_send(SIGN_SRV_PART){
     return 0;
 }
 
-int ui_test_srv_cmd(const char *srv_name, const char *chat_name, char *cmd, int block){
+int ui_test_srv_cmd(SIGN_SRV_CMD){
     return 0;
 }
 
@@ -54,30 +53,30 @@ void ui_test(){
     ui_set_topic_sync("irc.freenode.net", "#summer-time-record",
             "Summer Time Record （夏令时记录）");
 
-    ui_sys_msg_sync("no.exist.net", "#summer-time-record", "follback to cur chat", SYS_MSG_NORMAL);
-    ui_send_msg_sync("no.exist.net", "#summer-time-record", "msg");
-    ui_recv_msg_sync("no.exist.net", "#summer-time-record", "nick", "id", "msg");
+    ui_sys_msg_sync("no.exist.net", "#summer-time-record", "follback to cur chat", SYS_MSG_NORMAL, 0);
+    ui_send_msg_sync("no.exist.net", "#summer-time-record", "msg", 0);
+    ui_recv_msg_sync("no.exist.net", "#summer-time-record", "nick", "id", "msg", 0);
 
     ui_sys_msg_sync("irc.freenode.net", "#summer-time-record",
-            "マリー：痛いくらいに现実は 足早に駆け抜けた", SYS_MSG_NORMAL);
+            "マリー：痛いくらいに现実は 足早に駆け抜けた", SYS_MSG_NORMAL, 0);
     ui_send_msg_sync("irc.freenode.net", "#summer-time-record",
-            "マリー ナイス！");
+            "マリー ナイス！", 0);
     ui_recv_msg_sync("irc.freenode.net", "#summer-time-record",
-            "マリー", "", "えへへっ");
+            "マリー", "", "えへへっ", 0);
     ui_sys_msg_sync("irc.freenode.net", "#summer-time-record",
-            "カノ：选んだ今日は平凡で 崩れそうになる日々さ", SYS_MSG_ACTION);
+            "カノ：选んだ今日は平凡で 崩れそうになる日々さ", SYS_MSG_ACTION, 1);
     ui_send_msg_sync("irc.freenode.net", "#summer-time-record",
-            "なんかイラッとするっすね");
+            "なんかイラッとするっすね", 0);
     ui_recv_msg_sync("irc.freenode.net", "#summer-time-record",
-            "キド", "", "奇遇だな?俺もそう思った");
+            "キド", "", "奇遇だな?俺もそう思った", 0);
     ui_recv_msg_sync("irc.freenode.net", "#summer-time-record",
-            "カノ", "", "ヒドくないっ！");
+            "カノ", "", "ヒドくないっ！", 0);
     ui_sys_msg_sync("irc.freenode.net", "#summer-time-record",
-            "ヒビヤ：昨日の今日も延长戦 大人だって 臆病だ", SYS_MSG_ERROR);
+            "ヒビヤ：昨日の今日も延长戦 大人だって 臆病だ", SYS_MSG_ERROR, 0);
     ui_recv_msg_sync("irc.freenode.net", "#summer-time-record",
-            "モモ", "", "ヒビヤでうだうめい");
+            "モモ", "", "ヒビヤでうだうめい", 0);
     ui_recv_msg_sync("irc.freenode.net", "#summer-time-record",
-            "ヒビヤ", "", "バスッ!");
+            "ヒビヤ", "", "バスッ!", 0);
 
     // Test ui_add_user
     assert(ui_add_user_sync("chat.freenode.net", "#non-exist",

@@ -60,7 +60,7 @@ static int srv_session_reconnect(srv_session_t *session){
     WARN_FR("Reconnecting, session: %s", session->host);
 
     snprintf(msg, sizeof(msg), _("Reconnecting to %s ..."), session->host);
-    srv_hdr_ui_sys_msg(session->host, META_SERVER, msg, SYS_MSG_NORMAL);
+    srv_hdr_ui_sys_msg(session->host, META_SERVER, msg, SYS_MSG_NORMAL, 0);
 
     session->stat = SESS_INUSE;
     irc_disconnect(session->irc_session);
@@ -93,7 +93,7 @@ static void srv_session_err_hdr(srv_session_t *session){
             session->host, errno, errmsg);
 
     snprintf(msg, sizeof(msg), _("ERROR: %s"), errmsg);
-    srv_hdr_ui_sys_msg(session->host, META_SERVER, msg, SYS_MSG_ERROR);
+    srv_hdr_ui_sys_msg(session->host, META_SERVER, msg, SYS_MSG_ERROR, 0);
 
     /* Error occurs when session is not connnect yet */
     if (session->stat == SESS_INUSE){

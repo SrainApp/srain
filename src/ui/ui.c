@@ -33,7 +33,8 @@ typedef struct {
     char nick2[NICK_LEN];
     char msg[MSG_LEN];
     int type;
-} CommonUIData;
+    int flag;
+} UICommonData;
 
 void ui_init(int argc, char **argv){
     ui_hdr_init();
@@ -46,11 +47,11 @@ void ui_init(int argc, char **argv){
 }
 
 void ui_idle_destroy_data(void *data){
-    DBG_FR("CommonUIData %p freed", data);
+    DBG_FR("UICommonData %p freed", data);
     g_free(data);
 }
 
-int ui_idle(CommonUIData *data){
+int ui_idle(UICommonData *data){
     DBG_FR("Idle call, data: %p", data);
     DBG_FR("func: %p", data->ui_interface);
 
@@ -70,19 +71,22 @@ int ui_idle(CommonUIData *data){
         DBG_FR("ui_sys_msg_sync");
         const char *msg = data->msg;
         SysMsgType type = data->type;
-        ui_sys_msg_sync(srv_name, chat_name, msg, type);
+        SrainMsgFlag flag = data->flag;
+        ui_sys_msg_sync(srv_name, chat_name, msg, type, flag);
     }
     else if (data->ui_interface == ui_send_msg_sync){
         DBG_FR("ui_send_msg_sync");
         const char *msg = data->msg;
-        ui_send_msg_sync(srv_name, chat_name, msg);
+        SrainMsgFlag flag = data->flag;
+        ui_send_msg_sync(srv_name, chat_name, msg, flag);
     }
     else if (data->ui_interface == ui_recv_msg_sync){
         DBG_FR("ui_recv_msg_sync");
         const char *nick = data->nick;
         const char *id = data->nick2;
         const char *msg = data->msg;
-        ui_recv_msg_sync(srv_name, chat_name, nick, id, msg);
+        SrainMsgFlag flag = data->flag;
+        ui_recv_msg_sync(srv_name, chat_name, nick, id, msg, flag);
     }
     else if (data->ui_interface == ui_add_user_sync){
         DBG_FR("ui_add_user_sync");
@@ -129,9 +133,8 @@ int ui_idle(CommonUIData *data){
     } while (0)
 */
 
-void ui_add_chat(const char *srv_name, const char *chat_name,
-        const char *nick, ChatType type){
-    CommonUIData *data = g_malloc0(sizeof(CommonUIData));
+void ui_add_chat(SIGN_UI_ADD_CHAT){
+    UICommonData *data = g_malloc0(sizeof(UICommonData));
 
     g_return_if_fail(srv_name);
     g_return_if_fail(chat_name);
@@ -147,8 +150,8 @@ void ui_add_chat(const char *srv_name, const char *chat_name,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 
-void ui_rm_chat(const char *srv_name, const char *chat_name){
-    CommonUIData *data = g_malloc0(sizeof(CommonUIData));
+void ui_rm_chat(SIGN_UI_RM_CHAT){
+    UICommonData *data = g_malloc0(sizeof(UICommonData));
 
     g_return_if_fail(srv_name);
     g_return_if_fail(chat_name);
@@ -161,9 +164,8 @@ void ui_rm_chat(const char *srv_name, const char *chat_name){
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 
-void ui_sys_msg(const char *srv_name, const char *chat_name,
-        const char *msg, SysMsgType type){
-    CommonUIData *data = g_malloc0(sizeof(CommonUIData));
+void ui_sys_msg(SIGN_UI_SYS_MSG){
+    UICommonData *data = g_malloc0(sizeof(UICommonData));
 
     g_return_if_fail(srv_name);
     g_return_if_fail(chat_name);
@@ -174,14 +176,14 @@ void ui_sys_msg(const char *srv_name, const char *chat_name,
     strncpy(data->chat_name, chat_name, sizeof(data->chat_name));
     strncpy(data->msg, msg, sizeof(data->msg));
     data->type = type;
+    data->flag = flag;
 
     gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 
-void ui_send_msg(const char *srv_name, const char *chat_name,
-        const char *msg){
-    CommonUIData *data = g_malloc0(sizeof(CommonUIData));
+void ui_send_msg(SIGN_UI_SEND_MSG){
+    UICommonData *data = g_malloc0(sizeof(UICommonData));
 
     g_return_if_fail(srv_name);
     g_return_if_fail(chat_name);
@@ -191,14 +193,14 @@ void ui_send_msg(const char *srv_name, const char *chat_name,
     strncpy(data->srv_name, srv_name, sizeof(data->srv_name));
     strncpy(data->chat_name, chat_name, sizeof(data->chat_name));
     strncpy(data->msg, msg, sizeof(data->msg));
+    data->flag = flag;
 
     gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 
-void ui_recv_msg(const char *srv_name, const char *chat_name,
-        const char *nick, const char *id, const char *msg){
-    CommonUIData *data = g_malloc0(sizeof(CommonUIData));
+void ui_recv_msg(SIGN_UI_RECV_MSG){
+    UICommonData *data = g_malloc0(sizeof(UICommonData));
 
     g_return_if_fail(srv_name);
     g_return_if_fail(chat_name);
@@ -212,14 +214,14 @@ void ui_recv_msg(const char *srv_name, const char *chat_name,
     strncpy(data->nick, nick, sizeof(data->nick));
     strncpy(data->nick2, id, sizeof(data->nick2));
     strncpy(data->msg, msg, sizeof(data->msg));
+    data->flag = flag;
 
     gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 
-void ui_add_user(const char *srv_name, const char *chat_name,
- const char *nick, UserType type){
-    CommonUIData *data = g_malloc0(sizeof(CommonUIData));
+void ui_add_user(SIGN_UI_ADD_USER){
+    UICommonData *data = g_malloc0(sizeof(UICommonData));
 
     g_return_if_fail(srv_name);
     g_return_if_fail(chat_name);
@@ -235,9 +237,8 @@ void ui_add_user(const char *srv_name, const char *chat_name,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 
-void ui_rm_user(const char *srv_name, const char *chat_name,
-        const char *nick){
-    CommonUIData *data = g_malloc0(sizeof(CommonUIData));
+void ui_rm_user(SIGN_UI_RM_USER){
+    UICommonData *data = g_malloc0(sizeof(UICommonData));
 
     g_return_if_fail(srv_name);
     g_return_if_fail(chat_name);
@@ -252,9 +253,8 @@ void ui_rm_user(const char *srv_name, const char *chat_name,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 
-void ui_ren_user(const char *srv_name, const char *chat_name,
-        const char *old_nick, const char *new_nick, UserType type){
-    CommonUIData *data = g_malloc0(sizeof(CommonUIData));
+void ui_ren_user(SIGN_UI_REN_USER){
+    UICommonData *data = g_malloc0(sizeof(UICommonData));
 
     g_return_if_fail(srv_name);
     g_return_if_fail(chat_name);
@@ -272,9 +272,8 @@ void ui_ren_user(const char *srv_name, const char *chat_name,
             (GSourceFunc)ui_idle, data, ui_idle_destroy_data);
 }
 
-void ui_set_topic(const char *srv_name, const char *chat_name,
-        const char *topic){
-    CommonUIData *data = g_malloc0(sizeof(CommonUIData));
+void ui_set_topic(SIGN_UI_SET_TOPIC){
+    UICommonData *data = g_malloc0(sizeof(UICommonData));
 
     g_return_if_fail(srv_name);
     g_return_if_fail(chat_name);
@@ -301,8 +300,7 @@ void ui_set_topic(const char *srv_name, const char *chat_name,
  *
  * @return 0 if successful, -1 if failed
  */
-int ui_add_chat_sync(const char *srv_name, const char *chat_name,
-        const char *nick, ChatType type){
+int ui_add_chat_sync(SIGN_UI_ADD_CHAT){
     SrainChat *chat;
     chat = srain_window_add_chat(srain_win, srv_name, chat_name, type);
 
@@ -322,7 +320,7 @@ int ui_add_chat_sync(const char *srv_name, const char *chat_name,
  *
  * @return 0 if successful, -1 if failed
  */
-int ui_rm_chat_sync(const char *srv_name, const char *chat_name){
+int ui_rm_chat_sync(SIGN_UI_RM_CHAT){
     GList *chats;
     SrainChat *chat;
 
@@ -355,8 +353,7 @@ int ui_rm_chat_sync(const char *srv_name, const char *chat_name){
  * @param type SrainStackSidebar should be updated
  *             when type = SYS_MSG_ACTION or SYS_MSG_ERROR
  */
-void ui_sys_msg_sync(const char *srv_name, const char *chat_name,
-        const char *msg, SysMsgType type){
+void ui_sys_msg_sync(SIGN_UI_SYS_MSG){
     int is_mentioned;
     int is_noitfy;
     const char *your_nick;
@@ -417,7 +414,7 @@ void ui_sys_msg_sync(const char *srv_name, const char *chat_name,
  * @param chat This chatnel must be existent
  * @param msg
  */
-void ui_send_msg_sync(const char *srv_name, const char *chat_name, const char *msg){
+void ui_send_msg_sync(SIGN_UI_SEND_MSG){
     SrainChat *chat;
     SrainMsgList *list;
 
@@ -439,8 +436,7 @@ void ui_send_msg_sync(const char *srv_name, const char *chat_name, const char *m
  * @param id
  * @param msg
  */
-void ui_recv_msg_sync(const char *srv_name, const char *chat_name,
-        const char *nick, const char *id, const char *msg){
+void ui_recv_msg_sync(SIGN_UI_RECV_MSG){
     int is_mentioned = 0;
     int is_noitfy = 0;
     const char *your_nick;
@@ -495,8 +491,7 @@ void ui_recv_msg_sync(const char *srv_name, const char *chat_name,
  *
  * @return 0 if successful, -1 if failed
  */
-int ui_add_user_sync(const char *srv_name, const char *chat_name,
-        const char *nick, UserType type){
+int ui_add_user_sync(SIGN_UI_ADD_USER){
     int res;
     SrainChat *chat;
     SrainUserList *list;
@@ -527,8 +522,7 @@ int ui_add_user_sync(const char *srv_name, const char *chat_name,
  *
  * @return 0 if successful, -1 if failed
  */
-int ui_rm_user_sync(const char *srv_name, const char *chat_name,
-        const char *nick){
+int ui_rm_user_sync(SIGN_UI_RM_USER){
     int res;
     SrainChat *chat;
     SrainUserList *list;
@@ -561,8 +555,7 @@ int ui_rm_user_sync(const char *srv_name, const char *chat_name,
  * @param msg When nick was renamed in a chatnel, send `reason`
  *          to this chatnel using `ui_sys_msg()`
  */
-void ui_ren_user_sync(const char *srv_name, const char *chat_name,
-        const char *old_nick, const char *new_nick, UserType type){
+void ui_ren_user_sync(SIGN_UI_REN_USER){
     SrainChat *chat;
     SrainUserList *list;
     SrainEntryCompletion *comp;
@@ -592,7 +585,7 @@ void ui_ren_user_sync(const char *srv_name, const char *chat_name,
  * @param chat_name
  * @param topic
  */
-void ui_set_topic_sync(const char *srv_name, const char *chat_name, const char *topic){
+void ui_set_topic_sync(SIGN_UI_SET_TOPIC){
     SrainChat *chat;
 
     chat = srain_window_get_chat_by_name(srain_win, srv_name, chat_name);

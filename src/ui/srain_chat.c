@@ -192,13 +192,13 @@ static void input_entry_on_activate(SrainChat *chat){
         ui_send_msg_sync(
                     srain_chat_get_srv_name(chat),
                     srain_chat_get_chat_name(chat),
-                    input);
+                    input, 0);
         if (ui_hdr_srv_send(chat, input) < 0){
             ui_sys_msg_sync(
                     srain_chat_get_srv_name(chat),
                     srain_chat_get_chat_name(chat),
                     _("Failed to send message"),
-                    SYS_MSG_ERROR);
+                    SYS_MSG_ERROR, 0);
         }
     }
 

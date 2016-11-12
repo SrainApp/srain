@@ -55,7 +55,7 @@ void _rc_read(){
 
                 char msg[512];
                 snprintf(msg, sizeof(msg), _("Command \"%s\" failed"), line);
-                ui_sys_msg(_("Null"), "", msg, SYS_MSG_ERROR);
+                ui_sys_msg(_("Null"), "", msg, SYS_MSG_ERROR, 0);
                 break;
             }
         }

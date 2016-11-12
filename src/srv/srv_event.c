@@ -120,7 +120,7 @@ void srv_event_nick(irc_session_t *irc_session, const char *event,
             srv_session_add_user(sess, chan->name, new_nick);
 
             srv_hdr_ui_ren_user(sess->host, chan->name, origin, new_nick, 0);
-            srv_hdr_ui_sys_msg(sess->host, chan->name, msg, SYS_MSG_NORMAL);
+            srv_hdr_ui_sys_msg(sess->host, chan->name, msg, SYS_MSG_NORMAL, 0);
 
             chat_log_log(sess->host, chan->name, msg);
         }
@@ -155,7 +155,7 @@ void srv_event_quit(irc_session_t *irc_session, const char *event,
             srv_session_rm_user(sess, chan->name, origin);
 
             srv_hdr_ui_rm_user(sess->host, chan->name, origin);
-            srv_hdr_ui_sys_msg(sess->host, chan->name, msg, SYS_MSG_NORMAL);
+            srv_hdr_ui_sys_msg(sess->host, chan->name, msg, SYS_MSG_NORMAL, 0);
 
             chat_log_log(sess->host, chan->name, msg);
         }
@@ -198,7 +198,7 @@ void srv_event_join(irc_session_t *irc_session, const char *event,
     srv_hdr_ui_add_user(sess->host, chan, origin, USER_CHIGUA);
 
     snprintf(msg, sizeof(msg), _("%s has joined %s"), origin, chan);
-    srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_NORMAL);
+    srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_NORMAL, 0);
     chat_log_log(sess->host, chan, msg);
 }
 
@@ -220,7 +220,7 @@ void srv_event_part(irc_session_t *irc_session, const char *event,
     srv_session_rm_user(sess, chan, origin);
 
     snprintf(msg, sizeof(msg), _("%s has left %s: %s"), origin, chan, reason);
-    srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_NORMAL);
+    srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_NORMAL, 0);
     chat_log_log(sess->host, chan, msg);
 
     /* YOU has left a channel */
@@ -247,7 +247,7 @@ void srv_event_mode(irc_session_t *irc_session, const char *event,
     snprintf(msg, sizeof(msg), _("mode %s %s %s by %s"),
             chan, mode, mode_args, origin);
 
-    srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_NORMAL);
+    srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_NORMAL, 0);
     chat_log_log(sess->host, chan, msg);
 
     if (mode[0] == '-'){
@@ -298,7 +298,7 @@ void srv_event_umode(irc_session_t *irc_session, const char *event,
 
     snprintf(msg, sizeof(msg), _("mode %s %s by %s"), origin, mode, origin);
 
-    srv_hdr_ui_sys_msg(sess->host, "", msg, SYS_MSG_NORMAL);
+    srv_hdr_ui_sys_msg(sess->host, "", msg, SYS_MSG_NORMAL, 0);
     // TODO: How to log it?
     // chat_log_log(sess->host, chan, msg);
 }
@@ -319,7 +319,7 @@ void srv_event_topic(irc_session_t *irc_session, const char *event,
     srv_hdr_ui_set_topic(sess->host, chan, topic);
 
     snprintf(msg, sizeof(msg), _("Topic for %s is \"%s\""), chan, topic);
-    srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_NORMAL);
+    srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_NORMAL, 0);
     chat_log_log(sess->host, chan, msg);
 }
 
@@ -339,7 +339,7 @@ void srv_event_kick(irc_session_t *irc_session, const char *event,
 
     snprintf(msg, sizeof(msg), _("%s are kicked from %s by %s: %s"),
             kick_nick, chan, origin, reason);
-    srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_ERROR);
+    srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_ERROR, 0);
     chat_log_log(sess->host, chan, msg);
 
     srv_hdr_ui_rm_user(sess->host, chan, kick_nick);
@@ -372,14 +372,14 @@ void srv_event_channel(irc_session_t *irc_session, const char *event,
             if (!plugin_avatar_has_queried(nick))
                 srv_session_who(sess, nick);
 
-            srv_hdr_ui_recv_msg(sess->host, chan, nick, origin, vmsg);
+            srv_hdr_ui_recv_msg(sess->host, chan, nick, origin, vmsg, 0);
         }
     } else {
         if (!filter_is_ignore(origin)){
             if (!plugin_avatar_has_queried(origin))
                 srv_session_who(sess, origin);
 
-            srv_hdr_ui_recv_msg(sess->host, chan, origin, "", vmsg);
+            srv_hdr_ui_recv_msg(sess->host, chan, origin, "", vmsg, 0);
         }
     }
 }
@@ -400,7 +400,7 @@ void srv_event_privmsg(irc_session_t *irc_session, const char *event,
     chat_log_fmt(sess->host, origin, "<%s> %s", origin, msg);
 
     if (!filter_is_ignore(origin))
-        srv_hdr_ui_recv_msg(sess->host, origin, origin, "", msg);
+        srv_hdr_ui_recv_msg(sess->host, origin, origin, "", msg, 0);
 
     free(msg);
 }
@@ -424,9 +424,9 @@ void srv_event_notice(irc_session_t *irc_session, const char *event,
      */
     if (strcmp(origin, "NickServ") == 0
             || strcmp(origin, "ChanServ") == 0){
-        srv_hdr_ui_recv_msg(sess->host, origin, origin, sess->host, msg);
+        srv_hdr_ui_recv_msg(sess->host, origin, origin, sess->host, msg, 0);
     } else {
-        srv_hdr_ui_recv_msg(sess->host, origin, origin, "", msg);
+        srv_hdr_ui_recv_msg(sess->host, origin, origin, "", msg, 0);
     }
     chat_log_fmt(sess->host, origin, "[%s] %s", origin, msg);
 
@@ -447,7 +447,7 @@ void srv_event_channel_notice(irc_session_t *irc_session, const char *event,
 
     strip(msg);
 
-    srv_hdr_ui_recv_msg(sess->host, chan, origin, "", msg);
+    srv_hdr_ui_recv_msg(sess->host, chan, origin, "", msg, 0);
     chat_log_fmt(sess->host, chan, "[%s] %s", origin, msg);
 
     free(msg);
@@ -465,7 +465,7 @@ void srv_event_invite(irc_session_t *irc_session, const char *event,
     const char *chan = count >= 2 ? params[1] : "";
 
     snprintf(msg, sizeof(msg), _("%s invites you into %s"), origin, chan);
-    srv_hdr_ui_sys_msg(sess->host, "", msg, SYS_MSG_NORMAL);
+    srv_hdr_ui_sys_msg(sess->host, "", msg, SYS_MSG_NORMAL, 0);
 
     // TODO: How to log it?
     // chat_log_log(sess->host, chan, msg);
@@ -486,7 +486,7 @@ void srv_event_ctcp_action(irc_session_t *irc_session, const char *event,
     strip(msg);
 
     snprintf(buf, sizeof(buf), _("*** %s %s ***"), origin, msg);
-    srv_hdr_ui_sys_msg(sess->host, chan, buf, SYS_MSG_ACTION);
+    srv_hdr_ui_sys_msg(sess->host, chan, buf, SYS_MSG_ACTION, 0);
     chat_log_log(sess->host, chan, buf);
 
     free(msg);
@@ -526,7 +526,7 @@ void srv_event_numeric (irc_session_t *irc_session, unsigned int event,
                     g_string_append_printf(buf, "%s ", params[i++]);
                 }
                 srv_hdr_ui_recv_msg(sess->host, META_SERVER,
-                        origin, sess->host, buf->str);
+                        origin, sess->host, buf->str, 0);
                 g_string_free(buf, TRUE);
                 break;
             }
@@ -599,7 +599,7 @@ void srv_event_numeric (irc_session_t *irc_session, unsigned int event,
                 CHECK_COUNT(6);
                 snprintf(buf, sizeof(buf), _("%s <%s@%s> %s"), params[1], params[2],
                         params[3], params[5]);
-                srv_hdr_ui_sys_msg(sess->host, "", buf, SYS_MSG_NORMAL);
+                srv_hdr_ui_sys_msg(sess->host, "", buf, SYS_MSG_NORMAL, 0);
                 const char *nick = params[1];
                 const char *realname = params[5];
                 /* Use Real Name as avatar token :-( */
@@ -609,35 +609,35 @@ void srv_event_numeric (irc_session_t *irc_session, unsigned int event,
         case LIBIRC_RFC_RPL_WHOISCHANNELS:
             CHECK_COUNT(3);
             snprintf(buf, sizeof(buf), _("%s is member of %s"), params[1], params[2]);
-            srv_hdr_ui_sys_msg(sess->host, "", buf, SYS_MSG_NORMAL);
+            srv_hdr_ui_sys_msg(sess->host, "", buf, SYS_MSG_NORMAL, 0);
             break;
         case LIBIRC_RFC_RPL_WHOISSERVER:
             CHECK_COUNT(4);
             snprintf(buf, sizeof(buf), _("%s is attached to %s at \"%s\""),
                     params[1], params[2], params[3]);
-            srv_hdr_ui_sys_msg(sess->host, "", buf, SYS_MSG_NORMAL);
+            srv_hdr_ui_sys_msg(sess->host, "", buf, SYS_MSG_NORMAL, 0);
             break;
         case LIBIRC_RFC_RPL_WHOISIDLE:
             CHECK_COUNT(5); // TODO
             snprintf(buf, sizeof(buf), _("%s is idle for %s seconds since %s"),
                     params[1], params[2], params[3]);
-            srv_hdr_ui_sys_msg(sess->host, "", buf, SYS_MSG_NORMAL);
+            srv_hdr_ui_sys_msg(sess->host, "", buf, SYS_MSG_NORMAL, 0);
             break;
         case NORFC1459_RPL_WHOWAS_TIME:
             CHECK_COUNT(4);
             snprintf(buf, sizeof(buf), _("%s %s %s"),
                     params[1], params[3], params[2]);
-            srv_hdr_ui_sys_msg(sess->host, "", buf, SYS_MSG_NORMAL);
+            srv_hdr_ui_sys_msg(sess->host, "", buf, SYS_MSG_NORMAL, 0);
             break;
         case NORFC1459_RPL_WHOISHOST:
         case NORFC1459_RPL_WHOISSECURE:
             CHECK_COUNT(3);
             snprintf(buf, sizeof(buf), _("%s %s"), params[1], params[2]);
-            srv_hdr_ui_sys_msg(sess->host, "", buf, SYS_MSG_NORMAL);
+            srv_hdr_ui_sys_msg(sess->host, "", buf, SYS_MSG_NORMAL, 0);
             break;
         case LIBIRC_RFC_RPL_ENDOFWHOIS:
             CHECK_COUNT(3);
-            srv_hdr_ui_sys_msg(sess->host, "", params[2], SYS_MSG_NORMAL);
+            srv_hdr_ui_sys_msg(sess->host, "", params[2], SYS_MSG_NORMAL, 0);
             break;
 
             /************************ NAMES message ************************/
@@ -662,7 +662,7 @@ void srv_event_numeric (irc_session_t *irc_session, unsigned int event,
                     char msg[512];
 
                     snprintf(msg, sizeof(msg), _("ERROR[%3d]: %s"), event, params[count-1]);
-                    srv_hdr_ui_sys_msg(sess->host, "", msg, SYS_MSG_ERROR);
+                    srv_hdr_ui_sys_msg(sess->host, "", msg, SYS_MSG_ERROR, 0);
                     return;
                 }
 

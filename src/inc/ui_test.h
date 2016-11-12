@@ -3,10 +3,10 @@
 
 #include "srv.h"
 
-DECLARE_SRVJoinFunc(ui_test_srv_join);
-DECLARE_SRVPartFunc(ui_test_srv_part);
-DECLARE_SRVSendFunc(ui_test_srv_send);
-DECLARE_SRVCmdFunc(ui_test_srv_cmd);
+int ui_test_srv_join(SIGN_SRV_JOIN);
+int ui_test_srv_part(SIGN_SRV_PART);
+int ui_test_srv_send(SIGN_SRV_SEND);
+int ui_test_srv_cmd(SIGN_SRV_CMD);
 
 void ui_test();
 

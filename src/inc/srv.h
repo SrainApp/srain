@@ -1,17 +1,18 @@
 #ifndef __SRV_H
 #define __SRV_H
 
-/* Interface function pointers */
-typedef int (*SRVJoinFunc) (const char *srv_name, const char *chan_name, const char *passwd);
-typedef int (*SRVPartFunc) (const char *srv_name, const char *chan_name);
-typedef int (*SRVSendFunc) (const char *srv_name, const char *target, const char *msg);
-typedef int (*SRVCmdFunc) (const char *srv_name, const char *source, char *cmd, int block);
-
 /* Macros for defining interface function */
-#define DECLARE_SRVJoinFunc(func) int func (const char *srv_name, const char *chan_name, const char *passwd)
-#define DECLARE_SRVPartFunc(func) int func (const char *srv_name, const char *chan_name);
-#define DECLARE_SRVSendFunc(func) int func (const char *srv_name, const char *target, const char *msg)
-#define DECLARE_SRVCmdFunc(func) int func (const char *srv_name, const char *source, char *cmd, int block)
+#define SIGN_SRV_JOIN const char *srv_name, const char *chan_name, const char *passwd
+#define SIGN_SRV_PART const char *srv_name, const char *chan_name
+#define SIGN_SRV_SEND const char *srv_name, const char *target, const char *msg
+#define SIGN_SRV_CMD const char *srv_name, const char *source, char *cmd, int block
+
+
+/* Interface function pointers */
+typedef int (*SRVJoinFunc) (SIGN_SRV_JOIN);
+typedef int (*SRVPartFunc) (SIGN_SRV_PART);
+typedef int (*SRVSendFunc) (SIGN_SRV_SEND);
+typedef int (*SRVCmdFunc)  (SIGN_SRV_CMD);
 
 void srv_init();
 void srv_finalize();
@@ -20,9 +21,9 @@ int srv_connect(const char *host, int port, const char *passwd,
 int srv_quit(const char *srv_name, const char *reason);
 
 /* SRV interface functions, used by other module */
-DECLARE_SRVJoinFunc(srv_join);
-DECLARE_SRVPartFunc(srv_part);
-DECLARE_SRVSendFunc(srv_send);
-DECLARE_SRVCmdFunc(srv_cmd);
+int srv_join (SIGN_SRV_JOIN);
+int srv_part (SIGN_SRV_PART);
+int srv_send (SIGN_SRV_SEND);
+int srv_cmd  (SIGN_SRV_CMD);
 
 #endif /* __SRV_H */

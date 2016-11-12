@@ -144,7 +144,7 @@ static int on_command_msg(Command *cmd, void *user_data){
     srv_session_t *session = user_data;
 
     if (!target || !msg) return -1;
-    srv_hdr_ui_send_msg(session->host, target, msg);
+    srv_hdr_ui_send_msg(session->host, target, msg, 0);
     return srv_session_send(session, target, msg);
 }
 
@@ -156,7 +156,7 @@ static int on_command_me(Command *cmd, void *user_data){
 
     char buf[512];
     snprintf(buf, sizeof(buf), _("*** %s %s ***"), session->nickname, msg);
-    srv_hdr_ui_sys_msg(session->host, "", buf, SYS_MSG_ACTION);
+    srv_hdr_ui_sys_msg(session->host, "", buf, SYS_MSG_ACTION, 0);
     // FIXME
     return srv_session_me(session, "", msg);
 }
@@ -335,48 +335,48 @@ static CommandBind cmd_binds[] = {
 void on_unknown_cmd(const char *cmd, void *user_data){
     srv_session_t *session = user_data;
 
-    srv_hdr_ui_sys_msg(session->host, "", "No such command '%s'", SYS_MSG_ERROR);
+    srv_hdr_ui_sys_msg(session->host, "", "No such command '%s'", SYS_MSG_ERROR, 0);
 }
 
 void on_unknown_opt(Command *cmd, const char *opt, void *user_data){
     srv_session_t *session = user_data;
 
-    srv_hdr_ui_sys_msg(session->host, "", "No such option '%s'", SYS_MSG_ERROR);
+    srv_hdr_ui_sys_msg(session->host, "", "No such option '%s'", SYS_MSG_ERROR, 0);
 }
 
 void on_missing_opt_val(Command *cmd, const char *opt, void *user_data){
     srv_session_t *session = user_data;
 
-    srv_hdr_ui_sys_msg(session->host, "", "Option '%s' missing value", SYS_MSG_ERROR);
+    srv_hdr_ui_sys_msg(session->host, "", "Option '%s' missing value", SYS_MSG_ERROR, 0);
 }
 
 void on_too_many_opt(Command *cmd, void *user_data){
     srv_session_t *session = user_data;
 
-    srv_hdr_ui_sys_msg(session->host, "", "Too many options", SYS_MSG_ERROR);
+    srv_hdr_ui_sys_msg(session->host, "", "Too many options", SYS_MSG_ERROR, 0);
 }
 
 void on_too_many_arg(Command *cmd, void *user_data){
     srv_session_t *session = user_data;
 
-    srv_hdr_ui_sys_msg(session->host, "", "Too many arguments", SYS_MSG_ERROR);
+    srv_hdr_ui_sys_msg(session->host, "", "Too many arguments", SYS_MSG_ERROR, 0);
 }
 
 void on_callback_fail(Command *cmd, void *user_data){
     srv_session_t *session = user_data;
 
-    srv_hdr_ui_sys_msg(session->host, "", "Command '%s' failed", SYS_MSG_ERROR);
+    srv_hdr_ui_sys_msg(session->host, "", "Command '%s' failed", SYS_MSG_ERROR, 0);
 }
 
 
 static CommandContext cmd_context = {
-    cmd_binds,
-    on_unknown_cmd,
-    on_unknown_opt,
-    on_missing_opt_val,
-    on_too_many_opt,
-    on_too_many_arg,
-    on_callback_fail
+    .binds = cmd_binds,
+    .on_unknown_cmd = on_unknown_cmd,
+    .on_unknown_opt = on_unknown_opt,
+    .on_missing_opt_val = on_missing_opt_val,
+    .on_too_many_opt = on_too_many_opt,
+    .on_too_many_arg = on_too_many_arg,
+    .on_callback_fail = on_callback_fail,
 };
 
 void srv_session_cmd_init(){

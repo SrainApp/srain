@@ -5,14 +5,14 @@
 
 void srv_test();
 
-DECLARE_UIAddChatFunc(srv_test_ui_add_chat);
-DECLARE_UIRmChatFunc(srv_test_ui_rm_chat);
-DECLARE_UISysMsgFunc(srv_test_ui_sys_msg);
-DECLARE_UISendMsgFunc(srv_test_ui_send_msg);
-DECLARE_UIRecvMsgFunc(srv_test_ui_recv_msg);
-DECLARE_UIAddUserFunc(srv_test_ui_add_user);
-DECLARE_UIRmUserFunc(srv_test_ui_rm_user);
-DECLARE_UIRenUserFunc(srv_test_ui_ren_user);
-DECLARE_UISetTopicFunc(srv_test_ui_set_topic);
+void srv_test_ui_add_chat  (SIGN_UI_ADD_CHAT);
+void srv_test_ui_rm_chat   (SIGN_UI_RM_CHAT);
+void srv_test_ui_sys_msg   (SIGN_UI_SYS_MSG);
+void srv_test_ui_send_msg  (SIGN_UI_SEND_MSG);
+void srv_test_ui_recv_msg  (SIGN_UI_RECV_MSG);
+void srv_test_ui_add_user  (SIGN_UI_ADD_USER);
+void srv_test_ui_rm_user   (SIGN_UI_RM_USER);
+void srv_test_ui_ren_user  (SIGN_UI_REN_USER);
+void srv_test_ui_set_topic (SIGN_UI_SET_TOPIC);
 
 #endif /* __SRV_TEST */

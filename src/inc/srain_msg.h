@@ -3,7 +3,28 @@
 
 #include <gtk/gtk.h>
 
+/* ================ SRAIN_SRAIN_MSG ================ */
+
+typedef int SrainMsgFlag;
+
+#define SRAIN_MSG_MENTIONED 0x1
+
+struct _SrainMsg {
+    GtkBox parent;
+    SrainMsgFlag flag;
+    GtkLabel *msg_label;
+};
+
+typedef struct _SrainMsg SrainMsg;
+
+#define SRAIN_MSG(obj) ((SrainMsg *) obj)
+#define SRAIN_IS_MSG(obj) \
+    (SRIAN_IS_SYS_MSG(obj) || \
+     SRIAN_IS_SEND_MSG(obj) || \
+     SRIAN_IS_RECV_MSG(obj))
+
 /* ================ SRAIN_SYS_MSG ================ */
+
 typedef enum {
     SYS_MSG_NORMAL,
     SYS_MSG_ERROR,
@@ -13,6 +34,7 @@ typedef enum {
 
 struct _SrainSysMsg {
     GtkBox parent;
+    SrainMsgFlag flag;
     GtkLabel *msg_label;
 };
 
@@ -33,9 +55,11 @@ SrainSysMsg* srain_sys_msg_new(const char *msg, SysMsgType type);
 /* ================ SRAIN_SEND_MSG ================ */
 struct _SrainSendMsg {
     GtkBox parent;
-    GtkBox *padding_box;
+    SrainMsgFlag flag;
     GtkLabel *msg_label;
     GtkLabel *time_label;
+
+    GtkBox *padding_box;
     GString *image_path;
 };
 
@@ -56,10 +80,12 @@ SrainSendMsg *srain_send_msg_new(const char *msg);
 /* ================ SRAIN_RECV_MSG ================ */
 struct _SrainRecvMsg {
     GtkBox parent;
-    GtkImage *avatar_image;
-    GtkBox *padding_box;
+    SrainMsgFlag flag;
     GtkLabel *msg_label;
     GtkLabel *time_label;
+
+    GtkImage *avatar_image;
+    GtkBox *padding_box;
     GString *image_path;
     GtkLabel *nick_label;
     GtkLabel *identify_label;
