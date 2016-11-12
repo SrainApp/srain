@@ -16,21 +16,26 @@
 #include "log.h"
 
 int ui_test_srv_join(SIGN_SRV_JOIN){
+    LOG_FR("srv_name: %s, chan_name: %s, passwd: %s",
+            srv_name, chan_name, passwd);
     return 0;
 }
 
 int ui_test_srv_part(SIGN_SRV_PART){
+    LOG_FR("srv_name: %s, chan_name: %s", srv_name, chan_name);
     return 0;
 }
 
-int ui_test_srv_send(SIGN_SRV_PART){
+int ui_test_srv_send(SIGN_SRV_SEND){
+    LOG_FR("srv_name: %s, target: %s, msg: '%s'", srv_name, target, msg);
     return 0;
 }
 
 int ui_test_srv_cmd(SIGN_SRV_CMD){
+    LOG_FR("srv_name: %s, source: %s, cmd: '%s', block: %d",
+            srv_name, source, cmd, block);
     return 0;
 }
-
 
 void ui_test(){
     // TODO: add assert

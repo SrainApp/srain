@@ -1,4 +1,5 @@
 #include "srv_hdr.h"
+#include "srv_session.h"
 #include "srv_test.h"
 
 #include "log.h"
@@ -25,4 +26,16 @@ void srv_hdr_init(){
     srv_hdr_ui_ren_user = ui_ren_user;
     srv_hdr_ui_set_topic = ui_set_topic;
 #endif
+}
+
+void srv_hdr_ui_sys_msgf(SIGN_UI_CHAT_ID, SysMsgType type, SrainMsgFlag flag,
+        const char *fmt, ...) {
+    char buf[MSG_LEN];
+    va_list args;
+
+    va_start(args, fmt);
+    vsnprintf(buf, sizeof(buf), fmt, args);
+    va_end(args);
+
+    srv_hdr_ui_sys_msg(srv_name, chat_name, buf, type, flag);
 }

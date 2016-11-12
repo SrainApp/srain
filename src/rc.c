@@ -17,7 +17,7 @@
 #include <sys/stat.h>
 
 #include "ui.h"
-#include "ui_hdr.h"
+#include "srv.h"
 
 #include "meta.h"
 #include "i18n.h"
@@ -50,7 +50,7 @@ void _rc_read(){
         if (line){
             strtok(line, "\n");
             LOG_FR("Read: '%s'", line);
-            if (ui_hdr_srv_cmd(NULL, line, 1) < 0){
+            if (srv_cmd(NULL, NULL, line, 1) < 0){
                 ERR_FR("Command failed: %s", line);
 
                 char msg[512];

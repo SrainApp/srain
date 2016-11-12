@@ -114,8 +114,11 @@ static int create_user_file(){
 }
 
 void quit(){
-    srv_finalize();
     plugin_finalize();
+
+#ifdef IRC_TEST
+    srv_finalize();
+#endif
 
     exit(0);
 }

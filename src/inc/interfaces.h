@@ -1,16 +1,21 @@
 #ifndef __INTERFACE_H
 #define __INTERFACE_H
 
+/* For ChatType, SysMsgType, UserType, SrainMsgFlag */
+#include "srain_chat.h"
+#include "srain_msg.h"
+#include "srain_user_list.h"
+
 #define SIGN_UI_CHAT_ID const char *srv_name, const char *chat_name
 
-#define SIGN_UI_ADD_CHAT  SIGN_UI_CHAT_ID, const char *nick, int type
+#define SIGN_UI_ADD_CHAT  SIGN_UI_CHAT_ID, const char *nick, ChatType type
 #define SIGN_UI_RM_CHAT   SIGN_UI_CHAT_ID
-#define SIGN_UI_SYS_MSG   SIGN_UI_CHAT_ID, const char *msg, int type, int flag
-#define SIGN_UI_SEND_MSG  SIGN_UI_CHAT_ID, const char *msg, int flag
-#define SIGN_UI_RECV_MSG  SIGN_UI_CHAT_ID, const char *nick, const char *id, const char *msg, int flag
-#define SIGN_UI_ADD_USER  SIGN_UI_CHAT_ID, const char *nick, int type
+#define SIGN_UI_SYS_MSG   SIGN_UI_CHAT_ID, const char *msg, SysMsgType type, SrainMsgFlag flag
+#define SIGN_UI_SEND_MSG  SIGN_UI_CHAT_ID, const char *msg, SrainMsgFlag flag
+#define SIGN_UI_RECV_MSG  SIGN_UI_CHAT_ID, const char *nick, const char *id, const char *msg, SrainMsgFlag flag
+#define SIGN_UI_ADD_USER  SIGN_UI_CHAT_ID, const char *nick, UserType type
 #define SIGN_UI_RM_USER   SIGN_UI_CHAT_ID, const char *nick
-#define SIGN_UI_REN_USER  SIGN_UI_CHAT_ID, const char *old_nick, const char *new_nick, int type
+#define SIGN_UI_REN_USER  SIGN_UI_CHAT_ID, const char *old_nick, const char *new_nick, UserType type
 #define SIGN_UI_SET_TOPIC SIGN_UI_CHAT_ID, const char *topic
 
 typedef void (*UIAddChatFunc)   (SIGN_UI_ADD_CHAT);

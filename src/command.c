@@ -41,7 +41,9 @@ static void command_free(Command *cmd){
 static int get_arg(char *ptr, char **start, char **end){
     *start = strtok(ptr, " ");
     *end = strtok(NULL, "");
-    *end = g_strchug(*end);  // Remove leading whitespace
+    if (*end != NULL){
+        *end = g_strchug(*end);  // Remove leading whitespace
+    }
 
     if (*start == NULL){
         return -1;

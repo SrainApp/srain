@@ -3,10 +3,6 @@
 
 #include "interfaces.h"
 
-#include "srain_chat.h"
-#include "srain_msg.h"
-#include "srain_user_list.h"
-
 void ui_init(int argc, char **argv);
 
 /* UI interface functions, used by other module */
