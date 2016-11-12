@@ -1,18 +1,7 @@
 #ifndef __SRV_H
 #define __SRV_H
 
-/* Macros for defining interface function */
-#define SIGN_SRV_JOIN const char *srv_name, const char *chan_name, const char *passwd
-#define SIGN_SRV_PART const char *srv_name, const char *chan_name
-#define SIGN_SRV_SEND const char *srv_name, const char *target, const char *msg
-#define SIGN_SRV_CMD const char *srv_name, const char *source, char *cmd, int block
-
-
-/* Interface function pointers */
-typedef int (*SRVJoinFunc) (SIGN_SRV_JOIN);
-typedef int (*SRVPartFunc) (SIGN_SRV_PART);
-typedef int (*SRVSendFunc) (SIGN_SRV_SEND);
-typedef int (*SRVCmdFunc)  (SIGN_SRV_CMD);
+#include "interfaces.h"
 
 void srv_init();
 void srv_finalize();
