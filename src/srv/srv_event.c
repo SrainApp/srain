@@ -369,16 +369,17 @@ void srv_event_channel(irc_session_t *irc_session, const char *event,
     /* A message sent by relay bot */
     if (strlen(nick) > 0){
         if (!filter_is_ignore(nick)){
-            if (!plugin_avatar_has_queried(nick))
-                srv_session_who(sess, nick);
+            if (!plugin_avatar_has_queried(nick)) srv_session_who(sess, nick);
 
-            srv_hdr_ui_recv_msg(sess->host, chan, nick, origin, vmsg, 0);
+            int flag = strstr(vmsg, nick) ? SRAIN_MSG_MENTIONED : 0;
+            srv_hdr_ui_recv_msg(sess->host, chan, nick, origin, vmsg, flag);
         }
     } else {
         if (!filter_is_ignore(origin)){
             if (!plugin_avatar_has_queried(origin))
                 srv_session_who(sess, origin);
 
+            int flag = strstr(vmsg, origin) ? SRAIN_MSG_MENTIONED : 0;
             srv_hdr_ui_recv_msg(sess->host, chan, origin, "", vmsg, 0);
         }
     }
@@ -485,8 +486,9 @@ void srv_event_ctcp_action(irc_session_t *irc_session, const char *event,
 
     strip(msg);
 
+    int flag = strstr(msg, origin) ? SRAIN_MSG_MENTIONED : 0;
     snprintf(buf, sizeof(buf), _("*** %s %s ***"), origin, msg);
-    srv_hdr_ui_sys_msg(sess->host, chan, buf, SYS_MSG_ACTION, 0);
+    srv_hdr_ui_sys_msg(sess->host, chan, buf, SYS_MSG_ACTION, flag);
     chat_log_log(sess->host, chan, buf);
 
     free(msg);

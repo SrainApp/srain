@@ -58,7 +58,6 @@ void ui_hdr_init(){
  */
 int ui_hdr_srv_cmd(SrainChat *chat, char *cmd, int block){
     int res;
-    char *cmd2;
     const char *srv_name;
     const char *chat_name;
 
@@ -77,9 +76,7 @@ int ui_hdr_srv_cmd(SrainChat *chat, char *cmd, int block){
     DBG_FR("srv_name: %s, chat_name: %s, cmd: '%s', block: %d",
             srv_name, chat_name, cmd, block);
 
-    cmd2 = strdup(cmd);
-    res = _ui_hdr_srv_cmd(srv_name, chat_name, cmd2, block);
-    free(cmd2);
+    res = _ui_hdr_srv_cmd(srv_name, chat_name, cmd, block);
 
     return res;
 }

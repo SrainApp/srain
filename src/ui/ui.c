@@ -352,11 +352,9 @@ int ui_rm_chat_sync(SIGN_UI_RM_CHAT){
  * @param msg
  * @param type SrainStackSidebar should be updated
  *             when type = SYS_MSG_ACTION or SYS_MSG_ERROR
+ * @param flag
  */
 void ui_sys_msg_sync(SIGN_UI_SYS_MSG){
-    int is_mentioned;
-    int is_noitfy;
-    const char *your_nick;
     SrainChat *chat;
     SrainMsgList *list;
 
@@ -380,31 +378,11 @@ void ui_sys_msg_sync(SIGN_UI_SYS_MSG){
         return;
     }
 
-    your_nick = srain_chat_get_nick(chat);
-
-    /* is_mentioned = Message doesn't send by other user or server (It means a channel mesage)
-     *                && you nick appeared in the message */
-    is_mentioned = strlen(your_nick) != 0 && strstr(msg, your_nick) != NULL;
-
-    /* `srv_name` == `id` means this message is sent by server.
-     * is_notify = (Message sent by other user || your are mentioned in a channel)
-     *             && window is not active   */
-    is_noitfy = (strlen(your_nick) == 0 || is_mentioned)
-        && !srain_window_is_active(srain_win);
-
     list = srain_chat_get_msg_list(chat);
-    srain_msg_list_sys_msg_add(list, msg, type,
-            type != SYS_MSG_NORMAL && is_mentioned);
+    srain_msg_list_sys_msg_add(list, msg, type, flag);
 
     if (type != SYS_MSG_NORMAL){
         srain_window_stack_sidebar_update(srain_win, chat, NULL, msg);
-
-        /* Desktop notification */
-        if (is_noitfy){
-            snotify_notify(type == SYS_MSG_ACTION ? _("ACTION") : _("ERROR"),
-                    msg, "srain");
-            srain_window_tray_icon_stress(srain_win, 1);
-        }
     }
 }
 
@@ -413,6 +391,7 @@ void ui_sys_msg_sync(SIGN_UI_SYS_MSG){
  *
  * @param chat This chatnel must be existent
  * @param msg
+ * @param flag
  */
 void ui_send_msg_sync(SIGN_UI_SEND_MSG){
     SrainChat *chat;
@@ -422,7 +401,7 @@ void ui_send_msg_sync(SIGN_UI_SEND_MSG){
     g_return_if_fail(chat);
     list = srain_chat_get_msg_list(chat);
 
-    srain_msg_list_send_msg_add(list, msg);
+    srain_msg_list_send_msg_add(list, msg, flag);
     srain_window_stack_sidebar_update(srain_win, chat, _("You"), msg);
 }
 
@@ -435,11 +414,9 @@ void ui_send_msg_sync(SIGN_UI_SEND_MSG){
  * @param nick
  * @param id
  * @param msg
+ * @param flag
  */
 void ui_recv_msg_sync(SIGN_UI_RECV_MSG){
-    int is_mentioned = 0;
-    int is_noitfy = 0;
-    const char *your_nick;
     SrainChat *chat;
     SrainMsgList *list;
     SrainEntryCompletion *comp;
@@ -449,29 +426,10 @@ void ui_recv_msg_sync(SIGN_UI_RECV_MSG){
         chat = srain_window_get_chat_by_name(srain_win, srv_name, META_SERVER);
     g_return_if_fail(chat);
 
-    your_nick = srain_chat_get_nick(chat);
-
-    /* is_mentioned = Message doesn't send by other user or server (It means a channel mesage)
-     *                && you nick appeared in the message */
-    is_mentioned = strlen(your_nick) != 0 && strstr(msg, your_nick) != NULL;
-
-    /* `srv_name` == `id` means this message is sent by server.
-     * is_notify = Message doesn't send by server
-     *             && (Message sent by other user || your are mentioned in a channel)
-     *           && window is not active   */
-    is_noitfy = strcmp(srv_name, id) != 0
-        && (strlen(your_nick) == 0 || is_mentioned)
-        && !srain_window_is_active(srain_win);
-
     list = srain_chat_get_msg_list(chat);
-    srain_msg_list_recv_msg_add(list, nick, id, msg, is_mentioned);
+    srain_msg_list_recv_msg_add(list, nick, id, msg, flag);
 
-    /* Do not sent notification when window is active */
-    if (is_noitfy){
-        snotify_notify(nick, msg, "srain");
-        srain_window_tray_icon_stress(srain_win, 1);
-    }
-
+    // TODO: move in srain_msg_list?
     srain_window_stack_sidebar_update(srain_win, chat, nick, msg);
     if (strlen(id) != 0){
         comp = srain_chat_get_entry_completion(chat);

@@ -220,14 +220,14 @@ SrainMsgList* srain_msg_list_new(void){
 }
 
 void srain_msg_list_sys_msg_add(SrainMsgList *list, const char *msg,
-        SysMsgType type, int is_mentioned){
+        SysMsgType type, SrainMsgFlag flag){
     GtkListBoxRow *row;
     SrainSysMsg *smsg;
 
     smsg = srain_sys_msg_new(msg, type);
     row = gtk_list_box_add_unfocusable_row(list->list_box, GTK_WIDGET(smsg));
 
-    if (is_mentioned){
+    if (flag & SRAIN_MSG_MENTIONED){
        gtk_widget_set_name(GTK_WIDGET(row), "mentioned_msg");
     }
 
@@ -237,7 +237,7 @@ void srain_msg_list_sys_msg_add(SrainMsgList *list, const char *msg,
 }
 
 
-void srain_msg_list_send_msg_add(SrainMsgList *list, const char *msg){
+void srain_msg_list_send_msg_add(SrainMsgList *list, const char *msg, SrainMsgFlag flag){
     SrainSendMsg *smsg;
 
     smsg = srain_send_msg_new(msg);
@@ -248,14 +248,14 @@ void srain_msg_list_send_msg_add(SrainMsgList *list, const char *msg){
     smart_scroll(list, 1);
 }
 
-void _srain_msg_list_recv_msg_add(SrainMsgList *list, const char *nick,
-        const char *id, const char *msg, int is_mentioned){
+static void _srain_msg_list_recv_msg_add(SrainMsgList *list, const char *nick,
+        const char *id, const char *msg, SrainMsgFlag flag){
     GtkListBoxRow *row;
     SrainRecvMsg *smsg;
 
     smsg = srain_recv_msg_new(nick, id, msg);
     row = gtk_list_box_add_unfocusable_row(list->list_box, GTK_WIDGET(smsg));
-    if (is_mentioned){
+    if (flag & SRAIN_MSG_MENTIONED){
        gtk_widget_set_name(GTK_WIDGET(row), "mentioned_msg");
     }
 
@@ -268,7 +268,7 @@ void _srain_msg_list_recv_msg_add(SrainMsgList *list, const char *nick,
  * If its time is same to the last msg, combine them.
  */
 void srain_msg_list_recv_msg_add(SrainMsgList *list, const char *nick,
-        const char *id, const char *msg, int is_mentioned){
+        const char *id, const char *msg, SrainMsgFlag flag){
     char timestr[32];
     const char *old_msg;
     const char *old_timestr;
@@ -291,7 +291,7 @@ void srain_msg_list_recv_msg_add(SrainMsgList *list, const char *nick,
          *  - less then 512 char
          * can be combine
          */
-        if (!is_mentioned
+        if (!flag & SRAIN_MSG_MENTIONED
                 && strncmp(timestr, old_timestr, 32) == 0
                 && strncmp(nick, old_nick, NICK_LEN) == 0
                 && strlen(old_msg) < 512){
@@ -314,5 +314,5 @@ void srain_msg_list_recv_msg_add(SrainMsgList *list, const char *nick,
         }
     }
 
-    _srain_msg_list_recv_msg_add(list, nick, id, msg, is_mentioned);
+    _srain_msg_list_recv_msg_add(list, nick, id, msg, flag);
 }
