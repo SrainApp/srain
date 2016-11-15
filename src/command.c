@@ -19,7 +19,7 @@
 
 #include "log.h"
 
-static CommandContext *cmd_context;
+static CommandContext *cmd_context = NULL;
 
 static Command* command_alloc(CommandBind *bind, const char *rawcmd){
     Command *cmd = g_malloc0(sizeof(Command));
@@ -217,6 +217,8 @@ void commmad_set_context(CommandContext *ctx) {
 int command_proc(const char *rawcmd, void *user_data){
     int ret;
     Command *cmd;
+
+    if (!cmd_context) return -1;
 
     for (int i = 0; cmd_context->binds[i].name != NULL; i++){
         if (strncasecmp(rawcmd, cmd_context->binds[i].name, strlen(cmd_context->binds[i].name)) == 0){

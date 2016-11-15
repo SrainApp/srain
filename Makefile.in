@@ -24,6 +24,7 @@ DEL = rm -rf
 INSTALL = install -v
 
 TARGET = build/srain
+TEST_FLAG = NO_TEST
 
 default: src/Makefile data/ui/Makefile
 	$(MAKE) -C data/ui
@@ -31,7 +32,7 @@ default: src/Makefile data/ui/Makefile
 
 install: install-bin install-data install-po
 
-install-bin: default
+install-bin:
 	$(INSTALL) -Dm755 "$(TARGET)" "$(DESTDIR)$(PREFIX)/bin/srain"
 
 install-data: data/Makefile
@@ -41,14 +42,12 @@ install-po: po/Makefile
 	$(MAKE) -C po
 
 uitest:
-	$(MAKE) TEST_FLAG=UI_TEST
-	$(MAKE) run
+	$(MAKE) TEST_FLAG=UI_TEST run
 
 irctest:
-	$(MAKE) TEST_FLAG=IRC_TEST
-	$(MAKE) run
+	$(MAKE) TEST_FLAG=IRC_TEST run
 
-run: default
+run:
 	$(MAKE) PREFIX=$(PWD)/build
 	$(MAKE) install-bin
 	$(MAKE) install-po
