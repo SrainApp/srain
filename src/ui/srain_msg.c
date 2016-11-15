@@ -212,16 +212,34 @@ void srain_msg_set_msg(SrainMsg *smsg, const char *msg) {
     }
 }
 
-void srain_msg_append_msg(SrainMsg *smsg, const char *msg) {
+int srain_msg_append_msg(SrainMsg *smsg, const char *msg, SrainMsgFlag flag) {
+    char timestr[32];
+    const char *old_msg;
     GString *new_msg;
 
-    new_msg = g_string_new(gtk_label_get_text(smsg->msg_label));
+    if (flag != smsg->flag) {
+        return -1;
+    }
+
+    get_cur_time(timestr);
+    if (strcmp(timestr, gtk_label_get_text(smsg->time_label))) {
+        return -1;
+    }
+
+    old_msg = gtk_label_get_text(smsg->msg_label);
+    if (strlen(msg) + strlen(old_msg) > SRAIN_MSG_MAX_LEN) {
+        return -1;
+    }
+
+    new_msg = g_string_new(old_msg);
     g_string_append(new_msg, "\n");
     g_string_append(new_msg, msg);
 
     srain_msg_set_msg(smsg, new_msg->str);
 
     g_string_free(new_msg, TRUE);
+
+    return 0;
 }
 
 /* ================ SRAIN_SYS_MSG ================ */
@@ -235,12 +253,18 @@ static void srain_sys_msg_class_init(SrainSysMsgClass *class){
     gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
             "/org/gtk/srain/sys_msg.glade");
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainSysMsg, msg_label);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainSysMsg, time_label);
 }
 
-SrainSysMsg* srain_sys_msg_new(const char *msg, SysMsgType type){
+SrainSysMsg* srain_sys_msg_new(const char *msg, SysMsgType type, SrainMsgFlag flag){
+    char timestr[32];
     SrainSysMsg *smsg;
 
     smsg = g_object_new(SRAIN_TYPE_SYS_MSG, NULL);
+
+    get_cur_time(timestr);
+    gtk_label_set_text(smsg->time_label, timestr);
+
     switch (type){
         case SYS_MSG_NORMAL:
             gtk_widget_set_name(GTK_WIDGET(smsg), "normal_sys_msg_box");
@@ -258,6 +282,7 @@ SrainSysMsg* srain_sys_msg_new(const char *msg, SysMsgType type){
             ERR_FR("unkown SysMsgType");
     }
 
+    smsg->type = type;
     srain_msg_set_msg(SRAIN_MSG(smsg), msg);
 
     return smsg;
@@ -278,7 +303,7 @@ static void srain_send_msg_class_init(SrainSendMsgClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainSendMsg, time_label);
 }
 
-SrainSendMsg* srain_send_msg_new(const char *msg){
+SrainSendMsg* srain_send_msg_new(const char *msg, SrainMsgFlag flag){
     char timestr[32];
     GString *img_url;
     GString *markuped_msg;
@@ -368,7 +393,8 @@ static gboolean set_avatar_retry_timeout(gpointer user_data){
     return FALSE;
 }
 
-SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *msg){
+SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id,
+        const char *msg, SrainMsgFlag flag){
     char timestr[32];
     char *avatar_path;
     GString *markuped_msg;

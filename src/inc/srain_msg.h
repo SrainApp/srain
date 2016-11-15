@@ -3,6 +3,8 @@
 
 #include <gtk/gtk.h>
 
+#define SRAIN_MSG_MAX_LEN 512
+
 /* ================ SRAIN_SRAIN_MSG ================ */
 
 typedef int SrainMsgFlag;
@@ -13,6 +15,7 @@ struct _SrainMsg {
     GtkBox parent;
     SrainMsgFlag flag;
     GtkLabel *msg_label;
+    GtkLabel *time_label;
 };
 
 typedef struct _SrainMsg SrainMsg;
@@ -22,6 +25,8 @@ typedef struct _SrainMsg SrainMsg;
     (SRIAN_IS_SYS_MSG(obj) || \
      SRIAN_IS_SEND_MSG(obj) || \
      SRIAN_IS_RECV_MSG(obj))
+
+int srain_msg_append_msg(SrainMsg *smsg, const char *msg, SrainMsgFlag flag);
 
 /* ================ SRAIN_SYS_MSG ================ */
 
@@ -36,6 +41,9 @@ struct _SrainSysMsg {
     GtkBox parent;
     SrainMsgFlag flag;
     GtkLabel *msg_label;
+    GtkLabel *time_label;
+
+    SysMsgType type;
 };
 
 struct _SrainSysMsgClass {
@@ -50,7 +58,7 @@ typedef struct _SrainSysMsg SrainSysMsg;
 typedef struct _SrainSysMsgClass SrainSysMsgClass;
 
 GType srain_sys_msg_get_type(void);
-SrainSysMsg* srain_sys_msg_new(const char *msg, SysMsgType type);
+SrainSysMsg* srain_sys_msg_new(const char *msg, SysMsgType type, SrainMsgFlag flag);
 
 /* ================ SRAIN_SEND_MSG ================ */
 struct _SrainSendMsg {
@@ -75,7 +83,7 @@ typedef struct _SrainSendMsg SrainSendMsg;
 typedef struct _SrainSendMsgClass SrainSendMsgClass;
 
 GType srain_send_msg_get_type(void);
-SrainSendMsg *srain_send_msg_new(const char *msg);
+SrainSendMsg *srain_send_msg_new(const char *msg, SrainMsgFlag flag);
 
 /* ================ SRAIN_RECV_MSG ================ */
 struct _SrainRecvMsg {
@@ -104,6 +112,6 @@ typedef struct _SrainRecvMsg SrainRecvMsg;
 typedef struct _SrainRecvMsgClass SrainRecvMsgClass;
 
 GType srain_recv_msg_get_type(void);
-SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *msg);
+SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *msg, SrainMsgFlag flag);
 
 #endif /* __SRAIN_MSG_H */

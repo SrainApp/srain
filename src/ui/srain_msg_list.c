@@ -33,7 +33,7 @@ struct _SrainMsgList {
 
     int vis_row_num;
     GtkListBox *list_box;
-    GtkWidget *last_msg;
+    SrainMsg *last_msg;
 };
 
 struct _SrainMsgListClass {
@@ -224,14 +224,20 @@ void srain_msg_list_sys_msg_add(SrainMsgList *list, const char *msg,
     GtkListBoxRow *row;
     SrainSysMsg *smsg;
 
-    smsg = srain_sys_msg_new(msg, type);
+    if (list->last_msg
+            && SRAIN_IS_SYS_MSG(list->last_msg)
+            && SRAIN_SYS_MSG(list->last_msg)->type != SYS_MSG_ACTION){
+        if (srain_msg_append_msg(list->last_msg, msg, flag) == 0) return;
+    }
+
+    smsg = srain_sys_msg_new(msg, type, flag);
     row = gtk_list_box_add_unfocusable_row(list->list_box, GTK_WIDGET(smsg));
 
     if (flag & SRAIN_MSG_MENTIONED){
-       gtk_widget_set_name(GTK_WIDGET(row), "mentioned_msg");
+        gtk_widget_set_name(GTK_WIDGET(row), "mentioned_msg");
     }
 
-    list->last_msg = GTK_WIDGET(smsg);
+    list->last_msg = SRAIN_MSG(smsg);
 
     smart_scroll(list, 0);
 }
@@ -240,79 +246,41 @@ void srain_msg_list_sys_msg_add(SrainMsgList *list, const char *msg,
 void srain_msg_list_send_msg_add(SrainMsgList *list, const char *msg, SrainMsgFlag flag){
     SrainSendMsg *smsg;
 
-    smsg = srain_send_msg_new(msg);
+    if (list->last_msg && SRAIN_IS_SEND_MSG(list->last_msg)){
+        LOG_FR("send msg combine")
+        if (srain_msg_append_msg(list->last_msg, msg, flag) == 0) return;
+    }
+
+    smsg = srain_send_msg_new(msg, flag);
     gtk_list_box_add_unfocusable_row(list->list_box, GTK_WIDGET(smsg));
 
-    list->last_msg = GTK_WIDGET(smsg);
+    list->last_msg = SRAIN_MSG(smsg);
 
     smart_scroll(list, 1);
 }
 
-static void _srain_msg_list_recv_msg_add(SrainMsgList *list, const char *nick,
+/* Add a SrainRecvMsg into SrainMsgList.  */
+void srain_msg_list_recv_msg_add(SrainMsgList *list, const char *nick,
         const char *id, const char *msg, SrainMsgFlag flag){
     GtkListBoxRow *row;
     SrainRecvMsg *smsg;
 
-    smsg = srain_recv_msg_new(nick, id, msg);
-    row = gtk_list_box_add_unfocusable_row(list->list_box, GTK_WIDGET(smsg));
-    if (flag & SRAIN_MSG_MENTIONED){
-       gtk_widget_set_name(GTK_WIDGET(row), "mentioned_msg");
-    }
-
-    list->last_msg = GTK_WIDGET(smsg);
-
-    smart_scroll(list, 0);
-}
-
-/* Add a SrainRecvMsg into SrainMsgList.
- * If its time is same to the last msg, combine them.
- */
-void srain_msg_list_recv_msg_add(SrainMsgList *list, const char *nick,
-        const char *id, const char *msg, SrainMsgFlag flag){
-    char timestr[32];
-    const char *old_msg;
-    const char *old_timestr;
-    const char *old_nick;
-    GString *new_msg;
-    GString *markuped_msg;
-    SrainRecvMsg *last_recv_msg;
-
-    get_cur_time(timestr);
-
     if (list->last_msg && SRAIN_IS_RECV_MSG(list->last_msg)){
-        last_recv_msg = SRAIN_RECV_MSG(list->last_msg);
-        old_msg = gtk_label_get_text(last_recv_msg->msg_label);
-        old_timestr = gtk_label_get_text(last_recv_msg->time_label);
-        old_nick = gtk_label_get_text(last_recv_msg->nick_label);
-
-        /* A message that
-         *  - send by the same people
-         *  - send in same minute
-         *  - less then 512 char
-         * can be combine
-         */
-        if (!flag & SRAIN_MSG_MENTIONED
-                && strncmp(timestr, old_timestr, 32) == 0
-                && strncmp(nick, old_nick, NICK_LEN) == 0
-                && strlen(old_msg) < 512){
-            new_msg = g_string_new(old_msg);
-            g_string_append(new_msg, "\n");
-            g_string_append(new_msg, msg);
-
-            markuped_msg = markup(new_msg->str, NULL);
-            if (markuped_msg){
-                gtk_label_set_markup(last_recv_msg->msg_label, markuped_msg->str);
-                g_string_free(markuped_msg, TRUE);
-            } else {
-                gtk_label_set_text(last_recv_msg->msg_label, new_msg->str);
-            }
-
-            g_string_free(new_msg, TRUE);
-            smart_scroll(list, 0);
-
-            return;
+        const char *old_nick = gtk_label_get_text(
+                SRAIN_RECV_MSG(list->last_msg)->nick_label);
+        if (strcasecmp(nick, old_nick) == 0) {
+            if (srain_msg_append_msg(list->last_msg, msg, flag) == 0) return;
         }
     }
 
-    _srain_msg_list_recv_msg_add(list, nick, id, msg, flag);
+    smsg = srain_recv_msg_new(nick, id, msg, flag);
+    row = gtk_list_box_add_unfocusable_row(list->list_box, GTK_WIDGET(smsg));
+
+    if (flag & SRAIN_MSG_MENTIONED){
+        gtk_widget_set_name(GTK_WIDGET(row), "mentioned_msg");
+    }
+
+    list->last_msg = SRAIN_MSG(smsg);
+
+    smart_scroll(list, 0);
 }
