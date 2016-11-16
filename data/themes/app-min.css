@@ -33,14 +33,21 @@
 /* SrainMsg {{ */
 #normal_sys_msg_box #msg_label,
 #error_sys_msg_box #msg_label,
-#command_sys_msg_box #msg_label,
 #action_sys_msg_box #msg_label,
 #normal_sys_msg_box #msg_label selection,
 #error_sys_msg_box #msg_label selection,
-#command_sys_msg_box #msg_label selection,
 #action_sys_msg_box #msg_label selection {
     color: @sys_msg_text_color;
     border-radius: 4px;
+}
+
+#normal_sys_msg_box #msg_label link,
+#error_sys_msg_box #msg_label link,
+#action_sys_msg_box #msg_label link,
+#normal_sys_msg_box #msg_label link:visited,
+#error_sys_msg_box #msg_label link:visited,
+#action_sys_msg_box #msg_label link:visited {
+    color: white;
 }
 
 #normal_sys_msg_box #msg_label { background-color: @normal_sys_msg_color; }
