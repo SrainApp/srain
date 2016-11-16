@@ -224,11 +224,13 @@ void srain_msg_list_sys_msg_add(SrainMsgList *list, const char *msg,
     GtkListBoxRow *row;
     SrainSysMsg *smsg;
 
+    /* Do not merge sys message (看起来不好看 :-|)
     if (list->last_msg
             && SRAIN_IS_SYS_MSG(list->last_msg)
             && SRAIN_SYS_MSG(list->last_msg)->type != SYS_MSG_ACTION){
         if (srain_msg_append_msg(list->last_msg, msg, flag) == 0) return;
     }
+    */
 
     smsg = srain_sys_msg_new(msg, type, flag);
     row = gtk_list_box_add_unfocusable_row(list->list_box, GTK_WIDGET(smsg));
