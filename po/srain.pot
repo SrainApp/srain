@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Srain 0.05-git@0.355.f9f1a55\n"
+"Project-Id-Version: Srain 0.05-git@0.390.62fb40a\n"
 "Report-Msgid-Bugs-To: lastavengesr@outlook.com\n"
-"POT-Creation-Date: 2016-09-06 00:30+0800\n"
+"POT-Creation-Date: 2016-11-16 23:37+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,17 +24,17 @@ msgid ""
 "Running against GTK+ %d.%d.%d"
 msgstr ""
 
-#: ../src/srv/srv_event.c:635
+#: ../src/srv/srv_event.c:637
 #, c-format
 msgid "%s %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:628
+#: ../src/srv/srv_event.c:630
 #, c-format
 msgid "%s %s %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:600
+#: ../src/srv/srv_event.c:602
 #, c-format
 msgid "%s <%s@%s> %s"
 msgstr ""
@@ -64,22 +64,22 @@ msgstr ""
 msgid "%s has quit: %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:467
+#: ../src/srv/srv_event.c:468
 #, c-format
 msgid "%s invites you into %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:616
+#: ../src/srv/srv_event.c:618
 #, c-format
 msgid "%s is attached to %s at \"%s\""
 msgstr ""
 
-#: ../src/srv/srv_event.c:622
+#: ../src/srv/srv_event.c:624
 #, c-format
 msgid "%s is idle for %s seconds since %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:611
+#: ../src/srv/srv_event.c:613
 #, c-format
 msgid "%s is member of %s"
 msgstr ""
@@ -89,21 +89,16 @@ msgstr ""
 msgid "%s is now known as %s"
 msgstr ""
 
-#: ../src/srv/srv_session_cmd.c:288
-#, c-format
-msgid "%s: wrong parameters"
-msgstr ""
-
 #: ../data/ui/recv_msg.glade:119
 msgid "(This message can not be showed correctly)."
 msgstr ""
 
-#: ../src/srv/srv_session_cmd.c:215 ../src/srv/srv_event.c:488
+#: ../src/srv/srv_session_cmd.c:158 ../src/srv/srv_event.c:490
 #, c-format
 msgid "*** %s %s ***"
 msgstr ""
 
-#: ../src/ui/ui.c:379
+#: ../src/ui/ui.c:374
 #, c-format
 msgid ""
 "<b>Session:</b> %s\n"
@@ -123,16 +118,16 @@ msgid ""
 "\">Srain's website</a>.\n"
 msgstr ""
 
-#: ../src/ui/ui.c:407
-msgid "ACTION"
-msgstr ""
-
 #: ../data/ui/window.glade:42 ../data/ui/window.glade:439
 msgid "About"
 msgstr ""
 
 #: ../src/ui/srain_window.c:122
 msgid "About Srain"
+msgstr ""
+
+#: ../src/ui/srain_msg_list.c:243
+msgid "Action"
 msgstr ""
 
 #: ../data/ui/window.glade:179
@@ -152,6 +147,11 @@ msgstr ""
 msgid "Command \"%s\" failed"
 msgstr ""
 
+#: ../src/srv/srv_session_cmd.c:372
+#, c-format
+msgid "Command '%s' failed"
+msgstr ""
+
 #: ../data/ui/window.glade:58 ../data/ui/window.glade:328
 msgid "Connect"
 msgstr ""
@@ -168,7 +168,7 @@ msgstr ""
 msgid "Disconnect (_C)"
 msgstr ""
 
-#: ../src/ui/ui.c:381 ../src/ui/ui.c:407
+#: ../src/ui/ui.c:376
 msgid "ERROR"
 msgstr ""
 
@@ -177,9 +177,13 @@ msgstr ""
 msgid "ERROR: %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:664
+#: ../src/srv/srv_event.c:666
 #, c-format
 msgid "ERROR[%3d]: %s"
+msgstr ""
+
+#: ../src/ui/srain_msg_list.c:250
+msgid "Error"
 msgstr ""
 
 #: ../src/ui/srain_msg.c:118 ../src/ui/srain_chat.c:200
@@ -218,9 +222,14 @@ msgstr ""
 msgid "Nickname:"
 msgstr ""
 
-#: ../src/srv/srv_session_cmd.c:279
+#: ../src/srv/srv_session_cmd.c:339
 #, c-format
-msgid "No such commmand: %s"
+msgid "No such command '%s'"
+msgstr ""
+
+#: ../src/srv/srv_session_cmd.c:346
+#, c-format
+msgid "No such option '%s'"
 msgstr ""
 
 #: ../data/ui/window.glade:302
@@ -239,16 +248,17 @@ msgstr ""
 msgid "Open File"
 msgstr ""
 
+#: ../src/srv/srv_session_cmd.c:353
+#, c-format
+msgid "Option '%s' missing value"
+msgstr ""
+
 #: ../data/ui/window.glade:383
 msgid "Password(optional):"
 msgstr ""
 
 #: ../data/ui/window.glade:202
 msgid "Password:"
-msgstr ""
-
-#: ../src/srv/srv_session_cmd.c:272
-msgid "Please visit"
 msgstr ""
 
 #: ../data/ui/window.glade:226
@@ -266,6 +276,14 @@ msgstr ""
 
 #: ../data/ui/window.glade:429
 msgid "Srain"
+msgstr ""
+
+#: ../src/srv/srv_session_cmd.c:365
+msgid "Too many arguments"
+msgstr ""
+
+#: ../src/srv/srv_session_cmd.c:359
+msgid "Too many options"
 msgstr ""
 
 #: ../src/srv/srv_event.c:321
@@ -292,7 +310,7 @@ msgstr ""
 msgid "Welcome"
 msgstr ""
 
-#: ../src/ui/ui.c:429
+#: ../src/ui/ui.c:405
 msgid "You"
 msgstr ""
 
