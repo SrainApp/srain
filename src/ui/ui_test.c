@@ -73,7 +73,7 @@ void ui_test(){
     ui_send_msg_sync("irc.freenode.net", "#summer-time-record",
             "なんかイラッとするっすね", 0);
     ui_recv_msg_sync("irc.freenode.net", "#summer-time-record",
-            "キド", "", "奇遇だな?俺もそう思った", 0);
+            "キド", "", "奇遇だな?俺もそう思った", SRAIN_MSG_MENTIONED);
     ui_recv_msg_sync("irc.freenode.net", "#summer-time-record",
             "カノ", "", "ヒドくないっ！", 0);
     ui_sys_msg_sync("irc.freenode.net", "#summer-time-record",

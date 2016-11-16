@@ -19,6 +19,7 @@
 #include "srain_msg_list.h"
 #include "srain_window.h"
 #include "srain_msg.h"
+#include "snotify.h"
 
 #include "srv_session.h"
 
@@ -235,8 +236,20 @@ void srain_msg_list_sys_msg_add(SrainMsgList *list, const char *msg,
     smsg = srain_sys_msg_new(msg, type, flag);
     row = gtk_list_box_add_unfocusable_row(list->list_box, GTK_WIDGET(smsg));
 
+    // TODO: 需要 Action message 和 Error message 的区分
     if (flag & SRAIN_MSG_MENTIONED){
         gtk_widget_set_name(GTK_WIDGET(row), "mentioned_msg");
+        if (!srain_window_is_active(srain_win) && type == SYS_MSG_ACTION){
+            snotify_notify( _("Action"), msg, "srain");
+            srain_window_tray_icon_stress(srain_win, 1);
+        }
+    }
+
+    if (type == SYS_MSG_ERROR) {
+        if (!srain_window_is_active(srain_win)){
+            snotify_notify(_("Error"), msg, "srain-red");
+            srain_window_tray_icon_stress(srain_win, 1);
+        }
     }
 
     list->last_msg = SRAIN_MSG(smsg);
@@ -280,6 +293,10 @@ void srain_msg_list_recv_msg_add(SrainMsgList *list, const char *nick,
 
     if (flag & SRAIN_MSG_MENTIONED){
         gtk_widget_set_name(GTK_WIDGET(row), "mentioned_msg");
+        if (!srain_window_is_active(srain_win)) {
+            snotify_notify(nick, msg, "srain");
+            srain_window_tray_icon_stress(srain_win, 1);
+        }
     }
 
     list->last_msg = SRAIN_MSG(smsg);
