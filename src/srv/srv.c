@@ -59,14 +59,14 @@ int srv_connect(SIGN_SRV_CONNECT){
         return -1;
     }
 
-    res = srv_session_new(host, port, passwd, nickname, username, realname, ssl)
+    res = srv_session_new(host, port, passwd, nickname, username, realname, flag)
         ?  0 : -1;
 
     return res;
 }
 
 int srv_quit(SIGN_SRV_QUIT){
-    srv_session_t *session;
+    SRVSession *session;
 
     session = srv_session_get_by_host(srv_name);
     if (!session){
@@ -79,7 +79,7 @@ int srv_quit(SIGN_SRV_QUIT){
 
 
 int srv_cmd(SIGN_SRV_CMD){
-    srv_session_t *session;
+    SRVSession *session;
 
     session = srv_session_get_by_host(srv_name);
 
@@ -87,7 +87,7 @@ int srv_cmd(SIGN_SRV_CMD){
 }
 
 int srv_query(SIGN_SRV_QUERY){
-    srv_session_t *session;
+    SRVSession *session;
 
     session = srv_session_get_by_host(srv_name);
     if (!session){
@@ -105,7 +105,7 @@ int srv_query(SIGN_SRV_QUERY){
 }
 
 int srv_unquery(SIGN_SRV_UNQUERY){
-    srv_session_t *session;
+    SRVSession *session;
 
     session = srv_session_get_by_host(srv_name);
     if (!session){
@@ -123,7 +123,7 @@ int srv_unquery(SIGN_SRV_UNQUERY){
 }
 
 int srv_join(SIGN_SRV_JOIN){
-    srv_session_t *session;
+    SRVSession *session;
 
     session = srv_session_get_by_host(srv_name);
     if (!session){
@@ -139,7 +139,7 @@ int srv_join(SIGN_SRV_JOIN){
 }
 
 int srv_part(SIGN_SRV_PART){
-    srv_session_t *session;
+    SRVSession *session;
 
     session = srv_session_get_by_host(srv_name);
     if (!session){
@@ -155,7 +155,7 @@ int srv_part(SIGN_SRV_PART){
 }
 
 int srv_send(SIGN_SRV_SEND){
-    srv_session_t *session;
+    SRVSession *session;
 
     if (!srv_name || !target || !msg){
         ERR_FR("host or nickname is NULL");
@@ -172,7 +172,7 @@ int srv_send(SIGN_SRV_SEND){
 }
 
 int srv_kick(SIGN_SRV_KICK){
-    srv_session_t *session;
+    SRVSession *session;
 
     session = srv_session_get_by_host(srv_name);
     if (!session){
@@ -184,7 +184,7 @@ int srv_kick(SIGN_SRV_KICK){
 }
 
 int srv_whois(SIGN_SRV_WHOIS){
-    srv_session_t *session;
+    SRVSession *session;
 
     session = srv_session_get_by_host(srv_name);
     if (!session){
@@ -196,7 +196,7 @@ int srv_whois(SIGN_SRV_WHOIS){
 }
 
 int srv_invite(SIGN_SRV_INVITE){
-    srv_session_t *session;
+    SRVSession *session;
 
     session = srv_session_get_by_host(srv_name);
     if (!session){

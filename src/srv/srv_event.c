@@ -77,14 +77,14 @@ static void strip(char *str){
 void srv_event_connect(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
     GList *chan_list;
-    channel_t *chan;
-    srv_session_t *sess;
+    SRVChannel *chan;
+    SRVSession *sess;
 
     sess = irc_get_ctx(irc_session);
 
     PRINT_EVENT_PARAM;
 
-    sess->stat = SESS_CONNECT;
+    sess->stat = SRV_SESSION_STAT_CONNECT;
 
     LOG_FR("Connected to %s", sess->host);
 
@@ -99,8 +99,8 @@ void srv_event_connect(irc_session_t *irc_session, const char *event,
 void srv_event_nick(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
     char msg[512];
-    srv_session_t *sess;
-    channel_t *chan;
+    SRVSession *sess;
+    SRVChannel *chan;
     GList *chan_list;
 
     sess = irc_get_ctx(irc_session);
@@ -135,8 +135,8 @@ void srv_event_nick(irc_session_t *irc_session, const char *event,
 void srv_event_quit(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
     char msg[512];
-    srv_session_t *sess;
-    channel_t *chan;
+    SRVSession *sess;
+    SRVChannel *chan;
     GList *chan_list;
 
     sess = irc_get_ctx(irc_session);
@@ -167,7 +167,7 @@ void srv_event_quit(irc_session_t *irc_session, const char *event,
         LOG_FR("session: %s, origin: %s, reason: %s", sess->host, origin, reason);
         /* Remove all chans belong to this session */
         srv_hdr_ui_rm_chat(sess->host, "");
-        sess->stat = SESS_CLOSE;
+        sess->stat = SRV_SESSION_STAT_CLOSE;
         srv_session_free(sess);
     }
 }
@@ -175,7 +175,7 @@ void srv_event_quit(irc_session_t *irc_session, const char *event,
 void srv_event_join(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
     char msg[512];
-    srv_session_t *sess;
+    SRVSession *sess;
 
     sess = irc_get_ctx(irc_session);
 
@@ -205,7 +205,7 @@ void srv_event_join(irc_session_t *irc_session, const char *event,
 void srv_event_part(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
     char msg[512];
-    srv_session_t *sess;
+    SRVSession *sess;
 
     sess = irc_get_ctx(irc_session);
 
@@ -233,7 +233,7 @@ void srv_event_part(irc_session_t *irc_session, const char *event,
 void srv_event_mode(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
     char msg[512];
-    srv_session_t *sess;
+    SRVSession *sess;
 
     sess = irc_get_ctx(irc_session);
 
@@ -287,7 +287,7 @@ void srv_event_mode(irc_session_t *irc_session, const char *event,
 void srv_event_umode(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
     char msg[512];
-    srv_session_t *sess;
+    SRVSession *sess;
 
     sess = irc_get_ctx(irc_session);
 
@@ -306,7 +306,7 @@ void srv_event_umode(irc_session_t *irc_session, const char *event,
 void srv_event_topic(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
     char msg[512];
-    srv_session_t *sess;
+    SRVSession *sess;
 
     sess = irc_get_ctx(irc_session);
 
@@ -326,7 +326,7 @@ void srv_event_topic(irc_session_t *irc_session, const char *event,
 void srv_event_kick(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
     char msg[512];
-    srv_session_t *sess;
+    SRVSession *sess;
 
     sess = irc_get_ctx(irc_session);
 
@@ -348,7 +348,7 @@ void srv_event_kick(irc_session_t *irc_session, const char *event,
 void srv_event_channel(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
     char vmsg[512];
-    srv_session_t *sess;
+    SRVSession *sess;
 
     sess = irc_get_ctx(irc_session);
 
@@ -387,7 +387,7 @@ void srv_event_channel(irc_session_t *irc_session, const char *event,
 
 void srv_event_privmsg(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
-    srv_session_t *sess;
+    SRVSession *sess;
 
     sess = irc_get_ctx(irc_session);
 
@@ -408,7 +408,7 @@ void srv_event_privmsg(irc_session_t *irc_session, const char *event,
 
 void srv_event_notice(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
-    srv_session_t *sess;
+    SRVSession *sess;
 
     sess = irc_get_ctx(irc_session);
 
@@ -436,7 +436,7 @@ void srv_event_notice(irc_session_t *irc_session, const char *event,
 
 void srv_event_channel_notice(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
-    srv_session_t *sess;
+    SRVSession *sess;
 
     sess = irc_get_ctx(irc_session);
 
@@ -457,7 +457,7 @@ void srv_event_channel_notice(irc_session_t *irc_session, const char *event,
 void srv_event_invite(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
     char msg[512];
-    srv_session_t *sess;
+    SRVSession *sess;
 
     sess = irc_get_ctx(irc_session);
     PRINT_EVENT_PARAM;
@@ -475,7 +475,7 @@ void srv_event_invite(irc_session_t *irc_session, const char *event,
 void srv_event_ctcp_action(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
     char buf[512];
-    srv_session_t *sess;
+    SRVSession *sess;
 
     sess = irc_get_ctx(irc_session);
     PRINT_EVENT_PARAM;
@@ -497,7 +497,7 @@ void srv_event_ctcp_action(irc_session_t *irc_session, const char *event,
 void srv_event_numeric (irc_session_t *irc_session, unsigned int event,
         const char *origin, const char **params, unsigned int count){
     char buf[512];
-    srv_session_t *sess;
+    SRVSession *sess;
 
     sess = irc_get_ctx(irc_session);
 

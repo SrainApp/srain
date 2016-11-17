@@ -54,8 +54,8 @@ void srv_test_ui_set_topic(SIGN_UI_SET_TOPIC){
 }
 
 void srv_test(){
-    assert(srv_connect("127.0.0.1", 6667, NULL, "la", PACKAGE_VERSION, PACKAGE_WEBSITE, SSL_OFF) == 0);
-    assert(srv_connect("localhost", 6667, NULL, "srainbot2", PACKAGE_VERSION, PACKAGE_WEBSITE, SSL_OFF) == 0);
+    assert(srv_connect("127.0.0.1", 6667, NULL, "la", PACKAGE_VERSION, PACKAGE_WEBSITE, 0) == 0);
+    assert(srv_connect("localhost", 6667, NULL, "srainbot2", PACKAGE_VERSION, PACKAGE_WEBSITE, 0) == 0);
 
     while (1);
 }

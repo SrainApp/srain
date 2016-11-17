@@ -25,12 +25,12 @@
 #include "meta.h"
 #include "chat_log.h"
 
-srv_session_t sessions[MAX_SESSIONS] = { 0 };
-irc_callbacks_t cbs;
+static SRVSession sessions[MAX_SESSIONS] = { 0 };
+static irc_callbacks_t cbs;
 
-static void srv_session_err_hdr(srv_session_t *session);
+static void srv_session_err_hdr(SRVSession *session);
 
-static int srv_session_get_index(srv_session_t *session){
+static int srv_session_get_index(SRVSession *session){
     int i;
     if (!session){
         WARN_FR("Session is NULL");
@@ -38,11 +38,11 @@ static int srv_session_get_index(srv_session_t *session){
     }
 
     // TODO: access data from another thread?
-    srv_session_t *session2;
+    SRVSession *session2;
     for (i = 0; i < MAX_SESSIONS; i++){
         session2 = &sessions[i];
         if (session2 == session){
-            if (session2->stat == SESS_NOINUSE){
+            if (session2->stat == SRV_SESSION_STAT_NOINUSE){
                 return -1;
             } else {
                 return i;
@@ -53,7 +53,7 @@ static int srv_session_get_index(srv_session_t *session){
     return -1;
 }
 
-static int srv_session_reconnect(srv_session_t *session){
+static int srv_session_reconnect(SRVSession *session){
     int res;
     char msg[512];
 
@@ -62,7 +62,7 @@ static int srv_session_reconnect(srv_session_t *session){
     snprintf(msg, sizeof(msg), _("Reconnecting to %s ..."), session->host);
     srv_hdr_ui_sys_msg(session->host, META_SERVER, msg, SYS_MSG_NORMAL, 0);
 
-    session->stat = SESS_INUSE;
+    session->stat = SRV_SESSION_STAT_INUSE;
     irc_disconnect(session->irc_session);
     res = irc_connect(session->irc_session,
             session->prefix[0] ? session->prefix : session->host,
@@ -77,7 +77,7 @@ static int srv_session_reconnect(srv_session_t *session){
     return 0;
 }
 
-static void srv_session_err_hdr(srv_session_t *session){
+static void srv_session_err_hdr(SRVSession *session){
     int errno;
     char msg[512];
     const char *errmsg = "";
@@ -96,12 +96,12 @@ static void srv_session_err_hdr(srv_session_t *session){
     srv_hdr_ui_sys_msg(session->host, META_SERVER, msg, SYS_MSG_ERROR, 0);
 
     /* Error occurs when session is not connnect yet */
-    if (session->stat == SESS_INUSE){
+    if (session->stat == SRV_SESSION_STAT_INUSE){
         srv_session_free(session);
         return;
     }
     /* Connection should be closed: you receive a QUIT message */
-    if (session->stat == SESS_CLOSE){
+    if (session->stat == SRV_SESSION_STAT_CLOSE){
         return;
     }
 
@@ -137,12 +137,12 @@ static void srv_session_err_hdr(srv_session_t *session){
     }
 }
 
-int _srv_session_free(srv_session_t *session){
+int _srv_session_free(SRVSession *session){
     int i;
 
     i = srv_session_get_index(session);
     if (i == -1) return -1;
-    if (session->stat == SESS_NOINUSE) return -1;
+    if (session->stat == SRV_SESSION_STAT_NOINUSE) return -1;
 
     LOG_FR("Free session %s", session->host);
 
@@ -152,8 +152,8 @@ int _srv_session_free(srv_session_t *session){
     // TODO: free user set
     g_list_free_full(sessions[i].chan_list, g_free);
 
-    sessions[i] = (srv_session_t) { 0 };
-    sessions[i].stat = SESS_NOINUSE;
+    sessions[i] = (SRVSession) { 0 };
+    sessions[i].stat = SRV_SESSION_STAT_NOINUSE;
     sessions[i].chan_list = NULL;
 
     return 0;
@@ -181,8 +181,8 @@ loop:
     FD_ZERO(&out_set);
 
     for (i = 0; i < MAX_SESSIONS; i++){
-        if (sessions[i].stat == SESS_NOINUSE) continue;
-        if (sessions[i].stat == SESS_CLOSE) {
+        if (sessions[i].stat == SRV_SESSION_STAT_NOINUSE) continue;
+        if (sessions[i].stat == SRV_SESSION_STAT_CLOSE) {
             _srv_session_free(&sessions[i]);
             continue;
         }
@@ -201,8 +201,8 @@ loop:
     }
 
     for (i = 0; i < MAX_SESSIONS; i++){
-        if (sessions[i].stat == SESS_NOINUSE) continue;
-        if (sessions[i].stat == SESS_CLOSE) {
+        if (sessions[i].stat == SRV_SESSION_STAT_NOINUSE) continue;
+        if (sessions[i].stat == SRV_SESSION_STAT_CLOSE) {
             _srv_session_free(&sessions[i]);
             continue;
         }
@@ -258,12 +258,13 @@ void srv_session_proc(){
  * @param realname Can be NULL
  * @param ssl
  *
- * @return NULL or srv_session_t
+ * @return NULL or SRVSession
  */
-srv_session_t* srv_session_new(const char *host, int port, const char *passwd,
-        const char *nickname, const char *username, const char *realname, ssl_opt_t ssl){
+SRVSession* srv_session_new(const char *host, int port, const char *passwd,
+        const char *nickname, const char *username, const char *realname,
+        SRVSessionFlag flag){
     int i;
-    srv_session_t *sess;
+    SRVSession *sess;
 
     if (!port) port = 6667;
     if (!passwd) passwd = "";
@@ -275,12 +276,12 @@ srv_session_t* srv_session_new(const char *host, int port, const char *passwd,
         return NULL;
     }
 
-    LOG_FR("host: %s, port: %d, nickname: %s, username: %s, realname: %s, ssl: %d",
-            host, port, nickname, username, realname, ssl);
+    LOG_FR("host: %s, port: %d, nickname: %s, username: %s, realname: %s, flag: %d",
+            host, port, nickname, username, realname, flag);
 
     sess = NULL;
     for (i = 0; i < MAX_SESSIONS; i++){
-        if (sessions[i].stat == SESS_NOINUSE){
+        if (sessions[i].stat == SRV_SESSION_STAT_NOINUSE){
             sess = &sessions[i];
             break;
         } else {
@@ -299,10 +300,10 @@ srv_session_t* srv_session_new(const char *host, int port, const char *passwd,
         return NULL;
     }
 
-    sess->stat = SESS_INUSE;
+    sess->stat = SRV_SESSION_STAT_INUSE;
     sess->port = port;
     sess->chan_list = NULL;
-    if (ssl != SSL_OFF)
+    if (flag & SRV_SESSION_FLAG_SSL)
         sess->prefix[0] = '#';
     else
         sess->prefix[0] = 0;
@@ -314,7 +315,7 @@ srv_session_t* srv_session_new(const char *host, int port, const char *passwd,
 
     irc_set_ctx(sess->irc_session, sess);
     irc_option_set(sess->irc_session, LIBIRC_OPTION_STRIPNICKS);
-    if (ssl == SSL_NO_VERIFY)
+    if (flag & SRV_SESSION_FLAG_SSL_NOVERIFY)
         irc_option_set(sess->irc_session, LIBIRC_OPTION_SSL_NO_VERIFY);
 
     if (irc_connect(sess->irc_session,
@@ -332,22 +333,22 @@ srv_session_t* srv_session_new(const char *host, int port, const char *passwd,
     return sess;
 }
 
-int srv_session_is_session(srv_session_t *session){
+int srv_session_is_session(SRVSession *session){
     return srv_session_get_index(session) == -1 ? 0 : 1;
 }
 
-int srv_session_free(srv_session_t *session){
-    session->stat = SESS_CLOSE;
+int srv_session_free(SRVSession *session){
+    session->stat = SRV_SESSION_STAT_CLOSE;
     return 0;
 }
 
-srv_session_t* srv_session_get_by_host(const char *host){
+SRVSession* srv_session_get_by_host(const char *host){
     int i;
 
     if (!host) return NULL;
 
     for (i = 0; i < MAX_SESSIONS; i++){
-        if (sessions[i].stat == SESS_NOINUSE) continue;
+        if (sessions[i].stat == SRV_SESSION_STAT_NOINUSE) continue;
         if (strcmp(sessions[i].host, host) == 0)
             return &sessions[i];
     }
@@ -355,7 +356,7 @@ srv_session_t* srv_session_get_by_host(const char *host){
     return NULL;
 }
 
-int srv_session_send(srv_session_t *session,
+int srv_session_send(SRVSession *session,
         const char *target, const char *msg){
     int res;
     if ((res = irc_cmd_msg(session->irc_session, target, msg)) < 0){
@@ -365,7 +366,7 @@ int srv_session_send(srv_session_t *session,
     return res;
 }
 
-int srv_session_me(srv_session_t *session,
+int srv_session_me(SRVSession *session,
         const char *target, const char *msg){
     int res;
     if ((res = irc_cmd_me(session->irc_session, target, msg)) < 0){
@@ -376,7 +377,7 @@ int srv_session_me(srv_session_t *session,
     return res;
 }
 
-int srv_session_join(srv_session_t *session,
+int srv_session_join(SRVSession *session,
         const char *chan, const char *passwd){
     int res;
     if ((res = irc_cmd_join(session->irc_session, chan, passwd)) < 0){
@@ -385,7 +386,7 @@ int srv_session_join(srv_session_t *session,
     return res;
 }
 
-int srv_session_part(srv_session_t *session, const char *chan){
+int srv_session_part(SRVSession *session, const char *chan){
     int res;
     if ((res = irc_cmd_part(session->irc_session, chan)) < 0){
         srv_session_err_hdr(session);
@@ -393,7 +394,7 @@ int srv_session_part(srv_session_t *session, const char *chan){
     return res;
 }
 
-int srv_session_quit(srv_session_t *session, const char *reason){
+int srv_session_quit(SRVSession *session, const char *reason){
     int res;
 
     if (!reason) reason = PACKAGE_NAME PACKAGE_VERSION " close.";
@@ -408,7 +409,7 @@ void srv_session_quit_all(){
     int i;
 
     for (i = 0; i < MAX_SESSIONS; i++){
-        if (sessions[i].stat == SESS_CONNECT) {
+        if (sessions[i].stat == SRV_SESSION_STAT_CONNECT) {
             srv_session_quit(&sessions[i], NULL);
         }
     }
@@ -421,7 +422,7 @@ void srv_session_quit_all(){
      */
 }
 
-int srv_session_nick(srv_session_t *session, const char *new_nick){
+int srv_session_nick(SRVSession *session, const char *new_nick){
     int res;
     if ((res = irc_cmd_nick(session->irc_session, new_nick)) < 0){
         srv_session_err_hdr(session);
@@ -429,7 +430,7 @@ int srv_session_nick(srv_session_t *session, const char *new_nick){
     return res;
 }
 
-int srv_session_whois(srv_session_t *session, const char *nick){
+int srv_session_whois(SRVSession *session, const char *nick){
     int res;
     if ((res = irc_cmd_whois(session->irc_session, nick)) < 0){
         srv_session_err_hdr(session);
@@ -437,7 +438,7 @@ int srv_session_whois(srv_session_t *session, const char *nick){
     return res;
 }
 
-int srv_session_who(srv_session_t *session, const char *nick){
+int srv_session_who(SRVSession *session, const char *nick){
     int res;
     if ((res = irc_cmd_who(session->irc_session, nick)) < 0){
         srv_session_err_hdr(session);
@@ -445,7 +446,7 @@ int srv_session_who(srv_session_t *session, const char *nick){
     return res;
 }
 
-int srv_session_invite(srv_session_t *session, const char *nick, const char *chan){
+int srv_session_invite(SRVSession *session, const char *nick, const char *chan){
     int res;
     if ((res = irc_cmd_invite(session->irc_session, nick, chan)) < 0){
         srv_session_err_hdr(session);
@@ -453,7 +454,7 @@ int srv_session_invite(srv_session_t *session, const char *nick, const char *cha
     return res;
 }
 
-int srv_session_kick(srv_session_t *session, const char *nick,
+int srv_session_kick(SRVSession *session, const char *nick,
         const char *chan, const char *reason){
     int res;
     if ((res = irc_cmd_kick(session->irc_session, nick, chan, reason)) < 0){
@@ -462,7 +463,7 @@ int srv_session_kick(srv_session_t *session, const char *nick,
     return res;
 }
 
-int srv_session_mode(srv_session_t *session, const char *target, const char *mode){
+int srv_session_mode(SRVSession *session, const char *target, const char *mode){
     int res;
     if (target)
         res = irc_cmd_user_mode(session->irc_session, mode);
@@ -476,7 +477,7 @@ int srv_session_mode(srv_session_t *session, const char *target, const char *mod
     return res;
 }
 
-int srv_session_topic(srv_session_t *session, const char *chan, const char *topic){
+int SRVSessionopic(SRVSession *session, const char *chan, const char *topic){
     int res;
     if ((res = irc_cmd_topic(session->irc_session, chan, topic)) < 0){
         srv_session_err_hdr(session);
@@ -485,9 +486,9 @@ int srv_session_topic(srv_session_t *session, const char *chan, const char *topi
 }
 
 /* Append to seesion channel list */
-int srv_session_add_chan(srv_session_t *session, const char *chan_name){
+int srv_session_add_chan(SRVSession *session, const char *chan_name){
     GList *chan_list;
-    channel_t *chan;
+    SRVChannel *chan;
 
     chan_list = session->chan_list;
     while (chan_list){
@@ -502,7 +503,7 @@ int srv_session_add_chan(srv_session_t *session, const char *chan_name){
         return -1;
     }
 
-    chan = g_malloc0(sizeof(channel_t));
+    chan = g_malloc0(sizeof(SRVChannel));
 
     chan->joined = 0;
     chan->user_list = NULL;
@@ -514,9 +515,9 @@ int srv_session_add_chan(srv_session_t *session, const char *chan_name){
 }
 
 /* Remove from seesion channel list */
-int srv_session_rm_chan(srv_session_t *session, const char *chan_name){
+int srv_session_rm_chan(SRVSession *session, const char *chan_name){
     GList *chan_list;
-    channel_t *chan;
+    SRVChannel *chan;
 
     chan_list = session->chan_list;
     while (chan_list){
@@ -537,9 +538,9 @@ int srv_session_rm_chan(srv_session_t *session, const char *chan_name){
     return -1;
 }
 
-static channel_t* get_chan_by_name(srv_session_t *session, const char *chan_name){
+static SRVChannel* get_chan_by_name(SRVSession *session, const char *chan_name){
     GList *chan_list;
-    channel_t *chan;
+    SRVChannel *chan;
 
     chan_list = session->chan_list;
     while (chan_list){
@@ -555,9 +556,9 @@ static channel_t* get_chan_by_name(srv_session_t *session, const char *chan_name
     return NULL;
 }
 
-int srv_session_add_user(srv_session_t *session, const char *chan_name,
+int srv_session_add_user(SRVSession *session, const char *chan_name,
         const char *nick){
-    channel_t *chan;
+    SRVChannel *chan;
     GList *user_list;
 
     chan = get_chan_by_name(session, chan_name);
@@ -577,9 +578,9 @@ int srv_session_add_user(srv_session_t *session, const char *chan_name,
     return 0;
 }
 
-int srv_session_rm_user(srv_session_t *session, const char *chan_name,
+int srv_session_rm_user(SRVSession *session, const char *chan_name,
         const char *nick){
-    channel_t *chan;
+    SRVChannel *chan;
     GList *user_list;
 
     chan = get_chan_by_name(session, chan_name);
@@ -601,9 +602,9 @@ int srv_session_rm_user(srv_session_t *session, const char *chan_name,
     return -1;
 }
 
-int srv_session_user_exist(srv_session_t *session, const char *chan_name,
+int srv_session_user_exist(SRVSession *session, const char *chan_name,
         const char *nick){
-    channel_t *chan;
+    SRVChannel *chan;
     GList *user_list;
 
     chan = get_chan_by_name(session, chan_name);

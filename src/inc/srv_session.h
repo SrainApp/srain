@@ -14,30 +14,28 @@
 
 #define IS_CHAN(x) (x && (x[0] == '#' || x[0] == '&'))
 
-typedef enum {
-    SSL_OFF = 0,
-    SSL_NO_VERIFY,
-    SSL_ON,
-    /*...*/
-} ssl_opt_t;
+#define SRV_SESSION_FLAG_SSL            0x1
+#define SRV_SESSION_FLAG_SSL_NOVERIFY   0x2
+
+typedef int SRVSessionFlag;
 
 typedef enum {
-    SESS_NOINUSE = 0,
-    SESS_INUSE,
-    SESS_CONNECT,
-    SESS_CLOSE,
+    SRV_SESSION_STAT_NOINUSE = 0,
+    SRV_SESSION_STAT_INUSE,
+    SRV_SESSION_STAT_CONNECT,
+    SRV_SESSION_STAT_CLOSE,
     /*...*/
-} session_stat_t;
+} SRVSessionStat;
 
 typedef struct{
     char name[CHAN_LEN];
     int joined; // Whether you actually join in this channel
     GList *user_list;
-} channel_t;
+} SRVChannel;
 
 typedef struct {
     // Session status
-    session_stat_t stat;
+    SRVSessionStat stat;
 
     // IRC context
     char prefix[1];   // '#' or ' ', Note: plz use it as server parameter of `irc_connect()`
@@ -51,36 +49,36 @@ typedef struct {
     GList *chan_list;   // List of channel_t
 
     irc_session_t *irc_session;
-} srv_session_t;
+} SRVSession;
 
 void srv_session_init();
 void srv_session_proc();
-srv_session_t* srv_session_new(const char *host, int port, const char *passwd,
-        const char *nickname, const char *username, const char *realname, ssl_opt_t ssl);
-int srv_session_is_session(srv_session_t *session);
-int srv_session_free(srv_session_t *session);
+SRVSession* srv_session_new(const char *host, int port, const char *passwd,
+        const char *nickname, const char *username, const char *realname, SRVSessionFlag flag);
+int srv_session_is_session(SRVSession *session);
+int srv_session_free(SRVSession *session);
 
-srv_session_t* srv_session_get_by_host(const char *host);
+SRVSession* srv_session_get_by_host(const char *host);
 
-int srv_session_send(srv_session_t *session, const char *target, const char *msg);
-int srv_session_me(srv_session_t *session, const char *target, const char *msg);
-int srv_session_join(srv_session_t *session, const char *chan, const char *passwd);
-int srv_session_part(srv_session_t *session, const char *chan);
-int srv_session_quit(srv_session_t *session, const char *reason);
+int srv_session_send(SRVSession *session, const char *target, const char *msg);
+int srv_session_me(SRVSession *session, const char *target, const char *msg);
+int srv_session_join(SRVSession *session, const char *chan, const char *passwd);
+int srv_session_part(SRVSession *session, const char *chan);
+int srv_session_quit(SRVSession *session, const char *reason);
 void srv_session_quit_all();
-int srv_session_nick(srv_session_t *session, const char *new_nick);
-int srv_session_whois(srv_session_t *session, const char *nick);
-int srv_session_who(srv_session_t *session, const char *nick);
-int srv_session_invite(srv_session_t *session, const char *nick, const char *chan);
-int srv_session_kick(srv_session_t *session, const char *nick, const char *chan, const char *reason);
-int srv_session_mode(srv_session_t *session, const char *target, const char *mode);
-int srv_session_topic(srv_session_t *session, const char *chan, const char *topic);
+int srv_session_nick(SRVSession *session, const char *new_nick);
+int srv_session_whois(SRVSession *session, const char *nick);
+int srv_session_who(SRVSession *session, const char *nick);
+int srv_session_invite(SRVSession *session, const char *nick, const char *chan);
+int srv_session_kick(SRVSession *session, const char *nick, const char *chan, const char *reason);
+int srv_session_mode(SRVSession *session, const char *target, const char *mode);
+int SRVSessionopic(SRVSession *session, const char *chan, const char *topic);
 
 /* Handle session's channel list and user list */
-int srv_session_add_chan(srv_session_t *session, const char *chan);
-int srv_session_rm_chan(srv_session_t *session, const char *chan);
-int srv_session_add_user(srv_session_t *session, const char *chan, const char *nick);
-int srv_session_rm_user(srv_session_t *session, const char *chan, const char *nick);
-int srv_session_user_exist(srv_session_t *session, const char *chan, const char *nick);
+int srv_session_add_chan(SRVSession *session, const char *chan);
+int srv_session_rm_chan(SRVSession *session, const char *chan);
+int srv_session_add_user(SRVSession *session, const char *chan, const char *nick);
+int srv_session_rm_user(SRVSession *session, const char *chan, const char *nick);
+int srv_session_user_exist(SRVSession *session, const char *chan, const char *nick);
 
 #endif /* __SRV_SESSION_H */

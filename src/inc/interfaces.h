@@ -6,6 +6,8 @@
 #include "srain_msg.h"
 #include "srain_user_list.h"
 
+#include "srv_session.h"
+
 #define SIGN_UI_CHAT_ID const char *srv_name, const char *chat_name
 
 #define SIGN_UI_ADD_CHAT  SIGN_UI_CHAT_ID, const char *nick, ChatType type
@@ -30,7 +32,7 @@ typedef void (*UISetTopicFunc)  (SIGN_UI_SET_TOPIC);
 
 #define SIGN_SRV_CONNECT    const char *host, int port, const char *passwd, \
                             const char *nickname, const char *username, \
-                            const char *realname, int ssl
+                            const char *realname, SRVSessionFlag flag
 #define SIGN_SRV_QUERY      const char *srv_name, const char *nick
 #define SIGN_SRV_UNQUERY    const char *srv_name, const char *nick
 #define SIGN_SRV_JOIN       const char *srv_name, const char *chan, const char *passwd

@@ -21,13 +21,13 @@
 #include "filter.h"
 #include "command.h"
 
-static srv_session_t *startup_session;
+static SRVSession *startup_session;
 
 static int on_command_connect(Command *cmd, void *user_data){
     const char *host = command_get_arg(cmd, 0);
     const char *nick = command_get_arg(cmd, 1);
     char *port, *passwd, *ssl, *realname;
-    srv_session_t *session = user_data;
+    SRVSession *session = user_data;
 
     command_get_opt(cmd, "-port", &port);
     command_get_opt(cmd, "-passwd", &passwd);
@@ -35,16 +35,16 @@ static int on_command_connect(Command *cmd, void *user_data){
     command_get_opt(cmd, "-realname", &realname);
 
     if (!host || !nick) return -1;
-    ssl_opt_t sslopt = SSL_OFF;
-    if (strcmp(ssl, "on") == 0) sslopt = SSL_ON;
-    if (strcmp(ssl, "off") == 0) sslopt = SSL_OFF;
-    if (strcmp(ssl, "noverify") == 0) sslopt = SSL_NO_VERIFY;
+    SRVSessionFlag flag = 0;
+    if (strcmp(ssl, "on") == 0) flag |= SRV_SESSION_FLAG_SSL;
+    // if (strcmp(ssl, "off") == 0) sslopt = SSL_OFF;
+    if (strcmp(ssl, "noverify") == 0) flag |= SRV_SESSION_FLAG_SSL_NOVERIFY;
 
     if (*passwd == '\0') passwd = NULL;
 
-    srv_session_t *tmp;
+    SRVSession *tmp;
     tmp = srv_session_new(host, atoi(port), passwd, nick,
-            PACKAGE_NAME, realname, sslopt);
+            PACKAGE_NAME, realname, flag);
     if (tmp){
         startup_session = tmp;
         return 0;
@@ -87,7 +87,7 @@ static int on_command_unignore(Command *cmd, void *user_data){
 
 static int on_command_query(Command *cmd, void *user_data){
     const char *nick = command_get_arg(cmd, 0);
-    srv_session_t *session = user_data;
+    SRVSession *session = user_data;
 
     if (!nick) return -1;
     srv_hdr_ui_add_chat(session->host, nick, "", CHAT_PRIVATE);
@@ -97,7 +97,7 @@ static int on_command_query(Command *cmd, void *user_data){
 
 static int on_command_unquery(Command *cmd, void *user_data){
     const char *nick = command_get_arg(cmd, 0);
-    srv_session_t *session = user_data;
+    SRVSession *session = user_data;
 
     if (!nick) return -1;
     srv_hdr_ui_rm_chat(session->host, nick);
@@ -107,7 +107,7 @@ static int on_command_unquery(Command *cmd, void *user_data){
 static int on_command_join(Command *cmd, void *user_data){
     const char *chan = command_get_arg(cmd, 0);
     const char *passwd = command_get_arg(cmd, 1);
-    srv_session_t *session = user_data;
+    SRVSession *session = user_data;
 
     if (!chan) return -1;
     return srv_session_join(session, chan, passwd);
@@ -116,7 +116,7 @@ static int on_command_join(Command *cmd, void *user_data){
 static int on_command_part(Command *cmd, void *user_data){
     const char *chan = command_get_arg(cmd, 0);
     // const char *reason = command_get_arg(cmd, 1);
-    srv_session_t *session = user_data;
+    SRVSession *session = user_data;
 
     if (!chan) chan = user_data;
     return srv_session_part(session, chan);
@@ -124,7 +124,7 @@ static int on_command_part(Command *cmd, void *user_data){
 
 static int on_command_quit(Command *cmd, void *user_data){
     const char *reason = command_get_arg(cmd, 0);
-    srv_session_t *session = user_data;
+    SRVSession *session = user_data;
 
     return srv_session_quit(session, reason);
 }
@@ -132,16 +132,16 @@ static int on_command_quit(Command *cmd, void *user_data){
 static int on_command_topic(Command *cmd, void *user_data){
     const char *channel = user_data;
     const char *topic = command_get_arg(cmd, 0);
-    srv_session_t *session = user_data;
+    SRVSession *session = user_data;
 
     if (command_get_opt(cmd, "-rm", NULL)) topic = "";
-    return srv_session_topic(session, channel, topic);
+    return SRVSessionopic(session, channel, topic);
 }
 
 static int on_command_msg(Command *cmd, void *user_data){
     const char *target = command_get_arg(cmd, 0);
     const char *msg = command_get_arg(cmd, 1);
-    srv_session_t *session = user_data;
+    SRVSession *session = user_data;
 
     if (!target || !msg) return -1;
     srv_hdr_ui_send_msg(session->host, target, msg, 0);
@@ -150,7 +150,7 @@ static int on_command_msg(Command *cmd, void *user_data){
 
 static int on_command_me(Command *cmd, void *user_data){
     const char *msg = command_get_arg(cmd, 0);
-    srv_session_t *session = user_data;
+    SRVSession *session = user_data;
 
     if (!msg) return -1;
 
@@ -163,7 +163,7 @@ static int on_command_me(Command *cmd, void *user_data){
 
 static int on_command_nick(Command *cmd, void *user_data){
     const char *nick = command_get_arg(cmd, 0);
-    srv_session_t *session = user_data;
+    SRVSession *session = user_data;
 
     if (!nick) return -1;
     return srv_session_nick(session, nick);
@@ -171,7 +171,7 @@ static int on_command_nick(Command *cmd, void *user_data){
 
 static int on_command_whois(Command *cmd, void *user_data){
     const char *nick = command_get_arg(cmd, 0);
-    srv_session_t *session = user_data;
+    SRVSession *session = user_data;
 
     if (!nick) return -1;
     return srv_session_whois(session, nick);
@@ -180,7 +180,7 @@ static int on_command_whois(Command *cmd, void *user_data){
 static int on_command_invite(Command *cmd, void *user_data){
     const char *nick = command_get_arg(cmd, 0);
     const char *chan = command_get_arg(cmd, 1);
-    srv_session_t *session = user_data;
+    SRVSession *session = user_data;
 
     if (!nick) return -1;
     if (!chan) chan = user_data;
@@ -191,7 +191,7 @@ static int on_command_kick(Command *cmd, void *user_data){
     const char *nick = command_get_arg(cmd, 0);
     const char *chan = command_get_arg(cmd, 1);
     const char *reason = command_get_arg(cmd, 3);
-    srv_session_t *session = user_data;
+    SRVSession *session = user_data;
 
     if (!nick || !chan) return -1;
     return srv_session_kick(session, nick, chan, reason);
@@ -200,7 +200,7 @@ static int on_command_kick(Command *cmd, void *user_data){
 static int on_command_mode(Command *cmd, void *user_data){
     const char *mode = command_get_arg(cmd, 0);
     const char *target = command_get_arg(cmd, 1);
-    srv_session_t *session = user_data;
+    SRVSession *session = user_data;
 
     if (!target || !mode) return -1;
     return srv_session_mode(session, target, mode);
@@ -333,40 +333,40 @@ static CommandBind cmd_binds[] = {
 };
 
 void on_unknown_cmd(const char *cmd, void *user_data){
-    srv_session_t *session = user_data;
+    SRVSession *session = user_data;
 
     srv_hdr_ui_sys_msgf(session->host, "", SYS_MSG_ERROR, 0,
             _("No such command '%s'"), cmd);
 }
 
 void on_unknown_opt(Command *cmd, const char *opt, void *user_data){
-    srv_session_t *session = user_data;
+    SRVSession *session = user_data;
 
     srv_hdr_ui_sys_msgf(session->host, "", SYS_MSG_ERROR, 0,
             _("No such option '%s'"), opt);
 }
 
 void on_missing_opt_val(Command *cmd, const char *opt, void *user_data){
-    srv_session_t *session = user_data;
+    SRVSession *session = user_data;
 
     srv_hdr_ui_sys_msgf(session->host, "", SYS_MSG_ERROR, 0,
             _("Option '%s' missing value"), opt);
 }
 
 void on_too_many_opt(Command *cmd, void *user_data){
-    srv_session_t *session = user_data;
+    SRVSession *session = user_data;
 
     srv_hdr_ui_sys_msg(session->host, "", _("Too many options"), SYS_MSG_ERROR, 0);
 }
 
 void on_too_many_arg(Command *cmd, void *user_data){
-    srv_session_t *session = user_data;
+    SRVSession *session = user_data;
 
     srv_hdr_ui_sys_msg(session->host, "", _("Too many arguments"), SYS_MSG_ERROR, 0);
 }
 
 void on_callback_fail(Command *cmd, void *user_data){
-    srv_session_t *session = user_data;
+    SRVSession *session = user_data;
 
     srv_hdr_ui_sys_msgf(session->host, "", SYS_MSG_ERROR, 0,
             _("Command '%s' failed"), cmd->bind->name);
@@ -387,16 +387,16 @@ void srv_session_cmd_init(){
     commmad_set_context(&cmd_context);
 }
 
-static void wait_until_connected(srv_session_t *session){
+static void wait_until_connected(SRVSession *session){
     if (!session) return;
 
     DBG_FR("Waiting for session: %s ...", session->host);
-    while (session->stat != SESS_CONNECT){
+    while (session->stat != SRV_SESSION_STAT_CONNECT){
         sleep(1);
     };
 }
 
-int srv_session_cmd(srv_session_t *session, const char *source, char *cmd, int block){
+int srv_session_cmd(SRVSession *session, const char *source, char *cmd, int block){
     if (source == NULL) source = META_SERVER;
     if (session == NULL) session = startup_session;
     if (block) wait_until_connected(session);
