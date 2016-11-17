@@ -43,6 +43,7 @@ typedef void (*UISetTopicFunc)  (SIGN_UI_SET_TOPIC);
 #define SIGN_SRV_INVITE     const char *srv_name, const char *nick, const char *chan
 
 typedef int (*SRVConnectFunc)   (SIGN_SRV_CONNECT);
+typedef int (*SRVQuitFunc)      (SIGN_SRV_QUIT);
 typedef int (*SRVQueryFunc)     (SIGN_SRV_QUERY);
 typedef int (*SRVUnqueryFunc)   (SIGN_SRV_UNQUERY);
 typedef int (*SRVJoinFunc)      (SIGN_SRV_JOIN);

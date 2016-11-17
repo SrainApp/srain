@@ -65,6 +65,19 @@ int srv_connect(SIGN_SRV_CONNECT){
     return res;
 }
 
+int srv_quit(SIGN_SRV_QUIT){
+    srv_session_t *session;
+
+    session = srv_session_get_by_host(srv_name);
+    if (!session){
+        WARN_FR("No such session %s", srv_name);
+        return -1;
+    }
+
+    return srv_session_quit(session, reason);
+}
+
+
 int srv_cmd(SIGN_SRV_CMD){
     srv_session_t *session;
 
@@ -156,19 +169,6 @@ int srv_send(SIGN_SRV_SEND){
     }
 
     return srv_session_send(session, target, msg);
-}
-
-
-int srv_quit(SIGN_SRV_QUIT){
-    srv_session_t *session;
-
-    session = srv_session_get_by_host(srv_name);
-    if (!session){
-        WARN_FR("No such session %s", srv_name);
-        return -1;
-    }
-
-    return srv_session_quit(session, reason);
 }
 
 int srv_kick(SIGN_SRV_KICK){

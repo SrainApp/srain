@@ -10,6 +10,7 @@ SRVQueryFunc    ui_hdr_srv_query;
 SRVUnqueryFunc  ui_hdr_srv_unquery;
 SRVJoinFunc     ui_hdr_srv_join;
 SRVPartFunc     ui_hdr_srv_part;
+SRVQuitFunc     ui_hdr_srv_quit;
 SRVSendFunc     ui_hdr_srv_send;
 SRVCmdFunc      ui_hdr_srv_cmd;
 SRVKickFunc     ui_hdr_srv_kick;

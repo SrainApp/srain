@@ -5,12 +5,10 @@
 
 void srv_init();
 void srv_finalize();
-int srv_connect(const char *host, int port, const char *passwd,
-        const char *nickname, const char *username, const char *realname, int ssl);
-int srv_quit(const char *srv_name, const char *reason);
 
 /* SRV interface functions, used by other module */
 int srv_connect(SIGN_SRV_CONNECT);
+int srv_quit(SIGN_SRV_QUIT);
 int srv_cmd  (SIGN_SRV_CMD);
 int srv_query(SIGN_SRV_QUERY);
 int srv_unquery(SIGN_SRV_UNQUERY);

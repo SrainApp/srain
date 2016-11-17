@@ -23,6 +23,7 @@ void ui_hdr_init(){
     ui_hdr_srv_unquery = srv_unquery;
     ui_hdr_srv_join = srv_join;
     ui_hdr_srv_part = srv_part;
+    ui_hdr_srv_quit = srv_quit;
     ui_hdr_srv_send = srv_send;
     ui_hdr_srv_cmd = srv_cmd;
     ui_hdr_srv_kick = srv_kick;

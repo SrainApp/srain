@@ -82,9 +82,24 @@ static void close_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
 
     chat = user_data;
 
-    ui_hdr_srv_part(
-            srain_chat_get_srv_name(chat),
-            srain_chat_get_chat_name(chat));
+    switch (chat->type){
+        case CHAT_SERVER:
+            ui_hdr_srv_quit(srain_chat_get_srv_name(chat), "");
+            break;
+        case CHAT_CHANNEL:
+            ui_hdr_srv_part(
+                    srain_chat_get_srv_name(chat),
+                    srain_chat_get_chat_name(chat));
+            break;
+        case CHAT_PRIVATE:
+            ui_hdr_srv_unquery(
+                    srain_chat_get_srv_name(chat),
+                    srain_chat_get_chat_name(chat));
+            break;
+        default:
+            break;
+    }
+
 }
 
 static gboolean entry_on_key_press(gpointer user_data, GdkEventKey *event){
