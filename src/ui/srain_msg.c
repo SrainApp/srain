@@ -111,7 +111,10 @@ static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_da
                 srain_chat_get_srv_name(chat),
                 srain_chat_get_chat_name(chat),
                 str->str, 0);
-        if (ui_hdr_srv_send(chat, str->str) < 0){
+        if (ui_hdr_srv_send(
+                    srain_chat_get_srv_name(chat),
+                    srain_chat_get_chat_name(chat),
+                    str->str) < 0){
             ui_sys_msg_sync(
                     srain_chat_get_srv_name(chat),
                     srain_chat_get_chat_name(chat),

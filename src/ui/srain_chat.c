@@ -80,10 +80,11 @@ static void toggle_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
 static void close_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
     SrainChat *chat;
 
-    g_return_if_fail(SRAIN_IS_CHAT(user_data));
     chat = user_data;
 
-    ui_hdr_srv_part(chat);
+    ui_hdr_srv_part(
+            srain_chat_get_srv_name(chat),
+            srain_chat_get_chat_name(chat));
 }
 
 static gboolean entry_on_key_press(gpointer user_data, GdkEventKey *event){
@@ -187,14 +188,20 @@ static void input_entry_on_activate(SrainChat *chat){
     LOG_FR("chat: %s, text: '%s'", chat_name, input);
 
     if (input[0] == '/'){
-        ui_hdr_srv_cmd(chat, input, 0);
+        ui_hdr_srv_cmd(
+                srain_chat_get_srv_name(chat),
+                srain_chat_get_chat_name(chat),
+                input, 0);
     } else {
-        ui_send_msg_sync(
+        ui_send_msg(
+                srain_chat_get_srv_name(chat),
+                srain_chat_get_chat_name(chat),
+                input, 0);
+        if (ui_hdr_srv_send(
                     srain_chat_get_srv_name(chat),
                     srain_chat_get_chat_name(chat),
-                    input, 0);
-        if (ui_hdr_srv_send(chat, input) < 0){
-            ui_sys_msg_sync(
+                    input) < 0){
+            ui_sys_msg(
                     srain_chat_get_srv_name(chat),
                     srain_chat_get_chat_name(chat),
                     _("Failed to send message"),

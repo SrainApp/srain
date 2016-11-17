@@ -10,37 +10,43 @@
 
 static void nick_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
     const char *nick;
-    GString *cmd;
+    SrainChat *chat;
 
+    chat = srain_window_get_cur_chat(srain_win);
     nick = user_data;
-    cmd = g_string_new("");
 
     if (strcmp(gtk_widget_get_name(widget), "whois_menu_item") == 0){
-        g_string_printf(cmd, "/whois %s", nick);
+        ui_hdr_srv_whois(srain_chat_get_srv_name(chat), nick);
     }
     else if (strcmp(gtk_widget_get_name(widget), "ignore_menu_item") == 0){
+        // TODO
+        GString *cmd = g_string_new("");
+
         g_string_printf(cmd, "/ignore %s", nick);
+        ui_hdr_srv_cmd(
+                srain_chat_get_srv_name(chat),
+                srain_chat_get_chat_name(chat),
+                cmd->str, 0);
+        g_string_free(cmd, TRUE);
     }
     else if (strcmp(gtk_widget_get_name(widget), "kick_menu_item") == 0){
-        g_string_printf(cmd, "/kick %s", nick);
+        ui_hdr_srv_kick(
+                srain_chat_get_srv_name(chat),
+                srain_chat_get_chat_name(chat),
+                nick, "");
     }
     else if (strcmp(gtk_widget_get_name(widget), "chat_menu_item") == 0){
-        g_string_printf(cmd, "/query %s", nick);
+        ui_hdr_srv_query( srain_chat_get_srv_name(chat), nick);
     }
     else if (strcmp(gtk_widget_get_name(widget), "invite_submenu_item") == 0){
-        g_string_printf(cmd, "/invite %s %s", nick,
-                gtk_menu_item_get_label(GTK_MENU_ITEM(widget)));
+        ui_hdr_srv_invite(
+                srain_chat_get_srv_name(chat),
+                srain_chat_get_chat_name(chat),
+                nick);
     }
     else {
         ERR_FR("Unknown menu item: %s", gtk_widget_get_name(widget));
-        g_string_free(cmd, TRUE);
-
-        return;
     }
-
-    ui_hdr_srv_cmd(srain_window_get_cur_chat(srain_win), cmd->str, 0);
-
-    g_string_free(cmd, TRUE);
 }
 
 void nick_menu_popup(GdkEventButton *event, const char *nick){

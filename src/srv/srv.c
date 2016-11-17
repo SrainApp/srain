@@ -51,8 +51,7 @@ void srv_finalize(){
  *
  * @return 0 if successed, -1 if failed
  */
-int srv_connect(const char *host, int port, const char *passwd,
-        const char *nickname, const char *username, const char *realname, int ssl){
+int srv_connect(SIGN_SRV_CONNECT){
     int res;
 
     if (!host || !nickname){
@@ -66,7 +65,83 @@ int srv_connect(const char *host, int port, const char *passwd,
     return res;
 }
 
-int srv_send(const char *srv_name, const char *target, const char *msg){
+int srv_cmd(SIGN_SRV_CMD){
+    srv_session_t *session;
+
+    session = srv_session_get_by_host(srv_name);
+
+    return srv_session_cmd(session, source, cmd, block);
+}
+
+int srv_query(SIGN_SRV_QUERY){
+    srv_session_t *session;
+
+    session = srv_session_get_by_host(srv_name);
+    if (!session){
+        WARN_FR("No such session %s", srv_name);
+        return -1;
+    }
+
+    if (IS_CHAN(nick)){
+        return -1;
+    }
+
+    srv_hdr_ui_add_chat(session->host, nick, session->nickname, CHAT_PRIVATE);
+
+    return 0;
+}
+
+int srv_unquery(SIGN_SRV_UNQUERY){
+    srv_session_t *session;
+
+    session = srv_session_get_by_host(srv_name);
+    if (!session){
+        WARN_FR("No such session %s", srv_name);
+        return -1;
+    }
+
+    if (IS_CHAN(nick)){
+        return -1;
+    }
+
+    srv_hdr_ui_rm_chat(session->host, nick);
+
+    return 0;
+}
+
+int srv_join(SIGN_SRV_JOIN){
+    srv_session_t *session;
+
+    session = srv_session_get_by_host(srv_name);
+    if (!session){
+        WARN_FR("No such session %s", srv_name);
+        return -1;
+    }
+
+    if (!IS_CHAN(chan)){
+        return -1;
+    }
+
+    return srv_session_join(session, chan, passwd);
+}
+
+int srv_part(SIGN_SRV_PART){
+    srv_session_t *session;
+
+    session = srv_session_get_by_host(srv_name);
+    if (!session){
+        WARN_FR("No such session %s", srv_name);
+        return -1;
+    }
+
+    if (!IS_CHAN(chan)){
+        return -1;
+    }
+
+    return srv_session_part(session, chan);
+}
+
+int srv_send(SIGN_SRV_SEND){
     srv_session_t *session;
 
     if (!srv_name || !target || !msg){
@@ -83,54 +158,8 @@ int srv_send(const char *srv_name, const char *target, const char *msg){
     return srv_session_send(session, target, msg);
 }
 
-int srv_cmd(const char *srv_name, const char *source, char *cmd, int block){
-    srv_session_t *session;
 
-    session = srv_session_get_by_host(srv_name);
-
-    return srv_session_cmd(session, source, cmd, block);
-}
-
-int srv_join(const char *srv_name, const char *chat, const char *passwd){
-    srv_session_t *session;
-
-    session = srv_session_get_by_host(srv_name);
-    if (!session){
-        WARN_FR("No such session %s", srv_name);
-        return -1;
-    }
-
-    if (IS_CHAN(chat)){
-        return srv_session_join(session, chat, passwd);
-    }
-    else if (strcmp(chat, META_SERVER) == 0){
-        return -1;
-    } else {
-        srv_hdr_ui_add_chat(session->host, chat, session->nickname, CHAT_PRIVATE);
-        return 0;
-    }
-}
-
-int srv_part(const char *srv_name, const char *chat){
-    srv_session_t *session;
-
-    session = srv_session_get_by_host(srv_name);
-    if (!session){
-        WARN_FR("No such session %s", srv_name);
-        return -1;
-    }
-    if (IS_CHAN(chat)){
-        return srv_session_part(session, chat);
-    }
-    else if (strcmp(chat, META_SERVER) == 0){
-        return srv_session_quit(session, NULL);
-    } else {
-        srv_hdr_ui_rm_chat(session->host, chat);
-        return 0;
-    }
-}
-
-int srv_quit(const char *srv_name, const char *reason){
+int srv_quit(SIGN_SRV_QUIT){
     srv_session_t *session;
 
     session = srv_session_get_by_host(srv_name);
@@ -140,4 +169,40 @@ int srv_quit(const char *srv_name, const char *reason){
     }
 
     return srv_session_quit(session, reason);
+}
+
+int srv_kick(SIGN_SRV_KICK){
+    srv_session_t *session;
+
+    session = srv_session_get_by_host(srv_name);
+    if (!session){
+        WARN_FR("No such session %s", srv_name);
+        return -1;
+    }
+
+    return srv_session_kick(session, nick, chan, reason);
+}
+
+int srv_whois(SIGN_SRV_WHOIS){
+    srv_session_t *session;
+
+    session = srv_session_get_by_host(srv_name);
+    if (!session){
+        WARN_FR("No such session %s", srv_name);
+        return -1;
+    }
+
+    return srv_session_whois(session, nick);
+}
+
+int srv_invite(SIGN_SRV_INVITE){
+    srv_session_t *session;
+
+    session = srv_session_get_by_host(srv_name);
+    if (!session){
+        WARN_FR("No such session %s", srv_name);
+        return -1;
+    }
+
+    return srv_session_invite(session, nick, chan);
 }

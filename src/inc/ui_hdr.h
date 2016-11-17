@@ -2,12 +2,18 @@
 #define __UI_HDR_H
 
 #include "interfaces.h"
-#include "srain_chat.h"
 
 void ui_hdr_init();
-int ui_hdr_srv_join(const char *chat_name, const char *passwd);
-int ui_hdr_srv_part(SrainChat *chat);
-int ui_hdr_srv_send(SrainChat *target, const char *msg);
-int ui_hdr_srv_cmd(SrainChat *source, char *cmd, int block);
+
+SRVConnectFunc  ui_hdr_srv_connect;
+SRVQueryFunc    ui_hdr_srv_query;
+SRVUnqueryFunc  ui_hdr_srv_unquery;
+SRVJoinFunc     ui_hdr_srv_join;
+SRVPartFunc     ui_hdr_srv_part;
+SRVSendFunc     ui_hdr_srv_send;
+SRVCmdFunc      ui_hdr_srv_cmd;
+SRVKickFunc     ui_hdr_srv_kick;
+SRVWhoisFunc    ui_hdr_srv_whois;
+SRVInviteFunc   ui_hdr_srv_invite;
 
 #endif /* __UI_HDR_H */

@@ -16,13 +16,13 @@
 #include "log.h"
 
 int ui_test_srv_join(SIGN_SRV_JOIN){
-    LOG_FR("srv_name: %s, chan_name: %s, passwd: %s",
-            srv_name, chan_name, passwd);
+    LOG_FR("srv_name: %s, chat: %s, passwd: %s",
+            srv_name, chan, passwd);
     return 0;
 }
 
 int ui_test_srv_part(SIGN_SRV_PART){
-    LOG_FR("srv_name: %s, chan_name: %s", srv_name, chan_name);
+    LOG_FR("srv_name: %s, chan: %s", srv_name, chan);
     return 0;
 }
 

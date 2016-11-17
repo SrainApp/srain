@@ -156,7 +156,9 @@ static void join_button_on_click(gpointer user_data){
     chat = gtk_entry_get_text(join_entries->join_chat_entry);
     pwd = gtk_entry_get_text(join_entries->join_pwd_entry);
 
-    ui_hdr_srv_join(chat, pwd);
+    ui_hdr_srv_join(
+            srain_chat_get_srv_name(srain_window_get_cur_chat(srain_win)),
+            chat, pwd);
 
     gtk_entry_set_text(join_entries->join_chat_entry, "");
     gtk_entry_set_text(join_entries->join_pwd_entry, "");
@@ -171,7 +173,6 @@ static void conn_button_on_click(gpointer user_data){
     const char *realname;
     int ssl;
     int no_verify;
-    GString *cmd;
     ConnEntries *conn_entries;
 
     conn_entries = user_data;
@@ -184,18 +185,7 @@ static void conn_button_on_click(gpointer user_data){
     ssl = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(conn_entries->conn_ssl_check_button));
     no_verify = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(conn_entries->conn_no_verfiy_check_button));
 
-    cmd = g_string_new("");
-
-    g_string_printf(cmd, "/connect %s %s ", addr, nick);
-    if (strlen(port) > 0) g_string_append_printf(cmd, "port=%s,", port);
-    if (strlen(passwd) > 0) g_string_append_printf(cmd, ",passwd=%s,", passwd);
-    if (strlen(realname) > 0) g_string_append_printf(cmd, "realname=%s,", realname);
-    if (ssl && !no_verify) g_string_append_printf(cmd, "ssl=on,");
-    if (ssl && no_verify) g_string_append_printf(cmd, "ssl=noverify,");
-
-    ui_hdr_srv_cmd(srain_window_get_cur_chat(srain_win), strdup(cmd->str), 0);
-
-    g_string_free(cmd, TRUE);
+    ui_hdr_srv_connect(addr, atoi(port), passwd, nick, NULL, realname, 0);
 
     gtk_entry_set_text(conn_entries->conn_addr_entry, "");
     gtk_entry_set_text(conn_entries->conn_port_entry, "");

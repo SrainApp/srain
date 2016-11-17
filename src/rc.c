@@ -6,7 +6,7 @@
  * @date 2016-03-01
  *
  * read $DESTDIR/srain/srainrc or $XDG_CONFIG_HOME/srain/srainrc,
- * call `ui_hdr_srv_cmd()` for every line
+ * call `srv_cmd()` for every line
  */
 
 #define __LOG_ON
