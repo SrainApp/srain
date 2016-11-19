@@ -325,7 +325,6 @@ void srv_event_kick(irc_session_t *irc_session, const char *event,
 
 void srv_event_channel(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
-    char vmsg[512];
     SRVSession *sess;
 
     sess = irc_get_ctx(irc_session);
@@ -339,11 +338,13 @@ void srv_event_channel(irc_session_t *irc_session, const char *event,
     char* pure_msg = irc_color_strip_from_mirc(msg);
     if (!pure_msg){
         ERR_FR("Failed to strip color from irc message");
+        pure_msg = strdup(msg);
     }
 
     chat_log_fmt(sess->host, chan, "<%s> %s", origin, pure_msg);
 
     char nick[NICK_LEN] = { 0 };
+
     filter_relaybot_trans(origin, nick, pure_msg);
 
     /* A message sent by relay bot */
@@ -351,16 +352,16 @@ void srv_event_channel(irc_session_t *irc_session, const char *event,
         if (!filter_is_ignore(nick)){
             if (!plugin_avatar_has_queried(nick)) srv_session_who(sess, nick);
 
-            int flag = strstr(vmsg, sess->nickname) ? SRAIN_MSG_MENTIONED : 0;
-            srv_hdr_ui_recv_msg(sess->host, chan, nick, origin, vmsg, flag);
+            int flag = strstr(pure_msg, sess->nickname) ? SRAIN_MSG_MENTIONED : 0;
+            srv_hdr_ui_recv_msg(sess->host, chan, nick, origin, pure_msg, flag);
         }
     } else {
         if (!filter_is_ignore(origin)){
             if (!plugin_avatar_has_queried(origin))
                 srv_session_who(sess, origin);
 
-            int flag = strstr(vmsg, sess->nickname) ? SRAIN_MSG_MENTIONED : 0;
-            srv_hdr_ui_recv_msg(sess->host, chan, origin, "", vmsg, flag);
+            int flag = strstr(pure_msg, sess->nickname) ? SRAIN_MSG_MENTIONED : 0;
+            srv_hdr_ui_recv_msg(sess->host, chan, origin, "", pure_msg, flag);
         }
     }
 
@@ -381,12 +382,13 @@ void srv_event_privmsg(irc_session_t *irc_session, const char *event,
     char* pure_msg = irc_color_strip_from_mirc(msg);
     if (!pure_msg){
         ERR_FR("Failed to strip color from irc message");
+        pure_msg = strdup(msg);
     }
 
-    chat_log_fmt(sess->host, origin, "<%s> %s", origin, msg);
+    chat_log_fmt(sess->host, origin, "<%s> %s", origin, pure_msg);
 
     if (!filter_is_ignore(origin))
-        srv_hdr_ui_recv_msg(sess->host, origin, origin, "", msg, 0);
+        srv_hdr_ui_recv_msg(sess->host, origin, origin, "", pure_msg, 0);
 
     free(pure_msg);
 }
@@ -406,6 +408,7 @@ void srv_event_notice(irc_session_t *irc_session, const char *event,
     char* pure_msg = irc_color_strip_from_mirc(msg);
     if (!pure_msg){
         ERR_FR("Failed to strip color from irc message");
+        pure_msg = strdup(msg);
     }
 
     /* FIXME: Freenode specified :-(
@@ -413,11 +416,11 @@ void srv_event_notice(irc_session_t *irc_session, const char *event,
      */
     if (strcmp(origin, "NickServ") == 0
             || strcmp(origin, "ChanServ") == 0){
-        srv_hdr_ui_recv_msg(sess->host, origin, origin, sess->host, msg, 0);
+        srv_hdr_ui_recv_msg(sess->host, origin, origin, sess->host, pure_msg, 0);
     } else {
-        srv_hdr_ui_recv_msg(sess->host, origin, origin, "", msg, 0);
+        srv_hdr_ui_recv_msg(sess->host, origin, origin, "", pure_msg, 0);
     }
-    chat_log_fmt(sess->host, origin, "[%s] %s", origin, msg);
+    chat_log_fmt(sess->host, origin, "[%s] %s", origin, pure_msg);
 
     free(pure_msg);
 }
@@ -432,15 +435,16 @@ void srv_event_channel_notice(irc_session_t *irc_session, const char *event,
     CHECK_COUNT(2);
 
     const char *chan = params[0];
-    char *msg = strdup(count >= 2 ? params[1] : "");
+    const char *msg = count >= 2 ? params[1] : "";
 
     char* pure_msg = irc_color_strip_from_mirc(msg);
     if (!pure_msg){
         ERR_FR("Failed to strip color from irc message");
+        pure_msg = strdup(msg);
     }
 
-    srv_hdr_ui_recv_msg(sess->host, chan, origin, "", msg, 0);
-    chat_log_fmt(sess->host, chan, "[%s] %s", origin, msg);
+    srv_hdr_ui_recv_msg(sess->host, chan, origin, "", pure_msg, 0);
+    chat_log_fmt(sess->host, chan, "[%s] %s", origin, pure_msg);
 
     free(pure_msg);
 }
@@ -473,15 +477,16 @@ void srv_event_ctcp_action(irc_session_t *irc_session, const char *event,
 
     CHECK_COUNT(2);
     const char *chan = params[0];
-    char *msg = strdup(params[1]);
+    const char *msg = params[1];
 
     char* pure_msg = irc_color_strip_from_mirc(msg);
     if (!pure_msg){
         ERR_FR("Failed to strip color from irc message");
+        pure_msg = strdup(msg);
     }
 
     int flag = strstr(msg, sess->nickname) ? SRAIN_MSG_MENTIONED : 0;
-    snprintf(buf, sizeof(buf), _("*** %s %s ***"), origin, msg);
+    snprintf(buf, sizeof(buf), _("*** %s %s ***"), origin, pure_msg);
     srv_hdr_ui_sys_msg(sess->host, chan, buf, SYS_MSG_ACTION, flag);
     chat_log_log(sess->host, chan, buf);
 

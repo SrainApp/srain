@@ -6,6 +6,7 @@
  * @date 2016-03-10
  */
 
+// #define __DBG_ON
 // #define __LOG_ON
 
 #include <string.h>
@@ -46,9 +47,9 @@ typedef struct {
  *  
  *  if {nick,ldelim,rdelim} no matched, nothing will be changed.
  */
+// TODO: nick 的大小被隐式的要求 > 512
 void filter_relaybot_trans(const char *orgin_nick, char *nick, char *msg){
     int nick_len;
-    int max_msg_len;
     char *rdelim_ptr;
     char tmp_msg[512];
     GList *lst;
@@ -69,16 +70,15 @@ void filter_relaybot_trans(const char *orgin_nick, char *nick, char *msg){
                 /* right delimiter matched */
                 if (rdelim_ptr){
                     nick_len = rdelim_ptr - msg - strlen(info->ldelim);
-                    max_msg_len = MSG_LEN - (rdelim_ptr + strlen(info->rdelim) - msg);
                     DBG_FR("Right delim %s found, nick len = %d", info->rdelim, nick_len);
 
                     strncpy(nick,
                             msg + strlen(info->ldelim),
                             (nick_len>NICK_LEN?NICK_LEN:nick_len));
 
-                    strncpy(tmp_msg, rdelim_ptr + strlen(info->rdelim), max_msg_len);
-                    memset(msg, 0, MSG_LEN);
-                    strncpy(msg, tmp_msg, max_msg_len);
+                    strncpy(tmp_msg, rdelim_ptr + strlen(info->rdelim), sizeof(tmp_msg) - 1);
+                    tmp_msg[sizeof(tmp_msg) - 1] = 0;
+                    strcpy(msg, tmp_msg);
 
                     return;
                 }
