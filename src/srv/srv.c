@@ -48,6 +48,7 @@ void srv_finalize(){
  * @param nickname
  * @param username Can be NULL
  * @param realname Can be NULL
+ * @param flag
  *
  * @return 0 if successed, -1 if failed
  */

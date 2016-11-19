@@ -37,8 +37,9 @@ static int on_command_connect(Command *cmd, void *user_data){
     if (!host || !nick) return -1;
     SRVSessionFlag flag = 0;
     if (strcmp(ssl, "on") == 0) flag |= SRV_SESSION_FLAG_SSL;
-    // if (strcmp(ssl, "off") == 0) sslopt = SSL_OFF;
-    if (strcmp(ssl, "noverify") == 0) flag |= SRV_SESSION_FLAG_SSL_NOVERIFY;
+    if (strcmp(ssl, "noverify") == 0){
+        flag |= SRV_SESSION_FLAG_SSL | SRV_SESSION_FLAG_SSL_NOVERIFY;
+    }
 
     if (*passwd == '\0') passwd = NULL;
 
