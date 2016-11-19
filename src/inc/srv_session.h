@@ -29,7 +29,6 @@ typedef enum {
 
 typedef struct{
     char name[CHAN_LEN];
-    int joined; // Whether you actually join in this channel
     GList *user_list;
 } SRVChannel;
 
@@ -77,6 +76,8 @@ int SRVSessionopic(SRVSession *session, const char *chan, const char *topic);
 /* Handle session's channel list and user list */
 int srv_session_add_chan(SRVSession *session, const char *chan);
 int srv_session_rm_chan(SRVSession *session, const char *chan);
+int srv_session_chan_exist(SRVSession *session, const char *chan);
+
 int srv_session_add_user(SRVSession *session, const char *chan, const char *nick);
 int srv_session_rm_user(SRVSession *session, const char *chan, const char *nick);
 int srv_session_user_exist(SRVSession *session, const char *chan, const char *nick);

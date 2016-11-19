@@ -43,37 +43,6 @@
         return; \
     }
 
-/* TODO: remove me strip unprintable char and irc color code */
-static void strip(char *str){
-    int i;
-    int j;
-    int len;
-
-    j = 0;
-    len = strlen(str);
-
-    for (i = 0; i < len; i++){
-        switch (str[i]){
-            case 2: case 0xf: case 0x16:
-            case 0x1d: case 0x1f:
-                break;
-            case 3:  // irc color code
-                if (str[i+1] >= '0' && str[i+1] <= '9'){
-                    if (str[i+2] >= '0' && str[i+2] <= '9'){
-                        i += 2;
-                    } else {
-                        i += 1;
-                    }
-                }
-                break;
-            default:
-                str[j++] = str[i];
-        }
-    }
-
-    str[j] = '\0';
-}
-
 void srv_event_connect(irc_session_t *irc_session, const char *event,
         const char *origin, const char **params, unsigned int count){
     GList *chan_list;
@@ -127,6 +96,7 @@ void srv_event_nick(irc_session_t *irc_session, const char *event,
         chan_list = g_list_next(chan_list);
     }
 
+    /* You changed your nick */
     if (strncasecmp(origin, sess->nickname, NICK_LEN) == 0){
         strncpy(sess->nickname, new_nick, NICK_LEN);
     }
@@ -184,7 +154,7 @@ void srv_event_join(irc_session_t *irc_session, const char *event,
 
     const char *chan = params[0];
 
-    /* YOU has join a channel */
+    /* You has join a channel */
     if (strncasecmp(sess->nickname, origin, NICK_LEN) == 0){
         srv_hdr_ui_add_chat(sess->host, chan, origin, CHAT_CHANNEL);
 
@@ -223,7 +193,7 @@ void srv_event_part(irc_session_t *irc_session, const char *event,
     srv_hdr_ui_sys_msg(sess->host, chan, msg, SYS_MSG_NORMAL, 0);
     chat_log_log(sess->host, chan, msg);
 
-    /* YOU has left a channel */
+    /* You has left a channel */
     if (strncasecmp(sess->nickname, origin, NICK_LEN) == 0){
         srv_hdr_ui_rm_chat(sess->host, chan);
         srv_session_rm_chan(sess, chan);
@@ -343,6 +313,14 @@ void srv_event_kick(irc_session_t *irc_session, const char *event,
     chat_log_log(sess->host, chan, msg);
 
     srv_hdr_ui_rm_user(sess->host, chan, kick_nick);
+
+    /* You are kicked 23333 */
+    if (strncasecmp(kick_nick, sess->nickname, NICK_LEN) == 0){
+        if (!chan){
+            ERR_FR("Your are kicked from a channel which you haven't joined");
+        }
+        srv_session_rm_chan(sess, chan);
+    }
 }
 
 void srv_event_channel(irc_session_t *irc_session, const char *event,
@@ -357,14 +335,16 @@ void srv_event_channel(irc_session_t *irc_session, const char *event,
 
     const char *chan = params[0];
     const char *msg = count >= 2 ? params[1] : "";
-    strncpy(vmsg, msg, sizeof(vmsg));
 
-    strip(vmsg);
+    char* pure_msg = irc_color_strip_from_mirc(msg);
+    if (!pure_msg){
+        ERR_FR("Failed to strip color from irc message");
+    }
 
-    chat_log_fmt(sess->host, chan, "<%s> %s", origin, vmsg);
+    chat_log_fmt(sess->host, chan, "<%s> %s", origin, pure_msg);
 
     char nick[NICK_LEN] = { 0 };
-    filter_relaybot_trans(origin, nick, vmsg);
+    filter_relaybot_trans(origin, nick, pure_msg);
 
     /* A message sent by relay bot */
     if (strlen(nick) > 0){
@@ -383,6 +363,8 @@ void srv_event_channel(irc_session_t *irc_session, const char *event,
             srv_hdr_ui_recv_msg(sess->host, chan, origin, "", vmsg, flag);
         }
     }
+
+    free(pure_msg);
 }
 
 void srv_event_privmsg(irc_session_t *irc_session, const char *event,
@@ -394,16 +376,19 @@ void srv_event_privmsg(irc_session_t *irc_session, const char *event,
     PRINT_EVENT_PARAM;
     CHECK_COUNT(1);
 
-    char *msg = strdup(count >= 2 ? params[1] : "");
+    const char *msg = count >= 2 ? params[1] : "";
 
-    strip(msg);
+    char* pure_msg = irc_color_strip_from_mirc(msg);
+    if (!pure_msg){
+        ERR_FR("Failed to strip color from irc message");
+    }
 
     chat_log_fmt(sess->host, origin, "<%s> %s", origin, msg);
 
     if (!filter_is_ignore(origin))
         srv_hdr_ui_recv_msg(sess->host, origin, origin, "", msg, 0);
 
-    free(msg);
+    free(pure_msg);
 }
 
 void srv_event_notice(irc_session_t *irc_session, const char *event,
@@ -416,9 +401,12 @@ void srv_event_notice(irc_session_t *irc_session, const char *event,
     CHECK_COUNT(1);
 
     // const char *nick = params[0];
-    char *msg = strdup(count >= 2 ? params[1] : "");
+    const char *msg = count >= 2 ? params[1] : "";
 
-    strip(msg);
+    char* pure_msg = irc_color_strip_from_mirc(msg);
+    if (!pure_msg){
+        ERR_FR("Failed to strip color from irc message");
+    }
 
     /* FIXME: Freenode specified :-(
      * This notice messaage is sent by Freenode's offical bot
@@ -431,7 +419,7 @@ void srv_event_notice(irc_session_t *irc_session, const char *event,
     }
     chat_log_fmt(sess->host, origin, "[%s] %s", origin, msg);
 
-    free(msg);
+    free(pure_msg);
 }
 
 void srv_event_channel_notice(irc_session_t *irc_session, const char *event,
@@ -446,12 +434,15 @@ void srv_event_channel_notice(irc_session_t *irc_session, const char *event,
     const char *chan = params[0];
     char *msg = strdup(count >= 2 ? params[1] : "");
 
-    strip(msg);
+    char* pure_msg = irc_color_strip_from_mirc(msg);
+    if (!pure_msg){
+        ERR_FR("Failed to strip color from irc message");
+    }
 
     srv_hdr_ui_recv_msg(sess->host, chan, origin, "", msg, 0);
     chat_log_fmt(sess->host, chan, "[%s] %s", origin, msg);
 
-    free(msg);
+    free(pure_msg);
 }
 
 void srv_event_invite(irc_session_t *irc_session, const char *event,
@@ -484,14 +475,17 @@ void srv_event_ctcp_action(irc_session_t *irc_session, const char *event,
     const char *chan = params[0];
     char *msg = strdup(params[1]);
 
-    strip(msg);
+    char* pure_msg = irc_color_strip_from_mirc(msg);
+    if (!pure_msg){
+        ERR_FR("Failed to strip color from irc message");
+    }
 
     int flag = strstr(msg, sess->nickname) ? SRAIN_MSG_MENTIONED : 0;
     snprintf(buf, sizeof(buf), _("*** %s %s ***"), origin, msg);
     srv_hdr_ui_sys_msg(sess->host, chan, buf, SYS_MSG_ACTION, flag);
     chat_log_log(sess->host, chan, buf);
 
-    free(msg);
+    free(pure_msg);
 }
 
 void srv_event_numeric (irc_session_t *irc_session, unsigned int event,

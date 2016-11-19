@@ -72,6 +72,7 @@ int srv_quit(SIGN_SRV_QUIT){
     session = srv_session_get_by_host(srv_name);
     if (!session){
         WARN_FR("No such session %s", srv_name);
+        srv_hdr_ui_rm_chat(srv_name, "");
         return -1;
     }
 
@@ -150,6 +151,11 @@ int srv_part(SIGN_SRV_PART){
 
     if (!IS_CHAN(chan)){
         return -1;
+    }
+
+    if (!srv_session_chan_exist(session, chan)){
+        srv_hdr_ui_rm_chat(session->host, chan);
+        return 0;
     }
 
     return srv_session_part(session, chan);

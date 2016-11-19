@@ -388,6 +388,7 @@ int srv_session_join(SRVSession *session,
 
 int srv_session_part(SRVSession *session, const char *chan){
     int res;
+
     if ((res = irc_cmd_part(session->irc_session, chan)) < 0){
         srv_session_err_hdr(session);
     }
@@ -397,7 +398,7 @@ int srv_session_part(SRVSession *session, const char *chan){
 int srv_session_quit(SRVSession *session, const char *reason){
     int res;
 
-    if (!reason) reason = PACKAGE_NAME PACKAGE_VERSION " close.";
+    if (!reason) reason = PACKAGE_NAME " " PACKAGE_VERSION " close.";
 
     if ((res = irc_cmd_quit(session->irc_session, reason)) < 0){
         srv_session_err_hdr(session);
@@ -505,7 +506,6 @@ int srv_session_add_chan(SRVSession *session, const char *chan_name){
 
     chan = g_malloc0(sizeof(SRVChannel));
 
-    chan->joined = 0;
     chan->user_list = NULL;
     strncpy(chan->name, chan_name, CHAN_LEN);
 
@@ -536,6 +536,21 @@ int srv_session_rm_chan(SRVSession *session, const char *chan_name){
     DBG_FR("%s not found, session: %s", chan_name, session->host)
 
     return -1;
+}
+
+int srv_session_chan_exist(SRVSession *session, const char *chan_name){
+    SRVChannel *chan;
+    GList *chan_list;
+
+    chan_list = session->chan_list;
+    while (chan_list){
+        chan = chan_list->data;
+        if (strcasecmp(chan->name, chan_name) == 0){
+            return 1;
+        }
+        chan_list = g_list_next(chan_list);
+    }
+    return 0;
 }
 
 static SRVChannel* get_chan_by_name(SRVSession *session, const char *chan_name){
