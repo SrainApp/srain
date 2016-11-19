@@ -171,3 +171,31 @@ void show_msg_dialog(const char *title, const char *msg){
     gtk_dialog_run(GTK_DIALOG(dia));
     gtk_widget_destroy(GTK_WIDGET(dia));
 }
+
+void scale_size_to(int src_width, int src_height,
+        int max_width, int max_height, int *dst_width, int *dst_height){
+    long double src_ratio;
+    long double max_ratio;
+
+    if (!src_width || !src_height) return;
+    if (!max_width || !max_height) return;
+    if (!dst_width || !dst_height) return;
+
+    src_ratio = src_width * 1.0 / src_height;
+    max_ratio = max_width * 1.0 / max_height;
+
+    if (src_width > max_width || src_height > max_height){
+        if (src_ratio > max_ratio){
+            /* 相同宽度下 src 有更大的高度，需要调整 */
+            *dst_width = max_width;
+            *dst_height = (int)(max_height / src_ratio);
+        } else {
+            /* 相同高度下 src 有更大的宽度，需要调整 */
+            *dst_width = (int)(max_height * src_ratio);
+            *dst_height = max_height;
+        }
+    } else {
+        *dst_width = src_width;
+        *dst_height = src_height;
+    }
+}

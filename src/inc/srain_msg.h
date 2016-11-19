@@ -16,6 +16,7 @@ struct _SrainMsg {
     SrainMsgFlag flag;
     GtkLabel *msg_label;
     GtkLabel *time_label;
+    GtkBox *padding_box;
 };
 
 typedef struct _SrainMsg SrainMsg;
@@ -33,7 +34,6 @@ int srain_msg_append_msg(SrainMsg *smsg, const char *msg, SrainMsgFlag flag);
 typedef enum {
     SYS_MSG_NORMAL,
     SYS_MSG_ERROR,
-    SYS_MSG_COMMAND,
     SYS_MSG_ACTION
 } SysMsgType;
 
@@ -42,6 +42,7 @@ struct _SrainSysMsg {
     SrainMsgFlag flag;
     GtkLabel *msg_label;
     GtkLabel *time_label;
+    GtkBox *padding_box;
 
     SysMsgType type;
 };
@@ -66,8 +67,8 @@ struct _SrainSendMsg {
     SrainMsgFlag flag;
     GtkLabel *msg_label;
     GtkLabel *time_label;
-
     GtkBox *padding_box;
+
     GString *image_path;
 };
 
@@ -91,9 +92,9 @@ struct _SrainRecvMsg {
     SrainMsgFlag flag;
     GtkLabel *msg_label;
     GtkLabel *time_label;
+    GtkBox *padding_box;
 
     GtkImage *avatar_image;
-    GtkBox *padding_box;
     GString *image_path;
     GtkLabel *nick_label;
     GtkLabel *identify_label;

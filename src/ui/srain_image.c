@@ -10,7 +10,10 @@
 
 #include <gtk/gtk.h>
 #include <string.h>
+
+#include "ui_common.h"
 #include "srain_image.h"
+
 #include "download.h"
 #include "log.h"
 
@@ -77,10 +80,8 @@ SrainImage* srain_image_new(void){
  */
 static void eventbox_on_click(gpointer user_data , GdkEventButton *event){
     int monitor;
-    int img_width;
-    int img_height;
-    double img_ratio;
-    double scr_ratio;
+    int width;
+    int height;
     GdkScreen *screen;
     GdkWindow *gdkwin;
     GdkRectangle rect;
@@ -106,52 +107,26 @@ static void eventbox_on_click(gpointer user_data , GdkEventButton *event){
         /* If we should scale the image, do not fill full screen */
         rect.height -= 20;
         rect.width -= 20;
-        scr_ratio = (rect.width*1.0)/rect.height;
-
-        LOG_FR("max width: %d, max height: %d, radio: %lf",
-                rect.width, rect.height, scr_ratio);
-
 
         image = GTK_IMAGE(gtk_builder_get_object(builder, "image"));
         pixbuf = gdk_pixbuf_new_from_file(simg->file, NULL);
 
-        img_width = gdk_pixbuf_get_width(pixbuf);
-        img_height = gdk_pixbuf_get_height(pixbuf);
-        img_ratio = (img_width*1.0)/img_height;
+        width = gdk_pixbuf_get_width(pixbuf);
+        height = gdk_pixbuf_get_height(pixbuf);
 
-        LOG_FR("image width: %d, height: %d, ratio: %lf",
-                img_width ,img_height, img_ratio);
+        scale_size_to(width, height, rect.width, rect.height, &width, &height);
 
-        /* Scale if image to large */
-        if (img_width >= rect.width
-                || img_height >= rect.height){
-            /* FIXME:
-             * If the img_ratio is much larger or smaller than 1,
-             * the new pixbuf's aspect ratio may chatged
-             * because of loss of precision
-             * gdk_pixbuf_scale() can deal with this.
-             */
-            if (scr_ratio > img_ratio){
-                pixbuf2 = gdk_pixbuf_scale_simple(pixbuf,
-                        (int)(rect.height*img_ratio), rect.height,
+        pixbuf2 = gdk_pixbuf_scale_simple(pixbuf, width, height,
                         GDK_INTERP_BILINEAR);
-            } else {
-                pixbuf2 = gdk_pixbuf_scale_simple(pixbuf,
-                        rect.width, (int)(rect.height/img_ratio),
-                        GDK_INTERP_BILINEAR);
-            }
 
-            g_object_unref(pixbuf);
-            pixbuf = pixbuf2;
-        }
-
-        gtk_image_set_from_pixbuf(image, pixbuf);
+        gtk_image_set_from_pixbuf(image, pixbuf2);
 
         g_signal_connect_swapped(iwin, "button-release-event",
                 G_CALLBACK(gtk_widget_destroy), iwin);
         g_signal_connect_swapped(image, "button-release-event",
                 G_CALLBACK(gtk_widget_destroy), iwin);
 
+        g_object_unref(pixbuf2);
         g_object_unref(pixbuf);
         g_object_unref(builder);
 
@@ -160,22 +135,35 @@ static void eventbox_on_click(gpointer user_data , GdkEventButton *event){
 }
 
 static void srain_image_set_from_self(SrainImage *simg){
+
     if (simg->size == 0){
         gtk_image_set_from_file(simg->image, simg->file);
     } else {
         GError *error;
         GdkPixbuf *pixbuf;
+        GdkPixbuf *pixbuf2;
+        int width, height;
 
         error = NULL;
-        pixbuf = gdk_pixbuf_new_from_file_at_size(simg->file,
-                simg->size, simg->size, &error);
+        pixbuf = gdk_pixbuf_new_from_file(simg->file, &error);
+
+        width = gdk_pixbuf_get_width(pixbuf);
+        height = gdk_pixbuf_get_height(pixbuf);
+
+        scale_size_to(width, height, simg->size, simg->size, &width, &height);
+
+        pixbuf2 = gdk_pixbuf_scale_simple(pixbuf, width, height,
+                        GDK_INTERP_BILINEAR);
+
         if (error){
             ERR_FR("failed to open %s as a image", simg->file);
             return;
         }
 
         gtk_widget_show(GTK_WIDGET(simg->image));
-        gtk_image_set_from_pixbuf(simg->image, pixbuf);
+        gtk_image_set_from_pixbuf(simg->image, pixbuf2);
+
+        g_object_unref(pixbuf2);
         g_object_unref(pixbuf);
     }
 

@@ -204,14 +204,31 @@ static void nick_button_on_click(GtkWidget *widget, gpointer *user_data){
 
 /* ================ SRAIN_SRAIN_MSG ================ */
 void srain_msg_set_msg(SrainMsg *smsg, const char *msg) {
+    char timestr[32];
     GString *markuped;
+    GString *imgurl = NULL;
 
-    markuped = markup(msg, NULL);
+    get_cur_time(timestr);
+    gtk_label_set_text(smsg->time_label, timestr);
+
+    markuped = markup(msg, &imgurl);
     if (markuped){
         gtk_label_set_markup(smsg->msg_label, markuped->str);
         g_string_free(markuped, TRUE);
     } else {
         gtk_label_set_text(smsg->msg_label, msg);
+    }
+
+    if (imgurl){
+        SrainImage *simg = srain_image_new();
+        srain_image_set_from_url_async(simg, imgurl->str, 300,
+                SRAIN_IMAGE_ENLARGE | SRAIN_IMAGE_SPININER );
+
+        gtk_container_add(GTK_CONTAINER(smsg->padding_box), GTK_WIDGET(simg));
+        gtk_container_set_border_width(GTK_CONTAINER(simg), 6);
+        gtk_widget_show(GTK_WIDGET(simg));
+
+        g_string_free(imgurl, TRUE);
     }
 }
 
@@ -257,6 +274,7 @@ static void srain_sys_msg_class_init(SrainSysMsgClass *class){
             "/org/gtk/srain/sys_msg.glade");
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainSysMsg, msg_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainSysMsg, time_label);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainSysMsg, padding_box);
 }
 
 SrainSysMsg* srain_sys_msg_new(const char *msg, SysMsgType type, SrainMsgFlag flag){
@@ -274,9 +292,6 @@ SrainSysMsg* srain_sys_msg_new(const char *msg, SysMsgType type, SrainMsgFlag fl
             break;
         case SYS_MSG_ERROR:
             gtk_widget_set_name(GTK_WIDGET(smsg), "error_sys_msg_box");
-            break;
-        case SYS_MSG_COMMAND:
-            gtk_widget_set_name(GTK_WIDGET(smsg), "command_sys_msg_box");
             break;
         case SYS_MSG_ACTION:
             gtk_widget_set_name(GTK_WIDGET(smsg), "action_sys_msg_box");
@@ -307,31 +322,10 @@ static void srain_send_msg_class_init(SrainSendMsgClass *class){
 }
 
 SrainSendMsg* srain_send_msg_new(const char *msg, SrainMsgFlag flag){
-    char timestr[32];
-    GString *img_url;
-    GString *markuped_msg;
     SrainSendMsg *smsg;
-    SrainImage *simg;
 
     smsg = g_object_new(SRAIN_TYPE_SEND_MSG, NULL);
-
-    get_cur_time(timestr);
-    gtk_label_set_text(smsg->time_label, timestr);
-
     srain_msg_set_msg(SRAIN_MSG(smsg), msg);
-
-    /*
-     * TODO: remove
-    if (img_url){
-        simg = srain_image_new();
-        srain_image_set_from_url_async(simg, img_url->str, 300,
-                SRAIN_IMAGE_ENLARGE | SRAIN_IMAGE_SPININER | SRAIN_IMAGE_AUTOLOAD);
-        g_string_free(img_url, TRUE);
-        gtk_container_add(GTK_CONTAINER(smsg->padding_box), GTK_WIDGET(simg));
-        gtk_container_set_border_width(GTK_CONTAINER(simg), 6);
-        gtk_widget_show(GTK_WIDGET(simg));
-    }
-    */
 
     return smsg;
 }
@@ -398,36 +392,14 @@ static gboolean set_avatar_retry_timeout(gpointer user_data){
 
 SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id,
         const char *msg, SrainMsgFlag flag){
-    char timestr[32];
     char *avatar_path;
-    GString *markuped_msg;
-    GString *img_url;
     GdkPixbuf *pixbuf;
-    SrainImage *simg;
     SrainRecvMsg *smsg;
 
     smsg = g_object_new(SRAIN_TYPE_RECV_MSG, NULL);
-
-    get_cur_time(timestr);
-    gtk_label_set_text(smsg->time_label, timestr);
     gtk_label_set_text(smsg->nick_label, nick);
     gtk_label_set_text(smsg->identify_label, id);
-
     srain_msg_set_msg(SRAIN_MSG(smsg), msg);
-
-    /* Image in message */
-    /*
-     * TODO: remove
-    if (img_url){
-        simg = srain_image_new();
-        srain_image_set_from_url_async(simg, img_url->str, 300,
-                SRAIN_IMAGE_ENLARGE | SRAIN_IMAGE_SPININER | SRAIN_IMAGE_AUTOLOAD);
-        g_string_free(img_url, TRUE);
-        gtk_container_add(GTK_CONTAINER(smsg->padding_box), GTK_WIDGET(simg));
-        gtk_container_set_border_width(GTK_CONTAINER(simg), 6);
-        gtk_widget_show(GTK_WIDGET(simg));
-    }
-    */
 
     avatar_path = get_avatar_file(nick);
 
