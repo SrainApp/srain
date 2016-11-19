@@ -15,7 +15,7 @@ DEFS = -D PACKAGE='"$(PACKAGE)"' \
 	   -D PACKAGE_WEBSITE='"$(PACKAGE_WEBSITE)"' \
 	   -D PACKAGE_DATA_DIR='"$(PACKAGE_DATA_DIR)"' \
 	   -D $(TEST_FLAG)
-CFLAGS = -O2 -Wall -I$(PWD)/src/inc
+CFLAGS = -O2 -Wall -I$(PWD)/src/inc -Wno-deprecated-declarations
 GTK3FLAGS = $(shell pkg-config --cflags gtk+-3.0)
 GTK3LIBS = $(shell pkg-config --libs gtk+-3.0)
 PY3FLAGS = $(shell pkg-config --cflags python3)
