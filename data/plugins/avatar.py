@@ -38,10 +38,10 @@ def save(url, path):
     if r.status_code == 200:
         with open(path, 'wb') as img:
             shutil.copyfileobj(r.raw, img)
-        print('[save]: %s' % path)
+        # print('[save]: %s' % path)
         return True
     else:
-        print('[save]: Failed')
+        # print('[save]: Failed')
         return False
 
 # ref: https://developer.github.com/v3/users/#get-a-single-user 
@@ -52,14 +52,14 @@ def get_github_avatar(id_):
     url = j.get('avatar_url')
     if (url):
         url += '&' + urlencode({'s': str(size)})
-    print('[get_github_avatar]: url: %s' % url)
+    # print('[get_github_avatar]: url: %s' % url)
     return url
 
 # ref: https://en.gravatar.com/site/implement/images/python/ 
 def get_gravatar_avatar(email):
     api = 'https://www.gravatar.com/avatar/' + hashlib.md5(email.lower().encode('utf-8')).hexdigest() + '?'
     url = api + urlencode({'s': str(size)})
-    print('[get_gravatar_avatar]: url: %s' % url)
+    # print('[get_gravatar_avatar]: url: %s' % url)
     return url
 
 def get_custom_map_avatar(name):
@@ -67,11 +67,11 @@ def get_custom_map_avatar(name):
     r = requests.get(api, timeout = timeout)
     json = r.json()
     url = json.get(name)
-    print('[get_custom_map_avatar]: url: %s' % url)
+    # print('[get_custom_map_avatar]: url: %s' % url)
     return url
 
 def avatar(nick, token, path):
-    print('[avatar]: nick: %s, token: %s, path: %s' % (nick, token, path))
+    # print('[avatar]: nick: %s, token: %s, path: %s' % (nick, token, path))
     url = get_custom_map_avatar(nick)
 
     if not url:
