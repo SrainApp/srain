@@ -193,14 +193,12 @@ static int is_blank(const char *str){
 
 static void input_entry_on_activate(SrainChat *chat){
     char *input;
-    const char *chat_name;
 
     input = strdup(gtk_entry_get_text(chat->input_entry));
-    chat_name = gtk_widget_get_name(GTK_WIDGET(chat));
 
     if (is_blank(input)) goto ret;
 
-    LOG_FR("chat: %s, text: '%s'", chat_name, input);
+    DBG_FR("chat: %s, text: '%s'", chat_name, input);
 
     if (input[0] == '/'){
         ui_hdr_srv_cmd(

@@ -209,11 +209,9 @@ static gboolean CTRL_J_K_on_press(GtkAccelGroup *group, GObject *obj,
     sidebar = user_data;
     switch (keyval){
         case GDK_KEY_k:
-            LOG_FR("<C-k>");
             srain_stack_sidebar_prev(sidebar);
             break;
         case GDK_KEY_j:
-            LOG_FR("<C-j>");
             srain_stack_sidebar_next(sidebar);
             break;
         default:
