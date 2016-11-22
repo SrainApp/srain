@@ -478,7 +478,7 @@ int srv_session_mode(SRVSession *session, const char *target, const char *mode){
     return res;
 }
 
-int SRVSessionopic(SRVSession *session, const char *chan, const char *topic){
+int srv_session_topic(SRVSession *session, const char *chan, const char *topic){
     int res;
     if ((res = irc_cmd_topic(session->irc_session, chan, topic)) < 0){
         srv_session_err_hdr(session);

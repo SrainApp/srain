@@ -71,7 +71,7 @@ int srv_session_who(SRVSession *session, const char *nick);
 int srv_session_invite(SRVSession *session, const char *nick, const char *chan);
 int srv_session_kick(SRVSession *session, const char *nick, const char *chan, const char *reason);
 int srv_session_mode(SRVSession *session, const char *target, const char *mode);
-int SRVSessionopic(SRVSession *session, const char *chan, const char *topic);
+int srv_session_topic(SRVSession *session, const char *chan, const char *topic);
 
 /* Handle session's channel list and user list */
 int srv_session_add_chan(SRVSession *session, const char *chan);
