@@ -24,7 +24,7 @@ Example::
 
 Command::
 
-    /relay <nick> [-l <ldelim>] [-r <rdelim>]
+    /relay [-l <ldelim>] [-r <rdelim>] <nick>
     /unrelay <nick>
 
 Flag ``nick`` as a relay bot, show the real nick of the message sender.
