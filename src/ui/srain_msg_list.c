@@ -229,7 +229,10 @@ void srain_msg_list_sys_msg_add(SrainMsgList *list, const char *msg,
     if (list->last_msg
             && SRAIN_IS_SYS_MSG(list->last_msg)
             && SRAIN_SYS_MSG(list->last_msg)->type != SYS_MSG_ACTION){
-        if (srain_msg_append_msg(list->last_msg, msg, flag) == 0) return;
+        if (srain_msg_append_msg(list->last_msg, msg, flag) == 0){
+            smart_scroll(list, 0);
+            return;
+        }
     }
     */
 
@@ -262,8 +265,10 @@ void srain_msg_list_send_msg_add(SrainMsgList *list, const char *msg, SrainMsgFl
     SrainSendMsg *smsg;
 
     if (list->last_msg && SRAIN_IS_SEND_MSG(list->last_msg)){
-        LOG_FR("send msg combine")
-        if (srain_msg_append_msg(list->last_msg, msg, flag) == 0) return;
+        if (srain_msg_append_msg(list->last_msg, msg, flag) == 0){
+            smart_scroll(list, 1);
+            return;
+        }
     }
 
     smsg = srain_send_msg_new(msg, flag);
@@ -284,7 +289,10 @@ void srain_msg_list_recv_msg_add(SrainMsgList *list, const char *nick,
         const char *old_nick = gtk_label_get_text(
                 SRAIN_RECV_MSG(list->last_msg)->nick_label);
         if (strcasecmp(nick, old_nick) == 0) {
-            if (srain_msg_append_msg(list->last_msg, msg, flag) == 0) return;
+            if (srain_msg_append_msg(list->last_msg, msg, flag) == 0){
+                smart_scroll(list, 1);
+                return;
+            }
         }
     }
 
