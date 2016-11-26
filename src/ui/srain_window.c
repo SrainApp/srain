@@ -189,7 +189,7 @@ static void conn_button_on_click(gpointer user_data){
     if (ssl) flag |= SRV_SESSION_FLAG_SSL;
     if (no_verify) flag |= SRV_SESSION_FLAG_SSL_NOVERIFY;
 
-    ui_hdr_srv_connect(addr, atoi(port), passwd, nick, NULL, realname, flag);
+    ui_hdr_srv_connect(addr, atoi(port), passwd, nick, PACKAGE_NAME, realname, flag);
 
     gtk_entry_set_text(conn_entries->conn_addr_entry, "");
     gtk_entry_set_text(conn_entries->conn_port_entry, "");
