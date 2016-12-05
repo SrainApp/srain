@@ -147,7 +147,7 @@ static int command_parse(Command *cmd, void *user_data){
     }
     cmd->opt_key[nopt] = NULL;
 
-    for (int i = 0; i < bind->argc - 1; i++){
+    for (unsigned int i = 0; i < bind->argc - 1; i++){
         if (get_quote_arg(ptr, &cmd->argv[i], &ptr) < 0){
             cmd->argv[i] = NULL;
             goto missing_arg;
@@ -157,13 +157,13 @@ static int command_parse(Command *cmd, void *user_data){
     cmd->argv[bind->argc - 1] = ptr;
     if (ptr == NULL) goto missing_arg;
 
-    for (int i = 0; i < nopt; i++){
+    for (unsigned int i = 0; i < nopt; i++){
         DBG_FR("opt: '%s'", cmd->opt_key[i]);
         if (bind->opt_default_val[i] != NULL)
             DBG_FR("val: '%s'", cmd->opt_val[i]);
     }
 
-    for (int i = 0; i < bind->argc; i++){
+    for (unsigned int i = 0; i < bind->argc; i++){
         DBG_FR("argv: '%s'", cmd->argv[i]);
     }
     return 0;

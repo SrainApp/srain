@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Srain 0.05-git@0.390.62fb40a\n"
+"Project-Id-Version: Srain 0.05-git@0.409.ae03b7e\n"
 "Report-Msgid-Bugs-To: lastavengesr@outlook.com\n"
-"POT-Creation-Date: 2016-11-16 23:37+0800\n"
+"POT-Creation-Date: 2016-12-07 20:06+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,17 +24,17 @@ msgid ""
 "Running against GTK+ %d.%d.%d"
 msgstr ""
 
-#: ../src/srv/srv_event.c:637
+#: ../src/srv/srv_event.c:638
 #, c-format
 msgid "%s %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:630
+#: ../src/srv/srv_event.c:631
 #, c-format
 msgid "%s %s %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:602
+#: ../src/srv/srv_event.c:603
 #, c-format
 msgid "%s <%s@%s> %s"
 msgstr ""
@@ -44,47 +44,47 @@ msgstr ""
 msgid "%s <fwd %s@%s>"
 msgstr ""
 
-#: ../src/srv/srv_event.c:340
+#: ../src/srv/srv_event.c:310
 #, c-format
 msgid "%s are kicked from %s by %s: %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:200
+#: ../src/srv/srv_event.c:170
 #, c-format
 msgid "%s has joined %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:222
+#: ../src/srv/srv_event.c:192
 #, c-format
 msgid "%s has left %s: %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:149
+#: ../src/srv/srv_event.c:119
 #, c-format
 msgid "%s has quit: %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:468
+#: ../src/srv/srv_event.c:465
 #, c-format
 msgid "%s invites you into %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:618
+#: ../src/srv/srv_event.c:619
 #, c-format
 msgid "%s is attached to %s at \"%s\""
 msgstr ""
 
-#: ../src/srv/srv_event.c:624
+#: ../src/srv/srv_event.c:625
 #, c-format
 msgid "%s is idle for %s seconds since %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:613
+#: ../src/srv/srv_event.c:614
 #, c-format
 msgid "%s is member of %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:113
+#: ../src/srv/srv_event.c:82
 #, c-format
 msgid "%s is now known as %s"
 msgstr ""
@@ -93,7 +93,7 @@ msgstr ""
 msgid "(This message can not be showed correctly)."
 msgstr ""
 
-#: ../src/srv/srv_session_cmd.c:158 ../src/srv/srv_event.c:490
+#: ../src/srv/srv_session_cmd.c:363 ../src/srv/srv_event.c:491
 #, c-format
 msgid "*** %s %s ***"
 msgstr ""
@@ -147,7 +147,7 @@ msgstr ""
 msgid "Command \"%s\" failed"
 msgstr ""
 
-#: ../src/srv/srv_session_cmd.c:372
+#: ../src/srv/srv_session_cmd.c:457
 #, c-format
 msgid "Command '%s' failed"
 msgstr ""
@@ -156,7 +156,7 @@ msgstr ""
 msgid "Connect"
 msgstr ""
 
-#: ../src/ui/srain_msg.c:136
+#: ../src/ui/srain_msg.c:139
 msgid "Copy message"
 msgstr ""
 
@@ -164,7 +164,7 @@ msgstr ""
 msgid "Description:"
 msgstr ""
 
-#: ../src/ui/srain_chat.c:305
+#: ../src/ui/srain_chat.c:325
 msgid "Disconnect (_C)"
 msgstr ""
 
@@ -177,7 +177,7 @@ msgstr ""
 msgid "ERROR: %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:666
+#: ../src/srv/srv_event.c:667
 #, c-format
 msgid "ERROR[%3d]: %s"
 msgstr ""
@@ -186,15 +186,15 @@ msgstr ""
 msgid "Error"
 msgstr ""
 
-#: ../src/ui/srain_msg.c:118 ../src/ui/srain_chat.c:200
+#: ../src/ui/srain_msg.c:121 ../src/ui/srain_chat.c:220
 msgid "Failed to send message"
 msgstr ""
 
-#: ../src/ui/srain_chat.c:127
+#: ../src/ui/srain_chat.c:143
 msgid "Failed to upload image"
 msgstr ""
 
-#: ../src/ui/srain_msg.c:143
+#: ../src/ui/srain_msg.c:146
 msgid "Forward to..."
 msgstr ""
 
@@ -210,7 +210,7 @@ msgstr ""
 msgid "Language: English"
 msgstr ""
 
-#: ../src/ui/srain_chat.c:308
+#: ../src/ui/srain_chat.c:328
 msgid "Leave (_C)"
 msgstr ""
 
@@ -222,12 +222,12 @@ msgstr ""
 msgid "Nickname:"
 msgstr ""
 
-#: ../src/srv/srv_session_cmd.c:339
+#: ../src/srv/srv_session_cmd.c:422
 #, c-format
 msgid "No such command '%s'"
 msgstr ""
 
-#: ../src/srv/srv_session_cmd.c:346
+#: ../src/srv/srv_session_cmd.c:429
 #, c-format
 msgid "No such option '%s'"
 msgstr ""
@@ -248,7 +248,7 @@ msgstr ""
 msgid "Open File"
 msgstr ""
 
-#: ../src/srv/srv_session_cmd.c:353
+#: ../src/srv/srv_session_cmd.c:436
 #, c-format
 msgid "Option '%s' missing value"
 msgstr ""
@@ -278,15 +278,15 @@ msgstr ""
 msgid "Srain"
 msgstr ""
 
-#: ../src/srv/srv_session_cmd.c:365
+#: ../src/srv/srv_session_cmd.c:449
 msgid "Too many arguments"
 msgstr ""
 
-#: ../src/srv/srv_session_cmd.c:359
+#: ../src/srv/srv_session_cmd.c:442
 msgid "Too many options"
 msgstr ""
 
-#: ../src/srv/srv_event.c:321
+#: ../src/srv/srv_event.c:291
 #, c-format
 msgid "Topic for %s is \"%s\""
 msgstr ""
@@ -318,7 +318,7 @@ msgstr ""
 msgid "_Chat"
 msgstr ""
 
-#: ../data/ui/chat.glade:28 ../src/ui/srain_chat.c:311
+#: ../data/ui/chat.glade:28 ../src/ui/srain_chat.c:331
 msgid "_Close"
 msgstr ""
 
@@ -342,12 +342,12 @@ msgstr ""
 msgid "_Whois"
 msgstr ""
 
-#: ../src/srv/srv_event.c:247
+#: ../src/srv/srv_event.c:217
 #, c-format
 msgid "mode %s %s %s by %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:299
+#: ../src/srv/srv_event.c:269
 #, c-format
 msgid "mode %s %s by %s"
 msgstr ""

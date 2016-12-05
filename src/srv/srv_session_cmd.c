@@ -31,6 +31,9 @@ static int on_command_connect(Command *cmd, void *user_data);
 static int on_command_relay(Command *cmd, void *user_data);
 static int on_command_unrelay(Command *cmd, void *user_data);
 static int on_command_ignore(Command *cmd, void *user_data);
+static int on_command_filter(Command *cmd, void *user_data);
+static int on_command_filter_show(Command *cmd, void *user_data);
+static int on_command_unfilter(Command *cmd, void *user_data);
 static int on_command_unignore(Command *cmd, void *user_data);
 static int on_command_query(Command *cmd, void *user_data);
 static int on_command_unquery(Command *cmd, void *user_data);
@@ -86,10 +89,28 @@ static CommandBind cmd_binds[] = {
         on_command_unignore
     },
     {
+        "/filter", 3, // <filter name> <channel> <regex>
+        {NULL},
+        {NULL},
+        on_command_filter
+    },
+    {
+        "/unfilter", 1, // <filter name>
+        {NULL},
+        {NULL},
+        on_command_unfilter
+    },
+    {
         "/query", 1, // <nick>
         {NULL},
         {NULL},
         on_command_query
+    },
+    {
+        "/filterlist", 0,
+        {NULL},
+        {NULL},
+        on_command_filter_show
     },
     {
         "/unquery", 1, // <nick>
@@ -245,6 +266,27 @@ static int on_command_unignore(Command *cmd, void *user_data){
 
     if (!nick) return -1;
     return filter_ignore_list_rm(nick);
+}
+
+static int on_command_filter(Command *cmd, void *user_data){
+    const char *name = command_get_arg(cmd, 0);
+    const char *channel_name = command_get_arg(cmd, 1);
+    const char *regex = command_get_arg(cmd, 2);
+
+    if(!name || !channel_name || !regex)
+        return -1;
+    return filter_filter_add_filter(name, regex, channel_name);
+}
+
+static int on_command_unfilter(Command *cmd, void *user_data){
+    const char *name = command_get_arg(cmd, 0);
+    if (!name) return -1;
+
+    return filter_filter_remove_filter(name);
+}
+
+static int on_command_filter_show(Command *cmd, void *user_data){
+    return filter_filter_show();
 }
 
 static int on_command_query(Command *cmd, void *user_data){
@@ -440,3 +482,4 @@ int srv_session_cmd(SRVSession *session, const char *source, char *cmd, int bloc
 
     return command_proc(cmd, &ctx);
 }
+/* vim: set et ts=4 sw=4 sts=4: */
