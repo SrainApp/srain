@@ -2,8 +2,11 @@
 build/
 /Makefile
 .ycm_extra_conf.py
+.color_coded
 *.pyc
 *.*~
+*.swap.*
+.*.swp
 resources.c
 
 # Object files

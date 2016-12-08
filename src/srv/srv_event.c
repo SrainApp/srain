@@ -349,14 +349,16 @@ void srv_event_channel(irc_session_t *irc_session, const char *event,
 
     /* A message sent by relay bot */
     if (strlen(nick) > 0){
-        if (!filter_is_ignore(nick)){
+        /*if (!filter_is_ignore(nick)){*/
+        if (!filter_is_ignore(nick) && !filter_filter_check_message(chan, nick, pure_msg)){
             if (!plugin_avatar_has_queried(nick)) srv_session_who(sess, nick);
 
             int flag = strstr(pure_msg, sess->nickname) ? SRAIN_MSG_MENTIONED : 0;
             srv_hdr_ui_recv_msg(sess->host, chan, nick, origin, pure_msg, flag);
         }
     } else {
-        if (!filter_is_ignore(origin)){
+        /*if (!filter_is_ignore(origin)){*/
+        if (!filter_is_ignore(origin) && !filter_filter_check_message(chan, origin, pure_msg)){
             if (!plugin_avatar_has_queried(origin))
                 srv_session_who(sess, origin);
 
@@ -675,3 +677,4 @@ void srv_event_numeric (irc_session_t *irc_session, unsigned int event,
     }
 
 }
+/* vim: set et ts=4 sw=4 sts=4: */
