@@ -11,14 +11,20 @@
 
 #include <string.h>
 #include <glib.h>
+#include <regex.h>
+#include <sys/types.h>
 
 #include "srv_session.h"
 
 #include "meta.h"
 #include "log.h"
+#include "filter.h"
 
 GList *ignore_list;
 GList *relaybot_list;
+GList *filter_list;
+
+int disable_filter = 0; //TODO: Add filter_disable/enable
 
 typedef struct {
     char ldelim[10];
@@ -133,7 +139,7 @@ int filter_ignore_list_rm(const char *nick){
     lst = ignore_list;
     while (lst){
         if (strncmp(lst->data, nick, NICK_LEN) == 0){
-            free(lst->data);
+            g_free(lst->data);
             ignore_list = g_list_remove(ignore_list, lst->data);
 
             LOG_FR("Remove %s", nick);
@@ -146,7 +152,7 @@ int filter_ignore_list_rm(const char *nick){
     return -1;
 }
 
-int filter_relaybot_list_add(const char *nick, char *ldelim, char* rdelim){
+int filter_relaybot_list_add(const char *nick, const char *ldelim, const char* rdelim){
     GList *lst;
     RelaybotInfo *info;
 
@@ -154,13 +160,13 @@ int filter_relaybot_list_add(const char *nick, char *ldelim, char* rdelim){
     while (lst){
         info = lst->data;
         if (strncmp(info->nick, nick, NICK_LEN) == 0){
-            WARN_FR("%s already exist in relaybot_list", nick);
+            WARN_FR("%s already exists in relaybot_list", nick);
             return -1;
         }
         lst = lst->next;
     }
 
-    info = calloc(1, sizeof(RelaybotInfo));
+    info = g_malloc0(sizeof(RelaybotInfo));
     strncpy(info->nick, nick, NICK_LEN);
     strncpy(info->ldelim, ldelim, 10);
     strncpy(info->rdelim, rdelim, 10);
@@ -179,7 +185,7 @@ int filter_relaybot_list_rm(const char *nick){
     while (lst){
         info = lst->data;
         if (strncmp(info->nick, nick, NICK_LEN) == 0){
-            free(lst->data);
+            g_free(lst->data);
             relaybot_list = g_list_remove(relaybot_list, lst->data);
             LOG_FR("Remove %s", nick);
 
@@ -190,4 +196,128 @@ int filter_relaybot_list_rm(const char *nick){
 
     WARN_FR("%s no found", nick);
     return -1;
+}
+
+int filter_filter_add_filter(
+        const char *name,
+        const char *regex,
+        const char *channel_name
+){
+    GList *lst = filter_list;
+    FilterItem *item;
+
+    while(lst){
+        item = lst->data;
+        if (strncmp(item->name, name, FILTER_NAME_MAX_LEN) == 0){
+            WARN_FR("%s already exists in filter_list", name);
+            return -1;
+        }
+        lst = lst->next;
+    }
+
+    item = g_malloc0(sizeof(FilterItem));
+    if (item == 0){
+        ERR_FR("ERR: The memory is exhausted");
+        return -1;
+    }
+
+    strncpy(item->name, name, FILTER_NAME_MAX_LEN);
+    strncpy(item->regex, regex, FILTER_MAX_LEN);
+    strncpy(item->channel_name, channel_name, CHAN_LEN);
+
+    filter_list = g_list_append(filter_list, item);
+    LOG_FR("Add filter %s, regex: '%s', channel: '%s'", name, regex, channel_name);
+
+    return 0;
+}
+
+int filter_filter_remove_filter(const char *filter_name) {
+    GList *lst = filter_list;
+    FilterItem *filter_item;
+    while(lst){
+        filter_item = lst->data;
+        if(strncmp(filter_name, filter_item->name, FILTER_MAX_LEN) == 0){
+            g_free(lst->data);
+            filter_list = g_list_remove(filter_list, lst->data);
+            LOG_FR("Remove filter %s", filter_name);
+
+            return 0;
+        }
+        lst = lst->next;
+    }
+    return -1;
+}
+
+int filter_filter_show(){
+    GList *lst = filter_list;
+    FilterItem *item;
+
+    while(lst){
+        item = lst->data;
+        //TODO: show all filters on the current buffer
+        lst = lst->next;
+    }
+    return 0;
+}
+
+//returns 1 if matched 
+int preg_test(const char *regex, const char *string){
+    regex_t preg;
+    //int convert_result;
+    int test_result = 0;
+
+    //Convert regex string to type regex_t
+    //TODO: Handle the convert result
+    regcomp(&preg, regex, REG_EXTENDED);
+    if (regex != NULL && regexec(&preg, string, 0, NULL, 0) == 0){
+        test_result = 1;
+    }
+    regfree(&preg);
+    return test_result;
+}
+
+/**
+ * @param message
+ * 
+ * @return if return 0, pass and display this message
+ */
+int filter_filter_check_message(
+        const char *channel_name,
+        const char *nick_name,
+        const char *message
+){
+    GList *lst;
+    FilterItem *item;
+    int test_result = 0;
+
+    if (disable_filter == 1){
+        return 0;
+    }
+    lst = filter_list;
+    while(lst){
+        item = lst->data;
+
+        /* If specified a channel_name or channel_name is * */
+        if (strncmp(channel_name, item->channel_name, CHAN_LEN) == 0
+            || strncmp("*", item->channel_name, 2) == 0){
+            test_result =
+                preg_test(item->regex, message) ||
+                preg_test(item->regex, nick_name);
+
+            if (test_result != 0){
+                return 1;
+            }
+		}
+        if (channel_name == NULL){
+            test_result =
+                preg_test(item->regex, message) ||
+                preg_test(item->regex, nick_name);
+
+            if (test_result != 0){
+                return 1;
+            }
+        }
+        lst = lst->next;
+    }
+    return 0;
 }
