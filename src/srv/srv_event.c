@@ -349,14 +349,14 @@ void srv_event_channel(irc_session_t *irc_session, const char *event,
 
     /* A message sent by relay bot */
     if (strlen(nick) > 0){
-        if (!filter_is_ignore(nick)){
+        if (!filter_is_ignore(nick) && !filter_filter_check_message(chan, nick, pure_msg)){
             if (!plugin_avatar_has_queried(nick)) srv_session_who(sess, nick);
 
             int flag = strstr(pure_msg, sess->nickname) ? SRAIN_MSG_MENTIONED : 0;
             srv_hdr_ui_recv_msg(sess->host, chan, nick, origin, pure_msg, flag);
         }
     } else {
-        if (!filter_is_ignore(origin)){
+        if (!filter_is_ignore(origin) && !filter_filter_check_message(chan, origin, pure_msg)){
             if (!plugin_avatar_has_queried(origin))
                 srv_session_who(sess, origin);
 
@@ -387,7 +387,7 @@ void srv_event_privmsg(irc_session_t *irc_session, const char *event,
 
     chat_log_fmt(sess->host, origin, "<%s> %s", origin, pure_msg);
 
-    if (!filter_is_ignore(origin))
+    if (!filter_is_ignore(origin) && !filter_filter_check_message(NULL, origin, pure_msg))
         srv_hdr_ui_recv_msg(sess->host, origin, origin, "", pure_msg, 0);
 
     free(pure_msg);
