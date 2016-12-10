@@ -203,7 +203,17 @@ static void nick_button_on_click(GtkWidget *widget, gpointer *user_data){
 }
 
 /* ================ SRAIN_SRAIN_MSG ================ */
-void srain_msg_set_msg(SrainMsg *smsg, const char *msg) {
+static void srain_msg_append_image(SrainMsg *smsg, const char *url) {
+    SrainImage *simg = srain_image_new();
+    srain_image_set_from_url_async(simg, url, 300,
+            SRAIN_IMAGE_ENLARGE | SRAIN_IMAGE_SPININER );
+
+    gtk_container_add(GTK_CONTAINER(smsg->padding_box), GTK_WIDGET(simg));
+    gtk_container_set_border_width(GTK_CONTAINER(simg), 6);
+    gtk_widget_show(GTK_WIDGET(simg));
+}
+
+static void srain_msg_set_msg(SrainMsg *smsg, const char *msg) {
     char timestr[32];
     GString *markuped;
     GString *imgurl = NULL;
@@ -220,14 +230,7 @@ void srain_msg_set_msg(SrainMsg *smsg, const char *msg) {
     }
 
     if (imgurl){
-        SrainImage *simg = srain_image_new();
-        srain_image_set_from_url_async(simg, imgurl->str, 300,
-                SRAIN_IMAGE_ENLARGE | SRAIN_IMAGE_SPININER );
-
-        gtk_container_add(GTK_CONTAINER(smsg->padding_box), GTK_WIDGET(simg));
-        gtk_container_set_border_width(GTK_CONTAINER(simg), 6);
-        gtk_widget_show(GTK_WIDGET(simg));
-
+        srain_msg_append_image(smsg, imgurl->str);
         g_string_free(imgurl, TRUE);
     }
 }
@@ -235,7 +238,9 @@ void srain_msg_set_msg(SrainMsg *smsg, const char *msg) {
 int srain_msg_append_msg(SrainMsg *smsg, const char *msg, SrainMsgFlag flag) {
     char timestr[32];
     const char *old_msg;
-    GString *new_msg;
+    const char *old_markup;
+    GString *new_markup;
+    GString *imgurl;
 
     if (flag != smsg->flag) {
         return -1;
@@ -251,13 +256,25 @@ int srain_msg_append_msg(SrainMsg *smsg, const char *msg, SrainMsgFlag flag) {
         return -1;
     }
 
-    new_msg = g_string_new(old_msg);
-    g_string_append(new_msg, "\n");
-    g_string_append(new_msg, msg);
+    old_markup = gtk_label_get_label(smsg->msg_label);
+    new_markup = markup(msg, &imgurl);
+    if (new_markup) {
+        g_string_prepend(new_markup, "\n");
+        g_string_prepend(new_markup, old_markup);
+        gtk_label_set_markup(smsg->msg_label, new_markup->str);
+    } else {
+        new_markup = g_string_new(msg);
+        g_string_prepend(new_markup, "\n");
+        g_string_prepend(new_markup, old_msg);
+        gtk_label_set_text(smsg->msg_label, new_markup->str);
+    }
 
-    srain_msg_set_msg(smsg, new_msg->str);
+    if (imgurl){
+        srain_msg_append_image(smsg, imgurl->str);
+        g_string_free(imgurl, TRUE);
+    }
 
-    g_string_free(new_msg, TRUE);
+    g_string_free(new_markup, TRUE);
 
     return 0;
 }
