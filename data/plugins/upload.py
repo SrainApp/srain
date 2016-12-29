@@ -2,7 +2,7 @@
 ##
 # @file upload.py
 # @brief upload plugin example
-# @author LastAvengers <lastavengers@outlook.com>
+# @author SilverRainZ <silverrainz@outlook.com>
 # @version 1.0
 # @date 2016-03-15
 #

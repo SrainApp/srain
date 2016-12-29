@@ -14,9 +14,9 @@ PACKAGE_BUILD = $(shell [ -d .git ] && \
 				echo -n -git@0.`git rev-list --count HEAD`.`git describe --always`)
 PACKAGE_VERSION = 0.05$(PACKAGE_BUILD)
 PACKAGE_AUTHOR = Shengyu Zhang
-PACKAGE_EMAIL = lastavengesr@outlook.com
+PACKAGE_EMAIL = silverrainz@outlook.com
 PACKAGE_DESC = It does not look like an IRC client.
-PACKAGE_WEBSITE = https://github.com/lastavenger/srain
+PACKAGE_WEBSITE = https://github.com/SilverRainZ/srain
 PACKAGE_DATA_DIR = $(PREFIX)
 
 MAKE = make

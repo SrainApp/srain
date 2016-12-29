@@ -1,7 +1,7 @@
 /**
  * @file srain_app.c
  * @brief Srain's application class implement
- * @author Shengyu Zhang <lastavengers@outlook.com>
+ * @author Shengyu Zhang <silverrainz@outlook.com>
  * @version 1.0
  * @date 2016-03-01
  */
@@ -49,7 +49,7 @@ static void srain_app_activate(GtkApplication *app){
                 "add your commands into <u>~/.config/srain/srainrc</u>."
                 "\n\n"
                 "Need help? Please visit "
-                "<a href=\"https://github.com/lastavenger/srain/wiki\">Srain's website</a>."
+                "<a href=\"https://github.com/silverrainz/srain/wiki\">Srain's website</a>."
                 "\n"));
         }
     }

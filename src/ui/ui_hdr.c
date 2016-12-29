@@ -1,7 +1,7 @@
 /**
  * @file ui_hdr.c
  * @brief IRC server interface for UI module
- * @author Shengyu Zhang <lastavengers@outlook.com>
+ * @author Shengyu Zhang <silverrainz@outlook.com>
  * @version 1.0
  * @date 2016-04-21
  */

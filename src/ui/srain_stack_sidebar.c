@@ -1,7 +1,7 @@
 /**
  * @file srain_stack_sidebar.c
  * @brief A simplified, customized stacksidebar implement
- * @author Shengyu Zhang <lastavengers@outlook.com>
+ * @author Shengyu Zhang <silverrainz@outlook.com>
  * @version 1.0
  * @date 2016-03-06
  *

@@ -1,7 +1,7 @@
 /**
  * @file srv_name.c
  * @brief SRV module interfaces
- * @author Shengyu Zhang <lastavengers@outlook.com>
+ * @author Shengyu Zhang <silverrainz@outlook.com>
  * @version 1.0
  * @date 2016-07-19
  */

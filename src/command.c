@@ -2,7 +2,7 @@
 :A
  * @file command.c
  * @brief Flexible command parser
- * @author Shengyu Zhang <lastavengers@outlook.com>
+ * @author Shengyu Zhang <silverrainz@outlook.com>
  * @version 1.0
  * @date 2016-11-05
  */

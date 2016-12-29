@@ -2,7 +2,7 @@
  * @file markup.c
  * @brief provide function markup(): match url and
  *      return a GString with html tags
- * @author Shengyu Zhang <lastavengers@outlook.com>
+ * @author Shengyu Zhang <silverrainz@outlook.com>
  * @version 1.0
  * @date 2016-03-16
  */

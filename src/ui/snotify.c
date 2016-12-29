@@ -1,7 +1,7 @@
 /**
  * @file snotify.c
  * @brief Srain's desktop notification
- * @author Shengyu Zhang <lastavengers@outlook.com>
+ * @author Shengyu Zhang <silverrainz@outlook.com>
  * @version 1.0
  * @date 2016-08-26
  */

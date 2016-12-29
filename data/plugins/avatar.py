@@ -1,7 +1,7 @@
 ##
 # @file avatar.py
 # @brief Smart avatar plugin for srain
-# @author SY Zhang <lastavengers@outlook.com>
+# @author SY Zhang <silverrainz@outlook.com>
 # @version 1.0
 # @date 2016-08-26
 #
@@ -28,10 +28,6 @@ timeout = 20
 
 def test():
     pass
-  # avatar("\\u", "github:lastavenger")
-  # avatar("la", "github:lastavenger")
-  # avatar("cc", "gravatar:lastavengers@outlook.com")
-  # avatar("lastavenger", "github:lastavenger___")
 
 def save(url, path):
     r = requests.get(url, timeout = timeout, stream = True)
@@ -55,7 +51,7 @@ def get_github_avatar(id_):
     # print('[get_github_avatar]: url: %s' % url)
     return url
 
-# ref: https://en.gravatar.com/site/implement/images/python/ 
+# ref: https://en.gravatar.com/site/implement/images/python/
 def get_gravatar_avatar(email):
     api = 'https://www.gravatar.com/avatar/' + hashlib.md5(email.lower().encode('utf-8')).hexdigest() + '?'
     url = api + urlencode({'s': str(size)})
@@ -63,7 +59,7 @@ def get_gravatar_avatar(email):
     return url
 
 def get_custom_map_avatar(name):
-    api = 'https://raw.githubusercontent.com/lastavenger/srain-avatar-archives/master/archives.json'
+    api = 'https://raw.githubusercontent.com/SilverRainZ/srain-avatar-archives/master/archives.json'
     r = requests.get(api, timeout = timeout)
     json = r.json()
     url = json.get(name)

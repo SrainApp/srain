@@ -1,7 +1,7 @@
 /**
  * @file chat_log.c
  * @brief Save chat log to local store
- * @author Shengyu Zhang <lastavengers@outlook.com>
+ * @author Shengyu Zhang <silverrainz@outlook.com>
  * @version 1.0
  * @date 2016-08-21
  */

@@ -1,6 +1,6 @@
 /* @file ui.c
  * @brief UI module interfaces
- * @author Shengyu Zhang <lastavengers@outlook.com>
+ * @author Shengyu Zhang <silverrainz@outlook.com>
  * @version 1.0
  * @date 2016-06-29
  */

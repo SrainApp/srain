@@ -1,7 +1,7 @@
 /**
  * @file download.c
  * @brief download file from a given url and save it to cache dir
- * @author Shengyu Zhang <lastavengers@outlook.com>
+ * @author Shengyu Zhang <silverrainz@outlook.com>
  * @version 1.0
  * @date 2016-03-18
  *

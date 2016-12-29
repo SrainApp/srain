@@ -1,7 +1,7 @@
 /**
  * @file srain_chat.c
  * @brief Complex widget used to reprsenting a session
- * @author Shengyu Zhang <lastavengers@outlook.com>
+ * @author Shengyu Zhang <silverrainz@outlook.com>
  * @version 1.0
  * @date 2016-03-01
  */

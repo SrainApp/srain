@@ -1,7 +1,7 @@
 /**
  * @file completion.c
  * @brief GtkEntryCompletion wrapper for keywords completion
- * @author Shengyu Zhang <lastavengers@outlook.com>
+ * @author Shengyu Zhang <silverrainz@outlook.com>
  * @version 1.0
  * @date 2016-06-05
  *
