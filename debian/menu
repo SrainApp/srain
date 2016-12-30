@@ -1,0 +1,2 @@
+?package(srain):needs="X11|text|vc|wm" section="Applications/Network"\
+  title="Srain" command="/usr/bin/srain"
