@@ -12,11 +12,17 @@
 
 void ui_hdr_init(){
 #ifdef UI_TEST
+    ui_hdr_srv_connect = ui_test_srv_connect;
+    ui_hdr_srv_query = ui_test_srv_query;
+    ui_hdr_srv_unquery = ui_test_srv_unquery;
     ui_hdr_srv_join = ui_test_srv_join;
     ui_hdr_srv_part = ui_test_srv_part;
+    ui_hdr_srv_quit = ui_test_srv_quit;
     ui_hdr_srv_send = ui_test_srv_send;
     ui_hdr_srv_cmd = ui_test_srv_cmd;
-    // TODO: more...
+    ui_hdr_srv_kick = ui_test_srv_kick;
+    ui_hdr_srv_whois = ui_test_srv_whois;
+    ui_hdr_srv_invite = ui_test_srv_invite;
 #else
     ui_hdr_srv_connect = srv_connect;
     ui_hdr_srv_query = srv_query;
@@ -28,6 +34,6 @@ void ui_hdr_init(){
     ui_hdr_srv_cmd = srv_cmd;
     ui_hdr_srv_kick = srv_kick;
     ui_hdr_srv_whois = srv_whois;
-    ui_hdr_srv_invite= srv_invite;
+    ui_hdr_srv_invite = srv_invite;
 #endif
 }

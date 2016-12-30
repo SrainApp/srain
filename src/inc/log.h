@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <glib.h>
 
-#define DBG_PROMPT      "[ DBG] [%s] "
+#define DBG_PROMPT      "\e[37m[ DBG]\e[0m [%s]\t"
 #define INFO_PROMPT     "\e[32m[INFO]\e[0m [%s]\t"
 #define WARN_PROMPT     "\e[33m[WARN] [%s]\t"
 #define ERR_PROMPT      "\e[31m[ ERR] [%s]\t"
@@ -27,7 +27,7 @@
         g_print("\n");                          \
     } while (0);
 
-/* Print a line of debug message with fucntion name, 
+/* Print a line of debug message with fucntion name,
  * do not output the trailing newline */
 #define _DBG_F(...)                         \
     do {                                    \

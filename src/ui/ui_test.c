@@ -15,14 +15,35 @@
 #include "srv.h"
 #include "log.h"
 
+int ui_test_srv_connect(SIGN_SRV_CONNECT){
+    LOG_FR("host: %s, port: %d, passwd: %s, "
+            "nickname: %s, username: %s,realname: %s, flag: %d",
+            host, port, passwd, nickname, username, realname, flag);
+    return 0;
+}
+
+int ui_test_srv_query(SIGN_SRV_QUERY){
+    LOG_FR("srv_name: %s, nick: %s", srv_name, nick);
+    return 0;
+}
+
+int ui_test_srv_unquery(SIGN_SRV_UNQUERY){
+    LOG_FR("srv_name: %s, nick: %s", srv_name, nick);
+    return 0;
+}
+
 int ui_test_srv_join(SIGN_SRV_JOIN){
-    LOG_FR("srv_name: %s, chat: %s, passwd: %s",
-            srv_name, chan, passwd);
+    LOG_FR("srv_name: %s, chat: %s, passwd: %s", srv_name, chan, passwd);
     return 0;
 }
 
 int ui_test_srv_part(SIGN_SRV_PART){
     LOG_FR("srv_name: %s, chan: %s", srv_name, chan);
+    return 0;
+}
+
+int ui_test_srv_quit(SIGN_SRV_QUIT){
+    LOG_FR("srv_name: %s, reason: %s", srv_name, reason);
     return 0;
 }
 
@@ -34,6 +55,22 @@ int ui_test_srv_send(SIGN_SRV_SEND){
 int ui_test_srv_cmd(SIGN_SRV_CMD){
     LOG_FR("srv_name: %s, source: %s, cmd: '%s', block: %d",
             srv_name, source, cmd, block);
+    return 0;
+}
+
+int ui_test_srv_kick(SIGN_SRV_KICK){
+    LOG_FR("srv_name: %s, nick: %s, chan: %s, reason: %s",
+            srv_name, nick, chan, reason);
+    return 0;
+}
+
+int ui_test_srv_whois(SIGN_SRV_WHOIS){
+    LOG_FR("srv_name: %s, nick: %s", srv_name, nick);
+    return 0;
+}
+
+int ui_test_srv_invite(SIGN_SRV_INVITE){
+    LOG_FR("srv_name: %s, nick: %s, chan: %s", srv_name, nick, chan);
     return 0;
 }
 
