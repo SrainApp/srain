@@ -1,11 +1,12 @@
-<img src="./data/icons/raw/srain.png" width=8%> Srain
+Srain
 =====
 
 **Note:** Srain is still under development.
 
 It does not look like an IRC client :-)
 
-# Dependencies
+Dependencies
+------------
 
 - make          (makedepends)
 - gcc           (makedepends)
@@ -18,39 +19,53 @@ It does not look like an IRC client :-)
 - libircclient >= 1.8
 - libnotify
 
-# Build & Debug
+Build & Debug
+-------------
+
+.. code-block:: shell
 
     mkdir build
     ./configure --prefix=$PWD/build --enable-debug
     make
     make run
 
-# Install
+Install
+-------
 
-## Arch Linux
+Arch Linux
+~~~~~~~~~~
+
+.. code-block:: shell
 
     yaourt -S srain-git # git version
     yaourt -S srain     # latest release
 
 or
 
+.. code-block:: shell
+
     # Add archlinuxcn mirror, then
     pacman -S archlinuxcn/srain-git
 
-## Gentoo
+Gentoo
+~~~~~~
 
-Look at the [install guide](https://github.com/rtlanceroad/gentoo-srain).
+Look at the `Install Guide <https://github.com/rtlanceroad/gentoo-srain>`_
 
-## For other linux distributions:
+For Other Linux Distributions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: shell
 
     # Intall the above dependencies, then
     # Note: the configure script doesn't check dependiencies.
     mkdir build
     ./configure --prefix=/usr/local --disable-debug
     make
-	make DESTDIR=/ install
+    make DESTDIR=/ install
 
-# Feature
+Feature
+-------
 
 - Beautiful User Interface
 - Relay bot message transform
@@ -58,12 +73,14 @@ Look at the [install guide](https://github.com/rtlanceroad/gentoo-srain).
 - Get avatar according to user's real name (plugin)
 - Auto upload image to pastebin (plugin)
 
-# Screenshot
+Screenshot
+----------
 
 As you see, its theme is inspired by Telegram Desktop.
 
-![screenshot](http://img.tjm.moe/47/ceece073d29563da0c22ab6e8e8c3cdc534113.png)
+.. image:: http://img.tjm.moe/47/ceece073d29563da0c22ab6e8e8c3cdc534113.png
 
-# License
+License
+-------
 
-GPL v3
+GNU General Public License Version 3
