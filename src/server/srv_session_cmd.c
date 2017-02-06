@@ -12,21 +12,19 @@
 #include <string.h>
 #include <strings.h>
 
-#include "srv_session.h"
-#include "srv_hdr.h"
-
 #include "log.h"
 #include "meta.h"
 #include "i18n.h"
 #include "filter.h"
 #include "command.h"
 
+/*
 typedef struct {
     SRVSession *session;
     const char *source;
 } SessionCommandContext;
 
-static SRVSession *startup_session;
+static SRVSession *startup_session = NULL;
 static int on_command_connect(Command *cmd, void *user_data);
 static int on_command_relay(Command *cmd, void *user_data);
 static int on_command_unrelay(Command *cmd, void *user_data);
@@ -292,6 +290,7 @@ static int on_command_filter_show(Command *cmd, void *user_data){
 static int on_command_query(Command *cmd, void *user_data){
     const char *nick = command_get_arg(cmd, 0);
     SessionCommandContext *ctx = user_data;
+    g_return_if_fail(ctx);
 
     if (!nick) return -1;
     srv_hdr_ui_add_chat(ctx->session->host, nick, "", CHAT_PRIVATE);
@@ -302,6 +301,7 @@ static int on_command_query(Command *cmd, void *user_data){
 static int on_command_unquery(Command *cmd, void *user_data){
     const char *nick = command_get_arg(cmd, 0);
     SessionCommandContext *ctx = user_data;
+    g_return_if_fail(ctx);
 
     if (!nick) return -1;
     srv_hdr_ui_rm_chat(ctx->session->host, nick);
@@ -312,7 +312,7 @@ static int on_command_join(Command *cmd, void *user_data){
     const char *chan = command_get_arg(cmd, 0);
     const char *passwd = command_get_arg(cmd, 1);
     SessionCommandContext *ctx = user_data;
-
+    g_return_if_fail(ctx);
 
     if (!chan) return -1;
     return srv_session_join(ctx->session, chan, passwd);
@@ -322,7 +322,7 @@ static int on_command_part(Command *cmd, void *user_data){
     const char *chan = command_get_arg(cmd, 0);
     // const char *reason = command_get_arg(cmd, 1);
     SessionCommandContext *ctx = user_data;
-
+    g_return_if_fail(ctx);
 
     if (!chan) chan = user_data;
     return srv_session_part(ctx->session, chan);
@@ -417,6 +417,7 @@ static int on_command_list(Command *cmd, void *user_data){
 
 static void on_unknown_cmd(const char *cmd, void *user_data){
     SessionCommandContext *ctx = user_data;
+    g_return_if_fail(ctx);
 
     srv_hdr_ui_sys_msgf(ctx->session->host, ctx->source, SYS_MSG_ERROR, 0,
             _("No such command '%s'"), cmd);
@@ -424,6 +425,7 @@ static void on_unknown_cmd(const char *cmd, void *user_data){
 
 static void on_unknown_opt(Command *cmd, const char *opt, void *user_data){
     SessionCommandContext *ctx = user_data;
+    g_return_if_fail(ctx);
 
     srv_hdr_ui_sys_msgf(ctx->session->host, ctx->source, SYS_MSG_ERROR, 0,
             _("No such option '%s'"), opt);
@@ -431,6 +433,7 @@ static void on_unknown_opt(Command *cmd, const char *opt, void *user_data){
 
 static void on_missing_opt_val(Command *cmd, const char *opt, void *user_data){
     SessionCommandContext *ctx = user_data;
+    g_return_if_fail(ctx);
 
     srv_hdr_ui_sys_msgf(ctx->session->host, ctx->source, SYS_MSG_ERROR, 0,
             _("Option '%s' missing value"), opt);
@@ -438,6 +441,7 @@ static void on_missing_opt_val(Command *cmd, const char *opt, void *user_data){
 
 static void on_too_many_opt(Command *cmd, void *user_data){
     SessionCommandContext *ctx = user_data;
+    g_return_if_fail(ctx);
 
     srv_hdr_ui_sys_msg(ctx->session->host, ctx->source, _("Too many options"),
             SYS_MSG_ERROR, 0);
@@ -445,6 +449,7 @@ static void on_too_many_opt(Command *cmd, void *user_data){
 
 static void on_too_many_arg(Command *cmd, void *user_data){
     SessionCommandContext *ctx = user_data;
+    g_return_if_fail(ctx);
 
     srv_hdr_ui_sys_msg(ctx->session->host, ctx->source, _("Too many arguments"),
             SYS_MSG_ERROR, 0);
@@ -452,7 +457,9 @@ static void on_too_many_arg(Command *cmd, void *user_data){
 
 static void on_callback_fail(Command *cmd, void *user_data){
     SessionCommandContext *ctx = user_data;
+    g_return_if_fail(ctx);
 
+    WARN_FR("%x" , ctx->session);
     srv_hdr_ui_sys_msgf(ctx->session->host, ctx->source, SYS_MSG_ERROR, 0,
             _("Command '%s' failed"), cmd->bind->name);
 }
@@ -473,12 +480,16 @@ void srv_session_cmd_init(){
 int srv_session_cmd(SRVSession *session, const char *source, char *cmd, int block){
     SessionCommandContext ctx;
 
+    WARN_FR("sess: 0x%x", session);
     if (source == NULL) source = META_SERVER;
     if (session == NULL) session = startup_session;
     if (block) wait_until_connected(session);
 
+    WARN_FR("sess: 0x%x", session);
     ctx.session = session;
     ctx.source = source;
 
     return command_proc(cmd, &ctx);
 }
+*/
+

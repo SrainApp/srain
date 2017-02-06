@@ -15,7 +15,6 @@
 #include "theme.h"
 #include "ui.h"
 #include "ui_common.h"
-#include "ui_hdr.h"
 #include "srain_chat.h"
 #include "srain_entry_completion.h"
 #include "srain_msg_list.h"
@@ -84,17 +83,21 @@ static void close_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
 
     switch (chat->type){
         case CHAT_SERVER:
-            ui_hdr_srv_quit(srain_chat_get_srv_name(chat), "");
+            // ui_hdr_srv_quit(srain_chat_get_srv_name(chat), "");
             break;
         case CHAT_CHANNEL:
+            /*
             ui_hdr_srv_part(
                     srain_chat_get_srv_name(chat),
                     srain_chat_get_chat_name(chat));
+            */
             break;
         case CHAT_PRIVATE:
+            /*
             ui_hdr_srv_unquery(
                     srain_chat_get_srv_name(chat),
                     srain_chat_get_chat_name(chat));
+            */
             break;
         default:
             break;
@@ -200,6 +203,7 @@ static void input_entry_on_activate(SrainChat *chat){
 
     DBG_FR("chat: %s, text: '%s'", chat_name, input);
 
+    /*
     if (input[0] == '/'){
         ui_hdr_srv_cmd(
                 srain_chat_get_srv_name(chat),
@@ -221,6 +225,7 @@ static void input_entry_on_activate(SrainChat *chat){
                     SYS_MSG_ERROR, 0);
         }
     }
+    */
 
 ret:
     gtk_entry_set_text(chat->input_entry, "");

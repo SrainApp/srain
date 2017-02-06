@@ -14,7 +14,7 @@
 #include <regex.h>
 #include <sys/types.h>
 
-#include "srv_session.h"
+#include "srv.h"
 
 #include "meta.h"
 #include "log.h"

@@ -15,13 +15,10 @@
 
 #include "ui.h"
 #include "ui_common.h"
-#include "ui_hdr.h"
 #include "srain_msg_list.h"
 #include "srain_window.h"
 #include "srain_msg.h"
 #include "snotify.h"
-
-#include "srv_session.h"
 
 #include "i18n.h"
 #include "markup.h"

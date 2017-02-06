@@ -1,7 +1,6 @@
 #include <gtk/gtk.h>
 #include <string.h>
 
-#include "ui_hdr.h"
 #include "srain_app.h"
 #include "srain_window.h"
 #include "srain_chat.h"
@@ -16,33 +15,35 @@ static void nick_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
     nick = user_data;
 
     if (strcmp(gtk_widget_get_name(widget), "whois_menu_item") == 0){
-        ui_hdr_srv_whois(srain_chat_get_srv_name(chat), nick);
+        // ui_hdr_srv_whois(srain_chat_get_srv_name(chat), nick);
     }
     else if (strcmp(gtk_widget_get_name(widget), "ignore_menu_item") == 0){
         // TODO
         GString *cmd = g_string_new("");
 
         g_string_printf(cmd, "/ignore %s", nick);
-        ui_hdr_srv_cmd(
+        /*ui_hdr_srv_cmd(
                 srain_chat_get_srv_name(chat),
                 srain_chat_get_chat_name(chat),
                 cmd->str, 0);
+                */
         g_string_free(cmd, TRUE);
     }
     else if (strcmp(gtk_widget_get_name(widget), "kick_menu_item") == 0){
-        ui_hdr_srv_kick(
+        /* ui_hdr_srv_kick(
                 srain_chat_get_srv_name(chat),
                 srain_chat_get_chat_name(chat),
                 nick, "");
+                */
     }
     else if (strcmp(gtk_widget_get_name(widget), "chat_menu_item") == 0){
-        ui_hdr_srv_query( srain_chat_get_srv_name(chat), nick);
+        // ui_hdr_srv_query( srain_chat_get_srv_name(chat), nick);
     }
     else if (strcmp(gtk_widget_get_name(widget), "invite_submenu_item") == 0){
-        ui_hdr_srv_invite(
+        /* ui_hdr_srv_invite(
                 srain_chat_get_srv_name(chat),
                 srain_chat_get_chat_name(chat),
-                nick);
+                nick); */
     }
     else {
         ERR_FR("Unknown menu item: %s", gtk_widget_get_name(widget));

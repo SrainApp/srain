@@ -22,10 +22,6 @@ PY3FLAGS = $(shell pkg-config --cflags python3)
 PY3LIBS = $(shell pkg-config --libs python3)
 CURLFLAGS = $(shell pkg-config --cflags libcurl)
 CURLLIBS = $(shell pkg-config --libs libcurl)
-# LIBIRCCLINETFLAGS = $(shell pkg-config --cflags libircclient)
-# LIBIRCCLINETLIBS = $(shell pkg-config --libs libircclient)
-LIBIRCCLINETFLAGS = -lircclient
-LIBIRCCLINETLIBS = -I/usr/include/libircclient
 LIBNOTIFYFLAGS = $(shell pkg-config --cflags libnotify)
 LIBNOTIFYLIBS = $(shell pkg-config --libs libnotify)
 

@@ -2,18 +2,23 @@
 
 - Changed:
     - New command parser and format, see `./doc/commands.rst`
-    - Scroll message list via key Ctrl + UP/DONW but not UP/DOWN
+    - Scroll message list via key Ctrl + UP/DONW but not UP/DOWN [UNCOMFRIM]
     - Install script for gentoo, thx to @rtlanceroad !
+    - Install script for debian, thx to @xxx
 - Added:
-    - Switch history input message via key UP/DOWN
+    - Filter for changing/ignoring message [WIP]
+    - Add preference panel [NOYET]
+- Removed:
+    - Remove libircclient dependence [WIP]
 - Improved:
+    - Improve reconnection stuff [NOYET]
     - More accurate message mention
     - Display preview image in correct size
     - SrainSysMsg:
         - Image in SrainSysMsg can be displayed now
         - HTTP link in SrainSendMsg can be rendered now
     - Mulit sent message can be merged in one SrainSendMsg
-    - Define interface signature as macro
+    - Define interface signature as macro [CANCEL]
 
 # 2016-08-27 Version 0.05:
 

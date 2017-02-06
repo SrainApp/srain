@@ -13,7 +13,6 @@
 #include <assert.h>
 
 #include "ui_common.h"
-#include "ui_hdr.h"
 #include "theme.h"
 #include "srain_app.h"
 #include "srain_window.h"
@@ -156,9 +155,11 @@ static void join_button_on_click(gpointer user_data){
     chat = gtk_entry_get_text(join_entries->join_chat_entry);
     pwd = gtk_entry_get_text(join_entries->join_pwd_entry);
 
-    ui_hdr_srv_join(
+    /*
+     * ui_hdr_srv_join(
             srain_chat_get_srv_name(srain_window_get_cur_chat(srain_win)),
             chat, pwd);
+    */
 
     gtk_entry_set_text(join_entries->join_chat_entry, "");
     gtk_entry_set_text(join_entries->join_pwd_entry, "");
@@ -173,7 +174,7 @@ static void conn_button_on_click(gpointer user_data){
     const char *realname;
     int ssl;
     int no_verify;
-    SRVSessionFlag flag = 0;
+    // SRVSessionFlag flag = 0;
     ConnEntries *conn_entries;
 
     conn_entries = user_data;
@@ -186,10 +187,10 @@ static void conn_button_on_click(gpointer user_data){
     ssl = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(conn_entries->conn_ssl_check_button));
     no_verify = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(conn_entries->conn_no_verfiy_check_button));
 
-    if (ssl) flag |= SRV_SESSION_FLAG_SSL;
-    if (no_verify) flag |= SRV_SESSION_FLAG_SSL_NOVERIFY;
+    // if (ssl) flag |= SRV_SESSION_FLAG_SSL;
+    // if (no_verify) flag |= SRV_SESSION_FLAG_SSL_NOVERIFY;
 
-    ui_hdr_srv_connect(addr, atoi(port), passwd, nick, PACKAGE_NAME, realname, flag);
+    // ui_hdr_srv_connect(addr, atoi(port), passwd, nick, PACKAGE_NAME, realname, flag);
 
     gtk_entry_set_text(conn_entries->conn_addr_entry, "");
     gtk_entry_set_text(conn_entries->conn_port_entry, "");

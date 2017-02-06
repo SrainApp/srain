@@ -24,7 +24,8 @@
 
 #include <gtk/gtkbin.h>
 #include <gtk/gtkstack.h>
-#include <srain_chat.h>
+#include "srain_chat.h"
+#include "srv.h"
 
 #define SRAIN_TYPE_STACK_SIDEBAR           (srain_stack_sidebar_get_type())
 #define SRAIN_STACK_SIDEBAR(obj)           (G_TYPE_CHECK_INSTANCE_CAST((obj), SRAIN_TYPE_STACK_SIDEBAR, SrainStackSidebar))

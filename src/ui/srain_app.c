@@ -11,7 +11,6 @@
 #include <gtk/gtk.h>
 
 #include "theme.h"
-#include "ui_test.h"
 #include "ui_common.h"
 #include "srain_app.h"
 #include "srain_window.h"
@@ -37,7 +36,7 @@ static void srain_app_activate(GtkApplication *app){
         gtk_window_present(GTK_WINDOW(srain_win));
 
 #ifdef UI_TEST
-        ui_test();
+        // ui_test();
 #endif
 
         if (rc_read() < 0) {

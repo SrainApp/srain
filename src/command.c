@@ -81,7 +81,7 @@ static int get_quote_arg(char *ptr, char **start, char **end){
         if (*ptr == '\''){
             *ptr++ = '\0';
             while (*ptr == ' ') *ptr++ = '\0';
-                *end = ptr;
+            *end = ptr;
             return 0;
         }
     }

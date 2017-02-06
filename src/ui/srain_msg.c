@@ -15,7 +15,6 @@
 
 #include "ui.h"
 #include "ui_common.h"
-#include "ui_hdr.h"
 #include "nick_menu.h"
 #include "srain_window.h"
 #include "srain_chat.h"
@@ -107,10 +106,13 @@ static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_da
                 srain_chat_get_chat_name(srain_window_get_cur_chat(srain_win)));
         line = strtok(NULL, "\n");
 
+        /*
         ui_send_msg_sync(
                 srain_chat_get_srv_name(chat),
                 srain_chat_get_chat_name(chat),
                 str->str, 0);
+        */
+        /*
         if (ui_hdr_srv_send(
                     srain_chat_get_srv_name(chat),
                     srain_chat_get_chat_name(chat),
@@ -121,6 +123,7 @@ static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_da
                     _("Failed to send message"),
                     SYS_MSG_ERROR, 0);
         }
+        */
         g_string_free(str, TRUE);
     }
 
