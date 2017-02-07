@@ -11,9 +11,9 @@ typedef struct {
     char command[COMMAND_LEN];
     int nparam;
     char param[PARAM_COUNT][PARAM_LEN];  // middle
-    char message[MSG_LEN];  // trailing
+    char message[SIRC_MSG_LEN];  // trailing
 
-    Server *srv;   // irc server this message belongs to
+    void *ctx;   // irc server this message belongs to
 } IRCMsg;
 
 typedef enum {

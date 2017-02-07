@@ -18,7 +18,6 @@
 #include "filter.h"
 #include "command.h"
 
-/*
 typedef struct {
     SRVSession *session;
     const char *source;
@@ -215,16 +214,16 @@ static int on_command_connect(Command *cmd, void *user_data){
     command_get_opt(cmd, "-realname", &realname);
 
     if (!host || !nick) return -1;
-    SRVSessionFlag flag = 0;
+    /*
     if (strcmp(ssl, "on") == 0) flag |= SRV_SESSION_FLAG_SSL;
     if (strcmp(ssl, "noverify") == 0){
         flag |= SRV_SESSION_FLAG_SSL | SRV_SESSION_FLAG_SSL_NOVERIFY;
     }
+    */
 
     if (*passwd == '\0') passwd = NULL;
 
-    SRVSession *tmp;
-    tmp = srv_session_new(host, atoi(port), passwd, nick,
+    Server *srv = server_new(host, atoi(port), passwd, nick,
             PACKAGE_NAME, realname, flag);
     if (tmp){
         startup_session = tmp;
@@ -491,5 +490,4 @@ int srv_session_cmd(SRVSession *session, const char *source, char *cmd, int bloc
 
     return command_proc(cmd, &ctx);
 }
-*/
 

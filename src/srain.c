@@ -14,7 +14,6 @@
 #include <signal.h>
 
 #include "srv.h"
-#include "srv_test.h"
 
 #include "srain_app.h"
 

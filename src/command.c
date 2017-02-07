@@ -1,5 +1,4 @@
 /**
-:A
  * @file command.c
  * @brief Flexible command parser
  * @author Shengyu Zhang <silverrainz@outlook.com>

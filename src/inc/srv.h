@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <glib.h>
 
+#include "irc.h"
+
 /* Structure members length */
 #define NAME_LEN        64
 #define PASSWD_LEN      64
@@ -45,6 +47,15 @@ typedef enum {
 } ServerStatus;
 
 typedef struct {
+    char name[NAME_LEN];
+    char host[HOST_LEN];
+    int port;
+    char passwd[PASSWD_LEN];
+    bool ssl;
+    char *encoding;
+} ServerInfo;
+
+typedef struct {
     /* Server profile */
     char name[NAME_LEN];
     char host[HOST_LEN];
@@ -53,16 +64,13 @@ typedef struct {
     bool ssl;
     char *encoding;
 
-    /* IRC protocol related */
-    int fd;
-    char buf[BUF_LEN];
-    GMutex mutex; // Buffer lock
     time_t last_ping;
     GList *chan_list;
-
     User user;
+
     volatile ServerStatus stat;
     void *ui;
+    SircSession *irc;
 } Server;
 
 typedef struct {
@@ -84,6 +92,13 @@ typedef struct {
 
 void srv_init();
 void srv_finalize();
+
+Server* server_new(const char *name, const char *host, int port,
+        const char *passwd, bool ssl, const char *enconding,
+        const char *nick, const char *username, const char *realname);
+void server_free(Server *srv);
+int server_connect(Server *srv);
+void server_disconnect(Server *srv);
 
 int server_add_chan(Server *srv, const char *name, const char *passwd);
 int server_rm_chan(Server *srv, const char *name);

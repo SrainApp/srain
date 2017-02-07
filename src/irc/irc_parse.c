@@ -113,10 +113,10 @@ IRCMsgType irc_parse(char *line, IRCMsg *imsg){
         /* if no trailing */
         if (trailing_ptr){
             /* a message may be separated in different irc message */
-            strncpy(imsg->message, trailing_ptr + 2, MSG_LEN);
+            strncpy(imsg->message, trailing_ptr + 2, SIRC_MSG_LEN);
             DBG_FR("message: %s", imsg->message);
         } else if (middle_ptr[0] == ':'){
-            strncpy(imsg->message, middle_ptr + 1, MSG_LEN);
+            strncpy(imsg->message, middle_ptr + 1, SIRC_MSG_LEN);
             DBG_FR("message(no param): %s", imsg->message);
         }
 

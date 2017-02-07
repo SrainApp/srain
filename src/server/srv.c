@@ -13,10 +13,8 @@
 #include <gtk/gtk.h>
 
 #include "srv.h"
-#include "srv_session_cmd.h"
-#include "srv_test.h"
+#include "srv_event.h"
 
-#include "irc.h"
 #include "irc_cmd.h"
 
 #include "ui.h"
@@ -48,12 +46,6 @@ Server* server_new(const char *name,
     srv->ssl = ssl;
     srv->stat = SERVER_UNCONNECTED;
     /* srv->chan_list = NULL; */ // by g_malloc0()
-    srv->fd = -1;
-    srv->ui = ui_add_chat(srv, META_SERVER, CHAT_SERVER);
-
-    if (!srv->ui){
-        goto bad;
-    }
 
     g_strlcpy(srv->name, name, sizeof(srv->name));
     g_strlcpy(srv->host, host, sizeof(srv->host));
@@ -65,7 +57,35 @@ Server* server_new(const char *name,
     g_strlcpy(srv->user.username, username, sizeof(srv->user.username));
     g_strlcpy(srv->user.realname, realname, sizeof(srv->user.realname));
 
-    g_mutex_init(&srv->mutex);
+    /* Get UI & IRC handler */
+    // srv->ui = ui_add_chat(srv, META_SERVER, CHAT_SERVER);
+    // srv->ui = ui_add_chat(srv, META_SERVER, CHAT_SERVER);
+    srv->irc = sirc_new(srv);
+
+    // if (!srv->ui || !srv->irc){
+        // goto bad;
+    // }
+
+    /* IRC event callbacks */
+    srv->irc->events.connect  = srv_event_connect;
+    srv->irc->events.disconnect  = srv_event_disconnect;
+    srv->irc->events.ping  = srv_event_ping;
+    srv->irc->events.welcome  = srv_event_welcome;
+    srv->irc->events.nick = srv_event_nick;
+    srv->irc->events.quit = srv_event_quit;
+    srv->irc->events.join = srv_event_join;
+    srv->irc->events.part = srv_event_part;
+    srv->irc->events.mode = srv_event_mode;
+    srv->irc->events.umode = srv_event_umode;
+    srv->irc->events.topic = srv_event_topic;
+    srv->irc->events.kick = srv_event_kick;
+    srv->irc->events.channel = srv_event_channel;
+    srv->irc->events.privmsg = srv_event_privmsg;
+    srv->irc->events.notice = srv_event_notice;
+    srv->irc->events.channel_notice = srv_event_channel_notice;
+    srv->irc->events.invite = srv_event_invite;
+    srv->irc->events.ctcp_action = srv_event_ctcp_action;
+    srv->irc->events.numeric = srv_event_numeric;
 
     return srv;
 
@@ -75,10 +95,6 @@ bad:
 }
 
 void server_free(Server *srv){
-    if (srv->fd != -1){
-        // close connection...
-    }
-
     if (srv->ui != NULL){
         ui_rm_chat(srv->ui);
     }
@@ -91,25 +107,13 @@ void server_free(Server *srv){
 }
 
 int server_connect(Server *srv){
-    User *user = &srv->user;
-    irc_connect(srv);
+    sirc_connect(srv->irc, srv->host, srv->port);
 
-    while (srv->stat == SERVER_CONNECTING) {
-        while (gtk_events_pending()) gtk_main_iteration();
-    }
-
-    if (srv->stat == SERVER_DISCONNECTED) {
-        ERR_FR("Failed to connect to server %s(%s:%d)",
-                srv->name, srv->host, srv->port);
-        return SRN_ERR;
-    }
-
-    irc_cmd_nick(srv->fd, user->nick);
-    irc_cmd_user(srv->fd, user->username, "hostname", "servername", user->realname);
+    return SRN_OK;
 }
 
 void server_disconnect(Server *srv){
-    irc_disconnect(srv);
+    sirc_disconnect(srv);
 }
 
 int server_add_chan(Server *srv, const char *name, const char *passwd){
@@ -263,17 +267,15 @@ User* server_get_user(Server *srv, const char *chan_name, const char *nick){
 void srv_init(){
     irc_init();
     char **argv = { NULL };
-    // gtk_init(0, argv);
+    gtk_init(0, argv);
     Server *srv = server_new("ngircd1", "127.0.0.1", 6667, "", FALSE, "UTF-8",
             "LA", NULL, NULL);
-    Server *srv2 = server_new("ngircd2", "127.0.0.1", 6668, "", FALSE, "UTF-8",
-            "LA2", NULL, NULL);
-    if (srv) {
+    // Server *srv2 = server_new("ngircd2", "127.0.0.1", 6668, "", FALSE, "UTF-8",
+            // "LA2", NULL, NULL);
         server_connect(srv);
-        server_connect(srv2);
+        // server_connect(srv2);
         // server_disconnect(srv);
-        // gtk_main();
-    }
+        gtk_main();
 }
 
 void srv_finalize(){
