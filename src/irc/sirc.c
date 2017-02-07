@@ -17,10 +17,10 @@
 #include <sys/types.h>
 
 #include "socket.h"
-#include "irc_magic.h"
-#include "irc_cmd.h"
-#include "irc_parse.h"
-#include "irc_event.h"
+#include "sirc_numeric.h"
+#include "sirc_cmd.h"
+#include "sirc_parse.h"
+#include "sirc_event.h"
 
 #include "srain.h"
 #include "log.h"
@@ -35,7 +35,7 @@ typedef struct {
  */
 static void th_sirc_connect(ThreadData *td);
 static void th_sirc_proc(SircSession *sirc);
-static void th_sirc_recv(SircSession *sirc);
+static int th_sirc_recv(SircSession *sirc);
 
 /* NOTE: The "idle_" prefix means that this function invoked as a idle function
  * in GLib main thread(main loop).
@@ -59,7 +59,7 @@ SircSession* sirc_new(void *ctx){
     return sirc;
 }
 
-SircSession* sirc_free(SircSession *sirc){
+void sirc_free(SircSession *sirc){
     if (sirc->fd != -1){
         sirc_disconnect(sirc);
     }
@@ -112,27 +112,33 @@ static void th_sirc_connect(ThreadData *td){
  * runs on GLib main thread. */
 static void th_sirc_proc(SircSession *sirc){
     for (;;){
-        th_sirc_recv(sirc);
+        if (th_sirc_recv(sirc) == SRN_ERR){
+            DBG_FR("SircSession thread exit because read error");
+            return;
+        }
         if (sirc->fd == -1) {
-            DBG_FR("SircSession thread exit");
+            DBG_FR("SircSession thread exit because fd closed");
             return;
         }
     }
 }
 
-static void th_sirc_recv(SircSession *sirc){
+static int th_sirc_recv(SircSession *sirc){
     g_mutex_lock(&sirc->mutex);
     int ret = sck_readline(sirc->fd, sirc->buf, sizeof(sirc->buf));
 
     if (ret != SRN_ERR){
         g_idle_add_full(G_PRIORITY_HIGH_IDLE,
                 (GSourceFunc)idle_sirc_recv, sirc, NULL);
-    } else {
-        ERR_FR("Socket error, connection close");
-        g_idle_add_full(G_PRIORITY_HIGH_IDLE,
-                (GSourceFunc)idle_sirc_on_disconnect, sirc, NULL);
-        g_mutex_unlock(&sirc->mutex);
+        return SRN_OK;
     }
+
+    ERR_FR("Socket error, connection close");
+    g_idle_add_full(G_PRIORITY_HIGH_IDLE,
+            (GSourceFunc)idle_sirc_on_disconnect, sirc, NULL);
+    g_mutex_unlock(&sirc->mutex);
+
+    return ret;
 }
 
 /******************************************************************************
@@ -140,13 +146,13 @@ static void th_sirc_recv(SircSession *sirc){
  *****************************************************************************/
 
 static int idle_sirc_recv(SircSession *sirc){
-    IRCMsg imsg;
+    SircMessage imsg;
 
     int res = irc_parse(sirc->buf, &imsg);
 
     switch (res){
-        case IRCMSG_PING:
-            irc_cmd_pong(sirc->fd, sirc->buf);
+        case SIRC_MSG_PING:
+            sirc_cmd_pong(sirc, sirc->buf);
             sirc->events.ping("PING", sirc->ctx);
             break;
         default:
@@ -159,11 +165,11 @@ static int idle_sirc_recv(SircSession *sirc){
 }
 
 static int idle_sirc_on_connect(SircSession *sirc){
-    sirc->events.connect("connect", sirc->ctx);
+    sirc->events.connect("CONNECT", sirc->ctx);
     return FALSE;
 }
 
 static int idle_sirc_on_disconnect(SircSession *sirc){
-    sirc->events.disconnect("disconnect", sirc->ctx);
+    sirc->events.disconnect("DISCONNECT", sirc->ctx);
     return FALSE;
 }

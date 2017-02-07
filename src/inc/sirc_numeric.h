@@ -1,14 +1,5 @@
-#ifndef __IRC_MAGIC_H
-#define __IRC_MAGIC_H
-
-#define COMMAND_LEN     64      // unconfirm
-#define PARAM_COUNT     64      // unconfirm
-#define PARAM_LEN       64      // unconfirm
-#define SIRC_MSG_LEN    512     // unconfirm
-
-#define CHAN_PREFIX1    '#'
-#define CHAN_PREFIX2    '&'
-#define IS_CHAN(str) ((str)[0] == CHAN_PREFIX1 || (str)[0] == CHAN_PREFIX2)
+#ifndef __SIRC_NUMERIC_H
+#define __SIRC_NUMERIC_H
 
 #define RPL_WELCOME         1
 #define RPL_YOURHOST        2
@@ -97,4 +88,4 @@
 #define RPL_ENDOFUSERS      394
 #define RPL_NOUSERS         395
 
-#endif /* __IRC_MAGIC_H */
+#endif /* __SIRC_NUMERIC_H */

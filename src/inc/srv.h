@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <glib.h>
 
-#include "irc.h"
+#include "sirc.h"
 
 /* Structure members length */
 #define NAME_LEN        64

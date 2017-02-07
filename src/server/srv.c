@@ -15,7 +15,7 @@
 #include "srv.h"
 #include "srv_event.h"
 
-#include "irc_cmd.h"
+#include "sirc_cmd.h"
 
 #include "ui.h"
 
@@ -67,10 +67,10 @@ Server* server_new(const char *name,
     // }
 
     /* IRC event callbacks */
-    srv->irc->events.connect  = srv_event_connect;
-    srv->irc->events.disconnect  = srv_event_disconnect;
-    srv->irc->events.ping  = srv_event_ping;
-    srv->irc->events.welcome  = srv_event_welcome;
+    srv->irc->events.connect = srv_event_connect;
+    srv->irc->events.disconnect = srv_event_disconnect;
+    srv->irc->events.ping = srv_event_ping;
+    srv->irc->events.welcome = srv_event_welcome;
     srv->irc->events.nick = srv_event_nick;
     srv->irc->events.quit = srv_event_quit;
     srv->irc->events.join = srv_event_join;

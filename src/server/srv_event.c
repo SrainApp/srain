@@ -458,8 +458,8 @@ void srv_event_connect(const char *event, void *ctx){
 
     LOG_FR("Server %s connected", srv->name);
 
-    irc_cmd_nick(srv->irc, user->nick);
-    irc_cmd_user(srv->irc, user->username, "hostname", "servername", user->realname);
+    sirc_cmd_nick(srv->irc, user->nick);
+    sirc_cmd_user(srv->irc, user->username, "hostname", "servername", user->realname);
 }
 
 void srv_event_disconnect(const char *event, void *ctx){

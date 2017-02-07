@@ -11,9 +11,10 @@
 #define __DBG_ON
 
 #include <string.h>
+#include <glib.h>
 
-#include "irc.h"
-#include "irc_parse.h"
+#include "sirc.h"
+#include "sirc_parse.h"
 
 #include "log.h"
 
@@ -57,23 +58,23 @@ static void strip(char *str){
  *               store parsing result
  *
  * @return IRC message type,
- *      - IRCMSG_MSG: recv a normal message
- *      - IRCMSG_PING/NOTICE/ERROR: serve message that do not need to care by IRC user
- *        (after you recv IRCMSG_ERROR, connection maybe closed by server)
- *      - IRCMSG_UNKNOWN: unrecognized
+ *      - SIRC_MSG_MESSAGE: recv a normal message
+ *      - SIRC_MSG_PING/NOTICE/ERROR: serve message that do not need to care by IRC user
+ *        (after you recv SIRC_MSG_ERROR, connection maybe closed by server)
+ *      - SIRC_MSG_UNKNOWN: unrecognized
  */
-IRCMsgType irc_parse(char *line, IRCMsg *imsg){
-    memset(imsg, 0, sizeof(IRCMsg));
+SircMessageType irc_parse(char *line, SircMessage *imsg){
+    memset(imsg, 0, sizeof(SircMessage));
 
     if (strncmp(line, "PING :", sizeof("PING :") - 1) == 0){
-        return IRCMSG_PING;
+        return SIRC_MSG_PING;
     }
     else if (strncmp(line, "NOTICE AUTH :", sizeof("NOTICE AUTH :" - 1)) == 0){
-        return IRCMSG_NOTICE;
+        return SIRC_MSG_NOTICE;
     }
     else if (strncmp(line, "ERROR :", sizeof("ERROR :" - 1)) == 0 ){
         WARN_FR("Server error: %s", line);
-        return IRCMSG_ERROR;
+        return SIRC_MSG_ERROR;
     } else {
         /* This is a IRC message
          * IRS protocol message format?
@@ -92,11 +93,11 @@ IRCMsgType irc_parse(char *line, IRCMsg *imsg){
         trailing_ptr = strstr(middle_ptr, " :");
 
         if (!prefix_ptr || !command_ptr || !middle_ptr) goto bad;
-        strncpy(imsg->command, command_ptr, COMMAND_LEN);
-        DBG_FR("command: %s", imsg->command);
+        g_strlcpy(imsg->cmd, command_ptr, sizeof(imsg->cmd));
+        DBG_FR("command: %s", imsg->cmd);
 
         // <prefix> ::= <servername> | <nick> [ '!' <user> ] [ '@' <host> ]
-        strncpy(imsg->prefix, prefix_ptr, sizeof(imsg->prefix));
+        g_strlcpy(imsg->prefix, prefix_ptr, sizeof(imsg->prefix));
         nick_ptr = strtok(prefix_ptr, "!");
         user_ptr = strtok(NULL, "@");
         host_ptr = strtok(NULL, "");
@@ -113,31 +114,31 @@ IRCMsgType irc_parse(char *line, IRCMsg *imsg){
         /* if no trailing */
         if (trailing_ptr){
             /* a message may be separated in different irc message */
-            strncpy(imsg->message, trailing_ptr + 2, SIRC_MSG_LEN);
-            DBG_FR("message: %s", imsg->message);
+            g_strlcpy(imsg->msg, trailing_ptr + 2, sizeof(imsg->msg));
+            DBG_FR("message: %s", imsg->msg);
         } else if (middle_ptr[0] == ':'){
-            strncpy(imsg->message, middle_ptr + 1, SIRC_MSG_LEN);
-            DBG_FR("message(no param): %s", imsg->message);
+            g_strlcpy(imsg->msg, middle_ptr + 1, sizeof(imsg->msg));
+            DBG_FR("message(no param): %s", imsg->msg);
         }
 
         DBG_F("param: ");
         middle_ptr = strtok(middle_ptr, " ");
         do {
             if (middle_ptr[0] == ':') break;
-            strncpy(imsg->param[imsg->nparam++], middle_ptr, PARAM_LEN);
-            DBG("%s(%d) ", imsg->param[imsg->nparam-1], imsg->nparam);
-            if (imsg->nparam > PARAM_COUNT - 1){
+            g_strlcpy(imsg->params[imsg->nparam++], middle_ptr, sizeof(imsg->params[0]));
+            DBG("%s(%d) ", imsg->params[imsg->nparam-1], imsg->nparam);
+            if (imsg->nparam > SIRC_PARAM_COUNT - 1){
                 ERR_FR("Too many params: %s", line);
-                return IRCMSG_UNKNOWN;
+                return SIRC_MSG_UNKNOWN;
             }
         } while ((middle_ptr = strtok(NULL, " ")) != NULL);
         DBG("\n");
 
-        strip(imsg->message);
+        strip(imsg->msg);
 
-        return IRCMSG_MSG;
+        return SIRC_MSG_MESSAGE;
 bad:
         ERR_FR("Unrecognized message: %s", line);
-        return IRCMSG_UNKNOWN;
+        return SIRC_MSG_UNKNOWN;
     }
 }

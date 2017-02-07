@@ -51,7 +51,7 @@ typedef struct {
 
 int sirc_init();
 SircSession* sirc_new(void *ctx);
-SircSession* sirc_free(SircSession *sirc);
+void sirc_free(SircSession *sirc);
 void sirc_connect(SircSession *sirc, const char *host, int port);
 void sirc_disconnect(SircSession *sirc);
 

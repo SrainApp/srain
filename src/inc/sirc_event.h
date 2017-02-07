@@ -18,9 +18,9 @@
 #ifndef __IRC_EVENT_H
 #define __IRC_EVENT_H
 
-#include "irc.h"
-#include "irc_parse.h"
+#include "sirc.h"
+#include "sirc_parse.h"
 
-void irc_event_hdr(SircSession *sirc, IRCMsg *imsg);
+void irc_event_hdr(SircSession *sirc, SircMessage *imsg);
 
 #endif /* __IRC_EVENT_H */
