@@ -101,7 +101,7 @@ int sirc_cmd_raw(SircSession *sirc, const char *fmt, ...){
         len = vsnprintf(buf, sizeof(buf), fmt, args);
         va_end(args);
     }
-    
+
     if (len > 512){
         WARN_FR("Raw command too long");
         len = 512;

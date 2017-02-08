@@ -1,5 +1,5 @@
  /**
- * @file irc_parse.c
+ * @file sirc_parse.c
  * @brief Raw IRC data parser
  * @author Shengyu Zhang <silverrain@outlook.com>
  * @version 1.0
@@ -63,7 +63,7 @@ static void strip(char *str){
  *        (after you recv SIRC_MSG_ERROR, connection maybe closed by server)
  *      - SIRC_MSG_UNKNOWN: unrecognized
  */
-SircMessageType irc_parse(char *line, SircMessage *imsg){
+SircMessageType sirc_parse(char *line, SircMessage *imsg){
     memset(imsg, 0, sizeof(SircMessage));
 
     if (strncmp(line, "PING :", sizeof("PING :") - 1) == 0){

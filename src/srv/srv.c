@@ -265,7 +265,6 @@ User* server_get_user(Server *srv, const char *chan_name, const char *nick){
 }
 
 void srv_init(){
-    irc_init();
     char **argv = { NULL };
     gtk_init(0, argv);
     Server *srv = server_new("ngircd1", "127.0.0.1", 6667, "", FALSE, "UTF-8",

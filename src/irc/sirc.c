@@ -1,6 +1,6 @@
 /**
  * @file sirc.c
- * @brief IRC module
+ * @brief IRC module interface
  * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-03-02
@@ -44,15 +44,11 @@ static int idle_sirc_on_connect(SircSession *sirc);
 static int idle_sirc_on_disconnect(SircSession *sirc);
 static int idle_sirc_recv(SircSession *sirc);
 
-int irc_init(){
-    return SRN_OK;
-}
-
 SircSession* sirc_new(void *ctx){
     SircSession *sirc = g_malloc0(sizeof(SircSession));
 
     sirc->fd = -1;
-    sirc->ctx = ctx;
+    sirc_set_ctx(sirc, ctx);
 
     g_mutex_init(&sirc->mutex);
 
@@ -65,6 +61,14 @@ void sirc_free(SircSession *sirc){
     }
 
     g_free(sirc);
+}
+
+void sirc_set_ctx(SircSession *sirc, void *ctx){
+    sirc->ctx = ctx;
+}
+
+void* sirc_get_ctx(SircSession *sirc){
+    return sirc->ctx;
 }
 
 void sirc_connect(SircSession *sirc, const char *host, int port){
@@ -148,15 +152,15 @@ static int th_sirc_recv(SircSession *sirc){
 static int idle_sirc_recv(SircSession *sirc){
     SircMessage imsg;
 
-    int res = irc_parse(sirc->buf, &imsg);
+    int res = sirc_parse(sirc->buf, &imsg);
 
     switch (res){
         case SIRC_MSG_PING:
             sirc_cmd_pong(sirc, sirc->buf);
-            sirc->events.ping("PING", sirc->ctx);
+            sirc->events.ping(sirc, "PING");
             break;
         default:
-            irc_event_hdr(sirc, &imsg);
+            sirc_event_hdr(sirc, &imsg);
             break;
     }
 
@@ -165,11 +169,11 @@ static int idle_sirc_recv(SircSession *sirc){
 }
 
 static int idle_sirc_on_connect(SircSession *sirc){
-    sirc->events.connect("CONNECT", sirc->ctx);
+    sirc->events.connect(sirc, "CONNECT");
     return FALSE;
 }
 
 static int idle_sirc_on_disconnect(SircSession *sirc){
-    sirc->events.disconnect("DISCONNECT", sirc->ctx);
+    sirc->events.disconnect(sirc, sirc->ctx);
     return FALSE;
 }

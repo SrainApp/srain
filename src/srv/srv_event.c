@@ -44,8 +44,9 @@
         return; \
     }
 
-void srv_event_welcome(Server *srv, const char *event,
+void srv_event_welcome(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
+    Server *srv = sirc_get_ctx(sirc);
     GList *chan_list;
 
     PRINT_EVENT_PARAM;
@@ -63,8 +64,9 @@ void srv_event_welcome(Server *srv, const char *event,
     LOG_FR("Welcome");
 }
 
-void srv_event_nick(Server *srv, const char *event,
+void srv_event_nick(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
+    Server *srv = sirc_get_ctx(sirc);
     char msg[512];
     GList *lst;
     Channel *chan;
@@ -93,8 +95,9 @@ void srv_event_nick(Server *srv, const char *event,
     }
 }
 
-void srv_event_quit(Server *srv, const char *event,
+void srv_event_quit(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
+    Server *srv = sirc_get_ctx(sirc);
     char msg[512];
     GList *chan_list;
 
@@ -133,8 +136,9 @@ void srv_event_quit(Server *srv, const char *event,
     }
 }
 
-void srv_event_join(Server *srv, const char *event,
+void srv_event_join(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
+    Server *srv = sirc_get_ctx(sirc);
     char msg[512];
     const char *chan = params[0];
 
@@ -156,8 +160,9 @@ void srv_event_join(Server *srv, const char *event,
     chat_log_log(srv->name, chan, msg);
 }
 
-void srv_event_part(Server *srv, const char *event,
+void srv_event_part(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
+    Server *srv = sirc_get_ctx(sirc);
     char msg[512];
 
     PRINT_EVENT_PARAM;
@@ -181,8 +186,9 @@ void srv_event_part(Server *srv, const char *event,
     }
 }
 
-void srv_event_mode(Server *srv, const char *event,
+void srv_event_mode(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
+    Server *srv = sirc_get_ctx(sirc);
     char msg[512];
 
     PRINT_EVENT_PARAM;
@@ -232,8 +238,9 @@ void srv_event_mode(Server *srv, const char *event,
     }
 }
 
-void srv_event_umode(Server *srv, const char *event,
+void srv_event_umode(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
+    Server *srv = sirc_get_ctx(sirc);
     char msg[512];
 
     PRINT_EVENT_PARAM;
@@ -248,8 +255,9 @@ void srv_event_umode(Server *srv, const char *event,
     // chat_log_log(srv->name, chan, msg);
 }
 
-void srv_event_topic(Server *srv, const char *event,
+void srv_event_topic(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
+    Server *srv = sirc_get_ctx(sirc);
     char msg[512];
 
     PRINT_EVENT_PARAM;
@@ -265,8 +273,9 @@ void srv_event_topic(Server *srv, const char *event,
     chat_log_log(srv->name, chan, msg);
 }
 
-void srv_event_kick(Server *srv, const char *event,
+void srv_event_kick(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
+    Server *srv = sirc_get_ctx(sirc);
     char msg[512];
 
     PRINT_EVENT_PARAM;
@@ -292,8 +301,9 @@ void srv_event_kick(Server *srv, const char *event,
     }
 }
 
-void srv_event_channel(Server *srv, const char *event,
+void srv_event_channel(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
+    Server *srv = sirc_get_ctx(sirc);
 
     PRINT_EVENT_PARAM;
     CHECK_COUNT(1);
@@ -337,8 +347,9 @@ void srv_event_channel(Server *srv, const char *event,
     free(pure_msg);
 }
 
-void srv_event_privmsg(Server *srv, const char *event,
+void srv_event_privmsg(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
+    Server *srv = sirc_get_ctx(sirc);
 
     PRINT_EVENT_PARAM;
     CHECK_COUNT(1);
@@ -359,8 +370,9 @@ void srv_event_privmsg(Server *srv, const char *event,
     free(pure_msg);
 }
 
-void srv_event_notice(Server *srv, const char *event,
+void srv_event_notice(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
+    Server *srv = sirc_get_ctx(sirc);
 
     PRINT_EVENT_PARAM;
     CHECK_COUNT(1);
@@ -388,8 +400,9 @@ void srv_event_notice(Server *srv, const char *event,
     free(pure_msg);
 }
 
-void srv_event_channel_notice(Server *srv, const char *event,
+void srv_event_channel_notice(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
+    Server *srv = sirc_get_ctx(sirc);
 
     PRINT_EVENT_PARAM;
     CHECK_COUNT(2);
@@ -409,8 +422,9 @@ void srv_event_channel_notice(Server *srv, const char *event,
     free(pure_msg);
 }
 
-void srv_event_invite(Server *srv, const char *event,
+void srv_event_invite(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
+    Server *srv = sirc_get_ctx(sirc);
     char msg[512];
 
     CHECK_COUNT(1);
@@ -423,8 +437,9 @@ void srv_event_invite(Server *srv, const char *event,
     // chat_log_log(srv->name, chan, msg);
 }
 
-void srv_event_ctcp_action(Server *srv, const char *event,
+void srv_event_ctcp_action(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
+    Server *srv = sirc_get_ctx(sirc);
     char buf[512];
 
     PRINT_EVENT_PARAM;
@@ -447,13 +462,14 @@ void srv_event_ctcp_action(Server *srv, const char *event,
     free(pure_msg);
 }
 
-void srv_event_numeric (Server *srv, int event,
+void srv_event_numeric (SircSession *sirc, int event,
         const char *origin, const char **params, int count){
+    Server *srv = sirc_get_ctx(sirc);
     char buf[512];
 }
 
-void srv_event_connect(const char *event, void *ctx){
-    Server *srv = ctx;
+void srv_event_connect(SircSession *sirc, const char *event){
+    Server *srv = sirc_get_ctx(sirc);
     User *user = &srv->user;
 
     LOG_FR("Server %s connected", srv->name);
@@ -462,14 +478,14 @@ void srv_event_connect(const char *event, void *ctx){
     sirc_cmd_user(srv->irc, user->username, "hostname", "servername", user->realname);
 }
 
-void srv_event_disconnect(const char *event, void *ctx){
-    Server *srv = ctx;
+void srv_event_disconnect(SircSession *sirc, const char *event){
+    Server *srv = sirc_get_ctx(sirc);
 
     LOG_FR("Server %s disconnected", srv->name);
 }
 
-void srv_event_ping(const char *event, void *ctx){
-    Server *srv = ctx;
+void srv_event_ping(SircSession *sirc, const char *event){
+    Server *srv = sirc_get_ctx(sirc);
 
     LOG_FR("Server %s ping", srv->name);
 }

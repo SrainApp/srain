@@ -21,6 +21,6 @@
 #include "sirc.h"
 #include "sirc_parse.h"
 
-void irc_event_hdr(SircSession *sirc, SircMessage *imsg);
+void sirc_event_hdr(SircSession *sirc, SircMessage *imsg);
 
 #endif /* __IRC_EVENT_H */

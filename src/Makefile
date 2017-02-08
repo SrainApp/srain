@@ -34,9 +34,7 @@ SRCS = $(wildcard *.c */*.c ../build/resources.c)
 OBJS = $(patsubst %.c, ../build/%.o, $(notdir $(SRCS)))
 
 default:
-	./cmd_list.sh --gen
 	make $(TARGET)
-	./cmd_list.sh --restore
 
 ../build/%.o: %.c
 	$(CC) $(CFLAGS) -c $^ -o $@

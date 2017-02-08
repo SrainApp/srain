@@ -26,14 +26,13 @@
 #include "log.h"
 #include "i18n.h"
 
-#include "cmd_list.h"
-
 struct _SrainChat {
     GtkBox parent;
 
     char *server_name;
     char *chat_name;
     ChatType type;
+    void *ctx;
 
     /* header */
     GtkLabel* name_label;
@@ -271,10 +270,12 @@ static void srain_chat_init(SrainChat *self){
 
     /* command completion */
     int i;
+    /* TODO: get cmdlist from command_filter
     for (i = 0; cmd_list[i] != 0; i++){
         srain_entry_completion_add_keyword(self->completion,
                 cmd_list[i], KEYWORD_NORMAL);
     }
+    */
 
 }
 

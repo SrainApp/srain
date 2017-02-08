@@ -28,6 +28,6 @@ typedef enum {
     SIRC_MSG_SCKERR
 } SircMessageType;
 
-SircMessageType irc_parse(char *line, SircMessage *imsg);
+SircMessageType sirc_parse(char *line, SircMessage *imsg);
 
 #endif /* __IFC_PARSE_H */

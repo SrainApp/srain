@@ -13,6 +13,7 @@
 #include "ui.h"
 #include "ui_common.h"
 #include "srain_app.h"
+#include "srain_chat.h"
 #include "srain_window.h"
 #include "theme.h"
 #include "snotify.h"
@@ -41,7 +42,7 @@ void ui_init(int argc, char **argv){
  *
  * @return 0 if successful, -1 if failed
  */
-void* ui_add_chat(Server *srv, const char *name, ChatType type){
+void* ui_add_chat(const char *name, ChatType type, void *ctx){
     SrainChat *chat;
     chat = srain_window_add_chat(srain_win, srv->name, name, type);
 
@@ -61,7 +62,7 @@ void* ui_add_chat(Server *srv, const char *name, ChatType type){
  *
  * @return 0 if successful, -1 if failed
  */
-void ui_rm_chat(void *chat){
+void ui_rm_chat(SuiSession *sui){
     g_return_if_fail(SRAIN_IS_CHAT(chat));
     srain_window_rm_chat(srain_win, chat);
 }
@@ -76,7 +77,7 @@ void ui_rm_chat(void *chat){
  *             when type = SYS_MSG_ACTION or SYS_MSG_ERROR
  * @param flag
  */
-void ui_sys_msg(void *chat, const char *msg, SysMsgType type, SrainMsgFlag flag){
+void ui_sys_msg(SuiSession *sui, const char *msg, SysMsgType type, SrainMsgFlag flag){
     SrainMsgList *list;
 
     if (!chat){
@@ -106,7 +107,7 @@ void ui_sys_msg(void *chat, const char *msg, SysMsgType type, SrainMsgFlag flag)
  * @param msg
  * @param flag
  */
-void ui_send_msg(void *chat, const char *msg, SrainMsgFlag flag){
+void ui_send_msg(SuiSession *sui, const char *msg, SrainMsgFlag flag){
     SrainMsgList *list;
 
     g_return_if_fail(SRAIN_IS_CHAT(chat));
@@ -128,7 +129,7 @@ void ui_send_msg(void *chat, const char *msg, SrainMsgFlag flag){
  * @param msg
  * @param flag
  */
-void ui_recv_msg(void *chat, const char *nick, const char *id, const char *msg,
+void ui_recv_msg(SuiSession *sui, const char *nick, const char *id, const char *msg,
         SrainMsgFlag flag){
     SrainMsgList *list;
     SrainEntryCompletion *comp;
@@ -158,7 +159,7 @@ void ui_recv_msg(void *chat, const char *nick, const char *id, const char *msg,
  *
  * @return 0 if successful, -1 if failed
  */
-int ui_add_user(void *chat, const char *nick, UserType type){
+int ui_add_user(SuiSession *sui, const char *nick, UserType type){
     int res;
     SrainUserList *list;
     SrainEntryCompletion *comp;
@@ -184,7 +185,7 @@ int ui_add_user(void *chat, const char *nick, UserType type){
  *
  * @return 0 if successful, -1 if failed
  */
-int ui_rm_user(void *chat, const char *nick){
+int ui_rm_user(SuiSession *sui, const char *nick){
     int res;
     SrainUserList *list;
     SrainEntryCompletion *comp;
@@ -212,7 +213,7 @@ int ui_rm_user(void *chat, const char *nick){
  * @param msg When nick was renamed in a chatnel, send `reason`
  *          to this chatnel using `ui_sys_msg()`
  */
-void ui_ren_user(void *chat, const char *old_nick, const char *new_nick, UserType type){
+void ui_ren_user(SuiSession *sui, const char *old_nick, const char *new_nick, UserType type){
     SrainUserList *list;
     SrainEntryCompletion *comp;
 
@@ -239,7 +240,7 @@ void ui_ren_user(void *chat, const char *old_nick, const char *new_nick, UserTyp
  * @param chat_name
  * @param topic
  */
-void ui_set_topic(void *chat, const char *topic){
+void ui_set_topic(SuiSession *sui, const char *topic){
     g_return_if_fail(SRAIN_IS_CHAT(chat));
 
     srain_chat_set_topic(chat, topic);

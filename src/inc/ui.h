@@ -5,6 +5,14 @@
 #include "srain_msg.h"
 #include "srain_user_list.h"
 
+typedef struct {
+    char *name;
+    char *remark;
+
+    SrainChat *chat;
+    void *ctx;
+} SuiSession;
+
 void ui_init(int argc, char **argv);
 void* ui_add_chat(Server *srv, const char *chat_name, ChatType type);
 void ui_rm_chat(void *chat);
