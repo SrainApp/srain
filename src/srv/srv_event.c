@@ -16,6 +16,9 @@
 #include "srv.h"
 #include "srv_event.h"
 
+#include "sirc_cmd.h"
+#include "sirc_numeric.h"
+
 #include "ui.h"
 
 #include "srain.h"
@@ -144,7 +147,7 @@ void srv_event_join(SircSession *sirc, const char *event,
 
     /* You has join a channel */
     if (strncasecmp(srv->user.nick, origin, NICK_LEN) == 0){
-        ui_add_chat(srv, chan, CHAT_CHANNEL);
+        sui_new(chan, srv->host, CHAT_CHANNEL, srv);
 
         //// srv_session_add_chan(sess, chan);
     }
@@ -465,14 +468,49 @@ void srv_event_ctcp_action(SircSession *sirc, const char *event,
 void srv_event_numeric (SircSession *sirc, int event,
         const char *origin, const char **params, int count){
     Server *srv = sirc_get_ctx(sirc);
-    char buf[512];
+
+    switch (event) {
+        case RPL_WELCOME:
+        case RPL_YOURHOST:
+        case RPL_CREATED:
+        case RPL_MOTDSTART:
+        case RPL_MOTD:
+        case RPL_ENDOFMOTD:
+        case RPL_MYINFO:
+        case RPL_BOUNCE:
+        case RPL_LUSEROP:
+        case RPL_LUSERUNKNOWN:
+        case RPL_LUSERCHANNELS:
+        case RPL_LUSERCLIENT:
+        case RPL_LUSERME:
+        case RPL_ADMINME:
+        case RPL_STATSDLINE:
+        case RPL_LOCALUSERS:
+        case RPL_GLOBALUSERS:
+            {
+                int i = 1;
+                GString *buf = g_string_new(NULL);
+
+                while (i < count){
+                    LOG_FR("[%d] %s",i, params[i++]);
+                    g_string_append_printf(buf, "%s ", params[i++]);
+                }
+
+                sui_add_recv_msg(srv->ui, origin, srv->host, buf->str, 0);
+                g_string_free(buf, TRUE);
+                break;
+            }
+        default:
+            break;
+    }
 }
 
 void srv_event_connect(SircSession *sirc, const char *event){
     Server *srv = sirc_get_ctx(sirc);
     User *user = &srv->user;
 
-    LOG_FR("Server %s connected", srv->name);
+    sui_add_sys_msgf(srv->ui, SYS_MSG_NORMAL, 0, _("Connected to %s(%s:%d)"),
+            srv->name, srv->host, srv->port);
 
     sirc_cmd_nick(srv->irc, user->nick);
     sirc_cmd_user(srv->irc, user->username, "hostname", "servername", user->realname);
@@ -486,6 +524,4 @@ void srv_event_disconnect(SircSession *sirc, const char *event){
 
 void srv_event_ping(SircSession *sirc, const char *event){
     Server *srv = sirc_get_ctx(sirc);
-
-    LOG_FR("Server %s ping", srv->name);
 }

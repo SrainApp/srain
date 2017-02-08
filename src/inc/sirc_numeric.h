@@ -88,4 +88,14 @@
 #define RPL_ENDOFUSERS      394
 #define RPL_NOUSERS         395
 
+/* NORFC1459*/
+#define RPL_STATSDLINE      250
+#define RPL_LOCALUSERS      265
+#define RPL_GLOBALUSERS     266
+#define RPL_CHANNEL_URL     328
+#define RPL_WHOWAS_TIME     330
+#define RPL_WHOISHOST       378
+#define RPL_WHOISSECURE     671
+
+
 #endif /* __SIRC_NUMERIC_H */

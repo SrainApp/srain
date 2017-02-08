@@ -5,6 +5,7 @@
 #include <glib.h>
 
 #include "sirc.h"
+#include "ui.h"
 
 /* Structure members length */
 #define NAME_LEN        64
@@ -17,18 +18,6 @@
 #define MSG_LEN         512
 
 #define BUF_LEN         512
-
-/* Ref: http://www.geekshed.net/2009/10/nick-prefixes-explained/ */
-typedef enum {
-    USER_CHIGUA,    // No prefix
-    USER_OWNER,     // ~ mode +q
-    USER_ADMIN,     // & mode +a
-    USER_FULL_OP,   // @ mode +o
-    USER_HALF_OP,   // % mode +h
-    USER_VOICED,    // + mode +v
-    /* ... */
-    USER_TYPE_MAX
-} UserType;
 
 typedef struct {
     char nick[NICK_LEN];
@@ -69,7 +58,7 @@ typedef struct {
     User user;
 
     volatile ServerStatus stat;
-    void *ui;
+    SuiSession *ui;
     SircSession *irc;
 } Server;
 
@@ -79,8 +68,8 @@ typedef struct {
     User *me;
     GList *user_list;
 
-    void *ui;
     Server *srv;
+    SuiSession *ui;
 } Channel;
 
 typedef struct {

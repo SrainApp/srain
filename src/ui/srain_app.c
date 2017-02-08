@@ -15,6 +15,8 @@
 #include "srain_app.h"
 #include "srain_window.h"
 
+#include "srv.h"
+
 #include "meta.h"
 #include "rc.h"
 #include "log.h"
@@ -32,9 +34,12 @@ static void srain_app_activate(GtkApplication *app){
     if (srain_win){
         gtk_window_present(GTK_WINDOW(srain_win));
     } else {
+        WARN_FR(">>>");
         srain_win = srain_window_new(SRAIN_APP(app));
         gtk_window_present(GTK_WINDOW(srain_win));
 
+        Server *srv = server_new("ngircd1", "127.0.0.1", 6667, "", FALSE, "UTF-8", "LA", NULL, NULL);
+        server_connect(srv);
 #ifdef UI_TEST
         // ui_test();
 #endif

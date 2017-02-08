@@ -5,23 +5,32 @@
 #include "srain_msg.h"
 #include "srain_user_list.h"
 
-typedef struct {
-    char *name;
-    char *remark;
+#define SUI_NAME_LEN 128
 
-    SrainChat *chat;
+typedef struct {
+    char name[SUI_NAME_LEN];
+    char remark[SUI_NAME_LEN];
+
+    SrainChat *ui;
     void *ctx;
 } SuiSession;
 
-void ui_init(int argc, char **argv);
-void* ui_add_chat(Server *srv, const char *chat_name, ChatType type);
-void ui_rm_chat(void *chat);
-void ui_sys_msg(void *chat, const char *msg, SysMsgType type, SrainMsgFlag flag);
-void ui_send_msg(void *chat, const char *msg, SrainMsgFlag flag);
-void ui_recv_msg(void *chat, const char *nick, const char *id, const char *msg, SrainMsgFlag flag);
-int ui_add_user(void *chat, const char *nick, UserType type);
-int ui_rm_user(void *chat, const char *nick);
-void ui_ren_user(void *chat, const char *old_nick, const char *new_nick, UserType type);
-void ui_set_topic(void *chat, const char *topic);
+void sui_init(int argc, char **argv);
+SuiSession *sui_new(const char *name, const char *remark, ChatType type, void *ctx);
+void* sui_get_ctx(SuiSession *sui);
+void sui_set_ctx(SuiSession *sui, void *ctx);
+void sui_free(SuiSession *sui);
+
+void sui_add_sys_msg(SuiSession *sui, const char *msg, SysMsgType type, SrainMsgFlag flag);
+void sui_add_sys_msgf(SuiSession *sui, SysMsgType type, SrainMsgFlag flag,
+        const char *fmt, ...);
+void ui_add_sent_msg(SuiSession *sui, const char *msg, SrainMsgFlag flag);
+void sui_add_recv_msg(SuiSession *sui, const char *nick, const char *id,
+        const char *msg, SrainMsgFlag flag);
+
+int sui_add_user(SuiSession *sui, const char *nick, UserType type);
+int sui_rm_user(SuiSession *sui, const char *nick);
+void sui_ren_user(SuiSession *sui, const char *old_nick, const char *new_nick, UserType type);
+void sui_set_topic(SuiSession *sui, const char *topic);
 
 #endif /* __UI_H */

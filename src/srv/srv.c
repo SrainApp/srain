@@ -17,8 +17,6 @@
 
 #include "sirc_cmd.h"
 
-#include "ui.h"
-
 #include "meta.h"
 #include "srain.h"
 #include "log.h"
@@ -58,13 +56,12 @@ Server* server_new(const char *name,
     g_strlcpy(srv->user.realname, realname, sizeof(srv->user.realname));
 
     /* Get UI & IRC handler */
-    // srv->ui = ui_add_chat(srv, META_SERVER, CHAT_SERVER);
-    // srv->ui = ui_add_chat(srv, META_SERVER, CHAT_SERVER);
+    srv->ui = sui_new(META_SERVER, srv->host, CHAT_SERVER, srv);
     srv->irc = sirc_new(srv);
 
-    // if (!srv->ui || !srv->irc){
-        // goto bad;
-    // }
+    if (!srv->ui || !srv->irc){
+        goto bad;
+    }
 
     /* IRC event callbacks */
     srv->irc->events.connect = srv_event_connect;
@@ -95,8 +92,11 @@ bad:
 }
 
 void server_free(Server *srv){
+    if (srv->irc != NULL){
+        sirc_free(srv->ui);
+    }
     if (srv->ui != NULL){
-        ui_rm_chat(srv->ui);
+        sui_free(srv->ui);
     }
 
     if (srv->chan_list != NULL){
@@ -136,7 +136,7 @@ int server_add_chan(Server *srv, const char *name, const char *passwd){
     chan->srv = srv;
     chan->me = NULL;
     chan->user_list = NULL;
-    chan->ui = ui_add_chat(srv, name, CHAT_CHANNEL); // TODO
+    chan->ui = sui_new(name, srv->host, CHAT_CHANNEL, srv); // ??
 
     g_strlcpy(chan->name, name, sizeof(chan->name));
     g_strlcpy(chan->passwd, passwd, sizeof(chan->passwd));
@@ -157,7 +157,7 @@ int server_rm_chan(Server *srv, const char *name){
     while (lst) {
         chan = lst->data;
         if (strcasecmp(chan->name, name) == 0){
-            // ui_rm_chat
+            sui_free(chan->ui);
             // rm user_list
             g_free(chan);
             srv->chan_list = g_list_delete_link(srv->chan_list, lst);
@@ -211,7 +211,7 @@ int server_add_user(Server *srv, const char *chan_name, const char *nick){
     // g_strlcpy(user->realnaem, realname, sizeof(user->realname));
     chan->user_list = g_list_append(chan->user_list, user);
 
-    // ui_add_user()
+    sui_add_user(chan->ui, nick, USER_CHIGUA);
 
     return SRN_OK;
 bad:
@@ -233,7 +233,7 @@ void server_rm_user(Server *srv, const char *chan_name, const char *nick){
         if (strcasecmp(user->nick, nick) == 0){
             g_free(user);
             g_list_delete_link(chan->user_list, lst);
-            // ui_rm_user()
+            sui_rm_user(chan->ui, user->nick);
             return SRN_OK;
         }
         lst = g_list_next(lst);
@@ -266,6 +266,7 @@ User* server_get_user(Server *srv, const char *chan_name, const char *nick){
 
 void srv_init(){
     char **argv = { NULL };
+    /*
     gtk_init(0, argv);
     Server *srv = server_new("ngircd1", "127.0.0.1", 6667, "", FALSE, "UTF-8",
             "LA", NULL, NULL);
@@ -275,6 +276,7 @@ void srv_init(){
         // server_connect(srv2);
         // server_disconnect(srv);
         gtk_main();
+        */
 }
 
 void srv_finalize(){

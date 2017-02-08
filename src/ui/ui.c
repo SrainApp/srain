@@ -5,7 +5,8 @@
  * @date 2016-06-29
  */
 
-// #define __DBG_ON
+#define __LOG_ON
+#define __DBG_ON
 
 #include <gtk/gtk.h>
 #include <string.h>
@@ -13,7 +14,6 @@
 #include "ui.h"
 #include "ui_common.h"
 #include "srain_app.h"
-#include "srain_chat.h"
 #include "srain_window.h"
 #include "theme.h"
 #include "snotify.h"
@@ -31,53 +31,47 @@ void ui_init(int argc, char **argv){
 
     snotify_finalize();
 }
-/* ================================================================================ */
-/* Note: the following functions are synchronous, should be called from main thread */
-/* ================================================================================ */
-/**
- * @brief Add a chatnel to main window
- *
- * @param srv_name Server's name, can't contains whitespace
- * @param chat_name Chatnel's name, can't contains whitespace
- *
- * @return 0 if successful, -1 if failed
- */
-void* ui_add_chat(const char *name, ChatType type, void *ctx){
-    SrainChat *chat;
-    chat = srain_window_add_chat(srain_win, srv->name, name, type);
 
-    if (chat){
-        srain_chat_set_nick(chat, srv->user.nick);
+SuiSession *sui_new(const char *name, const char *remark,
+        ChatType type, void *ctx){
+    SuiSession *sui = g_malloc0(sizeof(SuiSession));
+
+    sui->ui = srain_window_add_chat(srain_win, remark, name, type);
+    LOG_FR("ui: 0x%x", sui->ui);
+
+    if (!sui->ui){
+        goto bad;
     }
 
-    return chat;
+    g_strlcpy(sui->name, name, sizeof(sui->name));
+    g_strlcpy(sui->remark, remark, sizeof(sui->remark));
+
+    sui_set_ctx(sui, ctx);
+
+    return sui;
+
+bad:
+    sui_free(sui);
+    return NULL;
 }
 
-/**
- * @brief Remove a chatnel from main window
- *
- * @param srv_name Server's name, can't contains whitespace
- * @param chat_name Chatnel's name, if chat_name == ""(empty string), remove
- *          all chatnel with the srv_name given as the argument
- *
- * @return 0 if successful, -1 if failed
- */
-void ui_rm_chat(SuiSession *sui){
-    g_return_if_fail(SRAIN_IS_CHAT(chat));
-    srain_window_rm_chat(srain_win, chat);
+void sui_free(SuiSession *sui){
+    if (sui->ui){
+        srain_window_rm_chat(srain_win, sui->ui);
+    }
+    g_free(sui);
 }
 
-/**
- * @brief Add a system message to sepcified chatnel
- *
- * @param srv_name
- * @param chat_name
- * @param msg
- * @param type SrainStackSidebar should be updated
- *             when type = SYS_MSG_ACTION or SYS_MSG_ERROR
- * @param flag
- */
-void ui_sys_msg(SuiSession *sui, const char *msg, SysMsgType type, SrainMsgFlag flag){
+void* sui_get_ctx(SuiSession *sui){
+    return sui->ctx;
+}
+
+void sui_set_ctx(SuiSession *sui, void *ctx){
+    sui->ctx = ctx;
+}
+
+void sui_add_sys_msg(SuiSession *sui, const char *msg, SysMsgType type, SrainMsgFlag flag){
+    SrainChat *chat = sui->ui;
     SrainMsgList *list;
 
     if (!chat){
@@ -100,14 +94,20 @@ void ui_sys_msg(SuiSession *sui, const char *msg, SysMsgType type, SrainMsgFlag 
     }
 }
 
-/**
- * @brief Add a message to sepcified chatnel (sent by yourself)
- *
- * @param chat This chatnel must be existent
- * @param msg
- * @param flag
- */
-void ui_send_msg(SuiSession *sui, const char *msg, SrainMsgFlag flag){
+void sui_add_sys_msgf(SuiSession *sui, SysMsgType type, SrainMsgFlag flag,
+        const char *fmt, ...){
+    char buf[512];
+    va_list args;
+
+    va_start(args, fmt);
+    vsnprintf(buf, sizeof(buf) - 1, fmt, args);
+    va_end(args);
+
+    sui_add_sys_msg(sui, buf, type, flag);
+}
+
+void ui_add_sent_msg(SuiSession *sui, const char *msg, SrainMsgFlag flag){
+    SrainChat *chat = sui->ui;
     SrainMsgList *list;
 
     g_return_if_fail(SRAIN_IS_CHAT(chat));
@@ -118,24 +118,14 @@ void ui_send_msg(SuiSession *sui, const char *msg, SrainMsgFlag flag){
     srain_window_stack_sidebar_update(srain_win, chat, _("You"), msg);
 }
 
-/**
- * @brief Add a message to sepcified chatnel (sent by others),
- *      The nick will be added into the completion list of this chatnel,
- *      The sidebar should be updated
- *
- * @param chat_name If no such chatnel, fallback to META_SERVER
- * @param nick
- * @param id
- * @param msg
- * @param flag
- */
-void ui_recv_msg(SuiSession *sui, const char *nick, const char *id, const char *msg,
-        SrainMsgFlag flag){
+void sui_add_recv_msg(SuiSession *sui, const char *nick, const char *id,
+        const char *msg, SrainMsgFlag flag){
+    SrainChat *chat = sui->ui;
     SrainMsgList *list;
     SrainEntryCompletion *comp;
 
     g_return_if_fail(SRAIN_IS_CHAT(chat));
-    
+
     list = srain_chat_get_msg_list(chat);
     srain_msg_list_recv_msg_add(list, nick, id, msg, flag);
 
@@ -146,21 +136,11 @@ void ui_recv_msg(SuiSession *sui, const char *nick, const char *id, const char *
         if (!comp) return;
         srain_entry_completion_add_keyword(comp, nick, KEYWORD_TMP);
     }
-
 }
 
-/**
- * @brief Add a nick into a specified chatnel's user list
- *
- * @param srv_name
- * @param chat_name
- * @param nick
- * @param type
- *
- * @return 0 if successful, -1 if failed
- */
-int ui_add_user(SuiSession *sui, const char *nick, UserType type){
+int sui_add_user(SuiSession *sui, const char *nick, UserType type){
     int res;
+    SrainChat *chat = sui->ui;
     SrainUserList *list;
     SrainEntryCompletion *comp;
 
@@ -176,22 +156,14 @@ int ui_add_user(SuiSession *sui, const char *nick, UserType type){
     return res;
 }
 
-/**
- * @brief Remove a nick from a specified chatnel's user list
- *
- * @param srv_name
- * @param chat_name
- * @param nick
- *
- * @return 0 if successful, -1 if failed
- */
-int ui_rm_user(SuiSession *sui, const char *nick){
+int sui_rm_user(SuiSession *sui, const char *nick){
     int res;
+    SrainChat *chat = sui->ui;
     SrainUserList *list;
     SrainEntryCompletion *comp;
 
     g_return_val_if_fail(SRAIN_IS_CHAT(chat), SRN_ERR);
-    
+
     list = srain_chat_get_user_list(chat);
 
     if ((res = srain_user_list_rm(list, nick)) == 0){
@@ -202,18 +174,9 @@ int ui_rm_user(SuiSession *sui, const char *nick){
     return res;
 }
 
-/**
- * @brief Rename a item in all chatnels' user list
- *
- * @param srv_name
- * @param chat_name
- * @param old_nick
- * @param new_nick
- * @param type
- * @param msg When nick was renamed in a chatnel, send `reason`
- *          to this chatnel using `ui_sys_msg()`
- */
-void ui_ren_user(SuiSession *sui, const char *old_nick, const char *new_nick, UserType type){
+void sui_ren_user(SuiSession *sui, const char *old_nick, const char *new_nick,
+        UserType type){
+    SrainChat *chat = sui->ui;
     SrainUserList *list;
     SrainEntryCompletion *comp;
 
@@ -233,14 +196,9 @@ void ui_ren_user(SuiSession *sui, const char *old_nick, const char *new_nick, Us
     }
 }
 
-/**
- * @brief Set topic
- *
- * @param srv_name
- * @param chat_name
- * @param topic
- */
-void ui_set_topic(SuiSession *sui, const char *topic){
+void sui_set_topic(SuiSession *sui, const char *topic){
+    SrainChat *chat = sui->ui;
+
     g_return_if_fail(SRAIN_IS_CHAT(chat));
 
     srain_chat_set_topic(chat, topic);

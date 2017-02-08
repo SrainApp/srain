@@ -16,9 +16,6 @@
 #include <gtk/gtk.h>
 #include <sys/stat.h>
 
-#include "ui.h"
-#include "srv.h"
-
 #include "meta.h"
 #include "i18n.h"
 #include "log.h"
