@@ -51,8 +51,8 @@ struct _SircSession {
     void *ctx;
 };
 
-SircSession* sirc_new(void *ctx);
-void sirc_free(SircSession *sirc);
+SircSession* sirc_new_session(void *ctx);
+void sirc_free_session(SircSession *sirc);
 void sirc_connect(SircSession *sirc, const char *host, int port);
 void sirc_disconnect(SircSession *sirc);
 void* sirc_get_ctx(SircSession *sirc);

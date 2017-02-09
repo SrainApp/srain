@@ -44,7 +44,7 @@ static int idle_sirc_on_connect(SircSession *sirc);
 static int idle_sirc_on_disconnect(SircSession *sirc);
 static int idle_sirc_recv(SircSession *sirc);
 
-SircSession* sirc_new(void *ctx){
+SircSession* sirc_new_session(void *ctx){
     SircSession *sirc = g_malloc0(sizeof(SircSession));
 
     sirc->fd = -1;
@@ -55,7 +55,7 @@ SircSession* sirc_new(void *ctx){
     return sirc;
 }
 
-void sirc_free(SircSession *sirc){
+void sirc_free_session(SircSession *sirc){
     if (sirc->fd != -1){
         sirc_disconnect(sirc);
     }

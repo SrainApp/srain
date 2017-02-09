@@ -13,7 +13,6 @@
 #include <string.h>
 
 #include "theme.h"
-#include "ui.h"
 #include "ui_common.h"
 #include "srain_chat.h"
 #include "srain_entry_completion.h"

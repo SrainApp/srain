@@ -14,6 +14,7 @@
 #include <signal.h>
 
 #include "srv.h"
+#include "sui.h"
 
 #include "srain_app.h"
 
@@ -39,13 +40,7 @@ int main(int argc, char **argv){
     i18n_init();
     plugin_init();
 
-#ifndef UI_TEST
-    srv_init();
-#endif
-
-#ifndef IRC_TEST
-    ui_init(argc, argv);
-#endif
+    sui_main_loop(argc, argv);
 
     quit();
 

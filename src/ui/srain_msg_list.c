@@ -13,10 +13,9 @@
 #include <gtk/gtk.h>
 #include <string.h>
 
-#include "ui.h"
 #include "ui_common.h"
-#include "srain_msg_list.h"
 #include "srain_window.h"
+#include "srain_msg_list.h"
 #include "srain_msg.h"
 #include "snotify.h"
 

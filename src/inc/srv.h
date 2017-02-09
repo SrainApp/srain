@@ -5,7 +5,7 @@
 #include <glib.h>
 
 #include "sirc.h"
-#include "ui.h"
+#include "sui.h"
 
 /* Structure members length */
 #define NAME_LEN        64

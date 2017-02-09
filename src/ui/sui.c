@@ -11,7 +11,7 @@
 #include <gtk/gtk.h>
 #include <string.h>
 
-#include "ui.h"
+#include "sui.h"
 #include "ui_common.h"
 #include "srain_app.h"
 #include "srain_window.h"
@@ -23,7 +23,7 @@
 #include "log.h"
 #include "meta.h"
 
-void ui_init(int argc, char **argv){
+void sui_main_loop(int argc, char **argv){
     theme_init();
     snotify_init();
 
@@ -32,12 +32,11 @@ void ui_init(int argc, char **argv){
     snotify_finalize();
 }
 
-SuiSession *sui_new(const char *name, const char *remark,
+SuiSession *sui_new_session(const char *name, const char *remark,
         ChatType type, void *ctx){
     SuiSession *sui = g_malloc0(sizeof(SuiSession));
 
     sui->ui = srain_window_add_chat(srain_win, remark, name, type);
-    LOG_FR("ui: 0x%x", sui->ui);
 
     if (!sui->ui){
         goto bad;
@@ -51,11 +50,11 @@ SuiSession *sui_new(const char *name, const char *remark,
     return sui;
 
 bad:
-    sui_free(sui);
+    sui_free_session(sui);
     return NULL;
 }
 
-void sui_free(SuiSession *sui){
+void sui_free_session(SuiSession *sui){
     if (sui->ui){
         srain_window_rm_chat(srain_win, sui->ui);
     }

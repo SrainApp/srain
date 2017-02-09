@@ -34,7 +34,6 @@ static void srain_app_activate(GtkApplication *app){
     if (srain_win){
         gtk_window_present(GTK_WINDOW(srain_win));
     } else {
-        WARN_FR(">>>");
         srain_win = srain_window_new(SRAIN_APP(app));
         gtk_window_present(GTK_WINDOW(srain_win));
 

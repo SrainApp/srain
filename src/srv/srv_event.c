@@ -19,7 +19,7 @@
 #include "sirc_cmd.h"
 #include "sirc_numeric.h"
 
-#include "ui.h"
+#include "sui.h"
 
 #include "srain.h"
 #include "i18n.h"
@@ -147,7 +147,7 @@ void srv_event_join(SircSession *sirc, const char *event,
 
     /* You has join a channel */
     if (strncasecmp(srv->user.nick, origin, NICK_LEN) == 0){
-        sui_new(chan, srv->host, CHAT_CHANNEL, srv);
+        sui_new_session(chan, srv->host, CHAT_CHANNEL, srv);
 
         //// srv_session_add_chan(sess, chan);
     }
@@ -492,7 +492,7 @@ void srv_event_numeric (SircSession *sirc, int event,
                 GString *buf = g_string_new(NULL);
 
                 while (i < count){
-                    LOG_FR("[%d] %s",i, params[i++]);
+                    LOG_FR("[%d] %s",i, params[i]);
                     g_string_append_printf(buf, "%s ", params[i++]);
                 }
 

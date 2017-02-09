@@ -13,7 +13,6 @@
 #include <assert.h>
 #include <string.h>
 
-#include "ui.h"
 #include "ui_common.h"
 #include "nick_menu.h"
 #include "srain_window.h"

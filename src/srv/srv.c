@@ -56,8 +56,8 @@ Server* server_new(const char *name,
     g_strlcpy(srv->user.realname, realname, sizeof(srv->user.realname));
 
     /* Get UI & IRC handler */
-    srv->ui = sui_new(META_SERVER, srv->host, CHAT_SERVER, srv);
-    srv->irc = sirc_new(srv);
+    srv->ui = sui_new_session(META_SERVER, srv->host, CHAT_SERVER, srv);
+    srv->irc = sirc_new_session(srv);
 
     if (!srv->ui || !srv->irc){
         goto bad;
@@ -93,10 +93,10 @@ bad:
 
 void server_free(Server *srv){
     if (srv->irc != NULL){
-        sirc_free(srv->ui);
+        sirc_free_session(srv->ui);
     }
     if (srv->ui != NULL){
-        sui_free(srv->ui);
+        sui_free_session(srv->ui);
     }
 
     if (srv->chan_list != NULL){
@@ -136,7 +136,7 @@ int server_add_chan(Server *srv, const char *name, const char *passwd){
     chan->srv = srv;
     chan->me = NULL;
     chan->user_list = NULL;
-    chan->ui = sui_new(name, srv->host, CHAT_CHANNEL, srv); // ??
+    chan->ui = sui_new_session(name, srv->host, CHAT_CHANNEL, srv); // ??
 
     g_strlcpy(chan->name, name, sizeof(chan->name));
     g_strlcpy(chan->passwd, passwd, sizeof(chan->passwd));
@@ -157,7 +157,7 @@ int server_rm_chan(Server *srv, const char *name){
     while (lst) {
         chan = lst->data;
         if (strcasecmp(chan->name, name) == 0){
-            sui_free(chan->ui);
+            sui_free_session(chan->ui);
             // rm user_list
             g_free(chan);
             srv->chan_list = g_list_delete_link(srv->chan_list, lst);
@@ -224,7 +224,7 @@ void server_rm_user(Server *srv, const char *chan_name, const char *nick){
 
     chan = server_get_chan(srv, chan_name);
     if (!chan) {
-        return SRN_ERR;
+        return ;
     }
 
     GList *lst = chan->user_list;
@@ -232,7 +232,7 @@ void server_rm_user(Server *srv, const char *chan_name, const char *nick){
         user = lst->data;
         if (strcasecmp(user->nick, nick) == 0){
             g_free(user);
-            g_list_delete_link(chan->user_list, lst);
+            g_list_delete_link(chan->user_list, lst); // TODO: ret val
             sui_rm_user(chan->ui, user->nick);
             return SRN_OK;
         }
@@ -249,7 +249,7 @@ User* server_get_user(Server *srv, const char *chan_name, const char *nick){
 
     chan = server_get_chan(srv, chan_name);
     if (!chan) {
-        return SRN_ERR;
+        return NULL;
     }
 
     GList *lst = chan->user_list;
