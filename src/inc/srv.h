@@ -95,7 +95,7 @@ int server_add_chat(Server *srv, const char *name, const char *passwd);
 int server_rm_chat(Server *srv, const char *name);
 Chat* server_get_chat(Server *srv, const char *name);
 
-int chat_add_user(Chat *chat, const char *nick);
+int chat_add_user(Chat *chat, const char *nick, UserType type);
 int chat_rm_user(Chat *chat, const char *nick);
 User* chat_get_user(Chat *chat, const char *nick);
 

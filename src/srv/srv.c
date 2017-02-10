@@ -182,12 +182,13 @@ Chat* server_get_chat(Server *srv, const char *name) {
         if (strcasecmp(chat->name, name) == 0){
             return chat;
         }
+        lst = g_list_next(lst);
     }
 
     return NULL;
 }
 
-int chat_add_user(Chat *chat, const char *nick){
+int chat_add_user(Chat *chat, const char *nick, UserType type){
     GList *lst;
     User *user;
 
@@ -203,14 +204,14 @@ int chat_add_user(Chat *chat, const char *nick){
     user = g_malloc0(sizeof(User));
 
     user->me = FALSE;
-    user->type = USER_CHIGUA;
+    user->type = type;
 
     g_strlcpy(user->nick, nick, sizeof(user->nick));
     // g_strlcpy(user->username, username, sizeof(user->username));
     // g_strlcpy(user->realnaem, realname, sizeof(user->realname));
     chat->user_list = g_list_append(chat->user_list, user);
 
-    sui_add_user(chat->ui, nick, USER_CHIGUA);
+    sui_add_user(chat->ui, nick, type);
 
     return SRN_OK;
 }

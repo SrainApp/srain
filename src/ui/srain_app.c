@@ -39,22 +39,6 @@ static void srain_app_activate(GtkApplication *app){
 
         Server *srv = server_new("ngircd1", "127.0.0.1", 6667, "", FALSE, "UTF-8", "LA", NULL, NULL);
         server_connect(srv);
-#ifdef UI_TEST
-        // ui_test();
-#endif
-
-        if (rc_read() < 0) {
-            /* Show a message dialog if no command runned in rc file */
-            show_msg_dialog(_("Welcome"), _("<big><b>Welcome to Srain :)</b></big>\n\n"
-                "Click the \"Connect\" button on the header bar to connect to a IRC server."
-                "\n\n"
-                "If you want to execute some commands automatically when startup, please "
-                "add your commands into <u>~/.config/srain/srainrc</u>."
-                "\n\n"
-                "Need help? Please visit "
-                "<a href=\"https://github.com/silverrainz/srain/wiki\">Srain's website</a>."
-                "\n"));
-        }
     }
 }
 
