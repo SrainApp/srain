@@ -66,14 +66,17 @@ static void strip(char *str){
 SircMessageType sirc_parse(char *line, SircMessage *imsg){
     memset(imsg, 0, sizeof(SircMessage));
 
+    /* Miscellaneous messages check */
     if (strncmp(line, "PING :", sizeof("PING :") - 1) == 0){
+        WARN_FR("Received miscellaneous messages: %s", line);
         return SIRC_MSG_PING;
     }
-    else if (strncmp(line, "NOTICE AUTH :", sizeof("NOTICE AUTH :" - 1)) == 0){
+    else if (strncmp(line, "NOTICE AUTH :", sizeof("NOTICE AUTH :") - 1) == 0){
+        WARN_FR("Received miscellaneous messages: %s", line);
         return SIRC_MSG_NOTICE;
     }
-    else if (strncmp(line, "ERROR :", sizeof("ERROR :" - 1)) == 0 ){
-        WARN_FR("Server error: %s", line);
+    else if (strncmp(line, "ERROR :", sizeof("ERROR :") - 1) == 0 ){
+        WARN_FR("Received miscellaneous messages: %s", line);
         return SIRC_MSG_ERROR;
     } else {
         /* This is a IRC message
@@ -89,7 +92,6 @@ SircMessageType sirc_parse(char *line, SircMessage *imsg){
         prefix_ptr = strtok(line + 1, " ");
         command_ptr = strtok(NULL, " ");
         middle_ptr = strtok(NULL, "");
-        // FIXME: crash here, see #19
         trailing_ptr = strstr(middle_ptr, " :");
 
         if (!prefix_ptr || !command_ptr || !middle_ptr) goto bad;

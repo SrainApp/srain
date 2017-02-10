@@ -34,9 +34,8 @@
         DBG_FR("server: %s, event: %s, origin: %s", srv->name, event, origin); \
         DBG_FR("msg: %s", msg); \
         for (int i = 0; i < count; i++){ \
-            if (i == 0) { \
-                DBG_F("count: %d, params: [", count); \
-            } else if (i == count - 1) { \
+            if (i == 0) DBG_F("count: %d, params: [", count); \
+            if (i == count - 1) { \
                 DBG("%s]\n", params[i]); \
             } else { \
                 DBG("%s ", params[i]); \
@@ -48,13 +47,12 @@
     do { \
         DBG_FR("server: %s, event: %d, origin: %s", srv->name, event, origin); \
         DBG_FR("msg: %s", msg); \
-        DBG_F("count: %d, params: [", count); \
         for (int i = 0; i < count; i++){ \
+            if (i == 0) DBG_F("count: %d, params: [", count); \
             if (i == count - 1) { \
                 DBG("%s]\n", params[i]); \
             } else { \
                 DBG("%s ", params[i]); \
-            } \
         } \
     } while (0)
 
@@ -373,23 +371,30 @@ void srv_event_notice(SircSession *sirc, const char *event,
     Chat *chat;
 
     PRINT_EVENT_PARAM;
-    CHECK_COUNT(0);
+    CHECK_COUNT(1);
     g_return_if_fail(msg);
 
+    const char *target = params[0];
     chat = server_get_chat(srv, origin);
-    g_return_if_fail(chat);
-
-    /* FIXME: Freenode specified :-(
-     * This notice messaage is sent by Freenode's offical bot
-     */
-    if (strcmp(origin, "NickServ") == 0
-            || strcmp(origin, "ChanServ") == 0){
-        sui_add_recv_msg(chat->ui, origin, srv->name, msg, 0);
+    if (strncasecmp(srv->user.nick, target, sizeof(srv->user.nick) - 1) == 0){
+        /* NOTICE from user*/
+        /* FIXME: Freenode specified :-(
+         * This notice messaage is sent by Freenode's offical bot
+         */
+        SuiSession *ui = chat ? chat->ui : srv->ui;
+        if (strcmp(origin, "NickServ") == 0
+                || strcmp(origin, "ChanServ") == 0){
+            sui_add_recv_msg(ui, origin, srv->name, msg, 0);
+        } else {
+            sui_add_recv_msg(ui, origin, "", msg, 0);
+        }
     } else {
+        /* NOTICE from channel */
+        g_return_if_fail(chat);
         sui_add_recv_msg(chat->ui, origin, "", msg, 0);
     }
 
-    chat_log_fmt(srv->name, origin, "[%s] %s", origin, msg);
+    chat_log_fmt(srv->name, target, "[%s] %s", origin, msg);
 }
 
 void srv_event_channel_notice(SircSession *sirc, const char *event,
@@ -403,11 +408,6 @@ void srv_event_channel_notice(SircSession *sirc, const char *event,
 
     const char *chan = params[0];
 
-    chat = server_get_chat(srv, chan);
-    g_return_if_fail(chat);
-
-    sui_add_recv_msg(chat->ui, origin, "", msg, 0);
-    chat_log_fmt(srv->name, chan, "[%s] %s", origin, msg);
 }
 
 void srv_event_invite(SircSession *sirc, const char *event,

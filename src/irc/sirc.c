@@ -117,11 +117,11 @@ static void th_sirc_connect(ThreadData *td){
 static void th_sirc_proc(SircSession *sirc){
     for (;;){
         if (th_sirc_recv(sirc) == SRN_ERR){
-            DBG_FR("SircSession thread exit because read error");
+            DBG_FR("SircSession thread exit because of read error");
             return;
         }
         if (sirc->fd == -1) {
-            DBG_FR("SircSession thread exit because fd closed");
+            DBG_FR("SircSession thread exit because of fd closed");
             return;
         }
     }
@@ -159,8 +159,10 @@ static int idle_sirc_recv(SircSession *sirc){
             sirc_cmd_pong(sirc, sirc->buf);
             sirc->events.ping(sirc, "PING");
             break;
-        default:
+        case SIRC_MSG_MESSAGE:
             sirc_event_hdr(sirc, &imsg);
+            break;
+        default:
             break;
     }
 

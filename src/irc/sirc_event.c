@@ -88,19 +88,6 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
              sirc->events.kick(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
          }
          else if (strcmp(event, "NOTICE") == 0){
-             switch (imsg->nparam) {
-                 case 0:
-                     /* User notice message */
-                     sirc->events.notice(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
-                     break;
-                 case 1:
-                     /* Channel notice message */
-                     sirc->events.channel_notice(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
-                     break;
-                 default:
-                     ERR_FR("NOTICE has extra parameters");
-                     break;
-             }
              sirc->events.notice(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
          }
          else if (strcmp(event, "INVITE") == 0){
