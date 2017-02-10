@@ -56,7 +56,7 @@ Server* server_new(const char *name,
     g_strlcpy(srv->user.realname, realname, sizeof(srv->user.realname));
 
     /* Get UI & IRC handler */
-    srv->ui = sui_new_session(META_SERVER, srv->host, CHAT_SERVER, srv);
+    srv->ui = sui_new_session(META_SERVER, srv->name, CHAT_SERVER, srv);
     srv->irc = sirc_new_session(srv);
 
     if (!srv->ui || !srv->irc){
@@ -142,7 +142,7 @@ int server_add_chat(Server *srv, const char *name, const char *passwd){
     chat->srv = srv;
     chat->me = NULL;
     chat->user_list = NULL;
-    chat->ui = sui_new_session(name, srv->host,
+    chat->ui = sui_new_session(name, srv->name,
             SIRC_IS_CHAN(name) ? CHAT_CHANNEL : CHAT_PRIVATE, srv); // ??
 
     g_strlcpy(chat->name, name, sizeof(chat->name));

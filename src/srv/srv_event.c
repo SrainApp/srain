@@ -53,6 +53,7 @@
                 DBG("%s]\n", params[i]); \
             } else { \
                 DBG("%s ", params[i]); \
+            } \
         } \
     } while (0)
 
