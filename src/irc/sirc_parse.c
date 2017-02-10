@@ -93,11 +93,11 @@ SircMessageType sirc_parse(char *line, SircMessage *imsg){
         trailing_ptr = strstr(middle_ptr, " :");
 
         if (!prefix_ptr || !command_ptr || !middle_ptr) goto bad;
-        g_strlcpy(imsg->cmd, command_ptr, sizeof(imsg->cmd));
+        imsg->cmd = command_ptr;
         DBG_FR("command: %s", imsg->cmd);
 
         // <prefix> ::= <servername> | <nick> [ '!' <user> ] [ '@' <host> ]
-        g_strlcpy(imsg->prefix, prefix_ptr, sizeof(imsg->prefix));
+        imsg->prefix = prefix_ptr;
         nick_ptr = strtok(prefix_ptr, "!");
         user_ptr = strtok(NULL, "@");
         host_ptr = strtok(NULL, "");
@@ -113,11 +113,12 @@ SircMessageType sirc_parse(char *line, SircMessage *imsg){
         // <params> ::= <SPACE> [ ':' <trailing> | <middle> <params> ]
         /* if no trailing */
         if (trailing_ptr){
-            /* a message may be separated in different irc message */
-            g_strlcpy(imsg->msg, trailing_ptr + 2, sizeof(imsg->msg));
+            /* A message may be separated in different irc message */
+            *trailing_ptr = '\0';   // Prevent influence by param parse
+            imsg->msg = trailing_ptr + 2;
             DBG_FR("message: %s", imsg->msg);
         } else if (middle_ptr[0] == ':'){
-            g_strlcpy(imsg->msg, middle_ptr + 1, sizeof(imsg->msg));
+            imsg->msg = middle_ptr + 1;
             DBG_FR("message(no param): %s", imsg->msg);
         }
 
@@ -125,7 +126,7 @@ SircMessageType sirc_parse(char *line, SircMessage *imsg){
         middle_ptr = strtok(middle_ptr, " ");
         do {
             if (middle_ptr[0] == ':') break;
-            g_strlcpy(imsg->params[imsg->nparam++], middle_ptr, sizeof(imsg->params[0]));
+            imsg->params[imsg->nparam++] = middle_ptr;
             DBG("%s(%d) ", imsg->params[imsg->nparam-1], imsg->nparam);
             if (imsg->nparam > SIRC_PARAM_COUNT - 1){
                 ERR_FR("Too many params: %s", line);
@@ -134,7 +135,7 @@ SircMessageType sirc_parse(char *line, SircMessage *imsg){
         } while ((middle_ptr = strtok(NULL, " ")) != NULL);
         DBG("\n");
 
-        strip(imsg->msg);
+        // strip(imsg->msg); // TODO
 
         return SIRC_MSG_MESSAGE;
 bad:

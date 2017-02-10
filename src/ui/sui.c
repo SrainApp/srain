@@ -1,5 +1,5 @@
-/* @file ui.c
- * @brief UI module interfaces
+/* @file sui.c
+ * @brief GTK UI module interfaces
  * @author Shengyu Zhang <silverrainz@outlook.com>
  * @version 1.0
  * @date 2016-06-29
@@ -36,6 +36,7 @@ SuiSession *sui_new_session(const char *name, const char *remark,
         ChatType type, void *ctx){
     SuiSession *sui = g_malloc0(sizeof(SuiSession));
 
+    LOG_FR("%s %s %d 0x%x", name, remark, type, ctx);
     sui->ui = srain_window_add_chat(srain_win, remark, name, type);
 
     if (!sui->ui){

@@ -1,6 +1,6 @@
 /**
- * @file srv_name.c
- * @brief SRV module interfaces
+ * @file server.c
+ * @brief
  * @author Shengyu Zhang <silverrainz@outlook.com>
  * @version 1.0
  * @date 2016-07-19
@@ -43,7 +43,7 @@ Server* server_new(const char *name,
     srv->port = port;
     srv->ssl = ssl;
     srv->stat = SERVER_UNCONNECTED;
-    /* srv->chan_list = NULL; */ // by g_malloc0()
+    /* srv->chat_list = NULL; */ // by g_malloc0()
 
     g_strlcpy(srv->name, name, sizeof(srv->name));
     g_strlcpy(srv->host, host, sizeof(srv->host));
@@ -92,75 +92,79 @@ bad:
 }
 
 void server_free(Server *srv){
-    if (srv->irc != NULL){
-        sirc_free_session(srv->ui);
-    }
-    if (srv->ui != NULL){
-        sui_free_session(srv->ui);
+    if (srv->chat_list != NULL){
+        while (srv->chat_list) {
+            Chat *chat = srv->chat_list->data;
+            server_rm_chat(srv, chat->name);
+        }
     }
 
-    if (srv->chan_list != NULL){
-        // free chan list
+    if (srv->irc != NULL){
+        sirc_free_session(srv->irc);
+    }
+
+    if (srv->ui != NULL){
+        sui_free_session(srv->ui);
     }
 
     g_free(srv);
 }
 
 int server_connect(Server *srv){
+    srv->stat = SERVER_CONNECTING;
     sirc_connect(srv->irc, srv->host, srv->port);
 
     return SRN_OK;
 }
 
 void server_disconnect(Server *srv){
-    sirc_disconnect(srv);
+    srv->stat = SERVER_DISCONNECTED;
+    sirc_disconnect(srv->irc);
 }
 
-int server_add_chan(Server *srv, const char *name, const char *passwd){
+int server_add_chat(Server *srv, const char *name, const char *passwd){
     GList *lst;
-    Channel *chan;
+    Chat *chat;
 
     if (!passwd) passwd = "";
 
-    lst = srv->chan_list;
+    lst = srv->chat_list;
     while (lst) {
-        chan = lst->data;
-        if (strcasecmp(chan->name, name) == 0){
+        chat = lst->data;
+        if (strcasecmp(chat->name, name) == 0){
             return SRN_ERR;
         }
         lst = g_list_next(lst);
     }
 
-    chan = g_malloc0(sizeof(Channel));
+    chat = g_malloc0(sizeof(Chat));
 
-    chan->srv = srv;
-    chan->me = NULL;
-    chan->user_list = NULL;
-    chan->ui = sui_new_session(name, srv->host, CHAT_CHANNEL, srv); // ??
+    chat->srv = srv;
+    chat->me = NULL;
+    chat->user_list = NULL;
+    chat->ui = sui_new_session(name, srv->host,
+            SIRC_IS_CHAN(name) ? CHAT_CHANNEL : CHAT_PRIVATE, srv); // ??
 
-    g_strlcpy(chan->name, name, sizeof(chan->name));
-    g_strlcpy(chan->passwd, passwd, sizeof(chan->passwd));
+    g_strlcpy(chat->name, name, sizeof(chat->name));
+    g_strlcpy(chat->passwd, passwd, sizeof(chat->passwd));
 
-    srv->chan_list = g_list_append(srv->chan_list, chan);
+    srv->chat_list = g_list_append(srv->chat_list, chat);
 
     return SRN_OK;
-
-bad:
-    return SRN_ERR;
 }
 
-int server_rm_chan(Server *srv, const char *name){
+int server_rm_chat(Server *srv, const char *name){
     GList *lst;
-    Channel *chan;
+    Chat *chat;
 
-    lst = srv->chan_list;
+    lst = srv->chat_list;
     while (lst) {
-        chan = lst->data;
-        if (strcasecmp(chan->name, name) == 0){
-            sui_free_session(chan->ui);
+        chat = lst->data;
+        if (strcasecmp(chat->name, name) == 0){
+            sui_free_session(chat->ui);
             // rm user_list
-            g_free(chan);
-            srv->chan_list = g_list_delete_link(srv->chan_list, lst);
+            g_free(chat);
+            srv->chat_list = g_list_delete_link(srv->chat_list, lst);
             return SRN_OK;
         }
     }
@@ -168,31 +172,26 @@ int server_rm_chan(Server *srv, const char *name){
     return SRN_ERR;
 }
 
-Channel* server_get_chan(Server *srv, const char *name) {
+Chat* server_get_chat(Server *srv, const char *name) {
     GList *lst;
-    Channel *chan;
+    Chat *chat;
 
-    lst = srv->chan_list;
+    lst = srv->chat_list;
     while (lst) {
-        chan = lst->data;
-        if (strcasecmp(chan->name, name) == 0){
-            return chan;
+        chat = lst->data;
+        if (strcasecmp(chat->name, name) == 0){
+            return chat;
         }
     }
 
     return NULL;
 }
 
-int server_add_user(Server *srv, const char *chan_name, const char *nick){
+int chat_add_user(Chat *chat, const char *nick){
+    GList *lst;
     User *user;
-    Channel *chan;
 
-    chan = server_get_chan(srv, chan_name);
-    if (!chan) {
-        return SRN_ERR;
-    }
-
-    GList *lst = chan->user_list;
+    lst = chat->user_list;
     while (lst){
         user = lst->data;
         if (strcasecmp(user->nick, nick) == 0){
@@ -209,50 +208,38 @@ int server_add_user(Server *srv, const char *chan_name, const char *nick){
     g_strlcpy(user->nick, nick, sizeof(user->nick));
     // g_strlcpy(user->username, username, sizeof(user->username));
     // g_strlcpy(user->realnaem, realname, sizeof(user->realname));
-    chan->user_list = g_list_append(chan->user_list, user);
+    chat->user_list = g_list_append(chat->user_list, user);
 
-    sui_add_user(chan->ui, nick, USER_CHIGUA);
+    sui_add_user(chat->ui, nick, USER_CHIGUA);
 
     return SRN_OK;
-bad:
-    return SRN_ERR;
 }
 
-void server_rm_user(Server *srv, const char *chan_name, const char *nick){
+int chat_rm_user(Chat *chat, const char *nick){
+    GList *lst;
     User *user;
-    Channel *chan;
 
-    chan = server_get_chan(srv, chan_name);
-    if (!chan) {
-        return ;
-    }
-
-    GList *lst = chan->user_list;
+    lst = chat->user_list;
     while (lst){
         user = lst->data;
         if (strcasecmp(user->nick, nick) == 0){
+            chat->user_list = g_list_delete_link(chat->user_list, lst);
+            sui_rm_user(chat->ui, user->nick);
             g_free(user);
-            g_list_delete_link(chan->user_list, lst); // TODO: ret val
-            sui_rm_user(chan->ui, user->nick);
+
             return SRN_OK;
         }
         lst = g_list_next(lst);
     }
-    //
 
     return SRN_ERR;
 }
 
-User* server_get_user(Server *srv, const char *chan_name, const char *nick){
+User* chat_get_user(Chat *chat, const char *nick){
     User *user;
-    Channel *chan;
+    GList *lst;
 
-    chan = server_get_chan(srv, chan_name);
-    if (!chan) {
-        return NULL;
-    }
-
-    GList *lst = chan->user_list;
+    lst = chat->user_list;
     while (lst){
         user = lst->data;
         if (strcasecmp(user->nick, nick) == 0){
@@ -264,20 +251,6 @@ User* server_get_user(Server *srv, const char *chan_name, const char *nick){
     return NULL;
 }
 
-void srv_init(){
-    char **argv = { NULL };
-    /*
-    gtk_init(0, argv);
-    Server *srv = server_new("ngircd1", "127.0.0.1", 6667, "", FALSE, "UTF-8",
-            "LA", NULL, NULL);
-    // Server *srv2 = server_new("ngircd2", "127.0.0.1", 6668, "", FALSE, "UTF-8",
-            // "LA2", NULL, NULL);
-        server_connect(srv);
-        // server_connect(srv2);
-        // server_disconnect(srv);
-        gtk_main();
-        */
-}
+void srv_init(){ }
 
-void srv_finalize(){
-}
+void srv_finalize(){ }

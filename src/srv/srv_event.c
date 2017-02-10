@@ -6,7 +6,7 @@
  * @date 2016-07-19
  */
 
-// #define __DBG_ON
+#define __DBG_ON
 #define __LOG_ON
 
 #include <glib.h>
@@ -29,67 +29,73 @@
 #include "chat_log.h"
 #include "plugin.h"
 
-#define __DBG_ON
-#define __LOG_ON
-
 #define PRINT_EVENT_PARAM \
     do { \
-        DBG_F("server: %s, event: %s, origin: %s, count %u, params: [", \
-                srv->name, event, origin, count); \
-        int i; \
-        for (i = 0; i < count; i++) DBG("'%s', ", params[i]); \
-        DBG("]\n"); \
+        DBG_FR("server: %s, event: %s, origin: %s", srv->name, event, origin); \
+        DBG_FR("msg: %s", msg); \
+        DBG_F("count: %d, params: [", count); \
+        for (int i = 0; i < count; i++){ \
+            if (i == count - 1) { \
+                DBG("%s]\n", params[i]); \
+            } else { \
+                DBG("%s ", params[i]); \
+            } \
+        } \
     } while (0)
+
+#define PRINT_NUMERIC_EVENT_PARAM \
+    do { \
+        DBG_FR("server: %s, event: %d, origin: %s", srv->name, event, origin); \
+        DBG_FR("msg: %s", msg); \
+        DBG_F("count: %d, params: [", count); \
+        for (int i = 0; i < count; i++){ \
+            if (i == count - 1) { \
+                DBG("%s]\n", params[i]); \
+            } else { \
+                DBG("%s ", params[i]); \
+            } \
+        } \
+    } while (0)
+
 
 #define CHECK_COUNT(x) \
     if (count < x) { \
-        ERR_FR("server: %s, count: %u, except >= %u", srv->name, count, x); \
+        ERR_FR("Event '%s' except param count >= %d, actually %d", event, x, count); \
         return; \
     }
 
-void srv_event_welcome(SircSession *sirc, const char *event,
-        const char *origin, const char **params, int count){
+void srv_event_welcome(SircSession *sirc, int event,
+        const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
-    GList *chan_list;
 
-    PRINT_EVENT_PARAM;
-
-    // sess->stat = SRV_SESSION_STAT_CONNECT;
-
-    /*
-    chan_list = sess->chan_list;
-    while (chan_list){
-        chan = chan_list->data;
-       // srv_session_join(sess, chan->name, NULL);
-        chan_list = g_list_next(chan_list);
-    }
-    */
-    LOG_FR("Welcome");
+    sirc_cmd_join(sirc, "#test");
 }
 
 void srv_event_nick(SircSession *sirc, const char *event,
-        const char *origin, const char **params, int count){
+        const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
-    char msg[512];
+    char buf[512];
     GList *lst;
-    Channel *chan;
+    Chat *chat;
+    User *user;
 
-    PRINT_EVENT_PARAM;
-    CHECK_COUNT(1);
 
-    const char *new_nick = params[0];
-    lst = srv->chan_list;
+    const char *old_nick = origin;
+    const char *new_nick = msg;
+
+    snprintf(buf, sizeof(buf), _("%s is now known as %s"), old_nick, new_nick);
+
+    lst = srv->chat_list;
     while (lst){
-        chan = lst->data;
-        // TODO
-        /*
-        if (ui_ren_user(srv->name, chan->name, origin, new_nick, 0) == SRN_OK) {
-            snprintf(msg, sizeof(msg), _("%s is now known as %s"), origin, new_nick);
-            ui_sys_msg(srv->name, chan->name, msg, SYS_MSG_NORMAL, 0);
-        }
+        chat = lst->data;
+        // TODO: dialog support
+        if ((user = chat_get_user(chat, origin)) != NULL){
+            g_strlcpy(user->nick, new_nick, sizeof(user->nick));
+            sui_ren_user(chat->ui, old_nick, new_nick, user->type);
 
-            chat_log_log(srv->name, chan->name, msg);
-            */
+            sui_add_sys_msg(chat->ui, buf, SYS_MSG_NORMAL, 0);
+            chat_log_log(srv->name, chat->name, buf);
+        }
         lst = g_list_next(lst);
     }
 
@@ -99,100 +105,100 @@ void srv_event_nick(SircSession *sirc, const char *event,
 }
 
 void srv_event_quit(SircSession *sirc, const char *event,
-        const char *origin, const char **params, int count){
+        const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
-    char msg[512];
-    GList *chan_list;
+    char buf[512];
+    GList *lst;
+    Chat *chat;
+    User *user;
 
     PRINT_EVENT_PARAM;
-    CHECK_COUNT(0);
 
-    const char *reason = count >= 1 ? params[0] : "";
+    const char *reason = msg;
 
-    snprintf(msg, sizeof(msg), _("%s has quit: %s"), origin, reason);
-
-    /*
-    chan_list = sess->chan_list;
-    while (chan_list){
-        chan = chan_list->data;
-        if (srv_session_user_exist(sess, chan->name, origin)){
-           // srv_session_rm_user(sess, chan->name, origin);
-
-            // srv_hdr_ui_rm_user(srv->name, chan->name, origin);
-            // srv_hdr_ui_sys_msg(srv->name, chan->name, msg, SYS_MSG_NORMAL, 0);
-
-            chat_log_log(srv->name, chan->name, msg);
-        }
-        chan_list = g_list_next(chan_list);
+    if (reason) {
+        snprintf(buf, sizeof(buf), _("%s has quit: %s"), origin, reason);
+    } else {
+        snprintf(buf, sizeof(buf), _("%s has quit"), origin);
     }
-    */
+
+    lst = srv->chat_list;
+    while (lst){
+        // TODO: dialog support
+        chat = lst->data;
+        if ((user = chat_get_user(chat, origin)) != NULL){
+            chat_rm_user(chat, user->nick);
+
+            sui_add_sys_msg(chat->ui, buf, SYS_MSG_NORMAL, 0);
+            chat_log_log(srv->name, chat->name, buf);
+        }
+        lst = g_list_next(lst);
+    }
 
     /* You quit */
     if (strncasecmp(origin, srv->user.nick, NICK_LEN) == 0){
-        LOG_FR("session: %s, origin: %s, reason: %s", srv->name, origin, reason);
-        /* Remove all chans belong to this session */
-        // srv_hdr_ui_rm_chat(srv->name, "");
-        /*
-        sess->stat = SRV_SESSION_STAT_CLOSE;
-       // srv_session_free(sess);
-        */
+        server_free(srv); // TODO ??
     }
 }
 
 void srv_event_join(SircSession *sirc, const char *event,
-        const char *origin, const char **params, int count){
+        const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
-    char msg[512];
-    const char *chan = params[0];
+    char buf[512];
+    const char *chan = msg;
+    Chat *chat;
 
     /* You has join a channel */
     if (strncasecmp(srv->user.nick, origin, NICK_LEN) == 0){
-        sui_new_session(chan, srv->host, CHAT_CHANNEL, srv);
-
-        //// srv_session_add_chan(sess, chan);
+        server_add_chat(srv, chan, NULL);
     }
 
-    /* SRV user set */
-   // srv_session_add_user(sess, chan, origin);
+    chat = server_get_chat(srv, chan);
+    if (!chat) {
+        ERR_FR("Received a JOIN message from a unjoined channel %s", chan);
+    }
+    chat_add_user(chat, origin);
 
-    /* UI user list */
-    // srv_hdr_ui_add_user(srv->name, chan, origin, USER_CHIGUA);
-
-    snprintf(msg, sizeof(msg), _("%s has joined %s"), origin, chan);
-    // srv_hdr_ui_sys_msg(srv->name, chan, msg, SYS_MSG_NORMAL, 0);
-    chat_log_log(srv->name, chan, msg);
+    snprintf(buf, sizeof(buf), _("%s has joined"), origin);
+    sui_add_sys_msg(chat->ui, buf, SYS_MSG_NORMAL, 0);
+    chat_log_log(srv->name, chan, buf);
 }
 
 void srv_event_part(SircSession *sirc, const char *event,
-        const char *origin, const char **params, int count){
+        const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
-    char msg[512];
+    char buf[512];
+    Chat *chat;
+    User *user;
 
     PRINT_EVENT_PARAM;
     CHECK_COUNT(1);
 
     const char *chan = params[0];
-    const char *reason = count >= 2 ? params[1] : "";;
+    const char *reason = msg;
 
-    // srv_hdr_ui_rm_user(srv->name, chan, origin);
+    if (reason){
+        snprintf(buf, sizeof(buf), _("%s has left: %s"), origin, reason);
+    } else {
+        snprintf(buf, sizeof(buf), _("%s has left"), origin);
+    }
 
-   // srv_session_rm_user(sess, chan, origin);
+    chat = server_get_chat(srv, chan);
+    chat_rm_user(chat, origin);
 
-    snprintf(msg, sizeof(msg), _("%s has left %s: %s"), origin, chan, reason);
-    // srv_hdr_ui_sys_msg(srv->name, chan, msg, SYS_MSG_NORMAL, 0);
-    chat_log_log(srv->name, chan, msg);
+    sui_add_sys_msg(chat->ui, buf, SYS_MSG_NORMAL, 0);
+    chat_log_log(srv->name, chan, buf);
 
     /* You has left a channel */
     if (strncasecmp(srv->user.nick, origin, NICK_LEN) == 0){
-        // srv_hdr_ui_rm_chat(srv->name, chan);
-       // srv_session_rm_chan(sess, chan);
+        server_rm_chat(srv, chan);
     }
 }
 
 void srv_event_mode(SircSession *sirc, const char *event,
-        const char *origin, const char **params, int count){
+        const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
-    char msg[512];
+    char buf[512];
 
     PRINT_EVENT_PARAM;
     CHECK_COUNT(2);
@@ -201,11 +207,11 @@ void srv_event_mode(SircSession *sirc, const char *event,
     const char *mode = params[1];
     const char *mode_args = count >= 3 ? params[2] : "";
 
-    snprintf(msg, sizeof(msg), _("mode %s %s %s by %s"),
+    snprintf(buf, sizeof(buf), _("mode %s %s %s by %s"),
             chan, mode, mode_args, origin);
 
-    // srv_hdr_ui_sys_msg(srv->name, chan, msg, SYS_MSG_NORMAL, 0);
-    chat_log_log(srv->name, chan, msg);
+    // srv_hdr_ui_sys_msg(srv->name, chan, buf, SYS_MSG_NORMAL, 0);
+    chat_log_log(srv->name, chan, buf);
 
     if (mode[0] == '-'){
         // srv_hdr_ui_ren_user(srv->name, chan, mode_args, mode_args, USER_CHIGUA);
@@ -242,26 +248,26 @@ void srv_event_mode(SircSession *sirc, const char *event,
 }
 
 void srv_event_umode(SircSession *sirc, const char *event,
-        const char *origin, const char **params, int count){
+        const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
-    char msg[512];
+    char buf[512];
 
     PRINT_EVENT_PARAM;
     CHECK_COUNT(1);
 
     const char *mode = params[0];
 
-    snprintf(msg, sizeof(msg), _("mode %s %s by %s"), origin, mode, origin);
+    snprintf(buf, sizeof(buf), _("mode %s %s by %s"), origin, mode, origin);
 
-    // srv_hdr_ui_sys_msg(srv->name, "", msg, SYS_MSG_NORMAL, 0);
+    // srv_hdr_ui_sys_msg(srv->name, "", buf, SYS_MSG_NORMAL, 0);
     // TODO: How to log it?
-    // chat_log_log(srv->name, chan, msg);
+    // chat_log_log(srv->name, chan, buf);
 }
 
 void srv_event_topic(SircSession *sirc, const char *event,
-        const char *origin, const char **params, int count){
+        const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
-    char msg[512];
+    char buf[512];
 
     PRINT_EVENT_PARAM;
     CHECK_COUNT(1);
@@ -271,15 +277,15 @@ void srv_event_topic(SircSession *sirc, const char *event,
 
     // srv_hdr_ui_set_topic(srv->name, chan, topic);
 
-    snprintf(msg, sizeof(msg), _("Topic for %s is \"%s\""), chan, topic);
-    // srv_hdr_ui_sys_msg(srv->name, chan, msg, SYS_MSG_NORMAL, 0);
-    chat_log_log(srv->name, chan, msg);
+    snprintf(buf, sizeof(buf), _("Topic for %s is \"%s\""), chan, topic);
+    // srv_hdr_ui_sys_msg(srv->name, chan, buf, SYS_MSG_NORMAL, 0);
+    chat_log_log(srv->name, chan, buf);
 }
 
 void srv_event_kick(SircSession *sirc, const char *event,
-        const char *origin, const char **params, int count){
+        const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
-    char msg[512];
+    char buf[512];
 
     PRINT_EVENT_PARAM;
     CHECK_COUNT(1);
@@ -288,10 +294,10 @@ void srv_event_kick(SircSession *sirc, const char *event,
     const char *kick_nick = count >= 2 ? params[1] : "";;
     const char *reason = count >= 3 ? params[2] : "";
 
-    snprintf(msg, sizeof(msg), _("%s are kicked from %s by %s: %s"),
+    snprintf(buf, sizeof(buf), _("%s are kicked from %s by %s: %s"),
             kick_nick, chan, origin, reason);
-    // srv_hdr_ui_sys_msg(srv->name, chan, msg, SYS_MSG_ERROR, 0);
-    chat_log_log(srv->name, chan, msg);
+    // srv_hdr_ui_sys_msg(srv->name, chan, buf, SYS_MSG_ERROR, 0);
+    chat_log_log(srv->name, chan, buf);
 
     // srv_hdr_ui_rm_user(srv->name, chan, kick_nick);
 
@@ -305,19 +311,19 @@ void srv_event_kick(SircSession *sirc, const char *event,
 }
 
 void srv_event_channel(SircSession *sirc, const char *event,
-        const char *origin, const char **params, int count){
+        const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
 
     PRINT_EVENT_PARAM;
     CHECK_COUNT(1);
 
     const char *chan = params[0];
-    const char *msg = count >= 2 ? params[1] : "";
+    const char *buf = count >= 2 ? params[1] : "";
 
-    char* pure_msg = msg;
+    char* pure_msg = buf;
     if (!pure_msg){
         ERR_FR("Failed to strip color from irc message");
-        pure_msg = strdup(msg);
+        pure_msg = strdup(buf);
     }
 
     chat_log_fmt(srv->name, chan, "<%s> %s", origin, pure_msg);
@@ -351,18 +357,18 @@ void srv_event_channel(SircSession *sirc, const char *event,
 }
 
 void srv_event_privmsg(SircSession *sirc, const char *event,
-        const char *origin, const char **params, int count){
+        const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
 
     PRINT_EVENT_PARAM;
     CHECK_COUNT(1);
 
-    const char *msg = count >= 2 ? params[1] : "";
+    const char *buf = count >= 2 ? params[1] : "";
 
-    char* pure_msg = msg;
+    char* pure_msg = buf;
     if (!pure_msg){
         ERR_FR("Failed to strip color from irc message");
-        pure_msg = strdup(msg);
+        pure_msg = strdup(buf);
     }
 
     chat_log_fmt(srv->name, origin, "<%s> %s", origin, pure_msg);
@@ -374,19 +380,19 @@ void srv_event_privmsg(SircSession *sirc, const char *event,
 }
 
 void srv_event_notice(SircSession *sirc, const char *event,
-        const char *origin, const char **params, int count){
+        const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
 
     PRINT_EVENT_PARAM;
     CHECK_COUNT(1);
 
     // const char *nick = params[0];
-    const char *msg = count >= 2 ? params[1] : "";
+    const char *buf = count >= 2 ? params[1] : "";
 
-    char* pure_msg = msg;
+    char* pure_msg = buf;
     if (!pure_msg){
         ERR_FR("Failed to strip color from irc message");
-        pure_msg = strdup(msg);
+        pure_msg = strdup(buf);
     }
 
     /* FIXME: Freenode specified :-(
@@ -404,19 +410,19 @@ void srv_event_notice(SircSession *sirc, const char *event,
 }
 
 void srv_event_channel_notice(SircSession *sirc, const char *event,
-        const char *origin, const char **params, int count){
+        const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
 
     PRINT_EVENT_PARAM;
     CHECK_COUNT(2);
 
     const char *chan = params[0];
-    const char *msg = count >= 2 ? params[1] : "";
+    const char *buf = count >= 2 ? params[1] : "";
 
-    char* pure_msg = msg;
+    char* pure_msg = buf;
     if (!pure_msg){
         ERR_FR("Failed to strip color from irc message");
-        pure_msg = strdup(msg);
+        pure_msg = strdup(buf);
     }
 
     // srv_hdr_ui_recv_msg(srv->name, chan, origin, "", pure_msg, 0);
@@ -426,38 +432,38 @@ void srv_event_channel_notice(SircSession *sirc, const char *event,
 }
 
 void srv_event_invite(SircSession *sirc, const char *event,
-        const char *origin, const char **params, int count){
+        const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
-    char msg[512];
+    char buf[512];
 
     CHECK_COUNT(1);
     const char *chan = count >= 2 ? params[1] : "";
 
-    snprintf(msg, sizeof(msg), _("%s invites you into %s"), origin, chan);
-    // srv_hdr_ui_sys_msg(srv->name, "", msg, SYS_MSG_NORMAL, 0);
+    snprintf(buf, sizeof(buf), _("%s invites you into %s"), origin, chan);
+    // srv_hdr_ui_sys_msg(srv->name, "", buf, SYS_MSG_NORMAL, 0);
 
     // TODO: How to log it?
-    // chat_log_log(srv->name, chan, msg);
+    // chat_log_log(srv->name, chan, buf);
+    // INFO BAR
 }
 
 void srv_event_ctcp_action(SircSession *sirc, const char *event,
-        const char *origin, const char **params, int count){
+        const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
     char buf[512];
 
     PRINT_EVENT_PARAM;
 
-    CHECK_COUNT(2);
+    CHECK_COUNT(1);
     const char *chan = params[0];
-    const char *msg = params[1];
 
-    char* pure_msg = msg;
+    char* pure_msg = msg; // TODO strip
     if (!pure_msg){
         ERR_FR("Failed to strip color from irc message");
         pure_msg = strdup(msg);
     }
 
-    int flag = strstr(msg, srv->user.nick) ? SRAIN_MSG_MENTIONED : 0;
+    int flag = strstr(buf, srv->user.nick) ? SRAIN_MSG_MENTIONED : 0;
     snprintf(buf, sizeof(buf), _("*** %s %s ***"), origin, pure_msg);
     // srv_hdr_ui_sys_msg(srv->name, chan, buf, SYS_MSG_ACTION, flag);
     chat_log_log(srv->name, chan, buf);
@@ -466,8 +472,10 @@ void srv_event_ctcp_action(SircSession *sirc, const char *event,
 }
 
 void srv_event_numeric (SircSession *sirc, int event,
-        const char *origin, const char **params, int count){
+        const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
+
+    PRINT_NUMERIC_EVENT_PARAM;
 
     switch (event) {
         case RPL_WELCOME:
@@ -492,9 +500,9 @@ void srv_event_numeric (SircSession *sirc, int event,
                 GString *buf = g_string_new(NULL);
 
                 while (i < count){
-                    LOG_FR("[%d] %s",i, params[i]);
                     g_string_append_printf(buf, "%s ", params[i++]);
                 }
+                g_string_append_printf(buf, "%s", msg);
 
                 sui_add_recv_msg(srv->ui, origin, srv->host, buf->str, 0);
                 g_string_free(buf, TRUE);
@@ -509,6 +517,8 @@ void srv_event_connect(SircSession *sirc, const char *event){
     Server *srv = sirc_get_ctx(sirc);
     User *user = &srv->user;
 
+    srv->stat = SERVER_CONNECTED;
+
     sui_add_sys_msgf(srv->ui, SYS_MSG_NORMAL, 0, _("Connected to %s(%s:%d)"),
             srv->name, srv->host, srv->port);
 
@@ -519,9 +529,13 @@ void srv_event_connect(SircSession *sirc, const char *event){
 void srv_event_disconnect(SircSession *sirc, const char *event){
     Server *srv = sirc_get_ctx(sirc);
 
-    LOG_FR("Server %s disconnected", srv->name);
+    srv->stat = SERVER_DISCONNECTED;
+
+    sui_add_sys_msgf(srv->ui, SYS_MSG_NORMAL, 0, _("Disconnected from %s(%s:%d)"),
+            srv->name, srv->host, srv->port);
 }
 
 void srv_event_ping(SircSession *sirc, const char *event){
     Server *srv = sirc_get_ctx(sirc);
+    // TODO: calc last ping time
 }

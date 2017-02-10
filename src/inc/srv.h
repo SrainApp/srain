@@ -54,7 +54,7 @@ typedef struct {
     char *encoding;
 
     time_t last_ping;
-    GList *chan_list;
+    GList *chat_list;
     User user;
 
     volatile ServerStatus stat;
@@ -62,15 +62,17 @@ typedef struct {
     SircSession *irc;
 } Server;
 
+/* Represent a channel or dialog */
 typedef struct {
     char name[CHAN_LEN];
     char passwd[PASSWD_LEN];
+    bool joined;
     User *me;
     GList *user_list;
 
     Server *srv;
     SuiSession *ui;
-} Channel;
+} Chat;
 
 typedef struct {
     User sender;
@@ -89,12 +91,12 @@ void server_free(Server *srv);
 int server_connect(Server *srv);
 void server_disconnect(Server *srv);
 
-int server_add_chan(Server *srv, const char *name, const char *passwd);
-int server_rm_chan(Server *srv, const char *name);
-Channel* server_get_chan(Server *srv, const char *name);
+int server_add_chat(Server *srv, const char *name, const char *passwd);
+int server_rm_chat(Server *srv, const char *name);
+Chat* server_get_chat(Server *srv, const char *name);
 
-int server_add_user(Server *srv, const char *chan_name, const char *nick);
-void server_rm_user(Server *srv, const char *chan_name, const char *nick);
-User* server_get_user(Server *srv, const char *chan_name, const char *nick);
+int chat_add_user(Chat *chat, const char *nick);
+int chat_rm_user(Chat *chat, const char *nick);
+User* chat_get_user(Chat *chat, const char *nick);
 
 #endif /* __SRV_H */

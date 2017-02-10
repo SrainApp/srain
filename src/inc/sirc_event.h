@@ -15,12 +15,12 @@
 
 /* This file is borrowed from libircclient(include/libirc_events.h) */
 
-#ifndef __IRC_EVENT_H
-#define __IRC_EVENT_H
+#ifndef __SIRC_EVENT_H
+#define __SIRC_EVENT_H
 
 #include "sirc.h"
 #include "sirc_parse.h"
 
 void sirc_event_hdr(SircSession *sirc, SircMessage *imsg);
 
-#endif /* __IRC_EVENT_H */
+#endif /* __SIRC_EVENT_H */

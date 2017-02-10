@@ -3,17 +3,22 @@
 
 #include <glib.h>
 
+#define CHAN_PREFIX1 '#'
+#define CHAN_PREFIX2 '&'
+
 #define SIRC_BUF_LEN 513
+
+#define SIRC_IS_CHAN(ch) (ch && (ch[0] == CHAN_PREFIX1 || ch[0] == CHAN_PREFIX2))
 
 typedef struct _SircSession SircSession;
 
 typedef void (*SircSimpleEventCallback) (SircSession *sirc, const char *event);
 
 typedef void (*SircEventCallback) (SircSession *sirc, const char *event,
-        const char *origin, const char **params, int count);
+        const char *origin, const char *params[], int count, const char *msg);
 
 typedef void (*SircNumericEventCallback) (SircSession *sirc, int event,
-        const char *origin, const char **params, int count);
+        const char *origin, const char *params[], int count, const char *msg);
 
 typedef struct {
     SircSimpleEventCallback     connect;
