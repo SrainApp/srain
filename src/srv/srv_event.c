@@ -4,6 +4,8 @@
  * @author Shengyu Zhang <silverrainz@outlook.com>
  * @version 1.0
  * @date 2016-07-19
+ *
+ * TODO: 不要相信任何来自 IRC Server 的数据，各种 check 待补
  */
 
 #define __DBG_ON
@@ -63,6 +65,39 @@
         ERR_FR("Event '%s' except param count >= %d, actually %d", event, x, count); \
         return; \
     }
+
+#define CHECK_NUMERIC_COUNT(x) \
+    if (count < x) { \
+        ERR_FR("Event '%3d' except param count >= %d, actually %d", event, x, count); \
+        return; \
+    }
+
+void srv_event_connect(SircSession *sirc, const char *event){
+    Server *srv = sirc_get_ctx(sirc);
+    User *user = &srv->user;
+
+    srv->stat = SERVER_CONNECTED;
+
+    sui_add_sys_msgf(srv->ui, SYS_MSG_NORMAL, 0, _("Connected to %s(%s:%d)"),
+            srv->name, srv->host, srv->port);
+
+    sirc_cmd_nick(srv->irc, user->nick);
+    sirc_cmd_user(srv->irc, user->username, "hostname", "servername", user->realname);
+}
+
+void srv_event_disconnect(SircSession *sirc, const char *event){
+    Server *srv = sirc_get_ctx(sirc);
+
+    srv->stat = SERVER_DISCONNECTED;
+
+    sui_add_sys_msgf(srv->ui, SYS_MSG_NORMAL, 0, _("Disconnected from %s(%s:%d)"),
+            srv->name, srv->host, srv->port);
+}
+
+void srv_event_ping(SircSession *sirc, const char *event){
+    // Server *srv = sirc_get_ctx(sirc);
+    // TODO: calc last ping time
+}
 
 void srv_event_welcome(SircSession *sirc, int event,
         const char *origin, const char **params, int count, const char *msg){
@@ -223,29 +258,29 @@ void srv_event_mode(SircSession *sirc, const char *event,
     chat_log_log(srv->name, chan, buf);
 
     if (mode[0] == '-'){
-        // srv_hdr_ui_ren_user(srv->name, chan, mode_args, mode_args, USER_CHIGUA);
+        // sui_ren_user(srv->name, chan, mode_args, mode_args, USER_CHIGUA);
         // TODO
     }
     else if (mode[0] == '+'){
         switch (mode[1]){
             case 'q':
-                // srv_hdr_ui_ren_user(srv->name, chan, mode_args, mode_args,
+                // sui_ren_user(srv->name, chan, mode_args, mode_args,
                         // USER_OWNER);
                 break;
             case 'a':
-                // srv_hdr_ui_ren_user(srv->name, chan, mode_args, mode_args,
+                // sui_ren_user(srv->name, chan, mode_args, mode_args,
                         // USER_ADMIN);
                 break;
             case 'o':
-                // srv_hdr_ui_ren_user(srv->name, chan, mode_args, mode_args,
+                // sui_ren_user(srv->name, chan, mode_args, mode_args,
                         // USER_FULL_OP);
                 break;
             case 'h':
-                // srv_hdr_ui_ren_user(srv->name, chan, mode_args, mode_args,
+                // sui_ren_user(srv->name, chan, mode_args, mode_args,
                         // USER_HALF_OP);
                 break;
             case 'v':
-                // srv_hdr_ui_ren_user(srv->name, chan, mode_args, mode_args,
+                // sui_ren_user(srv->name, chan, mode_args, mode_args,
                         // USER_VOICED);
                 break;
             default:
@@ -407,7 +442,7 @@ void srv_event_channel_notice(SircSession *sirc, const char *event,
     CHECK_COUNT(1);
     g_return_if_fail(msg);
 
-    const char *chan = params[0];
+    // const char *chan = params[0];
 
 }
 
@@ -451,27 +486,28 @@ void srv_event_ctcp_action(SircSession *sirc, const char *event,
 void srv_event_numeric (SircSession *sirc, int event,
         const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
+    char buf[512];
 
     PRINT_NUMERIC_EVENT_PARAM;
 
     switch (event) {
-        case RPL_WELCOME:
-        case RPL_YOURHOST:
-        case RPL_CREATED:
-        case RPL_MOTDSTART:
-        case RPL_MOTD:
-        case RPL_ENDOFMOTD:
-        case RPL_MYINFO:
-        case RPL_BOUNCE:
-        case RPL_LUSEROP:
-        case RPL_LUSERUNKNOWN:
-        case RPL_LUSERCHANNELS:
-        case RPL_LUSERCLIENT:
-        case RPL_LUSERME:
-        case RPL_ADMINME:
-        case RPL_STATSDLINE:
-        case RPL_LOCALUSERS:
-        case RPL_GLOBALUSERS:
+        case SIRC_RFC_RPL_WELCOME:
+        case SIRC_RFC_RPL_YOURHOST:
+        case SIRC_RFC_RPL_CREATED:
+        case SIRC_RFC_RPL_MOTDSTART:
+        case SIRC_RFC_RPL_MOTD:
+        case SIRC_RFC_RPL_ENDOFMOTD:
+        case SIRC_RFC_RPL_MYINFO:
+        case SIRC_RFC_RPL_BOUNCE:
+        case SIRC_RFC_RPL_LUSEROP:
+        case SIRC_RFC_RPL_LUSERUNKNOWN:
+        case SIRC_RFC_RPL_LUSERCHANNELS:
+        case SIRC_RFC_RPL_LUSERCLIENT:
+        case SIRC_RFC_RPL_LUSERME:
+        case SIRC_RFC_RPL_ADMINME:
+        case SIRC_RFC_RPL_STATSDLINE:
+        case SIRC_RFC_RPL_LOCALUSERS:
+        case SIRC_RFC_RPL_GLOBALUSERS:
             {
                 int i = 1;
                 GString *buf = g_string_new(NULL);
@@ -485,34 +521,160 @@ void srv_event_numeric (SircSession *sirc, int event,
                 g_string_free(buf, TRUE);
                 break;
             }
-        default:
+        case SIRC_RFC_ERR_NICKNAMEINUSE:
+            {
+                int len = strlen(srv->user.nick);
+                if (len < sizeof(srv->user.nick) - 1){
+                    srv->user.nick[len] = '_';
+                    srv->user.nick[len + 1] = 0;
+                    sirc_cmd_nick(srv->irc, srv->user.nick);
+                } else {
+                    ERR_FR("Your nickname is too long to add a trailing underline");
+                }
+                break;
+            }
+
+            /************************ NAMES message ************************/
+        case SIRC_RFC_RPL_NAMREPLY:
+            {
+                CHECK_NUMERIC_COUNT(3);
+                char *nickptr;
+                const char *chan = params[2];
+                char *names = (char *)msg; // TODO: ...
+                Chat *chat;
+                UserType type;
+
+                chat = server_get_chat(srv, chan);
+                g_return_if_fail(chat);
+
+                nickptr = strtok(names, " ");
+                while (nickptr){
+                    switch (nickptr[0]){
+                        case '~':
+                            nickptr++;
+                            type = USER_OWNER;
+                            break;
+                        case '&':
+                            nickptr++;
+                            type = USER_ADMIN;
+                            break;
+                        case '@':
+                            nickptr++;
+                            type = USER_FULL_OP;
+                            break;
+                        case '%':
+                            nickptr++;
+                            type = USER_HALF_OP;
+                            break;
+                        case '+':
+                            nickptr++;
+                            type = USER_VOICED;
+                            break;
+                        default:
+                            type = USER_CHIGUA;
+                    }
+                    chat_add_user(chat, nickptr, type);
+                    nickptr = strtok(NULL, " ");
+                }
+                break;
+            }
+
+        case SIRC_RFC_RPL_TOPIC:
+            {
+                CHECK_NUMERIC_COUNT(2);
+
+                const char *chan = params[1];
+                const char *topic = msg;
+
+                Chat *chat = server_get_chat(srv, chan);
+                g_return_if_fail(chat);
+
+                sui_set_topic(chat->ui, topic);
+                break;
+            }
+
+            /************************ Whois message ************************/
+        case SIRC_RFC_RPL_WHOISUSER:
+            {
+                CHECK_NUMERIC_COUNT(5);
+                const char *nick = params[1];
+                const char *user = params[2];
+                const char *host = params[3];
+                const char *realname = msg;
+                snprintf(buf, sizeof(buf), "%s <%s@%s> %s",
+                        nick, user, host, realname);
+                sui_add_sys_msg(srv->ui, buf, SYS_MSG_NORMAL, 0);
+                // TODO pass NULL ui to send to current chat
+                /* Use Real Name as avatar token :-( */
+                plugin_avatar(nick, realname);
+                break;
+            }
+        case SIRC_RFC_RPL_WHOISCHANNELS:
+            {
+                CHECK_NUMERIC_COUNT(3);
+                snprintf(buf, sizeof(buf), _("%s is member of %s"), params[1], params[2]);
+                sui_add_sys_msg(srv->ui, buf, SYS_MSG_NORMAL, 0);
+                break;
+            }
+        case SIRC_RFC_RPL_WHOISSERVER:
+            CHECK_NUMERIC_COUNT(4);
+            snprintf(buf, sizeof(buf), _("%s is attached to %s at \"%s\""),
+                    params[1], params[2], params[3]);
+            sui_add_sys_msg(srv->ui, buf, SYS_MSG_NORMAL, 0);
             break;
+        case SIRC_RFC_RPL_WHOISIDLE:
+            CHECK_NUMERIC_COUNT(4); // TODO
+            snprintf(buf, sizeof(buf), _("%s is idle for %s seconds since %s"),
+                    params[1], params[2], params[3]);
+            sui_add_sys_msg(srv->ui, buf, SYS_MSG_NORMAL, 0);
+            break;
+        case SIRC_RFC_RPL_WHOWAS_TIME:
+            CHECK_NUMERIC_COUNT(3);
+            snprintf(buf, sizeof(buf), _("%s %s %s"),
+                    params[1], msg, params[2]);
+            sui_add_sys_msg(srv->ui, buf, SYS_MSG_NORMAL, 0);
+            break;
+        case SIRC_RFC_RPL_WHOISHOST:
+        case SIRC_RFC_RPL_WHOISSECURE:
+            CHECK_NUMERIC_COUNT(2);
+            snprintf(buf, sizeof(buf), _("%s %s"), params[1], msg);
+            sui_add_sys_msg(srv->ui, buf, SYS_MSG_NORMAL, 0);
+            break;
+        case SIRC_RFC_RPL_ENDOFWHOIS:
+            CHECK_NUMERIC_COUNT(2);
+            sui_add_sys_msg(srv->ui, msg, SYS_MSG_NORMAL, 0);
+            break;
+
+            /************************ NAMES message ************************/
+        case SIRC_RFC_RPL_WHOREPLY:
+            {
+                CHECK_NUMERIC_COUNT(6);
+                /* params[count - 1] = "<hopcount> <realname>", Skip ' ' */
+                const char *nick = params[5];
+                const char *realname = strchr(msg, ' ');
+                if (realname) realname++;
+                else break;
+                /* Use Real Name as avatar token :-( */
+                plugin_avatar(nick, realname);
+                break;
+            }
+        case SIRC_RFC_RPL_ENDOFWHO:
+            break;
+        default:
+            {
+                // Error message
+                if (event >= 400 && event < 600){
+                    char buf[512];
+
+                    snprintf(buf, sizeof(buf), _("ERROR[%3d]: %s"), event, msg);
+                    sui_add_sys_msg(srv->ui, buf, SYS_MSG_ERROR, 0);
+                    return;
+                }
+
+                int i;
+                LOG_FR("Drop message, server: %s, event: %d, origin: %s, count: %u, params: [",
+                        srv->name, event, origin, count);
+                for (i = 0; i < count; i++) LOG("'%s', ", params[i]); LOG("]\n");
+            }
     }
-}
-
-void srv_event_connect(SircSession *sirc, const char *event){
-    Server *srv = sirc_get_ctx(sirc);
-    User *user = &srv->user;
-
-    srv->stat = SERVER_CONNECTED;
-
-    sui_add_sys_msgf(srv->ui, SYS_MSG_NORMAL, 0, _("Connected to %s(%s:%d)"),
-            srv->name, srv->host, srv->port);
-
-    sirc_cmd_nick(srv->irc, user->nick);
-    sirc_cmd_user(srv->irc, user->username, "hostname", "servername", user->realname);
-}
-
-void srv_event_disconnect(SircSession *sirc, const char *event){
-    Server *srv = sirc_get_ctx(sirc);
-
-    srv->stat = SERVER_DISCONNECTED;
-
-    sui_add_sys_msgf(srv->ui, SYS_MSG_NORMAL, 0, _("Disconnected from %s(%s:%d)"),
-            srv->name, srv->host, srv->port);
-}
-
-void srv_event_ping(SircSession *sirc, const char *event){
-    // Server *srv = sirc_get_ctx(sirc);
-    // TODO: calc last ping time
 }
