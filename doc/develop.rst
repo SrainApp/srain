@@ -33,7 +33,7 @@ Codeing Style
 * 缩进：四空格，无 Tab
 * 折行：
 
-  - 头文件中的函数签名不折行，其他地方的代码一律小于 80 char per line
+  - 头文件中的函数签名可以不折行，其他地方的代码一律小于 80 char per line
   - 参数过长时，从超过长度的第一个参数开始折行，参数无需对齐
   - 太长的字符串可以不折行
   - ``gtk_widget_class_bind_template_child()`` 由于实在太长，可以不折行
@@ -50,7 +50,7 @@ Codeing Style
 
   - 按英文规范，句首第一个单词首字符大写，多句时使用标点符号，同样每行不得超过
     80 字符（汉字以两字符计），链接可以不折行
-  - 日志级别：``DGB_FR`` ``LOG_FR`` ``WARN_FR`` ``ERROR_FR`` ，输出时包含回车和
+  - 日志级别： ``DGB_FR`` ``LOG_FR`` ``WARN_FR`` ``ERROR_FR`` ，输出时包含回车和
     函数名， 目前仅能 在编译时使用宏 ``__DBG_ON`` ``__LOG_ON`` 控制
   - Doxygen 貌似不好用（考虑换 sphinx）
 
@@ -97,39 +97,4 @@ Test
 Internal Interface
 ------------------
 
-接口的定义需要简化，改接口的时候会牵动一大堆东西。
-
-UI
-**
-
-::
-
-    void ui_init        (int argc, char **argv);
-    void ui_add_chat    (const char *srv_name, const char *chat_name, const char *nick, ChatType type);
-    void ui_rm_chat     (const char *srv_name, const char *chat_name);
-    void ui_sys_msg     (const char *srv_name, const char *chat_name, const char *msg, int mention, SysMsgType type);
-    void ui_send_msg    (const char *srv_name, const char *chat_name, const char *msg);
-    void ui_recv_msg    (const char *srv_name, const char *chat_name, const char *nick, const char *id, const char *msg, int mention);
-    void ui_add_user    (const char *srv_name, const char *chat_name, const char *nick, UserType type);
-    void ui_rm_user     (const char *srv_name, const char *chat_name, const char *nick);
-    void ui_ren_user    (const char *srv_name, const char *chat_name, const char *old_nick, const char *new_nick, UserType type);
-    void ui_set_topic   (const char *srv_name, const char *chat_name, const char *topic);
-
-SRV
-***
-
-::
-
-    void srv_init       ();
-    void srv_finalize   ();
-    void srv_connnect   (const char *host, int port, const char *passwd, const char *nickname, const char *username, const char *realname, int ssl);
-    void srv_cmd        (const char *srv_name, const char *source, char *cmd, int block);
-    void srv_query      (const char *srv_name, const char *nick);
-    void srv_unquery    (const char *srv_name, const char *nick);
-    void srv_join       (const char *srv_name, const char *chan_name, const char *passwd);
-    void srv_part       (const char *srv_name, const char *chan_name);
-    void srv_send       (const char *srv_name, const char *target, const char *msg);
-    void srv_quit       (const char *srv_name, const char *reason);
-    void srv_kick       (const char *srv_name, const char *chan_name, const char *nick);
-    void srv_whois      (const char *srv_name, const char *nick);
-    void srv_invite     (const char *srv_name, const char *chan_name, const char *nick);
+0.05 所用的基于字符串的接口不灵活且繁琐，已弃用。
