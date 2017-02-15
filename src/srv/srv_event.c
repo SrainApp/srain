@@ -578,6 +578,8 @@ void srv_event_numeric (SircSession *sirc, int event,
                 }
                 break;
             }
+        case SIRC_RFC_ENDOFNAMES:
+            break;
 
         case SIRC_RFC_RPL_TOPIC:
             {
@@ -593,7 +595,7 @@ void srv_event_numeric (SircSession *sirc, int event,
                 break;
             }
 
-            /************************ Whois message ************************/
+            /************************ WHOIS message ************************/
         case SIRC_RFC_RPL_WHOISUSER:
             {
                 CHECK_NUMERIC_COUNT(5);
@@ -645,7 +647,7 @@ void srv_event_numeric (SircSession *sirc, int event,
             sui_add_sys_msg(srv->ui, msg, SYS_MSG_NORMAL, 0);
             break;
 
-            /************************ NAMES message ************************/
+            /************************ WHO message ************************/
         case SIRC_RFC_RPL_WHOREPLY:
             {
                 CHECK_NUMERIC_COUNT(6);
