@@ -578,7 +578,7 @@ void srv_event_numeric (SircSession *sirc, int event,
                 }
                 break;
             }
-        case SIRC_RFC_ENDOFNAMES:
+        case SIRC_RFC_RPL_ENDOFNAMES:
             break;
 
         case SIRC_RFC_RPL_TOPIC:

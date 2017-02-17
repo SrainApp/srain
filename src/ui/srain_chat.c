@@ -12,6 +12,8 @@
 #include <assert.h>
 #include <string.h>
 
+#include "sui.h"
+#include "sui_event.h"
 #include "theme.h"
 #include "ui_common.h"
 #include "srain_chat.h"
@@ -30,8 +32,8 @@ struct _SrainChat {
 
     char *server_name;
     char *chat_name;
+    SuiSession *sui;
     ChatType type;
-    void *ctx;
 
     /* header */
     GtkLabel* name_label;
@@ -194,40 +196,19 @@ static int is_blank(const char *str){
 
 static void input_entry_on_activate(SrainChat *chat){
     char *input;
+    const char *params[1];
 
-    input = strdup(gtk_entry_get_text(chat->input_entry));
+    input = g_strdup(gtk_entry_get_text(chat->input_entry));
 
     if (is_blank(input)) goto ret;
 
-    DBG_FR("chat: %s, text: '%s'", chat_name, input);
-
-    /*
-    if (input[0] == '/'){
-        ui_hdr_srv_cmd(
-                srain_chat_get_srv_name(chat),
-                srain_chat_get_chat_name(chat),
-                input, 0);
-    } else {
-        ui_send_msg(
-                srain_chat_get_srv_name(chat),
-                srain_chat_get_chat_name(chat),
-                input, 0);
-        if (ui_hdr_srv_send(
-                    srain_chat_get_srv_name(chat),
-                    srain_chat_get_chat_name(chat),
-                    input) < 0){
-            ui_sys_msg(
-                    srain_chat_get_srv_name(chat),
-                    srain_chat_get_chat_name(chat),
-                    _("Failed to send message"),
-                    SYS_MSG_ERROR, 0);
-        }
-    }
-    */
+    params[0] = input;
+    sui_event_hdr(chat->sui, SUI_EVENT_SEND, params, 1);
 
 ret:
     gtk_entry_set_text(chat->input_entry, "");
-    free(input);
+    g_free(input);
+
     return;
 }
 
@@ -268,8 +249,8 @@ static void srain_chat_init(SrainChat *self){
             G_CALLBACK(upload_image_button_on_click), self->input_entry);
 
     /* command completion */
-    int i;
     /* TODO: get cmdlist from command_filter
+    int i;
     for (i = 0; cmd_list[i] != 0; i++){
         srain_entry_completion_add_keyword(self->completion,
                 cmd_list[i], KEYWORD_NORMAL);

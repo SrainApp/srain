@@ -32,6 +32,10 @@ void sui_main_loop(int argc, char **argv){
     snotify_finalize();
 }
 
+void sui_proc_pending_event(){
+    while (gtk_events_pending()) gtk_main_iteration();
+}
+
 SuiSession *sui_new_session(const char *name, const char *remark,
         ChatType type, void *ctx){
     SuiSession *sui = g_malloc0(sizeof(SuiSession));
