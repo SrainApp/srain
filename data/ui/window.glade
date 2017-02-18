@@ -184,11 +184,48 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry" id="conn_addr_entry">
+              <object class="GtkBox" id="con_addr_box">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="completion">conn_addr_entrycompletion</property>
-                <property name="input_purpose">url</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkEntry" id="conn_addr_entry">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="completion">conn_addr_entrycompletion</property>
+                    <property name="input_purpose">url</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="conn_port_label">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes"> : </property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="conn_port_entry">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="max_length">5</property>
+                    <property name="width_chars">5</property>
+                    <property name="input_purpose">number</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">3</property>
+                  </packing>
+                </child>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -203,7 +240,29 @@
               </object>
               <packing>
                 <property name="left_attach">0</property>
+                <property name="top_attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="conn_nick_label">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Nickname:</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
                 <property name="top_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="conn_real_label">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Description:</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">3</property>
               </packing>
             </child>
             <child>
@@ -216,40 +275,7 @@
               </object>
               <packing>
                 <property name="left_attach">1</property>
-                <property name="top_attach">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="conn_port_label">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Port:</property>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
                 <property name="top_attach">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkEntry" id="conn_port_entry">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="input_purpose">digits</property>
-              </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="conn_nick_label">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Nickname:</property>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">3</property>
               </packing>
             </child>
             <child>
@@ -259,18 +285,7 @@
               </object>
               <packing>
                 <property name="left_attach">1</property>
-                <property name="top_attach">3</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="conn_real_label">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Description:</property>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">4</property>
+                <property name="top_attach">2</property>
               </packing>
             </child>
             <child>
@@ -281,7 +296,7 @@
               </object>
               <packing>
                 <property name="left_attach">1</property>
-                <property name="top_attach">4</property>
+                <property name="top_attach">3</property>
               </packing>
             </child>
             <child>
@@ -294,7 +309,7 @@
               </object>
               <packing>
                 <property name="left_attach">1</property>
-                <property name="top_attach">5</property>
+                <property name="top_attach">4</property>
               </packing>
             </child>
             <child>
@@ -307,7 +322,7 @@
               </object>
               <packing>
                 <property name="left_attach">1</property>
-                <property name="top_attach">6</property>
+                <property name="top_attach">5</property>
               </packing>
             </child>
             <child>
@@ -359,7 +374,7 @@
               <object class="GtkLabel" id="join_chan_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Channel/Nickname:</property>
+                <property name="label" translatable="yes">Channel:</property>
               </object>
               <packing>
                 <property name="left_attach">0</property>
@@ -370,6 +385,7 @@
               <object class="GtkEntry" id="join_chat_entry">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="placeholder_text" translatable="yes">or Nickname</property>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -380,7 +396,7 @@
               <object class="GtkLabel" id="join_pwd_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Password(optional):</property>
+                <property name="label" translatable="yes">Password:</property>
               </object>
               <packing>
                 <property name="left_attach">0</property>
@@ -393,6 +409,7 @@
                 <property name="can_focus">True</property>
                 <property name="visibility">False</property>
                 <property name="invisible_char">*</property>
+                <property name="placeholder_text" translatable="yes">Optional</property>
                 <property name="input_purpose">password</property>
               </object>
               <packing>
