@@ -18,8 +18,46 @@
 #ifndef __SIRC_EVENT_H
 #define __SIRC_EVENT_H
 
-#include "sirc.h"
+#ifndef __IN_SIRC_H
+	#error This file should not be included directly, include just sirc.h
+#endif
+
 #include "sirc_parse.h"
+
+typedef void (*SircSimpleEventCallback) (SircSession *sirc, const char *event);
+
+typedef void (*SircEventCallback) (SircSession *sirc, const char *event,
+        const char *origin, const char *params[], int count, const char *msg);
+
+typedef void (*SircNumericEventCallback) (SircSession *sirc, int event,
+        const char *origin, const char *params[], int count, const char *msg);
+
+typedef struct {
+    SircSimpleEventCallback     connect;
+    SircSimpleEventCallback     disconnect;
+    SircSimpleEventCallback     ping;
+
+    SircNumericEventCallback    welcome;
+    SircEventCallback           nick;
+    SircEventCallback           quit;
+    SircEventCallback           join;
+    SircEventCallback           part;
+    SircEventCallback           mode;
+    SircEventCallback           umode;
+    SircEventCallback           topic;
+    SircEventCallback           kick;
+    SircEventCallback           channel;
+    SircEventCallback           privmsg;
+    SircEventCallback           notice;
+    SircEventCallback           channel_notice;
+    SircEventCallback           invite;
+    SircEventCallback           ctcp_req;
+    SircEventCallback           ctcp_rep;
+    SircEventCallback           ctcp_action;
+    SircEventCallback           unknown;
+
+    SircNumericEventCallback    numeric;
+} SircEvents;
 
 void sirc_event_hdr(SircSession *sirc, SircMessage *imsg);
 

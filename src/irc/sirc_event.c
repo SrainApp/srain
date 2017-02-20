@@ -11,24 +11,29 @@
 
 #include <string.h>
 
+#include "sirc.h"
 #include "sirc_numeric.h"
-#include "sirc_event.h"
 
 #include "log.h"
 
 static void sirc_ctcp_event_hdr(SircSession *sirc, SircMessage *imsg);
 
 void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
-    int num = atoi(imsg->cmd);
-    const char *origin = imsg->nick ? imsg->nick : imsg->prefix;
+    int num;
+    const char *origin;
+    SircEvents *events;
+
+    num = atoi(imsg->cmd);
+    origin = imsg->nick ? imsg->nick : imsg->prefix;
+    events = sirc_get_events(sirc);
 
     if (num != 0) {
         /* Numeric command */
         switch (num){
             case SIRC_RFC_RPL_WELCOME:
-                sirc->events.welcome(sirc, num, origin, imsg->params, imsg->nparam, imsg->msg);
+                events->welcome(sirc, num, origin, imsg->params, imsg->nparam, imsg->msg);
             default:
-                sirc->events.numeric(sirc, num, origin, imsg->params, imsg->nparam, imsg->msg);
+                events->numeric(sirc, num, origin, imsg->params, imsg->nparam, imsg->msg);
         }
      } else {
         /* Named command */
@@ -43,11 +48,11 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
              switch (imsg->nparam) {
                  case 0:
                      /* User message */
-                     sirc->events.privmsg(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
+                     events->privmsg(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
                      break;
                  case 1:
                      /* Channel message */
-                     sirc->events.channel(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
+                     events->channel(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
                      break;
                  default:
                      ERR_FR("PRIVMSG has extra parameters");
@@ -55,26 +60,26 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
              }
          }
          else if (strcmp(event, "JOIN") == 0){
-             sirc->events.join(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
+             events->join(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
          }
          else if (strcmp(event, "PART") == 0){
-             sirc->events.part(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
+             events->part(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
          }
          else if (strcmp(event, "QUIT") == 0){
-             sirc->events.quit(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
+             events->quit(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
          }
          else if (strcmp(event, "NICK") == 0){
-             sirc->events.nick(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
+             events->nick(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
          }
          else if (strcmp(event, "MODE") == 0){
              switch (imsg->nparam) {
                  case 1:
                      /* User mode changed */
-                     sirc->events.mode(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
+                     events->mode(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
                      break;
                  case 2:
                      /* Channel mode changed */
-                     sirc->events.umode(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
+                     events->umode(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
                      break;
                  default:
                      ERR_FR("MODE has extra parameters");
@@ -82,16 +87,16 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
              }
          }
          else if (strcmp(event, "TOPIC") == 0){
-             sirc->events.topic(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
+             events->topic(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
          }
          else if (strcmp(event, "KICK") == 0){
-             sirc->events.kick(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
+             events->kick(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
          }
          else if (strcmp(event, "NOTICE") == 0){
-             sirc->events.notice(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
+             events->notice(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
          }
          else if (strcmp(event, "INVITE") == 0){
-             sirc->events.invite(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
+             events->invite(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
          }
      }
 }
@@ -99,17 +104,20 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
 static void sirc_ctcp_event_hdr(SircSession *sirc, SircMessage *imsg) {
     int len;
     char *ctcp_msg;
-    const char *origin = imsg->nick ? imsg->nick : imsg->prefix;
+    const char *origin;
+    SircEvents *events;
 
     ctcp_msg = g_strdup(imsg->msg);
     len = strlen(ctcp_msg);
+    origin = imsg->nick ? imsg->nick : imsg->prefix;
+    events = sirc_get_events(sirc);
 
     ctcp_msg++; // Skip first 0x01
     ctcp_msg[len-1] = '\0'; // Remove the trailing 0x01
 
     if (strncasecmp(ctcp_msg, "ACTION ", sizeof("ACTION ") - 1) == 0){
         ctcp_msg += sizeof("ACTION ") - 1;
-        sirc->events.ctcp_action(sirc, "CTCP_ACTION", origin, imsg->params, imsg->nparam, ctcp_msg);
+        events->ctcp_action(sirc, "CTCP_ACTION", origin, imsg->params, imsg->nparam, ctcp_msg);
     }
     else if (strncasecmp(ctcp_msg, "DCC ", sizeof("DCC ") - 1) == 0){
         // TODO: impl DCC

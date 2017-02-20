@@ -20,10 +20,18 @@
 #include "sirc_numeric.h"
 #include "sirc_cmd.h"
 #include "sirc_parse.h"
-#include "sirc_event.h"
 
 #include "srain.h"
 #include "log.h"
+
+struct _SircSession {
+    int fd;
+    char buf[SIRC_BUF_LEN];
+    GMutex mutex;  // Buffer lock
+
+    SircEvents *events; // Event callbacks
+    void *ctx;
+};
 
 typedef struct {
     SircSession *sirc;
@@ -44,11 +52,11 @@ static int idle_sirc_on_connect(SircSession *sirc);
 static int idle_sirc_on_disconnect(SircSession *sirc);
 static int idle_sirc_recv(SircSession *sirc);
 
-SircSession* sirc_new_session(void *ctx){
+SircSession* sirc_new_session(SircEvents *events){
     SircSession *sirc = g_malloc0(sizeof(SircSession));
 
     sirc->fd = -1;
-    sirc_set_ctx(sirc, ctx);
+    sirc->events = events;
 
     g_mutex_init(&sirc->mutex);
 
@@ -61,6 +69,14 @@ void sirc_free_session(SircSession *sirc){
     }
 
     g_free(sirc);
+}
+
+int sirc_get_fd(SircSession *sirc){
+    return sirc->fd;
+}
+
+SircEvents *sirc_get_events(SircSession *sirc){
+    return sirc->events;
 }
 
 void sirc_set_ctx(SircSession *sirc, void *ctx){
@@ -157,7 +173,7 @@ static int idle_sirc_recv(SircSession *sirc){
     switch (res){
         case SIRC_MSG_PING:
             sirc_cmd_pong(sirc, sirc->buf);
-            sirc->events.ping(sirc, "PING");
+            sirc->events->ping(sirc, "PING");
             break;
         case SIRC_MSG_MESSAGE:
             sirc_event_hdr(sirc, &imsg);
@@ -171,11 +187,11 @@ static int idle_sirc_recv(SircSession *sirc){
 }
 
 static int idle_sirc_on_connect(SircSession *sirc){
-    sirc->events.connect(sirc, "CONNECT");
+    sirc->events->connect(sirc, "CONNECT");
     return FALSE;
 }
 
 static int idle_sirc_on_disconnect(SircSession *sirc){
-    sirc->events.disconnect(sirc, sirc->ctx);
+    sirc->events->disconnect(sirc, sirc->ctx);
     return FALSE;
 }

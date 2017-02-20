@@ -17,7 +17,6 @@
 #include <string.h>
 
 #include "socket.h"
-#include "sirc.h"
 #include "sirc_cmd.h"
 
 #include "srain.h"
@@ -107,7 +106,7 @@ int sirc_cmd_raw(SircSession *sirc, const char *fmt, ...){
         len = 512;
     }
 
-    int ret = sck_send(sirc->fd, buf, len);
+    int ret = sck_send(sirc_get_fd(sirc), buf, len);
     if (ret == SRN_ERR){
         return SRN_ERR;
     }

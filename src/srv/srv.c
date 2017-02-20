@@ -13,7 +13,7 @@
 #include <gtk/gtk.h>
 
 #include "srv.h"
-#include "srv_event.h"
+#include "irc_event.h"
 #include "ui_event.h"
 
 #include "sirc_cmd.h"
@@ -23,8 +23,10 @@
 #include "log.h"
 
 static SuiEvents sui_events;
+static SircEvents sirc_events;
 
 void server_init(){
+    /* UI event */
     sui_events.connect = ui_event_connect;
     sui_events.send = ui_event_send;
     sui_events.join = ui_event_join;
@@ -33,6 +35,27 @@ void server_init(){
     sui_events.unquery = ui_event_unquery;
     sui_events.kick = ui_event_kick;
     sui_events.invite = ui_event_invite;
+
+    /* UI event */
+    sirc_events.connect = irc_event_connect;
+    sirc_events.disconnect = irc_event_disconnect;
+    sirc_events.ping = irc_event_ping;
+    sirc_events.welcome = irc_event_welcome;
+    sirc_events.nick = irc_event_nick;
+    sirc_events.quit = irc_event_quit;
+    sirc_events.join = irc_event_join;
+    sirc_events.part = irc_event_part;
+    sirc_events.mode = irc_event_mode;
+    sirc_events.umode = irc_event_umode;
+    sirc_events.topic = irc_event_topic;
+    sirc_events.kick = irc_event_kick;
+    sirc_events.channel = irc_event_channel;
+    sirc_events.privmsg = irc_event_privmsg;
+    sirc_events.notice = irc_event_notice;
+    sirc_events.channel_notice = irc_event_channel_notice;
+    sirc_events.invite = irc_event_invite;
+    sirc_events.ctcp_action = irc_event_ctcp_action;
+    sirc_events.numeric = irc_event_numeric;
 }
 
 Server* server_new(const char *name,
@@ -74,35 +97,16 @@ Server* server_new(const char *name,
     /* Get UI & IRC handler */
     srv->ui = sui_new_session(META_SERVER, srv->name, &sui_events,
             SUI_SESSION_SERVER);
-    srv->irc = sirc_new_session(srv);
+    srv->irc = sirc_new_session(&sirc_events);
 
     if (!srv->ui || !srv->irc){
         goto bad;
     }
 
     sui_set_ctx(srv->ui, srv);
+    sirc_set_ctx(srv->irc, srv);
 
     /* IRC event callbacks */
-    srv->irc->events.connect = srv_event_connect;
-    srv->irc->events.disconnect = srv_event_disconnect;
-    srv->irc->events.ping = srv_event_ping;
-    srv->irc->events.welcome = srv_event_welcome;
-    srv->irc->events.nick = srv_event_nick;
-    srv->irc->events.quit = srv_event_quit;
-    srv->irc->events.join = srv_event_join;
-    srv->irc->events.part = srv_event_part;
-    srv->irc->events.mode = srv_event_mode;
-    srv->irc->events.umode = srv_event_umode;
-    srv->irc->events.topic = srv_event_topic;
-    srv->irc->events.kick = srv_event_kick;
-    srv->irc->events.channel = srv_event_channel;
-    srv->irc->events.privmsg = srv_event_privmsg;
-    srv->irc->events.notice = srv_event_notice;
-    srv->irc->events.channel_notice = srv_event_channel_notice;
-    srv->irc->events.invite = srv_event_invite;
-    srv->irc->events.ctcp_action = srv_event_ctcp_action;
-    srv->irc->events.numeric = srv_event_numeric;
-
     return srv;
 
 bad:
