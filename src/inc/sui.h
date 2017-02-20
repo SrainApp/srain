@@ -1,51 +1,24 @@
 #ifndef __SUI_H
 #define __SUI_H
 
-#include "srain_chat.h"
 #include "srain_msg.h"
 #include "srain_user_list.h"
 
-#define SUI_NAME_LEN 128
-
 typedef struct _SuiSession SuiSession;
+typedef int SuiSessionFlag;
 
-typedef enum {
-    SUI_EVENT_CONNECT,
-    SUI_EVENT_SEND,
-    SUI_EVENT_JOIN,
-    SUI_EVENT_PART,
-    SUI_EVENT_QUERY,
-    SUI_EVENT_UNQUERY,
-    SUI_EVENT_KICK,
-    SUI_EVENT_INVITE,
-} SuiEvent;
+#define SUI_SESSION_SERVER      1 >> 0
+#define SUI_SESSION_CHANNEL     1 >> 1
+#define SUI_SESSION_DIALOG      1 >> 2
+#define SUI_SESSION_NEWWINDOW   1 >> 3 // Not used yet
+#define SUI_SESSION_NOSWITCH    1 >> 4 // Not used yet
 
-typedef int (*SuiEventCallback) (SuiSession *sui, SuiEvent event,
-        const char *params[], int count);
-
-typedef struct {
-    SuiEventCallback connect;
-    SuiEventCallback send;
-    SuiEventCallback join;
-    SuiEventCallback part;
-    SuiEventCallback query;
-    SuiEventCallback unquery;
-    SuiEventCallback kick;
-    SuiEventCallback invite;
-} SuiEvents;
-
-struct _SuiSession{
-    char name[SUI_NAME_LEN];
-    char remark[SUI_NAME_LEN];
-    SrainChat *ui;
-
-    SuiEvents events;
-    void *ctx;
-} ;
+#include "sui_event.h"
 
 void sui_main_loop(int argc, char **argv);
-SuiSession *sui_new_session(const char *name, const char *remark, ChatType type, void *ctx);
+SuiSession *sui_new_session(const char *name, const char *remark, SuiEvents *events, SuiSessionFlag flag);
 void sui_free_session(SuiSession *sui);
+SuiEvents *sui_get_events(SuiSession *sui);
 void* sui_get_ctx(SuiSession *sui);
 void sui_set_ctx(SuiSession *sui, void *ctx);
 

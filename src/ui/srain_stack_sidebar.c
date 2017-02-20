@@ -139,7 +139,7 @@ add_child(GtkWidget *child, SrainStackSidebar *sidebar){
         return;
 
     chat_name = srain_chat_get_name(SRAIN_CHAT(child));
-    server_name = srain_chat_get_srv_name(SRAIN_CHAT(child));
+    server_name = srain_chat_get_remark(SRAIN_CHAT(child));
     type = srain_chat_get_chat_type(SRAIN_CHAT(child));
     item = srain_stack_sidebar_item_new(server_name, chat_name, type);
 

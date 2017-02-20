@@ -12,8 +12,6 @@
 #include <assert.h>
 #include <string.h>
 
-#include "sui.h"
-#include "sui_event.h"
 #include "theme.h"
 #include "ui_common.h"
 #include "srain_chat.h"
@@ -30,13 +28,12 @@
 struct _SrainChat {
     GtkBox parent;
 
-    char *server_name;
-    char *chat_name;
-    SuiSession *sui;
     ChatType type;
+    SuiSession *session;
 
     /* header */
     GtkLabel* name_label;
+    GtkLabel* remark_label;
     GtkMenu *menu;
     GtkRevealer *topic_revealer;
     GtkLabel *topic_label;
@@ -203,7 +200,7 @@ static void input_entry_on_activate(SrainChat *chat){
     if (is_blank(input)) goto ret;
 
     params[0] = input;
-    sui_event_hdr(chat->sui, SUI_EVENT_SEND, params, 1);
+    sui_event_hdr(chat->session, SUI_EVENT_SEND, params, 1);
 
 ret:
     gtk_entry_set_text(chat->input_entry, "");
@@ -260,9 +257,6 @@ static void srain_chat_init(SrainChat *self){
 }
 
 static void srain_chat_finalize(GObject *object){
-    free(SRAIN_CHAT(object)->server_name);
-    free(SRAIN_CHAT(object)->chat_name);
-
     G_OBJECT_CLASS(srain_chat_parent_class)->finalize(object);
 }
 
@@ -275,6 +269,7 @@ static void srain_chat_class_init(SrainChatClass *class){
             "/org/gtk/srain/chat.glade");
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, name_label);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, remark_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, menu);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, topic_revealer);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, topic_label);
@@ -292,19 +287,19 @@ static void srain_chat_class_init(SrainChatClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, upload_image_button);
 }
 
-SrainChat* srain_chat_new(const char *server_name, const char *chat_name,
+SrainChat* srain_chat_new(SuiSession *sui, const char *name, const char *remark,
         ChatType type){
     SrainChat *chat;
 
     chat = g_object_new(SRAIN_TYPE_CHAT, NULL);
 
     chat->type =type;
+    chat->session = sui;
+    LOG_FR("%x", chat->session);
 
-    gtk_label_set_text(chat->name_label, chat_name);
-    gtk_widget_set_name(GTK_WIDGET(chat), chat_name);
-
-    chat->chat_name = strdup(chat_name);
-    chat->server_name = strdup(server_name);
+    gtk_label_set_text(chat->name_label, name);
+    gtk_label_set_text(chat->remark_label, remark);
+    gtk_widget_set_name(GTK_WIDGET(chat), name);
 
     switch (chat->type){
         case CHAT_SERVER:
@@ -336,7 +331,7 @@ void srain_chat_set_topic(SrainChat *chat, const char *topic){
 }
 
 /**
- * @brief Insert text into a SrainChat's input entry
+ * @brief Insert text into a SrainChat's 0nput entry
  *
  * @param chat
  * @param text
@@ -371,15 +366,15 @@ SrainEntryCompletion* srain_chat_get_entry_completion(SrainChat *chat){
 }
 
 const char* srain_chat_get_name(SrainChat *chat){
-    return chat->chat_name;
+    return gtk_label_get_text(chat->name_label);
 }
 
-const char* srain_chat_get_srv_name(SrainChat *chat){
-    return chat->server_name;
+const char* srain_chat_get_remark(SrainChat *chat){
+    return gtk_label_get_text(chat->remark_label);
 }
 
 const char* srain_chat_get_chat_name(SrainChat *chat){
-    return chat->chat_name;
+    return gtk_label_get_text(chat->name_label);
 }
 
 void srain_chat_set_nick(SrainChat *chat, const char *nick){

@@ -82,8 +82,8 @@ void nick_menu_popup(GdkEventButton *event, const char *nick){
 
     /******************************************/
     chat = srain_window_get_cur_chat(srain_win);
-    chats = srain_window_get_chats_by_srv_name(srain_win,
-            srain_chat_get_srv_name(chat));
+    chats = srain_window_get_chats_by_remark(srain_win,
+            srain_chat_get_remark(chat));
 
     /* Skip META_SERVER */
     chats = g_list_next(chats);

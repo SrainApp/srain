@@ -14,12 +14,26 @@
 
 #include "srv.h"
 #include "srv_event.h"
+#include "ui_event.h"
 
 #include "sirc_cmd.h"
 
 #include "meta.h"
 #include "srain.h"
 #include "log.h"
+
+static SuiEvents sui_events;
+
+void server_init(){
+    sui_events.connect = ui_event_connect;
+    sui_events.send = ui_event_send;
+    sui_events.join = ui_event_join;
+    sui_events.part = ui_event_part;
+    sui_events.query = ui_event_query;
+    sui_events.unquery = ui_event_unquery;
+    sui_events.kick = ui_event_kick;
+    sui_events.invite = ui_event_invite;
+}
 
 Server* server_new(const char *name,
         const char *host,
@@ -37,6 +51,8 @@ Server* server_new(const char *name,
     if (!enconding) enconding = "UTF-8";
     if (!username) username = PACKAGE_NAME;
     if (!realname) realname = nick;
+
+    server_init();
 
     Server *srv = g_malloc0(sizeof(Server));
 
@@ -56,12 +72,15 @@ Server* server_new(const char *name,
     g_strlcpy(srv->user.realname, realname, sizeof(srv->user.realname));
 
     /* Get UI & IRC handler */
-    srv->ui = sui_new_session(META_SERVER, srv->name, CHAT_SERVER, srv);
+    srv->ui = sui_new_session(META_SERVER, srv->name, &sui_events,
+            SUI_SESSION_SERVER);
     srv->irc = sirc_new_session(srv);
 
     if (!srv->ui || !srv->irc){
         goto bad;
     }
+
+    sui_set_ctx(srv->ui, srv);
 
     /* IRC event callbacks */
     srv->irc->events.connect = srv_event_connect;
@@ -142,8 +161,8 @@ int server_add_chat(Server *srv, const char *name, const char *passwd){
     chat->srv = srv;
     chat->me = NULL;
     chat->user_list = NULL;
-    chat->ui = sui_new_session(name, srv->name,
-            SIRC_IS_CHAN(name) ? CHAT_CHANNEL : CHAT_PRIVATE, srv); // ??
+    chat->ui = sui_new_session(name, srv->name, &sui_events,
+            SIRC_IS_CHAN(name) ? SUI_SESSION_CHANNEL : SUI_SESSION_DIALOG); // ??
 
     g_strlcpy(chat->name, name, sizeof(chat->name));
     g_strlcpy(chat->passwd, passwd, sizeof(chat->passwd));

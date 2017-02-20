@@ -85,7 +85,7 @@ static void copy_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
 static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_data){
     char *sel_msg;
     char *line;
-    const char *srv_name;
+    const char *remark;
     GString *str;
     SrainChat *chat;
     SrainRecvMsg *smsg;
@@ -93,9 +93,10 @@ static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_da
     smsg = SRAIN_RECV_MSG(user_data);
     if ((sel_msg = label_get_selection(smsg->msg_label)) == NULL) return;
 
-    srv_name = srain_chat_get_srv_name(srain_window_get_cur_chat(srain_win));
-    chat = srain_window_get_chat_by_name(srain_win, srv_name,
-            gtk_menu_item_get_label(GTK_MENU_ITEM(widget)));
+    remark = srain_chat_get_remark(srain_window_get_cur_chat(srain_win));
+    chat = srain_window_get_chat(srain_win,
+            gtk_menu_item_get_label(GTK_MENU_ITEM(widget)),
+            remark);
 
     line = strtok(sel_msg, "\n");
     while (line){
@@ -157,8 +158,8 @@ static void msg_label_on_popup(GtkLabel *label, GtkMenu *menu,
 
     chat = srain_window_get_cur_chat(srain_win);
 
-    chats = srain_window_get_chats_by_srv_name(srain_win,
-            srain_chat_get_srv_name(chat));
+    chats = srain_window_get_chats_by_remark(srain_win,
+            srain_chat_get_remark(chat));
     if (!chats) return;
     /* Skip META_SERVER */
     chats = g_list_next(chats);

@@ -25,7 +25,7 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
     if (num != 0) {
         /* Numeric command */
         switch (num){
-            case RPL_WELCOME:
+            case SIRC_RFC_RPL_WELCOME:
                 sirc->events.welcome(sirc, num, origin, imsg->params, imsg->nparam, imsg->msg);
             default:
                 sirc->events.numeric(sirc, num, origin, imsg->params, imsg->nparam, imsg->msg);

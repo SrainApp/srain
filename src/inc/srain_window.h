@@ -15,11 +15,11 @@ typedef struct _SrainWindowClass SrainWindowClass;
 GType srain_window_get_type(void);
 SrainWindow *srain_window_new(SrainApp *app);
 
-SrainChat* srain_window_add_chat(SrainWindow *win, const char *srv_name, const char *chat_name, ChatType type);
+SrainChat* srain_window_add_chat(SrainWindow *win, SuiSession *sui, const char *name, const char *remark, ChatType type);
 void srain_window_rm_chat(SrainWindow *win, SrainChat *chat);
 SrainChat *srain_window_get_cur_chat(SrainWindow *win);
-SrainChat *srain_window_get_chat_by_name(SrainWindow *win, const char *server_name, const char *chat_name);
-GList* srain_window_get_chats_by_srv_name(SrainWindow *win, const char *server_name);
+SrainChat *srain_window_get_chat(SrainWindow *win, const char *name, const char *remark);
+GList* srain_window_get_chats_by_remark(SrainWindow *win, const char *remark);
 void srain_window_spinner_toggle(SrainWindow *win, gboolean is_busy);
 void srain_window_stack_sidebar_update(SrainWindow *win, SrainChat *chat, const char *nick, const char *msg);
 int srain_window_is_active(SrainWindow *win);

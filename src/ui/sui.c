@@ -23,6 +23,18 @@
 #include "log.h"
 #include "meta.h"
 
+#define SUI_NAME_LEN 128
+
+struct _SuiSession{
+    char name[SUI_NAME_LEN];
+    char remark[SUI_NAME_LEN];
+    SrainChat *ui;
+
+    ChatType type;
+    SuiEvents *events;
+    void *ctx;
+};
+
 void sui_main_loop(int argc, char **argv){
     theme_init();
     snotify_init();
@@ -37,10 +49,29 @@ void sui_proc_pending_event(){
 }
 
 SuiSession *sui_new_session(const char *name, const char *remark,
-        ChatType type, void *ctx){
-    SuiSession *sui = g_malloc0(sizeof(SuiSession));
+        SuiEvents *events, SuiSessionFlag flag){
+    ChatType type;
+    SuiSession *sui;
 
-    sui->ui = srain_window_add_chat(srain_win, remark, name, type);
+    g_return_val_if_fail(name, NULL);
+    g_return_val_if_fail(remark, NULL);
+
+    sui = g_malloc0(sizeof(SuiSession));
+
+    if (flag & SUI_SESSION_SERVER) {
+        type = CHAT_SERVER;
+    }
+    else if (flag & SUI_SESSION_CHANNEL) {
+        type = CHAT_CHANNEL;
+    }
+    else if (flag & SUI_SESSION_DIALOG) {
+        type = CHAT_PRIVATE;
+    } else {
+        ERR_FR("Chat type not found in SuiSessionFlag 0x%x", flag);
+    }
+
+    sui->ui = srain_window_add_chat(srain_win, sui, name, remark, type);
+    sui->events = events;
 
     if (!sui->ui){
         goto bad;
@@ -49,27 +80,39 @@ SuiSession *sui_new_session(const char *name, const char *remark,
     g_strlcpy(sui->name, name, sizeof(sui->name));
     g_strlcpy(sui->remark, remark, sizeof(sui->remark));
 
-    sui_set_ctx(sui, ctx);
-
     return sui;
 
 bad:
-    sui_free_session(sui);
+    if (sui) {
+        sui_free_session(sui);
+    }
     return NULL;
 }
 
 void sui_free_session(SuiSession *sui){
+    g_return_if_fail(sui);
+
     if (sui->ui){
         srain_window_rm_chat(srain_win, sui->ui);
     }
     g_free(sui);
 }
 
+SuiEvents *sui_get_events(SuiSession *sui){
+    g_return_val_if_fail(sui, NULL);
+
+    return sui->events;
+}
+
 void* sui_get_ctx(SuiSession *sui){
+    g_return_val_if_fail(sui, NULL);
+
     return sui->ctx;
 }
 
 void sui_set_ctx(SuiSession *sui, void *ctx){
+    g_return_if_fail(sui);
+
     sui->ctx = ctx;
 }
 

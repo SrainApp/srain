@@ -350,38 +350,30 @@ SrainWindow* srain_window_new(SrainApp *app){
     return g_object_new(SRAIN_TYPE_WINDOW, "application", app, NULL);
 }
 
-SrainChat* srain_window_add_chat(SrainWindow *win, const char *server_name,
-        const char *chat_name, ChatType type){
+SrainChat* srain_window_add_chat(SrainWindow *win, SuiSession *sui,
+        const char *name, const char *remark, ChatType type){
     SrainChat *chat;
 
-    if (srain_window_get_chat_by_name(win, server_name, chat_name)){
-        ERR_FR("server_name: %s, chat_name: %s, already exist",
-                server_name, chat_name);
+    if (srain_window_get_chat(win, name, remark)){
+        ERR_FR("SrainChat name: %s, remark: %s already exist",
+                name, remark);
         return NULL;
     }
 
-    chat = srain_chat_new(server_name, chat_name, type);
+    chat = srain_chat_new(sui, name, remark, type);
 
     GString *gstr = g_string_new("");
-    g_string_printf(gstr, "%s %s", server_name, chat_name);
+    g_string_printf(gstr, "%s %s", remark, name);
     gtk_stack_add_named(win->stack, GTK_WIDGET(chat), gstr->str);
     g_string_free(gstr, TRUE);
 
     theme_apply(GTK_WIDGET(win));
 
-    gtk_stack_set_visible_child (win->stack, GTK_WIDGET(chat));
+    gtk_stack_set_visible_child(win->stack, GTK_WIDGET(chat));
     return chat;
 }
 
 void srain_window_rm_chat(SrainWindow *win, SrainChat *chat){
-    char *chat_name;
-    char *server_name;
-
-    chat_name = g_object_get_data(G_OBJECT(chat), "chat-name");
-    server_name = g_object_get_data(G_OBJECT(chat), "server-name");
-    free(chat_name);
-    free(server_name);
-
     srain_user_list_clear(srain_chat_get_user_list(chat));
     gtk_container_remove(GTK_CONTAINER(win->stack), GTK_WIDGET(chat));
 }
@@ -397,14 +389,14 @@ SrainChat* srain_window_get_cur_chat(SrainWindow *win){
     return chat;
 }
 
-SrainChat* srain_window_get_chat_by_name(SrainWindow *win,
-        const char *server_name, const char *chat_name){
+SrainChat* srain_window_get_chat(SrainWindow *win,
+        const char *name, const char *remark){
     SrainChat *chat = NULL;
 
-    GString *name = g_string_new("");
-    g_string_printf(name, "%s %s", server_name, chat_name);
-    chat = SRAIN_CHAT(gtk_stack_get_child_by_name(win->stack, name->str));
-    g_string_free(name, TRUE);
+    GString *fullname = g_string_new("");
+    g_string_printf(fullname, "%s %s", remark, name);
+    chat = SRAIN_CHAT(gtk_stack_get_child_by_name(win->stack, fullname->str));
+    g_string_free(fullname, TRUE);
 
     return chat;
 }
@@ -417,8 +409,7 @@ SrainChat* srain_window_get_chat_by_name(SrainWindow *win,
  *
  * @return a GList, may be NULL, should be freed by caller
  */
-GList* srain_window_get_chats_by_srv_name(SrainWindow *win,
-        const char *server_name){
+GList* srain_window_get_chats_by_remark(SrainWindow *win, const char *remark){
     GList *all_chats;
     GList *chats = NULL;
     SrainChat *chat = NULL;
@@ -427,9 +418,7 @@ GList* srain_window_get_chats_by_srv_name(SrainWindow *win,
     while (all_chats){
         chat = SRAIN_CHAT(all_chats->data);
 
-        if (strncmp(server_name,
-                    srain_chat_get_srv_name(chat),
-                    strlen(server_name)) == 0){
+        if (strcmp(remark, srain_chat_get_remark(chat)) == 0){
             chats = g_list_append(chats, chat);
         }
         all_chats = g_list_next(all_chats);

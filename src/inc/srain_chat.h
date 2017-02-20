@@ -3,6 +3,7 @@
 
 #include <gtk/gtk.h>
 
+#include "sui.h"
 #include "srain_msg.h"
 #include "srain_msg_list.h"
 #include "srain_user_list.h"
@@ -23,7 +24,7 @@ typedef struct _SrainChat SrainChat;
 typedef struct _SrainChatClass SrainChatClass;
 
 GType srain_chat_get_type(void);
-SrainChat* srain_chat_new(const char *srv_name, const char *chat_name, ChatType type);
+SrainChat* srain_chat_new(SuiSession *sui, const char *name, const char *remark, ChatType type);
 
 void srain_chat_fcous_entry(SrainChat *chat);
 void srain_chat_set_topic(SrainChat *chat, const char *topic);
@@ -33,7 +34,7 @@ SrainUserList* srain_chat_get_user_list(SrainChat *chat);
 SrainMsgList* srain_chat_get_msg_list(SrainChat *chat);
 SrainEntryCompletion* srain_chat_get_entry_completion(SrainChat *chat);
 const char* srain_chat_get_name(SrainChat *chat);
-const char* srain_chat_get_srv_name(SrainChat *chat);
+const char* srain_chat_get_remark(SrainChat *chat);
 const char* srain_chat_get_chat_name(SrainChat *chat);
 void srain_chat_set_nick(SrainChat *chat, const char *nick);
 const char* srain_chat_get_nick(SrainChat *chat);
