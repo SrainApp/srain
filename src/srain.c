@@ -14,9 +14,7 @@
 #include <signal.h>
 
 #include "srv.h"
-#include "sui.h"
-
-#include "srain_app.h"
+#include "sui/sui.h"
 
 #include "i18n.h"
 #include "log.h"
@@ -25,11 +23,6 @@
 
 void quit(){
     plugin_finalize();
-
-#ifdef IRC_TEST
-    srv_finalize();
-#endif
-
     exit(0);
 }
 

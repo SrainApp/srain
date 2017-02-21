@@ -1,0 +1,35 @@
+#ifndef __SIRC_PARSE_H
+#define __SIRC_PARSE_H
+
+#define SIRC_CMD_LEN        64      // unconfirm
+#define SIRC_PARAM_COUNT    64      // unconfirm
+#define SIRC_PARAM_LEN      64      // unconfirm
+#define SIRC_MSG_LEN        512     // unconfirm
+
+typedef enum {
+    /* Miscellaneous messages */
+    SIRC_MSG_PING,
+    SIRC_MSG_PONG,
+    SIRC_MSG_NOTICE,
+    SIRC_MSG_ERROR,
+
+    /* Standard IRC messages */
+    SIRC_MSG_MESSAGE,
+} SircMessageType;
+
+typedef struct {
+    const char *prefix; // servername or nick!user@host
+    const char *nick, *user, *host;
+
+    const char *cmd;
+    int nparam;
+    const char *params[SIRC_PARAM_COUNT];  // middle
+    const char *msg;  // trailing
+    SircMessageType type;
+
+    void *ctx;   // irc server this message belongs to
+} SircMessage;
+
+int sirc_parse(char *line, SircMessage *imsg);
+
+#endif /* __SIRC_PARSE_H */

@@ -4,8 +4,8 @@
 #include <stdbool.h>
 #include <glib.h>
 
-#include "sirc.h"
-#include "sui.h"
+#include "sirc/sirc.h"
+#include "sui/sui.h"
 
 /* Structure members length */
 #define NAME_LEN        64
