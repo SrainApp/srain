@@ -34,7 +34,11 @@ struct _SuiSession{
     void *ctx;
 };
 
-void sui_main_loop(){
+SuiAppEvents *app_events = NULL;
+
+void sui_main_loop(SuiAppEvents *events){
+    app_events = events;
+
     theme_init();
     snotify_init();
 

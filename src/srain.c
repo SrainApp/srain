@@ -8,23 +8,14 @@
 
 #define __LOG_ON
 
-#include <sys/stat.h>
-#include <gtk/gtk.h>
-#include <errno.h>
 #include <signal.h>
 
-#include "srv.h"
-#include "sui/sui.h"
+#include "server.h"
 
-#include "i18n.h"
-#include "log.h"
 #include "plugin.h"
 #include "file_helper.h"
 
-void quit(){
-    plugin_finalize();
-    exit(0);
-}
+static void quit();
 
 int main(int argc, char **argv){
     create_user_file();
@@ -33,9 +24,16 @@ int main(int argc, char **argv){
     i18n_init();
     plugin_init();
 
-    sui_main_loop();
+    server_init();
 
     quit();
 
     return 0;
+}
+
+static void quit(){
+    plugin_finalize();
+    server_finalize();
+
+    exit(0);
 }

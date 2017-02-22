@@ -81,8 +81,8 @@ typedef struct {
     // Channel *sess;
 } Message;
 
-void srv_init();
-void srv_finalize();
+void server_init();
+void server_finalize();
 
 Server* server_new(const char *name, const char *host, int port,
         const char *passwd, bool ssl, const char *enconding,

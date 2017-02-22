@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2014 Intel Corporation
+ * Copyright (c) 2014      Intel Corporation
+ *               2016-2017 Shengyu Zhang <silverrain@outlook.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -25,7 +26,6 @@
 #include <gtk/gtkbin.h>
 #include <gtk/gtkstack.h>
 #include "srain_chat.h"
-#include "srv.h"
 
 #define SRAIN_TYPE_STACK_SIDEBAR           (srain_stack_sidebar_get_type())
 #define SRAIN_STACK_SIDEBAR(obj)           (G_TYPE_CHECK_INSTANCE_CAST((obj), SRAIN_TYPE_STACK_SIDEBAR, SrainStackSidebar))

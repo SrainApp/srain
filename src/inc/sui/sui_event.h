@@ -6,6 +6,7 @@
 #endif
 
 typedef enum {
+    SUI_EVENT_ACTIVATE,
     SUI_EVENT_CONNECT,
     SUI_EVENT_SEND,
     SUI_EVENT_JOIN,
@@ -16,11 +17,13 @@ typedef enum {
     SUI_EVENT_INVITE,
 } SuiEvent;
 
+typedef int (*SuiAppEventCallback) (SuiEvent event,
+        const char *params[], int count);
+
 typedef int (*SuiEventCallback) (SuiSession *sui, SuiEvent event,
         const char *params[], int count);
 
 typedef struct {
-    SuiEventCallback connect;
     SuiEventCallback send;
     SuiEventCallback join;
     SuiEventCallback part;
@@ -30,6 +33,9 @@ typedef struct {
     SuiEventCallback invite;
 } SuiEvents;
 
-void sui_event_hdr(SuiSession *sui, SuiEvent event, const char *params[], int count);
+typedef struct {
+    SuiAppEventCallback activate;
+    SuiAppEventCallback connect;
+} SuiAppEvents;
 
 #endif /* __SUI_EVENT_H */

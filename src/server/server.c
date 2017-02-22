@@ -12,7 +12,7 @@
 #include <string.h>
 #include <gtk/gtk.h>
 
-#include "srv.h"
+#include "server.h"
 #include "irc_event.h"
 #include "ui_event.h"
 
@@ -22,12 +22,13 @@
 #include "srain.h"
 #include "log.h"
 
+static SuiAppEvents sui_app_events;
 static SuiEvents sui_events;
 static SircEvents sirc_events;
+static GList *server_list;
 
 void server_init(){
     /* UI event */
-    sui_events.connect = ui_event_connect;
     sui_events.send = ui_event_send;
     sui_events.join = ui_event_join;
     sui_events.part = ui_event_part;
@@ -36,7 +37,10 @@ void server_init(){
     sui_events.kick = ui_event_kick;
     sui_events.invite = ui_event_invite;
 
-    /* UI event */
+    sui_app_events.activate = ui_event_activate;
+    sui_app_events.connect = ui_event_connect;
+
+    /* IRC event */
     sirc_events.connect = irc_event_connect;
     sirc_events.disconnect = irc_event_disconnect;
     sirc_events.ping = irc_event_ping;
@@ -56,6 +60,12 @@ void server_init(){
     sirc_events.invite = irc_event_invite;
     sirc_events.ctcp_action = irc_event_ctcp_action;
     sirc_events.numeric = irc_event_numeric;
+
+    sui_main_loop(&sui_app_events);
+}
+
+void server_finalize(){
+
 }
 
 Server* server_new(const char *name,
@@ -70,12 +80,10 @@ Server* server_new(const char *name,
     if (!host) return NULL;
     if (!nick) return NULL;
     if (!name) name = host;
-    if (!passwd) enconding = "";
+    if (!passwd) passwd = "";
     if (!enconding) enconding = "UTF-8";
     if (!username) username = PACKAGE_NAME;
     if (!realname) realname = nick;
-
-    server_init();
 
     Server *srv = g_malloc0(sizeof(Server));
 
@@ -293,7 +301,3 @@ User* chat_get_user(Chat *chat, const char *nick){
 
     return NULL;
 }
-
-void srv_init(){ }
-
-void srv_finalize(){ }

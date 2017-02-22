@@ -4,18 +4,35 @@
 
 #include "log.h"
 
+/* extern from sui.c */
+extern SuiAppEvents *app_events;
+
 void sui_event_hdr(SuiSession *sui, SuiEvent event, const char *params[], int count){
     SuiEvents *events;
 
     LOG_FR("sui: %p, event: %d", sui, event);
-    events = sui_get_events(sui);
-    g_return_if_fail(events);
+
+    if (sui){
+        events = sui_get_events(sui);
+        g_return_if_fail(events);
+    } else {
+        events = NULL;
+    }
 
     switch (event) {
-        case SUI_EVENT_CONNECT:
-            g_return_if_fail(events->connect);
-            events->connect(sui, event, params, count);
+        /* App events */
+
+        case SUI_EVENT_ACTIVATE:
+            g_return_if_fail(app_events->activate);
+            app_events->activate(event, params, count);
             break;
+        case SUI_EVENT_CONNECT:
+            g_return_if_fail(app_events->connect);
+            app_events->connect(event, params, count);
+            break;
+
+        /* Events */
+
         case SUI_EVENT_SEND:
             g_return_if_fail(events->send);
             events->send(sui, event, params, count);

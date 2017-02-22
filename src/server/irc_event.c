@@ -16,7 +16,7 @@
 #include <string.h>
 #include <strings.h>
 
-#include "srv.h"
+#include "server.h"
 #include "irc_event.h"
 
 #include "sui/sui.h"

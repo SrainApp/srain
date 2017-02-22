@@ -20,8 +20,6 @@
 #include "srain_stack_sidebar.h"
 #include "tray_icon.h"
 
-#include "srv.h"
-
 #include "meta.h"
 #include "log.h"
 #include "i18n.h"
@@ -169,14 +167,15 @@ static void join_button_on_click(gpointer user_data){
 }
 
 static void conn_button_on_click(gpointer user_data){
+    int ssl;
+    int count;
+    int no_verify;
     const char *addr;
     const char *port;
     const char *passwd;
     const char *nick;
     const char *realname;
-    int ssl;
-    int no_verify;
-    // SRVSessionFlag flag = 0;
+    char *params[9];
     ConnEntries *conn_entries;
 
     conn_entries = user_data;
@@ -189,19 +188,29 @@ static void conn_button_on_click(gpointer user_data){
     ssl = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(conn_entries->conn_ssl_check_button));
     no_verify = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(conn_entries->conn_no_verfiy_check_button));
 
+    if (strlen(addr) == 0) return;
+    if (strlen(nick) == 0) return;
+
+    count = 0;
+    params[count++] = addr;
+    params[count++] = addr;
+    params[count++] = port;
+    params[count++] = passwd;
+    params[count++] = "FALSE";
+    params[count++] = "UTF-8";
+    params[count++] = nick;
+    params[count++] = PACKAGE_NAME;
+    params[count++] = realname;
+
     // if (ssl) flag |= SRV_SESSION_FLAG_SSL;
     // if (no_verify) flag |= SRV_SESSION_FLAG_SSL_NOVERIFY;
-
-    Server *srv = server_new(addr, addr, atoi(port), passwd, FALSE, "UTF-8", nick, PACKAGE_NAME, realname);
-    server_connect(srv);
+    sui_event_hdr(NULL, SUI_EVENT_CONNECT, params, count);
 
     gtk_entry_set_text(conn_entries->conn_addr_entry, "");
     gtk_entry_set_text(conn_entries->conn_port_entry, "");
     gtk_entry_set_text(conn_entries->conn_pwd_entry, "");
     gtk_entry_set_text(conn_entries->conn_nick_entry, "");
     gtk_entry_set_text(conn_entries->conn_real_entry, "");
-
-    // TODO: Send command to server
 }
 
 static gboolean CTRL_J_K_on_press(GtkAccelGroup *group, GObject *obj,
