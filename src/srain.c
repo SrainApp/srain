@@ -33,7 +33,7 @@ int main(int argc, char **argv){
     i18n_init();
     plugin_init();
 
-    sui_main_loop(argc, argv);
+    sui_main_loop();
 
     quit();
 

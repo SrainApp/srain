@@ -148,8 +148,9 @@ int sirc_parse(char *line, SircMessage *imsg){
         DBG("\n");
 
         // strip(imsg->msg); // TODO
+        imsg->type = SIRC_MSG_MESSAGE;
 
-        return SIRC_MSG_MESSAGE;
+        return SRN_OK;
 bad:
         ERR_FR("Unrecognized message: %s", line);
         return SRN_ERR;

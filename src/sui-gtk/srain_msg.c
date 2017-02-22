@@ -103,23 +103,23 @@ static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_da
         str = g_string_new("");
         g_string_printf(str, _("%s <fwd %s@%s>"), line,
                 gtk_label_get_text(smsg->nick_label),
-                srain_chat_get_chat_name(srain_window_get_cur_chat(srain_win)));
+                srain_chat_get_name(srain_window_get_cur_chat(srain_win)));
         line = strtok(NULL, "\n");
 
         /*
         ui_send_msg_sync(
                 srain_chat_get_srv_name(chat),
-                srain_chat_get_chat_name(chat),
+                srain_chat_get_name(chat),
                 str->str, 0);
         */
         /*
         if (ui_hdr_srv_send(
                     srain_chat_get_srv_name(chat),
-                    srain_chat_get_chat_name(chat),
+                    srain_chat_get_name(chat),
                     str->str) < 0){
             ui_sys_msg_sync(
                     srain_chat_get_srv_name(chat),
-                    srain_chat_get_chat_name(chat),
+                    srain_chat_get_name(chat),
                     _("Failed to send message"),
                     SYS_MSG_ERROR, 0);
         }
@@ -168,7 +168,7 @@ static void msg_label_on_popup(GtkLabel *label, GtkMenu *menu,
 
     while (chats){
         item = GTK_MENU_ITEM(gtk_menu_item_new_with_label(
-                    srain_chat_get_chat_name(chats->data)));
+                    srain_chat_get_name(chats->data)));
         gtk_widget_show(GTK_WIDGET(item));
         g_signal_connect(item, "activate",
                 G_CALLBACK(froward_submenu_item_on_activate), smsg);

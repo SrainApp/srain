@@ -12,13 +12,14 @@
 #include <assert.h>
 #include <string.h>
 
-#include "theme.h"
+#include "sui/sui.h"
 #include "sui_common.h"
 #include "srain_chat.h"
 #include "srain_entry_completion.h"
 #include "srain_msg_list.h"
 #include "srain_user_list.h"
 #include "srain_msg.h"
+#include "theme.h"
 
 #include "markup.h"
 #include "plugin.h"
@@ -78,23 +79,16 @@ static void close_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
 
     chat = user_data;
 
+    // TODO:
     switch (chat->type){
         case CHAT_SERVER:
-            // ui_hdr_srv_quit(srain_chat_get_srv_name(chat), "");
+            sui_event_hdr(chat->session, SUI_EVENT_PART, NULL, 0);
             break;
         case CHAT_CHANNEL:
-            /*
-            ui_hdr_srv_part(
-                    srain_chat_get_srv_name(chat),
-                    srain_chat_get_chat_name(chat));
-            */
+            sui_event_hdr(chat->session, SUI_EVENT_PART, NULL, 0);
             break;
         case CHAT_PRIVATE:
-            /*
-            ui_hdr_srv_unquery(
-                    srain_chat_get_srv_name(chat),
-                    srain_chat_get_chat_name(chat));
-            */
+            sui_event_hdr(chat->session, SUI_EVENT_UNQUERY, NULL, 0);
             break;
         default:
             break;
@@ -295,7 +289,6 @@ SrainChat* srain_chat_new(SuiSession *sui, const char *name, const char *remark,
 
     chat->type =type;
     chat->session = sui;
-    LOG_FR("%x", chat->session);
 
     gtk_label_set_text(chat->name_label, name);
     gtk_label_set_text(chat->remark_label, remark);
@@ -365,16 +358,20 @@ SrainEntryCompletion* srain_chat_get_entry_completion(SrainChat *chat){
     return chat->completion;
 }
 
+void srain_chat_set_name(SrainChat *chat, const char *name){
+    gtk_label_set_text(chat->name_label, name);
+}
+
 const char* srain_chat_get_name(SrainChat *chat){
     return gtk_label_get_text(chat->name_label);
 }
 
-const char* srain_chat_get_remark(SrainChat *chat){
-    return gtk_label_get_text(chat->remark_label);
+void srain_chat_set_remark(SrainChat *chat, const char *remark){
+    gtk_label_set_text(chat->remark_label, remark);
 }
 
-const char* srain_chat_get_chat_name(SrainChat *chat){
-    return gtk_label_get_text(chat->name_label);
+const char* srain_chat_get_remark(SrainChat *chat){
+    return gtk_label_get_text(chat->remark_label);
 }
 
 void srain_chat_set_nick(SrainChat *chat, const char *nick){

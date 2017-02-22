@@ -27,20 +27,18 @@
 #define SUI_NAME_LEN 128
 
 struct _SuiSession{
-    char name[SUI_NAME_LEN];
-    char remark[SUI_NAME_LEN];
-    SrainChat *ui;
+    SrainChat *chat;
 
-    ChatType type;
+    SuiSessionFlag flag;
     SuiEvents *events;
     void *ctx;
 };
 
-void sui_main_loop(int argc, char **argv){
+void sui_main_loop(){
     theme_init();
     snotify_init();
 
-    g_application_run(G_APPLICATION(srain_app_new()), argc, argv);
+    g_application_run(G_APPLICATION(srain_app_new()), 0, NULL);
 
     snotify_finalize();
 }
@@ -49,37 +47,14 @@ void sui_proc_pending_event(){
     while (gtk_events_pending()) gtk_main_iteration();
 }
 
-SuiSession *sui_new_session(const char *name, const char *remark,
-        SuiEvents *events, SuiSessionFlag flag){
-    ChatType type;
+SuiSession *sui_new_session(SuiEvents *events, SuiSessionFlag flag){
     SuiSession *sui;
-
-    g_return_val_if_fail(name, NULL);
-    g_return_val_if_fail(remark, NULL);
 
     sui = g_malloc0(sizeof(SuiSession));
 
-    if (flag & SUI_SESSION_SERVER) {
-        type = CHAT_SERVER;
-    }
-    else if (flag & SUI_SESSION_CHANNEL) {
-        type = CHAT_CHANNEL;
-    }
-    else if (flag & SUI_SESSION_DIALOG) {
-        type = CHAT_PRIVATE;
-    } else {
-        ERR_FR("Chat type not found in SuiSessionFlag 0x%x", flag);
-    }
-
-    sui->ui = srain_window_add_chat(srain_win, sui, name, remark, type);
+    // sui->chat = NULL; // via g_malloc0()
+    sui->flag = flag;
     sui->events = events;
-
-    if (!sui->ui){
-        goto bad;
-    }
-
-    g_strlcpy(sui->name, name, sizeof(sui->name));
-    g_strlcpy(sui->remark, remark, sizeof(sui->remark));
 
     return sui;
 
@@ -93,10 +68,48 @@ bad:
 void sui_free_session(SuiSession *sui){
     g_return_if_fail(sui);
 
-    if (sui->ui){
-        srain_window_rm_chat(srain_win, sui->ui);
+    if (sui->chat){
+        srain_window_rm_chat(srain_win, sui->chat);
     }
     g_free(sui);
+}
+
+int sui_start_session(SuiSession *sui, const char *name, const char *remark){
+    ChatType type;
+    SuiSessionFlag flag;
+
+    flag = sui->flag;
+    if (flag & SUI_SESSION_SERVER) {
+        type = CHAT_SERVER;
+    }
+    else if (flag & SUI_SESSION_CHANNEL) {
+        type = CHAT_CHANNEL;
+    }
+    else if (flag & SUI_SESSION_DIALOG) {
+        type = CHAT_PRIVATE;
+    } else {
+        ERR_FR("Chat type not found in SuiSessionFlag 0x%x", flag);
+        return SRN_ERR;
+    }
+
+    sui->chat = srain_window_add_chat(srain_win, sui, name, remark, type);
+
+    if (!sui->chat){
+        return SRN_ERR;
+    }
+
+    return SRN_OK;
+}
+
+void sui_end_session(SuiSession *sui){
+    srain_window_rm_chat(srain_win, sui->chat);
+    sui->chat = NULL;
+}
+
+SuiSessionFlag sui_get_flag(SuiSession *sui){
+    g_return_val_if_fail(sui, 0);
+
+    return sui->flag;
 }
 
 SuiEvents *sui_get_events(SuiSession *sui){
@@ -117,8 +130,23 @@ void sui_set_ctx(SuiSession *sui, void *ctx){
     sui->ctx = ctx;
 }
 
+void sui_set_name(SuiSession *sui, const char *name){
+    g_return_if_fail(sui);
+    g_return_if_fail(name);
+
+    srain_chat_set_name(sui->chat, name);
+}
+
+
+void sui_set_remark(SuiSession *sui, const char *remark){
+    g_return_if_fail(sui);
+    g_return_if_fail(remark);
+
+    srain_chat_set_remark(sui->chat, remark);
+}
+
 void sui_add_sys_msg(SuiSession *sui, const char *msg, SysMsgType type, SrainMsgFlag flag){
-    SrainChat *chat = sui->ui;
+    SrainChat *chat = sui->chat;
     SrainMsgList *list;
 
     if (!chat){
@@ -153,8 +181,8 @@ void sui_add_sys_msgf(SuiSession *sui, SysMsgType type, SrainMsgFlag flag,
     sui_add_sys_msg(sui, buf, type, flag);
 }
 
-void ui_add_sent_msg(SuiSession *sui, const char *msg, SrainMsgFlag flag){
-    SrainChat *chat = sui->ui;
+void sui_add_sent_msg(SuiSession *sui, const char *msg, SrainMsgFlag flag){
+    SrainChat *chat = sui->chat;
     SrainMsgList *list;
 
     g_return_if_fail(SRAIN_IS_CHAT(chat));
@@ -167,7 +195,7 @@ void ui_add_sent_msg(SuiSession *sui, const char *msg, SrainMsgFlag flag){
 
 void sui_add_recv_msg(SuiSession *sui, const char *nick, const char *id,
         const char *msg, SrainMsgFlag flag){
-    SrainChat *chat = sui->ui;
+    SrainChat *chat = sui->chat;
     SrainMsgList *list;
     SrainEntryCompletion *comp;
 
@@ -187,7 +215,7 @@ void sui_add_recv_msg(SuiSession *sui, const char *nick, const char *id,
 
 int sui_add_user(SuiSession *sui, const char *nick, UserType type){
     int res;
-    SrainChat *chat = sui->ui;
+    SrainChat *chat = sui->chat;
     SrainUserList *list;
     SrainEntryCompletion *comp;
 
@@ -205,7 +233,7 @@ int sui_add_user(SuiSession *sui, const char *nick, UserType type){
 
 int sui_rm_user(SuiSession *sui, const char *nick){
     int res;
-    SrainChat *chat = sui->ui;
+    SrainChat *chat = sui->chat;
     SrainUserList *list;
     SrainEntryCompletion *comp;
 
@@ -223,7 +251,7 @@ int sui_rm_user(SuiSession *sui, const char *nick){
 
 void sui_ren_user(SuiSession *sui, const char *old_nick, const char *new_nick,
         UserType type){
-    SrainChat *chat = sui->ui;
+    SrainChat *chat = sui->chat;
     SrainUserList *list;
     SrainEntryCompletion *comp;
 
@@ -244,7 +272,7 @@ void sui_ren_user(SuiSession *sui, const char *old_nick, const char *new_nick,
 }
 
 void sui_set_topic(SuiSession *sui, const char *topic){
-    SrainChat *chat = sui->ui;
+    SrainChat *chat = sui->chat;
 
     g_return_if_fail(SRAIN_IS_CHAT(chat));
 

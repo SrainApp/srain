@@ -95,8 +95,7 @@ Server* server_new(const char *name,
     g_strlcpy(srv->user.realname, realname, sizeof(srv->user.realname));
 
     /* Get UI & IRC handler */
-    srv->ui = sui_new_session(META_SERVER, srv->name, &sui_events,
-            SUI_SESSION_SERVER);
+    srv->ui = sui_new_session(&sui_events, SUI_SESSION_SERVER);
     srv->irc = sirc_new_session(&sirc_events);
 
     if (!srv->ui || !srv->irc){
@@ -135,7 +134,9 @@ void server_free(Server *srv){
 
 int server_connect(Server *srv){
     srv->stat = SERVER_CONNECTING;
+
     sirc_connect(srv->irc, srv->host, srv->port);
+    sui_start_session(srv->ui, META_SERVER, srv->name);
 
     return SRN_OK;
 }
@@ -145,6 +146,7 @@ void server_disconnect(Server *srv){
     sirc_disconnect(srv->irc);
 }
 
+// TODO: invoked when recv a join QUERY?
 int server_add_chat(Server *srv, const char *name, const char *passwd){
     GList *lst;
     Chat *chat;
@@ -165,15 +167,32 @@ int server_add_chat(Server *srv, const char *name, const char *passwd){
     chat->srv = srv;
     chat->me = NULL;
     chat->user_list = NULL;
-    chat->ui = sui_new_session(name, srv->name, &sui_events,
-            SIRC_IS_CHAN(name) ? SUI_SESSION_CHANNEL : SUI_SESSION_DIALOG); // ??
+    chat->ui = sui_new_session(&sui_events, SIRC_IS_CHAN(name) ?
+            SUI_SESSION_CHANNEL : SUI_SESSION_DIALOG);
+
+    if (!chat->ui){
+        goto bad;
+    }
 
     g_strlcpy(chat->name, name, sizeof(chat->name));
     g_strlcpy(chat->passwd, passwd, sizeof(chat->passwd));
 
+    sui_set_ctx(chat->ui, chat);
+    sui_start_session(chat->ui, name, srv->name);
+
     srv->chat_list = g_list_append(srv->chat_list, chat);
 
     return SRN_OK;
+
+bad:
+    if (chat->ui) {
+        sui_free_session(chat->ui);
+    }
+    if (chat){
+        g_free(chat);
+    }
+
+    return SRN_ERR;
 }
 
 int server_rm_chat(Server *srv, const char *name){

@@ -24,7 +24,7 @@ static void nick_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
         g_string_printf(cmd, "/ignore %s", nick);
         /*ui_hdr_srv_cmd(
                 srain_chat_get_srv_name(chat),
-                srain_chat_get_chat_name(chat),
+                srain_chat_get_name(chat),
                 cmd->str, 0);
                 */
         g_string_free(cmd, TRUE);
@@ -32,7 +32,7 @@ static void nick_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
     else if (strcmp(gtk_widget_get_name(widget), "kick_menu_item") == 0){
         /* ui_hdr_srv_kick(
                 srain_chat_get_srv_name(chat),
-                srain_chat_get_chat_name(chat),
+                srain_chat_get_name(chat),
                 nick, "");
                 */
     }
@@ -42,7 +42,7 @@ static void nick_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
     else if (strcmp(gtk_widget_get_name(widget), "invite_submenu_item") == 0){
         /* ui_hdr_srv_invite(
                 srain_chat_get_srv_name(chat),
-                srain_chat_get_chat_name(chat),
+                srain_chat_get_name(chat),
                 nick); */
     }
     else {
@@ -94,7 +94,7 @@ void nick_menu_popup(GdkEventButton *event, const char *nick){
 
     while (chats){
         item  = GTK_MENU_ITEM(gtk_menu_item_new_with_label(
-                    srain_chat_get_chat_name(chats->data)));
+                    srain_chat_get_name(chats->data)));
         gtk_widget_show(GTK_WIDGET(item));
         gtk_widget_set_name(GTK_WIDGET(item), "invite_submenu_item");
         g_signal_connect(item, "activate",
