@@ -16,7 +16,6 @@ Dependencies
 - gtk >= 3.16
 - python >= 3.2
 - libcurl
-- libircclient >= 1.8
 - libnotify
 
 Build & Debug
