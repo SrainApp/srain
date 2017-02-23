@@ -79,21 +79,19 @@ static void close_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
 
     chat = user_data;
 
-    // TODO:
     switch (chat->type){
         case CHAT_SERVER:
-            sui_event_hdr(chat->session, SUI_EVENT_PART, NULL, 0);
+            sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_DISCONNECT, NULL, 0);
             break;
         case CHAT_CHANNEL:
-            sui_event_hdr(chat->session, SUI_EVENT_PART, NULL, 0);
+            sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_PART, NULL, 0);
             break;
         case CHAT_PRIVATE:
-            sui_event_hdr(chat->session, SUI_EVENT_UNQUERY, NULL, 0);
+            sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_UNQUERY, NULL, 0);
             break;
         default:
             break;
     }
-
 }
 
 static gboolean entry_on_key_press(gpointer user_data, GdkEventKey *event){
@@ -186,6 +184,7 @@ static int is_blank(const char *str){
 }
 
 static void input_entry_on_activate(SrainChat *chat){
+    int count;
     char *input;
     const char *params[1];
 
@@ -193,8 +192,9 @@ static void input_entry_on_activate(SrainChat *chat){
 
     if (is_blank(input)) goto ret;
 
-    params[0] = input;
-    sui_event_hdr(chat->session, SUI_EVENT_SEND, params, 1);
+    count = 0;
+    params[count++] = input;
+    sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_SEND, params, count);
 
 ret:
     gtk_entry_set_text(chat->input_entry, "");
@@ -388,4 +388,8 @@ ChatType srain_chat_get_chat_type(SrainChat *chat){
 
 GtkMenu* srain_chat_get_menu(SrainChat *chat){
     return chat->menu;
+}
+
+SuiSession *srain_chat_get_session(SrainChat *chat){
+    return chat->session;
 }

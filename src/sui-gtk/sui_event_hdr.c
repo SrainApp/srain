@@ -32,7 +32,10 @@ void sui_event_hdr(SuiSession *sui, SuiEvent event, const char *params[], int co
             break;
 
         /* Events */
-
+        case SUI_EVENT_DISCONNECT:
+            g_return_if_fail(events->disconnect);
+            events->disconnect(sui, event, params, count);
+            break;
         case SUI_EVENT_SEND:
             g_return_if_fail(events->send);
             events->send(sui, event, params, count);

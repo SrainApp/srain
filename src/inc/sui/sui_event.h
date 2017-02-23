@@ -8,11 +8,14 @@
 typedef enum {
     SUI_EVENT_ACTIVATE,
     SUI_EVENT_CONNECT,
+    SUI_EVENT_DISCONNECT,
     SUI_EVENT_SEND,
     SUI_EVENT_JOIN,
     SUI_EVENT_PART,
     SUI_EVENT_QUERY,
     SUI_EVENT_UNQUERY,
+    SUI_EVENT_WHOIS,
+    SUI_EVENT_IGNORE,
     SUI_EVENT_KICK,
     SUI_EVENT_INVITE,
 } SuiEvent;
@@ -24,6 +27,7 @@ typedef int (*SuiEventCallback) (SuiSession *sui, SuiEvent event,
         const char *params[], int count);
 
 typedef struct {
+    SuiEventCallback disconnect;
     SuiEventCallback send;
     SuiEventCallback join;
     SuiEventCallback part;

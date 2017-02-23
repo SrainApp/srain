@@ -14,6 +14,7 @@
 #include <string.h>
 
 #include "sui_common.h"
+#include "sui_event_hdr.h"
 #include "nick_menu.h"
 #include "srain_window.h"
 #include "srain_chat.h"
@@ -83,12 +84,14 @@ static void copy_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
 }
 
 static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_data){
+    int count;
     char *sel_msg;
     char *line;
     const char *remark;
     GString *str;
     SrainChat *chat;
     SrainRecvMsg *smsg;
+    const char *params[1];
 
     smsg = SRAIN_RECV_MSG(user_data);
     if ((sel_msg = label_get_selection(smsg->msg_label)) == NULL) return;
@@ -106,24 +109,10 @@ static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_da
                 srain_chat_get_name(srain_window_get_cur_chat(srain_win)));
         line = strtok(NULL, "\n");
 
-        /*
-        ui_send_msg_sync(
-                srain_chat_get_srv_name(chat),
-                srain_chat_get_name(chat),
-                str->str, 0);
-        */
-        /*
-        if (ui_hdr_srv_send(
-                    srain_chat_get_srv_name(chat),
-                    srain_chat_get_name(chat),
-                    str->str) < 0){
-            ui_sys_msg_sync(
-                    srain_chat_get_srv_name(chat),
-                    srain_chat_get_name(chat),
-                    _("Failed to send message"),
-                    SYS_MSG_ERROR, 0);
-        }
-        */
+        count = 0;
+        params[count++] = str->str;
+        sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_SEND, params, count);
+
         g_string_free(str, TRUE);
     }
 

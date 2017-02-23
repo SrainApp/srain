@@ -1,6 +1,8 @@
 #define __DBG_ON
 #define __LOG_ON
 
+#include <string.h>
+
 #include "server.h"
 #include "ui_event.h"
 
@@ -48,8 +50,32 @@ int ui_event_activate(SuiEvent event, const char *params[], int count){
 }
 
 int ui_event_connect(SuiEvent event, const char *params[], int count){
-    PRINT_APP_EVENT_PARAM;
+    Server *srv;
 
+    PRINT_APP_EVENT_PARAM;
+    g_return_val_if_fail(count == 9, SRN_ERR);
+
+    const char *name = params[0];
+    const char *host = params[1];
+    int port = atoi(params[2]);
+    const char *passwd = params[3];
+    bool ssl = strcmp(params[4], "TRUE") == 0 ? TRUE : FALSE;
+    const char *encoding = params[5];
+    const char *nick = params[6];
+    const char *username = params[7];
+    const char *realname= params[7];
+
+    srv = server_new(name, host, port, passwd, ssl, encoding, nick, username, realname);
+    if (!srv) {
+        return SRN_ERR;
+    }
+
+    server_connect(srv);
+
+    return SRN_OK;
+}
+
+int ui_event_disconnect(SuiSession *sui, SuiEvent event, const char *params[], int count){
     return SRN_OK;
 }
 

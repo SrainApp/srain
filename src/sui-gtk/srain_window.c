@@ -13,6 +13,7 @@
 #include <assert.h>
 
 #include "sui_common.h"
+#include "sui_event_hdr.h"
 #include "theme.h"
 #include "srain_app.h"
 #include "srain_window.h"
@@ -146,24 +147,27 @@ static void popover_entry_on_activate(GtkWidget *widget, gpointer user_data){
 }
 
 static void join_button_on_click(gpointer user_data){
-    const char *chat;
+    int count;
+    const char *name;
     const char *pwd;
     JoinEntries *join_entries;
+    SrainChat *chat;
+    const char *params[2];
 
     join_entries = user_data;
 
-    chat = gtk_entry_get_text(join_entries->join_chat_entry);
+    name = gtk_entry_get_text(join_entries->join_chat_entry);
     pwd = gtk_entry_get_text(join_entries->join_pwd_entry);
+    chat = srain_window_get_cur_chat(srain_win);
 
-    /*
-     * ui_hdr_srv_join(
-            srain_chat_get_srv_name(srain_window_get_cur_chat(srain_win)),
-            chat, pwd);
-    */
+    count = 0;
+    params[count++] = name;
+    params[count++] = pwd;
+
+    sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_JOIN, params, count);
 
     gtk_entry_set_text(join_entries->join_chat_entry, "");
     gtk_entry_set_text(join_entries->join_pwd_entry, "");
-
 }
 
 static void conn_button_on_click(gpointer user_data){
@@ -175,8 +179,8 @@ static void conn_button_on_click(gpointer user_data){
     const char *passwd;
     const char *nick;
     const char *realname;
-    char *params[9];
     ConnEntries *conn_entries;
+    const char *params[9];
 
     conn_entries = user_data;
 

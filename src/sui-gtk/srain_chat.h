@@ -41,5 +41,6 @@ void srain_chat_set_nick(SrainChat *chat, const char *nick);
 const char* srain_chat_get_nick(SrainChat *chat);
 ChatType srain_chat_get_chat_type(SrainChat *chat);
 GtkMenu* srain_chat_get_menu(SrainChat *chat);
+SuiSession *srain_chat_get_session(SrainChat *chat);
 
 #endif /* __SRAIN_CHAT_H */
