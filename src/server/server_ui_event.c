@@ -4,7 +4,7 @@
 #include <string.h>
 
 #include "server.h"
-#include "ui_event.h"
+#include "server_ui_event.h"
 
 #include "sirc/sirc.h"
 
@@ -38,7 +38,7 @@
         } \
     } while (0)
 
-int ui_event_activate(SuiEvent event, const char *params[], int count){
+int server_ui_event_activate(SuiEvent event, const char *params[], int count){
     PRINT_APP_EVENT_PARAM;
 
     Server *srv = server_new("ngircd1", "127.0.0.1", 6667, "", FALSE, "UTF-8", "LA", NULL, NULL);
@@ -49,7 +49,7 @@ int ui_event_activate(SuiEvent event, const char *params[], int count){
     return SRN_OK;
 }
 
-int ui_event_connect(SuiEvent event, const char *params[], int count){
+int server_ui_event_connect(SuiEvent event, const char *params[], int count){
     Server *srv;
 
     PRINT_APP_EVENT_PARAM;
@@ -75,11 +75,11 @@ int ui_event_connect(SuiEvent event, const char *params[], int count){
     return SRN_OK;
 }
 
-int ui_event_disconnect(SuiSession *sui, SuiEvent event, const char *params[], int count){
+int server_ui_event_disconnect(SuiSession *sui, SuiEvent event, const char *params[], int count){
     return SRN_OK;
 }
 
-int ui_event_send(SuiSession *sui, SuiEvent event, const char *params[], int count){
+int server_ui_event_send(SuiSession *sui, SuiEvent event, const char *params[], int count){
     Server *srv;
     Chat *chat;
     const char *msg;
@@ -113,27 +113,27 @@ int ui_event_send(SuiSession *sui, SuiEvent event, const char *params[], int cou
     return SRN_OK;
 }
 
-int ui_event_join(SuiSession *sui, SuiEvent event, const char *params[], int count){
+int server_ui_event_join(SuiSession *sui, SuiEvent event, const char *params[], int count){
     PRINT_EVENT_PARAM;
     return SRN_OK;
 }
-int ui_event_part(SuiSession *sui, SuiEvent event, const char *params[], int count){
+int server_ui_event_part(SuiSession *sui, SuiEvent event, const char *params[], int count){
     PRINT_EVENT_PARAM;
     return SRN_OK;
 }
-int ui_event_query(SuiSession *sui, SuiEvent event, const char *params[], int count){
+int server_ui_event_query(SuiSession *sui, SuiEvent event, const char *params[], int count){
     PRINT_EVENT_PARAM;
     return SRN_OK;
 }
-int ui_event_unquery(SuiSession *sui, SuiEvent event, const char *params[], int count){
+int server_ui_event_unquery(SuiSession *sui, SuiEvent event, const char *params[], int count){
     PRINT_EVENT_PARAM;
     return SRN_OK;
 }
-int ui_event_kick(SuiSession *sui, SuiEvent event, const char *params[], int count){
+int server_ui_event_kick(SuiSession *sui, SuiEvent event, const char *params[], int count){
     PRINT_EVENT_PARAM;
     return SRN_OK;
 }
-int ui_event_invite(SuiSession *sui, SuiEvent event, const char *params[], int count){
+int server_ui_event_invite(SuiSession *sui, SuiEvent event, const char *params[], int count){
     PRINT_EVENT_PARAM;
     return SRN_OK;
 }

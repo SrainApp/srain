@@ -1,5 +1,5 @@
 /**
- * @file irc_event.c
+ * @file server_irc_event.c
  * @brief Server event callbacks
  * @author Shengyu Zhang <silverrainz@outlook.com>
  * @version 1.0
@@ -17,7 +17,7 @@
 #include <strings.h>
 
 #include "server.h"
-#include "irc_event.h"
+#include "server_irc_event.h"
 
 #include "sui/sui.h"
 
@@ -70,7 +70,7 @@
         return; \
     }
 
-void irc_event_connect(SircSession *sirc, const char *event){
+void server_irc_event_connect(SircSession *sirc, const char *event){
     Server *srv = sirc_get_ctx(sirc);
     User *user = &srv->user;
 
@@ -83,7 +83,7 @@ void irc_event_connect(SircSession *sirc, const char *event){
     sirc_cmd_user(srv->irc, user->username, "hostname", "servername", user->realname);
 }
 
-void irc_event_disconnect(SircSession *sirc, const char *event){
+void server_irc_event_disconnect(SircSession *sirc, const char *event){
     Server *srv = sirc_get_ctx(sirc);
 
     srv->stat = SERVER_DISCONNECTED;
@@ -92,12 +92,12 @@ void irc_event_disconnect(SircSession *sirc, const char *event){
             srv->name, srv->host, srv->port);
 }
 
-void irc_event_ping(SircSession *sirc, const char *event){
+void server_irc_event_ping(SircSession *sirc, const char *event){
     // Server *srv = sirc_get_ctx(sirc);
     // TODO: calc last ping time
 }
 
-void irc_event_welcome(SircSession *sirc, int event,
+void server_irc_event_welcome(SircSession *sirc, int event,
         const char *origin, const char **params, int count, const char *msg){
     // Server *srv = sirc_get_ctx(sirc);
 
@@ -106,7 +106,7 @@ void irc_event_welcome(SircSession *sirc, int event,
     sirc_cmd_join(sirc, "#srain");
 }
 
-void irc_event_nick(SircSession *sirc, const char *event,
+void server_irc_event_nick(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
     char buf[512];
@@ -139,7 +139,7 @@ void irc_event_nick(SircSession *sirc, const char *event,
     }
 }
 
-void irc_event_quit(SircSession *sirc, const char *event,
+void server_irc_event_quit(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
     char buf[512];
@@ -176,7 +176,7 @@ void irc_event_quit(SircSession *sirc, const char *event,
     }
 }
 
-void irc_event_join(SircSession *sirc, const char *event,
+void server_irc_event_join(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
     Chat *chat;
@@ -202,7 +202,7 @@ void irc_event_join(SircSession *sirc, const char *event,
     chat_log_log(srv->name, chan, buf);
 }
 
-void irc_event_part(SircSession *sirc, const char *event,
+void server_irc_event_part(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
     char buf[512];
@@ -233,7 +233,7 @@ void irc_event_part(SircSession *sirc, const char *event,
     }
 }
 
-void irc_event_mode(SircSession *sirc, const char *event,
+void server_irc_event_mode(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
     char buf[512];
@@ -290,7 +290,7 @@ void irc_event_mode(SircSession *sirc, const char *event,
     }
 }
 
-void irc_event_umode(SircSession *sirc, const char *event,
+void server_irc_event_umode(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
     char buf[512];
@@ -307,7 +307,7 @@ void irc_event_umode(SircSession *sirc, const char *event,
     // chat_log_log(srv->name, chan, buf);
 }
 
-void irc_event_topic(SircSession *sirc, const char *event,
+void server_irc_event_topic(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
     char buf[512];
@@ -328,7 +328,7 @@ void irc_event_topic(SircSession *sirc, const char *event,
     chat_log_log(srv->name, chan, buf);
 }
 
-void irc_event_kick(SircSession *sirc, const char *event,
+void server_irc_event_kick(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
     char buf[512];
@@ -359,7 +359,7 @@ void irc_event_kick(SircSession *sirc, const char *event,
     chat_log_log(srv->name, chan, buf);
 }
 
-void irc_event_channel(SircSession *sirc, const char *event,
+void server_irc_event_channel(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
     Chat *chat;
@@ -381,7 +381,7 @@ void irc_event_channel(SircSession *sirc, const char *event,
     sui_add_recv_msg(chat->ui, origin, "", msg, flag);
 }
 
-void irc_event_privmsg(SircSession *sirc, const char *event,
+void server_irc_event_privmsg(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
     Chat *chat;
@@ -399,7 +399,7 @@ void irc_event_privmsg(SircSession *sirc, const char *event,
         sui_add_recv_msg(chat->ui, origin, "", msg, 0);
 }
 
-void irc_event_notice(SircSession *sirc, const char *event,
+void server_irc_event_notice(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
     Chat *chat;
@@ -431,7 +431,7 @@ void irc_event_notice(SircSession *sirc, const char *event,
     chat_log_fmt(srv->name, target, "[%s] %s", origin, msg);
 }
 
-void irc_event_channel_notice(SircSession *sirc, const char *event,
+void server_irc_event_channel_notice(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
     Chat *chat;
@@ -444,7 +444,7 @@ void irc_event_channel_notice(SircSession *sirc, const char *event,
 
 }
 
-void irc_event_invite(SircSession *sirc, const char *event,
+void server_irc_event_invite(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
     char buf[512];
@@ -459,7 +459,7 @@ void irc_event_invite(SircSession *sirc, const char *event,
     // chat_log_log(srv->name, chan, buf);
 }
 
-void irc_event_ctcp_action(SircSession *sirc, const char *event,
+void server_irc_event_ctcp_action(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
     Chat *chat;
@@ -481,7 +481,7 @@ void irc_event_ctcp_action(SircSession *sirc, const char *event,
     chat_log_log(srv->name, chan, buf);
 }
 
-void irc_event_numeric (SircSession *sirc, int event,
+void server_irc_event_numeric (SircSession *sirc, int event,
         const char *origin, const char **params, int count, const char *msg){
     Server *srv = sirc_get_ctx(sirc);
     char buf[512];

@@ -13,8 +13,8 @@
 #include <gtk/gtk.h>
 
 #include "server.h"
-#include "irc_event.h"
-#include "ui_event.h"
+#include "server_irc_event.h"
+#include "server_ui_event.h"
 
 #include "sirc/sirc.h"
 
@@ -22,46 +22,46 @@
 #include "srain.h"
 #include "log.h"
 
-static SuiAppEvents sui_app_events;
-static SuiEvents sui_events;
-static SircEvents sirc_events;
+static SuiAppEvents ui_app_events;
+static SuiEvents ui_events;
+static SircEvents irc_events;
 static GList *server_list;
 
 void server_init(){
     /* UI event */
-    sui_events.send = ui_event_send;
-    sui_events.join = ui_event_join;
-    sui_events.part = ui_event_part;
-    sui_events.query = ui_event_query;
-    sui_events.unquery = ui_event_unquery;
-    sui_events.kick = ui_event_kick;
-    sui_events.invite = ui_event_invite;
+    ui_events.send =server_ui_event_send;
+    ui_events.join =server_ui_event_join;
+    ui_events.part =server_ui_event_part;
+    ui_events.query =server_ui_event_query;
+    ui_events.unquery =server_ui_event_unquery;
+    ui_events.kick =server_ui_event_kick;
+    ui_events.invite =server_ui_event_invite;
 
-    sui_app_events.activate = ui_event_activate;
-    sui_app_events.connect = ui_event_connect;
+    ui_app_events.activate = server_ui_event_activate;
+    ui_app_events.connect = server_ui_event_connect;
 
     /* IRC event */
-    sirc_events.connect = irc_event_connect;
-    sirc_events.disconnect = irc_event_disconnect;
-    sirc_events.ping = irc_event_ping;
-    sirc_events.welcome = irc_event_welcome;
-    sirc_events.nick = irc_event_nick;
-    sirc_events.quit = irc_event_quit;
-    sirc_events.join = irc_event_join;
-    sirc_events.part = irc_event_part;
-    sirc_events.mode = irc_event_mode;
-    sirc_events.umode = irc_event_umode;
-    sirc_events.topic = irc_event_topic;
-    sirc_events.kick = irc_event_kick;
-    sirc_events.channel = irc_event_channel;
-    sirc_events.privmsg = irc_event_privmsg;
-    sirc_events.notice = irc_event_notice;
-    sirc_events.channel_notice = irc_event_channel_notice;
-    sirc_events.invite = irc_event_invite;
-    sirc_events.ctcp_action = irc_event_ctcp_action;
-    sirc_events.numeric = irc_event_numeric;
+    irc_events.connect =server_irc_event_connect;
+    irc_events.disconnect =server_irc_event_disconnect;
+    irc_events.ping =server_irc_event_ping;
+    irc_events.welcome =server_irc_event_welcome;
+    irc_events.nick =server_irc_event_nick;
+    irc_events.quit =server_irc_event_quit;
+    irc_events.join =server_irc_event_join;
+    irc_events.part =server_irc_event_part;
+    irc_events.mode =server_irc_event_mode;
+    irc_events.umode =server_irc_event_umode;
+    irc_events.topic =server_irc_event_topic;
+    irc_events.kick =server_irc_event_kick;
+    irc_events.channel =server_irc_event_channel;
+    irc_events.privmsg =server_irc_event_privmsg;
+    irc_events.notice =server_irc_event_notice;
+    irc_events.channel_notice =server_irc_event_channel_notice;
+    irc_events.invite =server_irc_event_invite;
+    irc_events.ctcp_action =server_irc_event_ctcp_action;
+    irc_events.numeric =server_irc_event_numeric;
 
-    sui_main_loop(&sui_app_events);
+    sui_main_loop(&ui_app_events);
 }
 
 void server_finalize(){
@@ -103,8 +103,8 @@ Server* server_new(const char *name,
     g_strlcpy(srv->user.realname, realname, sizeof(srv->user.realname));
 
     /* Get UI & IRC handler */
-    srv->ui = sui_new_session(&sui_events, SUI_SESSION_SERVER);
-    srv->irc = sirc_new_session(&sirc_events);
+    srv->ui = sui_new_session(&ui_events, SUI_SESSION_SERVER);
+    srv->irc = sirc_new_session(&irc_events);
 
     if (!srv->ui || !srv->irc){
         goto bad;
@@ -175,7 +175,7 @@ int server_add_chat(Server *srv, const char *name, const char *passwd){
     chat->srv = srv;
     chat->me = NULL;
     chat->user_list = NULL;
-    chat->ui = sui_new_session(&sui_events, SIRC_IS_CHAN(name) ?
+    chat->ui = sui_new_session(&ui_events, SIRC_IS_CHAN(name) ?
             SUI_SESSION_CHANNEL : SUI_SESSION_DIALOG);
 
     if (!chat->ui){
