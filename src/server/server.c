@@ -29,37 +29,39 @@ static GList *server_list;
 
 void server_init(){
     /* UI event */
-    ui_events.send =server_ui_event_send;
-    ui_events.join =server_ui_event_join;
-    ui_events.part =server_ui_event_part;
-    ui_events.query =server_ui_event_query;
-    ui_events.unquery =server_ui_event_unquery;
-    ui_events.kick =server_ui_event_kick;
-    ui_events.invite =server_ui_event_invite;
+    ui_events.send = server_ui_event_send;
+    ui_events.join = server_ui_event_join;
+    ui_events.part = server_ui_event_part;
+    ui_events.query = server_ui_event_query;
+    ui_events.unquery = server_ui_event_unquery;
+    ui_events.kick = server_ui_event_kick;
+    ui_events.invite = server_ui_event_invite;
+    ui_events.whois = server_ui_event_whois;
+    ui_events.ignore = server_ui_event_ignore;
 
     ui_app_events.activate = server_ui_event_activate;
     ui_app_events.connect = server_ui_event_connect;
 
     /* IRC event */
-    irc_events.connect =server_irc_event_connect;
-    irc_events.disconnect =server_irc_event_disconnect;
-    irc_events.ping =server_irc_event_ping;
-    irc_events.welcome =server_irc_event_welcome;
-    irc_events.nick =server_irc_event_nick;
-    irc_events.quit =server_irc_event_quit;
-    irc_events.join =server_irc_event_join;
-    irc_events.part =server_irc_event_part;
-    irc_events.mode =server_irc_event_mode;
-    irc_events.umode =server_irc_event_umode;
-    irc_events.topic =server_irc_event_topic;
-    irc_events.kick =server_irc_event_kick;
-    irc_events.channel =server_irc_event_channel;
-    irc_events.privmsg =server_irc_event_privmsg;
-    irc_events.notice =server_irc_event_notice;
-    irc_events.channel_notice =server_irc_event_channel_notice;
-    irc_events.invite =server_irc_event_invite;
-    irc_events.ctcp_action =server_irc_event_ctcp_action;
-    irc_events.numeric =server_irc_event_numeric;
+    irc_events.connect = server_irc_event_connect;
+    irc_events.disconnect = server_irc_event_disconnect;
+    irc_events.ping = server_irc_event_ping;
+    irc_events.welcome = server_irc_event_welcome;
+    irc_events.nick = server_irc_event_nick;
+    irc_events.quit = server_irc_event_quit;
+    irc_events.join = server_irc_event_join;
+    irc_events.part = server_irc_event_part;
+    irc_events.mode = server_irc_event_mode;
+    irc_events.umode = server_irc_event_umode;
+    irc_events.topic = server_irc_event_topic;
+    irc_events.kick = server_irc_event_kick;
+    irc_events.channel = server_irc_event_channel;
+    irc_events.privmsg = server_irc_event_privmsg;
+    irc_events.notice = server_irc_event_notice;
+    irc_events.channel_notice = server_irc_event_channel_notice;
+    irc_events.invite = server_irc_event_invite;
+    irc_events.ctcp_action = server_irc_event_ctcp_action;
+    irc_events.numeric = server_irc_event_numeric;
 
     sui_main_loop(&ui_app_events);
 }

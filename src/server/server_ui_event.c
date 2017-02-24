@@ -12,35 +12,9 @@
 #include "i18n.h"
 #include "log.h"
 
-#define PRINT_EVENT_PARAM \
-    do { \
-        DBG_FR("sui: %p, event: %d", sui, event); \
-        for (int i = 0; i < count; i++){ \
-            if (i == 0) DBG_F("count: %d, params: [", count); \
-            if (i == count - 1) { \
-                DBG("%s]\n", params[i]); \
-            } else { \
-                DBG("%s ", params[i]); \
-            } \
-        } \
-    } while (0)
-
-#define PRINT_APP_EVENT_PARAM \
-    do { \
-        DBG_FR("event: %d", event); \
-        for (int i = 0; i < count; i++){ \
-            if (i == 0) DBG_F("count: %d, params: [", count); \
-            if (i == count - 1) { \
-                DBG("%s]\n", params[i]); \
-            } else { \
-                DBG("%s ", params[i]); \
-            } \
-        } \
-    } while (0)
+static int get_server_and_chat(SuiSession *sui, Server **srv, Chat **chat);
 
 int server_ui_event_activate(SuiEvent event, const char *params[], int count){
-    PRINT_APP_EVENT_PARAM;
-
     Server *srv = server_new("ngircd1", "127.0.0.1", 6667, "", FALSE, "UTF-8", "LA", NULL, NULL);
     server_connect(srv);
     Server *srv2 = server_new("ngircd2", "127.0.0.1", 6667, "", FALSE, "UTF-8", "CC", NULL, NULL);
@@ -52,7 +26,6 @@ int server_ui_event_activate(SuiEvent event, const char *params[], int count){
 int server_ui_event_connect(SuiEvent event, const char *params[], int count){
     Server *srv;
 
-    PRINT_APP_EVENT_PARAM;
     g_return_val_if_fail(count == 9, SRN_ERR);
 
     const char *name = params[0];
@@ -76,31 +49,25 @@ int server_ui_event_connect(SuiEvent event, const char *params[], int count){
 }
 
 int server_ui_event_disconnect(SuiSession *sui, SuiEvent event, const char *params[], int count){
+    Server *srv;
+
+    g_return_val_if_fail(count == 0, SRN_ERR);
+    g_return_val_if_fail(get_server_and_chat(sui, &srv, NULL) == SRN_OK, SRN_ERR);
+
+    server_disconnect(srv);
+    server_free(srv);
+
     return SRN_OK;
 }
 
 int server_ui_event_send(SuiSession *sui, SuiEvent event, const char *params[], int count){
+    const char *msg;
     Server *srv;
     Chat *chat;
-    const char *msg;
-    SuiSessionFlag flag;
 
-    flag = sui_get_flag(sui);
-    if (flag & SUI_SESSION_SERVER){
-        chat = NULL;
-        srv = sui_get_ctx(sui);
-    }
-    else if (flag & SUI_SESSION_CHANNEL || flag & SUI_SESSION_DIALOG){
-        chat = sui_get_ctx(sui);
-        srv = chat->srv;
-    } else {
-        ERR_FR("Unknow SuiSession type: %x", flag);
-        return SRN_ERR;
-    }
-
-    PRINT_EVENT_PARAM;
-
+    g_return_val_if_fail(get_server_and_chat(sui, &srv, &chat) == SRN_OK, SRN_ERR);
     g_return_val_if_fail(count == 1, SRN_ERR);
+
     msg = params[0];
 
     if (sirc_cmd_msg(srv->irc, chat->name, msg) == SRN_OK){
@@ -114,26 +81,129 @@ int server_ui_event_send(SuiSession *sui, SuiEvent event, const char *params[], 
 }
 
 int server_ui_event_join(SuiSession *sui, SuiEvent event, const char *params[], int count){
-    PRINT_EVENT_PARAM;
-    return SRN_OK;
+    const char *name;
+    const char *passwd;
+    Server *srv;
+
+    g_return_val_if_fail(get_server_and_chat(sui, &srv, NULL) == SRN_OK, SRN_ERR);
+    g_return_val_if_fail(count == 1 || count == 2, SRN_ERR);
+
+    name = params[0];
+    passwd = count == 2 ? params[1] : NULL;
+
+    return sirc_cmd_join(srv->irc, name, passwd);
 }
+
 int server_ui_event_part(SuiSession *sui, SuiEvent event, const char *params[], int count){
-    PRINT_EVENT_PARAM;
-    return SRN_OK;
+    const char *name;
+    Server *srv;
+
+    g_return_val_if_fail(get_server_and_chat(sui, &srv, NULL) == SRN_OK, SRN_ERR);
+    g_return_val_if_fail(count == 1, SRN_ERR);
+
+    name = params[0];
+
+    return sirc_cmd_part(srv->irc, name, "Leave.");
 }
+
 int server_ui_event_query(SuiSession *sui, SuiEvent event, const char *params[], int count){
-    PRINT_EVENT_PARAM;
-    return SRN_OK;
+    const char *name;
+    Server *srv;
+
+    g_return_val_if_fail(get_server_and_chat(sui, &srv, NULL) == SRN_OK, SRN_ERR);
+    g_return_val_if_fail(count == 1, SRN_ERR);
+
+    name = params[0];
+
+    return server_add_chat(srv, name, NULL);
 }
+
 int server_ui_event_unquery(SuiSession *sui, SuiEvent event, const char *params[], int count){
-    PRINT_EVENT_PARAM;
-    return SRN_OK;
+    const char *name;
+    Server *srv;
+
+    g_return_val_if_fail(get_server_and_chat(sui, &srv, NULL) == SRN_OK, SRN_ERR);
+    g_return_val_if_fail(count == 1, SRN_ERR);
+
+    name = params[0];
+
+    return server_rm_chat(srv, name);
 }
+
 int server_ui_event_kick(SuiSession *sui, SuiEvent event, const char *params[], int count){
-    PRINT_EVENT_PARAM;
+    const char *nick;
+    Server *srv;
+    Chat *chat;
+
+    g_return_val_if_fail(get_server_and_chat(sui, &srv, &chat) == SRN_OK, SRN_ERR);
+    g_return_val_if_fail(count == 1, SRN_ERR);
+
+    nick = params[0];
+
+    return sirc_cmd_kick(srv->irc, nick, chat->name, "Kick.");
+}
+
+int server_ui_event_invite(SuiSession *sui, SuiEvent event, const char *params[], int count){
+    const char *nick;
+    Server *srv;
+    Chat *chat;
+
+    g_return_val_if_fail(get_server_and_chat(sui, &srv, &chat) == SRN_OK, SRN_ERR);
+    g_return_val_if_fail(count == 1, SRN_ERR);
+
+    nick = params[0];
+
+    return sirc_cmd_invite(srv->irc, nick, chat->name);
+}
+
+int server_ui_event_whois(SuiSession *sui, SuiEvent event, const char *params[], int count){
+    const char *nick;
+    Server *srv;
+
+    g_return_val_if_fail(get_server_and_chat(sui, &srv, NULL) == SRN_OK, SRN_ERR);
+
+    g_return_val_if_fail(count == 1, SRN_ERR);
+    nick = params[0];
+
+    return sirc_cmd_whois(srv->irc, nick);
+}
+
+int server_ui_event_ignore(SuiSession *sui, SuiEvent event, const char *params[], int count){
+    const char *nick;
+
+    g_return_val_if_fail(count == 1, SRN_ERR);
+    nick = params[0];
+
+    // TODO: ignore filter
     return SRN_OK;
 }
-int server_ui_event_invite(SuiSession *sui, SuiEvent event, const char *params[], int count){
-    PRINT_EVENT_PARAM;
+
+/* Get a Server object or Chat object from SuiSession context (sui->ctx),
+ * if get a NULL value from context, SRN_ERR will be returned. */
+static int get_server_and_chat(SuiSession *sui, Server **srv, Chat **chat){
+    void *ctx;
+    SuiSessionFlag flag;
+
+    g_return_val_if_fail(sui, SRN_ERR);
+    ctx = sui_get_ctx(sui);
+    g_return_val_if_fail(ctx, SRN_ERR);
+
+    flag = sui_get_flag(sui);
+
+    if (flag & SUI_SESSION_SERVER){
+        if (chat) *chat = NULL;
+        if (srv) *srv = ctx;
+    }
+    else if (flag & SUI_SESSION_CHANNEL || flag & SUI_SESSION_DIALOG){
+        if (chat) *chat = ctx;
+        if (srv){
+            *srv = ((Chat *)ctx)->srv;
+            g_return_val_if_fail(*srv, SRN_ERR);
+        }
+    } else {
+        ERR_FR("Unknow SuiSession type: %x", flag);
+        return SRN_ERR;
+    }
+
     return SRN_OK;
 }

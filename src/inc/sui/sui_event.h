@@ -14,10 +14,10 @@ typedef enum {
     SUI_EVENT_PART,
     SUI_EVENT_QUERY,
     SUI_EVENT_UNQUERY,
-    SUI_EVENT_WHOIS,
-    SUI_EVENT_IGNORE,
     SUI_EVENT_KICK,
     SUI_EVENT_INVITE,
+    SUI_EVENT_WHOIS,
+    SUI_EVENT_IGNORE,
 } SuiEvent;
 
 typedef int (*SuiAppEventCallback) (SuiEvent event,
@@ -35,6 +35,8 @@ typedef struct {
     SuiEventCallback unquery;
     SuiEventCallback kick;
     SuiEventCallback invite;
+    SuiEventCallback whois;
+    SuiEventCallback ignore;
 } SuiEvents;
 
 typedef struct {
