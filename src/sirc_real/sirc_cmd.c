@@ -34,8 +34,12 @@ int sirc_cmd_user(SircSession *sirc, const char *username, const char *hostname,
 }
 
 // sirc_cmd_join: For joining a chan
-int sirc_cmd_join(SircSession *sirc, const char *chan){
-    return sirc_cmd_raw(sirc, "JOIN %s\r\n", chan);
+int sirc_cmd_join(SircSession *sirc, const char *chan, const char *passwd){
+    if (passwd) {
+        return sirc_cmd_raw(sirc, "JOIN %s :%s\r\n", chan, passwd);
+    } else {
+        return sirc_cmd_raw(sirc, "JOIN %s\r\n", chan);
+    }
 }
 
 // sirc_cmd_part: For leaving a chan
