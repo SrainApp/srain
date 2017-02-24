@@ -20,10 +20,10 @@ typedef enum {
     SUI_EVENT_IGNORE,
 } SuiEvent;
 
-typedef int (*SuiAppEventCallback) (SuiEvent event,
+typedef void (*SuiAppEventCallback) (SuiEvent event,
         const char *params[], int count);
 
-typedef int (*SuiEventCallback) (SuiSession *sui, SuiEvent event,
+typedef void (*SuiEventCallback) (SuiSession *sui, SuiEvent event,
         const char *params[], int count);
 
 typedef struct {
