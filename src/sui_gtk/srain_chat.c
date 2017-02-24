@@ -14,6 +14,7 @@
 
 #include "sui/sui.h"
 #include "sui_common.h"
+#include "sui_event_hdr.h"
 #include "srain_chat.h"
 #include "srain_entry_completion.h"
 #include "srain_msg_list.h"

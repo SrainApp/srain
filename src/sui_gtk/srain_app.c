@@ -12,6 +12,7 @@
 
 #include "theme.h"
 #include "sui_common.h"
+#include "sui_event_hdr.h"
 #include "srain_app.h"
 #include "srain_window.h"
 

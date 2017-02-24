@@ -10,7 +10,7 @@
 
 static void nick_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
     int count;
-    char *params[1];
+    const char *params[1];
     const char *nick;
     SrainChat *chat;
 

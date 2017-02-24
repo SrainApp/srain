@@ -61,12 +61,6 @@ SuiSession *sui_new_session(SuiEvents *events, SuiSessionFlag flag){
     sui->events = events;
 
     return sui;
-
-bad:
-    if (sui) {
-        sui_free_session(sui);
-    }
-    return NULL;
 }
 
 void sui_free_session(SuiSession *sui){
