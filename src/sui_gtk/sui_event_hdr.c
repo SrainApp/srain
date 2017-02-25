@@ -1,7 +1,9 @@
+// #define __DBG_ON
 #define __LOG_ON
 
 #include "sui_event_hdr.h"
 
+#include "srain.h"
 #include "log.h"
 
 /* extern from sui.c */
@@ -10,7 +12,19 @@ extern SuiAppEvents *app_events;
 void sui_event_hdr(SuiSession *sui, SuiEvent event, const char *params[], int count){
     SuiEvents *events;
 
-    LOG_FR("sui: %p, event: %d", sui, event);
+    /* Debug output and parameters check */
+    bool nullparam = FALSE;
+    DBG_FR("sui: %p, event: %d", sui, event);
+    for (int i = 0; i < count; i++){
+        if (i == 0) DBG_F("count: %d, params: [", count);
+        if (i == count - 1) {
+            DBG("%s]\n", params[i]);
+        } else {
+            DBG("%s ", params[i]);
+        }
+        if (!params[i]) nullparam = TRUE;
+    }
+    g_return_if_fail(!nullparam);
 
     if (sui){
         events = sui_get_events(sui);
@@ -64,5 +78,15 @@ void sui_event_hdr(SuiSession *sui, SuiEvent event, const char *params[], int co
             g_return_if_fail(events->invite);
             events->invite(sui, event, params, count);
             break;
+        case SUI_EVENT_WHOIS:
+            g_return_if_fail(events->whois);
+            events->whois(sui, event, params, count);
+            break;
+        case SUI_EVENT_IGNORE:
+            g_return_if_fail(events->ignore);
+            events->ignore(sui, event, params, count);
+            break;
+        default:
+            ERR_FR("No such SuiEvent: %d", event);
     }
 }

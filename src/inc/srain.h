@@ -2,6 +2,7 @@
 #define __SRAIN_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 /* General result value */
 #define SRN_OK      0

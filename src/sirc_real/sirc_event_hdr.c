@@ -7,12 +7,14 @@
  *
  */
 
+// #define __DBG_ON
 #define __LOG_ON
 
 #include <string.h>
 
 #include "sirc_event_hdr.h"
 
+#include "srain.h"
 #include "log.h"
 
 static void sirc_ctcp_event_hdr(SircSession *sirc, SircMessage *imsg);
@@ -23,6 +25,11 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
     SircEvents *events;
 
     events = sirc_get_events(sirc);
+
+    if (imsg->type != SIRC_MSG_MESSAGE) {
+        DBG_FR("Miscellaneous messages, sirc: %p, type: %d, msg: %s",
+                sirc, imsg->type, imsg->msg);
+    };
 
     /* Miscellaneous messages */
     switch (imsg->type){
@@ -40,6 +47,21 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
 
     num = atoi(imsg->cmd);
     origin = imsg->nick ? imsg->nick : imsg->prefix;
+
+    /* Debug output and parameters check */
+    bool nullparam = FALSE;
+    DBG_FR("sirc: %p, event: %s, origin: %s", sirc, imsg->cmd, origin);
+    DBG_FR("msg: %s", imsg->msg);
+    for (int i = 0; i < imsg->nparam; i++){
+        if (i == 0) DBG_F("count: %d, params: [", imsg->nparam);
+        if (i == imsg->nparam - 1) {
+            DBG("%s]\n", imsg->params[i]);
+        } else {
+            DBG("%s ", imsg->params[i]);
+        }
+        if (!imsg->params[i]) nullparam = TRUE;
+    }
+    g_return_if_fail(!nullparam);
 
     if (num != 0) {
         /* Numeric command */
