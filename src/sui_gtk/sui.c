@@ -24,8 +24,6 @@
 #include "log.h"
 #include "meta.h"
 
-#define SUI_NAME_LEN 128
-
 struct _SuiSession{
     SrainChat *chat;
 
@@ -37,6 +35,8 @@ struct _SuiSession{
 SuiAppEvents *app_events = NULL;
 
 void sui_main_loop(SuiAppEvents *events){
+    g_return_if_fail(events);
+
     app_events = events;
 
     theme_init();
@@ -53,6 +53,8 @@ void sui_proc_pending_event(){
 
 SuiSession *sui_new_session(SuiEvents *events, SuiSessionFlag flag){
     SuiSession *sui;
+
+    g_return_val_if_fail(events, NULL);
 
     sui = g_malloc0(sizeof(SuiSession));
 
@@ -75,6 +77,10 @@ void sui_free_session(SuiSession *sui){
 int sui_start_session(SuiSession *sui, const char *name, const char *remark){
     ChatType type;
     SuiSessionFlag flag;
+
+    g_return_val_if_fail(sui, SRN_ERR);
+    g_return_val_if_fail(name, SRN_ERR);
+    g_return_val_if_fail(remark, SRN_ERR);
 
     flag = sui->flag;
     if (flag & SUI_SESSION_SERVER) {
@@ -100,12 +106,14 @@ int sui_start_session(SuiSession *sui, const char *name, const char *remark){
 }
 
 void sui_end_session(SuiSession *sui){
+    g_return_if_fail(sui);
+
     srain_window_rm_chat(srain_win, sui->chat);
     sui->chat = NULL;
 }
 
 SuiSessionFlag sui_get_flag(SuiSession *sui){
-    g_return_val_if_fail(sui, 0);
+    g_return_val_if_fail(sui, 0); // TODO: return 0 or SRN_ERR?
 
     return sui->flag;
 }
@@ -135,7 +143,6 @@ void sui_set_name(SuiSession *sui, const char *name){
     srain_chat_set_name(sui->chat, name);
 }
 
-
 void sui_set_remark(SuiSession *sui, const char *remark){
     g_return_if_fail(sui);
     g_return_if_fail(remark);
@@ -144,10 +151,14 @@ void sui_set_remark(SuiSession *sui, const char *remark){
 }
 
 void sui_add_sys_msg(SuiSession *sui, const char *msg, SysMsgType type, SrainMsgFlag flag){
-    SrainChat *chat = sui->chat;
+    SrainChat *chat;
     SrainMsgList *list;
 
-    if (!chat){
+    g_return_if_fail(sui);
+    g_return_if_fail(msg);
+
+    chat = sui->chat;
+    if (!chat){ // TODO: remove it ?
         if (type == SYS_MSG_ERROR){
             char buf[512];
             snprintf(buf, sizeof(buf), _("<b>Session:</b> %s\n<b>Error message:</b> %s"),
@@ -172,6 +183,9 @@ void sui_add_sys_msgf(SuiSession *sui, SysMsgType type, SrainMsgFlag flag,
     char buf[512];
     va_list args;
 
+    g_return_if_fail(sui);
+    g_return_if_fail(fmt);
+
     va_start(args, fmt);
     vsnprintf(buf, sizeof(buf) - 1, fmt, args);
     va_end(args);
@@ -180,8 +194,13 @@ void sui_add_sys_msgf(SuiSession *sui, SysMsgType type, SrainMsgFlag flag,
 }
 
 void sui_add_sent_msg(SuiSession *sui, const char *msg, SrainMsgFlag flag){
-    SrainChat *chat = sui->chat;
+    SrainChat *chat;
     SrainMsgList *list;
+
+    g_return_if_fail(msg);
+
+    g_return_if_fail(sui);
+    chat = sui->chat;
 
     g_return_if_fail(SRAIN_IS_CHAT(chat));
 
@@ -193,9 +212,16 @@ void sui_add_sent_msg(SuiSession *sui, const char *msg, SrainMsgFlag flag){
 
 void sui_add_recv_msg(SuiSession *sui, const char *nick, const char *id,
         const char *msg, SrainMsgFlag flag){
-    SrainChat *chat = sui->chat;
+    SrainChat *chat;
     SrainMsgList *list;
     SrainEntryCompletion *comp;
+
+    g_return_if_fail(nick);
+    g_return_if_fail(id);
+    g_return_if_fail(msg);
+
+    g_return_if_fail(sui);
+    chat = sui->chat;
 
     g_return_if_fail(SRAIN_IS_CHAT(chat));
 
@@ -213,9 +239,14 @@ void sui_add_recv_msg(SuiSession *sui, const char *nick, const char *id,
 
 int sui_add_user(SuiSession *sui, const char *nick, UserType type){
     int res;
-    SrainChat *chat = sui->chat;
+    SrainChat *chat;
     SrainUserList *list;
     SrainEntryCompletion *comp;
+
+    g_return_val_if_fail(nick, SRN_ERR);
+
+    g_return_val_if_fail(sui, SRN_ERR);
+    chat = sui->chat;
 
     g_return_val_if_fail(SRAIN_IS_CHAT(chat), SRN_ERR);
 
@@ -231,9 +262,14 @@ int sui_add_user(SuiSession *sui, const char *nick, UserType type){
 
 int sui_rm_user(SuiSession *sui, const char *nick){
     int res;
-    SrainChat *chat = sui->chat;
+    SrainChat *chat;
     SrainUserList *list;
     SrainEntryCompletion *comp;
+
+    g_return_val_if_fail(nick, SRN_ERR);
+
+    g_return_val_if_fail(sui, SRN_ERR);
+    chat = sui->chat;
 
     g_return_val_if_fail(SRAIN_IS_CHAT(chat), SRN_ERR);
 
@@ -249,9 +285,15 @@ int sui_rm_user(SuiSession *sui, const char *nick){
 
 void sui_ren_user(SuiSession *sui, const char *old_nick, const char *new_nick,
         UserType type){
-    SrainChat *chat = sui->chat;
+    SrainChat *chat;
     SrainUserList *list;
     SrainEntryCompletion *comp;
+
+    g_return_if_fail(old_nick);
+    g_return_if_fail(new_nick);
+
+    g_return_if_fail(sui);
+    chat = sui->chat;
 
     g_return_if_fail(SRAIN_IS_CHAT(chat));
 
@@ -270,7 +312,10 @@ void sui_ren_user(SuiSession *sui, const char *old_nick, const char *new_nick,
 }
 
 void sui_set_topic(SuiSession *sui, const char *topic){
-    SrainChat *chat = sui->chat;
+    SrainChat *chat;
+
+    g_return_if_fail(sui);
+    chat = sui->chat;
 
     g_return_if_fail(SRAIN_IS_CHAT(chat));
 
