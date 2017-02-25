@@ -53,7 +53,11 @@ static int idle_sirc_on_disconnect(SircSession *sirc);
 static int idle_sirc_recv(SircSession *sirc);
 
 SircSession* sirc_new_session(SircEvents *events){
-    SircSession *sirc = g_malloc0(sizeof(SircSession));
+    SircSession *sirc;
+
+    g_return_val_if_fail(events, NULL);
+
+    sirc = g_malloc0(sizeof(SircSession));
 
     sirc->fd = -1;
     sirc->events = events;
@@ -64,6 +68,8 @@ SircSession* sirc_new_session(SircEvents *events){
 }
 
 void sirc_free_session(SircSession *sirc){
+    g_return_if_fail(sirc);
+
     if (sirc->fd != -1){
         sirc_disconnect(sirc);
     }
@@ -72,22 +78,34 @@ void sirc_free_session(SircSession *sirc){
 }
 
 int sirc_get_fd(SircSession *sirc){
+    g_return_val_if_fail(sirc, -1);
+
     return sirc->fd;
 }
 
 SircEvents *sirc_get_events(SircSession *sirc){
+    g_return_val_if_fail(sirc, NULL);
+
     return sirc->events;
 }
 
 void sirc_set_ctx(SircSession *sirc, void *ctx){
+    g_return_if_fail(sirc);
+
     sirc->ctx = ctx;
 }
 
 void* sirc_get_ctx(SircSession *sirc){
+    g_return_val_if_fail(sirc, NULL);
+
     return sirc->ctx;
 }
 
 void sirc_connect(SircSession *sirc, const char *host, int port){
+    g_return_if_fail(sirc);
+    g_return_if_fail(host);
+    g_return_if_fail(port > 0);
+
     ThreadData *td = g_malloc0(sizeof(ThreadData)); // Free by th_irc_connect
 
     td->sirc = sirc;
@@ -98,6 +116,8 @@ void sirc_connect(SircSession *sirc, const char *host, int port){
 }
 
 void sirc_disconnect(SircSession *sirc){
+    g_return_if_fail(sirc);
+
     close(sirc->fd);
     sirc->fd = -1;
 }

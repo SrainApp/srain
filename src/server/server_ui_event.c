@@ -86,13 +86,12 @@ void server_ui_event_join(SuiSession *sui, SuiEvent event, const char *params[],
 void server_ui_event_part(SuiSession *sui, SuiEvent event, const char *params[], int count){
     const char *name;
     Server *srv;
+    Chat *chat;
 
-    g_return_if_fail(count == 1);
-    name = params[0];
+    g_return_if_fail(count == 0);
+    g_return_if_fail(get_server_and_chat(sui, &srv, &chat) == SRN_OK);
 
-    g_return_if_fail(get_server_and_chat(sui, &srv, NULL) == SRN_OK);
-
-    sirc_cmd_part(srv->irc, name, "Leave.");
+    sirc_cmd_part(srv->irc, chat->name, "Leave.");
 }
 
 void server_ui_event_query(SuiSession *sui, SuiEvent event, const char *params[], int count){
