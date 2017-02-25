@@ -219,6 +219,7 @@ int server_rm_chat(Server *srv, const char *name){
             srv->chat_list = g_list_delete_link(srv->chat_list, lst);
             return SRN_OK;
         }
+        lst = g_list_next(lst);
     }
 
     return SRN_ERR;
