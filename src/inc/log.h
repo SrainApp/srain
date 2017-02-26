@@ -6,8 +6,8 @@
 
 #define DBG_PROMPT      "\e[37m[ DBG]\e[0m [%s]\t"
 #define INFO_PROMPT     "\e[32m[INFO]\e[0m [%s]\t"
-#define WARN_PROMPT     "\e[33m[WARN] [%s]\t"
-#define ERR_PROMPT      "\e[31m[ ERR] [%s]\t"
+#define WARN_PROMPT     "\e[33m[WARN]\e[0m [%s]\t"
+#define ERR_PROMPT      "\e[31m[ ERR]\e[0m [%s]\t"
 
 #ifdef __DBG_ON
     #define DBG_FR(...) _DBG_FR(__VA_ARGS__)
