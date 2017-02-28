@@ -47,8 +47,6 @@ void plugin_init(){
     PyObject *py_module;
     PyObject *py_func;
 
-    LOG_FR("...");
-
     Py_Initialize();
     PyEval_InitThreads();
 
@@ -100,8 +98,6 @@ void plugin_init(){
 
 void plugin_finalize(){
     int i;
-
-    LOG_FR("...");
 
     for (i = 0; i < PLUGIN_COUNT; i++){
         if (plugins[i].func){

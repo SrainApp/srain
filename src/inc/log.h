@@ -4,10 +4,10 @@
 #include <stdlib.h>
 #include <glib.h>
 
-#define DBG_PROMPT      "\e[37m[ DBG]\e[0m [%s]\t"
-#define INFO_PROMPT     "\e[32m[INFO]\e[0m [%s]\t"
-#define WARN_PROMPT     "\e[33m[WARN]\e[0m [%s]\t"
-#define ERR_PROMPT      "\e[31m[ ERR]\e[0m [%s]\t"
+#define DBG_PROMPT      "\e[37m[ DBG %s]\e[0m "
+#define INFO_PROMPT     "\e[32m[INFO %s]\e[0m "
+#define WARN_PROMPT     "\e[33m[WARN %s]\e[0m "
+#define ERR_PROMPT      "\e[31m[ ERR %s]\e[0m "
 
 #ifdef __DBG_ON
     #define DBG_FR(...) _DBG_FR(__VA_ARGS__)

@@ -113,7 +113,8 @@ void sui_end_session(SuiSession *sui){
 }
 
 SuiSessionFlag sui_get_flag(SuiSession *sui){
-    g_return_val_if_fail(sui, 0); // TODO: return 0 or SRN_ERR?
+    /* Don't return SRN_ERR(-1 0xffffffff) */
+    g_return_val_if_fail(sui, 0);
 
     return sui->flag;
 }

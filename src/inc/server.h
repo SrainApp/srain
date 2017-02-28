@@ -17,8 +17,6 @@
 #define CHAN_LEN        200
 #define MSG_LEN         512
 
-#define BUF_LEN         512
-
 typedef struct {
     char nick[NICK_LEN];
     char username[NICK_LEN];
