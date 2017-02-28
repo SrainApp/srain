@@ -26,6 +26,7 @@
 
 struct _SircSession {
     int fd;
+    SircSessionFlag flag;
     char buf[SIRC_BUF_LEN];
     GMutex mutex;  // Buffer lock
 
@@ -52,7 +53,7 @@ static int idle_sirc_on_connect(SircSession *sirc);
 static int idle_sirc_on_disconnect(SircSession *sirc);
 static int idle_sirc_recv(SircSession *sirc);
 
-SircSession* sirc_new_session(SircEvents *events){
+SircSession* sirc_new_session(SircEvents *events, SircSessionFlag flag){
     SircSession *sirc;
 
     g_return_val_if_fail(events, NULL);
@@ -60,6 +61,7 @@ SircSession* sirc_new_session(SircEvents *events){
     sirc = g_malloc0(sizeof(SircSession));
 
     sirc->fd = -1;
+    sirc->flag = flag;
     sirc->events = events;
 
     g_mutex_init(&sirc->mutex);
@@ -81,6 +83,13 @@ int sirc_get_fd(SircSession *sirc){
     g_return_val_if_fail(sirc, -1);
 
     return sirc->fd;
+}
+
+SircSessionFlag sirc_get_flag(SircSession *sirc){
+    /* Don't return SRN_ERR(-1 0xffffffff) */
+    g_return_val_if_fail(sirc, 0);
+
+    return sirc->flag;
 }
 
 SircEvents *sirc_get_events(SircSession *sirc){
@@ -117,6 +126,7 @@ void sirc_connect(SircSession *sirc, const char *host, int port){
 
 void sirc_disconnect(SircSession *sirc){
     g_return_if_fail(sirc);
+    g_return_if_fail(sirc->fd != -1);
 
     close(sirc->fd);
     sirc->fd = -1;
