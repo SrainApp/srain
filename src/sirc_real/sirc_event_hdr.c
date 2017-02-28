@@ -68,12 +68,14 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
         switch (num){
             case SIRC_RFC_RPL_WELCOME:
                 events->welcome(sirc, num, origin, imsg->params, imsg->nparam, imsg->msg);
+                /* Do not break here */
             default:
                 events->numeric(sirc, num, origin, imsg->params, imsg->nparam, imsg->msg);
         }
      } else {
         /* Named command */
          const char* event = imsg->cmd;
+
          if (strcmp(event, "PRIVMSG") == 0){
              /* Check for CTCP request (starts and ends with 0x01) */
              int len = strlen(imsg->msg);
@@ -81,18 +83,14 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
                  sirc_ctcp_event_hdr(sirc, imsg);
                  return;
              }
-             switch (imsg->nparam) {
-                 case 0:
-                     /* User message */
-                     events->privmsg(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
-                     break;
-                 case 1:
-                     /* Channel message */
-                     events->channel(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
-                     break;
-                 default:
-                     ERR_FR("PRIVMSG has extra parameters");
-                     break;
+
+             g_return_if_fail(imsg->nparam >= 1);
+             if (SIRC_IS_CHAN(imsg->params[0])){
+                 /* Channel message */
+                 events->channel(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
+             } else {
+                 /* User message */
+                 events->privmsg(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
              }
          }
          else if (strcmp(event, "JOIN") == 0){
@@ -108,18 +106,13 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
              events->nick(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
          }
          else if (strcmp(event, "MODE") == 0){
-             switch (imsg->nparam) {
-                 case 1:
-                     /* User mode changed */
-                     events->mode(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
-                     break;
-                 case 2:
-                     /* Channel mode changed */
-                     events->umode(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
-                     break;
-                 default:
-                     ERR_FR("MODE has extra parameters");
-                     break;
+             g_return_if_fail(imsg->nparam >= 1);
+             if (SIRC_IS_CHAN(imsg->params[0])){
+                 /* Channel mode changed */
+                 events->mode(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
+             } else {
+                 /* User mode changed */
+                 events->umode(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
              }
          }
          else if (strcmp(event, "TOPIC") == 0){
@@ -129,7 +122,14 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
              events->kick(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
          }
          else if (strcmp(event, "NOTICE") == 0){
-             events->notice(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
+             g_return_if_fail(imsg->nparam >= 1);
+             if (SIRC_IS_CHAN(imsg->params[0])){
+                 /* Channel notice changed */
+                 events->channel_notice(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
+             } else {
+                 /* User notice message */
+                 events->notice(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
+             }
          }
          else if (strcmp(event, "INVITE") == 0){
              events->invite(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
