@@ -67,6 +67,9 @@ static void strip(char *str){
 int sirc_parse(char *line, SircMessage *imsg){
     memset(imsg, 0, sizeof(SircMessage));
 
+    DBG_FR("raw: %s", line);
+
+    // TODO: process miscellaneous message in a general way
     /* Miscellaneous messages check */
     if (strncmp(line, "PING :", sizeof("PING :") - 1) == 0){
         imsg->msg = line + sizeof("PING :") - 1;
@@ -98,13 +101,11 @@ int sirc_parse(char *line, SircMessage *imsg){
 
         // <message> ::= [':' <prefix> <SPACE> ] <command> <params> <crlf>
         // <params> ::= <SPACE> [ ':' <trailing> | <middle> <params> ]
-        prefix_ptr = strtok(line + 1, " ");
+        prefix_ptr = strtok(line + 1, " "); // Skip ':'
         command_ptr = strtok(NULL, " ");
         middle_ptr = strtok(NULL, "");
 
         if (!prefix_ptr || !command_ptr || !middle_ptr) goto bad;
-        trailing_ptr = strstr(middle_ptr, " :");
-
         imsg->cmd = command_ptr;
         DBG_FR("command: %s", imsg->cmd);
 
@@ -123,31 +124,36 @@ int sirc_parse(char *line, SircMessage *imsg){
         }
 
         // <params> ::= <SPACE> [ ':' <trailing> | <middle> <params> ]
-        /* If no trailing */
-        if (trailing_ptr){
-            /* A message may be separated in different irc message */
-            *trailing_ptr = '\0';   // Prevent influence by param parse
-            imsg->msg = trailing_ptr + 2;
-            DBG_FR("message: %s", imsg->msg);
-        } else if (middle_ptr[0] == ':'){
+
+        if (middle_ptr[0] == ':'){
+            /* params have only one element, it is a trailing */
+
             imsg->msg = middle_ptr + 1;
-            DBG_FR("message(no param): %s", imsg->msg);
+            imsg->nparam = 0;
+        } else {
+            trailing_ptr = strstr(middle_ptr, " :");
+            if (trailing_ptr){
+                /* trailing exists in params */
+                *trailing_ptr = '\0';   // Prevent influenced from split params
+                imsg->msg = trailing_ptr + 2;
+            }
+
+            /* Split params which don't contain trailing */
+            DBG_F("params: ");
+            middle_ptr = strtok(middle_ptr, " ");
+            do {
+                imsg->params[imsg->nparam++] = middle_ptr;
+                DBG("%s(%d) ", imsg->params[imsg->nparam-1], imsg->nparam);
+                if (imsg->nparam > SIRC_PARAM_COUNT - 1){
+                    ERR_FR("Too many params: %s", line);
+                    goto bad;
+                }
+            } while ((middle_ptr = strtok(NULL, " ")) != NULL);
+            DBG("\n");
         }
 
-        DBG_F("param: ");
-        middle_ptr = strtok(middle_ptr, " ");
-        do {
-            if (middle_ptr[0] == ':') break;
-            imsg->params[imsg->nparam++] = middle_ptr;
-            DBG("%s(%d) ", imsg->params[imsg->nparam-1], imsg->nparam);
-            if (imsg->nparam > SIRC_PARAM_COUNT - 1){
-                ERR_FR("Too many params: %s", line);
-                goto bad;
-            }
-        } while ((middle_ptr = strtok(NULL, " ")) != NULL);
-        DBG("\n");
+        DBG_FR("message: %s", imsg->msg);
 
-        // strip(imsg->msg); // TODO
         imsg->type = SIRC_MSG_MESSAGE;
 
         return SRN_OK;
