@@ -147,26 +147,37 @@ void server_irc_event_quit(SircSession *sirc, const char *event,
 
 void server_irc_event_join(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count, const char *msg){
+    bool youjoin;
     char buf[512];
     Server *srv;
     Chat *chat;
 
     g_return_if_fail(srv = sirc_get_ctx(sirc));
-    g_return_if_fail(count >= 0);
-    g_return_if_fail(msg);
+    g_return_if_fail(msg || count >= 1);
 
-    const char *chan = msg;
+    const char *chan = msg ? msg : params[0];
 
     /* You has join a channel */
-    if (strncasecmp(srv->user.nick, origin, NICK_LEN) == 0){
+    youjoin = (strncasecmp(srv->user.nick, origin, NICK_LEN) == 0);
+
+    if (youjoin) {
         server_add_chat(srv, chan, NULL);
     }
 
     g_return_if_fail(chat = server_get_chat(srv, chan));
 
+    if (youjoin) {
+        chat->joined = TRUE;
+    }
+
     chat_add_user(chat, origin, USER_CHIGUA);
 
-    snprintf(buf, sizeof(buf), _("%s has joined"), origin);
+    if (youjoin) {
+        snprintf(buf, sizeof(buf), _("You has joined"));
+    } else {
+        snprintf(buf, sizeof(buf), _("%s has joined"), origin);
+    }
+
     sui_add_sys_msg(chat->ui, buf, SYS_MSG_NORMAL, 0);
     chat_log_log(srv->name, chan, buf);
 }
@@ -198,31 +209,41 @@ void server_irc_event_part(SircSession *sirc, const char *event,
 
     /* You has left a channel */
     if (strncasecmp(srv->user.nick, origin, NICK_LEN) == 0){
+        chat->joined = FALSE;
         server_rm_chat(srv, chan);
     }
 }
 
 void server_irc_event_mode(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count, const char *msg){
-    char buf[512];
+    GString *buf;
     Server *srv;
     Chat *chat;
 
-    g_return_if_fail(count >= 2);
+    g_return_if_fail(count >= 1);
 
     const char *chan = params[0];
-    const char *mode = params[1];
-    const char *mode_args = msg;
 
     g_return_if_fail(srv = sirc_get_ctx(sirc));
     g_return_if_fail(chat = server_get_chat(srv, chan));
 
-    snprintf(buf, sizeof(buf), _("mode %s %s %s by %s"),
-            chan, mode, mode_args, origin);
+    buf = g_string_new(NULL);
+    g_string_printf(buf, _("mode %s "), chan);
+    for (int i = 1; i < count; i++) {
+        g_string_append_printf(buf, "%s ", params[i]);
+    }
 
-    sui_add_sys_msg(chat->ui, buf, SYS_MSG_NORMAL, 0);
-    chat_log_log(srv->name, chan, buf);
+    if (msg) {
+        g_string_append_printf(buf, "%s ", msg);
+    }
 
+    g_string_append_printf(buf, _("by %s"), origin);
+
+    sui_add_sys_msg(chat->ui, buf->str, SYS_MSG_NORMAL, 0);
+    chat_log_log(srv->name, chan, buf->str);
+
+    /* TODO: parse more modes */
+    /*
     if (mode[0] == '-'){
         // sui_ren_user(srv->name, chan, mode_args, mode_args, USER_CHIGUA);
         // TODO
@@ -256,23 +277,38 @@ void server_irc_event_mode(SircSession *sirc, const char *event,
         ERR_FR("Wrong mode: %s. chan: %s, mode_args: %s",
                 mode, chan, mode_args);
     }
+    */
+
+    g_string_free(buf, TRUE);
 }
 
 void server_irc_event_umode(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count, const char *msg){
-    char buf[512];
+    GString *buf;
     Server *srv;
 
     g_return_if_fail(srv = sirc_get_ctx(sirc));
     g_return_if_fail(count >= 1);
 
-    const char *mode = params[0];
+    const char *nick = params[0];
 
-    snprintf(buf, sizeof(buf), _("mode %s %s by %s"), origin, mode, origin);
+    buf = g_string_new(NULL);
+    g_string_printf(buf, _("mode %s "), nick);
+    for (int i = 1; i < count; i++) {
+        g_string_append_printf(buf, "%s ", params[i]);
+    }
 
-    sui_add_sys_msg(srv->ui, buf, SYS_MSG_NORMAL, 0);
+    if (msg) {
+        g_string_append_printf(buf, "%s ", msg);
+    }
+
+    g_string_append_printf(buf, _("by %s"), origin);
+
+    sui_add_sys_msg(srv->ui, buf->str, SYS_MSG_NORMAL, 0);
     // TODO: How to log it?
     // chat_log_log(srv->name, chan, buf);
+
+    g_string_free(buf, TRUE);
 }
 
 void server_irc_event_topic(SircSession *sirc, const char *event,
@@ -375,22 +411,16 @@ void server_irc_event_notice(SircSession *sirc, const char *event,
 
     chat = server_get_chat(srv, target);
 
-    if (strncasecmp(srv->user.nick, target, sizeof(srv->user.nick) - 1) == 0){
-        /* NOTICE from user*/
+    SuiSession *ui = chat ? chat->ui : srv->ui;
+
+    if (strcmp(origin, "NickServ") == 0
+            || strcmp(origin, "ChanServ") == 0){
         /* FIXME: Freenode specified :-(
          * This notice messaage is sent by Freenode's offical bot
          */
-        SuiSession *ui = chat ? chat->ui : srv->ui;
-        if (strcmp(origin, "NickServ") == 0
-                || strcmp(origin, "ChanServ") == 0){
-            sui_add_recv_msg(ui, origin, srv->name, msg, 0);
-        } else {
-            sui_add_recv_msg(ui, origin, "", msg, 0);
-        }
+        sui_add_recv_msg(ui, origin, srv->name, msg, 0);
     } else {
-        /* NOTICE from channel */
-        g_return_if_fail(chat);
-        sui_add_recv_msg(chat->ui, origin, "", msg, 0);
+        sui_add_recv_msg(ui, origin, "", msg, 0);
     }
 
     chat_log_fmt(srv->name, target, "[%s] %s", origin, msg);
@@ -407,6 +437,8 @@ void server_irc_event_channel_notice(SircSession *sirc, const char *event,
 
     g_return_if_fail(srv = sirc_get_ctx(sirc));
     g_return_if_fail(chat = server_get_chat(srv, chan));
+
+    sui_add_recv_msg(chat->ui, origin, "", msg, 0);
 }
 
 void server_irc_event_invite(SircSession *sirc, const char *event,

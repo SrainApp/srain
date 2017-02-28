@@ -38,6 +38,7 @@ void server_init(){
     ui_events.invite = server_ui_event_invite;
     ui_events.whois = server_ui_event_whois;
     ui_events.ignore = server_ui_event_ignore;
+    ui_events.disconnect = server_ui_event_disconnect;
 
     ui_app_events.activate = server_ui_event_activate;
     ui_app_events.connect = server_ui_event_connect;
@@ -106,7 +107,7 @@ Server* server_new(const char *name,
 
     /* Get UI & IRC handler */
     srv->ui = sui_new_session(&ui_events, SUI_SESSION_SERVER);
-    srv->irc = sirc_new_session(&irc_events);
+    srv->irc = sirc_new_session(&irc_events, 0);
 
     if (!srv->ui || !srv->irc){
         goto bad;
@@ -124,10 +125,15 @@ bad:
 }
 
 void server_free(Server *srv){
+    Chat *chat;
+
     if (srv->chat_list != NULL){
         while (srv->chat_list) {
-            Chat *chat = srv->chat_list->data;
-            server_rm_chat(srv, chat->name);
+            chat = srv->chat_list->data;
+            chat->joined = FALSE; // required by server_rm_chat()
+            if (server_rm_chat(srv, chat->name) != SRN_OK){
+                break;
+            }
         }
     }
 
@@ -152,17 +158,20 @@ int server_connect(Server *srv){
 }
 
 void server_disconnect(Server *srv){
-    srv->stat = SERVER_DISCONNECTED;
-    sirc_disconnect(srv->irc);
+    if (srv->stat == SERVER_CONNECTED) {
+        sirc_disconnect(srv->irc);
+    }
 }
 
 // TODO: invoked when recv a join QUERY?
 int server_add_chat(Server *srv, const char *name, const char *passwd){
     GList *lst;
     Chat *chat;
+    bool ischan;
 
     if (!passwd) passwd = "";
 
+    ischan = SIRC_IS_CHAN(name);
     lst = srv->chat_list;
     while (lst) {
         chat = lst->data;
@@ -174,11 +183,12 @@ int server_add_chat(Server *srv, const char *name, const char *passwd){
 
     chat = g_malloc0(sizeof(Chat));
 
+    chat->joined = FALSE;
     chat->srv = srv;
     chat->me = NULL;
     chat->user_list = NULL;
-    chat->ui = sui_new_session(&ui_events, SIRC_IS_CHAN(name) ?
-            SUI_SESSION_CHANNEL : SUI_SESSION_DIALOG);
+    chat->ui = sui_new_session(&ui_events,
+            ischan ? SUI_SESSION_CHANNEL : SUI_SESSION_DIALOG);
 
     if (!chat->ui){
         goto bad;
@@ -213,10 +223,13 @@ int server_rm_chat(Server *srv, const char *name){
     while (lst) {
         chat = lst->data;
         if (strcasecmp(chat->name, name) == 0){
+            g_return_val_if_fail(!chat->joined, SRN_ERR);
+
             sui_free_session(chat->ui);
-            // rm user_list
+            // TODO: rm user_list
             g_free(chat);
             srv->chat_list = g_list_delete_link(srv->chat_list, lst);
+
             return SRN_OK;
         }
         lst = g_list_next(lst);

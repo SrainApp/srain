@@ -17,7 +17,7 @@ static int get_server_and_chat(SuiSession *sui, Server **srv, Chat **chat);
 void server_ui_event_activate(SuiEvent event, const char *params[], int count){
     Server *srv = server_new("ngircd1", "127.0.0.1", 6667, "", FALSE, "UTF-8", "LA", NULL, NULL);
     server_connect(srv);
-    Server *srv2 = server_new("ngircd2", "127.0.0.1", 6667, "", FALSE, "UTF-8", "CC", NULL, NULL);
+    Server *srv2 = server_new("freenode", "irc.freenode.net", 6667, "", FALSE, "UTF-8", "srainbot", NULL, NULL);
     if (srv2) server_connect(srv2);
 }
 
@@ -84,14 +84,17 @@ void server_ui_event_join(SuiSession *sui, SuiEvent event, const char *params[],
 }
 
 void server_ui_event_part(SuiSession *sui, SuiEvent event, const char *params[], int count){
-    const char *name;
     Server *srv;
     Chat *chat;
 
     g_return_if_fail(count == 0);
     g_return_if_fail(get_server_and_chat(sui, &srv, &chat) == SRN_OK);
 
-    sirc_cmd_part(srv->irc, chat->name, "Leave.");
+    if (chat->joined) {
+        sirc_cmd_part(srv->irc, chat->name, "Leave.");
+    } else {
+        server_rm_chat(srv, chat->name);
+    }
 }
 
 void server_ui_event_query(SuiSession *sui, SuiEvent event, const char *params[], int count){
@@ -107,15 +110,12 @@ void server_ui_event_query(SuiSession *sui, SuiEvent event, const char *params[]
 }
 
 void server_ui_event_unquery(SuiSession *sui, SuiEvent event, const char *params[], int count){
-    const char *name;
     Server *srv;
+    Chat *chat;
 
-    g_return_if_fail(count == 1);
-    name = params[0];
+    g_return_if_fail(get_server_and_chat(sui, &srv, &chat) == SRN_OK);
 
-    g_return_if_fail(get_server_and_chat(sui, &srv, NULL) == SRN_OK);
-
-    server_rm_chat(srv, name);
+    server_rm_chat(srv, chat->name);
 }
 
 void server_ui_event_kick(SuiSession *sui, SuiEvent event, const char *params[], int count){
