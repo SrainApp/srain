@@ -284,19 +284,20 @@ int sui_rm_user(SuiSession *sui, const char *nick){
     return res;
 }
 
-void sui_ren_user(SuiSession *sui, const char *old_nick, const char *new_nick,
+int sui_ren_user(SuiSession *sui, const char *old_nick, const char *new_nick,
         UserType type){
+    int ret;
     SrainChat *chat;
     SrainUserList *list;
     SrainEntryCompletion *comp;
 
-    g_return_if_fail(old_nick);
-    g_return_if_fail(new_nick);
+    g_return_val_if_fail(old_nick, SRN_ERR);
+    g_return_val_if_fail(new_nick, SRN_ERR);
 
-    g_return_if_fail(sui);
+    g_return_val_if_fail(sui, SRN_ERR);
     chat = sui->chat;
 
-    g_return_if_fail(SRAIN_IS_CHAT(chat));
+    g_return_val_if_fail(SRAIN_IS_CHAT(chat), SRN_ERR);
 
     /* Your nick changed */
     if (strcmp(old_nick, srain_chat_get_nick(chat)) == 0){
@@ -305,11 +306,15 @@ void sui_ren_user(SuiSession *sui, const char *old_nick, const char *new_nick,
 
     list = srain_chat_get_user_list(chat);
 
-    if (srain_user_list_rename(list, old_nick, new_nick, type) == 0){
+    ret = srain_user_list_rename(list, old_nick, new_nick, type);
+
+    if (ret == SRN_OK){
         comp = srain_chat_get_entry_completion(chat);
         srain_entry_completion_add_keyword(comp, old_nick, KEYWORD_NORMAL);
         srain_entry_completion_rm_keyword(comp, new_nick);
     }
+
+    return ret;
 }
 
 void sui_set_topic(SuiSession *sui, const char *topic){

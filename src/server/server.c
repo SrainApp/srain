@@ -10,6 +10,7 @@
 // #define __DBG_ON
 
 #include <string.h>
+#include <strings.h>
 #include <gtk/gtk.h>
 
 #include "server.h"
@@ -271,6 +272,7 @@ int chat_add_user(Chat *chat, const char *nick, UserType type){
 
     user->me = FALSE;
     user->type = type;
+    user->chat = chat;
 
     g_strlcpy(user->nick, nick, sizeof(user->nick));
     // g_strlcpy(user->username, username, sizeof(user->username));
@@ -316,4 +318,26 @@ User* chat_get_user(Chat *chat, const char *nick){
     }
 
     return NULL;
+}
+
+int user_rename(User *user, const char *new_nick){
+    /* Update UI status */
+    if (user->chat) {
+        sui_ren_user(user->chat->ui, user->nick, new_nick, user->type);
+    }
+
+    g_strlcpy(user->nick, new_nick, sizeof(user->nick));
+
+    return SRN_OK;
+}
+
+int user_set_type(User *user, UserType type){
+    /* Update UI status */
+    if (user->chat) {
+        return sui_ren_user(user->chat->ui, user->nick, user->nick, type);
+    }
+
+    user->type = type;
+
+    return SRN_OK;
 }

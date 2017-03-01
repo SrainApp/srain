@@ -92,19 +92,18 @@ void server_irc_event_nick(SircSession *sirc, const char *event,
     lst = srv->chat_list;
     while (lst){
         chat = lst->data;
-        // TODO: dialog support
-        if ((user = chat_get_user(chat, origin)) != NULL){
-            g_strlcpy(user->nick, new_nick, sizeof(user->nick));
-            sui_ren_user(chat->ui, old_nick, new_nick, user->type);
-
-            sui_add_sys_msg(chat->ui, buf, SYS_MSG_NORMAL, 0);
-            chat_log_log(srv->name, chat->name, buf);
+        // TODO: dialog nick track support
+        if ((user = chat_get_user(chat, old_nick)) != NULL){
+            if (user_rename(user, new_nick) == SRN_OK){
+                sui_add_sys_msg(chat->ui, buf, SYS_MSG_NORMAL, 0);
+                chat_log_log(srv->name, chat->name, buf);
+            }
         }
         lst = g_list_next(lst);
     }
 
-    if (strncasecmp(origin, srv->user.nick, NICK_LEN) == 0){
-        g_strlcpy(srv->user.nick, new_nick, sizeof(srv->user.nick));
+    if (strncasecmp(old_nick, srv->user.nick, NICK_LEN) == 0){
+        user_rename(&srv->user, old_nick);
     }
 }
 
@@ -244,39 +243,6 @@ void server_irc_event_mode(SircSession *sirc, const char *event,
 
     /* TODO: parse more modes */
     /*
-    if (mode[0] == '-'){
-        // sui_ren_user(srv->name, chan, mode_args, mode_args, USER_CHIGUA);
-        // TODO
-    }
-    else if (mode[0] == '+'){
-        switch (mode[1]){
-            case 'q':
-                // sui_ren_user(srv->name, chan, mode_args, mode_args,
-                // USER_OWNER);
-                break;
-            case 'a':
-                // sui_ren_user(srv->name, chan, mode_args, mode_args,
-                // USER_ADMIN);
-                break;
-            case 'o':
-                // sui_ren_user(srv->name, chan, mode_args, mode_args,
-                // USER_FULL_OP);
-                break;
-            case 'h':
-                // sui_ren_user(srv->name, chan, mode_args, mode_args,
-                // USER_HALF_OP);
-                break;
-            case 'v':
-                // sui_ren_user(srv->name, chan, mode_args, mode_args,
-                // USER_VOICED);
-                break;
-            default:
-                break;
-        }
-    } else {
-        ERR_FR("Wrong mode: %s. chan: %s, mode_args: %s",
-                mode, chan, mode_args);
-    }
     */
 
     g_string_free(buf, TRUE);

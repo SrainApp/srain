@@ -17,14 +17,10 @@
 #define CHAN_LEN        200
 #define MSG_LEN         512
 
-typedef struct {
-    char nick[NICK_LEN];
-    char username[NICK_LEN];
-    char realname[NICK_LEN];
-
-    bool me;
-    UserType type;
-} User;
+typedef struct _User User;
+typedef struct _Chat Chat;
+typedef struct _Server Server;
+typedef struct _ServerInfo ServerInfo;
 
 typedef enum {
     SERVER_UNCONNECTED,
@@ -33,16 +29,30 @@ typedef enum {
     SERVER_DISCONNECTED,
 } ServerStatus;
 
-typedef struct {
-    char name[NAME_LEN];
-    char host[HOST_LEN];
-    int port;
-    char passwd[PASSWD_LEN];
-    bool ssl;
-    char *encoding;
-} ServerInfo;
+struct _User {
+    char nick[NICK_LEN];
+    char username[NICK_LEN];
+    char realname[NICK_LEN];
 
-typedef struct {
+    bool me;
+    UserType type;
+
+    Chat *chat;
+};
+
+/* Represent a channel or dialog */
+struct _Chat {
+    char name[CHAN_LEN];
+    char passwd[PASSWD_LEN];
+    bool joined;
+    User *me;
+    GList *user_list;
+
+    Server *srv;
+    SuiSession *ui;
+};
+
+struct _Server {
     /* Server profile */
     char name[NAME_LEN];
     char host[HOST_LEN];
@@ -58,26 +68,16 @@ typedef struct {
     volatile ServerStatus stat;
     SuiSession *ui;
     SircSession *irc;
-} Server;
+};
 
-/* Represent a channel or dialog */
-typedef struct {
-    char name[CHAN_LEN];
+struct _ServerInfo {
+    char name[NAME_LEN];
+    char host[HOST_LEN];
+    int port;
     char passwd[PASSWD_LEN];
-    bool joined;
-    User *me;
-    GList *user_list;
-
-    Server *srv;
-    SuiSession *ui;
-} Chat;
-
-typedef struct {
-    User sender;
-    char content[MSG_LEN];
-
-    // Channel *sess;
-} Message;
+    bool ssl;
+    char *encoding;
+};
 
 void server_init();
 void server_finalize();
@@ -96,5 +96,8 @@ Chat* server_get_chat(Server *srv, const char *name);
 int chat_add_user(Chat *chat, const char *nick, UserType type);
 int chat_rm_user(Chat *chat, const char *nick);
 User* chat_get_user(Chat *chat, const char *nick);
+
+int user_rename(User *user, const char *new_nick);
+int user_set_type(User *user, UserType type);
 
 #endif /* __SRV_H */
