@@ -1,12 +1,12 @@
 /**
  * @file rc.c
- * @brief run command file reader
+ * @brief Run command from file
  * @author Shengyu Zhang <silverrainz@outlook.com>
  * @version 1.0
  * @date 2016-03-01
  *
- * read $DESTDIR/srain/srainrc or $XDG_CONFIG_HOME/srain/srainrc,
- * call `srv_cmd()` for every line
+ * Read $DESTDIR/srain/srainrc or $XDG_CONFIG_HOME/srain/srainrc,
+ * call `server_cmd()` for every line
  */
 
 #define __LOG_ON
@@ -16,12 +16,15 @@
 #include <gtk/gtk.h>
 #include <sys/stat.h>
 
+#include "server_cmd.h"
+
+#include "srain.h"
 #include "meta.h"
 #include "i18n.h"
 #include "log.h"
 #include "file_helper.h"
 
-void _rc_read(){
+int rc_read(){
     FILE *fp;
     char *line;
     size_t len;
@@ -29,10 +32,9 @@ void _rc_read(){
     char *rc_file;
 
     rc_file = get_config_file("srainrc");
-    if (!rc_file) return;
+    if (!rc_file) return SRN_ERR;
 
     fp = fopen(rc_file, "r");
-
 
     if (!fp){
         ERR_FR("Failed to open %s", rc_file);
@@ -44,42 +46,16 @@ void _rc_read(){
     len = 0;
     line = NULL;
     while ((read = getline(&line, &len, fp)) != -1) {
-        if (line){
+        if (line && line[0] != '#'){
             strtok(line, "\n");
-            LOG_FR("Read: '%s'", line);
-            /* if (srv_cmd(NULL, NULL, line, 1) < 0){
+            if (server_cmd(NULL, NULL, line) != SRN_OK){
                 ERR_FR("Command failed: %s", line);
-
-                char msg[512];
-                snprintf(msg, sizeof(msg), _("Command \"%s\" failed"), line);
-                // ui_sys_msg(_("Null"), "", msg, SYS_MSG_ERROR, 0);
                 break;
             }
-            */
         }
     }
 
     if (line) free(line);
+
     fclose(fp);
-}
-
-int rc_read(){
-    char *rc_file;
-    struct stat st;
-
-    rc_file = get_config_file("srainrc");
-    if (!rc_file) return -1;
-
-    if (stat(rc_file, &st) != 0) {
-        g_free(rc_file);
-        return -1;
-    }
-
-    g_free(rc_file);
-
-    if (st.st_size == 0) return -1;
-
-    g_thread_new(NULL, (GThreadFunc)_rc_read, NULL);
-
-    return 0;
 }

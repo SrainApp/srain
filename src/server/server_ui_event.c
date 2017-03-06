@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "server.h"
+#include "server_cmd.h"
 #include "server_ui_event.h"
 
 #include "sirc/sirc.h"
@@ -11,14 +12,13 @@
 #include "srain.h"
 #include "i18n.h"
 #include "log.h"
+#include "rc.h"
 
 static int get_server_and_chat(SuiSession *sui, Server **srv, Chat **chat);
 
 void server_ui_event_activate(SuiEvent event, const char *params[], int count){
-    Server *srv = server_new("ngircd1", "127.0.0.1", 6667, "", FALSE, "UTF-8", "LA", NULL, NULL);
-    server_connect(srv);
-    Server *srv2 = server_new("freenode", "irc.freenode.net", 6667, "", FALSE, "UTF-8", "srainbot", NULL, NULL);
-    if (srv2) server_connect(srv2);
+    rc_read();
+    // TODO: welcome or command error report
 }
 
 void server_ui_event_connect(SuiEvent event, const char *params[], int count){
@@ -61,11 +61,19 @@ void server_ui_event_send(SuiSession *sui, SuiEvent event, const char *params[],
 
     g_return_if_fail(get_server_and_chat(sui, &srv, &chat) == SRN_OK);
 
-    if (sirc_cmd_msg(srv->irc, chat->name, msg) == SRN_OK){
-        sui_add_sent_msg(sui, msg, 0);
+    // Command or message?
+    if (msg[0] == '/'){
+        if (server_cmd(srv, chat, msg) == SRN_OK){
+            sui_add_sys_msgf(sui, SYS_MSG_NORMAL, 0,
+                    _("Command \"%s\" finished"), msg);
+        }
     } else {
-        sui_add_sys_msgf(sui, SYS_MSG_ERROR, 0,
-                _("Failed to send message \"%s\""), msg);
+        if (sirc_cmd_msg(srv->irc, chat->name, msg) == SRN_OK){
+            sui_add_sent_msg(sui, msg, 0);
+        } else {
+            sui_add_sys_msgf(sui, SYS_MSG_ERROR, 0,
+                    _("Failed to send message \"%s\""), msg);
+        }
     }
 }
 

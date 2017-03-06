@@ -28,6 +28,7 @@
 #include "meta.h"
 #include "chat_log.h"
 #include "plugin.h"
+#include "decorator.h"
 
 void server_irc_event_connect(SircSession *sirc, const char *event){
     Server *srv;
@@ -68,10 +69,6 @@ void server_irc_event_welcome(SircSession *sirc, int event,
     Server *srv;
 
     g_return_if_fail(srv = sirc_get_ctx(sirc));
-
-    // TODO: temp, remove me
-    sirc_cmd_join(sirc, "#test", NULL);
-    sirc_cmd_join(sirc, "#srain", NULL);
 }
 
 void server_irc_event_nick(SircSession *sirc, const char *event,
@@ -332,6 +329,8 @@ void server_irc_event_channel(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count, const char *msg){
     Server *srv;
     Chat *chat;
+    User *user;
+    Message *message;
 
     g_return_if_fail(msg);
     g_return_if_fail(count >= 1);
@@ -340,12 +339,14 @@ void server_irc_event_channel(SircSession *sirc, const char *event,
     g_return_if_fail(srv = sirc_get_ctx(sirc));
     g_return_if_fail(chat = server_get_chat(srv, chan));
 
+    user = chat_get_user(chat, origin);
+    message = message_new(user, msg, chat);
+
+    decorate_message(message, DECORATOR_MIRC_STRIP, NULL);
+
     chat_log_fmt(srv->name, chan, "<%s> %s", origin, msg);
 
-    // TODO relay filter
-    int flag = 0;
-    flag |= strstr(msg, srv->user.nick) ? SRAIN_MSG_MENTIONED : 0;
-    sui_add_recv_msg(chat->ui, origin, "", msg, flag);
+    sui_add_recv_msg(chat->ui, message->dname, "", message->dcontent, 0);
 }
 
 void server_irc_event_privmsg(SircSession *sirc, const char *event,
@@ -360,7 +361,7 @@ void server_irc_event_privmsg(SircSession *sirc, const char *event,
 
     chat_log_fmt(srv->name, origin, "<%s> %s", origin, msg);
 
-    if (!filter_is_ignore(origin) && !filter_filter_check_message(NULL, origin, msg))
+    // if (!filter_is_ignore(origin) && !filter_filter_check_message(NULL, origin, msg))
         sui_add_recv_msg(chat->ui, origin, "", msg, 0);
 }
 
