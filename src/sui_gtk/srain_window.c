@@ -46,7 +46,7 @@ struct _SrainWindow {
     GtkApplicationWindow parent;
 
     // Header
-    GtkButton *about_button;
+    GtkButton *start_popover_button;
     GtkButton *conn_popover_button;
     GtkButton *join_popover_button;
     GtkSpinner *spinner;
@@ -58,6 +58,12 @@ struct _SrainWindow {
     GtkMenu *tray_menu;
     GtkMenuItem *about_menu_item;
     GtkMenuItem *quit_menu_item;
+
+    // start_popover
+    GtkPopover *start_popover;
+    GtkButton *prefs_button;
+    GtkButton *about_button;
+    GtkButton *exit_button;
 
     // join_popover
     GtkPopover *join_popover;
@@ -279,8 +285,8 @@ static void srain_window_init(SrainWindow *self){
             G_CALLBACK(monitor_active_window), NULL);
 
     // Click to show/hide GtkPopover
-    g_signal_connect_swapped(self->about_button, "clicked",
-            G_CALLBACK(show_about_dialog), self);
+    g_signal_connect_swapped(self->start_popover_button, "clicked",
+            G_CALLBACK(popover_button_on_click), self->start_popover);
     g_signal_connect_swapped(self->join_popover_button, "clicked",
             G_CALLBACK(popover_button_on_click), self->join_popover);
     g_signal_connect_swapped(self->conn_popover_button, "clicked",
@@ -289,6 +295,9 @@ static void srain_window_init(SrainWindow *self){
             G_CALLBACK(popover_button_on_click), self->join_popover);
     g_signal_connect_swapped(self->conn_button, "clicked",
             G_CALLBACK(popover_button_on_click), self->conn_popover);
+
+    g_signal_connect_swapped(self->about_button, "clicked",
+            G_CALLBACK(show_about_dialog), self);
 
     // Click to submit entries' messages
     g_signal_connect_swapped(self->join_button, "clicked",
@@ -334,7 +343,7 @@ static void srain_window_init(SrainWindow *self){
 static void srain_window_class_init(SrainWindowClass *class){
     gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
             "/org/gtk/srain/window.glade");
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, about_button);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, start_popover_button);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, join_popover_button);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, conn_popover_button);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, spinner);
@@ -344,8 +353,12 @@ static void srain_window_class_init(SrainWindowClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, quit_menu_item);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, about_menu_item);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, sidebar_box);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, start_popover);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, join_popover);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, conn_popover);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, prefs_button);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, about_button);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, exit_button);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, join_chat_entry);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, join_pwd_entry);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, join_button);
