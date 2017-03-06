@@ -14,7 +14,8 @@
 #include "log.h"
 #include "rc.h"
 
-static int get_server_and_chat(SuiSession *sui, Server **srv, Chat **chat);
+static Server* ctx_get_server(SuiSession *sui);
+static Chat* ctx_get_chat(SuiSession *sui);
 
 void server_ui_event_activate(SuiEvent event, const char *params[], int count){
     rc_read();
@@ -45,7 +46,9 @@ void server_ui_event_disconnect(SuiSession *sui, SuiEvent event, const char *par
     Server *srv;
 
     g_return_if_fail(count == 0);
-    g_return_if_fail(get_server_and_chat(sui, &srv, NULL) == SRN_OK);
+
+    srv = ctx_get_server(sui);
+    g_return_if_fail(srv);
 
     server_disconnect(srv);
     server_free(srv);
@@ -59,7 +62,9 @@ void server_ui_event_send(SuiSession *sui, SuiEvent event, const char *params[],
     g_return_if_fail(count == 1);
     msg = params[0];
 
-    g_return_if_fail(get_server_and_chat(sui, &srv, &chat) == SRN_OK);
+    srv = ctx_get_server(sui);
+    chat = ctx_get_chat(sui);
+    g_return_if_fail(srv);
 
     // Command or message?
     if (msg[0] == '/'){
@@ -68,11 +73,15 @@ void server_ui_event_send(SuiSession *sui, SuiEvent event, const char *params[],
                     _("Command \"%s\" finished"), msg);
         }
     } else {
-        if (sirc_cmd_msg(srv->irc, chat->name, msg) == SRN_OK){
-            sui_add_sent_msg(sui, msg, 0);
+        if (chat) {
+            if (sirc_cmd_msg(srv->irc, chat->name, msg) == SRN_OK){
+                sui_add_sent_msg(sui, msg, 0);
+            } else {
+                sui_add_sys_msgf(sui, SYS_MSG_ERROR, 0,
+                        _("Failed to send message \"%s\""), msg);
+            }
         } else {
-            sui_add_sys_msgf(sui, SYS_MSG_ERROR, 0,
-                    _("Failed to send message \"%s\""), msg);
+            sui_add_sys_msg(sui, _("Can not send message to a server"), SYS_MSG_ERROR, 0);
         }
     }
 }
@@ -86,7 +95,8 @@ void server_ui_event_join(SuiSession *sui, SuiEvent event, const char *params[],
     name = params[0];
     passwd = count == 2 ? params[1] : NULL;
 
-    g_return_if_fail(get_server_and_chat(sui, &srv, NULL) == SRN_OK);
+    srv = ctx_get_server(sui);
+    g_return_if_fail(srv);
 
     sirc_cmd_join(srv->irc, name, passwd);
 }
@@ -96,7 +106,8 @@ void server_ui_event_part(SuiSession *sui, SuiEvent event, const char *params[],
     Chat *chat;
 
     g_return_if_fail(count == 0);
-    g_return_if_fail(get_server_and_chat(sui, &srv, &chat) == SRN_OK);
+    srv = ctx_get_server(sui);
+    g_return_if_fail(srv);
 
     if (chat->joined) {
         sirc_cmd_part(srv->irc, chat->name, "Leave.");
@@ -112,7 +123,8 @@ void server_ui_event_query(SuiSession *sui, SuiEvent event, const char *params[]
     g_return_if_fail(count == 1);
     name = params[0];
 
-    g_return_if_fail(get_server_and_chat(sui, &srv, NULL) == SRN_OK);
+    srv = ctx_get_server(sui);
+    g_return_if_fail(srv);
 
     server_add_chat(srv, name, NULL);
 }
@@ -121,7 +133,10 @@ void server_ui_event_unquery(SuiSession *sui, SuiEvent event, const char *params
     Server *srv;
     Chat *chat;
 
-    g_return_if_fail(get_server_and_chat(sui, &srv, &chat) == SRN_OK);
+    srv = ctx_get_server(sui);
+    chat = ctx_get_chat(sui);
+    g_return_if_fail(srv);
+    g_return_if_fail(chat);
 
     server_rm_chat(srv, chat->name);
 }
@@ -134,7 +149,10 @@ void server_ui_event_kick(SuiSession *sui, SuiEvent event, const char *params[],
     g_return_if_fail(count == 1);
     nick = params[0];
 
-    g_return_if_fail(get_server_and_chat(sui, &srv, &chat) == SRN_OK);
+    srv = ctx_get_server(sui);
+    chat = ctx_get_chat(sui);
+    g_return_if_fail(srv);
+    g_return_if_fail(chat);
 
     sirc_cmd_kick(srv->irc, nick, chat->name, "Kick.");
 }
@@ -147,7 +165,10 @@ void server_ui_event_invite(SuiSession *sui, SuiEvent event, const char *params[
     g_return_if_fail(count == 1);
     nick = params[0];
 
-    g_return_if_fail(get_server_and_chat(sui, &srv, &chat) == SRN_OK);
+    srv = ctx_get_server(sui);
+    chat = ctx_get_chat(sui);
+    g_return_if_fail(srv);
+    g_return_if_fail(chat);
 
     sirc_cmd_invite(srv->irc, nick, chat->name);
 }
@@ -159,7 +180,8 @@ void server_ui_event_whois(SuiSession *sui, SuiEvent event, const char *params[]
     g_return_if_fail(count == 1);
     nick = params[0];
 
-    g_return_if_fail(get_server_and_chat(sui, &srv, NULL) == SRN_OK);
+    srv = ctx_get_server(sui);
+    g_return_if_fail(srv);
 
     sirc_cmd_whois(srv->irc, nick);
 }
@@ -173,32 +195,43 @@ void server_ui_event_ignore(SuiSession *sui, SuiEvent event, const char *params[
     // TODO: ignore filter
 }
 
-/* Get a Server object or Chat object from SuiSession context (sui->ctx),
- * if get a NULL value from context, SRN_ERR will be returned. */
-static int get_server_and_chat(SuiSession *sui, Server **srv, Chat **chat){
+/* Get a Server object SuiSession context (sui->ctx) */
+static Server* ctx_get_server(SuiSession *sui){
     void *ctx;
+    Chat *chat;
     SuiSessionFlag flag;
 
-    g_return_val_if_fail(sui, SRN_ERR);
     ctx = sui_get_ctx(sui);
-    g_return_val_if_fail(ctx, SRN_ERR);
+    g_return_val_if_fail(ctx, NULL);
 
     flag = sui_get_flag(sui);
 
     if (flag & SUI_SESSION_SERVER){
-        if (chat) *chat = NULL;
-        if (srv) *srv = ctx;
+        return ctx;
     }
     else if (flag & SUI_SESSION_CHANNEL || flag & SUI_SESSION_DIALOG){
-        if (chat) *chat = ctx;
-        if (srv){
-            *srv = ((Chat *)ctx)->srv;
-            g_return_val_if_fail(*srv, SRN_ERR);
-        }
-    } else {
-        ERR_FR("Unknow SuiSession type: %x", flag);
-        return SRN_ERR;
+        chat = ctx;
+        return chat->srv;
     }
 
-    return SRN_OK;
+    return NULL;
+}
+/* Get a Chat object SuiSession context (sui->ctx) */
+static Chat* ctx_get_chat(SuiSession *sui){
+    void *ctx;
+    SuiSessionFlag flag;
+
+    ctx = sui_get_ctx(sui);
+    g_return_val_if_fail(ctx, NULL);
+
+    flag = sui_get_flag(sui);
+
+    if (flag & SUI_SESSION_SERVER){
+        return NULL;
+    }
+    else if (flag & SUI_SESSION_CHANNEL || flag & SUI_SESSION_DIALOG){
+        return ctx;
+    }
+
+    return NULL;
 }
