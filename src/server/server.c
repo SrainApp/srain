@@ -65,6 +65,8 @@ void server_init(){
     irc_events.ctcp_action = server_irc_event_ctcp_action;
     irc_events.numeric = server_irc_event_numeric;
 
+    server_cmd_init();
+
     sui_main_loop(&ui_app_events);
 }
 
@@ -272,7 +274,7 @@ int chat_add_user(Chat *chat, const char *nick, UserType type){
 
     user->me = FALSE;
     user->type = type;
-    user->chat = chat;
+    // user->chat = chat;
 
     g_strlcpy(user->nick, nick, sizeof(user->nick));
     // g_strlcpy(user->username, username, sizeof(user->username));
@@ -322,9 +324,9 @@ User* chat_get_user(Chat *chat, const char *nick){
 
 int user_rename(User *user, const char *new_nick){
     /* Update UI status */
-    if (user->chat) {
-        sui_ren_user(user->chat->ui, user->nick, new_nick, user->type);
-    }
+    // if (user->chat) {
+        // sui_ren_user(user->chat->ui, user->nick, new_nick, user->type);
+    // }
 
     g_strlcpy(user->nick, new_nick, sizeof(user->nick));
 
@@ -333,11 +335,67 @@ int user_rename(User *user, const char *new_nick){
 
 int user_set_type(User *user, UserType type){
     /* Update UI status */
-    if (user->chat) {
-        return sui_ren_user(user->chat->ui, user->nick, user->nick, type);
-    }
+    // if (user->chat) {
+        // TODO:
+        // return sui_ren_user(user->chat->ui, user->nick, user->nick, type);
+    // }
 
     user->type = type;
 
     return SRN_OK;
+}
+
+Message* message_new(User *origin, const char *content, Context *ctx){
+    Message *msg;
+
+    g_return_val_if_fail(content, NULL);
+
+    msg = g_malloc0(sizeof(Message));
+
+    msg->origin = origin;
+    if (origin) {
+        msg->dname = g_strdup(origin->nick);
+    }
+    // msg->role = NULL; // via g_malloc0()
+    msg->content = g_strdup(content);
+    msg->dcontent = g_strdup(content);
+    LOG_FR(": %s", msg->dcontent);
+    // msg->time = ...;
+    msg->mentioned = FALSE;
+    msg->ctx = ctx;
+    // msg->urls = NULL; // via  g_malloc0()
+    // msg->ui = NULL; // via  g_malloc0()
+
+    return msg;
+}
+
+void message_free(Message *msg){
+    g_return_if_fail(msg);
+
+    if (msg->origin) {
+        // Free User? NO.
+    }
+
+    if (msg->urls) {
+        // TODO
+    }
+
+    if (msg->dname) {
+        g_free(msg->dname);
+    }
+
+    if (msg->role) {
+        g_free(msg->role);
+    }
+
+    if (msg->content) {
+        g_free(msg->content);
+    }
+
+    if (msg->dcontent) {
+        g_free(msg->dcontent);
+    }
+    // if (msg->ui) {...}
+
+    g_free(msg);
 }

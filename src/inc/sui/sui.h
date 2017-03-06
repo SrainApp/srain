@@ -37,6 +37,7 @@ typedef int SrainMsgFlag;
 #undef __IN_SUI_H
 
 void sui_main_loop(SuiAppEvents *events);
+void sui_proc_pending_event();
 
 SuiSession *sui_new_session(SuiEvents *events, SuiSessionFlag flag);
 void sui_free_session(SuiSession *sui);

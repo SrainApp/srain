@@ -15,9 +15,10 @@
 #define SERVER_LEN      128
 #define USER_LEN        128
 #define CHAN_LEN        200
-#define MSG_LEN         512
 
+typedef struct _Message Message;
 typedef struct _User User;
+typedef struct _Context Context;
 typedef struct _Chat Chat;
 typedef struct _Server Server;
 typedef struct _ServerInfo ServerInfo;
@@ -29,6 +30,17 @@ typedef enum {
     SERVER_DISCONNECTED,
 } ServerStatus;
 
+typedef enum {
+    CONTEXT_SERVER,
+    CONTEXT_CHANNEL,
+    CONTEXT_DIALOG,
+} ContextType;
+
+/* Maybe a Server or Chat */
+struct _Context {
+    ContextType type;
+};
+
 struct _User {
     char nick[NICK_LEN];
     char username[NICK_LEN];
@@ -37,22 +49,45 @@ struct _User {
     bool me;
     UserType type;
 
-    Chat *chat;
+    Context *ctx;
+    // SuiUser *ui;
+};
+
+struct _Message {
+    User *origin;   // Originator of this message, often refers to an existing user
+    char *dname;    // Decorated name, maybe contains xml tags
+    char *role;     // The role of the message originator
+
+    char *content;
+    char *dcontent; // Decorated message content
+    time_t time;
+    bool mentioned;
+
+    Context *ctx;
+    GList *urls;     // URLs contains in message, like "http://xxx", "irc://xxx"
+    // SuiMessage *ui;
 };
 
 /* Represent a channel or dialog */
 struct _Chat {
+    ContextType type;   // CONTEXT_CHANNEL or CONTEXT_DIALOG
+
     char name[CHAN_LEN];
     char passwd[PASSWD_LEN];
     bool joined;
     User *me;
+
     GList *user_list;
+    GList *ignore_list;
+    GList *relaybot_list;
 
     Server *srv;
     SuiSession *ui;
 };
 
 struct _Server {
+    ContextType type;   // Always CONTEXT_SERVER
+
     /* Server profile */
     char name[NAME_LEN];
     char host[HOST_LEN];
@@ -62,14 +97,18 @@ struct _Server {
     char *encoding;
 
     time_t last_ping;
-    GList *chat_list;
     User user;
+
+    GList *chat_list;
+    GList *ignore_list;
+    GList *relaybot_list;
 
     volatile ServerStatus stat;
     SuiSession *ui;
     SircSession *irc;
 };
 
+// TODO: member of Server
 struct _ServerInfo {
     char name[NAME_LEN];
     char host[HOST_LEN];
@@ -100,4 +139,7 @@ User* chat_get_user(Chat *chat, const char *nick);
 int user_rename(User *user, const char *new_nick);
 int user_set_type(User *user, UserType type);
 
+
+Message* message_new(User *origin, const char *content, Context *ctx);
+void message_free(Message *msg);
 #endif /* __SRV_H */
