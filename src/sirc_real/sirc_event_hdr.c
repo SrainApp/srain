@@ -85,7 +85,7 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
              }
 
              g_return_if_fail(imsg->nparam >= 1);
-             if (SIRC_IS_CHAN(imsg->params[0])){
+             if (sirc_is_chan(imsg->params[0])){
                  /* Channel message */
                  events->channel(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
              } else {
@@ -107,7 +107,7 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
          }
          else if (strcmp(event, "MODE") == 0){
              g_return_if_fail(imsg->nparam >= 1);
-             if (SIRC_IS_CHAN(imsg->params[0])){
+             if (sirc_is_chan(imsg->params[0])){
                  /* Channel mode changed */
                  events->mode(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
              } else {
@@ -123,7 +123,7 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
          }
          else if (strcmp(event, "NOTICE") == 0){
              g_return_if_fail(imsg->nparam >= 1);
-             if (SIRC_IS_CHAN(imsg->params[0])){
+             if (sirc_is_chan(imsg->params[0])){
                  /* Channel notice changed */
                  events->channel_notice(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
              } else {

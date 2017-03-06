@@ -174,7 +174,7 @@ int server_add_chat(Server *srv, const char *name, const char *passwd){
 
     if (!passwd) passwd = "";
 
-    ischan = SIRC_IS_CHAN(name);
+    ischan = sirc_is_chan(name);
     lst = srv->chat_list;
     while (lst) {
         chat = lst->data;

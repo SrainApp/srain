@@ -1,5 +1,5 @@
-#ifndef __IRC_CMD_H
-#define __IRC_CMD_H
+#ifndef __SIRC_CMD_H
+#define __SIRC_CMD_H
 
 #ifndef __IN_SIRC_H
 	#error This file should not be included directly, include just sirc.h

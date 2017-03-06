@@ -10,16 +10,13 @@ typedef struct _SircSession SircSession;
 #define SIRC_SESSION_NOVERIFY   1 << 1 // Not support yet
 #define SIRC_SESSION_SASL       1 << 2 // Not support yet
 
-#define CHAN_PREFIX1    '#'
-#define CHAN_PREFIX2    '&'
-#define SIRC_IS_CHAN(ch) (ch && (ch[0] == CHAN_PREFIX1 || ch[0] == CHAN_PREFIX2))
-
 #define SIRC_BUF_LEN    513
 
 #define __IN_SIRC_H
 #include "sirc_cmd.h"
 #include "sirc_event.h"
 #include "sirc_numeric.h"
+#include "sirc_utils.h"
 #undef __IN_SIRC_H
 
 SircSession* sirc_new_session(SircEvents *events, SircSessionFlag flag);

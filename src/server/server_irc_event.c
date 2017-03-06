@@ -99,8 +99,8 @@ void server_irc_event_nick(SircSession *sirc, const char *event,
         lst = g_list_next(lst);
     }
 
-    if (strncasecmp(old_nick, srv->user.nick, NICK_LEN) == 0){
-        user_rename(&srv->user, old_nick);
+    if (sirc_nick_cmp(old_nick, srv->user.nick)){
+        user_rename(&srv->user, new_nick);
     }
 }
 
@@ -154,7 +154,7 @@ void server_irc_event_join(SircSession *sirc, const char *event,
     const char *chan = msg ? msg : params[0];
 
     /* You has join a channel */
-    youjoin = (strncasecmp(srv->user.nick, origin, NICK_LEN) == 0);
+    youjoin = sirc_nick_cmp(srv->user.nick, origin);
 
     if (youjoin) {
         server_add_chat(srv, chan, NULL);
