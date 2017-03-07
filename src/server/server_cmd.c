@@ -254,7 +254,7 @@ static int on_command_connect(Command *cmd, void *user_data){
 
     Server *srv = server_new(host, host, atoi(port), passwd, FALSE, "UTF-8",
             nick, PACKAGE_NAME, realname);
-    
+
     g_return_val_if_fail(srv, SRN_ERR);
 
     def_srv = srv;
@@ -272,7 +272,7 @@ static int on_command_connect(Command *cmd, void *user_data){
 static int on_command_relay(Command *cmd, void *user_data){
     const char *nick;
     char *ldelim, *rdelim;
-    
+
     nick = command_get_arg(cmd, 0);
     g_return_val_if_fail(nick, SRN_ERR);
 
@@ -286,7 +286,7 @@ static int on_command_relay(Command *cmd, void *user_data){
 
 static int on_command_unrelay(Command *cmd, void *user_data){
     const char *nick;
-    
+
     nick = command_get_arg(cmd, 0);
     g_return_val_if_fail(nick, SRN_ERR);
 
@@ -296,7 +296,7 @@ static int on_command_unrelay(Command *cmd, void *user_data){
 
 static int on_command_ignore(Command *cmd, void *user_data){
     const char *nick;
-    
+
     nick = command_get_arg(cmd, 0);
     g_return_val_if_fail(nick, SRN_ERR);
 
@@ -306,7 +306,7 @@ static int on_command_ignore(Command *cmd, void *user_data){
 
 static int on_command_unignore(Command *cmd, void *user_data){
     const char *nick;
-    
+
     nick = command_get_arg(cmd, 0);
     g_return_val_if_fail(nick, SRN_ERR);
 
@@ -327,7 +327,7 @@ static int on_command_unfilter(Command *cmd, void *user_data){
 static int on_command_query(Command *cmd, void *user_data){
     const char *nick;
     Server *srv;
-    
+
     g_return_val_if_fail(srv = scctx_get_server(user_data), SRN_ERR);
 
     nick = command_get_arg(cmd, 0);
@@ -341,7 +341,7 @@ static int on_command_unquery(Command *cmd, void *user_data){
     Server *srv;
 
     g_return_val_if_fail(srv = scctx_get_server(user_data), SRN_ERR);
-    
+
     nick = command_get_arg(cmd, 0);
     g_return_val_if_fail(nick, SRN_ERR);
 
@@ -352,7 +352,7 @@ static int on_command_join(Command *cmd, void *user_data){
     const char *chan;
     const char *passwd;
     Server *srv;
-    
+
     g_return_val_if_fail(srv = scctx_get_server(user_data), SRN_ERR);
 
     chan = command_get_arg(cmd, 0);
@@ -374,7 +374,7 @@ static int on_command_part(Command *cmd, void *user_data){
 
     g_return_val_if_fail(srv = scctx_get_server(user_data), SRN_ERR);
     chat = scctx_get_chat(user_data);
-    
+
     LOG_FR("chat: %p", chat);
 
     chan = command_get_arg(cmd, 0);
@@ -391,10 +391,11 @@ static int on_command_part(Command *cmd, void *user_data){
 static int on_command_quit(Command *cmd, void *user_data){
     const char *reason;
     Server *srv;
-    
+
     g_return_val_if_fail(srv = scctx_get_server(user_data), SRN_ERR);
-    
+
     reason = command_get_arg(cmd, 0);
+    if (!reason) reason = PACKAGE_NAME " " PACKAGE_VERSION " " "quit.";
 
     return sirc_cmd_quit(srv->irc, reason);
 }
@@ -403,10 +404,10 @@ static int on_command_topic(Command *cmd, void *user_data){
     const char *topic;
     Server *srv;
     Chat *chat;
-    
+
     g_return_val_if_fail(srv = scctx_get_server(user_data), SRN_ERR);
     g_return_val_if_fail(chat = scctx_get_chat(user_data), SRN_ERR);
-    
+
     topic = command_get_arg(cmd, 0);
 
     if (command_get_opt(cmd, "-rm", NULL)) topic = "";
@@ -420,7 +421,7 @@ static int on_command_msg(Command *cmd, void *user_data){
     Server *srv;
 
     g_return_val_if_fail(srv = scctx_get_server(user_data), SRN_ERR);
-    
+
     msg = command_get_arg(cmd, 1);
     target  = command_get_arg(cmd, 0);
     g_return_val_if_fail(msg, SRN_ERR);
@@ -444,7 +445,7 @@ static int on_command_me(Command *cmd, void *user_data){
     const char *msg;
     Server *srv;
     Chat *chat;
-    
+
     g_return_val_if_fail(srv = scctx_get_server(user_data), SRN_ERR);
     g_return_val_if_fail(chat = scctx_get_chat(user_data), SRN_ERR);
 
@@ -464,9 +465,9 @@ static int on_command_me(Command *cmd, void *user_data){
 static int on_command_nick(Command *cmd, void *user_data){
     const char *nick;
     Server *srv;
-    
+
     g_return_val_if_fail(srv = scctx_get_server(user_data), SRN_ERR);
-    
+
     nick = command_get_arg(cmd, 0);
     g_return_val_if_fail(nick, SRN_ERR);
 
@@ -476,9 +477,9 @@ static int on_command_nick(Command *cmd, void *user_data){
 static int on_command_whois(Command *cmd, void *user_data){
     const char *nick;
     Server *srv;
-    
+
     g_return_val_if_fail(srv = scctx_get_server(user_data), SRN_ERR);
-    
+
     nick = command_get_arg(cmd, 0);
     g_return_val_if_fail(nick, SRN_ERR);
 
@@ -486,14 +487,14 @@ static int on_command_whois(Command *cmd, void *user_data){
 }
 
 static int on_command_invite(Command *cmd, void *user_data){
-    const char *nick; 
+    const char *nick;
     const char *chan;
     Server *srv;
     Chat *chat;
-    
+
     g_return_val_if_fail(srv = scctx_get_server(user_data), SRN_ERR);
     chat = scctx_get_chat(user_data);
-    
+
     nick = command_get_arg(cmd, 0);
     chan = command_get_arg(cmd, 1);
     g_return_val_if_fail(nick, SRN_ERR);
@@ -553,7 +554,7 @@ static void on_unknown_cmd(const char *cmd, void *user_data){
 
     g_return_if_fail(srv = scctx_get_server(user_data));
     chat = scctx_get_chat(user_data);
-    
+
     sui = chat ? chat->ui : srv->ui;
     g_return_if_fail(sui);
 
@@ -567,7 +568,7 @@ static void on_unknown_opt(Command *cmd, const char *opt, void *user_data){
 
     g_return_if_fail(srv = scctx_get_server(user_data));
     chat = scctx_get_chat(user_data);
-    
+
     sui = chat ? chat->ui : srv->ui;
     g_return_if_fail(sui);
 
@@ -581,7 +582,7 @@ static void on_missing_opt_val(Command *cmd, const char *opt, void *user_data){
 
     g_return_if_fail(srv = scctx_get_server(user_data));
     chat = scctx_get_chat(user_data);
-    
+
     sui = chat ? chat->ui : srv->ui;
     g_return_if_fail(sui);
 
@@ -595,7 +596,7 @@ static void on_too_many_opt(Command *cmd, void *user_data){
 
     g_return_if_fail(srv = scctx_get_server(user_data));
     chat = scctx_get_chat(user_data);
-    
+
     sui = chat ? chat->ui : srv->ui;
     g_return_if_fail(sui);
 
@@ -609,10 +610,10 @@ static void on_too_many_arg(Command *cmd, void *user_data){
 
     g_return_if_fail(srv = scctx_get_server(user_data));
     chat = scctx_get_chat(user_data);
-    
+
     sui = chat ? chat->ui : srv->ui;
     g_return_if_fail(sui);
-    
+
     sui_add_sys_msg(sui,  _("Too many arguments"), SYS_MSG_ERROR, 0);
 }
 
@@ -623,10 +624,10 @@ static void on_callback_fail(Command *cmd, void *user_data){
 
     g_return_if_fail(srv = scctx_get_server(user_data));
     chat = scctx_get_chat(user_data);
-    
+
     sui = chat ? chat->ui : srv->ui;
     g_return_if_fail(sui);
-    
+
     sui_add_sys_msgf(sui, SYS_MSG_ERROR, 0, _("Command failed: %s"), cmd->rawcmd);
 }
 
