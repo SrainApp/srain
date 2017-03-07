@@ -1,5 +1,5 @@
-#ifndef __SRV_H
-#define __SRV_H
+#ifndef __SERVER_H
+#define __SERVER_H
 
 #include <stdbool.h>
 #include <glib.h>
@@ -18,7 +18,6 @@
 
 typedef struct _Message Message;
 typedef struct _User User;
-typedef struct _Context Context;
 typedef struct _Chat Chat;
 typedef struct _Server Server;
 typedef struct _ServerInfo ServerInfo;
@@ -30,17 +29,6 @@ typedef enum {
     SERVER_DISCONNECTED,
 } ServerStatus;
 
-typedef enum {
-    CONTEXT_SERVER,
-    CONTEXT_CHANNEL,
-    CONTEXT_DIALOG,
-} ContextType;
-
-/* Maybe a Server or Chat */
-struct _Context {
-    ContextType type;
-};
-
 struct _User {
     char nick[NICK_LEN];
     char username[NICK_LEN];
@@ -49,12 +37,14 @@ struct _User {
     bool me;
     UserType type;
 
-    Context *ctx;
+    /* A user may directly belongs to a Chat or a Server */
+    Chat *chat;
+    Server *srv;
     // SuiUser *ui;
 };
 
 struct _Message {
-    User *origin;   // Originator of this message, often refers to an existing user
+    User *user;     // Originator of this message, often refers to an existing user
     char *dname;    // Decorated name, maybe contains xml tags
     char *role;     // The role of the message originator
 
@@ -63,31 +53,29 @@ struct _Message {
     time_t time;
     bool mentioned;
 
-    Context *ctx;
-    GList *urls;     // URLs contains in message, like "http://xxx", "irc://xxx"
+    GSList *urls;   // URLs contains in message, like "http://xxx", "irc://xxx"
+
+    Server *srv;
     // SuiMessage *ui;
 };
 
 /* Represent a channel or dialog */
 struct _Chat {
-    ContextType type;   // CONTEXT_CHANNEL or CONTEXT_DIALOG
-
     char name[CHAN_LEN];
-    char passwd[PASSWD_LEN];
     bool joined;
     User *me;
 
-    GList *user_list;
-    GList *ignore_list;
-    GList *relaybot_list;
+    GSList *user_list;
+    /*
+    GSList *ignore_list;
+    GSList *brigebot_list;
+    */
 
     Server *srv;
     SuiSession *ui;
 };
 
 struct _Server {
-    ContextType type;   // Always CONTEXT_SERVER
-
     /* Server profile */
     char name[NAME_LEN];
     char host[HOST_LEN];
@@ -99,9 +87,10 @@ struct _Server {
     time_t last_ping;
     User user;
 
-    GList *chat_list;
-    GList *ignore_list;
-    GList *relaybot_list;
+    GSList *chat_list;
+
+    GSList *ignore_list;
+    GSList *brigebot_list;
 
     volatile ServerStatus stat;
     SuiSession *ui;
@@ -127,19 +116,22 @@ Server* server_new(const char *name, const char *host, int port,
 void server_free(Server *srv);
 int server_connect(Server *srv);
 void server_disconnect(Server *srv);
-
-int server_add_chat(Server *srv, const char *name, const char *passwd);
+int server_add_chat(Server *srv, const char *name);
 int server_rm_chat(Server *srv, const char *name);
 Chat* server_get_chat(Server *srv, const char *name);
 
+Chat *chat_new(Server *srv, const char *name);
+void chat_free(Chat *chat);
 int chat_add_user(Chat *chat, const char *nick, UserType type);
 int chat_rm_user(Chat *chat, const char *nick);
 User* chat_get_user(Chat *chat, const char *nick);
 
-int user_rename(User *user, const char *new_nick);
-int user_set_type(User *user, UserType type);
+User *user_new(Chat *chat, const char *nick, const char *username, const char *realname, UserType type);
+void user_free(User *user);
+void user_rename(User *user, const char *new_nick);
+void user_set_type(User *user, UserType type);
 
-
-Message* message_new(User *origin, const char *content, Context *ctx);
+Message* message_new(User *user, const char *content);
 void message_free(Message *msg);
-#endif /* __SRV_H */
+
+#endif /* __SERVER_H */

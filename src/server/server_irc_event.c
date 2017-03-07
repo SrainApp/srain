@@ -91,10 +91,9 @@ void server_irc_event_nick(SircSession *sirc, const char *event,
         chat = lst->data;
         // TODO: dialog nick track support
         if ((user = chat_get_user(chat, old_nick)) != NULL){
-            if (user_rename(user, new_nick) == SRN_OK){
-                sui_add_sys_msg(chat->ui, buf, SYS_MSG_NORMAL, 0);
-                chat_log_log(srv->name, chat->name, buf);
-            }
+            user_rename(user, new_nick);
+            sui_add_sys_msg(chat->ui, buf, SYS_MSG_NORMAL, 0);
+            chat_log_log(srv->name, chat->name, buf);
         }
         lst = g_list_next(lst);
     }
@@ -157,7 +156,7 @@ void server_irc_event_join(SircSession *sirc, const char *event,
     youjoin = sirc_nick_cmp(srv->user.nick, origin);
 
     if (youjoin) {
-        server_add_chat(srv, chan, NULL);
+        server_add_chat(srv, chan);
     }
 
     g_return_if_fail(chat = server_get_chat(srv, chan));
@@ -340,9 +339,12 @@ void server_irc_event_channel(SircSession *sirc, const char *event,
     g_return_if_fail(chat = server_get_chat(srv, chan));
 
     user = chat_get_user(chat, origin);
-    message = message_new(user, msg, chat);
+    LOG_FR("%s %s", origin, user->nick);
+    message = message_new(user, msg);
 
-    decorate_message(message, DECORATOR_MIRC_STRIP, NULL);
+    decorate_message(message,
+            DECORATOR_BOT2HUMAN | DECORATOR_MIRC_STRIP,
+            NULL);
 
     chat_log_fmt(srv->name, chan, "<%s> %s", origin, msg);
 

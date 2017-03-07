@@ -333,7 +333,7 @@ static int on_command_query(Command *cmd, void *user_data){
     nick = command_get_arg(cmd, 0);
     g_return_val_if_fail(nick, SRN_ERR);
 
-    return server_add_chat(srv, nick, NULL);
+    return server_add_chat(srv, nick);
 }
 
 static int on_command_unquery(Command *cmd, void *user_data){

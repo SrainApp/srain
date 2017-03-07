@@ -126,7 +126,7 @@ void server_ui_event_query(SuiSession *sui, SuiEvent event, const char *params[]
     srv = ctx_get_server(sui);
     g_return_if_fail(srv);
 
-    server_add_chat(srv, name, NULL);
+    server_add_chat(srv, name);
 }
 
 void server_ui_event_unquery(SuiSession *sui, SuiEvent event, const char *params[], int count){
