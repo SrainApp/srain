@@ -8,10 +8,14 @@
 
 #define __LOG_ON
 
+#include <stdlib.h>
 #include <signal.h>
 
 #include "server.h"
 
+#include "decorator.h"
+
+#include "i18n.h"
 #include "plugin.h"
 #include "file_helper.h"
 
@@ -23,6 +27,8 @@ int main(int argc, char **argv){
 
     i18n_init();
     plugin_init();
+
+    decorator_init();
 
     server_init();
 

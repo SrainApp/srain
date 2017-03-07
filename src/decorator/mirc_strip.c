@@ -1,3 +1,6 @@
+#include <string.h>
+#include <glib.h>
+
 #include "decorator.h"
 
 #include "srain.h"
@@ -16,8 +19,7 @@ int mirc_stirp(Message *msg, DecoratorFlag flag, void *user_data){
     int len;
     char *str;
 
-    str = msg->dcontent;
-    LOG_FR(": %s", str);
+    str = g_strdup(msg->dcontent);
 
     j = 0;
     len = strlen(str);
@@ -42,6 +44,9 @@ int mirc_stirp(Message *msg, DecoratorFlag flag, void *user_data){
     }
 
     str[j] = '\0';
+
+    g_free(msg->dcontent);
+    msg->dcontent = str;
 
     return SRN_OK;
 }
