@@ -5,6 +5,11 @@
  * @version 1.0
  * @date 2016-03-02
  *
+ * FIXME: Calling g_mutex_lock() on a GMutex that has already been locked by
+ * the same thread results in undefined behaviour (including but not limited
+ * to deadlocks).
+ *
+ * Use GRWLock instead.
  */
 
 #define __LOG_ON
@@ -29,6 +34,7 @@ struct _SircSession {
     SircSessionFlag flag;
     char buf[SIRC_BUF_LEN];
     GMutex mutex;  // Buffer lock
+    GThread *thread;
 
     SircEvents *events; // Event callbacks
     void *ctx;
@@ -63,6 +69,7 @@ SircSession* sirc_new_session(SircEvents *events, SircSessionFlag flag){
     sirc->fd = -1;
     sirc->flag = flag;
     sirc->events = events;
+    /* sirc->thread = NULL; // via g_malloc0() */
 
     g_mutex_init(&sirc->mutex);
 
@@ -121,15 +128,19 @@ void sirc_connect(SircSession *sirc, const char *host, int port){
     td->host = g_strdup(host);
     td->port = port;
 
-    g_thread_new(NULL, (GThreadFunc)th_sirc_connect, td);
+    sirc->thread = g_thread_new(NULL, (GThreadFunc)th_sirc_connect, td);
 }
 
 void sirc_disconnect(SircSession *sirc){
     g_return_if_fail(sirc);
     g_return_if_fail(sirc->fd != -1);
+    g_return_if_fail(sirc->thread);
 
     close(sirc->fd);
     sirc->fd = -1;
+
+    // g_thread_join(sirc->thread);
+    sirc->thread = NULL;
 }
 
 /******************************************************************************
@@ -141,20 +152,17 @@ static void th_sirc_connect(ThreadData *td){
 
     sirc->fd = sck_get_socket(td->host, td->port);
 
-    if (sirc->fd < 0){
-        ERR_FR("Failed to connect to %s:%d", td->host, td->port);
-        g_idle_add_full(G_PRIORITY_HIGH_IDLE,
-                (GSourceFunc)idle_sirc_on_disconnect, sirc, NULL);
-        return;
-    }
-
     g_free(td->host);
     g_free(td);
 
-    g_idle_add_full(G_PRIORITY_HIGH_IDLE,
-            (GSourceFunc)idle_sirc_on_connect, sirc, NULL);
-
-    th_sirc_proc(sirc);
+    if (sirc->fd < 0){
+        g_idle_add_full(G_PRIORITY_HIGH_IDLE,
+                (GSourceFunc)idle_sirc_on_disconnect, sirc, NULL);
+    } else {
+        g_idle_add_full(G_PRIORITY_HIGH_IDLE,
+                (GSourceFunc)idle_sirc_on_connect, sirc, NULL);
+        th_sirc_proc(sirc);
+    }
 }
 
 /* This function runs on a separate thread, blocking read a line
@@ -163,30 +171,32 @@ static void th_sirc_connect(ThreadData *td){
 static void th_sirc_proc(SircSession *sirc){
     for (;;){
         if (th_sirc_recv(sirc) == SRN_ERR){
-            DBG_FR("SircSession thread exit because of read error");
-            return;
-        }
-        if (sirc->fd == -1) {
-            DBG_FR("SircSession thread exit because of fd closed");
-            return;
+            break;
         }
     }
+
+    g_thread_exit(SRN_OK); // Always SRN_OK?
 }
 
 static int th_sirc_recv(SircSession *sirc){
+    int ret;
+
     g_mutex_lock(&sirc->mutex);
-    int ret = sck_readline(sirc->fd, sirc->buf, sizeof(sirc->buf));
+
+    ret = sck_readline(sirc->fd, sirc->buf, sizeof(sirc->buf));
 
     if (ret != SRN_ERR){
         g_idle_add_full(G_PRIORITY_HIGH_IDLE,
                 (GSourceFunc)idle_sirc_recv, sirc, NULL);
-        return SRN_OK;
-    }
+    } else {
+        /* sirc->fd == -1 means connection closed by sirc_disconnect() */
+        if (sirc->fd != -1) {
+            g_idle_add_full(G_PRIORITY_HIGH_IDLE,
+                    (GSourceFunc)idle_sirc_on_disconnect, sirc, NULL);
+        }
 
-    ERR_FR("Socket error, connection close");
-    g_idle_add_full(G_PRIORITY_HIGH_IDLE,
-            (GSourceFunc)idle_sirc_on_disconnect, sirc, NULL);
-    g_mutex_unlock(&sirc->mutex);
+        g_mutex_unlock(&sirc->mutex);
+    }
 
     return ret;
 }
@@ -209,10 +219,12 @@ static int idle_sirc_recv(SircSession *sirc){
 
 static int idle_sirc_on_connect(SircSession *sirc){
     sirc->events->connect(sirc, "CONNECT");
+
     return FALSE;
 }
 
 static int idle_sirc_on_disconnect(SircSession *sirc){
-    sirc->events->disconnect(sirc, sirc->ctx);
+    sirc->events->disconnect(sirc, "DISCONNECT");
+
     return FALSE;
 }
