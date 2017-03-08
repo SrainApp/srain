@@ -139,23 +139,26 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
 
 static void sirc_ctcp_event_hdr(SircSession *sirc, SircMessage *imsg) {
     int len;
+    char *ptr;
     char *ctcp_msg;
     const char *origin;
     SircEvents *events;
 
     ctcp_msg = g_strdup(imsg->msg);
+    ptr = ctcp_msg;
     len = strlen(ctcp_msg);
+
     origin = imsg->nick ? imsg->nick : imsg->prefix;
     events = sirc_get_events(sirc);
 
-    ctcp_msg++; // Skip first 0x01
+    ptr++; // Skip first 0x01
     ctcp_msg[len-1] = '\0'; // Remove the trailing 0x01
 
-    if (strncasecmp(ctcp_msg, "ACTION ", sizeof("ACTION ") - 1) == 0){
-        ctcp_msg += sizeof("ACTION ") - 1;
-        events->ctcp_action(sirc, "CTCP_ACTION", origin, imsg->params, imsg->nparam, ctcp_msg);
+    if (strncmp(ptr, "ACTION ", sizeof("ACTION ") - 1) == 0){
+        ptr += sizeof("ACTION ") - 1;
+        events->ctcp_action(sirc, "CTCP_ACTION", origin, imsg->params, imsg->nparam, ptr);
     }
-    else if (strncasecmp(ctcp_msg, "DCC ", sizeof("DCC ") - 1) == 0){
+    else if (strncmp(ptr, "DCC ", sizeof("DCC ") - 1) == 0){
         // TODO: impl DCC
     } else {
         // TODO: Any other CTCP event?
