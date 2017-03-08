@@ -107,7 +107,9 @@ void server_ui_event_part(SuiSession *sui, SuiEvent event, const char *params[],
 
     g_return_if_fail(count == 0);
     srv = ctx_get_server(sui);
+    chat = ctx_get_chat(sui);
     g_return_if_fail(srv);
+    g_return_if_fail(chat);
 
     if (chat->joined) {
         sirc_cmd_part(srv->irc, chat->name, "Leave.");
