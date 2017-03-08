@@ -74,7 +74,7 @@ void server_irc_event_welcome(SircSession *sirc, int event,
 void server_irc_event_nick(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count, const char *msg){
     char buf[512];
-    GList *lst;
+    GSList *lst;
     Server *srv;
     Chat *chat;
     User *user;
@@ -95,7 +95,7 @@ void server_irc_event_nick(SircSession *sirc, const char *event,
             sui_add_sys_msg(chat->ui, buf, SYS_MSG_NORMAL, 0);
             chat_log_log(srv->name, chat->name, buf);
         }
-        lst = g_list_next(lst);
+        lst = g_slist_next(lst);
     }
 
     if (sirc_nick_cmp(old_nick, srv->user.nick)){
@@ -106,7 +106,7 @@ void server_irc_event_nick(SircSession *sirc, const char *event,
 void server_irc_event_quit(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count, const char *msg){
     char buf[512];
-    GList *lst;
+    GSList *lst;
     Server *srv;
     Chat *chat;
     User *user;
@@ -131,12 +131,13 @@ void server_irc_event_quit(SircSession *sirc, const char *event,
             sui_add_sys_msg(chat->ui, buf, SYS_MSG_NORMAL, 0);
             chat_log_log(srv->name, chat->name, buf);
         }
-        lst = g_list_next(lst);
+        lst = g_slist_next(lst);
     }
 
     /* You quit */
-    if (strncasecmp(origin, srv->user.nick, NICK_LEN) == 0){
-        server_free(srv); // TODO ??
+    if (sirc_nick_cmp(origin, srv->user.nick)){
+        server_disconnect(srv);
+        server_free(srv);
     }
 }
 
