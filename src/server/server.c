@@ -93,8 +93,6 @@ Server* server_new(const char *name,
     if (!username) username = PACKAGE_NAME;
     if (!realname) realname = nick;
 
-    DBG_FR("name: %s, host: %s:%d, ", name, host, port);
-
     Server *srv = g_malloc0(sizeof(Server));
 
     srv->port = port;
@@ -145,16 +143,19 @@ void server_free(Server *srv){
                 chat_free(lst->data);
                 lst->data = NULL;
             }
+            lst = g_slist_next(lst);
         }
         g_slist_free(srv->chat_list);
     }
 
     if (srv->irc != NULL){
         sirc_free_session(srv->irc);
+        srv->irc= NULL;
     }
 
     if (srv->ui != NULL){
         sui_free_session(srv->ui);
+        srv->ui = NULL;
     }
 
     g_free(srv);

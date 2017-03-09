@@ -360,9 +360,6 @@ static int on_command_join(Command *cmd, void *user_data){
 
     g_return_val_if_fail(chan, SRN_ERR);
 
-    LOG_FR("server: %p, irc: %p %s %s", srv, srv->irc, chan, passwd);
-    LOG_FR("fd: %d", sirc_get_fd(srv->irc));
-
     return sirc_cmd_join(srv->irc, chan, passwd);
 }
 
@@ -453,7 +450,7 @@ static int on_command_me(Command *cmd, void *user_data){
     g_return_val_if_fail(msg, SRN_ERR);
 
     if (sirc_cmd_action(srv->irc, chat->name, msg) == SRN_OK) {
-        snprintf(buf, sizeof(buf), _("*** %s %s ***"), chat->name, msg);
+        snprintf(buf, sizeof(buf), _("*** %s %s ***"), srv->user.nick, msg);
         sui_add_sys_msg(chat->ui, buf, SYS_MSG_ACTION, 0);
 
         return SRN_OK;
