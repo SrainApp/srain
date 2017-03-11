@@ -127,36 +127,36 @@ static int pango_markup(Message *msg, DecoratorFlag flag, void *user_data){
         /* If something matched */
         if (type != MATCH_MAX){
             url = g_strndup(ptr + start, end - start);
-            markuped_url = g_markup_escape_text(url, -1);
 
             DBG_FR("Match url: %s, type: %d", url, type);
-            DBG_FR("Markuped url: %s", markuped_url);
 
             switch(type){
                 case MATCH_URL:
-                    g_string_append_printf(dcontent, "<a href=\"%s\">%s</a>", url, markuped_url);
+                    markuped_url = g_markup_printf_escaped("<a href=\"%s\">%s</a>", url, url);
                     break;
                 case MATCH_CHANNEL:
                     // TODO: get server
-                    g_string_append_printf(dcontent, "<a href=\"irc://%s:%d/%s\">%s</a>",
-                            "irc.freenode.net", 6667, url + 1, markuped_url);
+                    markuped_url = g_markup_printf_escaped("<a href=\"irc://%s:%d/%s\">%s</a>",
+                            "irc.freenode.net", 6667, url + 1, url);
                     break;
                 case MATCH_EMAIL:
-                    g_string_append_printf(dcontent, "<a href=\"mailto:%s\">%s</a>", url, markuped_url);
+                    markuped_url = g_markup_printf_escaped("<a href=\"mailto:%s\">%s</a>", url, url);
                     break;
                 case MATCH_HOST:
+                    markuped_url = NULL;
                     break;
                 default:
+                    markuped_url = NULL;
                     break;
             }
 
             msg->urls = g_slist_append(msg->urls, url);
+            dcontent = g_string_append(dcontent, markuped_url);
 
             DBG_FR("Appended url: %s", url);
-            DBG_FR("dcontent: %s", dcontent->str);
+            DBG_FR("Markuped url: %s", markuped_url);
 
             g_free(markuped_url);
-            g_free(url);
         }
 
         ptr += end;

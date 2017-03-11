@@ -7,7 +7,6 @@
 Message* message_new(User *user, const char *content){
     Message *msg;
 
-    g_return_val_if_fail(user, NULL);
     g_return_val_if_fail(content, NULL);
 
     msg = g_malloc0(sizeof(Message));
