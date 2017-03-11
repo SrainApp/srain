@@ -19,7 +19,7 @@ Decorator bot2human_decroator = {
     .func = bot2human,
 };
 
-static int  bot2human(Message *msg, DecoratorFlag flag, void *user_data){
+static int bot2human(Message *msg, DecoratorFlag flag, void *user_data){
     if (!bot_list) {
         LOG_FR("Append");
         bot_list = g_slist_append(bot_list, "teleboto");

@@ -6,8 +6,7 @@
 #define DECORATOR_BOT2HUMAN     1 << 0
 #define DECORATOR_MIRC_COLORIEZ 1 << 1
 #define DECORATOR_MIRC_STRIP    1 << 2
-#define DECORATOR_NICK_HIGHLIGH 1 << 3
-#define DECORATOR_NICK_COLORIZE 1 << 4
+#define DECORATOR_PANGO_MARKUP  1 << 3
 
 typedef int DecoratorFlag;
 

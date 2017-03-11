@@ -344,7 +344,7 @@ void server_irc_event_channel(SircSession *sirc, const char *event,
     message = message_new(user, msg);
 
     decorate_message(message,
-            DECORATOR_BOT2HUMAN | DECORATOR_MIRC_STRIP,
+            DECORATOR_BOT2HUMAN | DECORATOR_MIRC_STRIP | DECORATOR_PANGO_MARKUP,
             NULL);
 
     chat_log_fmt(srv->name, chan, "<%s> %s", origin, msg);

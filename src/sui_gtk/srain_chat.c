@@ -22,7 +22,6 @@
 #include "srain_msg.h"
 #include "theme.h"
 
-#include "markup.h"
 #include "plugin.h"
 #include "log.h"
 #include "i18n.h"
@@ -313,15 +312,7 @@ SrainChat* srain_chat_new(SuiSession *sui, const char *name, const char *remark,
 }
 
 void srain_chat_set_topic(SrainChat *chat, const char *topic){
-    GString *markuped_topic;
-
-    markuped_topic = markup(topic, NULL);
-    if (markuped_topic){
-        gtk_label_set_markup(chat->topic_label, markuped_topic->str);
-        g_string_free(markuped_topic, TRUE);
-    } else {
-        gtk_label_set_text(chat->topic_label, topic);
-    }
+    gtk_label_set_markup(chat->topic_label, topic);
 }
 
 /**

@@ -13,6 +13,7 @@
 
 extern Decorator mirc_strip_decroator;
 extern Decorator bot2human_decroator;
+extern Decorator pango_markup_decroator;
 
 static Decorator *decorators[MAX_DECORATOR];
 
@@ -21,6 +22,7 @@ void decorator_init(){
 
     decorators[0] = &bot2human_decroator;
     decorators[2] = &mirc_strip_decroator;
+    decorators[3] = &pango_markup_decroator;
 }
 
 int decorate_message(Message *msg, DecoratorFlag flag, void *user_data){

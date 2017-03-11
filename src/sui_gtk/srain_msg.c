@@ -21,7 +21,6 @@
 #include "srain_msg.h"
 #include "srain_image.h"
 
-#include "markup.h"
 #include "plugin.h"
 #include "download.h"
 #include "log.h"
@@ -207,32 +206,21 @@ static void srain_msg_append_image(SrainMsg *smsg, const char *url) {
 
 static void srain_msg_set_msg(SrainMsg *smsg, const char *msg) {
     char timestr[32];
-    GString *markuped;
-    GString *imgurl = NULL;
 
+    /* TODO: use Message->time */
     get_cur_time(timestr);
     gtk_label_set_text(smsg->time_label, timestr);
 
-    markuped = markup(msg, &imgurl);
-    if (markuped){
-        gtk_label_set_markup(smsg->msg_label, markuped->str);
-        g_string_free(markuped, TRUE);
-    } else {
-        gtk_label_set_text(smsg->msg_label, msg);
-    }
+    gtk_label_set_markup(smsg->msg_label, msg);
 
-    if (imgurl){
-        srain_msg_append_image(smsg, imgurl->str);
-        g_string_free(imgurl, TRUE);
-    }
+    // TODO: fix image
+    // srain_msg_append_image(smsg, imgurl->str);
 }
 
 int srain_msg_append_msg(SrainMsg *smsg, const char *msg, SrainMsgFlag flag) {
     char timestr[32];
-    const char *old_msg;
     const char *old_markup;
     GString *new_markup;
-    GString *imgurl;
 
     if (flag != smsg->flag) {
         return -1;
@@ -243,28 +231,13 @@ int srain_msg_append_msg(SrainMsg *smsg, const char *msg, SrainMsgFlag flag) {
         return -1;
     }
 
-    old_msg = gtk_label_get_text(smsg->msg_label);
-    if (strlen(msg) + strlen(old_msg) > SRAIN_MSG_MAX_LEN) {
-        return -1;
-    }
-
     old_markup = gtk_label_get_label(smsg->msg_label);
-    new_markup = markup(msg, &imgurl);
-    if (new_markup) {
-        g_string_prepend(new_markup, "\n");
-        g_string_prepend(new_markup, old_markup);
-        gtk_label_set_markup(smsg->msg_label, new_markup->str);
-    } else {
-        new_markup = g_string_new(msg);
-        g_string_prepend(new_markup, "\n");
-        g_string_prepend(new_markup, old_msg);
-        gtk_label_set_text(smsg->msg_label, new_markup->str);
-    }
+    new_markup = g_string_new(msg);
 
-    if (imgurl){
-        srain_msg_append_image(smsg, imgurl->str);
-        g_string_free(imgurl, TRUE);
-    }
+    g_string_prepend(new_markup, "\n");
+    g_string_prepend(new_markup, old_markup);
+
+    gtk_label_set_markup(smsg->msg_label, new_markup->str);
 
     g_string_free(new_markup, TRUE);
 

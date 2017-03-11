@@ -1,139 +1,172 @@
 /**
- * @file markup.c
- * @brief provide function markup(): match url and
- *      return a GString with html tags
+ * @file pango_markup.c
+ * @brief Decorator for escaping message and render url
  * @author Shengyu Zhang <silverrainz@outlook.com>
  * @version 1.0
- * @date 2016-03-16
+ * @date 2017-03-11
  */
 
-// #define __LOG_ON
+#define __DBG_ON
+#define __LOG_ON
 
 #include <stdio.h>
-#include <regex.h>
 #include <string.h>
 #include <glib.h>
+
+#include "decorator.h"
+
 #include "log.h"
 
-#define MAX_ERROR_MSG 0x1000
+/* Some patterns are copied from hexchat/src/common/url.c */
+#define PROTO_PATTERN       "(http|https|ftp|git|svn|irc|xmpp)"
 
-/* 人生苦短， 我用 GString */
+#define DOMAIN_PATTERN      "[_\\pL\\pN\\pS][-_\\pL\\pN\\pS]*(\\.[-_\\pL\\pN\\pS]+)*"
+#define TLD_PATTERN         "\\.[\\pL][-\\pL\\pN]*[\\pL]"
+#define IP_PATTERN          "[0-9]{1,3}(\\.[0-9]{1,3}){3}"
 
-static int compile_regex(regex_t *r, const char *pattern)
-{
-    int stat;
-    char err_msg[MAX_ERROR_MSG];
+#define PORT_PATTERN        "(:[1-9][0-9]{0,4})"
+#define HOST_PATTERN        "(" DOMAIN_PATTERN TLD_PATTERN "|" IP_PATTERN ")" PORT_PATTERN "?"
 
-    stat = regcomp(r, pattern, REG_EXTENDED|REG_NEWLINE);
-    if (stat!= 0) {
-        regerror(stat, r, err_msg, MAX_ERROR_MSG);
-        ERR_FR("'%s': %s\n", pattern, err_msg);
-        return -1;
+#define URL_PATH_PATTERN    "(/[A-Za-z0-9-_.~:/?#\\[\\]@!&'()*+,;=]*)?"
+#define URL_PATTERN         PROTO_PATTERN "://" HOST_PATTERN URL_PATH_PATTERN
+
+/* ref: https://tools.ietf.org/html/rfc1459#section-1.3*/
+#define CHANNEL_PATTERN     "[#&][^\x07\x2C\\s]{1,200}"
+
+#define EMAIL_PATTERN       "[a-z0-9][._+%a-z0-9-]+@" HOST_PATTERN
+
+static int pango_markup(Message *msg, DecoratorFlag flag, void *user_data);
+
+Decorator pango_markup_decroator = {
+    .name = "pango_markup",
+    .func = pango_markup,
+};
+
+typedef enum {
+    MATCH_URL,
+    MATCH_HOST,
+    MATCH_CHANNEL,
+    MATCH_EMAIL,
+
+    /* ... */
+    MATCH_MAX,
+} MatchType;
+
+static char* patterns[MATCH_MAX + 1] = {
+    [MATCH_URL] = URL_PATTERN,
+    [MATCH_CHANNEL] = CHANNEL_PATTERN,
+    [MATCH_EMAIL] = EMAIL_PATTERN,
+};
+
+static bool match_pattern(const char *pattern, const char *str, int *start, int *end) {
+    bool ret;
+    GError *err;
+    GRegex *regex;
+    GMatchInfo *match_info;
+
+    err = NULL;
+    regex = g_regex_new(pattern, G_REGEX_CASELESS | G_REGEX_OPTIMIZE, 0, &err);
+    if (!regex){
+        ERR_FR("g_regex_new() failed, pattern: %s, err: %s", pattern, err->message);
+        return FALSE;
     }
 
-    return 0;
-}
+    g_regex_match(regex, str, 0, &match_info);
 
-/* pango markup language escape */
-static GString* escape(const char *str){
-    int i;
-    int len;
-    GString *str2;
-
-    len = strlen(str);
-    str2 = g_string_new(NULL);
-
-    for (i = 0; i < len; i++){
-        switch (str[i]){
-            case '<':
-                str2 = g_string_append(str2, "&lt;");
-                break;
-            case '>':
-                str2 = g_string_append(str2, "&gt;");
-                break;
-            case '&':
-                str2 = g_string_append(str2, "&amp;");
-                break;
-            default:
-                str2 = g_string_append_c(str2, str[i]);
-        }
+    if (!(ret = g_match_info_matches(match_info))){
+        goto fin;
     }
 
-    return str2;
+    ret = g_match_info_fetch_pos(match_info, 0, start, end);
+
+fin:
+
+    g_match_info_free(match_info);
+    g_regex_unref(regex);
+
+    return ret;
 }
 
-/* match the urls in `msg`, return a GString with html tags,
- * when img_url is not NULL, return the first url which
- * points to a image file via `img_url`
- */
-GString* markup(const char *raw_msg, GString **img_url){
-    int n = 10;
+static int pango_markup(Message *msg, DecoratorFlag flag, void *user_data){
     int start, end;
-    const char *msg;
-    const char *msg_ptr;
-    regex_t re;
-    regmatch_t match[n];
-    GString *url;
-    GString *str;
-    GString *escaped_msg;
-    /* TODO: if `-` and `&` contained in pattern,
-     * TODO: regcomp() may return ERROR "不适用的范围结束" */
-    char pattern[] = "((http)|(https))://(www)?[-./;?:@&=+$,_!~*'#%[:alnum:]]+";
+    int tmpstart, tmpend;
+    char *left;
+    char *ptr, *ptrend;
+    char *url, *markuped_url;
+    GString *dcontent;
+    MatchType type;
 
-    if (compile_regex(&re, pattern) == -1){
-        return NULL;
+    ptr = msg->dcontent;
+    ptrend = msg->dcontent + strlen(msg->dcontent);
+    dcontent = g_string_new(NULL);
+
+    while (ptr < ptrend) {
+        type = MATCH_MAX;
+        start = end = strlen(ptr);
+
+        for (int i = 0; i < MATCH_MAX; i++){
+            if (!patterns[i]) continue;
+
+            if (match_pattern(patterns[i], ptr, &tmpstart, &tmpend)){
+                DBG_FR("Temp Match[%d,%d): %.*s ",
+                        tmpstart, tmpend, tmpend - tmpstart, ptr + tmpstart);
+
+                if (tmpstart < start){
+                    start = tmpstart;
+                    end = tmpend;
+                    type = i;
+                }
+            }
+        }
+
+        /* Markup the left of the matched(maybe) url */
+        left = g_markup_escape_text(ptr, start);
+        dcontent = g_string_append(dcontent, left);
+        g_free(left);
+
+        /* If something matched */
+        if (type != MATCH_MAX){
+            url = g_strndup(ptr + start, end - start);
+            markuped_url = g_markup_escape_text(url, -1);
+
+            DBG_FR("Match url: %s, type: %d", url, type);
+            DBG_FR("Markuped url: %s", markuped_url);
+
+            switch(type){
+                case MATCH_URL:
+                    g_string_append_printf(dcontent, "<a href=\"%s\">%s</a>", url, markuped_url);
+                    break;
+                case MATCH_CHANNEL:
+                    // TODO: get server
+                    g_string_append_printf(dcontent, "<a href=\"irc://%s:%d/%s\">%s</a>",
+                            "irc.freenode.net", 6667, url + 1, markuped_url);
+                    break;
+                case MATCH_EMAIL:
+                    g_string_append_printf(dcontent, "<a href=\"mailto:%s\">%s</a>", url, markuped_url);
+                    break;
+                case MATCH_HOST:
+                    break;
+                default:
+                    break;
+            }
+
+            msg->urls = g_slist_append(msg->urls, url);
+
+            DBG_FR("Appended url: %s", url);
+            DBG_FR("dcontent: %s", dcontent->str);
+
+            g_free(markuped_url);
+            g_free(url);
+        }
+
+        ptr += end;
     }
 
-    escaped_msg = escape(raw_msg);
-    msg = escaped_msg->str;
+    LOG_FR("Result: %s", dcontent->str);
 
-    msg_ptr = msg;
-    str = g_string_new(NULL);
+    g_free(msg->dcontent);
+    msg->dcontent = dcontent->str;
+    g_string_free(dcontent, FALSE);
 
-    if (img_url) *img_url = NULL;
-
-    while (1){
-        int no_match = regexec(&re, msg_ptr, n, match, 0);
-
-        if (no_match){
-            LOG_FR("no more matched");
-            break;
-        }
-
-        if (match[0].rm_so == -1){
-            break;
-        }
-
-        start = match[0].rm_so + (msg_ptr - msg);
-        end = match[0].rm_eo + (msg_ptr - msg);
-
-        str = g_string_append_len(str, msg_ptr, msg + start - msg_ptr);
-        url = g_string_new_len(msg + start, end - start);
-        g_string_append_printf(str,
-                               "<a href=\"%s\">%s</a>",
-                               url->str,
-                               url->str);
-
-        LOG_FR("match '%.*s' (%d:%d)", (end - start), msg + start, start, end);
-
-        /* is first url point to a image? */
-        if (img_url && *img_url == NULL &&
-                (strcmp(url->str + url->len - 4, ".png") == 0
-                || strcmp(url->str + url->len - 4, ".jpg") == 0
-                || strcmp(url->str + url->len - 5, ".jpeg") == 0
-                || strcmp(url->str + url->len - 4, ".jeg") == 0)){
-            LOG_FR("img found: '%s'", url->str);
-            *img_url = url;
-        } else {
-            g_string_free(url, TRUE);
-        }
-
-        msg_ptr += match[0].rm_eo;
-    }
-
-    str = g_string_append(str, msg_ptr);
-
-    g_string_free(escaped_msg, TRUE);
-
-    return str;
+    return SRN_OK;
 }
