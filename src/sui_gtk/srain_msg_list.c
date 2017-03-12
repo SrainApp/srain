@@ -20,7 +20,6 @@
 #include "snotify.h"
 
 #include "i18n.h"
-#include "markup.h"
 #include "log.h"
 
 #define MAX_MSG_COUNT 100

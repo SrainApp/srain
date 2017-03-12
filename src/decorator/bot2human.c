@@ -26,8 +26,8 @@ static int bot2human(Message *msg, DecoratorFlag flag, void *user_data){
         bot_list = g_slist_append(bot_list, "la");
     }
 
-    const char *dnick;
-    const char *dcontent;
+    char *dnick;
+    char *dcontent;
     GSList *lst;
     GError *err;
     GRegex *regex;

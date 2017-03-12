@@ -39,7 +39,7 @@ int rc_read(){
     if (!fp){
         ERR_FR("Failed to open %s", rc_file);
         g_free(rc_file);
-        return;
+        return SRN_ERR;
     }
     g_free(rc_file);
 
@@ -58,4 +58,6 @@ int rc_read(){
     if (line) free(line);
 
     fclose(fp);
+
+    return SRN_OK;
 }

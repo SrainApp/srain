@@ -31,8 +31,6 @@ void user_rename(User *user, const char *new_nick){
     }
 
     g_strlcpy(user->nick, new_nick, sizeof(user->nick));
-
-    return SRN_OK;
 }
 
 void user_set_type(User *user, UserType type){
@@ -42,6 +40,4 @@ void user_set_type(User *user, UserType type){
     }
 
     user->type = type;
-
-    return SRN_OK;
 }

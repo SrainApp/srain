@@ -214,7 +214,7 @@ void server_cmd_init(){
     commmad_set_context(&cmd_ctx);
 }
 
-int server_cmd(Server *srv, Chat *chat, char *cmd){
+int server_cmd(Server *srv, Chat *chat, const char *cmd){
     ServerCmdContext scctx;
 
     scctx.srv = srv;
