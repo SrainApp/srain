@@ -69,19 +69,13 @@ void server_ui_event_send(SuiSession *sui, SuiEvent event, const char *params[],
     // Command or message?
     if (msg[0] == '/'){
         if (server_cmd(srv, chat, msg) == SRN_OK){
-            sui_add_sys_msgf(sui, SYS_MSG_NORMAL, 0,
-                    _("Command \"%s\" finished"), msg);
+            // Nothing to do.
         }
     } else {
         if (chat) {
-            if (sirc_cmd_msg(srv->irc, chat->name, msg) == SRN_OK){
-                sui_add_sent_msg(sui, msg, 0);
-            } else {
-                sui_add_sys_msgf(sui, SYS_MSG_ERROR, 0,
-                        _("Failed to send message \"%s\""), msg);
-            }
+            chat_add_message(chat, chat->user, msg);
         } else {
-            sui_add_sys_msg(sui, _("Can not send message to a server"), SYS_MSG_ERROR, 0);
+            chat_add_error_message(srv->chat, NULL, _("Can not send message to a server"));
         }
     }
 }

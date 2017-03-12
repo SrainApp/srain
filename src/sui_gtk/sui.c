@@ -218,8 +218,8 @@ void sui_add_recv_msg(SuiSession *sui, const char *nick, const char *id,
     SrainEntryCompletion *comp;
 
     g_return_if_fail(nick);
-    g_return_if_fail(id);
     g_return_if_fail(msg);
+    if (!id) id = "";
 
     g_return_if_fail(sui);
     chat = sui->chat;

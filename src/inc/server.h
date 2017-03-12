@@ -60,7 +60,7 @@ struct _Message {
 struct _Chat {
     char name[CHAN_LEN];
     bool joined;
-    User *me;
+    User *user;     // Yourself
 
     GSList *user_list;
     GList *msg_list;
@@ -122,6 +122,14 @@ void chat_free(Chat *chat);
 int chat_add_user(Chat *chat, const char *nick, UserType type);
 int chat_rm_user(Chat *chat, const char *nick);
 User* chat_get_user(Chat *chat, const char *nick);
+void chat_add_message(Chat *chat, User *user, const char *content);
+void chat_add_action_message(Chat *chat, User *user, const char *content);
+void chat_add_notice_message(Chat *chat, User *user, const char *content);
+void chat_add_misc_message(Chat *chat, User *user, const char *content);
+void chat_add_misc_message_fmt(Chat *chat, User *user, const char *fmt, ...);
+void chat_add_error_message(Chat *chat, User *user, const char *content);
+void chat_add_error_message_fmt(Chat *chat, User *user, const char *fmt, ...);
+
 
 User *user_new(Chat *chat, const char *nick, const char *username, const char *realname, UserType type);
 void user_free(User *user);

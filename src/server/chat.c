@@ -1,4 +1,6 @@
 #include "server.h"
+#include "decorator.h"
+#include "chat_log.h"
 
 #include "sirc/sirc.h"
 
@@ -13,7 +15,7 @@ Chat *chat_new(Server *srv, const char *name){
 
     chat->joined = FALSE;
     chat->srv = srv;
-    chat->me = NULL;
+    chat->user = srv->user;
     chat->user_list = NULL;
     chat->ui = sui_new_session(&ui_events,
             ischan ? SUI_SESSION_CHANNEL : SUI_SESSION_DIALOG);
@@ -42,7 +44,7 @@ bad:
 
 void chat_free(Chat *chat){
     /* Free user list */
-    chat->me = NULL;
+    chat->user = NULL;
     if (chat->user_list){
         GSList *lst = chat->user_list;
         while (lst){
@@ -119,4 +121,126 @@ User* chat_get_user(Chat *chat, const char *nick){
     }
 
     return NULL;
+}
+
+
+/* TODO: Append message in Chat->msg_list */
+void chat_add_message(Chat *chat, User *user, const char *content){
+    Message *msg;
+    DecoratorFlag flag;
+
+    flag = DECORATOR_PANGO_MARKUP;
+    msg = message_new(chat, user, content);
+
+    if (user->me){
+        if (sirc_cmd_msg(chat->srv->irc, chat->name, content) == SRN_OK){
+            if (decorate_message(msg, flag, NULL) == SRN_OK){
+                sui_add_sent_msg(chat->ui, msg->dcontent, 0);
+            }
+        } else {
+            // TODO: chat_add_error_messagef()
+            chat_add_error_message(chat, NULL, "Failed to send message");
+        }
+    } else {
+        flag |= DECORATOR_BOT2HUMAN | DECORATOR_MIRC_STRIP;
+        if (decorate_message(msg, flag, NULL) == SRN_OK){
+            sui_add_recv_msg(chat->ui, msg->dname, msg->role, msg->dcontent,
+                    msg->mentioned ? SRAIN_MSG_MENTIONED : 0);
+        }
+    }
+
+    chat_log_fmt(chat->srv->info->name, chat->name, "<%s> %s", user->nick, content);
+
+    message_free(msg);
+}
+
+void chat_add_notice_message(Chat *chat, User *user, const char *content){
+    chat_add_message(chat, user, content);
+}
+
+void chat_add_action_message(Chat *chat, User *user, const char *content){
+    char *action_msg;
+    Message *msg;
+    DecoratorFlag flag;
+
+    flag = DECORATOR_PANGO_MARKUP;
+    msg = message_new(chat, user, content);
+
+    if (user->me){
+        if (sirc_cmd_action(chat->srv->irc, chat->name, content) != SRN_OK){
+            // ...
+        }
+    } else {
+        flag |= DECORATOR_BOT2HUMAN | DECORATOR_MIRC_STRIP;
+    }
+
+    if (decorate_message(msg, flag, NULL) == SRN_OK){
+        action_msg = g_strdup_printf("*** <b>%s</b> %s***",
+                msg->dname, msg->dcontent);
+
+        sui_add_sys_msg(chat->ui, action_msg, SYS_MSG_ACTION, 
+                msg->mentioned ? SRAIN_MSG_MENTIONED : 0);
+
+        g_free(action_msg);
+    }
+
+    chat_log_fmt(chat->srv->info->name, chat->name, "* %s %s", user->nick, content);
+
+    message_free(msg);
+}
+
+void chat_add_misc_message(Chat *chat, User *user, const char *content){
+    char *dcontent;
+    DecoratorFlag flag;
+
+    flag = DECORATOR_PANGO_MARKUP;
+    dcontent = decorate_content(content, flag);
+
+    if (dcontent){
+        sui_add_sys_msg(chat->ui, dcontent, SYS_MSG_NORMAL, 0);
+        g_free(dcontent);
+    }
+
+    chat_log_fmt(chat->srv->info->name, chat->name, "- %s %s", user->nick, content);
+}
+
+void chat_add_misc_message_fmt(Chat *chat, User *user, const char *fmt, ...){
+    char *content;
+    va_list args;
+
+    va_start(args, fmt);
+    content = g_strdup_vprintf(fmt, args);
+    va_end(args);
+
+    chat_add_misc_message(chat, user, content);
+
+    g_free(content);
+}
+
+void chat_add_error_message(Chat *chat, User *user, const char *content){
+    char *dcontent;
+    DecoratorFlag flag;
+
+    flag = DECORATOR_PANGO_MARKUP;
+    dcontent = decorate_content(content, flag);
+
+    if (dcontent){
+        sui_add_sys_msg(chat->ui, dcontent, SYS_MSG_ERROR, 0);
+        g_free(dcontent);
+    }
+
+    chat_log_fmt(chat->srv->info->name, chat->name, "! %s %s", user->nick, content);
+}
+
+void chat_add_error_message_fmt(Chat *chat, User *user, const char *fmt, ...){
+    char *content;
+    va_list args;
+
+    va_start(args, fmt);
+    content = g_strdup_vprintf(fmt, args);
+    va_end(args);
+
+    chat_add_error_message(chat, user, content);
+
+    g_free(content);
 }
