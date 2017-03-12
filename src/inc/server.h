@@ -37,13 +37,12 @@ struct _User {
     bool me;
     UserType type;
 
-    /* A user may directly belongs to a Chat or a Server */
     Chat *chat;
-    Server *srv;
     // SuiUser *ui;
 };
 
 struct _Message {
+    Chat *chat;
     User *user;     // Originator of this message, often refers to an existing user
     char *dname;    // Decorated name, maybe contains xml tags
     char *role;     // The role of the message originator
@@ -54,8 +53,6 @@ struct _Message {
     bool mentioned;
 
     GSList *urls;   // URLs contains in message, like "http://xxx", "irc://xxx"
-
-    Server *srv;
     // SuiMessage *ui;
 };
 
@@ -66,6 +63,7 @@ struct _Chat {
     User *me;
 
     GSList *user_list;
+    GList *msg_list;
     /*
     GSList *ignore_list;
     GSList *brigebot_list;
@@ -76,6 +74,9 @@ struct _Chat {
 };
 
 struct _Server {
+    volatile ServerStatus stat;
+    // ServerInfo info;
+
     /* Server profile */
     char name[NAME_LEN];
     char host[HOST_LEN];
@@ -85,15 +86,14 @@ struct _Server {
     char *encoding;
 
     time_t last_ping;
-    User user;
+    User *user;     // Used to store your nick, username, realname
+    Chat *chat;     // Hold all messages that do not belong to any other Chat
 
     GSList *chat_list;
 
     GSList *ignore_list;
     GSList *brigebot_list;
 
-    volatile ServerStatus stat;
-    SuiSession *ui;
     SircSession *irc;
 };
 
@@ -119,6 +119,7 @@ void server_disconnect(Server *srv);
 int server_add_chat(Server *srv, const char *name);
 int server_rm_chat(Server *srv, const char *name);
 Chat* server_get_chat(Server *srv, const char *name);
+Chat* server_get_chat_fallback(Server *srv, const char *name);
 
 Chat *chat_new(Server *srv, const char *name);
 void chat_free(Chat *chat);
@@ -131,7 +132,7 @@ void user_free(User *user);
 void user_rename(User *user, const char *new_nick);
 void user_set_type(User *user, UserType type);
 
-Message* message_new(User *user, const char *content);
+Message* message_new(Chat *chat, User *user, const char *content);
 void message_free(Message *msg);
 
 #endif /* __SERVER_H */

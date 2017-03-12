@@ -104,27 +104,18 @@ Server* server_new(const char *name,
     g_strlcpy(srv->host, host, sizeof(srv->host));
     g_strlcpy(srv->passwd, passwd, sizeof(srv->passwd));
 
-    /* srv->user */
-    srv->user.me = TRUE;
-    // TODO: ad-hoc method
-    srv->user.srv = srv;
-    srv->user.chat = NULL;
-    g_strlcpy(srv->user.nick, nick, sizeof(srv->user.nick));
-    g_strlcpy(srv->user.username, username, sizeof(srv->user.username));
-    g_strlcpy(srv->user.realname, realname, sizeof(srv->user.realname));
+    srv->chat = chat_new(srv, META_SERVER);
+    if (!srv->chat) goto bad;
 
-    /* Get UI & IRC handler */
-    srv->ui = sui_new_session(&ui_events, SUI_SESSION_SERVER);
+    srv->user = user_new(srv->chat, nick, username, realname, USER_CHIGUA);
+    if (!srv->user) goto bad;
+    srv->user->me = TRUE;
+
+    /* Get IRC handler */
     srv->irc = sirc_new_session(&irc_events, 0);
-
-    if (!srv->ui || !srv->irc){
-        goto bad;
-    }
-
-    sui_set_ctx(srv->ui, srv);
+    if (!srv->irc) goto bad;
     sirc_set_ctx(srv->irc, srv);
 
-    /* IRC event callbacks */
     return srv;
 
 bad:
@@ -153,9 +144,14 @@ void server_free(Server *srv){
         srv->irc= NULL;
     }
 
-    if (srv->ui != NULL){
-        sui_free_session(srv->ui);
-        srv->ui = NULL;
+    if (srv->user != NULL){
+        user_free(srv->user);
+        srv->user = NULL;
+    }
+
+    if (srv->chat != NULL){
+        chat_free(srv->chat);
+        srv->chat = NULL;
     }
 
     g_free(srv);
@@ -165,7 +161,6 @@ int server_connect(Server *srv){
     srv->stat = SERVER_CONNECTING;
 
     sirc_connect(srv->irc, srv->host, srv->port);
-    sui_start_session(srv->ui, META_SERVER, srv->name);
 
     return SRN_OK;
 }
@@ -233,4 +228,15 @@ Chat* server_get_chat(Server *srv, const char *name) {
     }
 
     return NULL;
+}
+
+/* This function never fail, if name is NULL or not chat found, return Server->chat instead. */
+Chat* server_get_chat_fallback(Server *srv, const char *name) {
+    Chat *chat;
+
+    if (!name || !(chat = server_get_chat(srv, name))){
+        chat = srv->chat;
+    }
+
+    return chat;
 }

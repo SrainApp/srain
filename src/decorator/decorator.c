@@ -50,3 +50,19 @@ int decorate_message(Message *msg, DecoratorFlag flag, void *user_data){
 
     return SRN_OK;
 }
+
+char* decorate_content(const char *content, DecoratorFlag flag){
+    char *dcontent;
+
+    Message *msg = message_new(NULL, NULL, content);
+
+    if (decorate_message(msg, flag, NULL) == SRN_OK){
+        dcontent = g_strdup(msg->dcontent);
+    } else {
+        dcontent = NULL;
+    }
+
+    message_free(msg);
+
+    return dcontent;
+}

@@ -9,11 +9,9 @@ User *user_new(Chat *chat, const char *nick, const char *username,
 
     user = g_malloc0(sizeof(User));
 
+    user->chat = chat;
     user->me = FALSE;
     user->type = type;
-    user->chat = chat;
-    user->srv = NULL;
-    // TODO: ad-hoc method
 
     g_strlcpy(user->nick, nick, sizeof(user->nick));
     g_strlcpy(user->username, username, sizeof(user->username));

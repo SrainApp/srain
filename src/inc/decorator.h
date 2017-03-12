@@ -19,5 +19,6 @@ typedef struct _Decorator {
 
 void decorator_init();
 int decorate_message(Message *msg, DecoratorFlag flag, void *user_data);
+char* decorate_content(const char *content, DecoratorFlag flag);
 
 #endif /* __DECORATOR_H */

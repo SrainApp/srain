@@ -425,12 +425,8 @@ static int on_command_msg(Command *cmd, void *user_data){
     g_return_val_if_fail(target, SRN_ERR);
 
     if (sirc_cmd_msg(srv->irc, target, msg) == SRN_OK){
-        Chat *chat = server_get_chat(srv, target);
-        if (chat) {
-            sui_add_sent_msg(chat->ui, msg, 0);
-        } else {
-            sui_add_sent_msg(srv->ui, msg, 0);
-        }
+        Chat *chat = server_get_chat_fallback(srv, target);
+        sui_add_sent_msg(chat->ui, msg, 0);
         return SRN_OK;
     } else {
         return SRN_ERR;
@@ -450,7 +446,7 @@ static int on_command_me(Command *cmd, void *user_data){
     g_return_val_if_fail(msg, SRN_ERR);
 
     if (sirc_cmd_action(srv->irc, chat->name, msg) == SRN_OK) {
-        snprintf(buf, sizeof(buf), _("*** %s %s ***"), srv->user.nick, msg);
+        snprintf(buf, sizeof(buf), _("*** %s %s ***"), srv->user->nick, msg);
         sui_add_sys_msg(chat->ui, buf, SYS_MSG_ACTION, 0);
 
         return SRN_OK;
@@ -552,7 +548,7 @@ static void on_unknown_cmd(const char *cmd, void *user_data){
     g_return_if_fail(srv = scctx_get_server(user_data));
     chat = scctx_get_chat(user_data);
 
-    sui = chat ? chat->ui : srv->ui;
+    sui = chat ? chat->ui : srv->chat->ui;
     g_return_if_fail(sui);
 
     sui_add_sys_msgf(sui, SYS_MSG_ERROR, 0, _("No such command: %s"), cmd);
@@ -566,7 +562,7 @@ static void on_unknown_opt(Command *cmd, const char *opt, void *user_data){
     g_return_if_fail(srv = scctx_get_server(user_data));
     chat = scctx_get_chat(user_data);
 
-    sui = chat ? chat->ui : srv->ui;
+    sui = chat ? chat->ui : srv->chat->ui;
     g_return_if_fail(sui);
 
     sui_add_sys_msgf(sui, SYS_MSG_ERROR, 0, _("No such option: %s"), opt);
@@ -580,7 +576,7 @@ static void on_missing_opt_val(Command *cmd, const char *opt, void *user_data){
     g_return_if_fail(srv = scctx_get_server(user_data));
     chat = scctx_get_chat(user_data);
 
-    sui = chat ? chat->ui : srv->ui;
+    sui = chat ? chat->ui : srv->chat->ui;
     g_return_if_fail(sui);
 
     sui_add_sys_msgf(sui, SYS_MSG_ERROR, 0, _("Option missing value: %s"), opt);
@@ -594,7 +590,7 @@ static void on_too_many_opt(Command *cmd, void *user_data){
     g_return_if_fail(srv = scctx_get_server(user_data));
     chat = scctx_get_chat(user_data);
 
-    sui = chat ? chat->ui : srv->ui;
+    sui = chat ? chat->ui : srv->chat->ui;
     g_return_if_fail(sui);
 
     sui_add_sys_msg(sui, _("Too many options"), SYS_MSG_ERROR, 0);
@@ -608,7 +604,7 @@ static void on_too_many_arg(Command *cmd, void *user_data){
     g_return_if_fail(srv = scctx_get_server(user_data));
     chat = scctx_get_chat(user_data);
 
-    sui = chat ? chat->ui : srv->ui;
+    sui = chat ? chat->ui : srv->chat->ui;
     g_return_if_fail(sui);
 
     sui_add_sys_msg(sui,  _("Too many arguments"), SYS_MSG_ERROR, 0);
@@ -622,7 +618,7 @@ static void on_callback_fail(Command *cmd, void *user_data){
     g_return_if_fail(srv = scctx_get_server(user_data));
     chat = scctx_get_chat(user_data);
 
-    sui = chat ? chat->ui : srv->ui;
+    sui = chat ? chat->ui : srv->chat->ui;
     g_return_if_fail(sui);
 
     sui_add_sys_msgf(sui, SYS_MSG_ERROR, 0, _("Command failed: %s"), cmd->rawcmd);

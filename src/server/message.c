@@ -4,7 +4,7 @@
 
 #include "srain.h"
 
-Message* message_new(User *user, const char *content){
+Message* message_new(Chat *chat, User *user, const char *content){
     Message *msg;
 
     g_return_val_if_fail(content, NULL);
@@ -12,15 +12,15 @@ Message* message_new(User *user, const char *content){
     msg = g_malloc0(sizeof(Message));
 
     msg->user = user;
+    msg->chat = chat;
     // msg->role = NULL; // via g_malloc0()
     msg->content = g_strdup(content);
     // msg->time = ...;
     msg->mentioned = FALSE;
     // msg->urls = NULL; // via g_malloc0()
-    // msg->ui = NULL; // via g_malloc0()
 
     /* Decorated */
-    msg->dname = g_strdup(user->nick);
+    msg->dname = user ? g_strdup(user->nick) : NULL;
     msg->dcontent = g_strdup(content);
 
     return msg;
@@ -29,9 +29,8 @@ Message* message_new(User *user, const char *content){
 void message_free(Message *msg){
     g_return_if_fail(msg);
 
-    if (msg->user) {
-        // Nothing to do.
-    }
+    if (msg->chat) { /* Nothing to do. */ }
+    if (msg->user) { /* Nothing to do. */ }
 
     if (msg->urls) {
         GSList *lst = msg->urls;
