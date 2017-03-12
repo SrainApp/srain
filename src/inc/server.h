@@ -75,19 +75,11 @@ struct _Chat {
 
 struct _Server {
     volatile ServerStatus stat;
-    // ServerInfo info;
-
-    /* Server profile */
-    char name[NAME_LEN];
-    char host[HOST_LEN];
-    int port;
-    char passwd[PASSWD_LEN];
-    bool ssl;
-    char *encoding;
-
-    time_t last_ping;
+    ServerInfo *info;
     User *user;     // Used to store your nick, username, realname
     Chat *chat;     // Hold all messages that do not belong to any other Chat
+
+    time_t last_ping;
 
     GSList *chat_list;
 
@@ -104,14 +96,18 @@ struct _ServerInfo {
     int port;
     char passwd[PASSWD_LEN];
     bool ssl;
-    char *encoding;
+    const char *encoding;
 };
 
 void server_init();
 void server_finalize();
 
+ServerInfo *server_info_new(const char *name, const char *host, int port,
+        const char *passwd, bool ssl, const char *encoding);
+void server_info_free(ServerInfo *info);
+
 Server* server_new(const char *name, const char *host, int port,
-        const char *passwd, bool ssl, const char *enconding,
+        const char *passwd, bool ssl, const char *encoding,
         const char *nick, const char *username, const char *realname);
 void server_free(Server *srv);
 int server_connect(Server *srv);

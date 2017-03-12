@@ -81,28 +81,16 @@ Server* server_new(const char *name,
         int port,
         const char *passwd,
         bool ssl,
-        const char *enconding,
+        const char *encoding,
         const char *nick,
         const char *username,
         const char *realname){
-    if (!host) return NULL;
-    if (!nick) return NULL;
-    if (!name) name = host;
-    if (!passwd) passwd = "";
-    if (!enconding) enconding = "UTF-8";
-    if (!username) username = PACKAGE_NAME;
-    if (!realname) realname = nick;
-
     Server *srv = g_malloc0(sizeof(Server));
 
-    srv->port = port;
-    srv->ssl = ssl;
     srv->stat = SERVER_UNCONNECTED;
-    /* srv->chat_list = NULL; */ // by g_malloc0()
 
-    g_strlcpy(srv->name, name, sizeof(srv->name));
-    g_strlcpy(srv->host, host, sizeof(srv->host));
-    g_strlcpy(srv->passwd, passwd, sizeof(srv->passwd));
+    srv->info = server_info_new(name, host, port, passwd, ssl, encoding);
+    if (!srv->info) goto bad;
 
     srv->chat = chat_new(srv, META_SERVER);
     if (!srv->chat) goto bad;
@@ -110,6 +98,10 @@ Server* server_new(const char *name,
     srv->user = user_new(srv->chat, nick, username, realname, USER_CHIGUA);
     if (!srv->user) goto bad;
     srv->user->me = TRUE;
+
+    /* srv->chat_list = NULL; */ // by g_malloc0()
+    /* srv->ignore_list = NULL; */ // by g_malloc0()
+    /* srv->brigebot_list = NULL; */ // by g_malloc0()
 
     /* Get IRC handler */
     srv->irc = sirc_new_session(&irc_events, 0);
@@ -124,8 +116,27 @@ bad:
 }
 
 void server_free(Server *srv){
-    GSList *lst;
+    if (srv->info != NULL){
+        server_info_free(srv->info);
+        srv->info = NULL;
+    }
 
+    if (srv->user != NULL){
+        user_free(srv->user);
+        srv->user = NULL;
+    }
+
+    if (srv->chat != NULL){
+        chat_free(srv->chat);
+        srv->chat = NULL;
+    }
+
+    if (srv->irc != NULL){
+        sirc_free_session(srv->irc);
+        srv->irc= NULL;
+    }
+
+    GSList *lst;
     /* Free chat list */
     if (srv->chat_list){
         lst = srv->chat_list;
@@ -139,28 +150,13 @@ void server_free(Server *srv){
         g_slist_free(srv->chat_list);
     }
 
-    if (srv->irc != NULL){
-        sirc_free_session(srv->irc);
-        srv->irc= NULL;
-    }
-
-    if (srv->user != NULL){
-        user_free(srv->user);
-        srv->user = NULL;
-    }
-
-    if (srv->chat != NULL){
-        chat_free(srv->chat);
-        srv->chat = NULL;
-    }
-
     g_free(srv);
 }
 
 int server_connect(Server *srv){
     srv->stat = SERVER_CONNECTING;
 
-    sirc_connect(srv->irc, srv->host, srv->port);
+    sirc_connect(srv->irc, srv->info->host, srv->info->port);
 
     return SRN_OK;
 }

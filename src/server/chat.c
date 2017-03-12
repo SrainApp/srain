@@ -25,7 +25,7 @@ Chat *chat_new(Server *srv, const char *name){
     g_strlcpy(chat->name, name, sizeof(chat->name));
 
     sui_set_ctx(chat->ui, chat);
-    sui_start_session(chat->ui, name, srv->name);
+    sui_start_session(chat->ui, name, srv->info->name);
 
     return chat;
 
