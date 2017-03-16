@@ -13,6 +13,7 @@
 
 #include "server.h"
 
+#include "filter.h"
 #include "decorator.h"
 
 #include "i18n.h"
@@ -28,6 +29,7 @@ int main(int argc, char **argv){
     i18n_init();
     plugin_init();
 
+    filter_init();
     decorator_init();
 
     server_init();

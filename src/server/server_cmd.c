@@ -23,6 +23,7 @@
 #include "meta.h"
 #include "i18n.h"
 #include "command.h"
+#include "filter.h"
 
 typedef struct _ServerCmdContext {
     Server *srv;
@@ -218,7 +219,11 @@ int server_cmd(Server *srv, Chat *chat, const char *cmd){
     ServerCmdContext scctx;
 
     scctx.srv = srv;
-    scctx.chat = chat;
+    if (srv && !chat){
+        scctx.chat = srv->chat;
+    } else {
+        scctx.chat = chat;
+    }
 
     return command_proc(cmd, &scctx);
 }
@@ -296,22 +301,26 @@ static int on_command_unrelay(Command *cmd, void *user_data){
 
 static int on_command_ignore(Command *cmd, void *user_data){
     const char *nick;
+    Chat *chat;
 
     nick = command_get_arg(cmd, 0);
     g_return_val_if_fail(nick, SRN_ERR);
 
-    // TODO
-    return SRN_OK;
+    g_return_val_if_fail(chat = scctx_get_chat(user_data), SRN_ERR);
+
+    return nick_filter_add_nick(chat, nick);
 }
 
 static int on_command_unignore(Command *cmd, void *user_data){
     const char *nick;
+    Chat *chat;
 
     nick = command_get_arg(cmd, 0);
     g_return_val_if_fail(nick, SRN_ERR);
 
-    // TODO
-    return SRN_OK;
+    g_return_val_if_fail(chat = scctx_get_chat(user_data), SRN_ERR);
+
+    return nick_filter_rm_nick(chat, nick);
 }
 
 static int on_command_filter(Command *cmd, void *user_data){

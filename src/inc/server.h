@@ -56,18 +56,19 @@ struct _Message {
     // SuiMessage *ui;
 };
 
-/* Represent a channel or dialog */
+/* Represent a channel or dialog or a server session */
 struct _Chat {
     char name[CHAN_LEN];
     bool joined;
-    User *user;     // Yourself
+    User *user;         // Yourself
 
     GSList *user_list;
-    GList *msg_list;
-    /*
-    GSList *ignore_list;
+    GList *msg_list;    // Not used yet
+
+    /* Used by Filters & Decorators */
+    GSList *ignore_nick_list;
+    GSList *ignore_regex_list;
     GSList *brigebot_list;
-    */
 
     Server *srv;
     SuiSession *ui;
@@ -82,9 +83,6 @@ struct _Server {
     time_t last_ping;
 
     GSList *chat_list;
-
-    GSList *ignore_list;
-    GSList *brigebot_list;
 
     SircSession *irc;
 };
