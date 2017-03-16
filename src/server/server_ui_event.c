@@ -73,7 +73,7 @@ void server_ui_event_send(SuiSession *sui, SuiEvent event, const char *params[],
         }
     } else {
         if (chat) {
-            chat_add_message(chat, chat->user, msg);
+            chat_add_sent_message(chat, msg);
         } else {
             chat_add_error_message(srv->chat, NULL, _("Can not send message to a server"));
         }

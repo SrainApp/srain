@@ -1,5 +1,7 @@
 #include "server.h"
+
 #include "decorator.h"
+#include "filter.h"
 #include "chat_log.h"
 
 #include "sirc/sirc.h"
@@ -125,28 +127,39 @@ User* chat_get_user(Chat *chat, const char *nick){
 
 
 /* TODO: Append message in Chat->msg_list */
-void chat_add_message(Chat *chat, User *user, const char *content){
+void chat_add_sent_message(Chat *chat, const char *content){
+    User *user;
     Message *msg;
     DecoratorFlag flag;
 
+    user = chat->user;
     flag = DECORATOR_PANGO_MARKUP;
     msg = message_new(chat, user, content);
 
-    if (user->me){
-        if (sirc_cmd_msg(chat->srv->irc, chat->name, content) == SRN_OK){
-            if (decorate_message(msg, flag, NULL) == SRN_OK){
-                sui_add_sent_msg(chat->ui, msg->dcontent, 0);
-            }
-        } else {
-            // TODO: chat_add_error_messagef()
-            chat_add_error_message(chat, NULL, "Failed to send message");
+    if (sirc_cmd_msg(chat->srv->irc, chat->name, content) == SRN_OK){
+        if (decorate_message(msg, flag, NULL) == SRN_OK){
+            sui_add_sent_msg(chat->ui, msg->dcontent, 0);
         }
     } else {
-        flag |= DECORATOR_BOT2HUMAN | DECORATOR_MIRC_STRIP;
-        if (decorate_message(msg, flag, NULL) == SRN_OK){
-            sui_add_recv_msg(chat->ui, msg->dname, msg->role, msg->dcontent,
-                    msg->mentioned ? SRAIN_MSG_MENTIONED : 0);
-        }
+        chat_add_error_message_fmt(chat, NULL, "Failed to send message \"%s\"",
+                msg->content);
+    }
+
+    chat_log_fmt(chat->srv->info->name, chat->name, "<%s> %s", user->nick, content);
+
+    message_free(msg);
+}
+
+void chat_add_recv_message(Chat *chat, User *user, const char *content){
+    Message *msg;
+    DecoratorFlag flag;
+
+    flag = DECORATOR_PANGO_MARKUP | DECORATOR_BOT2HUMAN | DECORATOR_MIRC_STRIP;;
+    msg = message_new(chat, user, content);
+
+    if (decorate_message(msg, flag, NULL) == SRN_OK){
+        sui_add_recv_msg(chat->ui, msg->dname, msg->role, msg->dcontent,
+                msg->mentioned ? SRAIN_MSG_MENTIONED : 0);
     }
 
     chat_log_fmt(chat->srv->info->name, chat->name, "<%s> %s", user->nick, content);
@@ -155,7 +168,7 @@ void chat_add_message(Chat *chat, User *user, const char *content){
 }
 
 void chat_add_notice_message(Chat *chat, User *user, const char *content){
-    chat_add_message(chat, user, content);
+    chat_add_recv_message(chat, user, content);
 }
 
 void chat_add_action_message(Chat *chat, User *user, const char *content){

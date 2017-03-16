@@ -334,7 +334,7 @@ void server_irc_event_channel(SircSession *sirc, const char *event,
     g_return_if_fail(chat = server_get_chat(srv, chan));
     g_return_if_fail(user = chat_get_user(chat, origin));
 
-    chat_add_message(chat, user, msg);
+    chat_add_recv_message(chat, user, msg);
 }
 
 void server_irc_event_privmsg(SircSession *sirc, const char *event,
@@ -350,7 +350,7 @@ void server_irc_event_privmsg(SircSession *sirc, const char *event,
     g_return_if_fail(user = chat_get_user(chat, origin));
 
     // FIXME: Get user from a private chat/directly message
-    chat_add_message(chat, user, msg);
+    chat_add_recv_message(chat, user, msg);
 }
 
 void server_irc_event_notice(SircSession *sirc, const char *event,
