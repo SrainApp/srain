@@ -5,11 +5,6 @@
  * @version 1.0
  * @date 2016-03-02
  *
- * FIXME: Calling g_mutex_lock() on a GMutex that has already been locked by
- * the same thread results in undefined behaviour (including but not limited
- * to deadlocks).
- *
- * Use GRWLock instead.
  */
 
 #define __LOG_ON
@@ -33,7 +28,7 @@ struct _SircSession {
     int fd;
     SircSessionFlag flag;
     char buf[SIRC_BUF_LEN];
-    GMutex mutex;  // Buffer lock
+    GRWLock rwlock;  // Buffer lock
     GThread *thread;
 
     SircEvents *events; // Event callbacks
@@ -71,7 +66,7 @@ SircSession* sirc_new_session(SircEvents *events, SircSessionFlag flag){
     sirc->events = events;
     /* sirc->thread = NULL; // via g_malloc0() */
 
-    g_mutex_init(&sirc->mutex);
+    g_rw_lock_init(&sirc->rwlock);
 
     return sirc;
 }
@@ -181,11 +176,12 @@ static void th_sirc_proc(SircSession *sirc){
 static int th_sirc_recv(SircSession *sirc){
     int ret;
 
-    g_mutex_lock(&sirc->mutex);
-
+    g_rw_lock_writer_lock(&sirc->rwlock);
     ret = sck_readline(sirc->fd, sirc->buf, sizeof(sirc->buf));
+    g_rw_lock_writer_unlock(&sirc->rwlock);
 
     if (ret != SRN_ERR){
+        g_rw_lock_reader_lock(&sirc->rwlock);
         g_idle_add_full(G_PRIORITY_HIGH_IDLE,
                 (GSourceFunc)idle_sirc_recv, sirc, NULL);
     } else {
@@ -194,8 +190,6 @@ static int th_sirc_recv(SircSession *sirc){
             g_idle_add_full(G_PRIORITY_HIGH_IDLE,
                     (GSourceFunc)idle_sirc_on_disconnect, sirc, NULL);
         }
-
-        g_mutex_unlock(&sirc->mutex);
     }
 
     return ret;
@@ -212,7 +206,7 @@ static int idle_sirc_recv(SircSession *sirc){
         sirc_event_hdr(sirc, &imsg);
     }
 
-    g_mutex_unlock(&sirc->mutex);
+    g_rw_lock_reader_unlock(&sirc->rwlock);
 
     return FALSE;
 }

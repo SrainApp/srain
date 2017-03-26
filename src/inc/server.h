@@ -87,7 +87,6 @@ struct _Server {
     SircSession *irc;
 };
 
-// TODO: member of Server
 struct _ServerInfo {
     char name[NAME_LEN];
     char host[HOST_LEN];
