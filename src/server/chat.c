@@ -157,7 +157,7 @@ void chat_add_recv_message(Chat *chat, User *user, const char *content){
     flag = DECORATOR_PANGO_MARKUP | DECORATOR_BOT2HUMAN | DECORATOR_MIRC_STRIP;;
     msg = message_new(chat, user, content);
 
-    if (filter_message(msg, FILTER_NICK, NULL)){
+    if (filter_message(msg, FILTER_NICK | FILTER_REGEX, NULL)){
         if (decorate_message(msg, flag, NULL) == SRN_OK){
             sui_add_recv_msg(chat->ui, msg->dname, msg->role, msg->dcontent,
                     msg->mentioned ? SRAIN_MSG_MENTIONED : 0);
@@ -181,7 +181,7 @@ void chat_add_action_message(Chat *chat, User *user, const char *content){
     dflag = DECORATOR_PANGO_MARKUP;
     msg = message_new(chat, user, content);
 
-    if (filter_message(msg, FILTER_NICK, NULL)){
+    if (filter_message(msg, FILTER_NICK | FILTER_REGEX, NULL)){
         if (user->me){
             if (sirc_cmd_action(chat->srv->irc, chat->name, content) != SRN_OK){
                 // ...

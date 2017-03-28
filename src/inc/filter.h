@@ -23,4 +23,7 @@ int nick_filter_add_nick(Chat *chat, const char *nick);
 int nick_filter_rm_nick(Chat *chat, const char *nick);
 void nick_filter_free_nick_list(Chat *chat);
 
+int regex_filter_add_pattern(Chat *chat, const char *name, const char *pattern);
+int regex_filter_rm_pattern(Chat *chat, const char *name);
+
 #endif /* __FILTER_H */

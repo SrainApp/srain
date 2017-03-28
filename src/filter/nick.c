@@ -19,7 +19,7 @@ Filter nick_filter = {
 };
 
 int nick_filter_add_nick(Chat *chat, const char *nick){
-    GSList *lst; 
+    GSList *lst;
 
     lst = chat->ignore_nick_list;
 
@@ -44,7 +44,7 @@ int nick_filter_add_nick(Chat *chat, const char *nick){
 }
 
 int nick_filter_rm_nick(Chat *chat, const char *nick){
-    GSList *lst; 
+    GSList *lst;
 
     lst = chat->ignore_nick_list;
 
@@ -56,7 +56,7 @@ int nick_filter_rm_nick(Chat *chat, const char *nick){
 
                 chat_add_misc_message_fmt(chat, NULL,
                         _("\"%s\" is removed from %s 's ignore list"),
-                        nick, chat->name); 
+                        nick, chat->name);
 
                 return SRN_OK;
             }
@@ -66,7 +66,7 @@ int nick_filter_rm_nick(Chat *chat, const char *nick){
 
     chat_add_error_message_fmt(chat, NULL,
             _("\"%s\" not found in %s 's ignore list"),
-            nick, chat->name); 
+            nick, chat->name);
 
     return SRN_ERR;
 }

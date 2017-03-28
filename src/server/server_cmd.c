@@ -37,9 +37,9 @@ static int on_command_connect(Command *cmd, void *user_data);
 static int on_command_relay(Command *cmd, void *user_data);
 static int on_command_unrelay(Command *cmd, void *user_data);
 static int on_command_ignore(Command *cmd, void *user_data);
-static int on_command_filter(Command *cmd, void *user_data);
-static int on_command_unfilter(Command *cmd, void *user_data);
 static int on_command_unignore(Command *cmd, void *user_data);
+static int on_command_rignore(Command *cmd, void *user_data);
+static int on_command_unrignore(Command *cmd, void *user_data);
 static int on_command_query(Command *cmd, void *user_data);
 static int on_command_unquery(Command *cmd, void *user_data);
 static int on_command_join(Command *cmd, void *user_data);
@@ -94,16 +94,16 @@ static CommandBind cmd_binds[] = {
         on_command_unignore
     },
     {
-        "/filter", 3, // <filter name> <channel> <regex>
-        {NULL},
-        {NULL},
-        on_command_filter
+        "/rignore", 2, // <name> <pattern>
+        {"-cur", NULL},
+        {NULL, NULL},
+        on_command_rignore
     },
     {
-        "/unfilter", 1, // <filter name>
+        "/unrignore", 2, // <name> <pattern>
+        {"-cur", NULL},
         {NULL},
-        {NULL},
-        on_command_unfilter
+        on_command_unrignore
     },
     {
         "/query", 1, // <nick>
@@ -344,14 +344,50 @@ static int on_command_unignore(Command *cmd, void *user_data){
     return nick_filter_rm_nick(chat, nick);
 }
 
-static int on_command_filter(Command *cmd, void *user_data){
-    // TODO
-    return SRN_OK;
+static int on_command_rignore(Command *cmd, void *user_data){
+    const char *name;
+    const char *pattern;
+    Server *srv;
+    Chat *chat;
+
+    name = command_get_arg(cmd, 0);
+    pattern = command_get_arg(cmd, 1);
+    g_return_val_if_fail(name, SRN_ERR);
+    g_return_val_if_fail(pattern, SRN_ERR);
+
+    if (command_get_opt(cmd, "-cur", NULL)){
+        chat = scctx_get_chat(user_data);
+    } else {
+        srv = scctx_get_server(user_data);
+        g_return_val_if_fail(srv, SRN_ERR);
+        chat = srv->chat;
+    }
+
+    g_return_val_if_fail(chat, SRN_ERR);
+
+    return regex_filter_add_pattern(chat, name, pattern);
 }
 
-static int on_command_unfilter(Command *cmd, void *user_data){
-    // TODO
-    return SRN_OK;
+static int on_command_unrignore(Command *cmd, void *user_data){
+    const char *name;
+    const char *pattern;
+    Server *srv;
+    Chat *chat;
+
+    name = command_get_arg(cmd, 0);
+    pattern = command_get_arg(cmd, 1);
+    g_return_val_if_fail(name, SRN_ERR);
+    g_return_val_if_fail(pattern, SRN_ERR);
+
+    if (command_get_opt(cmd, "-cur", NULL)){
+        chat = scctx_get_chat(user_data);
+    } else {
+        srv = scctx_get_server(user_data);
+        g_return_val_if_fail(srv, SRN_ERR);
+        chat = srv->chat;
+    }
+
+    return regex_filter_rm_pattern(chat, pattern);
 }
 
 static int on_command_query(Command *cmd, void *user_data){

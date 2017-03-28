@@ -20,7 +20,7 @@
 #define MAX_FILTER   32  // Bits of a FilterFlag(int)
 
 extern Filter nick_filter;
-// extern Filter regex_filter;
+extern Filter regex_filter;
 
 static Filter *filters[MAX_FILTER];
 
@@ -28,7 +28,7 @@ void filter_init(){
     memset(filters, 0, sizeof(filters));
 
     filters[0] = &nick_filter;
-    // filters[1] = &regex_filter;
+    filters[1] = &regex_filter;
 }
 
 bool filter_message(const Message *msg, FilterFlag flag, void *user_data){
