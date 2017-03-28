@@ -43,10 +43,12 @@ Example::
 
 Command::
 
-    /ignore <nick>
-    /unignore <nick>
+    /ignore [-cur] <nick>
+    /unignore [-cur] <nick>
 
 Ignore/unignore somebody's message.
+
+* ``-cur``: Only ignore in current chat
 
 **The following commands only influence current server**
 

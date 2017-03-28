@@ -83,13 +83,13 @@ static CommandBind cmd_binds[] = {
     },
     {
         "/ignore", 1, // <nick>
-        {NULL},
-        {NULL},
+        {"-cur", NULL},
+        {NULL, NULL},
         on_command_ignore
     },
     {
         "/unignore", 1, // <nick>
-        {NULL},
+        {"-cur", NULL},
         {NULL},
         on_command_unignore
     },
@@ -218,11 +218,16 @@ void server_cmd_init(){
 int server_cmd(Server *srv, Chat *chat, const char *cmd){
     ServerCmdContext scctx;
 
-    scctx.srv = srv;
-    if (srv && !chat){
-        scctx.chat = srv->chat;
-    } else {
-        scctx.chat = chat;
+    scctx.srv = NULL;
+    scctx.chat = NULL;
+
+    if (srv){
+        scctx.srv = srv;
+        if (chat){
+            scctx.chat = chat;
+        } else {
+            scctx.chat = srv->chat;
+        }
     }
 
     return command_proc(cmd, &scctx);
@@ -301,24 +306,40 @@ static int on_command_unrelay(Command *cmd, void *user_data){
 
 static int on_command_ignore(Command *cmd, void *user_data){
     const char *nick;
+    Server *srv;
     Chat *chat;
 
     nick = command_get_arg(cmd, 0);
     g_return_val_if_fail(nick, SRN_ERR);
 
-    g_return_val_if_fail(chat = scctx_get_chat(user_data), SRN_ERR);
+    if (command_get_opt(cmd, "-cur", NULL)){
+        chat = scctx_get_chat(user_data);
+    } else {
+        srv = scctx_get_server(user_data);
+        g_return_val_if_fail(srv, SRN_ERR);
+        chat = srv->chat;
+    }
+
+    g_return_val_if_fail(chat, SRN_ERR);
 
     return nick_filter_add_nick(chat, nick);
 }
 
 static int on_command_unignore(Command *cmd, void *user_data){
     const char *nick;
+    Server *srv;
     Chat *chat;
 
     nick = command_get_arg(cmd, 0);
     g_return_val_if_fail(nick, SRN_ERR);
 
-    g_return_val_if_fail(chat = scctx_get_chat(user_data), SRN_ERR);
+    if (command_get_opt(cmd, "-cur", NULL)){
+        chat = scctx_get_chat(user_data);
+    } else {
+        srv = scctx_get_server(user_data);
+        g_return_val_if_fail(srv, SRN_ERR);
+        chat = srv->chat;
+    }
 
     return nick_filter_rm_nick(chat, nick);
 }
@@ -647,5 +668,5 @@ static Server* scctx_get_server(ServerCmdContext *scctx){
 static Chat* scctx_get_chat(ServerCmdContext *scctx){
     g_return_val_if_fail(scctx, NULL);
 
-    return scctx->chat;
+    return scctx->chat ? scctx->chat : def_srv->chat;
 }
