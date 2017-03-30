@@ -1,5 +1,5 @@
-#define __DBG_ON
-#define __LOG_ON
+// #define __DBG_ON
+// #define __LOG_ON
 
 #include <glib.h>
 #include <string.h>
@@ -11,8 +11,8 @@
 
 #define MAX_DECORATOR   32  // Bits of a DecoratorFlag(int)
 
+extern Decorator relay_decroator;
 extern Decorator mirc_strip_decroator;
-extern Decorator bot2human_decroator;
 extern Decorator pango_markup_decroator;
 
 static Decorator *decorators[MAX_DECORATOR];
@@ -20,7 +20,7 @@ static Decorator *decorators[MAX_DECORATOR];
 void decorator_init(){
     memset(decorators, 0, sizeof(decorators));
 
-    decorators[0] = &bot2human_decroator;
+    decorators[0] = &relay_decroator;
     decorators[2] = &mirc_strip_decroator;
     decorators[3] = &pango_markup_decroator;
 }

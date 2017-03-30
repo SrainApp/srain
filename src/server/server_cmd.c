@@ -71,13 +71,13 @@ static CommandBind cmd_binds[] = {
     },
     {
         "/relay", 1, // <nick>
-        {"-ldelim", "-rdelim", NULL},
-        {"", "", NULL},
+        {"-cur", NULL},
+        {NULL},
         on_command_relay
     },
     {
         "/unrelay", 1, // <nick>
-        {NULL},
+        {"-cur", NULL},
         {NULL},
         on_command_unrelay
     },
@@ -281,27 +281,44 @@ static int on_command_connect(Command *cmd, void *user_data){
 
 static int on_command_relay(Command *cmd, void *user_data){
     const char *nick;
-    char *ldelim, *rdelim;
+    Server *srv;
+    Chat *chat;
 
     nick = command_get_arg(cmd, 0);
     g_return_val_if_fail(nick, SRN_ERR);
 
-    command_get_opt(cmd, "-ldelim", &ldelim);
-    command_get_opt(cmd, "-rdelim", &rdelim);
+    if (command_get_opt(cmd, "-cur", NULL)){
+        chat = scctx_get_chat(user_data);
+    } else {
+        srv = scctx_get_server(user_data);
+        g_return_val_if_fail(srv, SRN_ERR);
+        chat = srv->chat;
+    }
 
-    // TODO
-    return SRN_OK;
-    // return filter_relaybot_list_add(nick, ldelim, rdelim);
+    g_return_val_if_fail(chat, SRN_ERR);
+
+    return relay_decroator_add_nick(chat, nick);
 }
 
 static int on_command_unrelay(Command *cmd, void *user_data){
     const char *nick;
+    Server *srv;
+    Chat *chat;
 
     nick = command_get_arg(cmd, 0);
     g_return_val_if_fail(nick, SRN_ERR);
 
-    // TODO
-    return SRN_OK;
+    if (command_get_opt(cmd, "-cur", NULL)){
+        chat = scctx_get_chat(user_data);
+    } else {
+        srv = scctx_get_server(user_data);
+        g_return_val_if_fail(srv, SRN_ERR);
+        chat = srv->chat;
+    }
+
+    g_return_val_if_fail(chat, SRN_ERR);
+
+    return relay_decroator_rm_nick(chat, nick);
 }
 
 static int on_command_ignore(Command *cmd, void *user_data){

@@ -68,7 +68,7 @@ struct _Chat {
     /* Used by Filters & Decorators */
     GSList *ignore_nick_list;
     GSList *ignore_regex_list;
-    GSList *brigebot_list;
+    GSList *relaybot_list;
 
     Server *srv;
     SuiSession *ui;

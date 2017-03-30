@@ -24,22 +24,17 @@ Example::
 
 Command::
 
-    /relay [-l <ldelim>] [-r <rdelim>] <nick>
-    /unrelay <nick>
+    /relay [-cur] <nick>
+    /unrelay [-cur] <nick>
 
 Flag ``nick`` as a relay bot, show the real nick of the message sender.
-By default, use ``<[({`` as delimiter.
-
-Note:
-    Default delimiter is not available now.
-
-* ``-ldelim``, ``-rdelim``: Specifie custom delimiter
+Use ``[`` and ``]`` as delimiter.
 
 Example::
 
     /relay teleboto
-    # Note: there is a whitespace following the ']'
-    /relay -ldelim '[' -rdelim '] ' teleboto
+
+* ``-cur``: Only effects the current chat
 
 Command::
 
