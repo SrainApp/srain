@@ -77,19 +77,22 @@ void nick_filter_free(Chat *chat, const char *nick){
 }
 
 bool nick(const Message *msg, FilterFlag flag, void *user_data){
+    int i;
     GSList *lst;
 
     g_return_val_if_fail(msg->user, TRUE);
     g_return_val_if_fail(msg->chat, TRUE);
     g_return_val_if_fail(msg->chat->srv, TRUE);
 
-    lst = msg->chat->ignore_nick_list;
-
-    while (lst){
-        if (sirc_nick_cmp(lst->data, msg->user->nick)){
-            return FALSE;
+    for (i = 0, lst = msg->chat->ignore_nick_list;
+            i < 2;
+            i++, lst = msg->chat->srv->chat->ignore_nick_list){
+        while (lst){
+            if (sirc_nick_cmp(lst->data, msg->user->nick)){
+                return FALSE;
+            }
+            lst = g_slist_next(lst);
         }
-        lst = g_slist_next(lst);
     }
 
     return TRUE;
