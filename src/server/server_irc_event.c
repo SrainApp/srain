@@ -529,13 +529,19 @@ void server_irc_event_numeric (SircSession *sirc, int event,
         case SIRC_RFC_RPL_TOPIC:
             {
                 g_return_if_fail(count >= 2);
+                char *dtopic;
                 const char *chan = params[1];
                 const char *topic = msg;
 
                 Chat *chat = server_get_chat(srv, chan);
                 g_return_if_fail(chat);
 
-                sui_set_topic(chat->ui, topic);
+                dtopic = decorate_content(topic, DECORATOR_MIRC_STRIP | DECORATOR_PANGO_MARKUP);
+                if (dtopic){
+                    sui_set_topic(chat->ui, dtopic);
+                    g_free(dtopic);
+                }
+
                 break;
             }
 
