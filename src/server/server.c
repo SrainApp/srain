@@ -148,6 +148,7 @@ void server_free(Server *srv){
             lst = g_slist_next(lst);
         }
         g_slist_free(srv->chat_list);
+        srv->chat_list = NULL;
     }
 
     g_free(srv);

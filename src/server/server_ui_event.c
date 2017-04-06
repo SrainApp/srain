@@ -195,23 +195,15 @@ void server_ui_event_ignore(SuiSession *sui, SuiEvent event, const char *params[
 static Server* ctx_get_server(SuiSession *sui){
     void *ctx;
     Chat *chat;
-    SuiSessionFlag flag;
 
     ctx = sui_get_ctx(sui);
     g_return_val_if_fail(ctx, NULL);
 
-    flag = sui_get_flag(sui);
+    chat = ctx;
 
-    if (flag & SUI_SESSION_SERVER){
-        return ctx;
-    }
-    else if (flag & SUI_SESSION_CHANNEL || flag & SUI_SESSION_DIALOG){
-        chat = ctx;
-        return chat->srv;
-    }
-
-    return NULL;
+    return chat->srv;
 }
+
 /* Get a Chat object SuiSession context (sui->ctx) */
 static Chat* ctx_get_chat(SuiSession *sui){
     void *ctx;

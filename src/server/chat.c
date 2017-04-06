@@ -1,5 +1,8 @@
+#include <string.h>
+
 #include "server.h"
 
+#include "meta.h"
 #include "decorator.h"
 #include "filter.h"
 #include "chat_log.h"
@@ -11,6 +14,7 @@ extern SuiEvents ui_events;
 Chat *chat_new(Server *srv, const char *name){
     bool ischan;
     Chat *chat;
+    SuiSessionFlag flag;
 
     ischan = sirc_is_chan(name);
     chat = g_malloc0(sizeof(Chat));
@@ -19,8 +23,13 @@ Chat *chat_new(Server *srv, const char *name){
     chat->srv = srv;
     chat->user = srv->user;
     chat->user_list = NULL;
-    chat->ui = sui_new_session(&ui_events,
-            ischan ? SUI_SESSION_CHANNEL : SUI_SESSION_DIALOG);
+
+    flag = ischan ? SUI_SESSION_CHANNEL : SUI_SESSION_DIALOG;
+    if (strcmp(META_SERVER, name) == 0){
+        flag = SUI_SESSION_SERVER;
+    }
+
+    chat->ui = sui_new_session(&ui_events, flag);
 
     if (!chat->ui){
         goto bad;
@@ -62,6 +71,7 @@ void chat_free(Chat *chat){
 
     if (chat->ui){
         sui_free_session(chat->ui);
+        chat->ui = NULL;
     }
 
     g_free(chat);
