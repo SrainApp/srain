@@ -31,6 +31,8 @@ struct _SrainStackSidebarItemClass {
 
 G_DEFINE_TYPE(SrainStackSidebarItem, srain_stack_sidebar_item, GTK_TYPE_BOX);
 
+static char *markup_get_text(const char *markup);
+
 static void srain_stack_sidebar_item_init(SrainStackSidebarItem *self){
     gtk_widget_init_template(GTK_WIDGET(self));
 }
@@ -76,13 +78,25 @@ SrainStackSidebarItem *srain_stack_sidebar_item_new(const char *server_name,
 
 void srain_stack_sidebar_item_recentmsg_update(
         SrainStackSidebarItem *item, const char *nick, const char *msg){
-    char buf[512];
+    char *text;
+
+    text = markup_get_text(msg);
+    g_return_if_fail(text);
 
     if (nick){
-        snprintf(buf, sizeof(buf), "%s: %s", nick, msg);
-        gtk_label_set_text(item->recentmsg_label, buf);
+        GString *buf;
+
+        buf = g_string_new(NULL);
+        g_string_printf(buf, "%s: %s", nick, text);
+        gtk_label_set_text(item->recentmsg_label, buf->str);
+
+        g_string_free(buf, TRUE);
     } else {
-        gtk_label_set_text(item->recentmsg_label, msg);
+        gtk_label_set_text(item->recentmsg_label, text);
+    }
+
+    if (text){
+        g_free(text);
     }
 }
 
@@ -101,4 +115,43 @@ void srain_stack_sidebar_item_count_inc(SrainStackSidebarItem *item){
 void srain_stack_sidebar_item_count_clear(SrainStackSidebarItem *item){
     gtk_widget_set_name(GTK_WIDGET(item->count_label), "");
     gtk_label_set_text(item->count_label, "");
+}
+
+static void markup_contact_text(GMarkupParseContext *context, const gchar *text,
+        gsize text_len, gpointer user_data, GError **error){
+    GString **str;
+
+    str = user_data;
+    *str = g_string_append_len(*str, text, text_len);
+}
+
+static char *markup_get_text(const char *markup){
+    char *text;
+    const GMarkupParser parser = {NULL, NULL, markup_contact_text, NULL, NULL};
+    GString *str;
+    GError *err;
+    GMarkupParseContext *ctx;
+
+    str = g_string_new(NULL);
+    ctx = g_markup_parse_context_new(&parser, 0, &str, NULL);
+
+    /* `markup` should be a vaild xml document, so add a root tag for it
+     * ref: https://github.com/GNOME/gtk/blob/master/gtk/gtklabel.c#L2586
+     */
+    g_markup_parse_context_parse(ctx, "<markup>", -1, NULL);
+
+    err = NULL;
+    g_markup_parse_context_parse(ctx, markup, -1, &err);
+    if (err){
+        ERR_FR("%s", err->message);
+    }
+
+    g_markup_parse_context_parse(ctx, "</markup>", -1, NULL);
+    g_markup_parse_context_end_parse(ctx, NULL);
+    g_markup_parse_context_free(ctx);
+
+    text = str->str;
+    g_string_free(str, FALSE);
+
+    return text;
 }
