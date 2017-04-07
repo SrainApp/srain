@@ -7,6 +7,7 @@
 #define DECORATOR_MIRC_COLORIEZ 1 << 1
 #define DECORATOR_MIRC_STRIP    1 << 2
 #define DECORATOR_PANGO_MARKUP  1 << 3
+#define DECORATOR_MENTION       1 << 4
 
 typedef int DecoratorFlag;
 

@@ -164,7 +164,7 @@ void chat_add_recv_message(Chat *chat, User *user, const char *content){
     Message *msg;
     DecoratorFlag flag;
 
-    flag = DECORATOR_PANGO_MARKUP | DECORATOR_RELAY | DECORATOR_MIRC_STRIP;;
+    flag = DECORATOR_PANGO_MARKUP | DECORATOR_RELAY | DECORATOR_MIRC_STRIP | DECORATOR_MENTION;
     msg = message_new(chat, user, content);
 
     if (filter_message(msg, FILTER_NICK | FILTER_REGEX, NULL)){
@@ -197,7 +197,7 @@ void chat_add_action_message(Chat *chat, User *user, const char *content){
                 // ...
             }
         } else {
-            dflag |= DECORATOR_RELAY | DECORATOR_MIRC_STRIP;
+            dflag |= DECORATOR_RELAY | DECORATOR_MIRC_STRIP | DECORATOR_MENTION;
         }
 
         if (decorate_message(msg, dflag, NULL) == SRN_OK){

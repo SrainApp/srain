@@ -14,6 +14,7 @@
 extern Decorator relay_decroator;
 extern Decorator mirc_strip_decroator;
 extern Decorator pango_markup_decroator;
+extern Decorator mention_decroator;
 
 static Decorator *decorators[MAX_DECORATOR];
 
@@ -23,6 +24,7 @@ void decorator_init(){
     decorators[0] = &relay_decroator;
     decorators[2] = &mirc_strip_decroator;
     decorators[3] = &pango_markup_decroator;
+    decorators[4] = &mention_decroator;
 }
 
 int decorate_message(Message *msg, DecoratorFlag flag, void *user_data){
