@@ -56,6 +56,7 @@ static char* patterns[MATCH_MAX + 1] = {
     [MATCH_URL] = URL_PATTERN,
     [MATCH_CHANNEL] = CHANNEL_PATTERN,
     [MATCH_EMAIL] = EMAIL_PATTERN,
+    [MATCH_HOST] = HOST_PATTERN,
 };
 
 static bool match_pattern(const char *pattern, const char *str, int *start, int *end) {
@@ -132,18 +133,22 @@ static int pango_markup(Message *msg, DecoratorFlag flag, void *user_data){
 
             switch(type){
                 case MATCH_URL:
+                case MATCH_HOST:
                     markuped_url = g_markup_printf_escaped("<a href=\"%s\">%s</a>", url, url);
                     break;
                 case MATCH_CHANNEL:
-                    // TODO: get server
-                    markuped_url = g_markup_printf_escaped("<a href=\"irc://%s:%d/%s\">%s</a>",
-                            "irc.freenode.net", 6667, url + 1, url);
+                    if (msg->chat){
+                        markuped_url = g_markup_printf_escaped("<a href=\"irc://%s:%d/%s\">%s</a>",
+                                msg->chat->srv->info->host,
+                                msg->chat->srv->info->port,
+                                url + 1,
+                                url);
+                    } else {
+                        markuped_url = g_markup_escape_text(url, -1);
+                    }
                     break;
                 case MATCH_EMAIL:
                     markuped_url = g_markup_printf_escaped("<a href=\"mailto:%s\">%s</a>", url, url);
-                    break;
-                case MATCH_HOST:
-                    markuped_url = NULL;
                     break;
                 default:
                     markuped_url = NULL;

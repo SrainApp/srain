@@ -8,11 +8,8 @@
 
 #include "decorator.h"
 
-#include "sirc/sirc.h"
-
 #include "srain.h"
 #include "log.h"
-#include "i18n.h"
 
 static int mention(Message *msg, DecoratorFlag flag, void *user_data);
 
