@@ -529,8 +529,7 @@ static int on_command_me(Command *cmd, void *user_data){
     g_return_val_if_fail(msg, SRN_ERR);
 
     if (sirc_cmd_action(srv->irc, chat->name, msg) == SRN_OK) {
-        snprintf(buf, sizeof(buf), _("*** %s %s ***"), srv->user->nick, msg);
-        sui_add_sys_msg(chat->ui, buf, SYS_MSG_ACTION, 0);
+        chat_add_action_message(chat, chat->user->nick, msg);
 
         return SRN_OK;
     } else {

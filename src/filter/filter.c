@@ -21,6 +21,7 @@
 
 extern Filter nick_filter;
 extern Filter regex_filter;
+extern Filter chat_log_filter;
 
 static Filter *filters[MAX_FILTER];
 
@@ -29,6 +30,7 @@ void filter_init(){
 
     filters[0] = &nick_filter;
     filters[1] = &regex_filter;
+    filters[2] = &chat_log_filter;
 }
 
 bool filter_message(const Message *msg, FilterFlag flag, void *user_data){

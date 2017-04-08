@@ -161,14 +161,18 @@ void chat_add_sent_message(Chat *chat, const char *content){
     User *user;
     Message *msg;
     DecoratorFlag dflag;
+    FilterFlag fflag;
 
     user = chat->user;
     dflag = DECORATOR_PANGO_MARKUP;
+    fflag = FILTER_CHAT_LOG;
     msg = message_new(chat, user, content, MESSAGE_SENT);
 
     if (sirc_cmd_msg(chat->srv->irc, chat->name, content) == SRN_OK){
-        if (decorate_message(msg, dflag, NULL) == SRN_OK){
-            sui_add_sent_msg(chat->ui, msg->dcontent, 0);
+        if (filter_message(msg, fflag, NULL)){
+            if (decorate_message(msg, dflag, NULL) == SRN_OK){
+                sui_add_sent_msg(chat->ui, msg->dcontent, 0);
+            }
         }
     } else {
         chat_add_error_message_fmt(chat, chat->user->nick, _("Failed to send message \"%s\""),
@@ -186,7 +190,7 @@ void chat_add_recv_message(Chat *chat, const char *origin, const char *content){
     FilterFlag fflag;
 
     dflag = DECORATOR_PANGO_MARKUP |DECORATOR_RELAY | DECORATOR_MIRC_STRIP | DECORATOR_MENTION;
-    fflag = FILTER_NICK | FILTER_REGEX;
+    fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
 
     user = chat_get_user(chat, origin);
     if (!user){
@@ -215,7 +219,6 @@ void chat_add_notice_message(Chat *chat, const char *origin, const char *content
 
 void chat_add_action_message(Chat *chat, const char *origin, const char *content){
     bool invalid_user = FALSE;
-    char *action_msg;
     User *user;
     Message *msg;
     FilterFlag fflag;
@@ -228,20 +231,26 @@ void chat_add_action_message(Chat *chat, const char *origin, const char *content
     }
 
     dflag = DECORATOR_PANGO_MARKUP;
-    fflag = FILTER_NICK | FILTER_REGEX;
+    fflag = FILTER_CHAT_LOG;
 
     msg = message_new(chat, user, content, MESSAGE_ACTION);
 
-    if (filter_message(msg, fflag, NULL)){
-        if (user->me){
-            if (sirc_cmd_action(chat->srv->irc, chat->name, content) != SRN_OK){
-                // ...
-            }
-        } else {
-            dflag |= DECORATOR_RELAY | DECORATOR_MIRC_STRIP | DECORATOR_MENTION;
+    if (user->me){
+        if (sirc_cmd_action(chat->srv->irc, chat->name, content) != SRN_OK){
+            chat_add_error_message_fmt(chat, user->nick,
+                    _("Failed to send action message \"%s\""),
+                    msg->content);
+            return;
         }
+    } else {
+        fflag |= FILTER_NICK | FILTER_REGEX;
+        dflag |= DECORATOR_RELAY | DECORATOR_MIRC_STRIP | DECORATOR_MENTION;
+    }
 
+    if (filter_message(msg, fflag, NULL)){
         if (decorate_message(msg, dflag, NULL) == SRN_OK){
+            char *action_msg;
+
             action_msg = g_strdup_printf(_("*** <b>%s</b> %s***"),
                     msg->dname, msg->dcontent);
 
@@ -272,7 +281,7 @@ void chat_add_misc_message(Chat *chat, const char *origin, const char *content){
     }
 
     dflag = DECORATOR_PANGO_MARKUP;
-    fflag = FILTER_NICK | FILTER_REGEX;
+    fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
     msg = message_new(chat, user, content, MESSAGE_MISC);
 
     if (filter_message(msg, fflag, NULL)){
@@ -314,7 +323,7 @@ void chat_add_error_message(Chat *chat, const char *origin, const char *content)
     }
 
     dflag = DECORATOR_PANGO_MARKUP;
-    fflag = FILTER_NICK | FILTER_REGEX;
+    fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
     msg = message_new(chat, user, content, MESSAGE_ERROR);
 
     if (filter_message(msg, fflag, NULL)){

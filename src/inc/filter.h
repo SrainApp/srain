@@ -4,8 +4,9 @@
 #include "srain.h"
 #include "server.h"
 
-#define FILTER_NICK     1 << 0
-#define FILTER_REGEX    1 << 1
+#define FILTER_NICK         1 << 0
+#define FILTER_REGEX        1 << 1
+#define FILTER_CHAT_LOG     1 << 2
 
 typedef int FilterFlag;
 

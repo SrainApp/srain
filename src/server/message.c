@@ -17,9 +17,9 @@ Message* message_new(Chat *chat, User *user, const char *content, MessageType ty
     msg->chat = chat;
     // msg->role = NULL; // via g_malloc0()
     msg->content = g_strdup(content);
-    // msg->time = ...;
+    time(&msg->time);
     msg->mentioned = FALSE;
-    msg->type = MESSAGE_UNKNOWN;
+    msg->type = type;
     // msg->urls = NULL; // via g_malloc0()
 
     /* Decorated */
