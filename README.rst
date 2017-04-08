@@ -79,6 +79,15 @@ As you see, its theme is inspired by Telegram Desktop.
 
 .. image:: http://img.tjm.moe/47/ceece073d29563da0c22ab6e8e8c3cdc534113.png
 
+Need Help?
+----------
+
+Feel free to contact me if you have any question about srain.
+
+- **IRC Channel**: `#srain <irc://irc.freenode.net/srain>`_ at freenode
+- Email: silverrainz at outlook dot com
+- Github: file a issue `Here <https://github.com/SilverRainZ/srain/issues>`_
+
 License
 -------
 
