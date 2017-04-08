@@ -5,7 +5,7 @@
 #include "meta.h"
 #include "decorator.h"
 #include "filter.h"
-#include "chat_log.h"
+#include "i18n.h"
 
 #include "sirc/sirc.h"
 
@@ -16,12 +16,14 @@ Chat *chat_new(Server *srv, const char *name){
     Chat *chat;
     SuiSessionFlag flag;
 
+    g_return_val_if_fail(name, NULL);
+
     ischan = sirc_is_chan(name);
     chat = g_malloc0(sizeof(Chat));
 
     chat->joined = FALSE;
     chat->srv = srv;
-    chat->user = srv->user;
+    chat->user = user_ref(srv->user);
     chat->user_list = NULL;
 
     flag = ischan ? SUI_SESSION_CHANNEL : SUI_SESSION_DIALOG;
@@ -40,6 +42,12 @@ Chat *chat_new(Server *srv, const char *name){
     sui_set_ctx(chat->ui, chat);
     sui_start_session(chat->ui, name, srv->info->name);
 
+    /* Require chat->ui */
+    chat_add_user_full(chat, chat->user);
+    if (flag == SUI_SESSION_DIALOG){
+        chat_add_user(chat, chat->name, USER_CHIGUA);
+    }
+
     return chat;
 
 bad:
@@ -55,7 +63,8 @@ bad:
 
 void chat_free(Chat *chat){
     /* Free user list */
-    chat->user = NULL;
+    user_free(chat->user);
+
     if (chat->user_list){
         GSList *lst = chat->user_list;
         while (lst){
@@ -78,23 +87,34 @@ void chat_free(Chat *chat){
 }
 
 int chat_add_user(Chat *chat, const char *nick, UserType type){
-    GSList *lst;
+    int ret;
     User *user;
+
+
+    user = user_new(chat, nick, NULL, NULL, type);
+    ret = chat_add_user_full(chat, user);
+    user_free(user);
+
+    return ret;
+}
+
+int chat_add_user_full(Chat *chat, User *user){
+    GSList *lst;
+    User *user2;
 
     lst = chat->user_list;
     while (lst){
-        user = lst->data;
-        if (sirc_nick_cmp(user->nick, nick)){
+        user2 = lst->data;
+        if (sirc_nick_cmp(user2->nick, user->nick)){
             return SRN_ERR;
         }
         lst = g_slist_next(lst);
     }
 
-    user = user_new(chat, nick, NULL, NULL, type);
     g_return_val_if_fail(user, SRN_ERR);
 
-    chat->user_list = g_slist_append(chat->user_list, user);
-    sui_add_user(chat->ui, nick, type);
+    chat->user_list = g_slist_append(chat->user_list, user_ref(user));
+    sui_add_user(chat->ui, user->nick, user->type);
 
     return SRN_OK;
 }
@@ -144,54 +164,75 @@ void chat_add_sent_message(Chat *chat, const char *content){
 
     user = chat->user;
     dflag = DECORATOR_PANGO_MARKUP;
-    msg = message_new(chat, user, content);
+    msg = message_new(chat, user, content, MESSAGE_SENT);
 
     if (sirc_cmd_msg(chat->srv->irc, chat->name, content) == SRN_OK){
         if (decorate_message(msg, dflag, NULL) == SRN_OK){
             sui_add_sent_msg(chat->ui, msg->dcontent, 0);
         }
     } else {
-        chat_add_error_message_fmt(chat, NULL, "Failed to send message \"%s\"",
+        chat_add_error_message_fmt(chat, chat->user->nick, _("Failed to send message \"%s\""),
                 msg->content);
     }
 
-    chat_log_fmt(chat->srv->info->name, chat->name, "<%s> %s", user->nick, content);
-
     message_free(msg);
 }
 
-void chat_add_recv_message(Chat *chat, User *user, const char *content){
+void chat_add_recv_message(Chat *chat, const char *origin, const char *content){
+    bool invalid_user = FALSE;
+    User *user;
     Message *msg;
-    DecoratorFlag flag;
+    DecoratorFlag dflag;
+    FilterFlag fflag;
 
-    flag = DECORATOR_PANGO_MARKUP | DECORATOR_RELAY | DECORATOR_MIRC_STRIP | DECORATOR_MENTION;
-    msg = message_new(chat, user, content);
+    dflag = DECORATOR_PANGO_MARKUP |DECORATOR_RELAY | DECORATOR_MIRC_STRIP | DECORATOR_MENTION;
+    fflag = FILTER_NICK | FILTER_REGEX;
 
-    if (filter_message(msg, FILTER_NICK | FILTER_REGEX, NULL)){
-        if (decorate_message(msg, flag, NULL) == SRN_OK){
+    user = chat_get_user(chat, origin);
+    if (!user){
+        user = user_new(chat, origin, NULL, NULL, USER_CHIGUA);
+        invalid_user = TRUE;
+    }
+
+    msg = message_new(chat, user, content, MESSAGE_RECV);
+
+    if (filter_message(msg, fflag, NULL)){
+        if (decorate_message(msg, dflag, NULL) == SRN_OK){
             sui_add_recv_msg(chat->ui, msg->dname, msg->role, msg->dcontent,
                     msg->mentioned ? SRAIN_MSG_MENTIONED : 0);
         }
-
-        chat_log_fmt(chat->srv->info->name, chat->name, "<%s> %s", user->nick, content);
     }
 
+    if (invalid_user){
+        user_free(user);
+    }
     message_free(msg);
 }
 
-void chat_add_notice_message(Chat *chat, User *user, const char *content){
-    chat_add_recv_message(chat, user, content);
+void chat_add_notice_message(Chat *chat, const char *origin, const char *content){
+    chat_add_recv_message(chat, origin, content);
 }
 
-void chat_add_action_message(Chat *chat, User *user, const char *content){
+void chat_add_action_message(Chat *chat, const char *origin, const char *content){
+    bool invalid_user = FALSE;
     char *action_msg;
+    User *user;
     Message *msg;
+    FilterFlag fflag;
     DecoratorFlag dflag;
 
-    dflag = DECORATOR_PANGO_MARKUP;
-    msg = message_new(chat, user, content);
+    user = chat_get_user(chat, origin);
+    if (!user){
+        user = user_new(chat, origin, NULL, NULL, USER_CHIGUA);
+        invalid_user = TRUE;
+    }
 
-    if (filter_message(msg, FILTER_NICK | FILTER_REGEX, NULL)){
+    dflag = DECORATOR_PANGO_MARKUP;
+    fflag = FILTER_NICK | FILTER_REGEX;
+
+    msg = message_new(chat, user, content, MESSAGE_ACTION);
+
+    if (filter_message(msg, fflag, NULL)){
         if (user->me){
             if (sirc_cmd_action(chat->srv->irc, chat->name, content) != SRN_OK){
                 // ...
@@ -201,7 +242,7 @@ void chat_add_action_message(Chat *chat, User *user, const char *content){
         }
 
         if (decorate_message(msg, dflag, NULL) == SRN_OK){
-            action_msg = g_strdup_printf("*** <b>%s</b> %s***",
+            action_msg = g_strdup_printf(_("*** <b>%s</b> %s***"),
                     msg->dname, msg->dcontent);
 
             sui_add_sys_msg(chat->ui, action_msg, SYS_MSG_ACTION,
@@ -209,29 +250,44 @@ void chat_add_action_message(Chat *chat, User *user, const char *content){
 
             g_free(action_msg);
         }
-
-        chat_log_fmt(chat->srv->info->name, chat->name, "* %s %s", user->nick, content);
     }
 
+    if (invalid_user){
+        user_free(user);
+    }
     message_free(msg);
 }
 
-void chat_add_misc_message(Chat *chat, User *user, const char *content){
-    char *dcontent;
+void chat_add_misc_message(Chat *chat, const char *origin, const char *content){
+    bool invalid_user = FALSE;
+    User *user;
+    Message *msg;
     DecoratorFlag dflag;
+    FilterFlag fflag;
 
-    dflag = DECORATOR_PANGO_MARKUP;
-    dcontent = decorate_content(content, dflag);
-
-    if (dcontent){
-        sui_add_sys_msg(chat->ui, dcontent, SYS_MSG_NORMAL, 0);
-        g_free(dcontent);
+    user = chat_get_user(chat, origin);
+    if (!user){
+        user = user_new(chat, origin, NULL, NULL, USER_CHIGUA);
+        invalid_user = TRUE;
     }
 
-    chat_log_fmt(chat->srv->info->name, chat->name, "- %s %s", user->nick, content);
+    dflag = DECORATOR_PANGO_MARKUP;
+    fflag = FILTER_NICK | FILTER_REGEX;
+    msg = message_new(chat, user, content, MESSAGE_MISC);
+
+    if (filter_message(msg, fflag, NULL)){
+        if (decorate_message(msg, dflag, NULL) == SRN_OK){
+            sui_add_sys_msg(chat->ui, msg->dcontent, SYS_MSG_NORMAL, 0);
+        }
+    }
+
+    if (invalid_user){
+        user_free(user);
+    }
+    message_free(msg);
 }
 
-void chat_add_misc_message_fmt(Chat *chat, User *user, const char *fmt, ...){
+void chat_add_misc_message_fmt(Chat *chat, const char *origin, const char *fmt, ...){
     char *content;
     va_list args;
 
@@ -239,27 +295,41 @@ void chat_add_misc_message_fmt(Chat *chat, User *user, const char *fmt, ...){
     content = g_strdup_vprintf(fmt, args);
     va_end(args);
 
-    chat_add_misc_message(chat, user, content);
+    chat_add_misc_message(chat, origin, content);
 
     g_free(content);
 }
 
-void chat_add_error_message(Chat *chat, User *user, const char *content){
-    char *dcontent;
+void chat_add_error_message(Chat *chat, const char *origin, const char *content){
+    bool invalid_user = FALSE;
+    User *user;
+    Message *msg;
     DecoratorFlag dflag;
+    FilterFlag fflag;
 
-    dflag = DECORATOR_PANGO_MARKUP;
-    dcontent = decorate_content(content, dflag);
-
-    if (dcontent){
-        sui_add_sys_msg(chat->ui, dcontent, SYS_MSG_ERROR, 0);
-        g_free(dcontent);
+    user = chat_get_user(chat, origin);
+    if (!user){
+        user = user_new(chat, origin, NULL, NULL, USER_CHIGUA);
+        invalid_user = TRUE;
     }
 
-    chat_log_fmt(chat->srv->info->name, chat->name, "! %s %s", user->nick, content);
+    dflag = DECORATOR_PANGO_MARKUP;
+    fflag = FILTER_NICK | FILTER_REGEX;
+    msg = message_new(chat, user, content, MESSAGE_ERROR);
+
+    if (filter_message(msg, fflag, NULL)){
+        if (decorate_message(msg, dflag, NULL) == SRN_OK){
+            sui_add_sys_msg(chat->ui, msg->dcontent, SYS_MSG_ERROR, 0);
+        }
+    }
+
+    if (invalid_user){
+        user_free(user);
+    }
+    message_free(msg);
 }
 
-void chat_add_error_message_fmt(Chat *chat, User *user, const char *fmt, ...){
+void chat_add_error_message_fmt(Chat *chat, const char *origin, const char *fmt, ...){
     char *content;
     va_list args;
 
@@ -267,7 +337,32 @@ void chat_add_error_message_fmt(Chat *chat, User *user, const char *fmt, ...){
     content = g_strdup_vprintf(fmt, args);
     va_end(args);
 
-    chat_add_error_message(chat, user, content);
+    chat_add_error_message(chat, origin, content);
 
     g_free(content);
+}
+
+void chat_set_topic(Chat *chat, const char *origin, const char *topic){
+    bool invalid_user = FALSE;
+    User *user;
+    Message *msg;
+    DecoratorFlag dflag;
+
+    user = chat_get_user(chat, origin);
+    if (!user){
+        user = user_new(chat, origin, NULL, NULL, USER_CHIGUA);
+        invalid_user = TRUE;
+    }
+
+    dflag = DECORATOR_MIRC_STRIP | DECORATOR_PANGO_MARKUP;
+    msg = message_new(chat, user, topic, MESSAGE_UNKNOWN);
+
+    if (decorate_message(msg, dflag, NULL) == SRN_OK){
+        sui_set_topic(chat->ui, msg->dcontent);
+    }
+
+    if (invalid_user){
+        user_free(user);
+    }
+    message_free(msg);
 }

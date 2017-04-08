@@ -53,6 +53,7 @@ int decorate_message(Message *msg, DecoratorFlag flag, void *user_data){
     return SRN_OK;
 }
 
+/*
 char* decorate_content(const char *content, DecoratorFlag flag){
     char *dcontent;
 
@@ -68,3 +69,4 @@ char* decorate_content(const char *content, DecoratorFlag flag){
 
     return dcontent;
 }
+*/

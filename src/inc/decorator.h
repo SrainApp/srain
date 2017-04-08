@@ -20,7 +20,7 @@ typedef struct _Decorator {
 
 void decorator_init();
 int decorate_message(Message *msg, DecoratorFlag flag, void *user_data);
-char* decorate_content(const char *content, DecoratorFlag flag);
+// char* decorate_content(const char *content, DecoratorFlag flag);
 
 int relay_decroator_add_nick(Chat *chat, const char *nick);
 int relay_decroator_rm_nick(Chat *chat, const char *nick);

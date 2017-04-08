@@ -17,7 +17,11 @@ typedef enum {
     SYS_MSG_ACTION
 } SysMsgType;
 
-typedef enum {
+typedef int SrainMsgFlag;
+
+typedef enum _UserType UserType;
+
+enum _UserType {
     USER_CHIGUA,    // No prefix
     USER_OWNER,     // ~ mode +q
     USER_ADMIN,     // & mode +a
@@ -26,9 +30,7 @@ typedef enum {
     USER_VOICED,    // + mode +v
     /* ... */
     USER_TYPE_MAX
-} UserType;
-
-typedef int SrainMsgFlag;
+};
 
 #define SRAIN_MSG_MENTIONED 0x1
 

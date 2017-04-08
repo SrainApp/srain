@@ -1,5 +1,5 @@
-// #define __DBG_ON
-// #define __LOG_ON
+#define __DBG_ON
+#define __LOG_ON
 
 #include <glib.h>
 
@@ -26,20 +26,18 @@ int relay_decroator_add_nick(Chat *chat, const char *nick){
     lst = chat->relaybot_list;
 
     while(lst){
-        if (lst->data){
-            if (sirc_nick_cmp(lst->data, nick)){
-                chat_add_error_message_fmt(chat, NULL,
-                        _("\"%s\" already exists in %s 's relaybot list"),
-                        nick, chat->name);
-                return SRN_ERR;
-            }
+        if (sirc_nick_cmp(lst->data, nick)){
+            chat_add_error_message_fmt(chat, chat->user->nick,
+                    _("\"%s\" already exists in %s 's relaybot list"),
+                    nick, chat->name);
+            return SRN_ERR;
         }
         lst = g_slist_next(lst);
     }
 
     chat->relaybot_list = g_slist_append(chat->relaybot_list, g_strdup(nick));
 
-    chat_add_misc_message_fmt(chat, NULL,
+    chat_add_misc_message_fmt(chat, chat->user->nick,
             _("\"%s\" has added to %s 's relaybot list"), nick, chat->name);
 
     return SRN_OK;
@@ -56,7 +54,7 @@ int relay_decroator_rm_nick(Chat *chat, const char *nick){
                 g_free(lst->data);
                 chat->relaybot_list = g_slist_delete_link(chat->relaybot_list, lst);
 
-                chat_add_misc_message_fmt(chat, NULL,
+                chat_add_misc_message_fmt(chat, chat->user->nick,
                         _("\"%s\" is removed from %s 's relaybot list"),
                         nick, chat->name);
 
@@ -66,7 +64,7 @@ int relay_decroator_rm_nick(Chat *chat, const char *nick){
         lst = g_slist_next(lst);
     }
 
-    chat_add_error_message_fmt(chat, NULL,
+    chat_add_error_message_fmt(chat, chat->user->nick,
             _("\"%s\" not found in %s 's relaybot list"),
             nick, chat->name);
 

@@ -137,15 +137,11 @@ static int pango_markup(Message *msg, DecoratorFlag flag, void *user_data){
                     markuped_url = g_markup_printf_escaped("<a href=\"%s\">%s</a>", url, url);
                     break;
                 case MATCH_CHANNEL:
-                    if (msg->chat){
-                        markuped_url = g_markup_printf_escaped("<a href=\"irc://%s:%d/%s\">%s</a>",
-                                msg->chat->srv->info->host,
-                                msg->chat->srv->info->port,
-                                url + 1,
-                                url);
-                    } else {
-                        markuped_url = g_markup_escape_text(url, -1);
-                    }
+                    markuped_url = g_markup_printf_escaped("<a href=\"irc://%s:%d/%s\">%s</a>",
+                            msg->chat->srv->info->host,
+                            msg->chat->srv->info->port,
+                            url + 1,
+                            url);
                     break;
                 case MATCH_EMAIL:
                     markuped_url = g_markup_printf_escaped("<a href=\"mailto:%s\">%s</a>", url, url);

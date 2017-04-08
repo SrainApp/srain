@@ -16,18 +16,24 @@
 #define USER_LEN        128
 #define CHAN_LEN        200
 
+typedef enum   _MessageType MessageType;
 typedef struct _Message Message;
+// typedef struct _UserType UserType;
 typedef struct _User User;
 typedef struct _Chat Chat;
-typedef struct _Server Server;
+typedef enum   _ServerStatus ServerStatus;
 typedef struct _ServerInfo ServerInfo;
+typedef struct _Server Server;
 
-typedef enum {
-    SERVER_UNCONNECTED,
-    SERVER_CONNECTING,
-    SERVER_CONNECTED,
-    SERVER_DISCONNECTED,
-} ServerStatus;
+/*enum _UserType {
+    USER_CHIGUA,    // No prefix
+    USER_OWNER,     // ~ mode +q
+    USER_ADMIN,     // & mode +a
+    USER_FULL_OP,   // @ mode +o
+    USER_HALF_OP,   // % mode +h
+    USER_VOICED,    // + mode +v
+    USER_TYPE_MAX
+}; */
 
 struct _User {
     char nick[NICK_LEN];
@@ -35,10 +41,21 @@ struct _User {
     char realname[NICK_LEN];
 
     bool me;
+    int refcount;
     UserType type;
 
     Chat *chat;
     // SuiUser *ui;
+};
+
+enum _MessageType {
+    MESSAGE_UNKNOWN,
+    MESSAGE_RECV,
+    MESSAGE_SENT,
+    MESSAGE_ACTION,
+    MESSAGE_NOTICE,
+    MESSAGE_MISC,
+    MESSAGE_ERROR,
 };
 
 struct _Message {
@@ -51,6 +68,7 @@ struct _Message {
     char *dcontent; // Decorated message content
     time_t time;
     bool mentioned;
+    MessageType type;
 
     GSList *urls;   // URLs contains in message, like "http://xxx", "irc://xxx"
     // SuiMessage *ui;
@@ -72,6 +90,13 @@ struct _Chat {
 
     Server *srv;
     SuiSession *ui;
+};
+
+enum _ServerStatus {
+    SERVER_UNCONNECTED,
+    SERVER_CONNECTING,
+    SERVER_CONNECTED,
+    SERVER_DISCONNECTED,
 };
 
 struct _Server {
@@ -117,23 +142,26 @@ Chat* server_get_chat_fallback(Server *srv, const char *name);
 Chat *chat_new(Server *srv, const char *name);
 void chat_free(Chat *chat);
 int chat_add_user(Chat *chat, const char *nick, UserType type);
+int chat_add_user_full(Chat *chat, User *user);
 int chat_rm_user(Chat *chat, const char *nick);
 User* chat_get_user(Chat *chat, const char *nick);
 void chat_add_sent_message(Chat *chat, const char *content);
-void chat_add_recv_message(Chat *chat, User *user, const char *content);
-void chat_add_action_message(Chat *chat, User *user, const char *content);
-void chat_add_notice_message(Chat *chat, User *user, const char *content);
-void chat_add_misc_message(Chat *chat, User *user, const char *content);
-void chat_add_misc_message_fmt(Chat *chat, User *user, const char *fmt, ...);
-void chat_add_error_message(Chat *chat, User *user, const char *content);
-void chat_add_error_message_fmt(Chat *chat, User *user, const char *fmt, ...);
+void chat_add_recv_message(Chat *chat, const char *origin, const char *content);
+void chat_add_action_message(Chat *chat, const char *origin, const char *content);
+void chat_add_notice_message(Chat *chat, const char *origin, const char *content);
+void chat_add_misc_message(Chat *chat, const char *origin, const char *content);
+void chat_add_misc_message_fmt(Chat *chat, const char *origin, const char *fmt, ...);
+void chat_add_error_message(Chat *chat, const char *origin, const char *content);
+void chat_add_error_message_fmt(Chat *chat, const char *origin, const char *fmt, ...);
+void chat_set_topic(Chat *chat, const char *origin, const char *topic);
 
 User *user_new(Chat *chat, const char *nick, const char *username, const char *realname, UserType type);
+User *user_ref(User *user);
 void user_free(User *user);
 void user_rename(User *user, const char *new_nick);
 void user_set_type(User *user, UserType type);
 
-Message* message_new(Chat *chat, User *user, const char *content);
+Message* message_new(Chat *chat, User *user, const char *content, MessageType type);
 void message_free(Message *msg);
 
 #endif /* __SERVER_H */

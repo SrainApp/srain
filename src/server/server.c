@@ -85,7 +85,9 @@ Server* server_new(const char *name,
         const char *nick,
         const char *username,
         const char *realname){
-    Server *srv = g_malloc0(sizeof(Server));
+    Server *srv;
+
+    srv = g_malloc0(sizeof(Server));
 
     srv->stat = SERVER_UNCONNECTED;
 
@@ -98,6 +100,10 @@ Server* server_new(const char *name,
     srv->user = user_new(srv->chat, nick, username, realname, USER_CHIGUA);
     if (!srv->user) goto bad;
     srv->user->me = TRUE;
+
+    // FIXME: Corss-required between chat_new() and user_new()
+    srv->chat->user = user_ref(srv->user);
+    chat_add_user_full(srv->chat, srv->user);
 
     /* srv->chat_list = NULL; */ // by g_malloc0()
     /* srv->ignore_list = NULL; */ // by g_malloc0()

@@ -4,7 +4,7 @@ ServerInfo *server_info_new(const char *name, const char *host, int port,
         const char *passwd, bool ssl, const char *encoding){
     ServerInfo *info;
 
-    if (!host) return NULL;
+    g_return_val_if_fail(host, NULL);
     if (!name) name = host;
     if (!passwd) passwd = "";
     if (!encoding) encoding = "UTF-8";
@@ -23,5 +23,6 @@ ServerInfo *server_info_new(const char *name, const char *host, int port,
 }
 
 void server_info_free(ServerInfo *info){
+    g_return_if_fail(info);
     g_free(info);
 }

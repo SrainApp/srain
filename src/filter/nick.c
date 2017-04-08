@@ -24,20 +24,18 @@ int nick_filter_add_nick(Chat *chat, const char *nick){
     lst = chat->ignore_nick_list;
 
     while(lst){
-        if (lst->data){
-            if (sirc_nick_cmp(lst->data, nick)){
-                chat_add_error_message_fmt(chat, NULL,
-                        _("\"%s\" already exists in %s 's ignore list"),
-                        nick, chat->name);
-                return SRN_ERR;
-            }
+        if (sirc_nick_cmp(lst->data, nick)){
+            chat_add_error_message_fmt(chat, chat->user->nick,
+                    _("\"%s\" already exists in %s 's ignore list"),
+                    nick, chat->name);
+            return SRN_ERR;
         }
         lst = g_slist_next(lst);
     }
 
     chat->ignore_nick_list = g_slist_append(chat->ignore_nick_list, g_strdup(nick));
 
-    chat_add_misc_message_fmt(chat, NULL,
+    chat_add_misc_message_fmt(chat, chat->user->nick,
             _("\"%s\" has added to %s 's ignore list"), nick, chat->name);
 
     return SRN_OK;
@@ -54,7 +52,7 @@ int nick_filter_rm_nick(Chat *chat, const char *nick){
                 g_free(lst->data);
                 chat->ignore_nick_list = g_slist_delete_link(chat->ignore_nick_list, lst);
 
-                chat_add_misc_message_fmt(chat, NULL,
+                chat_add_misc_message_fmt(chat, chat->user->nick,
                         _("\"%s\" is removed from %s 's ignore list"),
                         nick, chat->name);
 
@@ -64,7 +62,7 @@ int nick_filter_rm_nick(Chat *chat, const char *nick){
         lst = g_slist_next(lst);
     }
 
-    chat_add_error_message_fmt(chat, NULL,
+    chat_add_error_message_fmt(chat, chat->user->nick,
             _("\"%s\" not found in %s 's ignore list"),
             nick, chat->name);
 
@@ -88,7 +86,7 @@ bool nick(const Message *msg, FilterFlag flag, void *user_data){
             i < 2;
             i++, lst = msg->chat->srv->chat->ignore_nick_list){
         while (lst){
-            if (sirc_nick_cmp(lst->data, msg->user->nick)){
+            if (sirc_nick_cmp(lst->data, msg->dname)){
                 return FALSE;
             }
             lst = g_slist_next(lst);
