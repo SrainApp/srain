@@ -34,7 +34,7 @@ static int mention(Message *msg, DecoratorFlag flag, void *user_data){
     DBG_FR("Generated pattern: %s", pattern);
 
     err = NULL;
-    regex = g_regex_new(pattern, 0, 0, &err);
+    regex = g_regex_new(pattern, G_REGEX_CASELESS, 0, &err);
     if (!regex){
         ERR_FR("g_regex_new() failed: %s", err->message);
         return SRN_ERR;
