@@ -34,10 +34,11 @@ void server_irc_event_connect(SircSession *sirc, const char *event){
     Server *srv;
     User *user;
 
-    g_return_if_fail(srv = sirc_get_ctx(sirc));
+    srv = sirc_get_ctx(sirc);
+    g_return_if_fail(srv);
 
-    srv->stat = SERVER_CONNECTED;
     user = srv->user;
+    srv->stat = SERVER_CONNECTED;
 
     chat_add_misc_message_fmt(srv->chat, "", _("Connected to %s(%s:%d)"),
             srv->info->name, srv->info->host, srv->info->port);

@@ -6,9 +6,10 @@
 typedef int SircSessionFlag;
 typedef struct _SircSession SircSession;
 
-#define SIRC_SESSION_SSL        1 << 0 // Not support yet
-#define SIRC_SESSION_NOVERIFY   1 << 1 // Not support yet
-#define SIRC_SESSION_SASL       1 << 2 // Not support yet
+#define SIRC_SESSION_SSL            1 << 0
+#define SIRC_SESSION_SSL_NOTVERIFY  1 << 1
+#define SIRC_SESSION_SASL           1 << 2 // Not support yet
+#define SIRC_SESSION_IPV6           1 << 3 // Not support yet
 
 #define SIRC_BUF_LEN    513
 
