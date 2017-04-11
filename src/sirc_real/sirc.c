@@ -1,6 +1,6 @@
 /**
  * @file sirc.c
- * @brief IRC module interface
+ * @brief Srain IRC library
  * @author Shengyu Zhang <lastavengers@outlook.com>
  * @version 1.0
  * @date 2016-03-02
@@ -10,18 +10,13 @@
 #define __LOG_ON
 #define __DBG_ON
 
-#include <unistd.h>
-#include <errno.h>
-#include <string.h>
-#include <sys/time.h>
-#include <sys/types.h>
 #include <glib.h>
 #include <gio/gio.h>
 
 #include "sirc/sirc.h"
 #include "sirc_parse.h"
 #include "sirc_event_hdr.h"
-#include "socket.h"
+#include "io_stream.h"
 
 #include "srain.h"
 #include "log.h"
@@ -39,26 +34,19 @@ struct _SircSession {
     void *ctx;
 };
 
-typedef struct {
-    SircSession *sirc;
-    char *host;
-    int port;
-} ThreadData;
+static void sirc_proc(SircSession *sirc);
 
 /* NOTE: The "th_" prefix means that this function invoked in a seprate thread.
  */
 static void th_sirc_proc(SircSession *sirc);
 static int th_sirc_recv(SircSession *sirc);
 
-/* NOTE: The "idle_" prefix means that this function invoked as a idle function
- * in GLib main thread(main loop).
- */
-static int on_recv(SircSession *sirc);
-static int on_disconnect(SircSession *sirc);
-
 static void on_connect_ready(GObject *obj, GAsyncResult *result, gpointer user_data);
 static gboolean on_accept_certificate(GTlsClientConnection *conn,
         GTlsCertificate *cert, GTlsCertificateFlags errors, gpointer user_data);
+static void connect_finish(SircSession *sirc);
+static int on_recv(SircSession *sirc);
+static int on_disconnect(SircSession *sirc);
 
 SircSession* sirc_new_session(SircEvents *events, SircSessionFlag flag){
     SircSession *sirc;
@@ -97,6 +85,12 @@ int sirc_get_fd(SircSession *sirc){
     return sirc->fd;
 }
 
+GIOStream* sirc_get_stream(SircSession *sirc){
+    g_return_val_if_fail(sirc, NULL);
+
+    return sirc->stream;
+}
+
 SircSessionFlag sirc_get_flag(SircSession *sirc){
     /* Don't return SRN_ERR(-1 0xffffffff) */
     g_return_val_if_fail(sirc, 0);
@@ -133,6 +127,9 @@ void sirc_connect(SircSession *sirc, const char *host, int port){
 
 void sirc_disconnect(SircSession *sirc){
     g_return_if_fail(sirc);
+
+    g_object_unref(sirc->stream);
+    sirc->stream = NULL;
 }
 
 static void sirc_proc(SircSession *sirc){
@@ -156,17 +153,16 @@ static int th_sirc_recv(SircSession *sirc){
     int ret;
 
     g_rw_lock_writer_lock(&sirc->rwlock);
-    ret = sck_readline(sirc->fd, sirc->buf, sizeof(sirc->buf));
-    // ret = io_stream_readline(sirc->fd, sirc->buf, sizeof(sirc->buf));
+    ret = io_stream_readline(sirc->stream, sirc->buf, sizeof(sirc->buf));
     g_rw_lock_writer_unlock(&sirc->rwlock);
 
-    if (ret != SRN_ERR){
+    if (ret != -1){
         g_rw_lock_reader_lock(&sirc->rwlock);
         g_idle_add_full(G_PRIORITY_HIGH_IDLE,
                 (GSourceFunc)on_recv, sirc, NULL);
     } else {
-        /* sirc->fd == -1 means connection closed by sirc_disconnect() */
-        if (sirc->fd != -1) {
+        /* sirc->stream == NULL means connection closed by sirc_disconnect() */
+        if (sirc->stream) {
             g_idle_add_full(G_PRIORITY_HIGH_IDLE,
                     (GSourceFunc)on_disconnect, sirc, NULL);
         }
@@ -189,21 +185,20 @@ static int on_recv(SircSession *sirc){
 
 static gboolean on_accept_certificate(GTlsClientConnection *conn,
         GTlsCertificate *cert, GTlsCertificateFlags errors, gpointer user_data){
-    LOG_FR ("Certificate would have been rejected ( ");
+    WARN_FR("Certificate error, ignore it:");
 
     if (errors & G_TLS_CERTIFICATE_UNKNOWN_CA)
-        g_print ("unknown-ca ");
+        WARN_FR("unknown-ca ");
     if (errors & G_TLS_CERTIFICATE_BAD_IDENTITY)
-        g_print ("bad-identity ");
+        WARN_FR("bad-identity ");
     if (errors & G_TLS_CERTIFICATE_NOT_ACTIVATED)
-        g_print ("not-activated ");
+        WARN_FR("not-activated ");
     if (errors & G_TLS_CERTIFICATE_EXPIRED)
-        g_print ("expired ");
+        WARN_FR("expired ");
     if (errors & G_TLS_CERTIFICATE_REVOKED)
-        g_print ("revoked ");
+        WARN_FR("revoked ");
     if (errors & G_TLS_CERTIFICATE_INSECURE)
-        g_print ("insecure ");
-    g_print (") but accepting anyway.\n");
+        WARN_FR("insecure ");
 
     return TRUE;
 }
@@ -227,7 +222,7 @@ static void on_handshake_ready(GObject *obj, GAsyncResult *res, gpointer user_da
     g_object_unref(sirc->stream);
     sirc->stream = G_IO_STREAM(tls_conn);
 
-    sirc->events->connect(sirc, "CONNECT");
+    connect_finish(sirc);
 }
 
 static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data){
@@ -260,9 +255,8 @@ static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data
              g_tls_client_connection_set_validation_flags(
                      G_TLS_CLIENT_CONNECTION(tls_conn), 0);
          } else {
-             // FIXME
              g_tls_client_connection_set_validation_flags(
-                     G_TLS_CLIENT_CONNECTION(tls_conn), 0);
+                     G_TLS_CLIENT_CONNECTION(tls_conn), G_TLS_CERTIFICATE_VALIDATE_ALL);
          }
 
          g_signal_connect(tls_conn, "accept-certificate",
@@ -279,7 +273,7 @@ static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data
     if (sirc->flag & SIRC_SESSION_SSL){
         // ...
     } else {
-        sirc->events->connect(sirc, "CONNECT");
+        connect_finish(sirc);
     }
 }
 
@@ -287,4 +281,10 @@ static int on_disconnect(SircSession *sirc){
     sirc->events->disconnect(sirc, "DISCONNECT");
 
     return FALSE;
+}
+
+static void connect_finish(SircSession *sirc){
+    sirc->events->connect(sirc, "CONNECT");
+
+    sirc_proc(sirc);
 }

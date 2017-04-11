@@ -22,15 +22,11 @@
 /**
  * @brief Parsing IRC raw data
  *
- * @param line A buffer contains ONE IRC raw message (without the trailing "\n\r")
- * @param imsg A pointer points to a pre-allocated IRCMsg strcture, used to
- *               store parsing result
+ * @param line A buffer contains ONE IRC raw message (without the trailing "\r\n")
+ * @param imsg A pointer points to a pre-allocated SircIrcMessage strcture,
+ *             used to store parsed result
  *
- * @return IRC message type, (OUT-OF-DATA)
- *      - SIRC_MSG_MESSAGE: recv a normal message
- *      - SIRC_MSG_PING/NOTICE/ERROR: serve message that do not need to care by IRC user
- *        (after you recv SIRC_MSG_ERROR, connection maybe closed by server)
- *      - SIRC_MSG_UNKNOWN: unrecognized
+ * @return SRN_OK if no error occurred.
  */
 int sirc_parse(char *line, SircMessage *imsg){
     memset(imsg, 0, sizeof(SircMessage));

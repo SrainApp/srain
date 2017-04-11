@@ -24,6 +24,7 @@
 #include "i18n.h"
 #include "command.h"
 #include "filter.h"
+#include "decorator.h"
 
 typedef struct _ServerCmdContext {
     Server *srv;
@@ -241,6 +242,7 @@ static int on_command_connect(Command *cmd, void *user_data){
     const char *host;
     const char *nick;
     char *port, *passwd, *ssl, *realname;
+    bool use_ssl;
 
     host = command_get_arg(cmd, 0);
     nick = command_get_arg(cmd, 1);
@@ -253,16 +255,9 @@ static int on_command_connect(Command *cmd, void *user_data){
     command_get_opt(cmd, "-ssl", &ssl);
     command_get_opt(cmd, "-realname", &realname);
 
-    /*
-    if (strcmp(ssl, "on") == 0) flag |= SRV_SESSION_FLAG_SSL;
-    if (strcmp(ssl, "noverify") == 0){
-        flag |= SRV_SESSION_FLAG_SSL | SRV_SESSION_FLAG_SSL_NOVERIFY;
-    }
-    */
+    use_ssl = (strcmp(ssl, "on") == 0);
 
-    if (*passwd == '\0') passwd = NULL;
-
-    Server *srv = server_new(host, host, atoi(port), passwd, FALSE, "UTF-8",
+    Server *srv = server_new(host, host, atoi(port), passwd, use_ssl, "UTF-8",
             nick, PACKAGE_NAME, realname);
 
     g_return_val_if_fail(srv, SRN_ERR);
@@ -517,7 +512,6 @@ static int on_command_msg(Command *cmd, void *user_data){
 }
 
 static int on_command_me(Command *cmd, void *user_data){
-    char buf[512];
     const char *msg;
     Server *srv;
     Chat *chat;

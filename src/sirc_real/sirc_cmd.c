@@ -17,7 +17,7 @@
 #include <string.h>
 
 #include "sirc/sirc.h"
-#include "socket.h"
+#include "io_stream.h"
 
 #include "srain.h"
 #include "log.h"
@@ -158,12 +158,7 @@ int sirc_cmd_raw(SircSession *sirc, const char *fmt, ...){
         len = 512;
     }
 
-    int ret = sck_send(sirc_get_fd(sirc), buf, len);
-    if (ret == SRN_ERR){
-        return SRN_ERR;
-    }
     // TODO send it totally
-    // if (ret < len) ...
-
-    return SRN_OK;
+    return (io_stream_write(sirc_get_stream(sirc), buf, len) < 0) ?
+        SRN_ERR : SRN_OK;
 }
