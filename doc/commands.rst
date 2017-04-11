@@ -1,3 +1,7 @@
+========
+Commands
+========
+
 Command::
 
     /connect [-port <port>] [-ssl on|off|noverify] [-realname <realname>] [-passwd <passwd>] <srv_name> <host>

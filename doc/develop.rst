@@ -1,12 +1,15 @@
+=========
 Srain Doc
 =========
 
 Current version：0.05
 
 Summary
--------
+=======
 
 Srain 致力于实现一个轻量/美观/易用的现代化 IRC 客户端。
+
+.. warning:: Out of date
 
 当前项目的目录结构如下::
 
@@ -26,7 +29,7 @@ Srain 致力于实现一个轻量/美观/易用的现代化 IRC 客户端。
         └── ui      // 界面
 
 Codeing Style
--------------
+=============
 
 * Public header 用 ``__XXX_H`` 形式
 * 提倡在函数开头统一声明变量，而不是即用即声明，方便释放的时候统一处理
@@ -58,13 +61,13 @@ Codeing Style
 * 单元测试：考虑引入 libcheck
 
 Python Plugin
--------------
+=============
 
 插件以 ``插件名.py`` 形式命名，放置在 ``$PREFIX/usr/share/srain/plugins`` 或者
 ``$HOME/.config/srain/plugins`` 下，程序启动时（``plguin_init``）会自动加载。
 
 avatar
-******
+------
 
 根据 ``token`` 和 ``nick`` 接收一个 nick，下载 36x36 的头像图片到 ``path``，以
 ``nick`` 命名
@@ -75,7 +78,7 @@ avatar
         pass
 
 upload
-******
+------
 
 接收一个本地文件的路径 ``img`` ，将文件上传到指定的图床并返回对应的 url
 
@@ -85,16 +88,18 @@ upload
         pass
 
 scrshot
-*******
+-------
 
 调用外部工具截屏并上传，TODO
 
 Test
-----
+====
 
 我不知道怎么写测试…… :-(
 
 Internal Interface
-------------------
+==================
 
 0.05 所用的基于字符串的接口不灵活且繁琐，已弃用。
+
+.. warning:: TODO
