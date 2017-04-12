@@ -402,8 +402,10 @@ void server_irc_event_ctcp_action(SircSession *sirc, const char *event,
     g_return_if_fail(count >= 1);
     const char *chan = params[0];
 
-    g_return_if_fail(srv = sirc_get_ctx(sirc));
-    g_return_if_fail(chat = server_get_chat(srv, chan));
+    srv = sirc_get_ctx(sirc);
+    g_return_if_fail(srv);
+    chat = server_get_chat_fallback(srv, chan);
+    g_return_if_fail(chat);
 
     chat_add_action_message(chat, origin, msg);
 }
@@ -594,7 +596,7 @@ void server_irc_event_numeric (SircSession *sirc, int event,
             {
                 // Error message
                 if (event >= 400 && event < 600){
-                    chat_add_error_message_fmt(srv->chat, origin, _("ERROR[%3d]: %s"), event, msg);
+                    chat_add_error_message_fmt(srv->cur_chat, origin, _("ERROR[%3d]: %s"), event, msg);
                     return;
                 }
 
