@@ -336,8 +336,10 @@ void server_irc_event_privmsg(SircSession *sirc, const char *event,
 
     g_return_if_fail(msg);
     g_return_if_fail(count >= 0);
-    g_return_if_fail(srv = sirc_get_ctx(sirc));
-    g_return_if_fail(chat = server_get_chat(srv, origin));
+    srv = sirc_get_ctx(sirc);
+    g_return_if_fail(srv);
+    chat = server_get_chat_fallback(srv, origin);
+    g_return_if_fail(chat);
 
     chat_add_recv_message(chat, origin, msg);
 }
@@ -351,9 +353,10 @@ void server_irc_event_notice(SircSession *sirc, const char *event,
     g_return_if_fail(count >= 1);
     const char *target = params[0];
 
-    g_return_if_fail(srv = sirc_get_ctx(sirc));
+    srv = sirc_get_ctx(sirc);
+    g_return_if_fail(srv);
 
-    chat = server_get_chat_fallback(srv, target);
+    chat = server_get_chat_fallback(srv, origin);
     g_return_if_fail(chat);
 
     chat_add_notice_message(chat, origin, msg);
@@ -526,7 +529,7 @@ void server_irc_event_numeric (SircSession *sirc, int event,
                 const char *user = params[2];
                 const char *host = params[3];
                 const char *realname = msg;
-                chat_add_misc_message_fmt(srv->chat, origin, "%s <%s@%s> %s",
+                chat_add_misc_message_fmt(srv->cur_chat, origin, "%s <%s@%s> %s",
                         nick, user, host, realname);
                 // TODO pass NULL ui to send to current chat
                 plugin_avatar(nick, realname);
@@ -535,27 +538,27 @@ void server_irc_event_numeric (SircSession *sirc, int event,
         case SIRC_RFC_RPL_WHOISCHANNELS:
             {
                 g_return_if_fail(count >= 3);
-                chat_add_misc_message_fmt(srv->chat, origin, _("%s is member of %s"), params[1], params[2]);
+                chat_add_misc_message_fmt(srv->cur_chat, origin, _("%s is member of %s"), params[1], params[2]);
                 break;
             }
         case SIRC_RFC_RPL_WHOISSERVER:
             {
                 g_return_if_fail(count >= 4);
-                chat_add_misc_message_fmt(srv->chat, origin, _("%s is attached to %s at \"%s\""),
+                chat_add_misc_message_fmt(srv->cur_chat, origin, _("%s is attached to %s at \"%s\""),
                         params[1], params[2], params[3]);
                 break;
             }
         case SIRC_RFC_RPL_WHOISIDLE:
             {
                 g_return_if_fail(count >= 4); // TODO: resolve timestamp
-                chat_add_misc_message_fmt(srv->chat, origin, _("%s is idle for %s seconds since %s"),
+                chat_add_misc_message_fmt(srv->cur_chat, origin, _("%s is idle for %s seconds since %s"),
                         params[1], params[2], params[3]);
                 break;
             }
         case SIRC_RFC_RPL_WHOWAS_TIME:
             {
                 g_return_if_fail(count >= 3);
-                chat_add_misc_message_fmt(srv->chat, origin, _("%s %s %s"),
+                chat_add_misc_message_fmt(srv->cur_chat, origin, _("%s %s %s"),
                         params[1], msg, params[2]);
                 break;
             }
@@ -563,12 +566,12 @@ void server_irc_event_numeric (SircSession *sirc, int event,
         case SIRC_RFC_RPL_WHOISSECURE:
             {
                 g_return_if_fail(count >= 2);
-                chat_add_misc_message_fmt(srv->chat, origin, _("%s %s"), params[1], msg);
+                chat_add_misc_message_fmt(srv->cur_chat, origin, _("%s %s"), params[1], msg);
                 break;
             }
         case SIRC_RFC_RPL_ENDOFWHOIS:
             {
-                chat_add_misc_message(srv->chat, origin, msg);
+                chat_add_misc_message(srv->cur_chat, origin, msg);
                 break;
             }
 

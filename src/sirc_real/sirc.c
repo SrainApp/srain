@@ -44,7 +44,7 @@ static int th_sirc_recv(SircSession *sirc);
 static void on_connect_ready(GObject *obj, GAsyncResult *result, gpointer user_data);
 static gboolean on_accept_certificate(GTlsClientConnection *conn,
         GTlsCertificate *cert, GTlsCertificateFlags errors, gpointer user_data);
-static void connect_finish(SircSession *sirc);
+static void on_connect_finish(SircSession *sirc);
 static int on_recv(SircSession *sirc);
 static int on_disconnect(SircSession *sirc);
 
@@ -214,6 +214,10 @@ static void on_handshake_ready(GObject *obj, GAsyncResult *res, gpointer user_da
     err = NULL;
     if (!g_tls_connection_handshake_finish(tls_conn, res, &err)){
         ERR_FR("TLS handshake failed: %s", err->message);
+
+        sirc_disconnect(sirc);
+        on_disconnect(sirc);
+
         return;
     }
 
@@ -222,13 +226,14 @@ static void on_handshake_ready(GObject *obj, GAsyncResult *res, gpointer user_da
     g_object_unref(sirc->stream);
     sirc->stream = G_IO_STREAM(tls_conn);
 
-    connect_finish(sirc);
+    on_connect_finish(sirc);
 }
 
 static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data){
     GError *err;
     GSocketClient *client;
     GSocketConnection *conn;
+    GSocketAddress *addr;
     SircSession *sirc;
 
     client = G_SOCKET_CLIENT(obj);
@@ -238,9 +243,22 @@ static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data
 
     if (!conn){
         ERR_FR("Connect failed: %d, %s", err->code, err->message);
+        on_disconnect(sirc);
     } else {
         DBG_FR("Connected");
     }
+
+    err = NULL;
+    addr = g_socket_connection_get_remote_address(conn, &err);
+
+    if (!addr){
+        ERR_FR("Get remote address : %d, %s", err->code, err->message);
+    } else {
+        // DBG_FR("Remote address: %");
+        // TODO: show remote address
+        g_object_unref(addr);
+    }
+
 
     if (sirc->flag & SIRC_SESSION_SSL){
          GIOStream *tls_conn;
@@ -273,7 +291,7 @@ static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data
     if (sirc->flag & SIRC_SESSION_SSL){
         // ...
     } else {
-        connect_finish(sirc);
+        on_connect_finish(sirc);
     }
 }
 
@@ -283,7 +301,7 @@ static int on_disconnect(SircSession *sirc){
     return FALSE;
 }
 
-static void connect_finish(SircSession *sirc){
+static void on_connect_finish(SircSession *sirc){
     sirc->events->connect(sirc, "CONNECT");
 
     sirc_proc(sirc);

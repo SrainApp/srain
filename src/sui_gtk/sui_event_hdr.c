@@ -86,6 +86,10 @@ void sui_event_hdr(SuiSession *sui, SuiEvent event, const char *params[], int co
             g_return_if_fail(events->ignore);
             events->ignore(sui, event, params, count);
             break;
+        case SUI_EVENT_CUTOVER:
+            g_return_if_fail(events->cutover);
+            events->cutover(sui, event, params, count);
+            break;
         default:
             ERR_FR("No such SuiEvent: %d", event);
     }

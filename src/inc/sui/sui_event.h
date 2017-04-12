@@ -18,6 +18,7 @@ typedef enum {
     SUI_EVENT_INVITE,
     SUI_EVENT_WHOIS,
     SUI_EVENT_IGNORE,
+    SUI_EVENT_CUTOVER,
 } SuiEvent;
 
 typedef void (*SuiAppEventCallback) (SuiEvent event,
@@ -37,6 +38,7 @@ typedef struct {
     SuiEventCallback invite;
     SuiEventCallback whois;
     SuiEventCallback ignore;
+    SuiEventCallback cutover;
 } SuiEvents;
 
 typedef struct {

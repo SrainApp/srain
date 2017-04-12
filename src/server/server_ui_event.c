@@ -188,10 +188,23 @@ void server_ui_event_ignore(SuiSession *sui, SuiEvent event, const char *params[
     g_return_if_fail(count == 1);
     nick = params[0];
 
-    // TODO: ignore filter
 }
 
-/* Get a Server object SuiSession context (sui->ctx) */
+void server_ui_event_cutover(SuiSession *sui, SuiEvent event, const char *params[], int count){
+    Server *srv;
+    Chat *chat;
+
+    g_return_if_fail(count == 0);
+
+    srv = ctx_get_server(sui);
+    g_return_if_fail(srv);
+    chat = ctx_get_chat(sui);
+    g_return_if_fail(chat);
+
+    srv->cur_chat = chat;
+}
+
+/* Get a Server object from SuiSession context (sui->ctx) */
 static Server* ctx_get_server(SuiSession *sui){
     void *ctx;
     Chat *chat;
@@ -204,22 +217,7 @@ static Server* ctx_get_server(SuiSession *sui){
     return chat->srv;
 }
 
-/* Get a Chat object SuiSession context (sui->ctx) */
+/* Get a Chat object from SuiSession context (sui->ctx) */
 static Chat* ctx_get_chat(SuiSession *sui){
-    void *ctx;
-    SuiSessionFlag flag;
-
-    ctx = sui_get_ctx(sui);
-    g_return_val_if_fail(ctx, NULL);
-
-    flag = sui_get_flag(sui);
-
-    if (flag & SUI_SESSION_SERVER){
-        return NULL;
-    }
-    else if (flag & SUI_SESSION_CHANNEL || flag & SUI_SESSION_DIALOG){
-        return ctx;
-    }
-
-    return NULL;
+    return sui_get_ctx(sui);
 }

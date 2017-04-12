@@ -107,6 +107,7 @@ struct _Server {
 
     time_t last_ping;
 
+    Chat *cur_chat;
     GSList *chat_list;
 
     SircSession *irc;

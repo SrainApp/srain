@@ -16,5 +16,6 @@ void server_ui_event_kick(SuiSession *sui, SuiEvent event, const char *params[],
 void server_ui_event_invite(SuiSession *sui, SuiEvent event, const char *params[], int count);
 void server_ui_event_whois(SuiSession *sui, SuiEvent event, const char *params[], int count);
 void server_ui_event_ignore(SuiSession *sui, SuiEvent event, const char *params[], int count);
+void server_ui_event_cutover(SuiSession *sui, SuiEvent event, const char *params[], int count);
 
 #endif /* __UI_EVENT_H */

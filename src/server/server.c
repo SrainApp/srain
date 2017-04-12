@@ -32,6 +32,7 @@ static GSList *server_list;
 
 void server_init(){
     /* UI event */
+    ui_events.disconnect = server_ui_event_disconnect;
     ui_events.send = server_ui_event_send;
     ui_events.join = server_ui_event_join;
     ui_events.part = server_ui_event_part;
@@ -41,7 +42,7 @@ void server_init(){
     ui_events.invite = server_ui_event_invite;
     ui_events.whois = server_ui_event_whois;
     ui_events.ignore = server_ui_event_ignore;
-    ui_events.disconnect = server_ui_event_disconnect;
+    ui_events.cutover = server_ui_event_cutover;
 
     ui_app_events.activate = server_ui_event_activate;
     ui_app_events.connect = server_ui_event_connect;
@@ -106,6 +107,7 @@ Server* server_new(const char *name,
     srv->chat->user = user_ref(srv->user);
     chat_add_user_full(srv->chat, srv->user);
 
+    srv->cur_chat = srv->chat;
     /* srv->chat_list = NULL; */ // by g_malloc0()
     /* srv->ignore_list = NULL; */ // by g_malloc0()
     /* srv->brigebot_list = NULL; */ // by g_malloc0()
@@ -209,6 +211,9 @@ int server_rm_chat(Server *srv, const char *name){
         if (strcasecmp(chat->name, name) == 0){
             g_return_val_if_fail(!chat->joined, SRN_ERR);
 
+            if (srv->cur_chat == chat){
+                srv->cur_chat = srv->chat;
+            }
             chat_free(chat);
             srv->chat_list = g_slist_delete_link(srv->chat_list, lst);
 
@@ -236,7 +241,16 @@ Chat* server_get_chat(Server *srv, const char *name) {
     return NULL;
 }
 
-/* This function never fail, if name is NULL or not chat found, return Server->chat instead. */
+/**
+ * @brief server_get_chat_fallback
+ *        This function never fail, if name is NULL or not chat found, return
+ *        `srv->chat` instead.
+ *
+ * @param srv
+ * @param name
+ *
+ * @return A instance of Chat
+ */
 Chat* server_get_chat_fallback(Server *srv, const char *name) {
     Chat *chat;
 

@@ -38,6 +38,7 @@
 #include "srain_stack_sidebar_item.h"
 #include "srain_chat.h"
 #include "sui_common.h"
+#include "sui_event_hdr.h"
 
 #include "log.h"
 
@@ -183,15 +184,21 @@ clear_sidebar(SrainStackSidebar *sidebar){
 }
 
 static void
-on_child_chatged(GtkWidget *widget, GParamSpec *pspec, SrainStackSidebar *sidebar){
+on_child_changed(GtkWidget *widget, GParamSpec *pspec, SrainStackSidebar *sidebar){
     GtkWidget *child;
     GtkWidget *row;
+    SrainChat *chat;
 
     child = gtk_stack_get_visible_child(GTK_STACK(widget));
+    g_return_if_fail(SRAIN_IS_CHAT(child));
+    chat = SRAIN_CHAT(child);
+
     row = g_hash_table_lookup(sidebar->rows, child);
     if (row != NULL) {
         gtk_list_box_select_row(sidebar->list, GTK_LIST_BOX_ROW(row));
     }
+
+    sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_CUTOVER, NULL, 0);
 }
 
 static void
@@ -208,7 +215,7 @@ static void
 disconnect_stack_signals(SrainStackSidebar *sidebar){
     g_signal_handlers_disconnect_by_func(sidebar->stack, on_stack_child_added, sidebar);
     g_signal_handlers_disconnect_by_func(sidebar->stack, on_stack_child_removed, sidebar);
-    g_signal_handlers_disconnect_by_func(sidebar->stack, on_child_chatged, sidebar);
+    g_signal_handlers_disconnect_by_func(sidebar->stack, on_child_changed, sidebar);
     g_signal_handlers_disconnect_by_func(sidebar->stack, disconnect_stack_signals, sidebar);
 }
 
@@ -216,7 +223,7 @@ static void
 connect_stack_signals(SrainStackSidebar *sidebar){
     g_signal_connect_after(sidebar->stack, "add", G_CALLBACK(on_stack_child_added), sidebar);
     g_signal_connect_after(sidebar->stack, "remove", G_CALLBACK(on_stack_child_removed), sidebar);
-    g_signal_connect(sidebar->stack, "notify::visible-child", G_CALLBACK(on_child_chatged), sidebar);
+    g_signal_connect(sidebar->stack, "notify::visible-child", G_CALLBACK(on_child_changed), sidebar);
     g_signal_connect_swapped(sidebar->stack, "destroy", G_CALLBACK(disconnect_stack_signals), sidebar);
 }
 
