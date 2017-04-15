@@ -6,8 +6,8 @@
  * @date 2017-03-16
  */
 
-#define __DBG_ON
-#define __LOG_ON
+// #define __DBG_ON
+// #define __LOG_ON
 
 #include <glib.h>
 #include <string.h>

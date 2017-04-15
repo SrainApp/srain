@@ -1,4 +1,4 @@
-#define __DBG_ON
+// #define __DBG_ON
 
 #include "server.h"
 #include "log.h"
