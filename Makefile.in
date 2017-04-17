@@ -15,7 +15,7 @@ PACKAGE_BUILD = $(shell [ -d .git ] && \
 PACKAGE_VERSION = 0.05$(PACKAGE_BUILD)
 PACKAGE_AUTHOR = Shengyu Zhang
 PACKAGE_EMAIL = silverrainz@outlook.com
-PACKAGE_DESC = It does not look like an IRC client.
+PACKAGE_DESC = Modern, beautiful IRC client written in GTK+ 3.
 PACKAGE_WEBSITE = https://github.com/SilverRainZ/srain
 PACKAGE_DATA_DIR = $(PREFIX)
 
