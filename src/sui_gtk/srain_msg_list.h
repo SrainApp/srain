@@ -18,6 +18,10 @@ void srain_msg_list_sys_msg_add(SrainMsgList *list, const char *msg, SysMsgType 
 void srain_msg_list_send_msg_add(SrainMsgList *list, const char *msg, SrainMsgFlag flag);
 void srain_msg_list_recv_msg_add(SrainMsgList *list, const char *nick, const char *id, const char *msg, SrainMsgFlag flag);
 
+void srain_msg_list_add_sys_msg(SrainMsgList *list, SrainSysMsg *msg);
+void srain_msg_list_add_send_msg(SrainMsgList *list, SrainSendMsg *msg);
+void srain_msg_list_add_recv_msg(SrainMsgList *list, SrainRecvMsg *msg);
+
 void srain_msg_list_scroll_up(SrainMsgList *list, double step);
 void srain_msg_list_scroll_down(SrainMsgList *list, double step);
 

@@ -29,8 +29,18 @@ struct _SuiSession{
 
     SuiSessionFlag flag;
     SuiEvents *events;
+
     void *ctx;
 };
+
+struct  _SuiMessage {
+    SrainMsg *msg;
+
+    SuiMessageType type;
+    SuiMessageFlag flag;
+
+    void *ctx;
+}
 
 SuiAppEvents *app_events = NULL;
 
@@ -326,4 +336,43 @@ void sui_set_topic(SuiSession *sui, const char *topic){
     g_return_if_fail(SRAIN_IS_CHAT(chat));
 
     srain_chat_set_topic(chat, topic);
+}
+
+SuiMessage* sui_add_message(SuiSession *sui, const char *nick, const char *msg,
+        const char *time, const char *remark, SuiMessageType type,
+        SuiMessageFlag flag){
+    SrainChat *chat;
+    SrainMsgList *list;
+    SuiMessage *smsg;
+
+    g_return_val_if_fail(sui, NULL);
+    g_return_val_if_fail(sui, msg);
+
+    smsg = g_malloc0(sizeof(SuiMessage));
+
+    smsg->flag = flag;
+    smsg->type = type;
+
+    switch (smsg->type){
+        case SUI_MESSAGE_MISC:
+        case SUI_MESSAGE_SENT:
+
+    }
+}
+
+void sui_message_set_ctx(SuiMessage *smsg, void *ctx){
+    g_return_if_fail(smsg);
+
+    smsg->ctx = ctx;
+}
+
+void *sui_message_get_ctx(SuiMessage *smsg){
+    g_return_if_fail(smsg);
+
+    return smsg->ctx;
+}
+
+void sui_message_append_image(SuiMessage *smsg, const char *url){
+    g_return_if_fail(smsg);
+    // TODO
 }
