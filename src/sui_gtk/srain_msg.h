@@ -4,20 +4,13 @@
 #include <gtk/gtk.h>
 
 #include "sui/sui.h"
+#include "sui_message.h"
 
 #define SRAIN_MSG_MAX_LEN 512
 
 /* ================ SRAIN_SRAIN_MSG ================ */
 
-struct _SrainMsg {
-    GtkBox parent;
-    SrainMsgFlag flag;
-    GtkLabel *msg_label;
-    GtkLabel *time_label;
-    GtkBox *padding_box;
-};
-
-typedef struct _SrainMsg SrainMsg;
+typedef struct _SuiMessage SrainMsg;
 
 #define SRAIN_MSG(obj) ((SrainMsg *) obj)
 #define SRAIN_IS_MSG(obj) \
@@ -30,11 +23,7 @@ int srain_msg_append_msg(SrainMsg *smsg, const char *msg, SrainMsgFlag flag);
 /* ================ SRAIN_SYS_MSG ================ */
 
 struct _SrainSysMsg {
-    GtkBox parent;
-    SrainMsgFlag flag;
-    GtkLabel *msg_label;
-    GtkLabel *time_label;
-    GtkBox *padding_box;
+    SUI_MESSAGE;
 
     SysMsgType type;
 };
@@ -55,11 +44,7 @@ SrainSysMsg* srain_sys_msg_new(const char *msg, SysMsgType type, SrainMsgFlag fl
 
 /* ================ SRAIN_SEND_MSG ================ */
 struct _SrainSendMsg {
-    GtkBox parent;
-    SrainMsgFlag flag;
-    GtkLabel *msg_label;
-    GtkLabel *time_label;
-    GtkBox *padding_box;
+    SUI_MESSAGE;
 
     GString *image_path;
 };
@@ -80,11 +65,7 @@ SrainSendMsg *srain_send_msg_new(const char *msg, SrainMsgFlag flag);
 
 /* ================ SRAIN_RECV_MSG ================ */
 struct _SrainRecvMsg {
-    GtkBox parent;
-    SrainMsgFlag flag;
-    GtkLabel *msg_label;
-    GtkLabel *time_label;
-    GtkBox *padding_box;
+    SUI_MESSAGE;
 
     GtkImage *avatar_image;
     GString *image_path;

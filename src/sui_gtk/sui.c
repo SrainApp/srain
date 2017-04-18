@@ -33,15 +33,6 @@ struct _SuiSession{
     void *ctx;
 };
 
-struct  _SuiMessage {
-    SrainMsg *msg;
-
-    SuiMessageType type;
-    SuiMessageFlag flag;
-
-    void *ctx;
-}
-
 SuiAppEvents *app_events = NULL;
 
 void sui_main_loop(SuiAppEvents *events){
@@ -161,91 +152,76 @@ void sui_set_remark(SuiSession *sui, const char *remark){
     srain_chat_set_remark(sui->chat, remark);
 }
 
-void sui_add_sys_msg(SuiSession *sui, const char *msg, SysMsgType type, SrainMsgFlag flag){
+SuiMessage *sui_add_sys_msg(SuiSession *sui, const char *msg, SysMsgType type, SrainMsgFlag flag){
+    SuiMessage *smsg;
     SrainChat *chat;
     SrainMsgList *list;
 
-    g_return_if_fail(sui);
-    g_return_if_fail(msg);
+    g_return_val_if_fail(sui, NULL);
+    g_return_val_if_fail(msg, NULL);
 
     chat = sui->chat;
-    if (!chat){ // TODO: remove it ?
-        if (type == SYS_MSG_ERROR){
-            char buf[512];
-            snprintf(buf, sizeof(buf), _("<b>Session:</b> %s\n<b>Error message:</b> %s"),
-                    "TODO", msg);
-            show_msg_dialog(_("ERROR"), buf);
-        }
-        return;
-    }
-
-    g_return_if_fail(SRAIN_IS_CHAT(chat));
+    g_return_val_if_fail(SRAIN_IS_CHAT(chat), NULL);
 
     list = srain_chat_get_msg_list(chat);
-    srain_msg_list_sys_msg_add(list, msg, type, flag);
+    smsg = (SuiMessage *)srain_sys_msg_new(msg, type, flag);
+    srain_msg_list_add_message(list, smsg);
 
     if (type != SYS_MSG_NORMAL){
         srain_window_stack_sidebar_update(srain_win, chat, NULL, msg);
     }
+
+    return smsg;
 }
 
-void sui_add_sys_msgf(SuiSession *sui, SysMsgType type, SrainMsgFlag flag,
-        const char *fmt, ...){
-    char buf[512];
-    va_list args;
-
-    g_return_if_fail(sui);
-    g_return_if_fail(fmt);
-
-    va_start(args, fmt);
-    vsnprintf(buf, sizeof(buf) - 1, fmt, args);
-    va_end(args);
-
-    sui_add_sys_msg(sui, buf, type, flag);
-}
-
-void sui_add_sent_msg(SuiSession *sui, const char *msg, SrainMsgFlag flag){
+SuiMessage *sui_add_sent_msg(SuiSession *sui, const char *msg, SrainMsgFlag flag){
     SrainChat *chat;
     SrainMsgList *list;
+    SuiMessage *smsg;
 
-    g_return_if_fail(msg);
+    g_return_val_if_fail(msg, NULL);
 
-    g_return_if_fail(sui);
+    g_return_val_if_fail(sui, NULL);
     chat = sui->chat;
 
-    g_return_if_fail(SRAIN_IS_CHAT(chat));
+    g_return_val_if_fail(SRAIN_IS_CHAT(chat), NULL);
 
     list = srain_chat_get_msg_list(chat);
+    smsg = (SuiMessage *)srain_send_msg_new(msg, flag);
+    srain_msg_list_add_message(list, smsg);
 
-    srain_msg_list_send_msg_add(list, msg, flag);
     srain_window_stack_sidebar_update(srain_win, chat, _("You"), msg);
+
+    return smsg;
 }
 
-void sui_add_recv_msg(SuiSession *sui, const char *nick, const char *id,
+SuiMessage *sui_add_recv_msg(SuiSession *sui, const char *nick, const char *id,
         const char *msg, SrainMsgFlag flag){
     SrainChat *chat;
     SrainMsgList *list;
     SrainEntryCompletion *comp;
+    SuiMessage *smsg;
 
-    g_return_if_fail(nick);
-    g_return_if_fail(msg);
+    g_return_val_if_fail(sui, NULL);
+    g_return_val_if_fail(nick, NULL);
+    g_return_val_if_fail(msg, NULL);
     if (!id) id = "";
 
-    g_return_if_fail(sui);
     chat = sui->chat;
-
-    g_return_if_fail(SRAIN_IS_CHAT(chat));
+    g_return_val_if_fail(SRAIN_IS_CHAT(chat), NULL);
 
     list = srain_chat_get_msg_list(chat);
-    srain_msg_list_recv_msg_add(list, nick, id, msg, flag);
+    smsg = (SuiMessage *)srain_recv_msg_new(nick, id, msg, flag);
+    srain_msg_list_add_message(list, smsg);
 
     // TODO: move in srain_msg_list?
     srain_window_stack_sidebar_update(srain_win, chat, nick, msg);
     if (strlen(id) != 0){
         comp = srain_chat_get_entry_completion(chat);
-        if (!comp) return;
         srain_entry_completion_add_keyword(comp, nick, KEYWORD_TMP);
     }
+
+    return smsg;
 }
 
 int sui_add_user(SuiSession *sui, const char *nick, UserType type){
@@ -338,28 +314,6 @@ void sui_set_topic(SuiSession *sui, const char *topic){
     srain_chat_set_topic(chat, topic);
 }
 
-SuiMessage* sui_add_message(SuiSession *sui, const char *nick, const char *msg,
-        const char *time, const char *remark, SuiMessageType type,
-        SuiMessageFlag flag){
-    SrainChat *chat;
-    SrainMsgList *list;
-    SuiMessage *smsg;
-
-    g_return_val_if_fail(sui, NULL);
-    g_return_val_if_fail(sui, msg);
-
-    smsg = g_malloc0(sizeof(SuiMessage));
-
-    smsg->flag = flag;
-    smsg->type = type;
-
-    switch (smsg->type){
-        case SUI_MESSAGE_MISC:
-        case SUI_MESSAGE_SENT:
-
-    }
-}
-
 void sui_message_set_ctx(SuiMessage *smsg, void *ctx){
     g_return_if_fail(smsg);
 
@@ -367,7 +321,7 @@ void sui_message_set_ctx(SuiMessage *smsg, void *ctx){
 }
 
 void *sui_message_get_ctx(SuiMessage *smsg){
-    g_return_if_fail(smsg);
+    g_return_val_if_fail(smsg, NULL);
 
     return smsg->ctx;
 }
