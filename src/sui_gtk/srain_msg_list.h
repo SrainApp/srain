@@ -14,12 +14,8 @@ typedef struct _SrainMsgListClass SrainMsgListClass;
 GType srain_msg_list_get_type(void);
 SrainMsgList *srain_msg_list_new(void);
 
-
-void srain_msg_list_sys_msg_add(SrainMsgList *list, const char *msg, SysMsgType type, SrainMsgFlag flag);
-void srain_msg_list_send_msg_add(SrainMsgList *list, const char *msg, SrainMsgFlag flag);
-void srain_msg_list_recv_msg_add(SrainMsgList *list, const char *nick, const char *id, const char *msg, SrainMsgFlag flag);
-
 void srain_msg_list_add_message(SrainMsgList *list, SuiMessage *smsg);
+void srain_msg_list_highlight_message(SuiMessage *smsg);
 
 void srain_msg_list_scroll_up(SrainMsgList *list, double step);
 void srain_msg_list_scroll_down(SrainMsgList *list, double step);

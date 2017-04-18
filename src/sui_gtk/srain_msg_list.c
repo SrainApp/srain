@@ -215,99 +215,16 @@ SrainMsgList* srain_msg_list_new(void){
     return g_object_new(SRAIN_TYPE_MSG_LIST, NULL);
 }
 
-void srain_msg_list_sys_msg_add(SrainMsgList *list, const char *msg,
-        SysMsgType type, SrainMsgFlag flag){
-    GtkListBoxRow *row;
-    SrainSysMsg *smsg;
-
-    /* Do not merge sys message (看起来不好看 :-|)
-    if (list->last_msg
-            && SRAIN_IS_SYS_MSG(list->last_msg)
-            && SRAIN_SYS_MSG(list->last_msg)->type != SYS_MSG_ACTION){
-        if (srain_msg_append_msg(list->last_msg, msg, flag) == 0){
-            smart_scroll(list, 0);
-            return;
-        }
-    }
-    */
-
-    smsg = srain_sys_msg_new(msg, type, flag);
-    row = gtk_list_box_add_unfocusable_row(list->list_box, GTK_WIDGET(smsg));
-
-    // TODO: 需要 Action message 和 Error message 的区分
-    if (flag & SRAIN_MSG_MENTIONED){
-        gtk_widget_set_name(GTK_WIDGET(row), "mentioned_msg");
-        if (!srain_window_is_active(srain_win) && type == SYS_MSG_ACTION){
-            snotify_notify( _("Action"), msg, "srain");
-            srain_window_tray_icon_stress(srain_win, 1);
-        }
-    }
-
-    if (type == SYS_MSG_ERROR) {
-        if (!srain_window_is_active(srain_win)){
-            snotify_notify(_("Error"), msg, "srain-red");
-            srain_window_tray_icon_stress(srain_win, 1);
-        }
-    }
-
-    list->last_msg = SRAIN_MSG(smsg);
-
-    smart_scroll(list, 0);
-}
-
-
-void srain_msg_list_send_msg_add(SrainMsgList *list, const char *msg, SrainMsgFlag flag){
-    SrainSendMsg *smsg;
-
-    if (list->last_msg && SRAIN_IS_SEND_MSG(list->last_msg)){
-        if (srain_msg_append_msg(list->last_msg, msg, flag) == 0){
-            smart_scroll(list, 1);
-            return;
-        }
-    }
-
-    smsg = srain_send_msg_new(msg, flag);
-    gtk_list_box_add_unfocusable_row(list->list_box, GTK_WIDGET(smsg));
-
-    list->last_msg = SRAIN_MSG(smsg);
-
-    smart_scroll(list, 1);
-}
-
-/* Add a SrainRecvMsg into SrainMsgList.  */
-void srain_msg_list_recv_msg_add(SrainMsgList *list, const char *nick,
-        const char *id, const char *msg, SrainMsgFlag flag){
-    GtkListBoxRow *row;
-    SrainRecvMsg *smsg;
-
-    if (list->last_msg && SRAIN_IS_RECV_MSG(list->last_msg)){
-        const char *old_nick = gtk_label_get_text(
-                SRAIN_RECV_MSG(list->last_msg)->nick_label);
-        if (strcasecmp(nick, old_nick) == 0) {
-            if (srain_msg_append_msg(list->last_msg, msg, flag) == 0){
-                smart_scroll(list, 1);
-                return;
-            }
-        }
-    }
-
-    smsg = srain_recv_msg_new(nick, id, msg, flag);
-    row = gtk_list_box_add_unfocusable_row(list->list_box, GTK_WIDGET(smsg));
-
-    if (flag & SRAIN_MSG_MENTIONED){
-        gtk_widget_set_name(GTK_WIDGET(row), "mentioned_msg");
-        if (!srain_window_is_active(srain_win)) {
-            snotify_notify(nick, msg, "srain");
-            srain_window_tray_icon_stress(srain_win, 1);
-        }
-    }
-
-    list->last_msg = SRAIN_MSG(smsg);
-
-    smart_scroll(list, 0);
-}
-
 void srain_msg_list_add_message(SrainMsgList *list, SuiMessage *smsg){
     gtk_list_box_add_unfocusable_row(list->list_box, GTK_WIDGET(smsg));
     smart_scroll(list, 0);
+}
+
+void srain_msg_list_highlight_message(SuiMessage *smsg){
+    GtkWidget *row;
+
+    row = gtk_widget_get_parent(smsg);
+    g_return_if_fail(GTK_IS_LIST_BOX_ROW(row));
+
+    gtk_widget_set_name(GTK_WIDGET(row), "mentioned_msg");
 }

@@ -164,11 +164,15 @@ SuiMessage *sui_add_sys_msg(SuiSession *sui, const char *msg, SysMsgType type, S
     g_return_val_if_fail(SRAIN_IS_CHAT(chat), NULL);
 
     list = srain_chat_get_msg_list(chat);
-    smsg = (SuiMessage *)srain_sys_msg_new(msg, type, flag);
+    smsg = (SuiMessage *)srain_sys_msg_new(msg, type);
     srain_msg_list_add_message(list, smsg);
 
     if (type != SYS_MSG_NORMAL){
         srain_window_stack_sidebar_update(srain_win, chat, NULL, msg);
+    }
+
+    if (flag & SUI_MESSAGE_MENTIONED){
+        srain_msg_list_highlight_message(smsg);
     }
 
     return smsg;
@@ -187,10 +191,14 @@ SuiMessage *sui_add_sent_msg(SuiSession *sui, const char *msg, SrainMsgFlag flag
     g_return_val_if_fail(SRAIN_IS_CHAT(chat), NULL);
 
     list = srain_chat_get_msg_list(chat);
-    smsg = (SuiMessage *)srain_send_msg_new(msg, flag);
+    smsg = (SuiMessage *)srain_send_msg_new(msg);
     srain_msg_list_add_message(list, smsg);
 
     srain_window_stack_sidebar_update(srain_win, chat, _("You"), msg);
+
+    if (flag & SUI_MESSAGE_MENTIONED){
+        srain_msg_list_highlight_message(smsg);
+    }
 
     return smsg;
 }
@@ -211,7 +219,7 @@ SuiMessage *sui_add_recv_msg(SuiSession *sui, const char *nick, const char *id,
     g_return_val_if_fail(SRAIN_IS_CHAT(chat), NULL);
 
     list = srain_chat_get_msg_list(chat);
-    smsg = (SuiMessage *)srain_recv_msg_new(nick, id, msg, flag);
+    smsg = (SuiMessage *)srain_recv_msg_new(nick, id, msg);
     srain_msg_list_add_message(list, smsg);
 
     // TODO: move in srain_msg_list?
@@ -219,6 +227,10 @@ SuiMessage *sui_add_recv_msg(SuiSession *sui, const char *nick, const char *id,
     if (strlen(id) != 0){
         comp = srain_chat_get_entry_completion(chat);
         srain_entry_completion_add_keyword(comp, nick, KEYWORD_TMP);
+    }
+
+    if (flag & SUI_MESSAGE_MENTIONED){
+        srain_msg_list_highlight_message(smsg);
     }
 
     return smsg;
