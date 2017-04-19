@@ -244,6 +244,8 @@ static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data
     if (!conn){
         ERR_FR("Connect failed: %d, %s", err->code, err->message);
         on_disconnect(sirc);
+
+        return;
     } else {
         DBG_FR("Connected");
     }
