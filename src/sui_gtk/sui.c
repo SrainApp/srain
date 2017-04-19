@@ -338,7 +338,20 @@ void *sui_message_get_ctx(SuiMessage *smsg){
     return smsg->ctx;
 }
 
+void sui_message_append_message(SuiMessage *smsg, const char *msg){
+    g_return_if_fail(smsg);
+    g_return_if_fail(msg);
+
+    srain_msg_append_msg(smsg, msg);
+}
+
 void sui_message_append_image(SuiMessage *smsg, const char *url){
     g_return_if_fail(smsg);
-    // TODO
+    g_return_if_fail(url);
+
+    srain_msg_append_image(smsg, url);
+}
+
+void sui_message_set_highlight(SuiMessage *smsg, bool highlight){
+    srain_msg_list_highlight_message(smsg);
 }

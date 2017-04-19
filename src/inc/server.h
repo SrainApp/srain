@@ -71,7 +71,7 @@ struct _Message {
     MessageType type;
 
     GSList *urls;   // URLs contains in message, like "http://xxx", "irc://xxx"
-    // SuiMessage *ui;
+    SuiMessage *ui;
 };
 
 /* Represent a channel or dialog or a server session */

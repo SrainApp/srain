@@ -21,6 +21,7 @@ Message* message_new(Chat *chat, User *user, const char *content, MessageType ty
     msg->mentioned = FALSE;
     msg->type = type;
     // msg->urls = NULL; // via g_malloc0()
+    // msg->ui = NULL; // via g_malloc0()
 
     /* Decorated */
     msg->dname = user ? g_strdup(user->nick) : NULL;
@@ -31,6 +32,7 @@ Message* message_new(Chat *chat, User *user, const char *content, MessageType ty
 
 void message_free(Message *msg){
     if (msg->chat) { /* Nothing to do. */ }
+    if (msg->ui) { /* Nothing to do. */ }
 
     if (msg->user) {
         user_free(msg->user);

@@ -194,7 +194,7 @@ static void nick_button_on_click(GtkWidget *widget, gpointer *user_data){
 }
 
 /* ================ SRAIN_SRAIN_MSG ================ */
-static void srain_msg_append_image(SrainMsg *smsg, const char *url) {
+void srain_msg_append_image(SrainMsg *smsg, const char *url) {
     SrainImage *simg = srain_image_new();
     srain_image_set_from_url_async(simg, url, 300,
             SRAIN_IMAGE_ENLARGE | SRAIN_IMAGE_SPININER );
@@ -207,7 +207,6 @@ static void srain_msg_append_image(SrainMsg *smsg, const char *url) {
 static void srain_msg_set_msg(SrainMsg *smsg, const char *msg) {
     char timestr[32];
 
-    /* TODO: use Message->time */
     get_cur_time(timestr);
     gtk_label_set_text(smsg->time_label, timestr);
 
@@ -217,15 +216,9 @@ static void srain_msg_set_msg(SrainMsg *smsg, const char *msg) {
     // srain_msg_append_image(smsg, imgurl->str);
 }
 
-int srain_msg_append_msg(SrainMsg *smsg, const char *msg, SrainMsgFlag flag) {
-    char timestr[32];
+int srain_msg_append_msg(SrainMsg *smsg, const char *msg) {
     const char *old_markup;
     GString *new_markup;
-
-    get_cur_time(timestr);
-    if (strcmp(timestr, gtk_label_get_text(smsg->time_label))) {
-        return -1;
-    }
 
     old_markup = gtk_label_get_label(smsg->msg_label);
     new_markup = g_string_new(msg);

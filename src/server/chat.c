@@ -11,6 +11,8 @@
 
 extern SuiEvents ui_events;
 
+static void append_image(Message *msg);
+
 Chat *chat_new(Server *srv, const char *name){
     bool ischan;
     Chat *chat;
@@ -34,7 +36,7 @@ Chat *chat_new(Server *srv, const char *name){
     chat->ui = sui_new_session(&ui_events, flag);
 
     if (!chat->ui){
-        goto bad;
+        goto cleanup;
     }
 
     g_strlcpy(chat->name, name, sizeof(chat->name));
@@ -50,7 +52,7 @@ Chat *chat_new(Server *srv, const char *name){
 
     return chat;
 
-bad:
+cleanup:
     if (chat->ui) {
         sui_free_session(chat->ui);
     }
@@ -168,17 +170,32 @@ void chat_add_sent_message(Chat *chat, const char *content){
     fflag = FILTER_CHAT_LOG;
     msg = message_new(chat, user, content, MESSAGE_SENT);
 
-    if (sirc_cmd_msg(chat->srv->irc, chat->name, content) == SRN_OK){
-        if (filter_message(msg, fflag, NULL)){
-            if (decorate_message(msg, dflag, NULL) == SRN_OK){
-                sui_add_sent_msg(chat->ui, msg->dcontent, 0);
-            }
-        }
-    } else {
-        chat_add_error_message_fmt(chat, chat->user->nick, _("Failed to send message \"%s\""),
-                msg->content);
+    if (sirc_cmd_msg(chat->srv->irc, chat->name, content) != SRN_OK){
+        chat_add_error_message_fmt(chat, chat->user->nick,
+                _("Failed to send message \"%s\""), msg->content);
+        goto cleanup;
     }
 
+    if (!filter_message(msg, fflag, NULL)){
+        /* Ignore this message */
+        goto cleanup;
+    }
+
+    if (decorate_message(msg, dflag, NULL) != SRN_OK){
+        goto cleanup;
+    }
+
+    msg->ui = sui_add_sent_msg(chat->ui, msg->dcontent, 0);
+    if (!msg->ui){
+        goto cleanup;
+    }
+
+    append_image(msg);
+
+    chat->msg_list = g_list_append(chat->msg_list, msg);
+    return;
+
+cleanup:
     message_free(msg);
 }
 
@@ -200,13 +217,26 @@ void chat_add_recv_message(Chat *chat, const char *origin, const char *content){
 
     msg = message_new(chat, user, content, MESSAGE_RECV);
 
-    if (filter_message(msg, fflag, NULL)){
-        if (decorate_message(msg, dflag, NULL) == SRN_OK){
-            sui_add_recv_msg(chat->ui, msg->dname, msg->role, msg->dcontent,
-                    msg->mentioned ? SRAIN_MSG_MENTIONED : 0);
-        }
+    if (!filter_message(msg, fflag, NULL)){
+        goto cleanup;
     }
 
+    if (decorate_message(msg, dflag, NULL) != SRN_OK){
+        goto cleanup;
+    }
+
+    msg->ui = sui_add_recv_msg(chat->ui, msg->dname, msg->role, msg->dcontent,
+            msg->mentioned ? SRAIN_MSG_MENTIONED : 0);
+    if (!msg->ui){
+        goto cleanup;
+    }
+
+    append_image(msg);
+
+    chat->msg_list = g_list_append(chat->msg_list, msg);
+    return;
+
+cleanup:
     if (invalid_user){
         user_free(user);
     }
@@ -240,27 +270,41 @@ void chat_add_action_message(Chat *chat, const char *origin, const char *content
             chat_add_error_message_fmt(chat, user->nick,
                     _("Failed to send action message \"%s\""),
                     msg->content);
-            return;
+            goto cleanup;
         }
     } else {
         fflag |= FILTER_NICK | FILTER_REGEX;
         dflag |= DECORATOR_RELAY | DECORATOR_MIRC_STRIP | DECORATOR_MENTION;
     }
 
-    if (filter_message(msg, fflag, NULL)){
-        if (decorate_message(msg, dflag, NULL) == SRN_OK){
-            char *action_msg;
-
-            action_msg = g_strdup_printf(_("*** <b>%s</b> %s***"),
-                    msg->dname, msg->dcontent);
-
-            sui_add_sys_msg(chat->ui, action_msg, SYS_MSG_ACTION,
-                    msg->mentioned ? SRAIN_MSG_MENTIONED : 0);
-
-            g_free(action_msg);
-        }
+    if (!filter_message(msg, fflag, NULL)){
+        goto cleanup;
+    }
+    if (decorate_message(msg, dflag, NULL) != SRN_OK){
+        goto cleanup;
     }
 
+    {
+        // TODO: "<b>" no used?
+        char *action_msg = g_strdup_printf(_("*** <b>%s</b> %s***"),
+                msg->dname, msg->dcontent);
+
+        msg->ui = sui_add_sys_msg(chat->ui, action_msg, SYS_MSG_ACTION,
+                msg->mentioned ? SRAIN_MSG_MENTIONED : 0);
+        g_free(action_msg);
+    }
+
+
+    if (!msg->ui){
+        goto cleanup;
+    }
+
+    append_image(msg);
+
+    chat->msg_list = g_list_append(chat->msg_list, msg);
+    return;
+
+cleanup:
     if (invalid_user){
         user_free(user);
     }
@@ -284,12 +328,23 @@ void chat_add_misc_message(Chat *chat, const char *origin, const char *content){
     fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
     msg = message_new(chat, user, content, MESSAGE_MISC);
 
-    if (filter_message(msg, fflag, NULL)){
-        if (decorate_message(msg, dflag, NULL) == SRN_OK){
-            sui_add_sys_msg(chat->ui, msg->dcontent, SYS_MSG_NORMAL, 0);
-        }
+    if (!filter_message(msg, fflag, NULL)){
+        goto cleanup;
     }
 
+    if (decorate_message(msg, dflag, NULL) != SRN_OK){
+        goto cleanup;
+    }
+
+    msg->ui = sui_add_sys_msg(chat->ui, msg->dcontent, SYS_MSG_NORMAL, 0);
+    if (!msg->ui){
+        goto cleanup;
+    }
+
+    chat->msg_list = g_list_append(chat->msg_list, msg);
+    return;
+
+cleanup:
     if (invalid_user){
         user_free(user);
     }
@@ -326,12 +381,22 @@ void chat_add_error_message(Chat *chat, const char *origin, const char *content)
     fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
     msg = message_new(chat, user, content, MESSAGE_ERROR);
 
-    if (filter_message(msg, fflag, NULL)){
-        if (decorate_message(msg, dflag, NULL) == SRN_OK){
-            sui_add_sys_msg(chat->ui, msg->dcontent, SYS_MSG_ERROR, 0);
-        }
+    if (!filter_message(msg, fflag, NULL)){
+        goto cleanup;
+    }
+    if (decorate_message(msg, dflag, NULL) != SRN_OK){
+        goto cleanup;
     }
 
+    msg->ui = sui_add_sys_msg(chat->ui, msg->dcontent, SYS_MSG_ERROR, 0);
+    if (msg->ui){
+        goto cleanup;
+    }
+
+    chat->msg_list = g_list_append(chat->msg_list, msg);
+    return;
+
+cleanup:
     if (invalid_user){
         user_free(user);
     }
@@ -374,4 +439,24 @@ void chat_set_topic(Chat *chat, const char *origin, const char *topic){
         user_free(user);
     }
     message_free(msg);
+}
+
+// TODO
+static void append_image(Message *msg){
+    GSList *url;
+
+    url = msg->urls;
+
+    while (url){
+        if (g_str_has_prefix(url->data, "http") // Both "http" and "https"
+                && (g_str_has_suffix(url->data, "png")
+                    || g_str_has_suffix(url->data, "jpg")
+                    || g_str_has_suffix(url->data, "jpeg")
+                    || g_str_has_suffix(url->data, "bmp")
+                    || g_str_has_suffix(url->data, "gif")
+                    )){
+            sui_message_append_image(msg->ui, url->data);
+        }
+        url = g_slist_next(url);
+    }
 }
