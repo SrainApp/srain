@@ -48,7 +48,7 @@ int rc_read(){
     while ((read = getline(&line, &len, fp)) != -1) {
         if (line && line[0] != '#'){
             strtok(line, "\n");
-            if (server_cmd(NULL, NULL, line) != SRN_OK){
+            if (server_cmd(NULL, line) != SRN_OK){
                 ERR_FR("Command failed: %s", line);
                 break;
             }

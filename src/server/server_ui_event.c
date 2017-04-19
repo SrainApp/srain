@@ -65,18 +65,15 @@ void server_ui_event_send(SuiSession *sui, SuiEvent event, const char *params[],
     srv = ctx_get_server(sui);
     chat = ctx_get_chat(sui);
     g_return_if_fail(srv);
+    g_return_if_fail(chat);
 
     // Command or message?
     if (msg[0] == '/'){
-        if (server_cmd(srv, chat, msg) == SRN_OK){
+        if (server_cmd(chat, msg) == SRN_OK){
             // Nothing to do.
         }
     } else {
-        if (chat) {
-            chat_add_sent_message(chat, msg);
-        } else {
-            chat_add_error_message(srv->chat, srv->user->nick, _("Can not send message to a server"));
-        }
+        chat_add_sent_message(chat, msg);
     }
 }
 
