@@ -178,6 +178,12 @@ void chat_add_sent_message(Chat *chat, const char *content){
     DecoratorFlag dflag;
     FilterFlag fflag;
 
+    if (chat == chat->srv->chat) {
+        chat_add_error_message(chat, chat->user->nick,
+                _("Can not send message to a server"));
+        return;
+    }
+
     user = chat->user;
     dflag = DECORATOR_PANGO_MARKUP;
     fflag = FILTER_CHAT_LOG;
@@ -268,6 +274,13 @@ void chat_add_action_message(Chat *chat, const char *origin, const char *content
     DecoratorFlag dflag;
 
     user = chat_get_user(chat, origin);
+
+    if (user && user->me && chat == chat->srv->chat) {
+        chat_add_error_message(chat, chat->user->nick,
+                _("Can not send message to a server"));
+        return;
+    }
+
     if (!user){
         user = user_new(chat, origin, NULL, NULL, USER_CHIGUA);
         invalid_user = TRUE;
@@ -299,7 +312,7 @@ void chat_add_action_message(Chat *chat, const char *origin, const char *content
 
     {
         // TODO: "<b>" no used?
-        char *action_msg = g_strdup_printf(_("*** <b>%s</b> %s***"),
+        char *action_msg = g_strdup_printf(_("*** <b>%s</b> %s ***"),
                 msg->dname, msg->dcontent);
 
         msg->ui = sui_add_sys_msg(chat->ui, action_msg, SYS_MSG_ACTION,
