@@ -64,9 +64,22 @@ cleanup:
 }
 
 void chat_free(Chat *chat){
-    /* Free user list */
     user_free(chat->user);
 
+    /* Free extra list */
+    if (chat->relaybot_list){
+        relay_decroator_free_list(chat);
+    }
+
+    if (chat->ignore_nick_list){
+        nick_filter_free_list(chat);
+    }
+
+    if (chat->ignore_regex_list){
+        regex_filter_free_list(chat);
+    }
+
+    /* Free user list */
     if (chat->user_list){
         GSList *lst = chat->user_list;
         while (lst){

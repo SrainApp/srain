@@ -27,7 +27,7 @@ int relay_decroator_add_nick(Chat *chat, const char *nick){
 
     while(lst){
         if (sirc_nick_cmp(lst->data, nick)){
-            chat_add_error_message_fmt(chat, chat->user->nick,
+            chat_add_error_message_fmt(chat->srv->cur_chat, chat->user->nick,
                     _("\"%s\" already exists in %s 's relaybot list"),
                     nick, chat->name);
             return SRN_ERR;
@@ -37,7 +37,7 @@ int relay_decroator_add_nick(Chat *chat, const char *nick){
 
     chat->relaybot_list = g_slist_append(chat->relaybot_list, g_strdup(nick));
 
-    chat_add_misc_message_fmt(chat, chat->user->nick,
+    chat_add_misc_message_fmt(chat->srv->cur_chat, chat->user->nick,
             _("\"%s\" has added to %s 's relaybot list"), nick, chat->name);
 
     return SRN_OK;
@@ -54,7 +54,7 @@ int relay_decroator_rm_nick(Chat *chat, const char *nick){
                 g_free(lst->data);
                 chat->relaybot_list = g_slist_delete_link(chat->relaybot_list, lst);
 
-                chat_add_misc_message_fmt(chat, chat->user->nick,
+                chat_add_misc_message_fmt(chat->srv->cur_chat, chat->user->nick,
                         _("\"%s\" is removed from %s 's relaybot list"),
                         nick, chat->name);
 
@@ -64,14 +64,14 @@ int relay_decroator_rm_nick(Chat *chat, const char *nick){
         lst = g_slist_next(lst);
     }
 
-    chat_add_error_message_fmt(chat, chat->user->nick,
+    chat_add_error_message_fmt(chat->srv->cur_chat, chat->user->nick,
             _("\"%s\" not found in %s 's relaybot list"),
             nick, chat->name);
 
     return SRN_ERR;
 }
 
-void relay_decroator_free_list(Chat *chat, const char *nick){
+void relay_decroator_free_list(Chat *chat){
     g_slist_free_full(chat->relaybot_list, g_free);
     chat->relaybot_list = NULL;
 }

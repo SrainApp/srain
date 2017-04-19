@@ -45,7 +45,7 @@ int regex_filter_add_pattern(Chat *chat, const char *name, const char *pattern){
         if (lst->data){
             np = lst->data;
             if (strcasecmp(np->name, name) == 0){
-                chat_add_error_message_fmt(chat, chat->user->nick,
+                chat_add_error_message_fmt(chat->srv->cur_chat, chat->user->nick,
                         _("\"%s\" already exists in %s 's regex list"),
                         np->name, chat->name);
                 return SRN_ERR;
@@ -57,7 +57,7 @@ int regex_filter_add_pattern(Chat *chat, const char *name, const char *pattern){
     err = NULL;
     regex = g_regex_new(pattern, 0, 0, &err);
     if (!regex){
-        chat_add_error_message_fmt(chat, chat->user->nick,
+        chat_add_error_message_fmt(chat->srv->cur_chat, chat->user->nick,
                 _("Invail pattern: %s"), err->message);
         return SRN_ERR;
     }
@@ -70,7 +70,7 @@ int regex_filter_add_pattern(Chat *chat, const char *name, const char *pattern){
 
     chat->ignore_regex_list = g_slist_append(chat->ignore_regex_list, np);
 
-    chat_add_misc_message_fmt(chat, chat->user->nick,
+    chat_add_misc_message_fmt(chat->srv->cur_chat, chat->user->nick,
             _("\"%s\" has added to %s 's regex list"), np->name, chat->name);
 
     return SRN_OK;
@@ -86,7 +86,7 @@ int regex_filter_rm_pattern(Chat *chat, const char *name){
         if (lst->data){
             np = lst->data;
             if (strcasecmp(np->name, name) == 0){
-                chat_add_misc_message_fmt(chat, chat->user->nick,
+                chat_add_misc_message_fmt(chat->srv->cur_chat, chat->user->nick,
                         _("\"%s\" is removed from %s 's ignore list"),
                         name, chat->name);
 
@@ -99,14 +99,14 @@ int regex_filter_rm_pattern(Chat *chat, const char *name){
         lst = g_slist_next(lst);
     }
 
-    chat_add_error_message_fmt(chat, chat->user->nick,
+    chat_add_error_message_fmt(chat->srv->cur_chat, chat->user->nick,
             _("\"%s\" not found in %s 's ignore list"),
             name, chat->name);
 
     return SRN_ERR;
 }
 
-void regex_filter_free(Chat *chat, const char *regex){
+void regex_filter_free_list(Chat *chat){
     g_slist_free_full(chat->ignore_regex_list,
             (GDestroyNotify)named_pattern_free);
     chat->ignore_regex_list = NULL;
@@ -134,7 +134,7 @@ bool regex(const Message *msg, FilterFlag flag, void *user_data){
     return TRUE;
 }
 
-void named_pattern_free(NamedPattern *np){
+static void named_pattern_free(NamedPattern *np){
     g_free(np->name);
     g_free(np->pattern);
     g_free(np);

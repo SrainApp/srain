@@ -22,9 +22,10 @@ bool filter_message(const Message *msg, FilterFlag flag, void *user_data);
 
 int nick_filter_add_nick(Chat *chat, const char *nick);
 int nick_filter_rm_nick(Chat *chat, const char *nick);
-void nick_filter_free_nick_list(Chat *chat);
+void nick_filter_free_list(Chat *chat);
 
 int regex_filter_add_pattern(Chat *chat, const char *name, const char *pattern);
 int regex_filter_rm_pattern(Chat *chat, const char *name);
+void regex_filter_free_list(Chat *chat);
 
 #endif /* __FILTER_H */

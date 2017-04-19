@@ -24,6 +24,6 @@ int decorate_message(Message *msg, DecoratorFlag flag, void *user_data);
 
 int relay_decroator_add_nick(Chat *chat, const char *nick);
 int relay_decroator_rm_nick(Chat *chat, const char *nick);
-void relay_decroator_free_list(Chat *chat, const char *nick);
+void relay_decroator_free_list(Chat *chat);
 
 #endif /* __DECORATOR_H */
