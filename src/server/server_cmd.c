@@ -14,6 +14,7 @@
 #include <strings.h>
 #include <glib.h>
 
+#include "server.h"
 #include "server_cmd.h"
 
 #include "sui/sui.h"
@@ -494,10 +495,11 @@ static int on_command_msg(Command *cmd, void *user_data){
     const char *msg;
     Server *srv;
 
-    g_return_val_if_fail(srv = scctx_get_server(user_data), SRN_ERR);
+    srv = scctx_get_server(user_data);
+    g_return_val_if_fail(srv, SRN_ERR);
 
     msg = command_get_arg(cmd, 1);
-    target  = command_get_arg(cmd, 0);
+    target = command_get_arg(cmd, 0);
     g_return_val_if_fail(msg, SRN_ERR);
     g_return_val_if_fail(target, SRN_ERR);
 
@@ -506,8 +508,8 @@ static int on_command_msg(Command *cmd, void *user_data){
      * TODO: A better way?
      */
     if (sirc_cmd_msg(srv->irc, target, msg) == SRN_OK){
-        Chat *chat = server_get_chat_fallback(srv, target);
-        sui_add_sent_msg(chat->ui, msg, 0);
+        chat_add_misc_message_fmt(srv->cur_chat, srv->user->nick,
+                "A message has been sent to \"%s\"", target);
         return SRN_OK;
     } else {
         return SRN_ERR;
