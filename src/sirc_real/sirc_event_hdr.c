@@ -115,6 +115,20 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
          else if (strcmp(event, "INVITE") == 0){
              events->invite(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
          }
+         else if (strcmp(event, "PING") == 0){
+             events->ping(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
+             /* Response "PING" message */
+             sirc_cmd_pong(sirc, imsg->msg ? imsg->msg : "");
+         }
+         else if (strcmp(event, "PONG") == 0){
+             events->pong(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
+         }
+         else if (strcmp(event, "ERROR") == 0){
+             events->error(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
+         }
+         else {
+             events->unknown(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
+         }
      }
 }
 

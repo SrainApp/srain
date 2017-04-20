@@ -33,7 +33,6 @@ typedef void (*SircNumericEventCallback) (SircSession *sirc, int event,
 typedef struct {
     SircSimpleEventCallback     connect;
     SircSimpleEventCallback     disconnect;
-    SircSimpleEventCallback     ping;
 
     SircNumericEventCallback    welcome;
     SircEventCallback           nick;
@@ -52,6 +51,9 @@ typedef struct {
     SircEventCallback           ctcp_req;
     SircEventCallback           ctcp_rep;
     SircEventCallback           ctcp_action;
+    SircEventCallback           ping;
+    SircEventCallback           pong;
+    SircEventCallback           error;
     SircEventCallback           unknown;
 
     SircNumericEventCallback    numeric;

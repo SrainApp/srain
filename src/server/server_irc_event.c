@@ -58,7 +58,8 @@ void server_irc_event_disconnect(SircSession *sirc, const char *event){
             srv->info->name, srv->info->host, srv->info->port);
 }
 
-void server_irc_event_ping(SircSession *sirc, const char *event){
+void server_irc_event_ping(SircSession *sirc, int event,
+        const char *origin, const char **params, int count, const char *msg){
     Server *srv;
 
     g_return_if_fail(srv = sirc_get_ctx(sirc));
