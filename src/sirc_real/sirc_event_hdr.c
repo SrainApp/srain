@@ -48,9 +48,11 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
         /* Numeric command */
         switch (num){
             case SIRC_RFC_RPL_WELCOME:
+                g_return_if_fail(events->welcome);
                 events->welcome(sirc, num, origin, imsg->params, imsg->nparam, imsg->msg);
                 /* Do not break here */
             default:
+                g_return_if_fail(events->numeric);
                 events->numeric(sirc, num, origin, imsg->params, imsg->nparam, imsg->msg);
         }
      } else {
@@ -68,65 +70,82 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
              g_return_if_fail(imsg->nparam >= 1);
              if (sirc_is_chan(imsg->params[0])){
                  /* Channel message */
+                g_return_if_fail(events->channel);
                  events->channel(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
              } else {
                  /* User message */
+                 g_return_if_fail(events->privmsg);
                  events->privmsg(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
              }
          }
          else if (strcmp(event, "JOIN") == 0){
+             g_return_if_fail(events->join);
              events->join(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
          }
          else if (strcmp(event, "PART") == 0){
+             g_return_if_fail(events->part);
              events->part(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
          }
          else if (strcmp(event, "QUIT") == 0){
+             g_return_if_fail(events->quit);
              events->quit(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
          }
          else if (strcmp(event, "NICK") == 0){
+             g_return_if_fail(events->nick);
              events->nick(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
          }
          else if (strcmp(event, "MODE") == 0){
              g_return_if_fail(imsg->nparam >= 1);
              if (sirc_is_chan(imsg->params[0])){
                  /* Channel mode changed */
+                 g_return_if_fail(events->mode);
                  events->mode(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
              } else {
                  /* User mode changed */
+                 g_return_if_fail(events->umode);
                  events->umode(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
              }
          }
          else if (strcmp(event, "TOPIC") == 0){
+             g_return_if_fail(events->topic);
              events->topic(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
          }
          else if (strcmp(event, "KICK") == 0){
+             g_return_if_fail(events->kick);
              events->kick(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
          }
          else if (strcmp(event, "NOTICE") == 0){
              g_return_if_fail(imsg->nparam >= 1);
              if (sirc_is_chan(imsg->params[0])){
                  /* Channel notice changed */
+                 g_return_if_fail(events->channel_notice);
                  events->channel_notice(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
              } else {
                  /* User notice message */
+                 g_return_if_fail(events->notice);
                  events->notice(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
              }
          }
          else if (strcmp(event, "INVITE") == 0){
+             g_return_if_fail(events->invite);
              events->invite(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
          }
          else if (strcmp(event, "PING") == 0){
+             g_return_if_fail(events->ping);
              events->ping(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
              /* Response "PING" message */
              sirc_cmd_pong(sirc, imsg->msg ? imsg->msg : "");
          }
          else if (strcmp(event, "PONG") == 0){
+             g_return_if_fail(events->pong);
              events->pong(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
          }
          else if (strcmp(event, "ERROR") == 0){
+             g_return_if_fail(events->error);
              events->error(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
          }
          else {
+             g_return_if_fail(events->unknown);
              events->unknown(sirc, event, origin, imsg->params, imsg->nparam, imsg->msg);
          }
      }
