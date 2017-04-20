@@ -33,48 +33,32 @@ int sirc_parse(char *line, SircMessage *imsg){
 
     DBG_FR("raw: %s", line);
 
-    // TODO: process miscellaneous message in a general way
-    /* Miscellaneous messages check */
-    if (strncmp(line, "PING :", sizeof("PING :") - 1) == 0){
-        imsg->msg = line + sizeof("PING :") - 1;
-        imsg->type = SIRC_MSG_PING;
-        return SRN_OK;
-    }
-    if (strncmp(line, "PONG :", sizeof("PONG :") - 1) == 0){
-        imsg->msg = line + sizeof("PONG :") - 1;
-        imsg->type = SIRC_MSG_PONG;
-        return SRN_OK;
-    }
-    else if (strncmp(line, "NOTICE AUTH :", sizeof("NOTICE AUTH :") - 1) == 0){
-        imsg->msg = line + sizeof("NOTICE AUTH :") - 1;
-        imsg->type = SIRC_MSG_NOTICE;
-        return SRN_OK;
-    }
-    else if (strncmp(line, "ERROR :", sizeof("ERROR :") - 1) == 0 ){
-        imsg->msg = line + sizeof("ERROR :") - 1;
-        imsg->type = SIRC_MSG_ERROR;
-        return SRN_OK;
-    } else {
-        /* This is a IRC message
-         * IRS protocol message format?
-         * See: https://tools.ietf.org/html/rfc1459#section-2.3
-         */
-        char *prefix_ptr, *command_ptr;
-        char *trailing_ptr, *middle_ptr;
-        char *nick_ptr, *user_ptr, *host_ptr;
+    /* This is a IRC message
+     * IRS protocol message format?
+     * See: https://tools.ietf.org/html/rfc1459#section-2.3
+     */
+    char *prefix_ptr, *command_ptr;
+    char *trailing_ptr, *params_ptr;
+    char *nick_ptr, *user_ptr, *host_ptr;
 
-        // <message> ::= [':' <prefix> <SPACE> ] <command> <params> <crlf>
-        // <params> ::= <SPACE> [ ':' <trailing> | <middle> <params> ]
+    // <message> ::= [':' <prefix> <SPACE> ] <command> <params> <crlf>
+    if (line[0] == ':'){
         prefix_ptr = strtok(line + 1, " "); // Skip ':'
         command_ptr = strtok(NULL, " ");
-        middle_ptr = strtok(NULL, "");
+    } else {
+        prefix_ptr = NULL;
+        command_ptr = strtok(line, " ");
+    }
 
-        if (!prefix_ptr || !command_ptr || !middle_ptr) goto bad;
-        imsg->cmd = command_ptr;
-        DBG_FR("command: %s", imsg->cmd);
+    params_ptr = strtok(NULL, "");
 
-        // <prefix> ::= <servername> | <nick> [ '!' <user> ] [ '@' <host> ]
+    if (!command_ptr || !params_ptr) goto bad;
+    imsg->cmd = command_ptr;
+    DBG_FR("command: %s", imsg->cmd);
+
+    if (prefix_ptr){
         imsg->prefix = prefix_ptr;
+        // <prefix> ::= <servername> | <nick> [ '!' <user> ] [ '@' <host> ]
         nick_ptr = strtok(prefix_ptr, "!");
         user_ptr = strtok(NULL, "@");
         host_ptr = strtok(NULL, "");
@@ -86,43 +70,43 @@ int sirc_parse(char *line, SircMessage *imsg){
         } else {
             DBG_FR("servername: %s", imsg->prefix);
         }
+    } else {
+        imsg->prefix = "";
+    }
 
-        // <params> ::= <SPACE> [ ':' <trailing> | <middle> <params> ]
+    // <params> ::= <SPACE> [ ':' <trailing> | <middle> <params> ]
 
-        if (middle_ptr[0] == ':'){
-            /* params have only one element, it is a trailing */
+    if (params_ptr[0] == ':'){
+        /* params have only one element, it is a trailing */
 
-            imsg->msg = middle_ptr + 1;
-            imsg->nparam = 0;
-        } else {
-            trailing_ptr = strstr(middle_ptr, " :");
-            if (trailing_ptr){
-                /* trailing exists in params */
-                *trailing_ptr = '\0';   // Prevent influenced from split params
-                imsg->msg = trailing_ptr + 2;
-            }
-
-            /* Split params which don't contain trailing */
-            DBG_F("params: ");
-            middle_ptr = strtok(middle_ptr, " ");
-            do {
-                imsg->params[imsg->nparam++] = middle_ptr;
-                DBG("%s(%d) ", imsg->params[imsg->nparam-1], imsg->nparam);
-                if (imsg->nparam > SIRC_PARAM_COUNT - 1){
-                    ERR_FR("Too many params: %s", line);
-                    goto bad;
-                }
-            } while ((middle_ptr = strtok(NULL, " ")) != NULL);
-            DBG("\n");
+        imsg->msg = params_ptr + 1;
+        imsg->nparam = 0;
+    } else {
+        trailing_ptr = strstr(params_ptr, " :");
+        if (trailing_ptr){
+            /* trailing exists in params */
+            *trailing_ptr = '\0';   // Prevent influenced from split params
+            imsg->msg = trailing_ptr + 2;
         }
 
-        DBG_FR("message: %s", imsg->msg);
-
-        imsg->type = SIRC_MSG_MESSAGE;
-
-        return SRN_OK;
-bad:
-        ERR_FR("Unrecognized message: %s", line);
-        return SRN_ERR;
+        /* Split params which don't contain trailing */
+        DBG_F("params: ");
+        params_ptr = strtok(params_ptr, " ");
+        do {
+            imsg->params[imsg->nparam++] = params_ptr;
+            DBG("%s(%d) ", imsg->params[imsg->nparam-1], imsg->nparam);
+            if (imsg->nparam > SIRC_PARAM_COUNT - 1){
+                ERR_FR("Too many params: %s", line);
+                goto bad;
+            }
+        } while ((params_ptr = strtok(NULL, " ")) != NULL);
+        DBG("\n");
     }
+
+    DBG_FR("message: %s", imsg->msg);
+
+    return SRN_OK;
+bad:
+    ERR_FR("Unrecognized message: %s", line);
+    return SRN_ERR;
 }

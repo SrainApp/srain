@@ -7,14 +7,8 @@
 #define SIRC_MSG_LEN        512     // unconfirm
 
 typedef enum {
-    /* Miscellaneous messages */
-    SIRC_MSG_PING,
-    SIRC_MSG_PONG,
-    SIRC_MSG_NOTICE,
-    SIRC_MSG_ERROR,
-
     /* Standard IRC messages */
-    SIRC_MSG_MESSAGE,
+    SIRC_MSG_MESSAGE, // Unused
 } SircMessageType;
 
 typedef struct {

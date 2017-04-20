@@ -26,25 +26,6 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
 
     events = sirc_get_events(sirc);
 
-    if (imsg->type != SIRC_MSG_MESSAGE) {
-        DBG_FR("Miscellaneous messages, sirc: %p, type: %d, msg: %s",
-                sirc, imsg->type, imsg->msg);
-    };
-
-    /* Miscellaneous messages */
-    switch (imsg->type){
-        case SIRC_MSG_PING:
-            sirc_cmd_pong(sirc, imsg->msg);
-            events->ping(sirc, "PING");
-            return;
-        case SIRC_MSG_PONG:
-        case SIRC_MSG_NOTICE:
-        case SIRC_MSG_ERROR:
-            return; // TODO:
-        case SIRC_MSG_MESSAGE:
-            break;
-    }
-
     num = atoi(imsg->cmd);
     origin = imsg->nick ? imsg->nick : imsg->prefix;
 
