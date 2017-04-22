@@ -23,6 +23,7 @@
 #include "meta.h"
 #include "srain.h"
 #include "log.h"
+#include "utils.h"
 
 SuiAppEvents ui_app_events;
 SuiEvents ui_events;
@@ -50,7 +51,6 @@ void server_init(){
     /* IRC event */
     irc_events.connect = server_irc_event_connect;
     irc_events.disconnect = server_irc_event_disconnect;
-    irc_events.ping = server_irc_event_ping;
     irc_events.welcome = server_irc_event_welcome;
     irc_events.nick = server_irc_event_nick;
     irc_events.quit = server_irc_event_quit;
@@ -66,6 +66,8 @@ void server_init(){
     irc_events.channel_notice = server_irc_event_channel_notice;
     irc_events.invite = server_irc_event_invite;
     irc_events.ctcp_action = server_irc_event_ctcp_action;
+    irc_events.ping = server_irc_event_ping;
+    irc_events.pong = server_irc_event_pong;
     irc_events.numeric = server_irc_event_numeric;
 
     server_cmd_init();
@@ -106,6 +108,11 @@ Server* server_new(const char *name,
     // FIXME: Corss-required between chat_new() and user_new()
     srv->chat->user = user_ref(srv->user);
     chat_add_user_full(srv->chat, srv->user);
+
+    /* NOTE: Ping related issuses are not handled in server.c */
+    /* srv->last_pong = 0; */ // by g_malloc0()
+    /* srv->ping_timer = 0; */ // by g_malloc0()
+    /* srv->delay = 0; */ // by g_malloc0()
 
     srv->cur_chat = srv->chat;
     /* srv->chat_list = NULL; */ // by g_malloc0()
@@ -179,7 +186,6 @@ void server_disconnect(Server *srv){
     }
 }
 
-// TODO: invoked when recv a join QUERY?
 int server_add_chat(Server *srv, const char *name){
     GSList *lst;
     Chat *chat;

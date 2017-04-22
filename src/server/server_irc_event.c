@@ -20,6 +20,7 @@
 #include "server_irc_event.h"
 
 #include "sui/sui.h"
+#include "sirc/sirc.h"
 
 #include "srain.h"
 #include "i18n.h"
@@ -30,6 +31,33 @@
 #include "plugin.h"
 #include "decorator.h"
 
+static gboolean irc_period_ping(gpointer user_data){
+    char timestr[64];
+    unsigned long time;
+    Server *srv;
+
+    srv = user_data;
+    g_return_val_if_fail(srv, G_SOURCE_REMOVE);
+    // g_return_if_fail(server_is_vaild(srv));
+
+    time = get_time_since_first_call_ms();
+    snprintf(timestr, sizeof(timestr), "%lu", time);
+
+    /* Check whether ping time out */
+    if (time - srv->last_pong > SERVER_PING_TIMEOUT){
+        /* Reconnect */
+        WARN_FR("Reconnecting to %s...", srv->info->name);
+        server_disconnect(srv);
+        server_connect(srv);
+
+        return G_SOURCE_REMOVE;
+    }
+
+    sirc_cmd_ping(srv->irc, timestr);
+
+    return G_SOURCE_CONTINUE;
+}
+
 void server_irc_event_connect(SircSession *sirc, const char *event){
     Server *srv;
     User *user;
@@ -39,6 +67,9 @@ void server_irc_event_connect(SircSession *sirc, const char *event){
 
     user = srv->user;
     srv->stat = SERVER_CONNECTED;
+    /* Start peroid ping */
+    srv->last_pong = get_time_since_first_call_ms();
+    srv->ping_timer = g_timeout_add(SERVER_PING_INTERVAL, irc_period_ping, srv);
 
     chat_add_misc_message_fmt(srv->chat, "", _("Connected to %s(%s:%d)"),
             srv->info->name, srv->info->host, srv->info->port);
@@ -54,16 +85,14 @@ void server_irc_event_disconnect(SircSession *sirc, const char *event){
 
     srv->stat = SERVER_DISCONNECTED;
 
+    /* Stop peroid ping */
+    if (srv->ping_timer){
+        g_source_remove(srv->ping_timer);
+        srv->ping_timer = 0;
+    }
+
     chat_add_misc_message_fmt(srv->chat, "", _("Disconnected from %s(%s:%d)"),
             srv->info->name, srv->info->host, srv->info->port);
-}
-
-void server_irc_event_ping(SircSession *sirc, int event,
-        const char *origin, const char **params, int count, const char *msg){
-    Server *srv;
-
-    g_return_if_fail(srv = sirc_get_ctx(sirc));
-    // TODO: calc last ping time
 }
 
 void server_irc_event_welcome(SircSession *sirc, int event,
@@ -409,6 +438,39 @@ void server_irc_event_ctcp_action(SircSession *sirc, const char *event,
     g_return_if_fail(chat);
 
     chat_add_action_message(chat, origin, msg);
+}
+
+void server_irc_event_ping(SircSession *sirc, int event,
+        const char *origin, const char **params, int count, const char *msg){
+    Server *srv;
+
+    srv = sirc_get_ctx(sirc);
+    g_return_if_fail(srv);
+
+    /* Nothing to do */
+}
+
+void server_irc_event_pong(SircSession *sirc, int event,
+        const char *origin, const char **params, int count, const char *msg){
+    Server *srv;
+    unsigned long time;
+    unsigned long nowtime;
+
+    srv = sirc_get_ctx(sirc);
+    g_return_if_fail(srv);
+    g_return_if_fail(msg);
+
+    time = strtoul(msg, NULL, 10);
+    nowtime = get_time_since_first_call_ms();
+
+    if (time != 0 && nowtime >= time){
+        /* Update dalay and pong time */
+        srv->delay = nowtime - time;
+        srv->last_pong = nowtime;
+        DBG_FR("Delay: %lu ms", srv->delay);
+    } else {
+        ERR_FR("Wrong timestamp: %s", msg);
+    }
 }
 
 void server_irc_event_numeric (SircSession *sirc, int event,

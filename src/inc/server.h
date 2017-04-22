@@ -7,6 +7,10 @@
 #include "sirc/sirc.h"
 #include "sui/sui.h"
 
+/* In millseconds */
+#define SERVER_PING_INTERVAL    (60 * 1000)
+#define SERVER_PING_TIMEOUT     (SERVER_PING_INTERVAL * 2)
+
 /* Structure members length */
 #define NAME_LEN        64
 #define PASSWD_LEN      64
@@ -105,7 +109,10 @@ struct _Server {
     User *user;     // Used to store your nick, username, realname
     Chat *chat;     // Hold all messages that do not belong to any other Chat
 
-    time_t last_ping;
+    /* Keep alive */
+    unsigned long long last_pong;    // Last pong time, in ms
+    unsigned long long delay;        // Delay in ms
+    int ping_timer;
 
     Chat *cur_chat;
     GSList *chat_list;
