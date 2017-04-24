@@ -12,6 +12,8 @@
 extern SuiEvents ui_events;
 
 static void append_image(Message *msg);
+static void add_message(Chat *chat, Message *msg);
+static bool whether_merge_last_message(Chat *chat, Message *msg);
 
 Chat *chat_new(Server *srv, const char *name){
     bool ischan;
@@ -26,7 +28,9 @@ Chat *chat_new(Server *srv, const char *name){
     chat->joined = FALSE;
     chat->srv = srv;
     chat->user = user_ref(srv->user);
-    chat->user_list = NULL;
+    // chat->user_list = NULL; // via g_malloc0()
+    // chat->msg_list = NULL; // via g_malloc0()
+    // chat->last_msg = NULL; // via g_malloc0()
 
     flag = ischan ? SUI_SESSION_CHANNEL : SUI_SESSION_DIALOG;
     if (strcmp(META_SERVER, name) == 0){
@@ -204,14 +208,21 @@ void chat_add_sent_message(Chat *chat, const char *content){
         goto cleanup;
     }
 
-    msg->ui = sui_add_sent_msg(chat->ui, msg->dcontent, 0);
+    if (whether_merge_last_message(chat, msg)){
+        msg->ui = chat->last_msg->ui;
+        sui_message_append_message(msg->ui, msg->dcontent);
+    } else {
+        msg->ui = sui_add_sent_msg(chat->ui, msg->dcontent, 0);
+    }
+
     if (!msg->ui){
         goto cleanup;
     }
 
     append_image(msg);
 
-    chat->msg_list = g_list_append(chat->msg_list, msg);
+    add_message(chat, msg);
+
     return;
 
 cleanup:
@@ -244,15 +255,21 @@ void chat_add_recv_message(Chat *chat, const char *origin, const char *content){
         goto cleanup;
     }
 
-    msg->ui = sui_add_recv_msg(chat->ui, msg->dname, msg->role, msg->dcontent,
-            msg->mentioned ? SRAIN_MSG_MENTIONED : 0);
+    if (whether_merge_last_message(chat, msg)){
+        msg->ui = chat->last_msg->ui;
+        sui_message_append_message(msg->ui, msg->dcontent);
+    } else {
+        msg->ui = sui_add_recv_msg(chat->ui, msg->dname, msg->role, msg->dcontent,
+                msg->mentioned ? SRAIN_MSG_MENTIONED : 0);
+    }
+    //
     if (!msg->ui){
         goto cleanup;
     }
 
     append_image(msg);
 
-    chat->msg_list = g_list_append(chat->msg_list, msg);
+    add_message(chat, msg);
     return;
 
 cleanup:
@@ -327,7 +344,7 @@ void chat_add_action_message(Chat *chat, const char *origin, const char *content
 
     append_image(msg);
 
-    chat->msg_list = g_list_append(chat->msg_list, msg);
+    add_message(chat, msg);
     return;
 
 cleanup:
@@ -367,7 +384,7 @@ void chat_add_misc_message(Chat *chat, const char *origin, const char *content){
         goto cleanup;
     }
 
-    chat->msg_list = g_list_append(chat->msg_list, msg);
+    add_message(chat, msg);
     return;
 
 cleanup:
@@ -419,7 +436,8 @@ void chat_add_error_message(Chat *chat, const char *origin, const char *content)
         goto cleanup;
     }
 
-    chat->msg_list = g_list_append(chat->msg_list, msg);
+    add_message(chat, msg);
+
     return;
 
 cleanup:
@@ -465,6 +483,22 @@ void chat_set_topic(Chat *chat, const char *origin, const char *topic){
         user_free(user);
     }
     message_free(msg);
+}
+
+static void add_message(Chat *chat, Message *msg){
+    chat->msg_list = g_list_append(chat->msg_list, msg);
+    chat->last_msg = msg;
+}
+
+static bool whether_merge_last_message(Chat *chat, Message *msg){
+    Message *last_msg;
+
+    last_msg = chat->last_msg;
+
+    return (last_msg
+            && msg->time - last_msg->time < MESSAGE_MERGE_INTERVAL
+            && msg->type == last_msg->type
+            && sirc_nick_cmp(last_msg->user->nick, msg->user->nick));
 }
 
 // TODO

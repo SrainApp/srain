@@ -15,7 +15,7 @@
  *
  * @return 
  *
- * NOTE: This function is not thread-safed
+ * NOTE: This function is not thread-safe
  **/
 unsigned long get_time_since_first_call_ms(void){
     static gint64 first = 0;
@@ -29,4 +29,12 @@ unsigned long get_time_since_first_call_ms(void){
     }
 
     return ret;
+}
+
+time_t get_current_time_s(void){
+    GTimeVal val;
+
+    g_get_current_time(&val);
+
+    return val.tv_sec + val.tv_usec / 1e6;
 }

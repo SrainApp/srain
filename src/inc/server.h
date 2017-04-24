@@ -11,6 +11,9 @@
 #define SERVER_PING_INTERVAL    (10 * 1000)
 #define SERVER_PING_TIMEOUT     (SERVER_PING_INTERVAL * 2)
 
+/* In seconds */
+#define MESSAGE_MERGE_INTERVAL  60
+
 /* Structure members length */
 #define NAME_LEN        64
 #define PASSWD_LEN      64
@@ -85,7 +88,8 @@ struct _Chat {
     User *user;         // Yourself
 
     GSList *user_list;
-    GList *msg_list;    // Not used yet
+    GList *msg_list;
+    Message *last_msg;
 
     /* Used by Filters & Decorators */
     GSList *ignore_nick_list;
