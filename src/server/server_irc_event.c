@@ -30,6 +30,7 @@
 #include "chat_log.h"
 #include "plugin.h"
 #include "decorator.h"
+#include "utils.h"
 
 static gboolean irc_period_ping(gpointer user_data){
     char timestr[64];
@@ -43,7 +44,7 @@ static gboolean irc_period_ping(gpointer user_data){
     time = get_time_since_first_call_ms();
     snprintf(timestr, sizeof(timestr), "%lu", time);
 
-    DBG_FR("%lu ms since last pong, time out: %lu ms",
+    DBG_FR("%lu ms since last pong, time out: %d ms",
             time - srv->last_pong, SERVER_PING_TIMEOUT);
 
     /* Check whether ping time out */
@@ -62,8 +63,10 @@ static gboolean irc_period_ping(gpointer user_data){
 }
 
 void server_irc_event_connect(SircSession *sirc, const char *event){
+    GSList *list;
     Server *srv;
     User *user;
+    Chat *chat;
 
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srv);
@@ -80,11 +83,27 @@ void server_irc_event_connect(SircSession *sirc, const char *event){
     srv->last_pong = get_time_since_first_call_ms();
     srv->ping_timer = g_timeout_add(SERVER_PING_INTERVAL, irc_period_ping, srv);
 
+    /* Join all channels already exists */
+    list = srv->chat_list;
+    while (list){
+        chat = list->data;
+
+        if (sirc_is_chan(chat->name)){
+            sirc_cmd_join(srv->irc, chat->name, NULL);
+        }
+        chat_add_misc_message_fmt(chat, "", _("Connected to %s(%s:%d)"),
+                srv->info->name, srv->info->host, srv->info->port);
+
+        list = g_slist_next(list);
+    }
+
     DBG_FR("Ping timer %d created", srv->ping_timer);
 }
 
 void server_irc_event_disconnect(SircSession *sirc, const char *event){
+    GSList *list;
     Server *srv;
+    Chat *chat;
 
     g_return_if_fail(srv = sirc_get_ctx(sirc));
 
@@ -97,6 +116,19 @@ void server_irc_event_disconnect(SircSession *sirc, const char *event){
         DBG_FR("Ping timer %d removed", srv->ping_timer);
 
         srv->ping_timer = 0;
+    }
+
+    /* Unjoin all channels */
+    list = srv->chat_list;
+    while (list){
+        chat = list->data;
+        if (sirc_is_chan(chat->name)){
+            chat->joined = FALSE;
+        }
+        chat_add_misc_message_fmt(chat, "", _("Disconnected from %s(%s:%d)"),
+                srv->info->name, srv->info->host, srv->info->port);
+
+        list = g_slist_next(list);
     }
 
     chat_add_misc_message_fmt(srv->chat, "", _("Disconnected from %s(%s:%d)"),
