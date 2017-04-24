@@ -14,9 +14,9 @@ typedef struct _SuiMessage SrainMsg;
 
 #define SRAIN_MSG(obj) ((SrainMsg *) obj)
 #define SRAIN_IS_MSG(obj) \
-    (SRIAN_IS_SYS_MSG(obj) || \
-     SRIAN_IS_SEND_MSG(obj) || \
-     SRIAN_IS_RECV_MSG(obj))
+    (SRAIN_IS_SYS_MSG(obj) || \
+     SRAIN_IS_SEND_MSG(obj) || \
+     SRAIN_IS_RECV_MSG(obj))
 
 int srain_msg_append_msg(SrainMsg *smsg, const char *msg);
 void srain_msg_append_image(SrainMsg *smsg, const char *url);
