@@ -15,19 +15,31 @@
 #include "log.h"
 
 int io_stream_write(GIOStream *stream, const char* data, size_t size){
+    int ret;
     GOutputStream *out;
+
+    g_return_val_if_fail(!g_io_stream_is_closed(stream), SRN_ERR);
 
     out = g_io_stream_get_output_stream(stream);
     // FIXME: if no all data sent, report error
-    return g_output_stream_write(out, data, size, NULL, NULL);
+    ret =  g_output_stream_write(out, data, size, NULL, NULL);
+    if (ret < 0) ret = SRN_ERR;
+
+    return ret;
 }
 
 int io_stream_read(GIOStream *stream, char* buf, size_t size){
+    int ret;
     GInputStream *in; 
+
+    g_return_val_if_fail(!g_io_stream_is_closed(stream), SRN_ERR);
 
     in = g_io_stream_get_input_stream(stream);
 
-    return g_input_stream_read(in, buf, size, NULL, NULL);
+    ret = g_input_stream_read(in, buf, size, NULL, NULL);
+    if (ret < 0) ret = SRN_ERR;
+
+    return ret;
 }
 
 /**
@@ -42,16 +54,14 @@ int io_stream_read(GIOStream *stream, char* buf, size_t size){
  */
 int io_stream_readline(GIOStream *stream, char *buf, size_t size){
     int i = 0;
-    bool end;
     char byte;
     char prev_byte;
 
-    end = FALSE;
     prev_byte = '\0';
     while (i < size - 1){
         int ret = io_stream_read(stream, &byte, 1);
-        if (ret == -1){
-            return -1;
+        if (ret == SRN_ERR){
+            return ret;
         }
         /* Read "\r\n" */
        if (prev_byte == '\r' && byte == '\n'){
@@ -65,5 +75,5 @@ int io_stream_readline(GIOStream *stream, char *buf, size_t size){
 
     WARN_FR("Length of the line exceeds the buffer");
 
-    return -1;
+    return SRN_ERR;
 }

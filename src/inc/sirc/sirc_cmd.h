@@ -6,7 +6,8 @@
 #endif
 
 /* IRC Protocol */
-int sirc_cmd_pong(SircSession *sirc, const char *pong);
+int sirc_cmd_ping(SircSession *sirc, const char *data);
+int sirc_cmd_pong(SircSession *sirc, const char *data);
 int sirc_cmd_join(SircSession *sirc, const char *chan, const char *passwd);
 int sirc_cmd_user(SircSession *sirc, const char *username, const char *hostname, const char *servername, const char *realname);
 int sirc_cmd_part(SircSession *sirc, const char *chan, const char *reason);

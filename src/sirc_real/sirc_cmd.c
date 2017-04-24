@@ -22,6 +22,12 @@
 #include "srain.h"
 #include "log.h"
 
+int sirc_cmd_ping(SircSession *sirc, const char *data){
+    g_return_val_if_fail(data, SRN_ERR);
+
+    return sirc_cmd_raw(sirc, "PING :%s\r\n", data);
+}
+
 // sirc_cmd_pong: For answering pong requests...
 int sirc_cmd_pong(SircSession *sirc, const char *data){
     g_return_val_if_fail(data, SRN_ERR);
@@ -159,6 +165,7 @@ int sirc_cmd_raw(SircSession *sirc, const char *fmt, ...){
     }
 
     // TODO send it totally
+
     return (io_stream_write(sirc_get_stream(sirc), buf, len) < 0) ?
         SRN_ERR : SRN_OK;
 }

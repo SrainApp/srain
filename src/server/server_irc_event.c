@@ -43,6 +43,9 @@ static gboolean irc_period_ping(gpointer user_data){
     time = get_time_since_first_call_ms();
     snprintf(timestr, sizeof(timestr), "%lu", time);
 
+    DBG_FR("%lu ms since last pong, time out: %lu ms",
+            time - srv->last_pong, SERVER_PING_TIMEOUT);
+
     /* Check whether ping time out */
     if (time - srv->last_pong > SERVER_PING_TIMEOUT){
         /* Reconnect */
@@ -67,15 +70,17 @@ void server_irc_event_connect(SircSession *sirc, const char *event){
 
     user = srv->user;
     srv->stat = SERVER_CONNECTED;
-    /* Start peroid ping */
-    srv->last_pong = get_time_since_first_call_ms();
-    srv->ping_timer = g_timeout_add(SERVER_PING_INTERVAL, irc_period_ping, srv);
-
     chat_add_misc_message_fmt(srv->chat, "", _("Connected to %s(%s:%d)"),
             srv->info->name, srv->info->host, srv->info->port);
 
     sirc_cmd_nick(srv->irc, user->nick);
     sirc_cmd_user(srv->irc, user->username, "hostname", "servername", user->realname);
+
+    /* Start peroid ping */
+    srv->last_pong = get_time_since_first_call_ms();
+    srv->ping_timer = g_timeout_add(SERVER_PING_INTERVAL, irc_period_ping, srv);
+
+    DBG_FR("Ping timer %d created", srv->ping_timer);
 }
 
 void server_irc_event_disconnect(SircSession *sirc, const char *event){
@@ -88,6 +93,9 @@ void server_irc_event_disconnect(SircSession *sirc, const char *event){
     /* Stop peroid ping */
     if (srv->ping_timer){
         g_source_remove(srv->ping_timer);
+
+        DBG_FR("Ping timer %d removed", srv->ping_timer);
+
         srv->ping_timer = 0;
     }
 

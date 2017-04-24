@@ -8,7 +8,7 @@
 #include "sui/sui.h"
 
 /* In millseconds */
-#define SERVER_PING_INTERVAL    (60 * 1000)
+#define SERVER_PING_INTERVAL    (10 * 1000)
 #define SERVER_PING_TIMEOUT     (SERVER_PING_INTERVAL * 2)
 
 /* Structure members length */
@@ -110,8 +110,8 @@ struct _Server {
     Chat *chat;     // Hold all messages that do not belong to any other Chat
 
     /* Keep alive */
-    unsigned long long last_pong;    // Last pong time, in ms
-    unsigned long long delay;        // Delay in ms
+    unsigned long last_pong;    // Last pong time, in ms
+    unsigned long delay;        // Delay in ms
     int ping_timer;
 
     Chat *cur_chat;

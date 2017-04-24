@@ -18,6 +18,8 @@
 #include "sirc_event_hdr.h"
 #include "io_stream.h"
 
+#include "server.h"
+
 #include "srain.h"
 #include "log.h"
 
@@ -61,6 +63,7 @@ SircSession* sirc_new_session(SircEvents *events, SircSessionFlag flag){
     /* sirc->thread = NULL; // via g_malloc0() */
     /* sirc->stream = NULL; // via g_malloc0() */
     sirc->client = g_socket_client_new();
+    // g_socket_client_set_timeout(sirc->client, SERVER_PING_INTERVAL);
 
     g_rw_lock_init(&sirc->rwlock);
 
@@ -126,14 +129,33 @@ void sirc_connect(SircSession *sirc, const char *host, int port){
 }
 
 void sirc_disconnect(SircSession *sirc){
+    GError *err;
+    GInputStream *in;
     g_return_if_fail(sirc);
 
+    sirc_cmd_quit(sirc, "QUIT");
+
+    in = g_io_stream_get_input_stream(sirc->stream);
+    g_input_stream_clear_pending(in);
+    g_input_stream_close(in, NULL, NULL);
+
+    err = NULL;
+    g_io_stream_close(sirc->stream, NULL, &err);
+    if (err){
+        ERR_FR("%s", err->message);
+    }
+
+    // FIXME:
     g_object_unref(sirc->stream);
+
     sirc->stream = NULL;
+
+    on_disconnect(sirc);
 }
 
 static void sirc_proc(SircSession *sirc){
     sirc->thread = g_thread_new(NULL, (GThreadFunc)th_sirc_proc, sirc);
+    DBG_FR("Thread %p created", sirc->thread);
 }
 
 /* This function runs on a separate thread, blocking read a line
@@ -146,6 +168,8 @@ static void th_sirc_proc(SircSession *sirc){
         }
     }
 
+    DBG_FR("Thead exit");
+
     g_thread_exit(SRN_OK); // Always SRN_OK?
 }
 
@@ -156,16 +180,14 @@ static int th_sirc_recv(SircSession *sirc){
     ret = io_stream_readline(sirc->stream, sirc->buf, sizeof(sirc->buf));
     g_rw_lock_writer_unlock(&sirc->rwlock);
 
-    if (ret != -1){
+    if (ret != SRN_ERR){
         g_rw_lock_reader_lock(&sirc->rwlock);
         g_idle_add_full(G_PRIORITY_HIGH_IDLE,
                 (GSourceFunc)on_recv, sirc, NULL);
     } else {
-        /* sirc->stream == NULL means connection closed by sirc_disconnect() */
-        if (sirc->stream) {
-            g_idle_add_full(G_PRIORITY_HIGH_IDLE,
-                    (GSourceFunc)on_disconnect, sirc, NULL);
-        }
+        ERR_FR("Readline error");
+        g_idle_add_full(G_PRIORITY_HIGH_IDLE,
+                (GSourceFunc)on_disconnect, sirc, NULL);
     }
 
     return ret;
@@ -288,7 +310,7 @@ static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data
 
     sirc->stream = G_IO_STREAM(conn);
 
-    /* If use TLS, toggle "connect" event after TLS handshake,
+    /* If use TLS, trigger "connect" event after TLS handshake,
      * see `on_handshake_ready` */
     if (sirc->flag & SIRC_SESSION_SSL){
         // ...
