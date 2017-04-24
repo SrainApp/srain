@@ -15,6 +15,9 @@
         <property name="focus_on_click">False</property>
         <property name="receives_default">True</property>
         <property name="halign">center</property>
+        <style>
+          <class name="suggested-action"/>
+        </style>
       </object>
       <packing>
         <property name="expand">False</property>
