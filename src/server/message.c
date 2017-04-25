@@ -3,6 +3,7 @@
 #include "server.h"
 
 #include "srain.h"
+#include "utils.h"
 
 Message* message_new(Chat *chat, User *user, const char *content, MessageType type){
     Message *msg;
@@ -24,7 +25,7 @@ Message* message_new(Chat *chat, User *user, const char *content, MessageType ty
     // msg->ui = NULL; // via g_malloc0()
 
     /* Decorated */
-    msg->dname = user ? g_strdup(user->nick) : NULL;
+    msg->dname = g_strdup(user->nick);
     msg->dcontent = g_strdup(content);
 
     return msg;

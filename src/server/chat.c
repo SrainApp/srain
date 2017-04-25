@@ -498,7 +498,8 @@ static bool whether_merge_last_message(Chat *chat, Message *msg){
     return (last_msg
             && msg->time - last_msg->time < MESSAGE_MERGE_INTERVAL
             && msg->type == last_msg->type
-            && sirc_nick_cmp(last_msg->user->nick, msg->user->nick));
+            && sirc_nick_cmp(last_msg->user->nick, msg->user->nick)
+            && sirc_nick_cmp(last_msg->dname, msg->dname));
 }
 
 // TODO
