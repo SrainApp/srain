@@ -10,6 +10,7 @@
 #define __LOG_ON
 #define __DBG_ON
 
+#include <string.h>
 #include <glib.h>
 #include <gio/gio.h>
 
@@ -26,9 +27,8 @@
 struct _SircSession {
     int fd;
     SircSessionFlag flag;
+    int bufptr;
     char buf[SIRC_BUF_LEN];
-    GRWLock rwlock;  // Buffer lock
-    GThread *thread;
     GSocketClient *client;
     GIOStream *stream;
 
@@ -36,18 +36,13 @@ struct _SircSession {
     void *ctx;
 };
 
-static void sirc_proc(SircSession *sirc);
-
-/* NOTE: The "th_" prefix means that this function invoked in a seprate thread.
- */
-static void th_sirc_proc(SircSession *sirc);
-static int th_sirc_recv(SircSession *sirc);
+static void sirc_recv(SircSession *sirc);
 
 static void on_connect_ready(GObject *obj, GAsyncResult *result, gpointer user_data);
 static gboolean on_accept_certificate(GTlsClientConnection *conn,
         GTlsCertificate *cert, GTlsCertificateFlags errors, gpointer user_data);
 static void on_connect_finish(SircSession *sirc);
-static int on_recv(SircSession *sirc);
+static void on_recv(GObject *obj, GAsyncResult *res, gpointer user_data);
 static int on_disconnect(SircSession *sirc);
 
 SircSession* sirc_new_session(SircEvents *events, SircSessionFlag flag){
@@ -60,12 +55,10 @@ SircSession* sirc_new_session(SircEvents *events, SircSessionFlag flag){
     sirc->fd = -1;
     sirc->flag = flag;
     sirc->events = events;
-    /* sirc->thread = NULL; // via g_malloc0() */
+    /* sirc->bufptr = 0; // via g_malloc0() */
     /* sirc->stream = NULL; // via g_malloc0() */
     sirc->client = g_socket_client_new();
     // g_socket_client_set_timeout(sirc->client, SERVER_PING_INTERVAL);
-
-    g_rw_lock_init(&sirc->rwlock);
 
     return sirc;
 }
@@ -130,14 +123,10 @@ void sirc_connect(SircSession *sirc, const char *host, int port){
 
 void sirc_disconnect(SircSession *sirc){
     GError *err;
-    GInputStream *in;
+
     g_return_if_fail(sirc);
 
     sirc_cmd_quit(sirc, "QUIT");
-
-    in = g_io_stream_get_input_stream(sirc->stream);
-    g_input_stream_clear_pending(in);
-    g_input_stream_close(in, NULL, NULL);
 
     err = NULL;
     g_io_stream_close(sirc->stream, NULL, &err);
@@ -145,7 +134,6 @@ void sirc_disconnect(SircSession *sirc){
         ERR_FR("%s", err->message);
     }
 
-    // FIXME:
     g_object_unref(sirc->stream);
 
     sirc->stream = NULL;
@@ -153,56 +141,53 @@ void sirc_disconnect(SircSession *sirc){
     on_disconnect(sirc);
 }
 
-static void sirc_proc(SircSession *sirc){
-    sirc->thread = g_thread_new(NULL, (GThreadFunc)th_sirc_proc, sirc);
-    DBG_FR("Thread %p created", sirc->thread);
+static void sirc_recv(SircSession *sirc){
+    GInputStream *in;
+
+    in = g_io_stream_get_input_stream(sirc->stream);
+    g_input_stream_read_async(in, &sirc->buf[sirc->bufptr], 1, G_PRIORITY_DEFAULT,
+            NULL, on_recv, sirc);
 }
 
-/* This function runs on a separate thread, blocking read a line
- * (terminated with "\r\n") from socket and then pass it to sirc_recv(), which
- * runs on GLib main thread. */
-static void th_sirc_proc(SircSession *sirc){
-    for (;;){
-        if (th_sirc_recv(sirc) == SRN_ERR){
-            break;
-        }
-    }
-
-    DBG_FR("Thead exit");
-
-    g_thread_exit(SRN_OK); // Always SRN_OK?
-}
-
-static int th_sirc_recv(SircSession *sirc){
-    int ret;
-
-    g_rw_lock_writer_lock(&sirc->rwlock);
-    ret = io_stream_readline(sirc->stream, sirc->buf, sizeof(sirc->buf));
-    g_rw_lock_writer_unlock(&sirc->rwlock);
-
-    if (ret != SRN_ERR){
-        g_rw_lock_reader_lock(&sirc->rwlock);
-        g_idle_add_full(G_PRIORITY_HIGH_IDLE,
-                (GSourceFunc)on_recv, sirc, NULL);
-    } else {
-        ERR_FR("Readline error");
-        g_idle_add_full(G_PRIORITY_HIGH_IDLE,
-                (GSourceFunc)on_disconnect, sirc, NULL);
-    }
-
-    return ret;
-}
-
-static int on_recv(SircSession *sirc){
+static void on_recv(GObject *obj, GAsyncResult *res, gpointer user_data){
+    int size;
+    GInputStream *in;
+    SircSession *sirc;
     SircMessage imsg;
 
-    if (sirc_parse(sirc->buf, &imsg) == SRN_OK){
-        sirc_event_hdr(sirc, &imsg);
+    g_return_if_fail(G_IS_INPUT_STREAM(obj));
+
+    in = G_INPUT_STREAM(obj);
+    sirc = user_data;
+
+    size = g_input_stream_read_finish(in, res, NULL);
+    g_return_if_fail(size == 1);
+
+    sirc->bufptr++;
+    if (sirc->bufptr > sizeof(sirc->buf)){
+        WARN_FR("Length of the line exceeds the buffer");
+        g_return_if_fail(FALSE);
     }
 
-    g_rw_lock_reader_unlock(&sirc->rwlock);
+    /* Read a line */
+    if (sirc->bufptr >= 2
+            && sirc->buf[sirc->bufptr-2] == '\r'
+            && sirc->buf[sirc->bufptr-1] == '\n'
+            ){
+        sirc->buf[sirc->bufptr-2] = '\0';
+        sirc->buf[sirc->bufptr-1] = '\0';
+        sirc->bufptr -= 2;
+        sirc->buf[sirc->bufptr] = '\0';
 
-    return FALSE;
+        if (sirc_parse(sirc->buf, &imsg) == SRN_OK){
+            sirc_event_hdr(sirc, &imsg);
+        }
+
+        memset(sirc->buf, 0, sizeof(sirc->buf));
+        sirc->bufptr = 0;
+    }
+
+    sirc_recv(sirc);
 }
 
 static gboolean on_accept_certificate(GTlsClientConnection *conn,
@@ -328,5 +313,5 @@ static int on_disconnect(SircSession *sirc){
 static void on_connect_finish(SircSession *sirc){
     sirc->events->connect(sirc, "CONNECT");
 
-    sirc_proc(sirc);
+    sirc_recv(sirc);
 }
