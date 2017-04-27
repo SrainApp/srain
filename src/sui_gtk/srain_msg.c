@@ -27,6 +27,7 @@
 #include "file_helper.h"
 #include "i18n.h"
 #include "meta.h"
+#include "utils.h"
 
 /**
  * @brief Get the selected text (utf-8 supported) of `label`,
@@ -204,16 +205,8 @@ void srain_msg_append_image(SrainMsg *smsg, const char *url) {
     gtk_widget_show(GTK_WIDGET(simg));
 }
 
-static void srain_msg_set_msg(SrainMsg *smsg, const char *msg) {
-    char timestr[32];
-
-    get_cur_time(timestr);
-    gtk_label_set_text(smsg->time_label, timestr);
-
+void srain_msg_set_msg(SrainMsg *smsg, const char *msg) {
     gtk_label_set_markup(smsg->msg_label, msg);
-
-    // TODO: fix image
-    // srain_msg_append_image(smsg, imgurl->str);
 }
 
 int srain_msg_append_msg(SrainMsg *smsg, const char *msg) {
@@ -233,6 +226,18 @@ int srain_msg_append_msg(SrainMsg *smsg, const char *msg) {
     return 0;
 }
 
+void srain_msg_set_time(SrainMsg *smsg, time_t time) {
+    char timestr[32];
+    char tooltip[64];
+
+    time_to_str(time, timestr, sizeof(timestr), "%R");
+    time_to_str(time, tooltip, sizeof(tooltip), _("%Y-%m-%d %T"));
+
+    gtk_label_set_text(smsg->time_label, timestr);
+    gtk_widget_set_tooltip_text(GTK_WIDGET(smsg->time_label), tooltip);
+}
+
+
 /* ================ SRAIN_SYS_MSG ================ */
 G_DEFINE_TYPE(SrainSysMsg, srain_sys_msg, GTK_TYPE_BOX);
 
@@ -249,13 +254,9 @@ static void srain_sys_msg_class_init(SrainSysMsgClass *class){
 }
 
 SrainSysMsg* srain_sys_msg_new(const char *msg, SysMsgType type){
-    char timestr[32];
     SrainSysMsg *smsg;
 
     smsg = g_object_new(SRAIN_TYPE_SYS_MSG, NULL);
-
-    get_cur_time(timestr);
-    gtk_label_set_text(smsg->time_label, timestr);
 
     switch (type){
         case SYS_MSG_NORMAL:

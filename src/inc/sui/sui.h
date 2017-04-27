@@ -64,6 +64,7 @@ void sui_set_remark(SuiSession *sui, const char *remark);
 // TODO: pass a image file path
 void sui_message_append_message(SuiMessage *smsg, const char *msg);
 void sui_message_append_image(SuiMessage *smsg, const char *url);
+void sui_message_set_time(SuiMessage *smsg, time_t time);
 void sui_message_set_ctx(SuiMessage *smsg, void *ctx);
 void *sui_message_get_ctx(SuiMessage *smsg);
 

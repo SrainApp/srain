@@ -20,6 +20,8 @@ typedef struct _SuiMessage SrainMsg;
 
 int srain_msg_append_msg(SrainMsg *smsg, const char *msg);
 void srain_msg_append_image(SrainMsg *smsg, const char *url);
+void srain_msg_set_msg(SrainMsg *smsg, const char *msg);
+void srain_msg_set_time(SrainMsg *smsg, time_t time);
 
 /* ================ SRAIN_SYS_MSG ================ */
 

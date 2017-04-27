@@ -38,3 +38,9 @@ time_t get_current_time_s(void){
 
     return val.tv_sec + val.tv_usec / 1e6;
 }
+
+void time_to_str(time_t time, char *timestr, size_t size, const char *fmt){
+    strftime(timestr, size - 1, fmt, localtime(&time));
+
+    timestr[size-1] = '\0';
+}

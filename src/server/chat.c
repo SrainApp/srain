@@ -219,6 +219,8 @@ void chat_add_sent_message(Chat *chat, const char *content){
         goto cleanup;
     }
 
+    sui_message_set_time(msg->ui, msg->time);
+
     append_image(msg);
 
     add_message(chat, msg);
@@ -266,6 +268,8 @@ void chat_add_recv_message(Chat *chat, const char *origin, const char *content){
     if (!msg->ui){
         goto cleanup;
     }
+
+    sui_message_set_time(msg->ui, msg->time);
 
     append_image(msg);
 

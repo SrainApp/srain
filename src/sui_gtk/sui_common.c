@@ -18,19 +18,6 @@
 extern SrainWindow *srain_win;
 
 /**
- * @brief get current time
- *
- * @param a pointer to store time string
- */
-void get_cur_time(char *timestr){
-    time_t curtime;
-
-    time(&curtime);
-    strftime(timestr, 32, "%H:%M", localtime(&curtime));
-    timestr[31] = '\0';
-}
-
-/**
  * @brief get a non-internal child widget by `name` in GtkListBox `widget`
  *
  * @param listbox a GtkListBox

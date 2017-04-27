@@ -355,3 +355,7 @@ void sui_message_append_image(SuiMessage *smsg, const char *url){
 void sui_message_set_highlight(SuiMessage *smsg, bool highlight){
     srain_msg_list_highlight_message(smsg);
 }
+
+void sui_message_set_time(SuiMessage *smsg, time_t time){
+    srain_msg_set_time(smsg, time);
+}
