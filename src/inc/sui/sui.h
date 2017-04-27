@@ -1,6 +1,9 @@
 #ifndef __SUI_H
 #define __SUI_H
 
+#include <time.h>
+#include "srain.h"
+
 typedef struct _SuiSession SuiSession;
 typedef int SuiSessionFlag;
 
@@ -17,12 +20,7 @@ typedef enum {
     SYS_MSG_ACTION
 } SysMsgType;
 
-typedef int SuiMessageFlag;
 typedef struct _SuiMessage SuiMessage;
-
-#define SUI_MESSAGE_MENTIONED 0x1
-
-typedef int SrainMsgFlag;
 
 typedef enum _UserType UserType;
 
@@ -61,17 +59,18 @@ void sui_set_remark(SuiSession *sui, const char *remark);
 
 /* SuiMessage */
 
-// TODO: pass a image file path
-void sui_message_append_message(SuiMessage *smsg, const char *msg);
-void sui_message_append_image(SuiMessage *smsg, const char *url);
-void sui_message_set_time(SuiMessage *smsg, time_t time);
 void sui_message_set_ctx(SuiMessage *smsg, void *ctx);
 void *sui_message_get_ctx(SuiMessage *smsg);
+// TODO: pass a image file path
+void sui_message_set_time(SuiMessage *smsg, time_t time);
+void sui_message_append_image(SuiMessage *smsg, const char *url);
+void sui_message_mentioned(SuiMessage *smsg);
+void sui_message_notify(SuiMessage *smsg);
 
-SuiMessage *sui_add_sys_msg(SuiSession *sui, const char *msg, SysMsgType type, SrainMsgFlag flag);
-SuiMessage *sui_add_sent_msg(SuiSession *sui, const char *msg, SrainMsgFlag flag);
-SuiMessage *sui_add_recv_msg(SuiSession *sui, const char *nick, const char *id,
-        const char *msg, SrainMsgFlag flag);
+SuiMessage *sui_add_sys_msg(SuiSession *sui, const char *msg, SysMsgType type);
+SuiMessage *sui_add_sent_msg(SuiSession *sui, const char *msg);
+SuiMessage *sui_add_recv_msg(SuiSession *sui, const char *nick, const char *id, const char *msg);
+void sui_message_append_message(SuiSession *sui, SuiMessage *smsg, const char *msg);
 
 /* Misc, user and topic */
 int sui_add_user(SuiSession *sui, const char *nick, UserType type);

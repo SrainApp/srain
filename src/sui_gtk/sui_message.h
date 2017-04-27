@@ -5,7 +5,6 @@
 
 #define SUI_MESSAGE         \
     GtkBox parent;          \
-    SrainMsgFlag flag;      \
     GtkLabel *msg_label;    \
     GtkLabel *time_label;   \
     GtkBox *padding_box;    \

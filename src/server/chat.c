@@ -210,9 +210,9 @@ void chat_add_sent_message(Chat *chat, const char *content){
 
     if (whether_merge_last_message(chat, msg)){
         msg->ui = chat->last_msg->ui;
-        sui_message_append_message(msg->ui, msg->dcontent);
+        sui_message_append_message(chat->ui, msg->ui, msg->dcontent);
     } else {
-        msg->ui = sui_add_sent_msg(chat->ui, msg->dcontent, 0);
+        msg->ui = sui_add_sent_msg(chat->ui, msg->dcontent);
     }
 
     if (!msg->ui){
@@ -259,14 +259,21 @@ void chat_add_recv_message(Chat *chat, const char *origin, const char *content){
 
     if (whether_merge_last_message(chat, msg)){
         msg->ui = chat->last_msg->ui;
-        sui_message_append_message(msg->ui, msg->dcontent);
+        sui_message_append_message(chat->ui, msg->ui, msg->dcontent);
     } else {
-        msg->ui = sui_add_recv_msg(chat->ui, msg->dname, msg->role, msg->dcontent,
-                msg->mentioned ? SRAIN_MSG_MENTIONED : 0);
+        msg->ui = sui_add_recv_msg(chat->ui, msg->dname, msg->role, msg->dcontent);
     }
-    //
+
     if (!msg->ui){
         goto cleanup;
+    }
+
+    if (msg->mentioned){
+        sui_message_mentioned(msg->ui);
+        sui_message_notify(msg->ui);
+    }
+    else if (chat != chat->srv->chat && !sirc_is_chan(chat->name)){
+        sui_message_notify(msg->ui);
     }
 
     sui_message_set_time(msg->ui, msg->time);
@@ -336,14 +343,18 @@ void chat_add_action_message(Chat *chat, const char *origin, const char *content
         char *action_msg = g_strdup_printf(_("*** <b>%s</b> %s ***"),
                 msg->dname, msg->dcontent);
 
-        msg->ui = sui_add_sys_msg(chat->ui, action_msg, SYS_MSG_ACTION,
-                msg->mentioned ? SRAIN_MSG_MENTIONED : 0);
+        msg->ui = sui_add_sys_msg(chat->ui, action_msg, SYS_MSG_ACTION);
         g_free(action_msg);
     }
 
 
     if (!msg->ui){
         goto cleanup;
+    }
+
+    if (msg->mentioned){
+        sui_message_mentioned(msg->ui);
+        sui_message_notify(msg->ui);
     }
 
     append_image(msg);
@@ -383,7 +394,7 @@ void chat_add_misc_message(Chat *chat, const char *origin, const char *content){
         goto cleanup;
     }
 
-    msg->ui = sui_add_sys_msg(chat->ui, msg->dcontent, SYS_MSG_NORMAL, 0);
+    msg->ui = sui_add_sys_msg(chat->ui, msg->dcontent, SYS_MSG_NORMAL);
     if (!msg->ui){
         goto cleanup;
     }
@@ -435,10 +446,13 @@ void chat_add_error_message(Chat *chat, const char *origin, const char *content)
         goto cleanup;
     }
 
-    msg->ui = sui_add_sys_msg(chat->ui, msg->dcontent, SYS_MSG_ERROR, 0);
+    msg->ui = sui_add_sys_msg(chat->ui, msg->dcontent, SYS_MSG_ERROR);
+
     if (msg->ui){
         goto cleanup;
     }
+
+    sui_message_notify(msg->ui);
 
     add_message(chat, msg);
 
@@ -501,7 +515,8 @@ static bool whether_merge_last_message(Chat *chat, Message *msg){
 
     return (last_msg
             && msg->time - last_msg->time < MESSAGE_MERGE_INTERVAL
-            && msg->type == last_msg->type
+            && (!last_msg->mentioned && !msg->mentioned)
+            && last_msg->type == msg->type
             && sirc_nick_cmp(last_msg->user->nick, msg->user->nick)
             && sirc_nick_cmp(last_msg->dname, msg->dname));
 }

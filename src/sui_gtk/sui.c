@@ -152,7 +152,7 @@ void sui_set_remark(SuiSession *sui, const char *remark){
     srain_chat_set_remark(sui->chat, remark);
 }
 
-SuiMessage *sui_add_sys_msg(SuiSession *sui, const char *msg, SysMsgType type, SrainMsgFlag flag){
+SuiMessage *sui_add_sys_msg(SuiSession *sui, const char *msg, SysMsgType type){
     SuiMessage *smsg;
     SrainChat *chat;
     SrainMsgList *list;
@@ -171,14 +171,10 @@ SuiMessage *sui_add_sys_msg(SuiSession *sui, const char *msg, SysMsgType type, S
         srain_window_stack_sidebar_update(srain_win, chat, NULL, msg);
     }
 
-    if (flag & SUI_MESSAGE_MENTIONED){
-        srain_msg_list_highlight_message(smsg);
-    }
-
     return smsg;
 }
 
-SuiMessage *sui_add_sent_msg(SuiSession *sui, const char *msg, SrainMsgFlag flag){
+SuiMessage *sui_add_sent_msg(SuiSession *sui, const char *msg){
     SrainChat *chat;
     SrainMsgList *list;
     SuiMessage *smsg;
@@ -196,15 +192,11 @@ SuiMessage *sui_add_sent_msg(SuiSession *sui, const char *msg, SrainMsgFlag flag
 
     srain_window_stack_sidebar_update(srain_win, chat, _("You"), msg);
 
-    if (flag & SUI_MESSAGE_MENTIONED){
-        srain_msg_list_highlight_message(smsg);
-    }
-
     return smsg;
 }
 
 SuiMessage *sui_add_recv_msg(SuiSession *sui, const char *nick, const char *id,
-        const char *msg, SrainMsgFlag flag){
+        const char *msg){
     SrainChat *chat;
     SrainMsgList *list;
     SrainEntryCompletion *comp;
@@ -222,15 +214,10 @@ SuiMessage *sui_add_recv_msg(SuiSession *sui, const char *nick, const char *id,
     smsg = (SuiMessage *)srain_recv_msg_new(nick, id, msg);
     srain_msg_list_add_message(list, smsg);
 
-    // TODO: move in srain_msg_list?
     srain_window_stack_sidebar_update(srain_win, chat, nick, msg);
     if (strlen(id) != 0){
         comp = srain_chat_get_entry_completion(chat);
         srain_entry_completion_add_keyword(comp, nick, KEYWORD_TMP);
-    }
-
-    if (flag & SUI_MESSAGE_MENTIONED){
-        srain_msg_list_highlight_message(smsg);
     }
 
     return smsg;
@@ -338,11 +325,27 @@ void *sui_message_get_ctx(SuiMessage *smsg){
     return smsg->ctx;
 }
 
-void sui_message_append_message(SuiMessage *smsg, const char *msg){
+void sui_message_append_message(SuiSession *sui, SuiMessage *smsg, const char *msg){
+    SrainChat *chat;
+
+    g_return_if_fail(sui);
     g_return_if_fail(smsg);
     g_return_if_fail(msg);
 
+    chat = sui->chat;
+    g_return_if_fail(SRAIN_IS_CHAT(chat));
+
     srain_msg_append_msg(smsg, msg);
+
+    if (SRAIN_IS_RECV_MSG(smsg)){
+        srain_window_stack_sidebar_update(srain_win, chat,
+                gtk_label_get_text(SRAIN_RECV_MSG(smsg)->nick_label), msg);
+    }
+    else if (SRAIN_IS_SEND_MSG(smsg)) {
+        srain_window_stack_sidebar_update(srain_win, chat, _("You"), msg);
+    } else {
+        WARN_FR("Append message is not available for message %p", smsg);
+    }
 }
 
 void sui_message_append_image(SuiMessage *smsg, const char *url){
@@ -352,10 +355,55 @@ void sui_message_append_image(SuiMessage *smsg, const char *url){
     srain_msg_append_image(smsg, url);
 }
 
-void sui_message_set_highlight(SuiMessage *smsg, bool highlight){
+void sui_message_mentioned(SuiMessage *smsg){
+    const char *title;
+
+    g_return_if_fail(smsg);
+
     srain_msg_list_highlight_message(smsg);
 }
 
 void sui_message_set_time(SuiMessage *smsg, time_t time){
     srain_msg_set_time(smsg, time);
+}
+
+/**
+ * @brief sui_message_noitfy Send a desktop notification, if windows is active,
+ *        notification will not be sent.
+ *
+ * @param smsg
+ */
+void sui_message_notify(SuiMessage *smsg){
+    const char *title;
+    const char *msg;
+    const char *icon;
+
+    g_return_if_fail(smsg);
+
+    if (srain_window_is_active(srain_win)){
+        return;
+    }
+
+    title = NULL;
+    msg = gtk_label_get_text(smsg->msg_label);
+    icon = "srain";
+
+    if (SRAIN_IS_RECV_MSG(smsg)){
+        title = gtk_label_get_text(SRAIN_RECV_MSG(smsg)->nick_label);
+    }
+    else if (SRAIN_IS_SYS_MSG(smsg)){
+        SrainSysMsg *ssmsg = SRAIN_SYS_MSG(smsg);
+        if (ssmsg->type == SYS_MSG_ERROR){
+            title = _("Error");
+            icon = "srain-red";
+        }
+        else if (ssmsg->type == SYS_MSG_ACTION){
+            title = _("Action");
+        }
+    }
+
+    g_return_if_fail(title);
+
+    snotify_notify(title, msg, icon);
+    srain_window_tray_icon_stress(srain_win, 1);
 }
