@@ -448,7 +448,7 @@ void chat_add_error_message(Chat *chat, const char *origin, const char *content)
 
     msg->ui = sui_add_sys_msg(chat->ui, msg->dcontent, SYS_MSG_ERROR);
 
-    if (msg->ui){
+    if (!msg->ui){
         goto cleanup;
     }
 
