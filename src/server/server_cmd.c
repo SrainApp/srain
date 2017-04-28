@@ -101,7 +101,7 @@ static CommandBind cmd_binds[] = {
         on_command_rignore
     },
     {
-        "/unrignore", 2, // <name> <pattern>
+        "/unrignore", 1, // <name>
         {"-cur", NULL},
         {NULL},
         on_command_unrignore
@@ -382,14 +382,11 @@ static int on_command_rignore(Command *cmd, void *user_data){
 
 static int on_command_unrignore(Command *cmd, void *user_data){
     const char *name;
-    const char *pattern;
     Server *srv;
     Chat *chat;
 
     name = command_get_arg(cmd, 0);
-    pattern = command_get_arg(cmd, 1);
     g_return_val_if_fail(name, SRN_ERR);
-    g_return_val_if_fail(pattern, SRN_ERR);
 
     if (command_get_opt(cmd, "-cur", NULL)){
         chat = scctx_get_chat(user_data);
@@ -399,7 +396,7 @@ static int on_command_unrignore(Command *cmd, void *user_data){
         chat = srv->chat;
     }
 
-    return regex_filter_rm_pattern(chat, pattern);
+    return regex_filter_rm_pattern(chat, name);
 }
 
 static int on_command_query(Command *cmd, void *user_data){
