@@ -160,6 +160,8 @@ static void join_button_on_click(gpointer user_data){
     pwd = gtk_entry_get_text(join_entries->join_pwd_entry);
     chat = srain_window_get_cur_chat(srain_win);
 
+    g_return_if_fail(chat);
+
     count = 0;
     params[count++] = name;
     params[count++] = pwd;
