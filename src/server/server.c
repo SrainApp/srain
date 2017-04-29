@@ -83,19 +83,18 @@ Server* server_new(const char *name,
         const char *host,
         int port,
         const char *passwd,
-        bool ssl,
         const char *encoding,
+        SircSessionFlag ircflag,
         const char *nick,
         const char *username,
         const char *realname){
     Server *srv;
-    SircSessionFlag ircflag;
 
     srv = g_malloc0(sizeof(Server));
 
     srv->stat = SERVER_UNCONNECTED;
 
-    srv->info = server_info_new(name, host, port, passwd, ssl, encoding);
+    srv->info = server_info_new(name, host, port, passwd, encoding, ircflag);
     if (!srv->info) goto bad;
 
     srv->chat = chat_new(srv, META_SERVER);
@@ -120,8 +119,6 @@ Server* server_new(const char *name,
     /* srv->brigebot_list = NULL; */ // by g_malloc0()
 
     /* Get IRC handler */
-    ircflag = 0;
-    if (ssl) ircflag |= SIRC_SESSION_SSL;
     srv->irc = sirc_new_session(&irc_events, ircflag);
     if (!srv->irc) goto bad;
     sirc_set_ctx(srv->irc, srv);

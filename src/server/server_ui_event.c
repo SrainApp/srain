@@ -24,6 +24,7 @@ void server_ui_event_activate(SuiEvent event, const char *params[], int count){
 
 void server_ui_event_connect(SuiEvent event, const char *params[], int count){
     Server *srv;
+    SircSessionFlag ircflag;
 
     g_return_if_fail(count == 9);
     const char *name = params[0];
@@ -31,12 +32,21 @@ void server_ui_event_connect(SuiEvent event, const char *params[], int count){
     int port = atoi(params[2]);
     const char *passwd = params[3];
     bool ssl = strcmp(params[4], "TRUE") == 0 ? TRUE : FALSE;
-    const char *encoding = params[5];
-    const char *nick = params[6];
-    const char *username = params[7];
-    const char *realname= params[7];
+    bool notverify = strcmp(params[5], "TRUE") == 0 ? TRUE : FALSE;
+    const char *encoding = params[6];
+    const char *nick = params[7];
+    const char *realname= params[8];
+    const char *username = PACKAGE_NAME;
 
-    srv = server_new(name, host, port, passwd, ssl, encoding, nick, username, realname);
+    if (strlen(realname) == 0) {
+        realname = "Can you can a can?";
+    }
+
+    ircflag = 0;
+    if (ssl) ircflag |= SIRC_SESSION_SSL;
+    if (notverify) ircflag |= SIRC_SESSION_SSL_NOTVERIFY;
+
+    srv = server_new(name, host, port, passwd, encoding, ircflag, nick, username, realname);
     g_return_if_fail(srv);
 
     server_connect(srv);

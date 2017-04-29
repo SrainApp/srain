@@ -242,7 +242,7 @@ static int on_command_connect(Command *cmd, void *user_data){
     const char *host;
     const char *nick;
     char *port, *passwd, *ssl, *realname;
-    bool use_ssl;
+    SircSessionFlag ircflag;
 
     host = command_get_arg(cmd, 0);
     nick = command_get_arg(cmd, 1);
@@ -255,9 +255,15 @@ static int on_command_connect(Command *cmd, void *user_data){
     command_get_opt(cmd, "-ssl", &ssl);
     command_get_opt(cmd, "-realname", &realname);
 
-    use_ssl = (strcmp(ssl, "on") == 0);
+    ircflag = 0;
+    if (strcmp(ssl, "on") == 0){
+        ircflag |= SIRC_SESSION_SSL;
+    }
+    else if (strcmp(ssl, "notverify") == 0){
+        ircflag |= SIRC_SESSION_SSL | SIRC_SESSION_SSL_NOTVERIFY;
+    }
 
-    Server *srv = server_new(host, host, atoi(port), passwd, use_ssl, "UTF-8",
+    Server *srv = server_new(host, host, atoi(port), passwd, "UTF-8", ircflag,
             nick, PACKAGE_NAME, realname);
 
     g_return_val_if_fail(srv, SRN_ERR);

@@ -1,7 +1,7 @@
 #include "server.h"
 
 ServerInfo *server_info_new(const char *name, const char *host, int port,
-        const char *passwd, bool ssl, const char *encoding){
+        const char *passwd, const char *encoding, SircSessionFlag ircflag){
     ServerInfo *info;
 
     g_return_val_if_fail(host, NULL);
@@ -12,8 +12,8 @@ ServerInfo *server_info_new(const char *name, const char *host, int port,
     info = g_malloc0(sizeof(ServerInfo));
 
     info->port = port;
-    info->ssl = ssl;
     info->encoding = encoding;
+    info->ircflag = ircflag;
 
     g_strlcpy(info->name, name, sizeof(info->name));
     g_strlcpy(info->host, host, sizeof(info->host));

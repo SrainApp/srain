@@ -129,19 +129,19 @@ struct _ServerInfo {
     char host[HOST_LEN];
     int port;
     char passwd[PASSWD_LEN];
-    bool ssl;
     const char *encoding;
+    SircSessionFlag ircflag;
 };
 
 void server_init();
 void server_finalize();
 
 ServerInfo *server_info_new(const char *name, const char *host, int port,
-        const char *passwd, bool ssl, const char *encoding);
+        const char *passwd, const char *encoding, SircSessionFlag ircflag);
 void server_info_free(ServerInfo *info);
 
 Server* server_new(const char *name, const char *host, int port,
-        const char *passwd, bool ssl, const char *encoding,
+        const char *passwd, const char *encoding, SircSessionFlag flag,
         const char *nick, const char *username, const char *realname);
 void server_free(Server *srv);
 int server_connect(Server *srv);

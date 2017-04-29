@@ -173,9 +173,9 @@ static void join_button_on_click(gpointer user_data){
 }
 
 static void conn_button_on_click(gpointer user_data){
-    int ssl;
     int count;
-    int no_verify;
+    bool ssl;
+    bool notverify;
     const char *addr;
     const char *port;
     const char *passwd;
@@ -192,7 +192,7 @@ static void conn_button_on_click(gpointer user_data){
     nick = gtk_entry_get_text(conn_entries->conn_nick_entry);
     realname = gtk_entry_get_text(conn_entries->conn_real_entry);
     ssl = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(conn_entries->conn_ssl_check_button));
-    no_verify = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(conn_entries->conn_no_verfiy_check_button));
+    notverify = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(conn_entries->conn_no_verfiy_check_button));
 
     if (strlen(addr) == 0) return;
     if (strlen(nick) == 0) return;
@@ -202,14 +202,21 @@ static void conn_button_on_click(gpointer user_data){
     params[count++] = addr;
     params[count++] = port;
     params[count++] = passwd;
-    params[count++] = "FALSE";
+    if (ssl) {
+        params[count++] = "TRUE";
+    } else {
+        params[count++] = "FALSE";
+    }
+    if (notverify) {
+        params[count++] = "TRUE";
+    } else {
+
+        params[count++] = "FALSE";
+    }
     params[count++] = "UTF-8";
     params[count++] = nick;
-    params[count++] = PACKAGE_NAME;
     params[count++] = realname;
 
-    // if (ssl) flag |= SRV_SESSION_FLAG_SSL;
-    // if (no_verify) flag |= SRV_SESSION_FLAG_SSL_NOVERIFY;
     sui_event_hdr(NULL, SUI_EVENT_CONNECT, params, count);
 
     gtk_entry_set_text(conn_entries->conn_addr_entry, "");
