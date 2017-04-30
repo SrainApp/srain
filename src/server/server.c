@@ -92,6 +92,7 @@ Server* server_new(const char *name,
 
     srv = g_malloc0(sizeof(Server));
 
+    srv->registered = FALSE;
     srv->stat = SERVER_UNCONNECTED;
 
     srv->info = server_info_new(name, host, port, passwd, encoding, ircflag);
@@ -106,7 +107,6 @@ Server* server_new(const char *name,
 
     // FIXME: Corss-required between chat_new() and user_new()
     srv->chat->user = user_ref(srv->user);
-    chat_add_user_full(srv->chat, srv->user);
 
     /* NOTE: Ping related issuses are not handled in server.c */
     /* srv->last_pong = 0; */ // by g_malloc0()

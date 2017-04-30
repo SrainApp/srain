@@ -49,10 +49,14 @@ Chat *chat_new(Server *srv, const char *name){
     sui_start_session(chat->ui, name, srv->info->name);
 
     /* Require chat->ui */
-    chat_add_user_full(chat, chat->user);
+
+    /* You will add 2 users with same nickname if you chat with yourself
     if (flag == SUI_SESSION_DIALOG){
+        g_return_val_if_fail(chat->user, NULL);
+        chat_add_user(chat, chat->user->nick, USER_CHIGUA);
         chat_add_user(chat, chat->name, USER_CHIGUA);
     }
+    */
 
     return chat;
 

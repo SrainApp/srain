@@ -139,7 +139,17 @@ void server_irc_event_welcome(SircSession *sirc, int event,
         const char *origin, const char **params, int count, const char *msg){
     Server *srv;
 
-    g_return_if_fail(srv = sirc_get_ctx(sirc));
+    srv = sirc_get_ctx(sirc);
+    g_return_if_fail(srv);
+
+    g_return_if_fail(count >= 1);
+
+    const char *nick = params[0];
+
+    /* You have registered when you recived a RPL_WELCOME(001) message */
+    srv->registered = TRUE;
+
+    g_strlcpy(srv->user->nick, nick, sizeof(srv->user->nick));
 }
 
 void server_irc_event_nick(SircSession *sirc, const char *event,
@@ -149,7 +159,8 @@ void server_irc_event_nick(SircSession *sirc, const char *event,
     Chat *chat;
     User *user;
 
-    g_return_if_fail(srv = sirc_get_ctx(sirc));
+    srv = sirc_get_ctx(sirc);
+    g_return_if_fail(srv);
 
     const char *old_nick = origin;
     const char *new_nick = msg;
@@ -167,6 +178,8 @@ void server_irc_event_nick(SircSession *sirc, const char *event,
     }
 
     if (sirc_nick_cmp(old_nick, srv->user->nick)){
+        chat_add_misc_message_fmt(srv->chat, old_nick, _("%s is now known as %s"),
+                old_nick, new_nick);
         user_rename(srv->user, new_nick);
     }
 }
@@ -202,6 +215,8 @@ void server_irc_event_quit(SircSession *sirc, const char *event,
 
     /* You quit */
     if (sirc_nick_cmp(origin, srv->user->nick)){
+        srv->registered = FALSE;
+
         server_disconnect(srv);
         server_free(srv);
     }
@@ -554,13 +569,29 @@ void server_irc_event_numeric (SircSession *sirc, int event,
             }
         case SIRC_RFC_ERR_NICKNAMEINUSE:
             {
-                int len = strlen(srv->user->nick);
-                if (len < sizeof(srv->user->nick) - 1){
-                    srv->user->nick[len] = '_';
-                    srv->user->nick[len + 1] = 0;
-                    sirc_cmd_nick(srv->irc, srv->user->nick);
-                } else {
-                    ERR_FR("Your nickname is too long to add a trailing underline");
+                chat_add_error_message_fmt(srv->cur_chat, origin,
+                        _("ERROR[%3d]: %s"), event, msg);
+
+                /* If you don't have a nickname (unregistered) yet, try a nick
+                 * with a trailing underline('_') */
+                if (!srv->registered){
+                    int len = strlen(srv->user->nick);
+
+                    if (len < sizeof(srv->user->nick) - 1){
+                        char new_nick[NICK_LEN];
+
+                        g_strlcpy(new_nick, srv->user->nick, sizeof(new_nick));
+
+                        new_nick[len] = '_';
+                        new_nick[len + 1] = '\0';
+                        sirc_cmd_nick(srv->irc, new_nick);
+
+                        chat_add_misc_message_fmt(srv->cur_chat, origin,
+                                _("Trying nickname: \"%s\"..."), new_nick);
+                    } else {
+                        chat_add_error_message_fmt(srv->cur_chat, origin,
+                                _("Your nickname is too long to add a trailing underline"));
+                    }
                 }
                 break;
             }

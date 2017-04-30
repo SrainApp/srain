@@ -108,10 +108,11 @@ enum _ServerStatus {
 };
 
 struct _Server {
-    volatile ServerStatus stat;
+    ServerStatus stat;
+    bool registered;    // Whether the user has registered(Own a nickname)?
     ServerInfo *info;
-    User *user;     // Used to store your nick, username, realname
-    Chat *chat;     // Hold all messages that do not belong to any other Chat
+    User *user;         // Used to store your nick, username, realname
+    Chat *chat;         // Hold all messages that do not belong to any other Chat
 
     /* Keep alive */
     unsigned long last_pong;    // Last pong time, in ms
