@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 0.05-git@0.413.22ccd91\n"
 "Report-Msgid-Bugs-To: silverrainz@outlook.com\n"
-"POT-Creation-Date: 2016-12-18 01:44+0800\n"
+"POT-Creation-Date: 2017-04-30 14:35+0800\n"
 "PO-Revision-Date: 2016-12-18 01:44+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,74 +17,144 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/ui/srain_window.c:106
+#: ../data/ui/window.glade:211
+msgid " : "
+msgstr ""
+
+#: ../src/filter/nick.c:37
+#, c-format
+msgid "\"%s\" already exists in %s 's ignore list"
+msgstr ""
+
+#: ../src/filter/regex.c:49
+#, c-format
+msgid "\"%s\" already exists in %s 's regex list"
+msgstr ""
+
+#: ../src/decorator/relay.c:31
+#, c-format
+msgid "\"%s\" already exists in %s 's relaybot list"
+msgstr ""
+
+#: ../src/filter/nick.c:47
+#, c-format
+msgid "\"%s\" has added to %s 's ignore list"
+msgstr ""
+
+#: ../src/filter/regex.c:74
+#, c-format
+msgid "\"%s\" has added to %s 's regex list"
+msgstr ""
+
+#: ../src/decorator/relay.c:41
+#, c-format
+msgid "\"%s\" has added to %s 's relaybot list"
+msgstr ""
+
+#: ../src/filter/regex.c:90 ../src/filter/nick.c:64
+#, c-format
+msgid "\"%s\" is removed from %s 's ignore list"
+msgstr ""
+
+#: ../src/decorator/relay.c:58
+#, c-format
+msgid "\"%s\" is removed from %s 's relaybot list"
+msgstr ""
+
+#: ../src/filter/regex.c:103 ../src/filter/nick.c:74
+#, c-format
+msgid "\"%s\" not found in %s 's ignore list"
+msgstr ""
+
+#: ../src/decorator/relay.c:68
+#, c-format
+msgid "\"%s\" not found in %s 's relaybot list"
+msgstr ""
+
+#: ../src/sui_gtk/srain_msg.c:234
+msgid "%Y-%m-%d %T"
+msgstr ""
+
+#: ../src/sui_gtk/srain_window.c:106
 #, c-format
 msgid ""
 "%s\n"
 "Running against GTK+ %d.%d.%d"
 msgstr ""
 
-#: ../src/srv/srv_event.c:636
+#: ../src/server/server_irc_event.c:705
 #, c-format
 msgid "%s %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:629
+#: ../src/server/server_irc_event.c:697
 #, c-format
 msgid "%s %s %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:601
-#, c-format
-msgid "%s <%s@%s> %s"
-msgstr ""
-
-#: ../src/ui/srain_msg.c:105
+#: ../src/sui_gtk/srain_msg.c:107
 #, c-format
 msgid "%s <fwd %s@%s>"
 msgstr ""
 
-#: ../src/srv/srv_event.c:310
+#: ../src/server/server_irc_event.c:392
 #, c-format
-msgid "%s are kicked from %s by %s: %s"
+msgid "%s are kicked by %s: %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:170
+#: ../src/server/server_irc_event.c:367
 #, c-format
-msgid "%s has joined %s"
+msgid ""
+"%s changed topic to:\n"
+"\t%s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:192
+#: ../src/server/server_irc_event.c:255
 #, c-format
-msgid "%s has left %s: %s"
+msgid "%s has joined"
 msgstr ""
 
-#: ../src/srv/srv_event.c:119
+#: ../src/server/server_irc_event.c:276
+#, c-format
+msgid "%s has left"
+msgstr ""
+
+#: ../src/server/server_irc_event.c:274
+#, c-format
+msgid "%s has left: %s"
+msgstr ""
+
+#: ../src/server/server_irc_event.c:202
+#, c-format
+msgid "%s has quit"
+msgstr ""
+
+#: ../src/server/server_irc_event.c:200
 #, c-format
 msgid "%s has quit: %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:463
+#: ../src/server/server_irc_event.c:476
 #, c-format
 msgid "%s invites you into %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:617
+#: ../src/server/server_irc_event.c:683
 #, c-format
 msgid "%s is attached to %s at \"%s\""
 msgstr ""
 
-#: ../src/srv/srv_event.c:623
+#: ../src/server/server_irc_event.c:690
 #, c-format
 msgid "%s is idle for %s seconds since %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:612
+#: ../src/server/server_irc_event.c:677
 #, c-format
 msgid "%s is member of %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:82
+#: ../src/server/server_irc_event.c:173 ../src/server/server_irc_event.c:181
 #, c-format
 msgid "%s is now known as %s"
 msgstr ""
@@ -93,116 +163,103 @@ msgstr ""
 msgid "(This message can not be showed correctly)."
 msgstr ""
 
-#: ../src/srv/srv_session_cmd.c:363 ../src/srv/srv_event.c:489
+#: ../src/server/chat.c:347
 #, c-format
-msgid "*** %s %s ***"
+msgid "*** <b>%s</b> %s ***"
 msgstr ""
 
-#: ../src/ui/ui.c:374
-#, c-format
-msgid ""
-"<b>Session:</b> %s\n"
-"<b>Error message:</b> %s"
-msgstr ""
-
-#: ../src/ui/srain_app.c:45
-msgid ""
-"<big><b>Welcome to Srain :)</b></big>\n"
-"\n"
-"Click the \"Connect\" button on the header bar to connect to a IRC server.\n"
-"\n"
-"If you want to execute some commands automatically when startup, please add "
-"your commands into <u>~/.config/srain/srainrc</u>.\n"
-"\n"
-"Need help? Please visit <a href=\"https://github.com/silverrainz/srain/wiki"
-"\">Srain's website</a>.\n"
-msgstr ""
-
-#: ../data/ui/window.glade:42 ../data/ui/window.glade:439
+#: ../data/ui/window.glade:43 ../data/ui/window.glade:460
 msgid "About"
 msgstr ""
 
-#: ../src/ui/srain_window.c:122
+#: ../src/sui_gtk/srain_window.c:122
 msgid "About Srain"
 msgstr ""
 
-#: ../src/ui/srain_msg_list.c:246
+#: ../src/sui_gtk/sui.c:401
 msgid "Action"
 msgstr ""
 
-#: ../data/ui/window.glade:179
+#: ../data/ui/window.glade:183
 msgid "Address:"
 msgstr ""
 
-#: ../src/ui/ui_common.c:99
+#: ../src/server/chat.c:191 ../src/server/chat.c:312
+msgid "Can not send message to a server"
+msgstr ""
+
+#: ../src/sui_gtk/sui_common.c:86
 msgid "Cancel"
 msgstr ""
 
-#: ../data/ui/window.glade:362
-msgid "Channel/Nickname:"
+#: ../data/ui/window.glade:381
+msgid "Channel:"
 msgstr ""
 
-#: ../src/rc.c:57
+#: ../src/server/server_cmd.c:677
 #, c-format
-msgid "Command \"%s\" failed"
+msgid "Command failed: %s"
 msgstr ""
 
-#: ../src/srv/srv_session_cmd.c:457
-#, c-format
-msgid "Command '%s' failed"
-msgstr ""
-
-#: ../data/ui/window.glade:58 ../data/ui/window.glade:328
+#: ../data/ui/window.glade:59 ../data/ui/window.glade:347
 msgid "Connect"
 msgstr ""
 
-#: ../src/ui/srain_msg.c:139
+#: ../src/server/server_irc_event.c:76 ../src/server/server_irc_event.c:94
+#, c-format
+msgid "Connected to %s(%s:%d)"
+msgstr ""
+
+#: ../src/sui_gtk/srain_msg.c:131
 msgid "Copy message"
 msgstr ""
 
-#: ../data/ui/window.glade:269
-msgid "Description:"
-msgstr ""
-
-#: ../src/ui/srain_chat.c:325
+#: ../src/sui_gtk/srain_chat.c:299
 msgid "Disconnect (_C)"
 msgstr ""
 
-#: ../src/ui/ui.c:376
-msgid "ERROR"
-msgstr ""
-
-#: ../src/srv/srv_session.c:95
+#: ../src/server/server_irc_event.c:128 ../src/server/server_irc_event.c:134
 #, c-format
-msgid "ERROR: %s"
+msgid "Disconnected from %s(%s:%d)"
 msgstr ""
 
-#: ../src/srv/srv_event.c:665
+#: ../src/server/server_irc_event.c:573 ../src/server/server_irc_event.c:733
 #, c-format
 msgid "ERROR[%3d]: %s"
 msgstr ""
 
-#: ../src/ui/srain_msg_list.c:253
+#: ../src/sui_gtk/sui.c:397
 msgid "Error"
 msgstr ""
 
-#: ../src/ui/srain_msg.c:121 ../src/ui/srain_chat.c:220
-msgid "Failed to send message"
+#: ../src/server/chat.c:329
+#, c-format
+msgid "Failed to send action message \"%s\""
 msgstr ""
 
-#: ../src/ui/srain_chat.c:143
+#: ../src/server/chat.c:202
+#, c-format
+msgid "Failed to send message \"%s\""
+msgstr ""
+
+#: ../src/sui_gtk/srain_chat.c:135
 msgid "Failed to upload image"
 msgstr ""
 
-#: ../src/ui/srain_msg.c:146
+#: ../src/sui_gtk/srain_msg.c:138
 msgid "Forward to..."
+msgstr ""
+
+#: ../src/filter/regex.c:61
+#, c-format
+msgid "Invail pattern: %s"
 msgstr ""
 
 #: ../data/ui/nick_menu.glade:50
 msgid "Invite to..."
 msgstr ""
 
-#: ../data/ui/window.glade:74 ../data/ui/window.glade:412
+#: ../data/ui/window.glade:75 ../data/ui/window.glade:433
 msgid "Join"
 msgstr ""
 
@@ -210,7 +267,7 @@ msgstr ""
 msgid "Language: English"
 msgstr ""
 
-#: ../src/ui/srain_chat.c:328
+#: ../src/sui_gtk/srain_chat.c:302
 msgid "Leave (_C)"
 msgstr ""
 
@@ -218,107 +275,108 @@ msgstr ""
 msgid "Load image"
 msgstr ""
 
-#: ../data/ui/window.glade:248
+#: ../data/ui/window.glade:254
 msgid "Nickname:"
 msgstr ""
 
-#: ../src/srv/srv_session_cmd.c:422
+#: ../src/server/server_cmd.c:629
 #, c-format
-msgid "No such command '%s'"
+msgid "No such command: %s"
 msgstr ""
 
-#: ../src/srv/srv_session_cmd.c:429
+#: ../src/server/server_cmd.c:639
 #, c-format
-msgid "No such option '%s'"
+msgid "No such option: %s"
 msgstr ""
 
-#: ../data/ui/window.glade:302
+#: ../data/ui/window.glade:321
 msgid "No verify certificate"
 msgstr ""
 
-#: ../src/rc.c:58
-msgid "Null"
-msgstr ""
-
-#: ../src/ui/ui_common.c:100
+#: ../src/sui_gtk/sui_common.c:87
 msgid "Open"
 msgstr ""
 
-#: ../src/ui/ui_common.c:97
+#: ../src/sui_gtk/sui_common.c:84
 msgid "Open File"
 msgstr ""
 
-#: ../src/srv/srv_session_cmd.c:436
+#: ../src/server/server_cmd.c:649
 #, c-format
-msgid "Option '%s' missing value"
+msgid "Option missing value: %s"
 msgstr ""
 
-#: ../data/ui/window.glade:383
-msgid "Password(optional):"
+#: ../data/ui/window.glade:416
+msgid "Optional"
 msgstr ""
 
-#: ../data/ui/window.glade:202
+#: ../data/ui/window.glade:243 ../data/ui/window.glade:403
 msgid "Password:"
 msgstr ""
 
-#: ../data/ui/window.glade:226
-msgid "Port:"
-msgstr ""
-
-#: ../data/ui/window.glade:447
+#: ../data/ui/window.glade:468
 msgid "Quit"
 msgstr ""
 
-#: ../src/srv/srv_session.c:62
-#, c-format
-msgid "Reconnecting to %s ..."
+#: ../data/ui/window.glade:265
+msgid "Realname:"
 msgstr ""
 
-#: ../data/ui/window.glade:429
+#: ../data/ui/window.glade:450
 msgid "Srain"
 msgstr ""
 
-#: ../src/srv/srv_session_cmd.c:449
+#: ../src/server/server_cmd.c:667
 msgid "Too many arguments"
 msgstr ""
 
-#: ../src/srv/srv_session_cmd.c:442
+#: ../src/server/server_cmd.c:658
 msgid "Too many options"
 msgstr ""
 
-#: ../src/srv/srv_event.c:291
+#: ../src/server/server_irc_event.c:590
 #, c-format
-msgid "Topic for %s is \"%s\""
+msgid "Trying nickname: \"%s\"..."
 msgstr ""
 
-#: ../data/ui/chat.glade:251
+#: ../data/ui/chat.glade:266
 msgid "Upload image"
 msgstr ""
 
-#: ../data/ui/window.glade:289
+#: ../data/ui/window.glade:308
 msgid "Use secure connection"
 msgstr ""
 
-#: ../src/ui/srain_user_list.c:62
+#: ../src/sui_gtk/srain_user_list.c:62
 #, c-format
 msgid ""
 "Users: %d, <span color=\"#157915\">%d@</span>,<span color=\"#856117\">%d%%</"
 "span>,<span color=\"#451984\">%d+</span>"
 msgstr ""
 
-#: ../src/ui/srain_app.c:45
-msgid "Welcome"
+#: ../src/sui_gtk/sui.c:193 ../src/sui_gtk/sui.c:345
+msgid "You"
 msgstr ""
 
-#: ../src/ui/ui.c:405
-msgid "You"
+#: ../src/server/server_irc_event.c:388
+#, c-format
+msgid "You are kicked by %s: %s"
+msgstr ""
+
+#: ../src/server/server_irc_event.c:253
+#, c-format
+msgid "You has joined"
+msgstr ""
+
+#: ../src/server/server_irc_event.c:593
+msgid "Your nickname is too long to add a trailing underline"
 msgstr ""
 
 #: ../data/ui/nick_menu.glade:41
 msgid "_Chat"
 msgstr ""
 
-#: ../data/ui/chat.glade:28 ../src/ui/srain_chat.c:331
+#: ../data/ui/chat.glade:28 ../src/sui_gtk/srain_chat.c:305
 msgid "_Close"
 msgstr ""
 
@@ -342,12 +400,16 @@ msgstr ""
 msgid "_Whois"
 msgstr ""
 
-#: ../src/srv/srv_event.c:217
+#: ../src/server/server_irc_event.c:314 ../src/server/server_irc_event.c:345
 #, c-format
-msgid "mode %s %s %s by %s"
+msgid "by %s"
 msgstr ""
 
-#: ../src/srv/srv_event.c:269
+#: ../src/server/server_irc_event.c:305 ../src/server/server_irc_event.c:336
 #, c-format
-msgid "mode %s %s by %s"
+msgid "mode %s "
+msgstr ""
+
+#: ../data/ui/window.glade:392
+msgid "or Nickname"
 msgstr ""
