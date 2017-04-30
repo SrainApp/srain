@@ -156,6 +156,9 @@
         </child>
       </object>
     </child>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
   </template>
   <object class="GtkPopover" id="conn_popover">
     <property name="can_focus">False</property>
@@ -259,7 +262,7 @@
               <object class="GtkLabel" id="conn_real_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Description:</property>
+                <property name="label" translatable="yes">Realname:</property>
               </object>
               <packing>
                 <property name="left_attach">0</property>
