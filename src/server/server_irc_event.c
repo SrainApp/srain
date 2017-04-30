@@ -76,6 +76,9 @@ void server_irc_event_connect(SircSession *sirc, const char *event){
     chat_add_misc_message_fmt(srv->chat, "", _("Connected to %s(%s:%d)"),
             srv->info->name, srv->info->host, srv->info->port);
 
+    if (strlen(srv->info->passwd) > 0){
+        sirc_cmd_pass(srv->irc, srv->info->passwd);
+    }
     sirc_cmd_nick(srv->irc, user->nick);
     sirc_cmd_user(srv->irc, user->username, "hostname", "servername", user->realname);
 

@@ -145,6 +145,12 @@ int sirc_cmd_mode(SircSession *sirc, const char *target, const char *mode){
     return sirc_cmd_raw(sirc, "MODE %s %s\r\n", target, mode);
 }
 
+int sirc_cmd_pass(SircSession *sirc, const char *pass){
+    g_return_val_if_fail(pass, SRN_ERR);
+
+    return sirc_cmd_raw(sirc, "PASS %s\r\n", pass);
+}
+
 int sirc_cmd_raw(SircSession *sirc, const char *fmt, ...){
     char buf[SIRC_BUF_LEN];
     int len = 0;

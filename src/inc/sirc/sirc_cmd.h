@@ -21,6 +21,7 @@ int sirc_cmd_names(SircSession *sirc, const char *chan);
 int sirc_cmd_invite(SircSession *sirc, const char *nick, const char *chan);
 int sirc_cmd_kick(SircSession *sirc, const char *nick, const char *chan, const char *reason);
 int sirc_cmd_mode(SircSession *sirc, const char *target, const char *mode);
+int sirc_cmd_pass(SircSession *sirc, const char *pass);
 int sirc_cmd_raw(SircSession *sirc, const char *fmt, ...);
 
 #endif /* __IRC_CMD_H */
