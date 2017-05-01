@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Srain 0.05-git@0.537.3514334\n"
+"Project-Id-Version: Srain 0.05-git@0.539.b4b0604\n"
 "Report-Msgid-Bugs-To: silverrainz@outlook.com\n"
-"POT-Creation-Date: 2017-04-30 14:56+0800\n"
+"POT-Creation-Date: 2017-05-01 13:12+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -82,12 +82,12 @@ msgid ""
 "Running against GTK+ %d.%d.%d"
 msgstr ""
 
-#: ../src/server/server_irc_event.c:705
+#: ../src/server/server_irc_event.c:709
 #, c-format
 msgid "%s %s"
 msgstr ""
 
-#: ../src/server/server_irc_event.c:697
+#: ../src/server/server_irc_event.c:701
 #, c-format
 msgid "%s %s %s"
 msgstr ""
@@ -97,64 +97,64 @@ msgstr ""
 msgid "%s <fwd %s@%s>"
 msgstr ""
 
-#: ../src/server/server_irc_event.c:392
+#: ../src/server/server_irc_event.c:396
 #, c-format
 msgid "%s are kicked by %s: %s"
 msgstr ""
 
-#: ../src/server/server_irc_event.c:367
+#: ../src/server/server_irc_event.c:371
 #, c-format
 msgid ""
 "%s changed topic to:\n"
 "\t%s"
 msgstr ""
 
-#: ../src/server/server_irc_event.c:255
+#: ../src/server/server_irc_event.c:259
 #, c-format
 msgid "%s has joined"
 msgstr ""
 
-#: ../src/server/server_irc_event.c:276
+#: ../src/server/server_irc_event.c:280
 #, c-format
 msgid "%s has left"
 msgstr ""
 
-#: ../src/server/server_irc_event.c:274
+#: ../src/server/server_irc_event.c:278
 #, c-format
 msgid "%s has left: %s"
 msgstr ""
 
-#: ../src/server/server_irc_event.c:202
+#: ../src/server/server_irc_event.c:206
 #, c-format
 msgid "%s has quit"
 msgstr ""
 
-#: ../src/server/server_irc_event.c:200
+#: ../src/server/server_irc_event.c:204
 #, c-format
 msgid "%s has quit: %s"
 msgstr ""
 
-#: ../src/server/server_irc_event.c:476
+#: ../src/server/server_irc_event.c:480
 #, c-format
 msgid "%s invites you into %s"
 msgstr ""
 
-#: ../src/server/server_irc_event.c:683
+#: ../src/server/server_irc_event.c:687
 #, c-format
 msgid "%s is attached to %s at \"%s\""
 msgstr ""
 
-#: ../src/server/server_irc_event.c:690
+#: ../src/server/server_irc_event.c:694
 #, c-format
 msgid "%s is idle for %s seconds since %s"
 msgstr ""
 
-#: ../src/server/server_irc_event.c:677
+#: ../src/server/server_irc_event.c:681
 #, c-format
 msgid "%s is member of %s"
 msgstr ""
 
-#: ../src/server/server_irc_event.c:173 ../src/server/server_irc_event.c:181
+#: ../src/server/server_irc_event.c:177 ../src/server/server_irc_event.c:185
 #, c-format
 msgid "%s is now known as %s"
 msgstr ""
@@ -205,7 +205,7 @@ msgstr ""
 msgid "Connect"
 msgstr ""
 
-#: ../src/server/server_irc_event.c:76 ../src/server/server_irc_event.c:94
+#: ../src/server/server_irc_event.c:76 ../src/server/server_irc_event.c:98
 #, c-format
 msgid "Connected to %s(%s:%d)"
 msgstr ""
@@ -218,12 +218,12 @@ msgstr ""
 msgid "Disconnect (_C)"
 msgstr ""
 
-#: ../src/server/server_irc_event.c:128 ../src/server/server_irc_event.c:134
+#: ../src/server/server_irc_event.c:132 ../src/server/server_irc_event.c:138
 #, c-format
 msgid "Disconnected from %s(%s:%d)"
 msgstr ""
 
-#: ../src/server/server_irc_event.c:573 ../src/server/server_irc_event.c:733
+#: ../src/server/server_irc_event.c:577 ../src/server/server_irc_event.c:737
 #, c-format
 msgid "ERROR[%3d]: %s"
 msgstr ""
@@ -290,7 +290,7 @@ msgid "No such option: %s"
 msgstr ""
 
 #: ../data/ui/window.glade:321
-msgid "No verify certificate"
+msgid "Not verify certificate"
 msgstr ""
 
 #: ../src/sui_gtk/sui_common.c:87
@@ -334,7 +334,7 @@ msgstr ""
 msgid "Too many options"
 msgstr ""
 
-#: ../src/server/server_irc_event.c:590
+#: ../src/server/server_irc_event.c:594
 #, c-format
 msgid "Trying nickname: \"%s\"..."
 msgstr ""
@@ -358,17 +358,17 @@ msgstr ""
 msgid "You"
 msgstr ""
 
-#: ../src/server/server_irc_event.c:388
+#: ../src/server/server_irc_event.c:392
 #, c-format
 msgid "You are kicked by %s: %s"
 msgstr ""
 
-#: ../src/server/server_irc_event.c:253
+#: ../src/server/server_irc_event.c:257
 #, c-format
 msgid "You has joined"
 msgstr ""
 
-#: ../src/server/server_irc_event.c:593
+#: ../src/server/server_irc_event.c:597
 msgid "Your nickname is too long to add a trailing underline"
 msgstr ""
 
@@ -400,12 +400,12 @@ msgstr ""
 msgid "_Whois"
 msgstr ""
 
-#: ../src/server/server_irc_event.c:314 ../src/server/server_irc_event.c:345
+#: ../src/server/server_irc_event.c:318 ../src/server/server_irc_event.c:349
 #, c-format
 msgid "by %s"
 msgstr ""
 
-#: ../src/server/server_irc_event.c:305 ../src/server/server_irc_event.c:336
+#: ../src/server/server_irc_event.c:309 ../src/server/server_irc_event.c:340
 #, c-format
 msgid "mode %s "
 msgstr ""

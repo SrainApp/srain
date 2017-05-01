@@ -318,7 +318,7 @@
             </child>
             <child>
               <object class="GtkCheckButton" id="conn_no_verfiy_check_button">
-                <property name="label" translatable="yes">No verify certificate</property>
+                <property name="label" translatable="yes">Not verify certificate</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
