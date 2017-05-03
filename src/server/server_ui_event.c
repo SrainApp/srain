@@ -13,6 +13,7 @@
 #include "i18n.h"
 #include "log.h"
 #include "rc.h"
+#include "filter.h"
 
 static Server* ctx_get_server(SuiSession *sui);
 static Chat* ctx_get_chat(SuiSession *sui);
@@ -191,10 +192,15 @@ void server_ui_event_whois(SuiSession *sui, SuiEvent event, const char *params[]
 
 void server_ui_event_ignore(SuiSession *sui, SuiEvent event, const char *params[], int count){
     const char *nick;
+    Chat *chat;
 
     g_return_if_fail(count == 1);
     nick = params[0];
 
+    chat = ctx_get_chat(sui);
+    g_return_if_fail(chat);
+
+    nick_filter_add_nick(chat, nick);
 }
 
 void server_ui_event_cutover(SuiSession *sui, SuiEvent event, const char *params[], int count){
