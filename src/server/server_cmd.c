@@ -63,7 +63,7 @@ static void on_too_many_opt(Command *cmd, void *user_data);
 static void on_too_many_arg(Command *cmd, void *user_data);
 static void on_callback_fail(Command *cmd, void *user_data);
 
-static CommandBind cmd_binds[] = {
+CommandBind cmd_binds[] = {
     {
         "/connect", 2, // <hosts> <nick>
         {"-port", "-ssl", "-passwd", "-realname", NULL},

@@ -6,10 +6,12 @@
 #include "decorator.h"
 #include "filter.h"
 #include "i18n.h"
+#include "command.h"
 
 #include "sirc/sirc.h"
 
 extern SuiEvents ui_events;
+extern CommandBind cmd_binds[];
 
 static void append_image(Message *msg);
 static void add_message(Chat *chat, Message *msg);
@@ -47,6 +49,11 @@ Chat *chat_new(Server *srv, const char *name){
 
     sui_set_ctx(chat->ui, chat);
     sui_start_session(chat->ui, name, srv->info->name);
+
+    sui_add_completion(chat->ui, chat->name);
+    for (int i = 0; cmd_binds[i].name != NULL; i++){
+        sui_add_completion(chat->ui, cmd_binds[i].name);
+    }
 
     /* Require chat->ui */
 

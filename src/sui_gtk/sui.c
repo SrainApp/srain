@@ -356,8 +356,6 @@ void sui_message_append_image(SuiMessage *smsg, const char *url){
 }
 
 void sui_message_mentioned(SuiMessage *smsg){
-    const char *title;
-
     g_return_if_fail(smsg);
 
     srain_msg_list_highlight_message(smsg);
@@ -406,4 +404,34 @@ void sui_message_notify(SuiMessage *smsg){
 
     snotify_notify(title, msg, icon);
     srain_window_tray_icon_stress(srain_win, 1);
+}
+
+void sui_add_completion(SuiSession *sui, const char *keyword){
+    SrainChat *chat;
+    SrainEntryCompletion *comp;
+
+    g_return_if_fail(sui);
+    g_return_if_fail(keyword);
+
+    chat = sui->chat;
+    g_return_if_fail(SRAIN_IS_CHAT(chat));
+
+    comp = srain_chat_get_entry_completion(chat);
+
+    srain_entry_completion_add_keyword(comp, keyword, KEYWORD_NORMAL);
+}
+
+void sui_rm_completion(SuiSession *sui, const char *keyword){
+    SrainChat *chat;
+    SrainEntryCompletion *comp;
+
+    g_return_if_fail(sui);
+    g_return_if_fail(keyword);
+
+    chat = sui->chat;
+    g_return_if_fail(SRAIN_IS_CHAT(chat));
+
+    comp = srain_chat_get_entry_completion(chat);
+
+    srain_entry_completion_rm_keyword(comp, keyword);
 }

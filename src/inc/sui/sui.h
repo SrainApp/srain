@@ -78,4 +78,8 @@ int sui_rm_user(SuiSession *sui, const char *nick);
 int sui_ren_user(SuiSession *sui, const char *old_nick, const char *new_nick, UserType type);
 void sui_set_topic(SuiSession *sui, const char *topic);
 
+/* Completion */
+void sui_add_completion(SuiSession *sui, const char *word);
+void sui_rm_completion(SuiSession *sui, const char *word);
+
 #endif /* __SUI_H */
