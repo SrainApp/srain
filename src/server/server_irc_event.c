@@ -76,6 +76,8 @@ void server_irc_event_connect(SircSession *sirc, const char *event){
     chat_add_misc_message_fmt(srv->chat, "", _("Connected to %s(%s:%d)"),
             srv->info->name, srv->info->host, srv->info->port);
 
+    /* Send connection password, you should send it command before sending
+     * the NICK/USER combination. */
     if (strlen(srv->info->passwd) > 0){
         sirc_cmd_pass(srv->irc, srv->info->passwd);
     }
@@ -498,7 +500,7 @@ void server_irc_event_ctcp_action(SircSession *sirc, const char *event,
     chat_add_action_message(chat, origin, msg);
 }
 
-void server_irc_event_ping(SircSession *sirc, int event,
+void server_irc_event_ping(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count, const char *msg){
     Server *srv;
 
@@ -508,7 +510,7 @@ void server_irc_event_ping(SircSession *sirc, int event,
     /* Nothing to do */
 }
 
-void server_irc_event_pong(SircSession *sirc, int event,
+void server_irc_event_pong(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count, const char *msg){
     Server *srv;
     unsigned long time;
@@ -529,6 +531,17 @@ void server_irc_event_pong(SircSession *sirc, int event,
     } else {
         ERR_FR("Wrong timestamp: %s", msg);
     }
+}
+
+void server_irc_event_error(SircSession *sirc, const char *event,
+        const char *origin, const char **params, int count, const char *msg){
+    Server *srv;
+
+    srv = sirc_get_ctx(sirc);
+    g_return_if_fail(srv);
+    g_return_if_fail(msg);
+
+    chat_add_error_message_fmt(srv->cur_chat, origin, _("ERROR: %s"), msg);
 }
 
 void server_irc_event_numeric (SircSession *sirc, int event,
