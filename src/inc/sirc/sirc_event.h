@@ -32,7 +32,7 @@ typedef void (*SircNumericEventCallback) (SircSession *sirc, int event,
 
 typedef struct {
     SircSimpleEventCallback     connect;
-    SircSimpleEventCallback     disconnect;
+    SircEventCallback           disconnect;
 
     SircNumericEventCallback    welcome;
     SircEventCallback           nick;

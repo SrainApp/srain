@@ -43,7 +43,7 @@ static gboolean on_accept_certificate(GTlsClientConnection *conn,
         GTlsCertificate *cert, GTlsCertificateFlags errors, gpointer user_data);
 static void on_connect_finish(SircSession *sirc);
 static void on_recv(GObject *obj, GAsyncResult *res, gpointer user_data);
-static int on_disconnect(SircSession *sirc);
+static void on_disconnect(SircSession *sirc, const char *reason);
 
 SircSession* sirc_new_session(SircEvents *events, SircSessionFlag flag){
     SircSession *sirc;
@@ -130,15 +130,16 @@ void sirc_disconnect(SircSession *sirc){
 
     err = NULL;
     g_io_stream_close(sirc->stream, NULL, &err);
+
     if (err){
         ERR_FR("%s", err->message);
+        on_disconnect(sirc, err->message);
+    } else {
+        on_disconnect(sirc, NULL);
     }
 
     g_object_unref(sirc->stream);
-
     sirc->stream = NULL;
-
-    on_disconnect(sirc);
 }
 
 static void sirc_recv(SircSession *sirc){
@@ -223,7 +224,7 @@ static void on_handshake_ready(GObject *obj, GAsyncResult *res, gpointer user_da
         ERR_FR("TLS handshake failed: %s", err->message);
 
         sirc_disconnect(sirc);
-        on_disconnect(sirc);
+        on_disconnect(sirc, err->message);
 
         return;
     }
@@ -250,7 +251,7 @@ static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data
 
     if (!conn){
         ERR_FR("Connect failed: %d, %s", err->code, err->message);
-        on_disconnect(sirc);
+        on_disconnect(sirc, err->message);
 
         return;
     } else {
@@ -304,10 +305,8 @@ static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data
     }
 }
 
-static int on_disconnect(SircSession *sirc){
-    sirc->events->disconnect(sirc, "DISCONNECT");
-
-    return FALSE;
+static void on_disconnect(SircSession *sirc, const char *reason){
+    sirc->events->disconnect(sirc, "DISCONNECT", "", NULL, 0, reason);
 }
 
 static void on_connect_finish(SircSession *sirc){
