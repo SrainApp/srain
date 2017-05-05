@@ -193,22 +193,25 @@ static void on_recv(GObject *obj, GAsyncResult *res, gpointer user_data){
 
 static gboolean on_accept_certificate(GTlsClientConnection *conn,
         GTlsCertificate *cert, GTlsCertificateFlags errors, gpointer user_data){
-    WARN_FR("Certificate error, ignore it:");
+    const char *errmsg;
 
+    errmsg = NULL;
     if (errors & G_TLS_CERTIFICATE_UNKNOWN_CA)
-        WARN_FR("unknown-ca ");
+        errmsg = "unknown-ca";
     if (errors & G_TLS_CERTIFICATE_BAD_IDENTITY)
-        WARN_FR("bad-identity ");
+        errmsg = "bad-identity";
     if (errors & G_TLS_CERTIFICATE_NOT_ACTIVATED)
-        WARN_FR("not-activated ");
+        errmsg = "not-activated";
     if (errors & G_TLS_CERTIFICATE_EXPIRED)
-        WARN_FR("expired ");
+        errmsg = "expired";
     if (errors & G_TLS_CERTIFICATE_REVOKED)
-        WARN_FR("revoked ");
+        errmsg = "revoked";
     if (errors & G_TLS_CERTIFICATE_INSECURE)
-        WARN_FR("insecure ");
+        errmsg = "insecure";
 
-    return TRUE;
+    WARN_FR("Certificate error: %s", errmsg);
+
+    return FALSE;
 }
 
 static void on_handshake_ready(GObject *obj, GAsyncResult *res, gpointer user_data){
