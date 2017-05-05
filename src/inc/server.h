@@ -147,6 +147,8 @@ Server* server_new(const char *name, const char *host, int port,
 void server_free(Server *srv);
 int server_connect(Server *srv);
 void server_disconnect(Server *srv);
+bool server_is_registered(Server *srv);
+void server_wait_until_registered(Server *srv);
 int server_add_chat(Server *srv, const char *name);
 int server_rm_chat(Server *srv, const char *name);
 Chat* server_get_chat(Server *srv, const char *name);

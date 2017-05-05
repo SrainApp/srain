@@ -68,6 +68,7 @@ void server_init(){
     irc_events.ctcp_action = server_irc_event_ctcp_action;
     irc_events.ping = server_irc_event_ping;
     irc_events.pong = server_irc_event_pong;
+    irc_events.error = server_irc_event_error;
     irc_events.numeric = server_irc_event_numeric;
 
     server_cmd_init();
@@ -181,6 +182,25 @@ void server_disconnect(Server *srv){
     if (srv->stat == SERVER_CONNECTED) {
         sirc_disconnect(srv->irc);
     }
+}
+
+/**
+ * @brief server_is_registered Whether this server registered
+ *
+ * @param srv
+ *
+ * @return TRUE if registered
+ */
+bool server_is_registered(Server *srv){
+    return srv->stat == SERVER_CONNECTED && srv->registered == TRUE;
+}
+
+void server_wait_until_registered(Server *srv){
+    /* Waiting for connection established */
+    while (srv->stat == SERVER_CONNECTING) sui_proc_pending_event();
+    /* Waiting until server registered */
+    while (srv->stat == SERVER_CONNECTED && srv->registered == FALSE)
+        sui_proc_pending_event();
 }
 
 int server_add_chat(Server *srv, const char *name){

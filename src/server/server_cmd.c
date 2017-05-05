@@ -270,9 +270,10 @@ static int on_command_connect(Command *cmd, void *user_data){
 
     def_srv = srv;
     server_connect(def_srv);
-    while (def_srv->stat == SERVER_CONNECTING) sui_proc_pending_event();
 
-    if (def_srv->stat != SERVER_CONNECTED) {
+    server_wait_until_registered(def_srv);
+
+    if (!server_is_registered(srv)){
         def_srv = NULL;
         return SRN_ERR;
     }
