@@ -15,9 +15,13 @@
 
 #include "meta.h"
 #include "log.h"
+#include "utils.h"
 
 struct _SrainStackSidebarItem {
     GtkBox parent;
+
+    unsigned long update_time;
+
     GtkImage *image;
     GtkLabel *chat_label;
     GtkLabel *server_label;
@@ -56,6 +60,8 @@ SrainStackSidebarItem *srain_stack_sidebar_item_new(const char *server_name,
 
     item = g_object_new(SRAIN_TYPE_STACK_SIDEBAR_ITEM, NULL);
 
+    item->update_time = get_time_since_first_call_ms();
+
     gtk_label_set_text(item->chat_label, chat_name);
     gtk_label_set_text(item->server_label, server_name);
 
@@ -79,6 +85,8 @@ SrainStackSidebarItem *srain_stack_sidebar_item_new(const char *server_name,
 void srain_stack_sidebar_item_recentmsg_update(
         SrainStackSidebarItem *item, const char *nick, const char *msg){
     char *text;
+
+    item->update_time = get_time_since_first_call_ms();
 
     text = markup_get_text(msg);
     g_return_if_fail(text);
@@ -115,6 +123,10 @@ void srain_stack_sidebar_item_count_inc(SrainStackSidebarItem *item){
 void srain_stack_sidebar_item_count_clear(SrainStackSidebarItem *item){
     gtk_widget_set_name(GTK_WIDGET(item->count_label), "");
     gtk_label_set_text(item->count_label, "");
+}
+
+unsigned long srain_stack_sidebar_item_get_update_time(SrainStackSidebarItem *item){
+    return item->update_time;
 }
 
 static void markup_contact_text(GMarkupParseContext *context, const gchar *text,

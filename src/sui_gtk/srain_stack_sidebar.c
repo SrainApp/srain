@@ -98,6 +98,21 @@ list_box_on_popup(GtkWidget *widget, GdkEventButton *event, gpointer user_data){
     return FALSE;
 }
 
+static gint list_sort_func(GtkListBoxRow *row1, GtkListBoxRow *row2,
+        gpointer user_data){
+    unsigned long time1;
+    unsigned long time2;
+    SrainStackSidebarItem *item1;
+    SrainStackSidebarItem *item2;
+
+    item1 = SRAIN_STACK_SIDEBAR_ITEM(gtk_bin_get_child(GTK_BIN(row1)));
+    item2 = SRAIN_STACK_SIDEBAR_ITEM(gtk_bin_get_child(GTK_BIN(row2)));
+
+    time1 = srain_stack_sidebar_item_get_update_time(item1);
+    time2 = srain_stack_sidebar_item_get_update_time(item2);
+
+    return time1 <= time2;
+}
 
 static void
 srain_stack_sidebar_init(SrainStackSidebar *self){
@@ -116,6 +131,9 @@ srain_stack_sidebar_init(SrainStackSidebar *self){
     gtk_widget_show(GTK_WIDGET(self->list));
 
     gtk_container_add(GTK_CONTAINER(sw), GTK_WIDGET(self->list));
+
+    gtk_list_box_set_sort_func(GTK_LIST_BOX(self->list),
+            list_sort_func, NULL, NULL);
 
     g_signal_connect(self->list, "row-selected",
             G_CALLBACK(listbox_on_row_selected), self);
@@ -289,6 +307,7 @@ srain_stack_sidebar_update(SrainStackSidebar *sidebar, SrainChat *chat,
 
     item = SRAIN_STACK_SIDEBAR_ITEM(gtk_bin_get_child(GTK_BIN(row)));
     srain_stack_sidebar_item_recentmsg_update(item, nick, msg);
+    gtk_list_box_row_changed(row);
 
     if (!is_visible){
         srain_stack_sidebar_item_count_inc(item);

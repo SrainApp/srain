@@ -17,6 +17,7 @@ SrainStackSidebarItem *srain_stack_sidebar_item_new(const char *server_name, con
 void srain_stack_sidebar_item_count_clear(SrainStackSidebarItem *item);
 void srain_stack_sidebar_item_count_inc(SrainStackSidebarItem *item);
 void srain_stack_sidebar_item_recentmsg_update(SrainStackSidebarItem *item, const char *nick, const char *msg);
+unsigned long srain_stack_sidebar_item_get_update_time(SrainStackSidebarItem *item);
 
 #endif /* __SRAIN_STACK_SIDEBAR_ITEM_H */
 
