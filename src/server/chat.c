@@ -173,6 +173,10 @@ User* chat_get_user(Chat *chat, const char *nick){
     User *user;
     GSList *lst;
 
+    if (sirc_nick_cmp(chat->user->nick, nick)) {
+        return chat->user;
+    }
+
     lst = chat->user_list;
     while (lst){
         user = lst->data;
