@@ -8,7 +8,7 @@
 #include "sui/sui.h"
 
 /* In millseconds */
-#define SERVER_PING_INTERVAL    (10 * 1000)
+#define SERVER_PING_INTERVAL    (60 * 1000)
 #define SERVER_PING_TIMEOUT     (SERVER_PING_INTERVAL * 2)
 
 /* In seconds */
