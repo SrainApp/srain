@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 0.05-git@0.413.22ccd91\n"
 "Report-Msgid-Bugs-To: silverrainz@outlook.com\n"
-"POT-Creation-Date: 2017-05-01 13:12+0800\n"
+"POT-Creation-Date: 2017-05-06 21:09+0800\n"
 "PO-Revision-Date: 2016-12-18 01:44+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -84,27 +84,27 @@ msgstr ""
 "%s\n"
 "运行于 GTK+ %d.%d.%d"
 
-#: ../src/server/server_irc_event.c:709
+#: ../src/server/server_irc_event.c:732
 #, c-format
 msgid "%s %s"
 msgstr "%s %s"
 
-#: ../src/server/server_irc_event.c:701
+#: ../src/server/server_irc_event.c:724
 #, c-format
 msgid "%s %s %s"
 msgstr "%s %s %s"
 
 #: ../src/sui_gtk/srain_msg.c:107
 #, c-format
-msgid "%s <fwd %s@%s>"
-msgstr "%s <fwd %s@%s>"
+msgid "%s < fwd %s@%s >"
+msgstr "%s <fwd %s@%s >"
 
-#: ../src/server/server_irc_event.c:396
+#: ../src/server/server_irc_event.c:408
 #, c-format
 msgid "%s are kicked by %s: %s"
 msgstr "%s 被 %s 踢出频道：%s"
 
-#: ../src/server/server_irc_event.c:371
+#: ../src/server/server_irc_event.c:383
 #, c-format
 msgid ""
 "%s changed topic to:\n"
@@ -113,52 +113,52 @@ msgstr ""
 "%s 将主题更改为：\n"
 "\t%s"
 
-#: ../src/server/server_irc_event.c:259
+#: ../src/server/server_irc_event.c:271
 #, c-format
 msgid "%s has joined"
 msgstr "%s 加入了频道"
 
-#: ../src/server/server_irc_event.c:280
+#: ../src/server/server_irc_event.c:292
 #, c-format
 msgid "%s has left"
 msgstr "%s 离开了频道"
 
-#: ../src/server/server_irc_event.c:278
+#: ../src/server/server_irc_event.c:290
 #, c-format
 msgid "%s has left: %s"
 msgstr "%s 离开了频道：%s"
 
-#: ../src/server/server_irc_event.c:206
+#: ../src/server/server_irc_event.c:218
 #, c-format
 msgid "%s has quit"
 msgstr "%s 退出了聊天室"
 
-#: ../src/server/server_irc_event.c:204
+#: ../src/server/server_irc_event.c:216
 #, c-format
 msgid "%s has quit: %s"
 msgstr "%s 退出了聊天室：%s"
 
-#: ../src/server/server_irc_event.c:480
+#: ../src/server/server_irc_event.c:492
 #, c-format
 msgid "%s invites you into %s"
 msgstr "%s 邀请你加入频道 %s"
 
-#: ../src/server/server_irc_event.c:687
+#: ../src/server/server_irc_event.c:710
 #, c-format
 msgid "%s is attached to %s at \"%s\""
 msgstr ""
 
-#: ../src/server/server_irc_event.c:694
+#: ../src/server/server_irc_event.c:717
 #, c-format
 msgid "%s is idle for %s seconds since %s"
 msgstr ""
 
-#: ../src/server/server_irc_event.c:681
+#: ../src/server/server_irc_event.c:704
 #, c-format
 msgid "%s is member of %s"
 msgstr "%s 是频道 %s 的成员"
 
-#: ../src/server/server_irc_event.c:177 ../src/server/server_irc_event.c:185
+#: ../src/server/server_irc_event.c:189 ../src/server/server_irc_event.c:197
 #, c-format
 msgid "%s is now known as %s"
 msgstr "%s 将昵称更改为 %s"
@@ -167,7 +167,7 @@ msgstr "%s 将昵称更改为 %s"
 msgid "(This message can not be showed correctly)."
 msgstr "(这条消息无法被正确显示)."
 
-#: ../src/server/chat.c:347
+#: ../src/server/chat.c:358
 #, c-format
 msgid "*** <b>%s</b> %s ***"
 msgstr "*** <b>%s</b> %s ***"
@@ -180,7 +180,7 @@ msgstr "关于"
 msgid "About Srain"
 msgstr "关于 Srain"
 
-#: ../src/sui_gtk/sui.c:401
+#: ../src/sui_gtk/sui.c:399
 msgid "Action"
 msgstr "动作"
 
@@ -188,7 +188,7 @@ msgstr "动作"
 msgid "Address:"
 msgstr "地址"
 
-#: ../src/server/chat.c:191 ../src/server/chat.c:312
+#: ../src/server/chat.c:202 ../src/server/chat.c:323
 msgid "Can not send message to a server"
 msgstr "不允许直接向服务器发送消息"
 
@@ -200,7 +200,7 @@ msgstr "取消"
 msgid "Channel:"
 msgstr "频道："
 
-#: ../src/server/server_cmd.c:677
+#: ../src/server/server_cmd.c:678
 #, c-format
 msgid "Command failed: %s"
 msgstr "命令执行失败：%s"
@@ -209,7 +209,7 @@ msgstr "命令执行失败：%s"
 msgid "Connect"
 msgstr "连接"
 
-#: ../src/server/server_irc_event.c:76 ../src/server/server_irc_event.c:98
+#: ../src/server/server_irc_event.c:76 ../src/server/server_irc_event.c:99
 #, c-format
 msgid "Connected to %s(%s:%d)"
 msgstr "已连接到 %s(%s:%d)"
@@ -222,26 +222,36 @@ msgstr "复制消息"
 msgid "Disconnect (_C)"
 msgstr "断开连接 (_C)"
 
-#: ../src/server/server_irc_event.c:132 ../src/server/server_irc_event.c:138
+#: ../src/server/server_irc_event.c:138 ../src/server/server_irc_event.c:149
 #, c-format
 msgid "Disconnected from %s(%s:%d)"
 msgstr "到 %s(%s:%d) 的连接已断开"
 
-#: ../src/server/server_irc_event.c:577 ../src/server/server_irc_event.c:737
+#: ../src/server/server_irc_event.c:135 ../src/server/server_irc_event.c:146
+#, c-format
+msgid "Disconnected from %s(%s:%d): %s"
+msgstr "到 %s(%s:%d) 的连接已断开：%s"
+
+#: ../src/server/server_irc_event.c:555
+#, c-format
+msgid "ERROR: %s"
+msgstr "错误: %s"
+
+#: ../src/server/server_irc_event.c:600 ../src/server/server_irc_event.c:760
 #, c-format
 msgid "ERROR[%3d]: %s"
 msgstr "错误[%3d]: %s"
 
-#: ../src/sui_gtk/sui.c:397
+#: ../src/sui_gtk/sui.c:395
 msgid "Error"
 msgstr "错误"
 
-#: ../src/server/chat.c:329
+#: ../src/server/chat.c:340
 #, c-format
 msgid "Failed to send action message \"%s\""
 msgstr "无法发送动作消息 \"%s\""
 
-#: ../src/server/chat.c:202
+#: ../src/server/chat.c:213
 #, c-format
 msgid "Failed to send message \"%s\""
 msgstr "无法发送消息 \"%s\""
@@ -283,12 +293,12 @@ msgstr "加载图片"
 msgid "Nickname:"
 msgstr "昵称："
 
-#: ../src/server/server_cmd.c:629
+#: ../src/server/server_cmd.c:630
 #, c-format
 msgid "No such command: %s"
 msgstr "没有这个命令：%s"
 
-#: ../src/server/server_cmd.c:639
+#: ../src/server/server_cmd.c:640
 #, c-format
 msgid "No such option: %s"
 msgstr "没有这个选项：%s"
@@ -305,7 +315,7 @@ msgstr "打开"
 msgid "Open File"
 msgstr "打开文件"
 
-#: ../src/server/server_cmd.c:649
+#: ../src/server/server_cmd.c:650
 #, c-format
 msgid "Option missing value: %s"
 msgstr "可选参数缺少参数值：%s"
@@ -330,15 +340,15 @@ msgstr "真实姓名："
 msgid "Srain"
 msgstr "Srain"
 
-#: ../src/server/server_cmd.c:667
+#: ../src/server/server_cmd.c:668
 msgid "Too many arguments"
 msgstr "参数太多"
 
-#: ../src/server/server_cmd.c:658
+#: ../src/server/server_cmd.c:659
 msgid "Too many options"
 msgstr "可选参数太多"
 
-#: ../src/server/server_irc_event.c:594
+#: ../src/server/server_irc_event.c:617
 #, c-format
 msgid "Trying nickname: \"%s\"..."
 msgstr "正在尝试使用昵称：\"%s\"..."
@@ -364,17 +374,17 @@ msgstr ""
 msgid "You"
 msgstr "你"
 
-#: ../src/server/server_irc_event.c:392
+#: ../src/server/server_irc_event.c:404
 #, c-format
 msgid "You are kicked by %s: %s"
 msgstr "你被 %s 踢出频道：%s"
 
-#: ../src/server/server_irc_event.c:257
+#: ../src/server/server_irc_event.c:269
 #, c-format
 msgid "You has joined"
 msgstr "你加入了频道"
 
-#: ../src/server/server_irc_event.c:597
+#: ../src/server/server_irc_event.c:620
 msgid "Your nickname is too long to add a trailing underline"
 msgstr "你的昵称太长，无法在其后追加下划线"
 
@@ -406,12 +416,12 @@ msgstr "用户列表 (_U)"
 msgid "_Whois"
 msgstr "个人信息 (_W)"
 
-#: ../src/server/server_irc_event.c:318 ../src/server/server_irc_event.c:349
+#: ../src/server/server_irc_event.c:330 ../src/server/server_irc_event.c:361
 #, c-format
 msgid "by %s"
 msgstr "由 %s"
 
-#: ../src/server/server_irc_event.c:309 ../src/server/server_irc_event.c:340
+#: ../src/server/server_irc_event.c:321 ../src/server/server_irc_event.c:352
 #, c-format
 msgid "mode %s "
 msgstr "%s 的模式变更为"
