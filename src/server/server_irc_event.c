@@ -688,6 +688,7 @@ void server_irc_event_numeric (SircSession *sirc, int event,
         case SIRC_RFC_RPL_WHOISUSER:
             {
                 g_return_if_fail(count >= 5);
+                g_return_if_fail(msg);
                 const char *nick = params[1];
                 const char *user = params[2];
                 const char *host = params[3];
@@ -700,15 +701,17 @@ void server_irc_event_numeric (SircSession *sirc, int event,
             }
         case SIRC_RFC_RPL_WHOISCHANNELS:
             {
-                g_return_if_fail(count >= 3);
-                chat_add_misc_message_fmt(srv->cur_chat, origin, _("%s is member of %s"), params[1], params[2]);
+                g_return_if_fail(count >= 2);
+                g_return_if_fail(msg);
+                chat_add_misc_message_fmt(srv->cur_chat, origin, _("%s is member of %s"), params[1], msg);
                 break;
             }
         case SIRC_RFC_RPL_WHOISSERVER:
             {
-                g_return_if_fail(count >= 4);
+                g_return_if_fail(count >= 3);
+                g_return_if_fail(msg);
                 chat_add_misc_message_fmt(srv->cur_chat, origin, _("%s is attached to %s at \"%s\""),
-                        params[1], params[2], params[3]);
+                        params[1], params[2], msg);
                 break;
             }
         case SIRC_RFC_RPL_WHOISIDLE:
@@ -721,6 +724,7 @@ void server_irc_event_numeric (SircSession *sirc, int event,
         case SIRC_RFC_RPL_WHOWAS_TIME:
             {
                 g_return_if_fail(count >= 3);
+                g_return_if_fail(msg);
                 chat_add_misc_message_fmt(srv->cur_chat, origin, _("%s %s %s"),
                         params[1], msg, params[2]);
                 break;
@@ -729,11 +733,13 @@ void server_irc_event_numeric (SircSession *sirc, int event,
         case SIRC_RFC_RPL_WHOISSECURE:
             {
                 g_return_if_fail(count >= 2);
+                g_return_if_fail(msg);
                 chat_add_misc_message_fmt(srv->cur_chat, origin, _("%s %s"), params[1], msg);
                 break;
             }
         case SIRC_RFC_RPL_ENDOFWHOIS:
             {
+                g_return_if_fail(msg);
                 chat_add_misc_message(srv->cur_chat, origin, msg);
                 break;
             }
