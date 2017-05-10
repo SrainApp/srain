@@ -28,6 +28,7 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
 
     num = atoi(imsg->cmd);
     origin = imsg->nick ? imsg->nick : imsg->prefix;
+    g_return_if_fail(origin);
 
     /* Debug output and parameters check */
     bool nullparam = FALSE;
