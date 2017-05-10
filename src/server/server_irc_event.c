@@ -784,6 +784,40 @@ void server_irc_event_numeric (SircSession *sirc, int event,
             }
         case SIRC_RFC_RPL_ENDOFWHO:
             break;
+            /************************ BANLIST message ************************/
+        case SIRC_RFC_RPL_BANLIST:
+            {
+                srv = sirc_get_ctx(sirc);
+                g_return_if_fail(srv);
+                g_return_if_fail(count >= 3);
+
+                const char *chan = params[1];
+                const char *banmask = params[2];
+
+                Chat *chat = server_get_chat(srv, chan);
+                if (!chat) chat = srv->cur_chat;
+
+                chat_add_misc_message_fmt(srv->cur_chat, origin, "%s: %s",
+                        chan, banmask);
+                // TODO: <time_left> and <reason> are not defined in RFC
+                break;
+            }
+        case SIRC_RFC_RPL_ENDOFBANLIST:
+            {
+                srv = sirc_get_ctx(sirc);
+                g_return_if_fail(srv);
+                g_return_if_fail(count >= 2);
+                g_return_if_fail(msg);
+
+                const char *chan = params[1];
+
+                Chat *chat = server_get_chat(srv, chan);
+                if (!chat) chat = srv->cur_chat;
+
+                chat_add_misc_message_fmt(srv->cur_chat, origin, _("%s: %s"),
+                        chan,msg);
+                break;
+            }
         default:
             {
                 // Error message
@@ -793,10 +827,10 @@ void server_irc_event_numeric (SircSession *sirc, int event,
                     return;
                 }
 
-                int i;
-                LOG_FR("Drop message, server: %s, event: %d, origin: %s, count: %u, params: [",
+                WARN_FR("Unspported message, You can report it at " PACKAGE_WEBSITE);
+                WARN_FR("server: %s, event: %d, origin: %s, count: %u, params: [",
                         srv->info->name, event, origin, count);
-                for (i = 0; i < count; i++) LOG("'%s', ", params[i]); LOG("]\n");
+                for (int i = 0; i < count; i++) LOG("'%s', ", params[i]); LOG("]\n");
             }
     }
 }
