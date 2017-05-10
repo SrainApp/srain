@@ -165,7 +165,7 @@ void server_irc_event_welcome(SircSession *sirc, int event,
     /* You have registered when you recived a RPL_WELCOME(001) message */
     srv->registered = TRUE;
 
-    g_strlcpy(srv->user->nick, nick, sizeof(srv->user->nick));
+    user_rename(srv->user, nick);
 }
 
 void server_irc_event_nick(SircSession *sirc, const char *event,
@@ -313,28 +313,27 @@ void server_irc_event_part(SircSession *sirc, const char *event,
 void server_irc_event_mode(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count, const char *msg){
     GString *buf;
+    GString *modes;
     Server *srv;
     Chat *chat;
 
     g_return_if_fail(count >= 1);
-    g_return_if_fail(msg);
 
     const char *chan = params[0];
 
     g_return_if_fail(srv = sirc_get_ctx(sirc));
     g_return_if_fail(chat = server_get_chat(srv, chan));
 
-    buf = g_string_new(NULL);
-    g_string_printf(buf, _("mode %s "), chan);
+    modes = g_string_new(NULL);
     for (int i = 1; i < count; i++) {
-        g_string_append_printf(buf, "%s ", params[i]);
+        g_string_append_printf(modes, "%s ", params[i]);
     }
-
     if (msg) {
-        g_string_append_printf(buf, "%s ", msg);
+        g_string_append_printf(modes, "%s ", msg);
     }
 
-    g_string_append_printf(buf, _("by %s"), origin);
+    buf = g_string_new(NULL);
+    g_string_printf(buf, _("mode %1$s %2$s by %3$s"), chan, modes->str, origin);
 
     chat_add_misc_message(chat, origin, buf->str);
 
@@ -342,12 +341,14 @@ void server_irc_event_mode(SircSession *sirc, const char *event,
     /*
     */
 
+    g_string_free(modes, TRUE);
     g_string_free(buf, TRUE);
 }
 
 void server_irc_event_umode(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count, const char *msg){
     GString *buf;
+    GString *modes;
     Server *srv;
 
     srv = sirc_get_ctx(sirc);
@@ -356,20 +357,20 @@ void server_irc_event_umode(SircSession *sirc, const char *event,
 
     const char *nick = params[0];
 
-    buf = g_string_new(NULL);
-    g_string_printf(buf, _("mode %s "), nick);
+    modes = g_string_new(NULL);
     for (int i = 1; i < count; i++) {
-        g_string_append_printf(buf, "%s ", params[i]);
+        g_string_append_printf(modes, "%s ", params[i]);
     }
-
     if (msg) {
-        g_string_append_printf(buf, "%s ", msg);
+        g_string_append_printf(modes, "%s ", msg);
     }
 
-    g_string_append_printf(buf, _("by %s"), origin);
+    buf = g_string_new(NULL);
+    g_string_printf(buf, _("mode %1$s %2$s by %3$s"), nick, modes->str, origin);
 
     chat_add_misc_message(srv->chat, origin, buf->str);
 
+    g_string_free(modes, TRUE);
     g_string_free(buf, TRUE);
 }
 
