@@ -320,8 +320,10 @@ void server_irc_event_mode(SircSession *sirc, const char *event,
 
     const char *chan = params[0];
 
-    g_return_if_fail(srv = sirc_get_ctx(sirc));
-    g_return_if_fail(chat = server_get_chat(srv, chan));
+    srv = sirc_get_ctx(sirc);
+    g_return_if_fail(srv);
+    chat = server_get_chat(srv, chan);
+    g_return_if_fail(chat);
 
     modes = g_string_new(NULL);
     for (int i = 1; i < count; i++) {
@@ -336,9 +338,45 @@ void server_irc_event_mode(SircSession *sirc, const char *event,
 
     chat_add_misc_message(chat, origin, buf->str);
 
-    /* TODO: parse more modes */
-    /*
-    */
+    // FIXME: Only process the first mode
+    do {
+        if (count < 3) break;
+        const char *mode = params[1];
+        const char *mode_args = params[2];
+
+        User *user = chat_get_user(chat, mode_args);
+        if (!user) break;
+
+        if (strlen(mode) < 2) break;
+
+        if (mode[0] == '-'){
+            user_set_type(user, USER_CHIGUA);
+        }
+        else if (mode[0] == '+'){
+            switch (mode[1]){
+                case 'q':
+                    user_set_type(user, USER_OWNER);
+                    break;
+                case 'a':
+                    user_set_type(user, USER_ADMIN);
+                    break;
+                case 'o':
+                    user_set_type(user, USER_FULL_OP);
+                    break;
+                case 'h':
+                    user_set_type(user, USER_HALF_OP);
+                    break;
+                case 'v':
+                    user_set_type(user, USER_VOICED);
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            ERR_FR("Unrecognized mode: %s. chan: %s, mode_args: %s",
+                    mode, chan, mode_args);
+        }
+    } while (0);
 
     g_string_free(modes, TRUE);
     g_string_free(buf, TRUE);
