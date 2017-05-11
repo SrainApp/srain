@@ -104,7 +104,7 @@ Server* server_new(const char *name,
 
     srv->user = user_new(srv->chat, nick, username, realname, USER_CHIGUA);
     if (!srv->user) goto bad;
-    srv->user->me = TRUE;
+    user_set_me(srv->user, TRUE);
 
     // FIXME: Corss-required between chat_new() and user_new()
     srv->chat->user = user_ref(srv->user);

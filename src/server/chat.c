@@ -120,9 +120,13 @@ int chat_add_user(Chat *chat, const char *nick, UserType type){
     int ret;
     User *user;
 
-
     user = user_new(chat, nick, NULL, NULL, type);
+
     ret = chat_add_user_full(chat, user);
+    if (sirc_nick_cmp(chat->user->nick, nick)){
+        user_set_me(user, TRUE);
+    }
+
     user_free(user);
 
     return ret;

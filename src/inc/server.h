@@ -175,6 +175,7 @@ User *user_ref(User *user);
 void user_free(User *user);
 void user_rename(User *user, const char *new_nick);
 void user_set_type(User *user, UserType type);
+void user_set_me(User *user, bool me);
 
 Message* message_new(Chat *chat, User *user, const char *content, MessageType type);
 void message_free(Message *msg);

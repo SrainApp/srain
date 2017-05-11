@@ -67,3 +67,7 @@ void user_set_type(User *user, UserType type){
 
     user->type = type;
 }
+
+void user_set_me(User *user, bool me){
+    user->me = me;
+}
