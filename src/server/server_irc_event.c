@@ -642,7 +642,7 @@ void server_irc_event_numeric (SircSession *sirc, int event,
 
                 buf = g_string_new(NULL);
                 for (int i = 1; i < count; i++){
-                    g_string_append_printf(buf, "%s ", params[i++]);
+                    g_string_append_printf(buf, "%s ", params[i]);
                 }
                 if (msg) g_string_append_printf(buf, "%s", msg);
 
