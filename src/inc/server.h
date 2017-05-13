@@ -110,6 +110,7 @@ enum _ServerStatus {
 struct _Server {
     ServerStatus stat;
     bool registered;    // Whether the user has registered(Own a nickname)?
+    bool user_quit;     // Whether the user has received a QUIT message originated by himself?
     ServerInfo *info;
     User *user;         // Used to store your nick, username, realname
     Chat *chat;         // Hold all messages that do not belong to any other Chat

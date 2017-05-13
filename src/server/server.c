@@ -94,6 +94,7 @@ Server* server_new(const char *name,
     srv = g_malloc0(sizeof(Server));
 
     srv->registered = FALSE;
+    srv->user_quit = FALSE;
     srv->stat = SERVER_UNCONNECTED;
 
     srv->info = server_info_new(name, host, port, passwd, encoding, ircflag);

@@ -155,9 +155,12 @@ int sirc_cmd_raw(SircSession *sirc, const char *fmt, ...){
     char buf[SIRC_BUF_LEN];
     int len = 0;
     va_list args;
+    GIOStream *stream;
 
     g_return_val_if_fail(sirc, SRN_ERR);
     g_return_val_if_fail(fmt, SRN_ERR);
+    stream = sirc_get_stream(sirc);
+    g_return_val_if_fail(G_IS_IO_STREAM(stream), SRN_ERR);
 
     if (strlen(fmt) != 0){
         va_start(args, fmt);
@@ -172,6 +175,6 @@ int sirc_cmd_raw(SircSession *sirc, const char *fmt, ...){
 
     // TODO send it totally
 
-    return (io_stream_write(sirc_get_stream(sirc), buf, len) < 0) ?
+    return (io_stream_write(stream, buf, len) < 0) ?
         SRN_ERR : SRN_OK;
 }

@@ -61,8 +61,9 @@ void server_ui_event_disconnect(SuiSession *sui, SuiEvent event, const char *par
     srv = ctx_get_server(sui);
     g_return_if_fail(srv);
 
-    server_disconnect(srv);
-    server_free(srv);
+    if (sirc_cmd_quit(srv->irc, "QUIT") == SRN_ERR){
+        server_free(srv);
+    }
 }
 
 void server_ui_event_send(SuiSession *sui, SuiEvent event, const char *params[], int count){

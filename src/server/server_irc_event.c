@@ -149,6 +149,13 @@ void server_irc_event_disconnect(SircSession *sirc, const char *event,
         chat_add_misc_message_fmt(srv->chat, "", _("Disconnected from %s(%s:%d)"),
                 srv->info->name, srv->info->host, srv->info->port);
     }
+
+    if (srv->user_quit){
+        server_free(srv);
+    } else {
+        // TODO: reconnect logic
+        // server_connect(srv);
+    }
 }
 
 void server_irc_event_welcome(SircSession *sirc, int event,
@@ -164,6 +171,7 @@ void server_irc_event_welcome(SircSession *sirc, int event,
 
     /* You have registered when you recived a RPL_WELCOME(001) message */
     srv->registered = TRUE;
+    srv->user_quit = FALSE;
 
     user_rename(srv->user, nick);
 }
@@ -235,9 +243,9 @@ void server_irc_event_quit(SircSession *sirc, const char *event,
     /* You quit */
     if (sirc_nick_cmp(origin, srv->user->nick)){
         srv->registered = FALSE;
+        srv->user_quit = TRUE;
 
         server_disconnect(srv);
-        server_free(srv);
     }
 }
 

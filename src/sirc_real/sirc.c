@@ -42,7 +42,8 @@ static void on_connect_ready(GObject *obj, GAsyncResult *result, gpointer user_d
 static gboolean on_accept_certificate(GTlsClientConnection *conn,
         GTlsCertificate *cert, GTlsCertificateFlags errors, gpointer user_data);
 static void on_connect_finish(SircSession *sirc);
-static void on_recv(GObject *obj, GAsyncResult *res, gpointer user_data);
+static void on_disconnect_ready(GObject *obj, GAsyncResult *result, gpointer user_data);
+static void on_recv_ready(GObject *obj, GAsyncResult *res, gpointer user_data);
 static void on_disconnect(SircSession *sirc, const char *reason);
 
 SircSession* sirc_new_session(SircEvents *events, SircSessionFlag flag){
@@ -63,14 +64,21 @@ SircSession* sirc_new_session(SircEvents *events, SircSessionFlag flag){
     return sirc;
 }
 
+/**
+ * @brief sirc_free_session Free a SircSession
+ *
+ * @param sirc
+ *
+ * NOTE: This function shouled be called after "DISCONNECT" event, because the IO of
+ *       SircSession is asynchronous.
+ */
 void sirc_free_session(SircSession *sirc){
     g_return_if_fail(sirc);
 
-    if (sirc->stream){
-        sirc_disconnect(sirc);
+    if (sirc->client){
+        g_object_unref(sirc->client);
+        sirc->client = NULL;
     }
-
-    g_object_unref(sirc->client);
 
     g_free(sirc);
 }
@@ -122,45 +130,43 @@ void sirc_connect(SircSession *sirc, const char *host, int port){
 }
 
 void sirc_disconnect(SircSession *sirc){
-    GError *err;
-
     g_return_if_fail(sirc);
 
-    sirc_cmd_quit(sirc, "QUIT");
-
-    err = NULL;
-    g_io_stream_close(sirc->stream, NULL, &err);
-
-    if (err){
-        ERR_FR("%s", err->message);
-        on_disconnect(sirc, err->message);
-    } else {
-        on_disconnect(sirc, NULL);
-    }
-
-    g_object_unref(sirc->stream);
-    sirc->stream = NULL;
+    g_io_stream_close_async(sirc->stream, 0, NULL, on_disconnect_ready, sirc);
 }
 
 static void sirc_recv(SircSession *sirc){
     GInputStream *in;
 
+    g_return_if_fail(G_IS_IO_STREAM(sirc->stream));
+
     in = g_io_stream_get_input_stream(sirc->stream);
     g_input_stream_read_async(in, &sirc->buf[sirc->bufptr], 1, G_PRIORITY_DEFAULT,
-            NULL, on_recv, sirc);
+            NULL, on_recv_ready, sirc);
 }
 
-static void on_recv(GObject *obj, GAsyncResult *res, gpointer user_data){
+static void on_recv_ready(GObject *obj, GAsyncResult *res, gpointer user_data){
     int size;
     GInputStream *in;
     SircSession *sirc;
     SircMessage imsg;
 
-    g_return_if_fail(G_IS_INPUT_STREAM(obj));
-
-    in = G_INPUT_STREAM(obj);
     sirc = user_data;
 
+    g_return_if_fail(G_IS_INPUT_STREAM(obj));
+    // g_return_if_fail(G_IS_IO_STREAM(sirc->stream));
+
+    /*
+    if (g_io_stream_is_closed(sirc->stream)){
+        g_object_unref(sirc->stream);
+        sirc->stream = NULL;
+
+        on_disconnect(sirc, NULL);
+        return;
+    }
+    */
+
+    in = G_INPUT_STREAM(obj);
     size = g_input_stream_read_finish(in, res, NULL);
     g_return_if_fail(size == 1);
 
@@ -222,20 +228,22 @@ static void on_handshake_ready(GObject *obj, GAsyncResult *res, gpointer user_da
     tls_conn = G_TLS_CONNECTION(obj);
     sirc = user_data;
 
+    g_object_unref(sirc->stream);
+    sirc->stream = G_IO_STREAM(tls_conn);
+
     err = NULL;
     if (!g_tls_connection_handshake_finish(tls_conn, res, &err)){
         ERR_FR("TLS handshake failed: %s", err->message);
 
-        sirc_disconnect(sirc);
+        g_object_unref(sirc->stream);
+        sirc->stream = NULL;
+
         on_disconnect(sirc, err->message);
 
         return;
     }
 
     DBG_FR("TLS handshake successed");
-
-    g_object_unref(sirc->stream);
-    sirc->stream = G_IO_STREAM(tls_conn);
 
     on_connect_finish(sirc);
 }
@@ -299,13 +307,32 @@ static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data
 
     sirc->stream = G_IO_STREAM(conn);
 
-    /* If use TLS, trigger "connect" event after TLS handshake,
+    /* If use TLS, trigger "CONNECT" event after TLS handshake,
      * see `on_handshake_ready` */
     if (sirc->flag & SIRC_SESSION_SSL){
         // ...
     } else {
         on_connect_finish(sirc);
     }
+}
+
+static void on_disconnect_ready(GObject *obj, GAsyncResult *result, gpointer user_data){
+    GError *err;
+    GIOStream *stream;
+    SircSession *sirc;
+
+    stream = G_IO_STREAM(obj);
+    sirc = user_data;
+    err = NULL;
+
+    if (!g_io_stream_close_finish(stream, result, &err)){
+        on_disconnect(sirc, err->message);
+    } else {
+        on_disconnect(sirc, NULL);
+    }
+
+    g_object_unref(sirc->stream);
+    sirc->stream = NULL;
 }
 
 static void on_disconnect(SircSession *sirc, const char *reason){
