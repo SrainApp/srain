@@ -604,10 +604,10 @@ static int on_command_mode(Command *cmd, void *user_data){
 
     g_return_val_if_fail(srv = scctx_get_server(user_data), SRN_ERR);
 
-    mode = command_get_arg(cmd, 0);
-    target = command_get_arg(cmd, 1);
-    g_return_val_if_fail(mode, SRN_ERR);
+    target = command_get_arg(cmd, 0);
+    mode = command_get_arg(cmd, 1);
     g_return_val_if_fail(target, SRN_ERR);
+    g_return_val_if_fail(mode, SRN_ERR);
 
     return sirc_cmd_mode(srv->irc, target, mode);
 }
