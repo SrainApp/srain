@@ -4,27 +4,29 @@ Commands
 
 Command::
 
-    /connect [-port <port>] [-ssl on|off|noverify] [-realname <realname>] [-passwd <passwd>] <srv_name> <host>
+    /connect [-port <port>] [-ssl on|off|notverify] [-realname <realname>] [-passwd <passwd>] <host> <nick>
 
 Add a server into your server list. It will become the default server
 automaticly.
 
-* ``srv_name``: The name of server that will displayed on UI
 * ``host``: IRC server host
+* ``nick``: The nickname you want to use
 * ``-port``: IRC server port, if no specified, use ``6667``
 * ``-ssl``:
 
   - ``on``: Use secure server connections with SSL
   - ``off``: On the contrary
-  - ``noverify``: disables the certificate verification
+  - ``notverify``: Disables the certificate verification
 
 * ``-passwd``: The password of the server
 * ``-realname``: Set your realname
 
 Example::
 
-    /connect -realname 'I am srainbot' -ssl noverify -port 6697 chat.freenode.org srainbot
+    /connect -realname 'I am srainbot' -ssl notverify -port 6697 chat.freenode.org srainbot
     /connect 127.0.0.1 srainbot
+
+**The following commands should excuted after a ``/connect`` command**
 
 Command::
 
@@ -48,8 +50,6 @@ Command::
 Ignore/unignore somebody's message.
 
 * ``-cur``: Only ignore in current chat
-
-**The following commands only influence current server**
 
 Command::
 
