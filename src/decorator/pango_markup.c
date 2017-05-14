@@ -34,7 +34,7 @@
 #define PORT_PATTERN        "(:[1-9][0-9]{0,4})"
 #define HOST_PATTERN        "(" DOMAIN_PATTERN TLD_PATTERN "|" IP_PATTERN ")" PORT_PATTERN "?"
 
-#define URL_PATH_PATTERN    "(/[A-Za-z0-9-_.~:/?#\\[\\]@!&'()*+,;=%]*)?"
+#define URL_PATH_PATTERN    "(/[A-Za-z0-9-_.~:/?#\\[\\]@!&'()*+,;=%|]*[A-Za-z0-9-_/])?/?"
 #define URL_PATTERN         PROTO_PATTERN "://" HOST_PATTERN URL_PATH_PATTERN
 
 /* ref: https://tools.ietf.org/html/rfc1459#section-1.3*/
