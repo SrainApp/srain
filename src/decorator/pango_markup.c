@@ -21,7 +21,14 @@
 #define PROTO_PATTERN       "(http|https|ftp|git|svn|irc|xmpp)"
 
 #define DOMAIN_PATTERN      "[_\\pL\\pN\\pS][-_\\pL\\pN\\pS]*(\\.[-_\\pL\\pN\\pS]+)*"
-#define TLD_PATTERN         "\\.[\\pL][-\\pL\\pN]*[\\pL]"
+
+/* Ref: https://w3techs.com/technologies/overview/top_level_domain/all */
+#define TLD_PATTERN         "\\.(com|ru|org|net|de|jp|uk|br|it|pl|fr|in|au|ir"  \
+                            "|info|nl|cn|es|cz|kr|ca|eu|ua|co|gr|ro|za|biz|ch"  \
+                            "|se|tw|mx|vn|hu|be|at|tr|dk|tv|me|ar|sk|no|us|fi"  \
+                            "|id|cl|xyz|io|pt|by|il|ie|nz|kz|hk|lt|cc|my|sg"    \
+                            "|club|bg|рф|edu|top|pk|su|th|hr|rs|pro|pe|si|az"   \
+                            "|lv|pw|ae|ph|ng|online|ee|ve|cat|moe)"
 #define IP_PATTERN          "[0-9]{1,3}(\\.[0-9]{1,3}){3}"
 
 #define PORT_PATTERN        "(:[1-9][0-9]{0,4})"
