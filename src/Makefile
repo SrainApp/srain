@@ -24,10 +24,12 @@ CURLFLAGS = $(shell pkg-config --cflags libcurl)
 CURLLIBS = $(shell pkg-config --libs libcurl)
 LIBNOTIFYFLAGS = $(shell pkg-config --cflags libnotify)
 LIBNOTIFYLIBS = $(shell pkg-config --libs libnotify)
+LIBCONFIGFLAGS = $(shell pkg-config --cflags libconfig)
+LIBCONFIGLIBS = $(shell pkg-config --libs libconfig)
 
 CFLAGS += $(DEFS) $(GTK3FLAGS)  $(GTK3LIBS) $(PY3FLAGS) $(PY3LIBS) \
 		  $(CURLFLAGS) $(CURLLIBS) $(LIBIRCCLINETFLAGS) $(LIBIRCCLINETLIBS) \
-		  $(LIBNOTIFYFLAGS) $(LIBNOTIFYLIBS)
+		  $(LIBNOTIFYFLAGS) $(LIBNOTIFYLIBS) $(LIBCONFIGFLAGS) $(LIBCONFIGLIBS)
 
 TARGET = ../build/srain
 SRCS = $(wildcard *.c */*.c ../build/resources.c)

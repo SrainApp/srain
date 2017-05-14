@@ -1,9 +1,10 @@
+=====
 Srain
 =====
 
 **Note:** Srain is still under development.
 
-It does not look like an IRC client :-)
+Modern, beautiful IRC client written in GTK+ 3.
 
 Dependencies
 ------------
@@ -17,6 +18,7 @@ Dependencies
 - python >= 3.2
 - libcurl
 - libnotify
+- libconfig
 
 Build & Debug
 -------------
@@ -86,7 +88,7 @@ Feel free to contact me if you have any question about srain.
 
 - **IRC Channel**: `#srain <irc://irc.freenode.net/srain>`_ at freenode
 - Email: silverrainz at outlook dot com
-- Github: file a issue `Here <https://github.com/SilverRainZ/srain/issues>`_
+- Github: file an issue `Here <https://github.com/SilverRainZ/srain/issues>`_
 
 License
 -------
