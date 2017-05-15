@@ -28,17 +28,19 @@
                             "|se|tw|mx|vn|hu|be|at|tr|dk|tv|me|ar|sk|no|us|fi"  \
                             "|id|cl|xyz|io|pt|by|il|ie|nz|kz|hk|lt|cc|my|sg"    \
                             "|club|bg|рф|edu|top|pk|su|th|hr|rs|pro|pe|si|az"   \
-                            "|lv|pw|ae|ph|ng|online|ee|ve|cat|moe)"
+                            "|lv|pw|ae|ph|ng|online|ee|ve|cat|moe|tk|ml)"
 #define IP_PATTERN          "[0-9]{1,3}(\\.[0-9]{1,3}){3}"
 
 #define PORT_PATTERN        "(:[1-9][0-9]{0,4})"
 #define HOST_PATTERN        "(" DOMAIN_PATTERN TLD_PATTERN "|" IP_PATTERN ")" PORT_PATTERN "?"
 
+/* For convenience, last character of URL is limited */
 #define URL_PATH_PATTERN    "(/[A-Za-z0-9-_.~:/?#\\[\\]@!&'()*+,;=%|]*[A-Za-z0-9-_/])?/?"
 #define URL_PATTERN         PROTO_PATTERN "://" HOST_PATTERN URL_PATH_PATTERN
 
-/* ref: https://tools.ietf.org/html/rfc1459#section-1.3*/
-#define CHANNEL_PATTERN     "[#&][^\x07\x2C\\s]{1,200}"
+/* Ref: https://tools.ietf.org/html/rfc1459#section-1.3
+   For convenience, last character of channel is limited */
+#define CHANNEL_PATTERN     "[#&][^\x07\x2C\\s,:]{0,199}[A-Za-z0-9-_+]"
 
 #define EMAIL_PATTERN       "[a-z0-9][._+%a-z0-9-]+@" HOST_PATTERN
 
