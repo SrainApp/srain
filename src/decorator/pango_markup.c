@@ -142,8 +142,11 @@ static int pango_markup(Message *msg, DecoratorFlag flag, void *user_data){
 
             switch(type){
                 case MATCH_URL:
-                case MATCH_HOST:
                     markuped_url = g_markup_printf_escaped("<a href=\"%s\">%s</a>", url, url);
+                    break;
+                case MATCH_HOST:
+                    /* Fallback to http protocol */
+                    markuped_url = g_markup_printf_escaped("<a href=\"http://%s\">%s</a>", url, url);
                     break;
                 case MATCH_CHANNEL:
                     markuped_url = g_markup_printf_escaped("<a href=\"irc://%s:%d/%s\">%s</a>",
