@@ -24,6 +24,7 @@
 #include "srain.h"
 #include "log.h"
 #include "utils.h"
+#include "prefs.h"
 
 SuiAppEvents ui_app_events;
 SuiEvents ui_events;
@@ -71,13 +72,15 @@ void server_init(){
     irc_events.error = server_irc_event_error;
     irc_events.numeric = server_irc_event_numeric;
 
+    prefs_init();
+
     server_cmd_init();
 
     sui_main_loop(&ui_app_events);
 }
 
 void server_finalize(){
-
+    prefs_finalize();
 }
 
 Server* server_new(const char *name,

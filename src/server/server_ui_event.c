@@ -14,11 +14,21 @@
 #include "log.h"
 #include "rc.h"
 #include "filter.h"
+#include "prefs.h"
 
 static Server* ctx_get_server(SuiSession *sui);
 static Chat* ctx_get_chat(SuiSession *sui);
 
 void server_ui_event_activate(SuiEvent event, const char *params[], int count){
+    const char *prefs_res;
+
+    prefs_res = prefs_read();
+
+    if (prefs_res){
+        show_msg_dialog(_("Error"), prefs_res);
+        g_free(prefs_res);
+    }
+
     rc_read();
     // TODO: welcome or command error report
 }

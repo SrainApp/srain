@@ -28,8 +28,7 @@ enum _UserType {
     USER_OWNER,     // ~ mode +q
     USER_ADMIN,     // & mode +a
     USER_FULL_OP,   // @ mode +o
-    USER_HALF_OP,   // % mode +h
-    USER_VOICED,    // + mode +v
+    USER_HALF_OP,   // % mode +h USER_VOICED,    // + mode +v
     USER_CHIGUA,    // No prefix
     /* ... */
     USER_TYPE_MAX
@@ -82,4 +81,6 @@ void sui_set_topic(SuiSession *sui, const char *topic);
 void sui_add_completion(SuiSession *sui, const char *word);
 void sui_rm_completion(SuiSession *sui, const char *word);
 
+// TODO: rename
+void show_msg_dialog(const char *title, const char *msg);
 #endif /* __SUI_H */
