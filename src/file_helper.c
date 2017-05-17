@@ -104,23 +104,15 @@ char *get_config_file(const char *fname){
 
 char *get_system_config_file(const char *fname){
     char *path;
-    const char *dir;
-    const char * const *dirs;
 
-    dirs = g_get_system_config_dirs();
-    while (*dirs){
-        dir = *dirs;
-        dirs++;
+    path = g_build_filename(PACKAGE_CONFIG_DIR, PACKAGE, fname, NULL);
 
-        path = g_build_filename(dir, PACKAGE, fname, NULL);
-
-        if (g_file_test(path, G_FILE_TEST_EXISTS)){
-            return path;
-        }
-
-        WARN_FR("'%s' not found", path);
-        g_free(path);
+    if (g_file_test(path, G_FILE_TEST_EXISTS)){
+        return path;
     }
+
+    WARN_FR("'%s' not found", path);
+    g_free(path);
 
     return NULL;
 }
