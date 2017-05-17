@@ -1,5 +1,2 @@
-/relay teleboto
-/relay xmppbot
-/relay toxsync
-/connect -ssl off -port 6667 chat.freenode.org srainbot
+/connect -ssl on -port 6697 chat.freenode.org srainbot
 /join #srain
