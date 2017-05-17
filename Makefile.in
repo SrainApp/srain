@@ -18,14 +18,14 @@ PACKAGE_EMAIL = silverrainz@outlook.com
 PACKAGE_DESC = Modern, beautiful IRC client written in GTK+ 3.
 PACKAGE_WEBSITE = https://github.com/SilverRainZ/srain
 PACKAGE_DATA_DIR = $(PREFIX)
+PACKAGE_CONFIG_DIR = $(CONFIG_DIR)
 
 MAKE = make
 DEL = rm -rf
 INSTALL = install -v
 
-TARGET = build/srain
+TARGET = $(PWD)/build/srain.out
 TEST_FLAG = NO_TEST
-
 default: src/Makefile data/ui/Makefile
 	$(MAKE) -C data/ui
 	$(MAKE) -C src
@@ -53,7 +53,10 @@ run:
 	$(MAKE) install-po
 	cp srainrc.example build/srainrc
 	cd build; \
-	XDG_DATA_DIRS=$(PWD)/build/share:/usr/share/ ./bin/srain
+	export XDG_CONFIG_DIRS=$(PWD)/build/xdg:/etc/xdg; \
+	export XDG_CONFIG_HOME=$(PWD)/build; \
+	export XDG_DATA_DIRS=$(PWD)/build/share:/usr/share; \
+	./bin/srain
 
 bt: $(TARGET)
 	cd build && yes | gdb ./srain -ex 'r' -ex 'bt' -ex 'q'
