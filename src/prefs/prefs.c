@@ -6,6 +6,8 @@
  * @date 2017-05-14
  */
 
+#define __LOG_ON
+
 #include <glib.h>
 #include <libconfig.h>
 
@@ -83,8 +85,6 @@ static const char *prefs_read_file(config_t *cfg, const char *file){
         g_string_free(errstr, FALSE);
 
         ERR_FR(errmsg);
-
-        g_free(file);
 
         return errmsg;
     }
