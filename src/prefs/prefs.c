@@ -10,6 +10,7 @@
 
 #include <glib.h>
 #include <libconfig.h>
+#include <string.h>
 
 #include "prefs.h"
 #include "srain.h"
@@ -28,7 +29,7 @@ void prefs_init(){
 };
 
 const char* prefs_read(){
-    const char *path;
+    char *path;
     const char *errmsg;
 
     path = get_system_config_file("builtin.cfg");
@@ -65,29 +66,30 @@ void prefs_finalize(){
 };
 
 static const char *prefs_read_file(config_t *cfg, const char *file){
-    const char *dir;
+    char *dir;
+    const char *version;
 
     dir = g_path_get_dirname(file);
     config_set_include_dir(cfg, dir);
     g_free(dir);
 
-    if (!config_read_file(&builtin_cfg, file)){
-        const char *errmsg;
-        GString *errstr;
-
-        errstr = g_string_new(NULL);
-        g_string_printf(errstr, _("Error found in %s line %d: %s"),
-                config_error_file(&builtin_cfg),
-                config_error_line(&builtin_cfg),
-                config_error_text(&builtin_cfg));
-
-        errmsg = errstr->str;
-        g_string_free(errstr, FALSE);
-
-        ERR_FR(errmsg);
-
-        return errmsg;
+    if (!config_read_file(cfg, file)){
+        return g_strdup_printf(_("Error found in %s line %d: %s"),
+                config_error_file(cfg),
+                config_error_line(cfg),
+                config_error_text(cfg));
     }
+
+    /* Verify configure version */
+    if (!config_lookup_string(cfg, "version", &version)){
+        return g_strdup_printf(_("No version found in config'%s'"), file);
+    }
+
+    /* TODO:
+    if (strcmp(version, PACKAGE_VERSION) != 0){
+        return g_strdup_printf(_("Version in config file '%s' is not macth"), file);
+    }
+    */
 
     return NULL;
 }
