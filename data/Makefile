@@ -6,9 +6,8 @@ INSTALL = install -v
 
 SIZE = 14x14 16x16 22x22 24x24 32x32 36x36 48x48 64x64 72x72 96x96 128x128 192x192 256x256 512x512
 
-default: Srain.desktop builtin.cfg icons themes plugins
+default: Srain.desktop icons themes plugins config
 	$(INSTALL) -Dm644 "Srain.desktop" "$(DESTDIR)$(PACKAGE_DATA_DIR)/share/applications/Srain.desktop"
-	$(INSTALL) -Dm644 "builtin.cfg" "$(DESTDIR)$(PACKAGE_CONFIG_DIR)/srain/builtin.cfg"
 
 icons:
 	cd icons; \
@@ -44,3 +43,6 @@ plugins:
 	for i in *.py; do \
 		$(INSTALL) -Dm644 "$$i" "$(DESTDIR)$(PACKAGE_DATA_DIR)/share/srain/plugins/$$i"; \
 	done
+
+config: builtin.cfg
+	$(INSTALL) -Dm644 "builtin.cfg" "$(DESTDIR)$(PACKAGE_CONFIG_DIR)/srain/builtin.cfg"

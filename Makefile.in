@@ -48,6 +48,7 @@ irctest:
 	$(MAKE) TEST_FLAG=IRC_TEST run
 
 run:
+	$(MAKE) -C data config
 	$(MAKE) PREFIX=$(PWD)/build
 	$(MAKE) install-bin
 	$(MAKE) install-po
