@@ -30,14 +30,16 @@ struct _SircPrefs {
     // bool use_ipv6;
     // bool use_sasl;
 
-    const char *part_msg;
-    const char *kick_msg;
-    const char *away_msg;
-    const char *quit_msg;
+    const char *part_message;
+    const char *kick_message;
+    const char *away_message;
+    const char *quit_message;
 };
 
 struct _ServerPrefs {
-    User user;
+    const char *nickname;
+    const char *username;
+    const char *realname;
 
     bool enable_log;
     bool strip_mirc_color;
