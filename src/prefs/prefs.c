@@ -140,8 +140,13 @@ static const char *prefs_read_file(config_t *cfg, const char *file){
 }
 
 static void read_sui_prefs_from_chat(config_setting_t *chat, SuiPrefs *prefs){
-    /* TODO: read more element */
+    config_setting_lookup_bool(chat, "notify", (int *)&prefs->notify);
     config_setting_lookup_bool(chat, "show_topic", (int *)&prefs->show_topic);
+    config_setting_lookup_bool(chat, "show_avatar", (int *)&prefs->show_avatar);
+    config_setting_lookup_bool(chat, "show_user_list", (int *)&prefs->show_user_list);
+    config_setting_lookup_bool(chat, "send_by_ctrl_enter", (int *)&prefs->send_by_ctrl_enter);
+    config_setting_lookup_bool(chat, "preview_image", (int *)&prefs->preview_image);
+    config_setting_lookup_bool(chat, "enable_log", (int *)&prefs->enable_log);
 }
 
 static void read_sui_prefs_from_chat_list(config_setting_t *chat_list,
@@ -239,12 +244,28 @@ static void read_server_prefs_from_server(config_setting_t *server,
         ServerPrefs *prefs){
     config_setting_t *irc;
 
-    config_setting_lookup_string(server, "nickname", &prefs->nickname);
+    /* Read server meta info */
+    config_setting_lookup_string(server, "name", &prefs->name);
+    config_setting_lookup_string(server, "host", &prefs->host);
+    config_setting_lookup_int(server, "port", &prefs->port);
+    config_setting_lookup_string(server, "passwd", &prefs->passwd);
+    config_setting_lookup_string(server, "encoding", &prefs->encoding);
+
+    /* Read server.user */
+    config_setting_lookup_string(server, "user.nickname", &prefs->nickname);
+    config_setting_lookup_string(server, "user.username", &prefs->username);
+    config_setting_lookup_string(server, "user.realname", &prefs->realname);
+
+    /* Read server.default_messages */
+    config_setting_lookup_string(server, "default_messages.part", &prefs->part_message);
+    config_setting_lookup_string(server, "default_messages.kick", &prefs->kick_message);
+    config_setting_lookup_string(server, "default_messages.away", &prefs->away_message);
+    config_setting_lookup_string(server, "default_messages.quit", &prefs->quit_message);
 
     /* Read server.irc */
     irc = config_setting_lookup(server, "irc");
     if (irc){
-        read_sirc_prefs_from_irc(irc, prefs->irc);
+        read_sirc_prefs_from_irc(irc, &prefs->irc);
     }
 }
 
@@ -293,5 +314,7 @@ static void read_server_prefs_from_cfg(config_t *cfg, ServerPrefs *prefs,
 }
 
 static void read_sirc_prefs_from_irc(config_setting_t *irc, SircPrefs *prefs){
-
+    config_setting_lookup_bool(irc, "auto_reconnect", (int *)&prefs->auto_reconnect);
+    config_setting_lookup_bool(irc, "use_ssl", (int *)&prefs->use_ssl);
+    config_setting_lookup_bool(irc, "verify_ssl_cert", (int *)&prefs->verify_ssl_cert);
 }

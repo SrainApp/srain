@@ -20,29 +20,38 @@ struct _SuiPrefs {
     bool show_avatar;
     bool show_user_list;
     bool send_by_ctrl_enter;
-    bool auto_preview_image;
+    bool preview_image;
+    bool enable_log;
 };
 
 struct _SircPrefs {
     bool auto_reconnect;
     bool use_ssl;
-    bool notverify_cert;
+    bool verify_ssl_cert;
     // bool use_ipv6;
     // bool use_sasl;
-
-    const char *part_message;
-    const char *kick_message;
-    const char *away_message;
-    const char *quit_message;
 };
 
 struct _ServerPrefs {
+    /* For specificed server */
+    const char *name;
+    const char *host;
+    int port;
+    const char *passwd;
+    const char *encoding;
+
+    /* User */
     const char *nickname;
     const char *username;
     const char *realname;
 
-    bool enable_log;
-    bool strip_mirc_color;
+    /* Default message */
+    const char *part_message;
+    const char *kick_message;
+    const char *away_message;
+    const char *quit_message;
+
+    SircPrefs irc;
 };
 
 void prefs_init();
