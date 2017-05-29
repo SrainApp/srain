@@ -6,12 +6,15 @@
 
 typedef struct _SuiSession SuiSession;
 typedef int SuiSessionFlag;
+typedef struct _SuiMessage SuiMessage;
+typedef enum _UserType UserType;
+typedef struct _SuiAppPrefs SuiAppPrefs;
+typedef struct _SuiPrefs SuiPrefs;
 
 #define SUI_SESSION_SERVER      1 << 0
 #define SUI_SESSION_CHANNEL     1 << 1
 #define SUI_SESSION_DIALOG      1 << 2
 #define SUI_SESSION_NEWWINDOW   1 << 3  // Not used yet
-#define SUI_SESSION_NOSWITCH    1 << 4  // Not used yet
 
 // TODO Rename type
 typedef enum {
@@ -20,9 +23,6 @@ typedef enum {
     SYS_MSG_ACTION
 } SysMsgType;
 
-typedef struct _SuiMessage SuiMessage;
-
-typedef enum _UserType UserType;
 
 enum _UserType {
     USER_OWNER,     // ~ mode +q
@@ -35,6 +35,21 @@ enum _UserType {
     USER_TYPE_MAX
 };
 
+struct _SuiAppPrefs {
+    bool switch_to_new_chat;
+    // const char *font;
+};
+
+struct _SuiPrefs {
+    bool notify;
+    bool show_topic;
+    bool show_avatar;
+    bool show_user_list;
+    bool send_by_ctrl_enter;
+    bool preview_image;
+    bool enable_log;
+};
+
 #define SRAIN_MSG_MENTIONED 0x1
 
 #define __IN_SUI_H
@@ -45,7 +60,7 @@ void sui_main_loop(SuiAppEvents *events);
 void sui_proc_pending_event();
 
 /* SuiSession */
-SuiSession *sui_new_session(SuiEvents *events, SuiSessionFlag flag);
+SuiSession *sui_new_session(SuiEvents *events, SuiPrefs *prefs, SuiSessionFlag flag);
 void sui_free_session(SuiSession *sui);
 int sui_start_session(SuiSession *sui, const char *name, const char *remark);
 void sui_end_session(SuiSession *sui);

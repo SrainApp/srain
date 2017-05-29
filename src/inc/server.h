@@ -31,6 +31,7 @@ typedef struct _Chat Chat;
 typedef enum   _ServerStatus ServerStatus;
 typedef struct _ServerInfo ServerInfo;
 typedef struct _Server Server;
+typedef struct _ServerPrefs ServerPrefs;
 
 /*enum _UserType {
     USER_CHIGUA,    // No prefix
@@ -133,6 +134,28 @@ struct _ServerInfo {
     char passwd[PASSWD_LEN];
     const char *encoding;
     SircSessionFlag ircflag;
+};
+
+struct _ServerPrefs {
+    /* For specificed server */
+    const char *name;
+    const char *host;
+    int port;
+    const char *passwd;
+    const char *encoding;
+
+    /* User */
+    const char *nickname;
+    const char *username;
+    const char *realname;
+
+    /* Default message */
+    const char *part_message;
+    const char *kick_message;
+    const char *away_message;
+    const char *quit_message;
+
+    SircPrefs irc;
 };
 
 void server_init();

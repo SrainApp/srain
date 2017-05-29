@@ -6,6 +6,7 @@
 
 typedef int SircSessionFlag;
 typedef struct _SircSession SircSession;
+typedef struct _SircPrefs SircPrefs;
 
 #define SIRC_SESSION_SSL            1 << 0
 #define SIRC_SESSION_SSL_NOTVERIFY  1 << 1
@@ -13,6 +14,14 @@ typedef struct _SircSession SircSession;
 #define SIRC_SESSION_IPV6           1 << 3 // Not support yet
 
 #define SIRC_BUF_LEN    513
+
+struct _SircPrefs {
+    bool auto_reconnect;
+    bool use_ssl;
+    bool verify_ssl_cert;
+    // bool use_ipv6;
+    // bool use_sasl;
+};
 
 #define __IN_SIRC_H
 #include "sirc_cmd.h"
