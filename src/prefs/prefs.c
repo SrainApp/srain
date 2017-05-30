@@ -1,9 +1,14 @@
 /**
  * @file prefs.c
- * @brief libconfig warpper for srain
+ * @brief Libconfig based configure file reader
  * @author Shengyu Zhang <silverrainz@outlook.com>
  * @version 1.0
  * @date 2017-05-14
+ *
+ * Prefs priority:
+ *      builtin_cfg < user_cfg
+ *      server < server_list
+ *      chat < chat_list
  */
 
 #define __LOG_ON
@@ -22,9 +27,11 @@
 config_t user_cfg;
 config_t builtin_cfg;
 
-static const char *prefs_read_file(config_t *cfg, const char *file);
+static char *prefs_read_file(config_t *cfg, const char *file);
 
 static void read_sirc_prefs_from_irc(config_setting_t *irc, SircPrefs *prefs);
+static void read_sirc_prefs_from_server_list(config_setting_t *server_list, SircPrefs *prefs, const char *srv_name);
+static void read_sirc_prefs_from_cfg(config_t *cfg, SircPrefs *prefs, const char *srv_name);
 
 static void read_server_prefs_from_server(config_setting_t *server, ServerPrefs *prefs);
 static void read_server_prefs_from_server_list(config_setting_t *server_list, ServerPrefs *prefs, const char *srv_name);
@@ -46,7 +53,7 @@ void prefs_finalize(){
 
 char* prefs_read(){
     char *path;
-    const char *errmsg;
+    char *errmsg;
 
     path = get_system_config_file("builtin.cfg");
     if (!path){
@@ -85,6 +92,11 @@ char* prefs_read_sui_app_prefs(SuiAppPrefs *prefs){
     return NULL;
 }
 
+char *prefs_read_server_list(GList **server_list){
+    // TODO
+    return NULL;
+}
+
 char* prefs_read_server_prefs(ServerPrefs *prefs, const char *srv_name){
     read_server_prefs_from_cfg(&builtin_cfg, prefs, srv_name);
     read_server_prefs_from_cfg(&user_cfg, prefs, srv_name);
@@ -92,22 +104,22 @@ char* prefs_read_server_prefs(ServerPrefs *prefs, const char *srv_name){
     return NULL;
 }
 
-char *prefs_read_server_list(GList **server_list){
+char* prefs_read_sirc_prefs(SircPrefs *prefs, const char *srv_name){
+    read_sirc_prefs_from_cfg(&builtin_cfg, prefs, srv_name);
+    read_sirc_prefs_from_cfg(&user_cfg, prefs, srv_name);
+
     return NULL;
 }
 
 char *prefs_read_sui_prefs(SuiPrefs *prefs, const char *srv_name,
         const char *chat_name){
-    /* builtin < user
-     * default prefs < server.chat < server.chat_list < server_list.chat < server_list.chat_list
-     */
     read_sui_prefs_from_cfg(&builtin_cfg, prefs, srv_name, chat_name);
     read_sui_prefs_from_cfg(&user_cfg, prefs, srv_name, chat_name);
 
     return NULL;
 }
 
-static const char *prefs_read_file(config_t *cfg, const char *file){
+static char *prefs_read_file(config_t *cfg, const char *file){
     char *dir;
     const char *version;
 
@@ -132,7 +144,6 @@ static const char *prefs_read_file(config_t *cfg, const char *file){
         return g_strdup_printf(_("Version in config file '%s' is not macth"), file);
     }
     */
-    SuiPrefs *prefs = g_malloc0(sizeof(SuiPrefs));
 
     return NULL;
 }
@@ -176,6 +187,7 @@ static void read_sui_prefs_from_cfg(config_t *cfg, SuiPrefs *prefs,
 
         chat = config_lookup(cfg, "server.chat");
         if (chat){
+            DBG_FR("Read: server.chat")
             read_sui_prefs_from_chat(chat, prefs);
         }
     }
@@ -201,6 +213,7 @@ static void read_sui_prefs_from_cfg(config_t *cfg, SuiPrefs *prefs,
             for (int i = 0; i < count; i++){
                 const char *name = NULL;
                 config_setting_t *server;
+                config_setting_t *chat;
 
                 server = config_setting_get_elem(server_list, i);
                 if (!server) break;
@@ -208,13 +221,10 @@ static void read_sui_prefs_from_cfg(config_t *cfg, SuiPrefs *prefs,
                 config_setting_lookup_string(server, "name", &name);
                 if (g_strcmp0(srv_name, name) != 0) continue;
 
-                DBG_FR("Read server_list.%s", name);
-
-                config_setting_t *chat;
-
                 /* Read server_list.[name = srv_name].chat */
                 chat = config_setting_lookup(server, "chat");
                 if (chat){
+                    DBG_FR("Read server_list.[name = %s].chat", name);
                     read_sui_prefs_from_chat(chat, prefs);
                 }
 
@@ -234,8 +244,6 @@ static void read_sui_prefs_from_cfg(config_t *cfg, SuiPrefs *prefs,
 
 static void read_server_prefs_from_server(config_setting_t *server,
         ServerPrefs *prefs){
-    config_setting_t *irc;
-
     /* Read server meta info */
     config_setting_lookup_string(server, "name", &prefs->name);
     config_setting_lookup_string(server, "host", &prefs->host);
@@ -253,12 +261,6 @@ static void read_server_prefs_from_server(config_setting_t *server,
     config_setting_lookup_string(server, "default_messages.kick", &prefs->kick_message);
     config_setting_lookup_string(server, "default_messages.away", &prefs->away_message);
     config_setting_lookup_string(server, "default_messages.quit", &prefs->quit_message);
-
-    /* Read server.irc */
-    irc = config_setting_lookup(server, "irc");
-    if (irc){
-        read_sirc_prefs_from_irc(irc, &prefs->irc);
-    }
 }
 
 static void read_server_prefs_from_server_list(config_setting_t *server_list,
@@ -276,7 +278,7 @@ static void read_server_prefs_from_server_list(config_setting_t *server_list,
         config_setting_lookup_string(server, "name", &name);
         if (g_strcmp0(srv_name, name) != 0) continue;
 
-        DBG_FR("Read: server_list.%s", name);
+        DBG_FR("Read: server_list.[name = %s]", name);
         read_server_prefs_from_server(server, prefs);
     }
 }
@@ -288,6 +290,7 @@ static void read_server_prefs_from_cfg(config_t *cfg, ServerPrefs *prefs,
     /* Read server */
     server = config_lookup(cfg, "server");
     if (server){
+        DBG_FR("Read: server");
         read_server_prefs_from_server(server, prefs);
     }
 
@@ -306,4 +309,50 @@ static void read_sirc_prefs_from_irc(config_setting_t *irc, SircPrefs *prefs){
     config_setting_lookup_bool(irc, "auto_reconnect", (int *)&prefs->auto_reconnect);
     config_setting_lookup_bool(irc, "use_ssl", (int *)&prefs->use_ssl);
     config_setting_lookup_bool(irc, "verify_ssl_cert", (int *)&prefs->verify_ssl_cert);
+}
+
+static void read_sirc_prefs_from_server_list(config_setting_t *server_list,
+        SircPrefs *prefs, const char *srv_name){
+    int count;
+
+    count = config_setting_length(server_list);
+    for (int i = 0; i < count; i++){
+        const char *name = NULL;
+        config_setting_t *server;
+        config_setting_t *irc;
+
+        server = config_setting_get_elem(server_list, i);
+        if (!server) break;
+
+        config_setting_lookup_string(server, "name", &name);
+        if (g_strcmp0(srv_name, name) != 0) continue;
+
+        irc = config_setting_lookup(server, "irc");
+        if (!irc) break;
+
+        DBG_FR("Read: server_list.[name = %s].irc", name);
+        read_sirc_prefs_from_irc(server, prefs);
+    }
+}
+
+static void read_sirc_prefs_from_cfg(config_t *cfg, SircPrefs *prefs,
+        const char *srv_name){
+    config_setting_t *irc;
+
+    /* Read server.irc */
+    irc = config_lookup(cfg, "server.irc");
+    if (irc){
+        DBG_FR("Read: server.irc");
+        read_sirc_prefs_from_irc(irc, prefs);
+    }
+
+    /* Read server_list[name = srv_name] */
+    if (srv_name){
+        config_setting_t *server_list;
+
+        server_list = config_lookup(cfg, "server_list");
+        if (server_list){
+            read_sirc_prefs_from_server_list(server_list, prefs, srv_name);
+        }
+    }
 }
