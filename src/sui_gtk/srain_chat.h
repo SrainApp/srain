@@ -43,4 +43,7 @@ ChatType srain_chat_get_chat_type(SrainChat *chat);
 GtkMenu* srain_chat_get_menu(SrainChat *chat);
 SuiSession *srain_chat_get_session(SrainChat *chat);
 
+void srain_chat_show_topic(SrainChat *chat, bool isshow);
+void srain_chat_show_user_list(SrainChat *chat, bool isshow);
+
 #endif /* __SRAIN_CHAT_H */

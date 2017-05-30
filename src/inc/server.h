@@ -99,6 +99,7 @@ struct _Chat {
 
     Server *srv;
     SuiSession *ui;
+    SuiPrefs *ui_prefs;
 };
 
 enum _ServerStatus {

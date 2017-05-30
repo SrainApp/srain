@@ -29,6 +29,7 @@ struct _SuiSession{
 
     SuiSessionFlag flag;
     SuiEvents *events;
+    SuiPrefs *prefs;
 
     void *ctx;
 };
@@ -52,16 +53,18 @@ void sui_proc_pending_event(){
     while (gtk_events_pending()) gtk_main_iteration();
 }
 
-SuiSession *sui_new_session(SuiEvents *events, SuiSessionFlag flag){
+SuiSession *sui_new_session(SuiEvents *events, SuiPrefs *prefs, SuiSessionFlag flag){
     SuiSession *sui;
 
     g_return_val_if_fail(events, NULL);
+    g_return_val_if_fail(prefs, NULL);
 
     sui = g_malloc0(sizeof(SuiSession));
 
     // sui->chat = NULL; // via g_malloc0()
     sui->flag = flag;
     sui->events = events;
+    sui->prefs = prefs;
 
     return sui;
 }
@@ -103,6 +106,9 @@ int sui_start_session(SuiSession *sui, const char *name, const char *remark){
         return SRN_ERR;
     }
 
+    srain_chat_show_topic(sui->chat, sui->prefs->show_topic);
+    srain_chat_show_user_list(sui->chat, sui->prefs->show_user_list);
+
     return SRN_OK;
 }
 
@@ -124,6 +130,12 @@ SuiEvents *sui_get_events(SuiSession *sui){
     g_return_val_if_fail(sui, NULL);
 
     return sui->events;
+}
+
+SuiPrefs *sui_get_prefs(SuiSession *sui){
+    g_return_val_if_fail(sui, NULL);
+
+    return sui->prefs;
 }
 
 void* sui_get_ctx(SuiSession *sui){
@@ -165,6 +177,7 @@ SuiMessage *sui_add_sys_msg(SuiSession *sui, const char *msg, SysMsgType type){
 
     list = srain_chat_get_msg_list(chat);
     smsg = (SuiMessage *)srain_sys_msg_new(msg, type);
+    sui_message_set_ctx(smsg, sui);
     srain_msg_list_add_message(list, smsg);
 
     if (type != SYS_MSG_NORMAL){
@@ -188,6 +201,7 @@ SuiMessage *sui_add_sent_msg(SuiSession *sui, const char *msg){
 
     list = srain_chat_get_msg_list(chat);
     smsg = (SuiMessage *)srain_send_msg_new(msg);
+    sui_message_set_ctx(smsg, sui);
     srain_msg_list_add_message(list, smsg);
 
     srain_window_stack_sidebar_update(srain_win, chat, _("You"), msg);
@@ -212,6 +226,7 @@ SuiMessage *sui_add_recv_msg(SuiSession *sui, const char *nick, const char *id,
 
     list = srain_chat_get_msg_list(chat);
     smsg = (SuiMessage *)srain_recv_msg_new(nick, id, msg);
+    sui_message_set_ctx(smsg, sui);
     srain_msg_list_add_message(list, smsg);
 
     srain_window_stack_sidebar_update(srain_win, chat, nick, msg);
@@ -375,10 +390,16 @@ void sui_message_notify(SuiMessage *smsg){
     const char *title;
     const char *msg;
     const char *icon;
+    SuiSession *sui;
 
     g_return_if_fail(smsg);
 
     if (srain_window_is_active(srain_win)){
+        return;
+    }
+
+    sui = sui_message_get_ctx(smsg);
+    if (sui && !sui->prefs->notify){
         return;
     }
 
