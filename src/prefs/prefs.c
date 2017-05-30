@@ -22,10 +22,6 @@
 config_t user_cfg;
 config_t builtin_cfg;
 
-char* prefs_read_sui_app_prefs(SuiAppPrefs *prefs);
-char *prefs_read_server_prefs(ServerPrefs *prefs, const char *srv_name);
-char *prefs_read_sui_prefs(SuiPrefs *prefs, const char *srv_name, const char *chat_name);
-
 static const char *prefs_read_file(config_t *cfg, const char *file);
 
 static void read_sirc_prefs_from_irc(config_setting_t *irc, SircPrefs *prefs);
@@ -48,7 +44,7 @@ void prefs_finalize(){
     config_destroy(&builtin_cfg);
 };
 
-const char* prefs_read(){
+char* prefs_read(){
     char *path;
     const char *errmsg;
 
@@ -81,6 +77,11 @@ const char* prefs_read(){
 }
 
 char* prefs_read_sui_app_prefs(SuiAppPrefs *prefs){
+    config_lookup_bool(&builtin_cfg, "application.switch_to_new_chat",
+            (int *)&prefs->switch_to_new_chat);
+    config_lookup_bool(&user_cfg, "application.switch_to_new_chat",
+            (int *)&prefs->switch_to_new_chat);
+
     return NULL;
 }
 
@@ -133,9 +134,6 @@ static const char *prefs_read_file(config_t *cfg, const char *file){
     */
     SuiPrefs *prefs = g_malloc0(sizeof(SuiPrefs));
 
-    prefs_read_sui_prefs(prefs, NULL, NULL);
-    prefs_read_sui_prefs(prefs, NULL, "#srain");
-
     return NULL;
 }
 
@@ -162,13 +160,10 @@ static void read_sui_prefs_from_chat_list(config_setting_t *chat_list,
         if (!chat) break;
 
         config_setting_lookup_string(chat, "name", &name);
+        if (g_strcmp0(chat_name, name) != 0) continue;
 
         DBG_FR("Read: chat_list.%s", name);
-
-        if (g_strcmp0(chat_name, name) == 0){
-            read_sui_prefs_from_chat(chat, prefs);
-            break;
-        }
+        read_sui_prefs_from_chat(chat, prefs);
     }
 }
 
@@ -211,12 +206,9 @@ static void read_sui_prefs_from_cfg(config_t *cfg, SuiPrefs *prefs,
                 if (!server) break;
 
                 config_setting_lookup_string(server, "name", &name);
+                if (g_strcmp0(srv_name, name) != 0) continue;
 
-                if (g_strcmp0(srv_name, name) != 0){
-                    continue;
-                }
-
-                DBG_FR("Config server[name = %s] found", name);
+                DBG_FR("Read server_list.%s", name);
 
                 config_setting_t *chat;
 
@@ -282,13 +274,10 @@ static void read_server_prefs_from_server_list(config_setting_t *server_list,
         if (!server) break;
 
         config_setting_lookup_string(server, "name", &name);
+        if (g_strcmp0(srv_name, name) != 0) continue;
 
-        DBG_FR("Read: server_list.[name = %s]", name);
-
-        if (g_strcmp0(srv_name, name) == 0){
-            read_server_prefs_from_server(server, prefs);
-            break;
-        }
+        DBG_FR("Read: server_list.%s", name);
+        read_server_prefs_from_server(server, prefs);
     }
 }
 
