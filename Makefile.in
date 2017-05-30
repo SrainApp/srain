@@ -1,7 +1,7 @@
 # Makefile
 
 .PHONY: install run bt clean cleanobj todo install-bin install-po install-data \
-		irctest uitest
+		bt gtk_dbg
 
 # Export all variables
 export
@@ -23,10 +23,13 @@ PACKAGE_CONFIG_DIR = $(CONFIG_DIR)
 MAKE = make
 DEL = rm -rf
 INSTALL = install -v
+DB = gdb
 
-TARGET = $(PWD)/build/srain.out
-TEST_FLAG = NO_TEST
+BUILD_DIR = $(PWD)/build
+TARGET = $(BUILD_DIR)/srain.out
+
 default: src/Makefile data/ui/Makefile
+	mkdir -p $(BUILD_DIR) | true
 	$(MAKE) -C data/ui
 	$(MAKE) -C src
 
@@ -41,37 +44,32 @@ install-data: data/Makefile
 install-po: po/Makefile
 	$(MAKE) -C po
 
-uitest:
-	$(MAKE) TEST_FLAG=UI_TEST run
-
-irctest:
-	$(MAKE) TEST_FLAG=IRC_TEST run
-
 run:
 	$(MAKE) -C data config
-	$(MAKE) PREFIX=$(PWD)/build
+	$(MAKE) PREFIX=$(BUILD_DIR)
 	$(MAKE) install-bin
 	$(MAKE) install-po
-	cp srainrc.example build/srainrc
-	cd build; \
-	export XDG_CONFIG_DIRS=$(PWD)/build/xdg:/etc/xdg; \
-	export XDG_CONFIG_HOME=$(PWD)/build; \
-	export XDG_DATA_DIRS=$(PWD)/build/share:/usr/share; \
-	./bin/srain
+	$(INSTALL) -Dm644 srainrc.example $(BUILD_DIR)/srain/srainrc
+	export XDG_CONFIG_DIRS=$(BUILD_DIR)/xdg:/etc/xdg; \
+	export XDG_CONFIG_HOME=$(BUILD_DIR); \
+	export XDG_DATA_DIRS=$(BUILD_DIR)/share:/usr/share; \
+	$(BUILD_DIR)/bin/srain
 
-bt: $(TARGET)
-	cd build && yes | gdb ./srain -ex 'r' -ex 'bt' -ex 'q'
-	#	GTK_DEBUG=interactive\
-	#		GOBJECT_DEBUG=instance-countcd \
-	#		$(MAKE) run
+bt:
+	$(DB) $(BUILD_DIR)/bin/srain -ex 'r' -ex 'bt' -ex 'q'
+
+gtk_dbg:
+	GTK_DEBUG=interactive \
+	GOBJECT_DEBUG=instance-countcd \
+	$(MAKE) run
 
 clean:
-	$(DEL) build/*
+	$(DEL) $(BUILD_DIR)/*
 
 cleanobj:
-	$(DEL) build/*.c
-	$(DEL) build/*.o
-	$(DEL) build/srain
+	$(DEL) $(BUILD_DIR)/*.c
+	$(DEL) $(BUILD_DIR)/*.o
+	$(DEL) $(TARGET)
 
 todo:
 	grep --color=auto -r -E "TODO|FIXME" src/

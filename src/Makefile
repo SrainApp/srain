@@ -1,11 +1,9 @@
-# makefile
+# Makefile
 #
-# used to compile *.c (which located in . and ./irc ./ui) to object file
-# output ot <PROJECT DIR>/build
-#
+# Complie C source codes and output object files to $(BUILD_DIR), then links
+# them together to get a executable $(TARGET).
+
 CC = gcc
-INSTALL = install -v
-TEST_FLAG = NO_TEST
 DEFS = -D PACKAGE='"$(PACKAGE)"' \
 	   -D PACKAGE_NAME='"$(PACKAGE_NAME)"' \
 	   -D PACKAGE_VERSION='"$(PACKAGE_VERSION)"' \
@@ -14,8 +12,7 @@ DEFS = -D PACKAGE='"$(PACKAGE)"' \
 	   -D PACKAGE_DESC='"$(PACKAGE_DESC)"' \
 	   -D PACKAGE_WEBSITE='"$(PACKAGE_WEBSITE)"' \
 	   -D PACKAGE_DATA_DIR='"$(PACKAGE_DATA_DIR)"' \
-	   -D PACKAGE_CONFIG_DIR='"$(PACKAGE_CONFIG_DIR)"' \
-	   -D $(TEST_FLAG)
+	   -D PACKAGE_CONFIG_DIR='"$(PACKAGE_CONFIG_DIR)"'
 CFLAGS = -std=gnu99 -O2 -Wall -I$(PWD)/src/inc -Wno-deprecated-declarations
 GTK3FLAGS = $(shell pkg-config --cflags gtk+-3.0)
 GTK3LIBS = $(shell pkg-config --libs gtk+-3.0)
@@ -32,16 +29,16 @@ CFLAGS += $(DEFS) $(GTK3FLAGS)  $(GTK3LIBS) $(PY3FLAGS) $(PY3LIBS) \
 		  $(CURLFLAGS) $(CURLLIBS) $(LIBIRCCLINETFLAGS) $(LIBIRCCLINETLIBS) \
 		  $(LIBNOTIFYFLAGS) $(LIBNOTIFYLIBS) $(LIBCONFIGFLAGS) $(LIBCONFIGLIBS)
 
-SRCS = $(wildcard *.c */*.c ../build/resources.c)
-OBJS = $(patsubst %.c, ../build/%.o, $(notdir $(SRCS)))
+SRCS = $(wildcard *.c */*.c $(BUILD_DIR)/resources.c)
+OBJS = $(patsubst %.c, $(BUILD_DIR)/%.o, $(notdir $(SRCS)))
 
 default:
 	make $(TARGET)
 
-../build/%.o: %.c
+$(BUILD_DIR)/%.o: %.c
 	$(CC) $(CFLAGS) -c $^ -o $@
 
-../build/%.o: */%.c
+$(BUILD_DIR)/%.o: */%.c
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 $(TARGET): $(OBJS)

@@ -7,7 +7,7 @@ XGETTEXTFLAG = --sort-output --from-code=UTF-8 \
 			   --msgid-bugs-address=$(PACKAGE_EMAIL)
 
 # Cover SRCS
-SRCS = $(wildcard ../src/*.c ../src/*/*.c ../build/resources.c)
+SRCS = $(wildcard ../src/*.c ../src/*/*.c $(BUILD_DIR)/resources.c)
 UIS = $(wildcard ../data/ui/*.glade)
 LANGS = $(shell cat LANGS)
 
@@ -29,7 +29,7 @@ po: srain.pot LANGS
 
 mo: LANGS po
 	for i in $(LANGS); do \
-		msgfmt $$i.po -o ../build/srain.mo; \
-		$(INSTALL) -Dm644 "../build/srain.mo" \
+		msgfmt $$i.po -o "$(BUILD_DIR)/srain.mo"; \
+		$(INSTALL) -Dm644 "$(BUILD_DIR)/srain.mo" \
 			"$(DESTDIR)$(PREFIX)/share/locale/$$i/LC_MESSAGES/srain.mo"; \
 	done
