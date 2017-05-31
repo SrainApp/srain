@@ -73,10 +73,22 @@ void server_init(){
     irc_events.numeric = server_irc_event_numeric;
 
     prefs_init();
-
     server_cmd_init();
 
-    sui_main_loop(&ui_app_events);
+    /* Read prefs **/
+    char *prefs_res;
+    SuiAppPrefs ui_app_prefs = {0};
+
+    prefs_res = prefs_read();
+
+    if (prefs_res){
+        ERR_FR("Read prefs failed: %s", prefs_res);
+        g_free(prefs_res);
+    }
+
+    prefs_read_sui_app_prefs(&ui_app_prefs);
+
+    sui_main_loop(&ui_app_events, &ui_app_prefs);
 }
 
 void server_finalize(){
@@ -92,6 +104,7 @@ Server* server_new(const char *name,
         const char *nick,
         const char *username,
         const char *realname){
+    char *prefs_res;
     Server *srv;
 
     srv = g_malloc0(sizeof(Server));
@@ -123,8 +136,15 @@ Server* server_new(const char *name,
     /* srv->ignore_list = NULL; */ // by g_malloc0()
     /* srv->brigebot_list = NULL; */ // by g_malloc0()
 
-    /* Get IRC handler */
-    srv->irc = sirc_new_session(&irc_events, ircflag);
+    /* sirc */
+    srv->irc_prefs = g_malloc0(sizeof(SircPrefs));
+    prefs_res = prefs_read_sirc_prefs(srv->irc_prefs, srv->info->name);
+    if (prefs_res){
+        g_free(prefs_res);
+        goto bad;
+    }
+
+    srv->irc = sirc_new_session(&irc_events, &srv->irc_prefs, ircflag);
     if (!srv->irc) goto bad;
     sirc_set_ctx(srv->irc, srv);
 
@@ -154,6 +174,11 @@ void server_free(Server *srv){
     if (srv->irc != NULL){
         sirc_free_session(srv->irc);
         srv->irc= NULL;
+    }
+
+    if (srv->irc_prefs != NULL){
+        g_free(srv->irc_prefs);
+        srv->irc_prefs = NULL;
     }
 
     GSList *lst;

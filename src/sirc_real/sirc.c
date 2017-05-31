@@ -33,6 +33,7 @@ struct _SircSession {
     GIOStream *stream;
 
     SircEvents *events; // Event callbacks
+    SircPrefs *prefs;
     void *ctx;
 };
 
@@ -46,7 +47,7 @@ static void on_disconnect_ready(GObject *obj, GAsyncResult *result, gpointer use
 static void on_recv_ready(GObject *obj, GAsyncResult *res, gpointer user_data);
 static void on_disconnect(SircSession *sirc, const char *reason);
 
-SircSession* sirc_new_session(SircEvents *events, SircSessionFlag flag){
+SircSession* sirc_new_session(SircEvents *events, SircPrefs *prefs, SircSessionFlag flag){
     SircSession *sirc;
 
     g_return_val_if_fail(events, NULL);
@@ -56,6 +57,7 @@ SircSession* sirc_new_session(SircEvents *events, SircSessionFlag flag){
     sirc->fd = -1;
     sirc->flag = flag;
     sirc->events = events;
+    sirc->prefs = prefs;
     /* sirc->bufptr = 0; // via g_malloc0() */
     /* sirc->stream = NULL; // via g_malloc0() */
     sirc->client = g_socket_client_new();

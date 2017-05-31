@@ -20,8 +20,10 @@ static Server* ctx_get_server(SuiSession *sui);
 static Chat* ctx_get_chat(SuiSession *sui);
 
 void server_ui_event_activate(SuiEvent event, const char *params[], int count){
-    const char *prefs_res;
+    const char *prefs_res = NULL;
 
+    /* We have read prefs in `server_init()`, read it again for reporting error
+     * on a message dialog. */
     prefs_res = prefs_read();
 
     if (prefs_res){

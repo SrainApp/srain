@@ -126,6 +126,7 @@ struct _Server {
     GSList *chat_list;
 
     SircSession *irc;
+    SircPrefs *irc_prefs;
 };
 
 struct _ServerInfo {

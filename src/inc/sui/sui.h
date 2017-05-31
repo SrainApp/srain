@@ -37,6 +37,7 @@ enum _UserType {
 
 struct _SuiAppPrefs {
     bool switch_to_new_chat;
+    const char *theme;
     // const char *font;
 };
 
@@ -56,7 +57,7 @@ struct _SuiPrefs {
 #include "sui_event.h"
 #undef __IN_SUI_H
 
-void sui_main_loop(SuiAppEvents *events);
+void sui_main_loop(SuiAppEvents *events, SuiAppPrefs *prefs);
 void sui_proc_pending_event();
 
 /* SuiSession */

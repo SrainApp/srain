@@ -84,10 +84,14 @@ char* prefs_read(){
 }
 
 char* prefs_read_sui_app_prefs(SuiAppPrefs *prefs){
+    // TODO: read_sui_app_prefs_from_cfg()
     config_lookup_bool(&builtin_cfg, "application.switch_to_new_chat",
             (int *)&prefs->switch_to_new_chat);
+    config_lookup_string(&builtin_cfg, "application.theme", &prefs->theme);
+
     config_lookup_bool(&user_cfg, "application.switch_to_new_chat",
             (int *)&prefs->switch_to_new_chat);
+    config_lookup_string(&user_cfg, "application.theme", &prefs->theme);
 
     return NULL;
 }

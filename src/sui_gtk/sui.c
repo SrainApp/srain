@@ -35,14 +35,20 @@ struct _SuiSession{
 };
 
 SuiAppEvents *app_events = NULL;
+SuiAppPrefs *app_prefs = NULL;
 
-void sui_main_loop(SuiAppEvents *events){
+void sui_main_loop(SuiAppEvents *events, SuiAppPrefs *prefs){
     g_return_if_fail(events);
+    g_return_if_fail(prefs);
 
     app_events = events;
+    app_prefs = prefs;
 
-    theme_init();
     snotify_init();
+
+    if (theme_load(prefs->theme) == SRN_ERR){
+        ERR_FR("Failed to load theme '%s'", prefs->theme);
+    }
 
     g_application_run(G_APPLICATION(srain_app_new()), 0, NULL);
 

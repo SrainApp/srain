@@ -4,6 +4,8 @@
 #include <glib.h>
 #include <gio/gio.h>
 
+#include "srain.h"
+
 typedef int SircSessionFlag;
 typedef struct _SircSession SircSession;
 typedef struct _SircPrefs SircPrefs;
@@ -30,7 +32,7 @@ struct _SircPrefs {
 #include "sirc_utils.h"
 #undef __IN_SIRC_H
 
-SircSession* sirc_new_session(SircEvents *events, SircSessionFlag flag);
+SircSession* sirc_new_session(SircEvents *events, SircPrefs *prefs, SircSessionFlag flag);
 void sirc_free_session(SircSession *sirc);
 void sirc_connect(SircSession *sirc, const char *host, int port);
 void sirc_disconnect(SircSession *sirc);
