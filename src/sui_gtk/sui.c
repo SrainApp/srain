@@ -371,10 +371,23 @@ void sui_message_append_message(SuiSession *sui, SuiMessage *smsg, const char *m
 }
 
 void sui_message_append_image(SuiMessage *smsg, const char *url){
+    SrainImageFlag flag;
+    SuiSession *sui;
+
     g_return_if_fail(smsg);
     g_return_if_fail(url);
+    g_return_if_fail(sui_message_get_ctx(smsg));
 
-    srain_msg_append_image(smsg, url);
+    sui = sui_message_get_ctx(smsg);
+    flag = SRAIN_IMAGE_ENLARGE | SRAIN_IMAGE_SPININER;
+
+    if (sui->prefs->preview_image){
+        flag |= SRAIN_IMAGE_AUTOLOAD;
+    } else {
+    }
+
+
+    srain_msg_append_image(smsg, url, flag);
 }
 
 void sui_message_mentioned(SuiMessage *smsg){

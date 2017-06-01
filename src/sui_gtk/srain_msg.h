@@ -5,6 +5,7 @@
 
 #include "sui/sui.h"
 #include "sui_message.h"
+#include "srain_image.h"
 
 #define SRAIN_MSG_MAX_LEN 512
 
@@ -19,7 +20,7 @@ typedef struct _SuiMessage SrainMsg;
      SRAIN_IS_RECV_MSG(obj))
 
 int srain_msg_append_msg(SrainMsg *smsg, const char *msg);
-void srain_msg_append_image(SrainMsg *smsg, const char *url);
+void srain_msg_append_image(SrainMsg *smsg, const char *url, SrainImageFlag flag);
 void srain_msg_set_msg(SrainMsg *smsg, const char *msg);
 void srain_msg_set_time(SrainMsg *smsg, time_t time);
 

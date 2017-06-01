@@ -23,7 +23,7 @@ struct _SrainImage {
     int size;
     char *url;
     char *file;
-    SrainImageType type;
+    SrainImageFlag flag;
 
     GtkButton *load_button;
     GtkSpinner *spinner;
@@ -167,7 +167,7 @@ static void srain_image_set_from_self(SrainImage *simg){
         g_object_unref(pixbuf);
     }
 
-    if (simg->type & SRAIN_IMAGE_ENLARGE){
+    if (simg->flag & SRAIN_IMAGE_ENLARGE){
         g_signal_connect_swapped(simg, "button_release_event",
                 G_CALLBACK(eventbox_on_click), simg);
     }
@@ -205,14 +205,14 @@ static void download_image(SrainImage *simg){
 }
 
 static void set_image_from_url_async(SrainImage *simg){
-    if (simg->type & SRAIN_IMAGE_SPININER){
+    if (simg->flag & SRAIN_IMAGE_SPININER){
         gtk_widget_set_visible(GTK_WIDGET(simg->spinner), TRUE);
         gtk_spinner_start(simg->spinner);
     }
 
     g_thread_new(NULL, (GThreadFunc)download_image, simg);
 
-    if (!(simg->type & SRAIN_IMAGE_AUTOLOAD)){
+    if (!(simg->flag & SRAIN_IMAGE_AUTOLOAD)){
         gtk_widget_set_visible(GTK_WIDGET(simg->load_button), FALSE);
     }
 }
@@ -223,14 +223,14 @@ static void set_image_from_url_async(SrainImage *simg){
  * @param simg a SrainImage instance
  * @param file path of file
  * @param size image size (both width and height)
- * @param type see SrainImageType in inc/srain_image.h
+ * @param flag see SrainImageFlag in inc/srain_image.h
  *      SRAIN_IMAGE_AUTOLOAD and SRAIN_IMAGE_SPININER are
  *      not used by this func
  */
 void srain_image_set_from_file(SrainImage *simg, char *file,
-        int size, SrainImageType type){
+        int size, SrainImageFlag flag){
     simg->size = size;
-    simg->type = type;
+    simg->flag = flag;
 
     if (simg->file) free(simg->file);
     simg->file = strdup(file);
@@ -244,17 +244,17 @@ void srain_image_set_from_file(SrainImage *simg, char *file,
  * @param simg a SrainImage instance
  * @param file path of file
  * @param size image size (both width and height)
- * @param type see SrainImageType in inc/srain_image.h
+ * @param flag see SrainImageFlag in inc/srain_image.h
  */
 void srain_image_set_from_url_async(SrainImage *simg, const char *url,
-        int size, SrainImageType type){
+        int size, SrainImageFlag flag){
     simg->size = size;
-    simg->type = type;
+    simg->flag = flag;
 
     if (simg->url) free(simg->url);
     simg->url = strdup(url);
 
-    if (type & SRAIN_IMAGE_AUTOLOAD){
+    if (flag & SRAIN_IMAGE_AUTOLOAD){
         set_image_from_url_async(simg);
     } else {
         gtk_widget_set_visible(GTK_WIDGET(simg->load_button), TRUE);

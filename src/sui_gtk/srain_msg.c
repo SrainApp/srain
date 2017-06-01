@@ -19,7 +19,6 @@
 #include "srain_window.h"
 #include "srain_chat.h"
 #include "srain_msg.h"
-#include "srain_image.h"
 
 #include "plugin.h"
 #include "download.h"
@@ -195,10 +194,9 @@ static void nick_button_on_click(GtkWidget *widget, gpointer *user_data){
 }
 
 /* ================ SRAIN_SRAIN_MSG ================ */
-void srain_msg_append_image(SrainMsg *smsg, const char *url) {
+void srain_msg_append_image(SrainMsg *smsg, const char *url, SrainImageFlag flag) {
     SrainImage *simg = srain_image_new();
-    srain_image_set_from_url_async(simg, url, 300,
-            SRAIN_IMAGE_ENLARGE | SRAIN_IMAGE_SPININER );
+    srain_image_set_from_url_async(simg, url, 300, flag);
 
     gtk_container_add(GTK_CONTAINER(smsg->padding_box), GTK_WIDGET(simg));
     gtk_container_set_border_width(GTK_CONTAINER(simg), 6);
