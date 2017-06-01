@@ -85,12 +85,7 @@ char* prefs_read(){
 
 char* prefs_read_sui_app_prefs(SuiAppPrefs *prefs){
     // TODO: read_sui_app_prefs_from_cfg()
-    config_lookup_bool(&builtin_cfg, "application.switch_to_new_chat",
-            (int *)&prefs->switch_to_new_chat);
     config_lookup_string(&builtin_cfg, "application.theme", &prefs->theme);
-
-    config_lookup_bool(&user_cfg, "application.switch_to_new_chat",
-            (int *)&prefs->switch_to_new_chat);
     config_lookup_string(&user_cfg, "application.theme", &prefs->theme);
 
     return NULL;
@@ -157,7 +152,6 @@ static void read_sui_prefs_from_chat(config_setting_t *chat, SuiPrefs *prefs){
     config_setting_lookup_bool(chat, "show_topic", (int *)&prefs->show_topic);
     config_setting_lookup_bool(chat, "show_avatar", (int *)&prefs->show_avatar);
     config_setting_lookup_bool(chat, "show_user_list", (int *)&prefs->show_user_list);
-    config_setting_lookup_bool(chat, "send_by_ctrl_enter", (int *)&prefs->send_by_ctrl_enter);
     config_setting_lookup_bool(chat, "preview_image", (int *)&prefs->preview_image);
     config_setting_lookup_bool(chat, "enable_log", (int *)&prefs->enable_log);
 }

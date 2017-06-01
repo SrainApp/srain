@@ -36,7 +36,6 @@ enum _UserType {
 };
 
 struct _SuiAppPrefs {
-    bool switch_to_new_chat;
     const char *theme;
     // const char *font;
 };
@@ -46,7 +45,6 @@ struct _SuiPrefs {
     bool show_topic;
     bool show_avatar;
     bool show_user_list;
-    bool send_by_ctrl_enter;
     bool preview_image;
     bool enable_log;
 };
