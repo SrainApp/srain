@@ -27,6 +27,9 @@
 config_t user_cfg;
 config_t builtin_cfg;
 
+/* The "bool" in libconfig is actually an integer, transform it to fit bool in "stdbool.h". */
+static int config_setting_lookup_bool_ex(const config_setting_t *config, const char *path, bool *value);
+
 static char *prefs_read_file(config_t *cfg, const char *file);
 
 static void read_sirc_prefs_from_irc(config_setting_t *irc, SircPrefs *prefs);
@@ -148,12 +151,12 @@ static char *prefs_read_file(config_t *cfg, const char *file){
 }
 
 static void read_sui_prefs_from_chat(config_setting_t *chat, SuiPrefs *prefs){
-    config_setting_lookup_bool(chat, "notify", (int *)&prefs->notify);
-    config_setting_lookup_bool(chat, "show_topic", (int *)&prefs->show_topic);
-    config_setting_lookup_bool(chat, "show_avatar", (int *)&prefs->show_avatar);
-    config_setting_lookup_bool(chat, "show_user_list", (int *)&prefs->show_user_list);
-    config_setting_lookup_bool(chat, "preview_image", (int *)&prefs->preview_image);
-    config_setting_lookup_bool(chat, "enable_log", (int *)&prefs->enable_log);
+    config_setting_lookup_bool_ex(chat, "notify", &prefs->notify);
+    config_setting_lookup_bool_ex(chat, "show_topic", &prefs->show_topic);
+    config_setting_lookup_bool_ex(chat, "show_avatar", &prefs->show_avatar);
+    config_setting_lookup_bool_ex(chat, "show_user_list", &prefs->show_user_list);
+    config_setting_lookup_bool_ex(chat, "preview_image", &prefs->preview_image);
+    config_setting_lookup_bool_ex(chat, "enable_log", &prefs->enable_log);
 }
 
 static void read_sui_prefs_from_chat_list(config_setting_t *chat_list,
@@ -171,7 +174,7 @@ static void read_sui_prefs_from_chat_list(config_setting_t *chat_list,
         config_setting_lookup_string(chat, "name", &name);
         if (g_strcmp0(chat_name, name) != 0) continue;
 
-        DBG_FR("Read: chat_list.%s", name);
+        DBG_FR("Read: chat_list.%s, chat_name: %s", name, chat_name);
         read_sui_prefs_from_chat(chat, prefs);
     }
 }
@@ -185,7 +188,7 @@ static void read_sui_prefs_from_cfg(config_t *cfg, SuiPrefs *prefs,
 
         chat = config_lookup(cfg, "server.chat");
         if (chat){
-            DBG_FR("Read: server.chat")
+            DBG_FR("Read: server.chat, srv_name: %s, chat_name: %s", srv_name, chat_name);
             read_sui_prefs_from_chat(chat, prefs);
         }
     }
@@ -222,7 +225,8 @@ static void read_sui_prefs_from_cfg(config_t *cfg, SuiPrefs *prefs,
                 /* Read server_list.[name = srv_name].chat */
                 chat = config_setting_lookup(server, "chat");
                 if (chat){
-                    DBG_FR("Read server_list.[name = %s].chat", name);
+                    DBG_FR("Read server_list.[name = %s].chat, srv_name: %s, chat_name: %s",
+                            name, srv_name, chat_name);
                     read_sui_prefs_from_chat(chat, prefs);
                 }
 
@@ -276,7 +280,7 @@ static void read_server_prefs_from_server_list(config_setting_t *server_list,
         config_setting_lookup_string(server, "name", &name);
         if (g_strcmp0(srv_name, name) != 0) continue;
 
-        DBG_FR("Read: server_list.[name = %s]", name);
+        DBG_FR("Read: server_list.[name = %s], srv_name: %s", name, srv_name);
         read_server_prefs_from_server(server, prefs);
     }
 }
@@ -288,7 +292,7 @@ static void read_server_prefs_from_cfg(config_t *cfg, ServerPrefs *prefs,
     /* Read server */
     server = config_lookup(cfg, "server");
     if (server){
-        DBG_FR("Read: server");
+        DBG_FR("Read: server, srv_name: %s", srv_name);
         read_server_prefs_from_server(server, prefs);
     }
 
@@ -304,9 +308,9 @@ static void read_server_prefs_from_cfg(config_t *cfg, ServerPrefs *prefs,
 }
 
 static void read_sirc_prefs_from_irc(config_setting_t *irc, SircPrefs *prefs){
-    config_setting_lookup_bool(irc, "auto_reconnect", (int *)&prefs->auto_reconnect);
-    config_setting_lookup_bool(irc, "use_ssl", (int *)&prefs->use_ssl);
-    config_setting_lookup_bool(irc, "verify_ssl_cert", (int *)&prefs->verify_ssl_cert);
+    config_setting_lookup_bool_ex(irc, "auto_reconnect", &prefs->auto_reconnect);
+    config_setting_lookup_bool_ex(irc, "use_ssl", &prefs->use_ssl);
+    config_setting_lookup_bool_ex(irc, "verify_ssl_cert", &prefs->verify_ssl_cert);
 }
 
 static void read_sirc_prefs_from_server_list(config_setting_t *server_list,
@@ -328,7 +332,7 @@ static void read_sirc_prefs_from_server_list(config_setting_t *server_list,
         irc = config_setting_lookup(server, "irc");
         if (!irc) break;
 
-        DBG_FR("Read: server_list.[name = %s].irc", name);
+        DBG_FR("Read: server_list.[name = %s].irc, srv_name: %s", name, srv_name);
         read_sirc_prefs_from_irc(server, prefs);
     }
 }
@@ -340,7 +344,7 @@ static void read_sirc_prefs_from_cfg(config_t *cfg, SircPrefs *prefs,
     /* Read server.irc */
     irc = config_lookup(cfg, "server.irc");
     if (irc){
-        DBG_FR("Read: server.irc");
+        DBG_FR("Read: server.irc, srv_name: %s", srv_name);
         read_sirc_prefs_from_irc(irc, prefs);
     }
 
@@ -353,4 +357,18 @@ static void read_sirc_prefs_from_cfg(config_t *cfg, SircPrefs *prefs,
             read_sirc_prefs_from_server_list(server_list, prefs, srv_name);
         }
     }
+}
+
+static int config_setting_lookup_bool_ex(const config_setting_t *config,
+        const char *path, bool *value){
+    int intval;
+    int ret;
+
+    ret = config_setting_lookup_bool(config, path, &intval);
+
+    if (ret == CONFIG_TRUE){
+        *value = (bool)intval;
+    }
+
+    return ret;
 }
