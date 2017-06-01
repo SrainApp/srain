@@ -90,5 +90,6 @@ typedef struct _SrainRecvMsgClass SrainRecvMsgClass;
 
 GType srain_recv_msg_get_type(void);
 SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *msg);
+void srain_recv_msg_show_avatar(SrainRecvMsg *smsg, bool isshow);
 
 #endif /* __SRAIN_MSG_H */

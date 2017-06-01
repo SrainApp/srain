@@ -233,6 +233,7 @@ SuiMessage *sui_add_recv_msg(SuiSession *sui, const char *nick, const char *id,
     list = srain_chat_get_msg_list(chat);
     smsg = (SuiMessage *)srain_recv_msg_new(nick, id, msg);
     sui_message_set_ctx(smsg, sui);
+    srain_recv_msg_show_avatar(SRAIN_RECV_MSG(smsg), sui->prefs->show_avatar);
     srain_msg_list_add_message(list, smsg);
 
     srain_window_stack_sidebar_update(srain_win, chat, nick, msg);
