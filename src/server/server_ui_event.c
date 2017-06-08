@@ -27,7 +27,7 @@ void server_ui_event_activate(SuiEvent event, const char *params[], int count){
     prefs_res = prefs_read();
 
     if (prefs_res){
-        show_msg_dialog(_("Error"), prefs_res);
+        sui_message_box(_("Error"), prefs_res);
         g_free(prefs_res);
     }
 

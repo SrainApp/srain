@@ -139,26 +139,6 @@ GtkListBoxRow* gtk_list_box_add_unfocusable_row(GtkListBox *listbox, GtkWidget *
     return row;
 }
 
-void show_msg_dialog(const char *title, const char *msg){
-    GtkMessageDialog *dia = GTK_MESSAGE_DIALOG(
-            gtk_message_dialog_new(GTK_WINDOW(srain_win),
-                GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-                GTK_MESSAGE_INFO,
-                GTK_BUTTONS_OK,
-                NULL
-                )
-            );
-
-    gtk_window_set_title(GTK_WINDOW(dia), title);
-    gtk_message_dialog_set_markup(GTK_MESSAGE_DIALOG(dia), msg);
-
-    /* Without this, message dialog cannot be displayed on the center */
-    while (gtk_events_pending()) gtk_main_iteration();
-
-    gtk_dialog_run(GTK_DIALOG(dia));
-    gtk_widget_destroy(GTK_WIDGET(dia));
-}
-
 void scale_size_to(int src_width, int src_height,
         int max_width, int max_height, int *dst_width, int *dst_height){
     long double src_ratio;

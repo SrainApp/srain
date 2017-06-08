@@ -476,3 +476,25 @@ void sui_rm_completion(SuiSession *sui, const char *keyword){
 
     srain_entry_completion_rm_keyword(comp, keyword);
 }
+
+void sui_message_box(const char *title, const char *msg){
+    GtkMessageDialog *dia;
+
+    dia = GTK_MESSAGE_DIALOG(
+            gtk_message_dialog_new(GTK_WINDOW(srain_win),
+                GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                GTK_MESSAGE_INFO,
+                GTK_BUTTONS_OK,
+                NULL
+                )
+            );
+
+    gtk_window_set_title(GTK_WINDOW(dia), title);
+    gtk_message_dialog_set_markup(GTK_MESSAGE_DIALOG(dia), msg);
+
+    /* Without this, message dialog cannot be displayed on the center of screen */
+    sui_proc_pending_event();
+
+    gtk_dialog_run(GTK_DIALOG(dia));
+    gtk_widget_destroy(GTK_WIDGET(dia));
+}
