@@ -28,9 +28,8 @@ config_t user_cfg;
 config_t builtin_cfg;
 
 /* The "bool" in libconfig is actually an integer, transform it to fit bool in "stdbool.h". */
+static char* prefs_read_file(config_t *cfg, const char *file);
 static int config_setting_lookup_bool_ex(const config_setting_t *config, const char *path, bool *value);
-
-static char *prefs_read_file(config_t *cfg, const char *file);
 
 static void read_sirc_prefs_from_irc(config_setting_t *irc, SircPrefs *prefs);
 static void read_sirc_prefs_from_server_list(config_setting_t *server_list, SircPrefs *prefs, const char *srv_name);
@@ -39,6 +38,7 @@ static void read_sirc_prefs_from_cfg(config_t *cfg, SircPrefs *prefs, const char
 static void read_server_prefs_from_server(config_setting_t *server, ServerPrefs *prefs);
 static void read_server_prefs_from_server_list(config_setting_t *server_list, ServerPrefs *prefs, const char *srv_name);
 static void read_server_prefs_from_cfg(config_t *cfg, ServerPrefs *prefs, const char *srv_name);
+static void read_server_prefs_list_from_cfg(config_t *cfg, GSList **list);
 
 static void read_sui_prefs_from_chat(config_setting_t *chat, SuiPrefs *prefs);
 static void read_sui_prefs_from_chat_list(config_setting_t *chat_list, SuiPrefs *prefs, const char *chat_name);
@@ -94,8 +94,10 @@ char* prefs_read_sui_app_prefs(SuiAppPrefs *prefs){
     return NULL;
 }
 
-char *prefs_read_server_list(GList **server_list){
-    // TODO
+char *prefs_read_server_prefs_list(GSList **prefs_list){
+    read_server_prefs_list_from_cfg(&builtin_cfg, prefs_list);
+    read_server_prefs_list_from_cfg(&user_cfg, prefs_list);
+
     return NULL;
 }
 
@@ -245,6 +247,8 @@ static void read_sui_prefs_from_cfg(config_t *cfg, SuiPrefs *prefs,
 
 static void read_server_prefs_from_server(config_setting_t *server,
         ServerPrefs *prefs){
+    config_setting_t *irc;
+
     /* Read server meta info */
     config_setting_lookup_string(server, "name", &prefs->name);
     config_setting_lookup_string(server, "host", &prefs->host);
@@ -262,6 +266,12 @@ static void read_server_prefs_from_server(config_setting_t *server,
     config_setting_lookup_string(server, "default_messages.kick", &prefs->kick_message);
     config_setting_lookup_string(server, "default_messages.away", &prefs->away_message);
     config_setting_lookup_string(server, "default_messages.quit", &prefs->quit_message);
+
+    /* Read server.irc */
+    irc = config_setting_lookup(server, "irc");
+    if (irc){
+        read_sirc_prefs_from_irc(irc, &prefs->irc);
+    }
 }
 
 static void read_server_prefs_from_server_list(config_setting_t *server_list,
@@ -370,4 +380,37 @@ static int config_setting_lookup_bool_ex(const config_setting_t *config,
     }
 
     return ret;
+}
+
+static void read_server_prefs_list_from_cfg(config_t *cfg, GSList **prefs_list){
+    int count;
+    ServerPrefs *prefs;
+    config_setting_t *server;
+    config_setting_t *server_list;
+
+    server_list = config_lookup(cfg, "server_list");
+
+    if (server_list){
+        count = config_setting_length(server_list);
+        for (int i = 0; i < count; i++){
+            char *errmsg = NULL;
+            const char *name = NULL;
+            server = config_setting_get_elem(server_list, i);
+            if (!server) break;
+
+            config_setting_lookup_string(server, "name", &name);
+            if (!name) break;
+
+            prefs = g_malloc0(sizeof(ServerPrefs));
+            /* TODO: Check ServerPrefs */
+            errmsg = prefs_read_server_prefs(prefs, name);
+            if (errmsg){
+                g_free(errmsg);
+                g_free(prefs);
+                break;
+            }
+
+            *prefs_list = g_slist_append(*prefs_list, prefs);
+        }
+    }
 }
