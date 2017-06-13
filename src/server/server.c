@@ -95,15 +95,9 @@ void server_finalize(){
     prefs_finalize();
 }
 
-Server* server_new(const char *name,
-        const char *host,
-        int port,
-        const char *passwd,
-        const char *encoding,
-        SircPrefs *irc_prefs,
-        const char *nick,
-        const char *username,
-        const char *realname){
+Server* server_new(const char *name, const char *host, int port,
+        const char *passwd, const char *encoding, SircPrefs *irc_prefs,
+        const char *nick, const char *username, const char *realname){
     Server *srv;
 
     srv = g_malloc0(sizeof(Server));
@@ -136,7 +130,7 @@ Server* server_new(const char *name,
     /* srv->brigebot_list = NULL; */ // by g_malloc0()
 
     /* sirc */
-    srv->irc = sirc_new_session(&irc_events, irc_prefs);
+    srv->irc = sirc_new_session(&irc_events, srv->prefs->irc);
     if (!srv->irc) goto bad;
     sirc_set_ctx(srv->irc, srv);
 
@@ -150,7 +144,7 @@ bad:
 Server* server_new_from_prefs(ServerPrefs *prefs){
     Server *srv;
 
-    g_return_val_if_fail(!server_perfs_is_valid(prefs), NULL);
+    g_return_val_if_fail(!server_prefs_is_valid(prefs), NULL);
 
     srv = g_malloc0(sizeof(Server));
 
@@ -183,7 +177,7 @@ Server* server_new_from_prefs(ServerPrefs *prefs){
     /* srv->brigebot_list = NULL; */ // by g_malloc0()
 
     /* sirc */
-    srv->irc = sirc_new_session(&irc_events, &prefs->irc);
+    srv->irc = sirc_new_session(&irc_events, prefs->irc);
     if (!srv->irc) goto bad;
     sirc_set_ctx(srv->irc, srv);
 
@@ -199,6 +193,7 @@ void server_free(Server *srv){
         server_info_free(srv->info);
         srv->info = NULL;
     }
+
     if (srv->prefs != NULL){
         server_prefs_free(srv->prefs);
         srv->prefs = NULL;
@@ -217,11 +212,6 @@ void server_free(Server *srv){
     if (srv->irc != NULL){
         sirc_free_session(srv->irc);
         srv->irc= NULL;
-    }
-
-    if (srv->irc_prefs != NULL){
-        g_free(srv->irc_prefs);
-        srv->irc_prefs = NULL;
     }
 
     GSList *lst;

@@ -2,7 +2,7 @@
 
 #include "server.h"
 
-#include "sirc.h"
+#include "sirc/sirc.h"
 
 ServerPrefs* server_prefs_new(){
     ServerPrefs *prefs;

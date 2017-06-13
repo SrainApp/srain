@@ -114,6 +114,7 @@ struct _Server {
     bool registered;    // Whether the user has registered(Own a nickname)?
     bool user_quit;     // Whether the user has received a QUIT message originated by himself?
     ServerInfo *info;
+    ServerPrefs *prefs;
     User *user;         // Used to store your nick, username, realname
     Chat *chat;         // Hold all messages that do not belong to any other Chat
 
@@ -126,7 +127,6 @@ struct _Server {
     GSList *chat_list;
 
     SircSession *irc;
-    SircPrefs *irc_prefs;
 };
 
 struct _ServerInfo {
@@ -157,7 +157,7 @@ struct _ServerPrefs {
     char *away_message;
     char *quit_message;
 
-    SircPrefs irc;
+    SircPrefs *irc;
 };
 
 void server_init();

@@ -1,3 +1,7 @@
+#include <glib.h>
+
+#include "sui/sui.h"
+
 SuiAppPrefs *sui_app_prefs_new(){
     SuiAppPrefs *prefs;
 
@@ -29,7 +33,7 @@ SuiPrefs *sui_prefs_new(){
     return prefs;
 }
 
-bool sui_app_prefs_is_valid(SuiPrefs *prefs){
+bool sui_prefs_is_valid(SuiPrefs *prefs){
     return prefs;
 }
 

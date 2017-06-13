@@ -27,9 +27,11 @@
 config_t user_cfg;
 config_t builtin_cfg;
 
-/* The "bool" in libconfig is actually an integer, transform it to fit bool in "stdbool.h". */
 static char* prefs_read_file(config_t *cfg, const char *file);
+
 static int config_setting_lookup_bool_ex(const config_setting_t *config, const char *path, bool *value);
+static int config_lookup_string_ex(const config_t *config, const char *path, char **value);
+static int config_setting_lookup_string_ex(const config_setting_t *config, const char *path, char **value);
 
 static void read_sirc_prefs_from_irc(config_setting_t *irc, SircPrefs *prefs);
 static void read_sirc_prefs_from_server_list(config_setting_t *server_list, SircPrefs *prefs, const char *srv_name);
@@ -88,8 +90,8 @@ char* prefs_read(){
 
 char* prefs_read_sui_app_prefs(SuiAppPrefs *prefs){
     // TODO: read_sui_app_prefs_from_cfg()
-    config_lookup_string(&builtin_cfg, "application.theme", &prefs->theme);
-    config_lookup_string(&user_cfg, "application.theme", &prefs->theme);
+    config_lookup_string_ex(&builtin_cfg, "application.theme", &prefs->theme);
+    config_lookup_string_ex(&user_cfg, "application.theme", &prefs->theme);
 
     return NULL;
 }
@@ -250,27 +252,27 @@ static void read_server_prefs_from_server(config_setting_t *server,
     config_setting_t *irc;
 
     /* Read server meta info */
-    config_setting_lookup_string(server, "name", &prefs->name);
-    config_setting_lookup_string(server, "host", &prefs->host);
+    config_setting_lookup_string_ex(server, "name", &prefs->name);
+    config_setting_lookup_string_ex(server, "host", &prefs->host);
     config_setting_lookup_int(server, "port", &prefs->port);
-    config_setting_lookup_string(server, "passwd", &prefs->passwd);
-    config_setting_lookup_string(server, "encoding", &prefs->encoding);
+    config_setting_lookup_string_ex(server, "passwd", &prefs->passwd);
+    config_setting_lookup_string_ex(server, "encoding", &prefs->encoding);
 
     /* Read server.user */
-    config_setting_lookup_string(server, "user.nickname", &prefs->nickname);
-    config_setting_lookup_string(server, "user.username", &prefs->username);
-    config_setting_lookup_string(server, "user.realname", &prefs->realname);
+    config_setting_lookup_string_ex(server, "user.nickname", &prefs->nickname);
+    config_setting_lookup_string_ex(server, "user.username", &prefs->username);
+    config_setting_lookup_string_ex(server, "user.realname", &prefs->realname);
 
     /* Read server.default_messages */
-    config_setting_lookup_string(server, "default_messages.part", &prefs->part_message);
-    config_setting_lookup_string(server, "default_messages.kick", &prefs->kick_message);
-    config_setting_lookup_string(server, "default_messages.away", &prefs->away_message);
-    config_setting_lookup_string(server, "default_messages.quit", &prefs->quit_message);
+    config_setting_lookup_string_ex(server, "default_messages.part", &prefs->part_message);
+    config_setting_lookup_string_ex(server, "default_messages.kick", &prefs->kick_message);
+    config_setting_lookup_string_ex(server, "default_messages.away", &prefs->away_message);
+    config_setting_lookup_string_ex(server, "default_messages.quit", &prefs->quit_message);
 
     /* Read server.irc */
     irc = config_setting_lookup(server, "irc");
     if (irc){
-        read_sirc_prefs_from_irc(irc, &prefs->irc);
+        read_sirc_prefs_from_irc(irc, prefs->irc);
     }
 }
 
@@ -368,20 +370,6 @@ static void read_sirc_prefs_from_cfg(config_t *cfg, SircPrefs *prefs,
     }
 }
 
-static int config_setting_lookup_bool_ex(const config_setting_t *config,
-        const char *path, bool *value){
-    int intval;
-    int ret;
-
-    ret = config_setting_lookup_bool(config, path, &intval);
-
-    if (ret == CONFIG_TRUE){
-        *value = (bool)intval;
-    }
-
-    return ret;
-}
-
 static void read_server_prefs_list_from_cfg(config_t *cfg, GSList **prefs_list){
     int count;
     ServerPrefs *prefs;
@@ -401,7 +389,7 @@ static void read_server_prefs_list_from_cfg(config_t *cfg, GSList **prefs_list){
             config_setting_lookup_string(server, "name", &name);
             if (!name) break;
 
-            prefs = g_malloc0(sizeof(ServerPrefs));
+            prefs = server_prefs_new();
             /* TODO: Check ServerPrefs */
             errmsg = prefs_read_server_prefs(prefs, name);
             if (errmsg){
@@ -413,4 +401,47 @@ static void read_server_prefs_list_from_cfg(config_t *cfg, GSList **prefs_list){
             *prefs_list = g_slist_append(*prefs_list, prefs);
         }
     }
+}
+
+/* The "bool" in libconfig is actually an integer, transform it to fit bool in "stdbool.h". */
+static int config_setting_lookup_bool_ex(const config_setting_t *config,
+        const char *path, bool *value){
+    int intval;
+    int ret;
+
+    ret = config_setting_lookup_bool(config, path, &intval);
+
+    if (ret == CONFIG_TRUE){
+        *value = (bool)intval;
+    }
+
+    return ret;
+}
+
+/* This function will allocate a new string, you should free it after used. */
+static int config_lookup_string_ex(const config_t *config, const char *path, char **value){
+    int ret;
+    const char *constval = NULL;
+
+    ret = config_lookup_string(config, path, &constval);
+
+    if (constval){
+        *value = g_strdup(constval);
+    }
+
+    return ret;
+}
+
+/* This function will allocate a new string, you should free it after used. */
+static int config_setting_lookup_string_ex(const config_setting_t *config, const char *path, char **value){
+    int ret;
+    const char *constval = NULL;
+
+    ret = config_setting_lookup_string(config, path, &constval);
+
+    if (constval){
+        *value = g_strdup(constval);
+    }
+
+    return ret;
 }

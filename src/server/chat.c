@@ -39,7 +39,7 @@ Chat *chat_new(Server *srv, const char *name){
     g_strlcpy(chat->name, name, sizeof(chat->name));
 
     /* sui */
-    chat->ui_prefs = g_malloc0(sizeof(SuiPrefs));
+    chat->ui_prefs = sui_prefs_new();
     res = prefs_read_sui_prefs(chat->ui_prefs, chat->srv->info->name, chat->name);
     if (res){
         ERR_FR("Read sui prefs failed: %s", res);
@@ -128,7 +128,7 @@ void chat_free(Chat *chat){
     }
 
     if (chat->ui_prefs){
-        g_free(chat->ui_prefs);
+        sui_prefs_free(chat->ui_prefs);
         chat->ui_prefs = NULL;
     }
 
