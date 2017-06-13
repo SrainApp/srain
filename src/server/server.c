@@ -100,11 +100,10 @@ Server* server_new(const char *name,
         int port,
         const char *passwd,
         const char *encoding,
-        SircSessionFlag ircflag,
+        SircPrefs *irc_prefs,
         const char *nick,
         const char *username,
         const char *realname){
-    char *prefs_res;
     Server *srv;
 
     srv = g_malloc0(sizeof(Server));
@@ -113,7 +112,7 @@ Server* server_new(const char *name,
     srv->user_quit = FALSE;
     srv->stat = SERVER_UNCONNECTED;
 
-    srv->info = server_info_new(name, host, port, passwd, encoding, ircflag);
+    srv->info = server_info_new(name, host, port, passwd, encoding, 0);
     if (!srv->info) goto bad;
 
     srv->chat = chat_new(srv, META_SERVER);
@@ -137,14 +136,54 @@ Server* server_new(const char *name,
     /* srv->brigebot_list = NULL; */ // by g_malloc0()
 
     /* sirc */
-    srv->irc_prefs = g_malloc0(sizeof(SircPrefs));
-    prefs_res = prefs_read_sirc_prefs(srv->irc_prefs, srv->info->name);
-    if (prefs_res){
-        g_free(prefs_res);
-        goto bad;
-    }
+    srv->irc = sirc_new_session(&irc_events, irc_prefs);
+    if (!srv->irc) goto bad;
+    sirc_set_ctx(srv->irc, srv);
 
-    srv->irc = sirc_new_session(&irc_events, &srv->irc_prefs, ircflag);
+    return srv;
+
+bad:
+    server_free(srv);
+    return NULL;
+}
+
+Server* server_new_from_prefs(ServerPrefs *prefs){
+    Server *srv;
+
+    g_return_val_if_fail(!server_perfs_is_valid(prefs), NULL);
+
+    srv = g_malloc0(sizeof(Server));
+
+    srv->registered = FALSE;
+    srv->user_quit = FALSE;
+    srv->stat = SERVER_UNCONNECTED;
+
+    srv->chat = chat_new(srv, META_SERVER);
+    if (!srv->chat) goto bad;
+
+    srv->user = user_new(srv->chat,
+            prefs->nickname,
+            prefs->username,
+            prefs->realname,
+            USER_CHIGUA);
+    if (!srv->user) goto bad;
+    user_set_me(srv->user, TRUE);
+
+    // FIXME: Corss-required between chat_new() and user_new()
+    srv->chat->user = user_ref(srv->user);
+
+    /* NOTE: Ping related issuses are not handled in server.c */
+    /* srv->last_pong = 0; */ // by g_malloc0()
+    /* srv->ping_timer = 0; */ // by g_malloc0()
+    /* srv->delay = 0; */ // by g_malloc0()
+
+    srv->cur_chat = srv->chat;
+    /* srv->chat_list = NULL; */ // by g_malloc0()
+    /* srv->ignore_list = NULL; */ // by g_malloc0()
+    /* srv->brigebot_list = NULL; */ // by g_malloc0()
+
+    /* sirc */
+    srv->irc = sirc_new_session(&irc_events, &prefs->irc);
     if (!srv->irc) goto bad;
     sirc_set_ctx(srv->irc, srv);
 
@@ -159,6 +198,10 @@ void server_free(Server *srv){
     if (srv->info != NULL){
         server_info_free(srv->info);
         srv->info = NULL;
+    }
+    if (srv->prefs != NULL){
+        server_prefs_free(srv->prefs);
+        srv->prefs = NULL;
     }
 
     if (srv->user != NULL){

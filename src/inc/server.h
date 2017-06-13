@@ -140,22 +140,22 @@ struct _ServerInfo {
 
 struct _ServerPrefs {
     /* For specificed server */
-    const char *name;
-    const char *host;
+    char *name;
+    char *host;
     int port;
-    const char *passwd;
-    const char *encoding;
+    char *passwd;
+    char *encoding;
 
     /* User */
-    const char *nickname;
-    const char *username;
-    const char *realname;
+    char *nickname;
+    char *username;
+    char *realname;
 
     /* Default message */
-    const char *part_message;
-    const char *kick_message;
-    const char *away_message;
-    const char *quit_message;
+    char *part_message;
+    char *kick_message;
+    char *away_message;
+    char *quit_message;
 
     SircPrefs irc;
 };
@@ -168,7 +168,7 @@ ServerInfo *server_info_new(const char *name, const char *host, int port,
 void server_info_free(ServerInfo *info);
 
 Server* server_new(const char *name, const char *host, int port,
-        const char *passwd, const char *encoding, SircSessionFlag flag,
+        const char *passwd, const char *encoding, SircPrefs *irc_prefs,
         const char *nick, const char *username, const char *realname);
 void server_free(Server *srv);
 int server_connect(Server *srv);
@@ -205,5 +205,9 @@ void user_set_me(User *user, bool me);
 
 Message* message_new(Chat *chat, User *user, const char *content, MessageType type);
 void message_free(Message *msg);
+
+ServerPrefs* server_prefs_new();
+bool server_prefs_is_valid(ServerPrefs *prefs);
+void server_prefs_free(ServerPrefs *prefs);
 
 #endif /* __SERVER_H */

@@ -8,8 +8,6 @@ typedef struct _SuiSession SuiSession;
 typedef int SuiSessionFlag;
 typedef struct _SuiMessage SuiMessage;
 typedef enum _UserType UserType;
-typedef struct _SuiAppPrefs SuiAppPrefs;
-typedef struct _SuiPrefs SuiPrefs;
 
 #define SUI_SESSION_SERVER      1 << 0
 #define SUI_SESSION_CHANNEL     1 << 1
@@ -35,23 +33,11 @@ enum _UserType {
     USER_TYPE_MAX
 };
 
-struct _SuiAppPrefs {
-    const char *theme;
-    // const char *font;
-};
-
-struct _SuiPrefs {
-    bool notify;
-    bool show_topic;
-    bool show_avatar;
-    bool show_user_list;
-    bool preview_image;
-};
-
 #define SRAIN_MSG_MENTIONED 0x1
 
 #define __IN_SUI_H
 #include "sui_event.h"
+#include "sui_prefs.h"
 #undef __IN_SUI_H
 
 void sui_main_loop(SuiAppEvents *events, SuiAppPrefs *prefs);

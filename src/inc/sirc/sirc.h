@@ -6,9 +6,9 @@
 
 #include "srain.h"
 
+// TODO: Deprecated
 typedef int SircSessionFlag;
 typedef struct _SircSession SircSession;
-typedef struct _SircPrefs SircPrefs;
 
 #define SIRC_SESSION_SSL            1 << 0
 #define SIRC_SESSION_SSL_NOTVERIFY  1 << 1
@@ -17,22 +17,15 @@ typedef struct _SircPrefs SircPrefs;
 
 #define SIRC_BUF_LEN    513
 
-struct _SircPrefs {
-    bool auto_reconnect;
-    bool use_ssl;
-    bool verify_ssl_cert;
-    // bool use_ipv6;
-    // bool use_sasl;
-};
-
 #define __IN_SIRC_H
 #include "sirc_cmd.h"
 #include "sirc_event.h"
 #include "sirc_numeric.h"
 #include "sirc_utils.h"
+#include "sirc_prefs.h"
 #undef __IN_SIRC_H
 
-SircSession* sirc_new_session(SircEvents *events, SircPrefs *prefs, SircSessionFlag flag);
+SircSession* sirc_new_session(SircEvents *events, SircPrefs *prefs);
 void sirc_free_session(SircSession *sirc);
 void sirc_connect(SircSession *sirc, const char *host, int port);
 void sirc_disconnect(SircSession *sirc);
