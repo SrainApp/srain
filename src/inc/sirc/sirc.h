@@ -6,8 +6,6 @@
 
 #include "srain.h"
 
-// TODO: Deprecated
-typedef int SircSessionFlag;
 typedef struct _SircSession SircSession;
 
 #define SIRC_SESSION_SSL            1 << 0
@@ -31,7 +29,6 @@ void sirc_connect(SircSession *sirc, const char *host, int port);
 void sirc_disconnect(SircSession *sirc);
 int sirc_get_fd(SircSession *sirc);
 GIOStream* sirc_get_stream(SircSession *sirc);
-SircSessionFlag sirc_get_flag(SircSession *sirc);
 SircEvents* sirc_get_events(SircSession *sirc);
 void* sirc_get_ctx(SircSession *sirc);
 void sirc_set_ctx(SircSession *sirc, void *ctx);

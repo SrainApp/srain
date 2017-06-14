@@ -26,7 +26,6 @@
 
 struct _SircSession {
     int fd;
-    SircSessionFlag flag;
     int bufptr;
     char buf[SIRC_BUF_LEN];
     GSocketClient *client;
@@ -94,13 +93,6 @@ GIOStream* sirc_get_stream(SircSession *sirc){
     g_return_val_if_fail(sirc, NULL);
 
     return sirc->stream;
-}
-
-SircSessionFlag sirc_get_flag(SircSession *sirc){
-    /* Don't return SRN_ERR(-1 0xffffffff) */
-    g_return_val_if_fail(sirc, 0);
-
-    return sirc->flag;
 }
 
 SircEvents *sirc_get_events(SircSession *sirc){
