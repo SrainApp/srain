@@ -6,12 +6,13 @@
 
 typedef struct _SuiSession SuiSession;
 typedef int SuiSessionFlag;
+typedef struct _SuiMessage SuiMessage;
+typedef enum _UserType UserType;
 
 #define SUI_SESSION_SERVER      1 << 0
 #define SUI_SESSION_CHANNEL     1 << 1
 #define SUI_SESSION_DIALOG      1 << 2
 #define SUI_SESSION_NEWWINDOW   1 << 3  // Not used yet
-#define SUI_SESSION_NOSWITCH    1 << 4  // Not used yet
 
 // TODO Rename type
 typedef enum {
@@ -20,9 +21,6 @@ typedef enum {
     SYS_MSG_ACTION
 } SysMsgType;
 
-typedef struct _SuiMessage SuiMessage;
-
-typedef enum _UserType UserType;
 
 enum _UserType {
     USER_OWNER,     // ~ mode +q
@@ -39,13 +37,14 @@ enum _UserType {
 
 #define __IN_SUI_H
 #include "sui_event.h"
+#include "sui_prefs.h"
 #undef __IN_SUI_H
 
-void sui_main_loop(SuiAppEvents *events);
+void sui_main_loop(SuiAppEvents *events, SuiAppPrefs *prefs);
 void sui_proc_pending_event();
 
 /* SuiSession */
-SuiSession *sui_new_session(SuiEvents *events, SuiSessionFlag flag);
+SuiSession *sui_new_session(SuiEvents *events, SuiPrefs *prefs, SuiSessionFlag flag);
 void sui_free_session(SuiSession *sui);
 int sui_start_session(SuiSession *sui, const char *name, const char *remark);
 void sui_end_session(SuiSession *sui);
@@ -72,14 +71,17 @@ SuiMessage *sui_add_sent_msg(SuiSession *sui, const char *msg);
 SuiMessage *sui_add_recv_msg(SuiSession *sui, const char *nick, const char *id, const char *msg);
 void sui_message_append_message(SuiSession *sui, SuiMessage *smsg, const char *msg);
 
-/* Misc, user and topic */
-int sui_add_user(SuiSession *sui, const char *nick, UserType type);
-int sui_rm_user(SuiSession *sui, const char *nick);
-int sui_ren_user(SuiSession *sui, const char *old_nick, const char *new_nick, UserType type);
-void sui_set_topic(SuiSession *sui, const char *topic);
-
 /* Completion */
 void sui_add_completion(SuiSession *sui, const char *word);
 void sui_rm_completion(SuiSession *sui, const char *word);
+
+/* User */
+int sui_add_user(SuiSession *sui, const char *nick, UserType type);
+int sui_rm_user(SuiSession *sui, const char *nick);
+int sui_ren_user(SuiSession *sui, const char *old_nick, const char *new_nick, UserType type);
+
+/* Misc */
+void sui_set_topic(SuiSession *sui, const char *topic);
+void sui_message_box(const char *title, const char *msg);
 
 #endif /* __SUI_H */

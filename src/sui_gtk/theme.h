@@ -3,7 +3,7 @@
 
 #include <gtk/gtk.h>
 
-void theme_init();
+int theme_load(const char *theme);
 void theme_apply(GtkWidget *widget);
 
 #endif /* __THEME_H */

@@ -29,19 +29,26 @@ struct _SuiSession{
 
     SuiSessionFlag flag;
     SuiEvents *events;
+    SuiPrefs *prefs;
 
     void *ctx;
 };
 
 SuiAppEvents *app_events = NULL;
+SuiAppPrefs *app_prefs = NULL;
 
-void sui_main_loop(SuiAppEvents *events){
+void sui_main_loop(SuiAppEvents *events, SuiAppPrefs *prefs){
     g_return_if_fail(events);
+    g_return_if_fail(prefs);
 
     app_events = events;
+    app_prefs = prefs;
 
-    theme_init();
     snotify_init();
+
+    if (theme_load(prefs->theme) == SRN_ERR){
+        ERR_FR("Failed to load theme '%s'", prefs->theme);
+    }
 
     g_application_run(G_APPLICATION(srain_app_new()), 0, NULL);
 
@@ -52,16 +59,18 @@ void sui_proc_pending_event(){
     while (gtk_events_pending()) gtk_main_iteration();
 }
 
-SuiSession *sui_new_session(SuiEvents *events, SuiSessionFlag flag){
+SuiSession *sui_new_session(SuiEvents *events, SuiPrefs *prefs, SuiSessionFlag flag){
     SuiSession *sui;
 
     g_return_val_if_fail(events, NULL);
+    g_return_val_if_fail(prefs, NULL);
 
     sui = g_malloc0(sizeof(SuiSession));
 
     // sui->chat = NULL; // via g_malloc0()
     sui->flag = flag;
     sui->events = events;
+    sui->prefs = prefs;
 
     return sui;
 }
@@ -103,6 +112,9 @@ int sui_start_session(SuiSession *sui, const char *name, const char *remark){
         return SRN_ERR;
     }
 
+    srain_chat_show_topic(sui->chat, sui->prefs->show_topic);
+    srain_chat_show_user_list(sui->chat, sui->prefs->show_user_list);
+
     return SRN_OK;
 }
 
@@ -124,6 +136,12 @@ SuiEvents *sui_get_events(SuiSession *sui){
     g_return_val_if_fail(sui, NULL);
 
     return sui->events;
+}
+
+SuiPrefs *sui_get_prefs(SuiSession *sui){
+    g_return_val_if_fail(sui, NULL);
+
+    return sui->prefs;
 }
 
 void* sui_get_ctx(SuiSession *sui){
@@ -165,6 +183,7 @@ SuiMessage *sui_add_sys_msg(SuiSession *sui, const char *msg, SysMsgType type){
 
     list = srain_chat_get_msg_list(chat);
     smsg = (SuiMessage *)srain_sys_msg_new(msg, type);
+    sui_message_set_ctx(smsg, sui);
     srain_msg_list_add_message(list, smsg);
 
     if (type != SYS_MSG_NORMAL){
@@ -188,6 +207,7 @@ SuiMessage *sui_add_sent_msg(SuiSession *sui, const char *msg){
 
     list = srain_chat_get_msg_list(chat);
     smsg = (SuiMessage *)srain_send_msg_new(msg);
+    sui_message_set_ctx(smsg, sui);
     srain_msg_list_add_message(list, smsg);
 
     srain_window_stack_sidebar_update(srain_win, chat, _("You"), msg);
@@ -212,6 +232,8 @@ SuiMessage *sui_add_recv_msg(SuiSession *sui, const char *nick, const char *id,
 
     list = srain_chat_get_msg_list(chat);
     smsg = (SuiMessage *)srain_recv_msg_new(nick, id, msg);
+    sui_message_set_ctx(smsg, sui);
+    srain_recv_msg_show_avatar(SRAIN_RECV_MSG(smsg), sui->prefs->show_avatar);
     srain_msg_list_add_message(list, smsg);
 
     srain_window_stack_sidebar_update(srain_win, chat, nick, msg);
@@ -349,10 +371,23 @@ void sui_message_append_message(SuiSession *sui, SuiMessage *smsg, const char *m
 }
 
 void sui_message_append_image(SuiMessage *smsg, const char *url){
+    SrainImageFlag flag;
+    SuiSession *sui;
+
     g_return_if_fail(smsg);
     g_return_if_fail(url);
+    g_return_if_fail(sui_message_get_ctx(smsg));
 
-    srain_msg_append_image(smsg, url);
+    sui = sui_message_get_ctx(smsg);
+    flag = SRAIN_IMAGE_ENLARGE | SRAIN_IMAGE_SPININER;
+
+    if (sui->prefs->preview_image){
+        flag |= SRAIN_IMAGE_AUTOLOAD;
+    } else {
+    }
+
+
+    srain_msg_append_image(smsg, url, flag);
 }
 
 void sui_message_mentioned(SuiMessage *smsg){
@@ -375,10 +410,16 @@ void sui_message_notify(SuiMessage *smsg){
     const char *title;
     const char *msg;
     const char *icon;
+    SuiSession *sui;
 
     g_return_if_fail(smsg);
 
     if (srain_window_is_active(srain_win)){
+        return;
+    }
+
+    sui = sui_message_get_ctx(smsg);
+    if (sui && !sui->prefs->notify){
         return;
     }
 
@@ -434,4 +475,26 @@ void sui_rm_completion(SuiSession *sui, const char *keyword){
     comp = srain_chat_get_entry_completion(chat);
 
     srain_entry_completion_rm_keyword(comp, keyword);
+}
+
+void sui_message_box(const char *title, const char *msg){
+    GtkMessageDialog *dia;
+
+    dia = GTK_MESSAGE_DIALOG(
+            gtk_message_dialog_new(GTK_WINDOW(srain_win),
+                GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                GTK_MESSAGE_INFO,
+                GTK_BUTTONS_OK,
+                NULL
+                )
+            );
+
+    gtk_window_set_title(GTK_WINDOW(dia), title);
+    gtk_message_dialog_set_markup(GTK_MESSAGE_DIALOG(dia), msg);
+
+    /* Without this, message dialog cannot be displayed on the center of screen */
+    sui_proc_pending_event();
+
+    gtk_dialog_run(GTK_DIALOG(dia));
+    gtk_widget_destroy(GTK_WIDGET(dia));
 }

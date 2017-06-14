@@ -4,7 +4,8 @@
 #include <glib.h>
 #include <gio/gio.h>
 
-typedef int SircSessionFlag;
+#include "srain.h"
+
 typedef struct _SircSession SircSession;
 
 #define SIRC_SESSION_SSL            1 << 0
@@ -19,15 +20,15 @@ typedef struct _SircSession SircSession;
 #include "sirc_event.h"
 #include "sirc_numeric.h"
 #include "sirc_utils.h"
+#include "sirc_prefs.h"
 #undef __IN_SIRC_H
 
-SircSession* sirc_new_session(SircEvents *events, SircSessionFlag flag);
+SircSession* sirc_new_session(SircEvents *events, SircPrefs *prefs);
 void sirc_free_session(SircSession *sirc);
 void sirc_connect(SircSession *sirc, const char *host, int port);
 void sirc_disconnect(SircSession *sirc);
 int sirc_get_fd(SircSession *sirc);
 GIOStream* sirc_get_stream(SircSession *sirc);
-SircSessionFlag sirc_get_flag(SircSession *sirc);
 SircEvents* sirc_get_events(SircSession *sirc);
 void* sirc_get_ctx(SircSession *sirc);
 void sirc_set_ctx(SircSession *sirc, void *ctx);

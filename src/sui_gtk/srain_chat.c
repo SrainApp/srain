@@ -385,3 +385,11 @@ GtkMenu* srain_chat_get_menu(SrainChat *chat){
 SuiSession *srain_chat_get_session(SrainChat *chat){
     return chat->session;
 }
+
+void srain_chat_show_topic(SrainChat *chat, bool isshow){
+    gtk_revealer_set_reveal_child(chat->topic_revealer, isshow);
+}
+
+void srain_chat_show_user_list(SrainChat *chat, bool isshow){
+    gtk_revealer_set_reveal_child(chat->user_list_revealer, isshow);
+}

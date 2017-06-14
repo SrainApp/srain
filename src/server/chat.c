@@ -7,6 +7,8 @@
 #include "filter.h"
 #include "i18n.h"
 #include "command.h"
+#include "log.h"
+#include "prefs.h"
 
 #include "sirc/sirc.h"
 
@@ -19,6 +21,7 @@ static bool whether_merge_last_message(Chat *chat, Message *msg);
 
 Chat *chat_new(Server *srv, const char *name){
     bool ischan;
+    char *res;
     Chat *chat;
     SuiSessionFlag flag;
 
@@ -33,22 +36,30 @@ Chat *chat_new(Server *srv, const char *name){
     // chat->user_list = NULL; // via g_malloc0()
     // chat->msg_list = NULL; // via g_malloc0()
     // chat->last_msg = NULL; // via g_malloc0()
+    g_strlcpy(chat->name, name, sizeof(chat->name));
+
+    /* sui */
+    chat->ui_prefs = sui_prefs_new();
+    res = prefs_read_sui_prefs(chat->ui_prefs, chat->srv->prefs->name, chat->name);
+    if (res){
+        ERR_FR("Read sui prefs failed: %s", res);
+        g_free(res);
+        res = NULL;
+    }
 
     flag = ischan ? SUI_SESSION_CHANNEL : SUI_SESSION_DIALOG;
     if (strcmp(META_SERVER, name) == 0){
         flag = SUI_SESSION_SERVER;
     }
 
-    chat->ui = sui_new_session(&ui_events, flag);
+    chat->ui = sui_new_session(&ui_events, chat->ui_prefs, flag);
 
     if (!chat->ui){
         goto cleanup;
     }
 
-    g_strlcpy(chat->name, name, sizeof(chat->name));
-
     sui_set_ctx(chat->ui, chat);
-    sui_start_session(chat->ui, name, srv->info->name);
+    sui_start_session(chat->ui, name, srv->prefs->name);
 
     sui_add_completion(chat->ui, chat->name);
     for (int i = 0; cmd_binds[i].name != NULL; i++){
@@ -70,6 +81,9 @@ Chat *chat_new(Server *srv, const char *name){
 cleanup:
     if (chat->ui) {
         sui_free_session(chat->ui);
+    }
+    if (chat->ui_prefs) {
+        g_free(chat->ui_prefs);
     }
     if (chat){
         g_free(chat);
@@ -111,6 +125,11 @@ void chat_free(Chat *chat){
     if (chat->ui){
         sui_free_session(chat->ui);
         chat->ui = NULL;
+    }
+
+    if (chat->ui_prefs){
+        sui_prefs_free(chat->ui_prefs);
+        chat->ui_prefs = NULL;
     }
 
     g_free(chat);

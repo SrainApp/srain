@@ -90,14 +90,6 @@ char *get_plugin_file(const char *fname){
 char *get_config_file(const char *fname){
     char *path;
 
-    path = g_build_filename(".", fname, NULL);
-
-    if (g_file_test(path, G_FILE_TEST_EXISTS)){
-        return path;
-    }
-    WARN_FR("'%s' not found", path);
-    g_free(path);
-
     path = g_build_filename(g_get_user_config_dir(), PACKAGE,
             fname, NULL);
 
@@ -107,6 +99,21 @@ char *get_config_file(const char *fname){
 
     WARN_FR("'%s' not found", path);
     g_free(path);
+    return NULL;
+}
+
+char *get_system_config_file(const char *fname){
+    char *path;
+
+    path = g_build_filename(PACKAGE_CONFIG_DIR, PACKAGE, fname, NULL);
+
+    if (g_file_test(path, G_FILE_TEST_EXISTS)){
+        return path;
+    }
+
+    WARN_FR("'%s' not found", path);
+    g_free(path);
+
     return NULL;
 }
 

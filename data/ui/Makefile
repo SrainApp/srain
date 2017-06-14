@@ -1,8 +1,9 @@
-# makefile
+# Makefile
 #
-# generate ui resource for app
-# compile ui file(*.glade) to <PROJECT DIR>/build/resources.c
-# then compile it to <PROJECT DIR>/build/resources.o
+# Generate ui resources for srain application.
+#
+# Compile ui file(*.glade) to $(BUILD_DIR)/resources.c, then compile it to
+# $(BUILD_DIR)/resources.o
 
 GLIB_COMPILE_RESOURCES = glib-compile-resources
 
@@ -10,7 +11,7 @@ default:
 	$(MAKE) $(SRCS)
 
 GLADES = $(wildcard *.glade)
-SRCS = ../../build/resources.c
+SRCS = $(BUILD_DIR)/resources.c
 
 $(SRCS): srain.gresource.xml $(GLADES)
 	$(GLIB_COMPILE_RESOURCES) srain.gresource.xml --target=$@ --sourcedir=. --generate-source

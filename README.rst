@@ -1,9 +1,10 @@
+=====
 Srain
 =====
 
 **Note:** Srain is still under development.
 
-It does not look like an IRC client :-)
+Modern, beautiful IRC client written in GTK+ 3.
 
 Dependencies
 ------------
@@ -17,6 +18,7 @@ Dependencies
 - python >= 3.2
 - libcurl
 - libnotify
+- libconfig
 
 Build & Debug
 -------------
@@ -24,7 +26,7 @@ Build & Debug
 .. code-block:: shell
 
     mkdir build
-    ./configure --prefix=$PWD/build --enable-debug
+    ./configure --prefix=$PWD/build --config-dir=$PWD/build/etc --enable-debug
     make
     make run
 
@@ -59,7 +61,7 @@ For Other Linux Distributions
     # Intall the above dependencies, then
     # Note: the configure script doesn't check dependiencies.
     mkdir build
-    ./configure --prefix=/usr/local --disable-debug
+    ./configure --prefix=/usr/local --config-dir=/etc --disable-debug
     make
     make DESTDIR=/ install
 
@@ -86,7 +88,7 @@ Feel free to contact me if you have any question about srain.
 
 - **IRC Channel**: `#srain <irc://irc.freenode.net/srain>`_ at freenode
 - Email: silverrainz at outlook dot com
-- Github: file a issue `Here <https://github.com/SilverRainZ/srain/issues>`_
+- Github: file an issue `Here <https://github.com/SilverRainZ/srain/issues>`_
 
 License
 -------

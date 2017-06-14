@@ -37,6 +37,10 @@
 #define PACKAGE_DATA_DIR "Undefined"
 #endif
 
+#ifndef PACKAGE_CONFIG_DIR
+#define PACKAGE_CONFIG_DIR "Undefined"
+#endif
+
 /* META_SERVER is a special name represent a IRC server */
 #define META_SERVER "Server "
 

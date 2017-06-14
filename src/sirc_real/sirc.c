@@ -1,7 +1,7 @@
 /**
  * @file sirc.c
  * @brief Srain IRC library
- * @author Shengyu Zhang <lastavengers@outlook.com>
+ * @author Shengyu Zhang <silverrainz@outlook.com>
  * @version 1.0
  * @date 2016-03-02
  *
@@ -25,14 +25,13 @@
 #include "log.h"
 
 struct _SircSession {
-    int fd;
-    SircSessionFlag flag;
     int bufptr;
     char buf[SIRC_BUF_LEN];
     GSocketClient *client;
     GIOStream *stream;
 
     SircEvents *events; // Event callbacks
+    SircPrefs *prefs;
     void *ctx;
 };
 
@@ -46,16 +45,15 @@ static void on_disconnect_ready(GObject *obj, GAsyncResult *result, gpointer use
 static void on_recv_ready(GObject *obj, GAsyncResult *res, gpointer user_data);
 static void on_disconnect(SircSession *sirc, const char *reason);
 
-SircSession* sirc_new_session(SircEvents *events, SircSessionFlag flag){
+SircSession* sirc_new_session(SircEvents *events, SircPrefs *prefs){
     SircSession *sirc;
 
     g_return_val_if_fail(events, NULL);
 
     sirc = g_malloc0(sizeof(SircSession));
 
-    sirc->fd = -1;
-    sirc->flag = flag;
     sirc->events = events;
+    sirc->prefs = prefs;
     /* sirc->bufptr = 0; // via g_malloc0() */
     /* sirc->stream = NULL; // via g_malloc0() */
     sirc->client = g_socket_client_new();
@@ -83,23 +81,10 @@ void sirc_free_session(SircSession *sirc){
     g_free(sirc);
 }
 
-int sirc_get_fd(SircSession *sirc){
-    g_return_val_if_fail(sirc, -1);
-
-    return sirc->fd;
-}
-
 GIOStream* sirc_get_stream(SircSession *sirc){
     g_return_val_if_fail(sirc, NULL);
 
     return sirc->stream;
-}
-
-SircSessionFlag sirc_get_flag(SircSession *sirc){
-    /* Don't return SRN_ERR(-1 0xffffffff) */
-    g_return_val_if_fail(sirc, 0);
-
-    return sirc->flag;
 }
 
 SircEvents *sirc_get_events(SircSession *sirc){
@@ -281,7 +266,7 @@ static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data
     }
 
 
-    if (sirc->flag & SIRC_SESSION_SSL){
+    if (sirc->prefs->use_ssl){
          GIOStream *tls_conn;
 
          err = NULL;
@@ -290,12 +275,12 @@ static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data
              ERR_FR("Could not create TLS connection: %s", err->message);
          }
 
-         if (sirc->flag & SIRC_SESSION_SSL_NOTVERIFY){
-             g_tls_client_connection_set_validation_flags(
-                     G_TLS_CLIENT_CONNECTION(tls_conn), 0);
-         } else {
+         if (sirc->prefs->verify_ssl_cert){
              g_tls_client_connection_set_validation_flags(
                      G_TLS_CLIENT_CONNECTION(tls_conn), G_TLS_CERTIFICATE_VALIDATE_ALL);
+         } else {
+             g_tls_client_connection_set_validation_flags(
+                     G_TLS_CLIENT_CONNECTION(tls_conn), 0);
          }
 
          g_signal_connect(tls_conn, "accept-certificate",
@@ -309,7 +294,7 @@ static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data
 
     /* If use TLS, trigger "CONNECT" event after TLS handshake,
      * see `on_handshake_ready` */
-    if (sirc->flag & SIRC_SESSION_SSL){
+    if (sirc->prefs->use_ssl){
         // ...
     } else {
         on_connect_finish(sirc);

@@ -31,6 +31,7 @@ typedef struct _Chat Chat;
 typedef enum   _ServerStatus ServerStatus;
 typedef struct _ServerInfo ServerInfo;
 typedef struct _Server Server;
+typedef struct _ServerPrefs ServerPrefs;
 
 /*enum _UserType {
     USER_CHIGUA,    // No prefix
@@ -98,6 +99,7 @@ struct _Chat {
 
     Server *srv;
     SuiSession *ui;
+    SuiPrefs *ui_prefs;
 };
 
 enum _ServerStatus {
@@ -112,6 +114,7 @@ struct _Server {
     bool registered;    // Whether the user has registered(Own a nickname)?
     bool user_quit;     // Whether the user has received a QUIT message originated by himself?
     ServerInfo *info;
+    ServerPrefs *prefs;
     User *user;         // Used to store your nick, username, realname
     Chat *chat;         // Hold all messages that do not belong to any other Chat
 
@@ -126,25 +129,32 @@ struct _Server {
     SircSession *irc;
 };
 
-struct _ServerInfo {
-    char name[NAME_LEN];
-    char host[HOST_LEN];
+struct _ServerPrefs {
+    /* For specificed server */
+    char *name;
+    char *host;
     int port;
-    char passwd[PASSWD_LEN];
-    const char *encoding;
-    SircSessionFlag ircflag;
+    char *passwd;
+    char *encoding;
+
+    /* User */
+    char *nickname;
+    char *username;
+    char *realname;
+
+    /* Default message */
+    char *part_message;
+    char *kick_message;
+    char *away_message;
+    char *quit_message;
+
+    SircPrefs *irc;
 };
 
 void server_init();
 void server_finalize();
 
-ServerInfo *server_info_new(const char *name, const char *host, int port,
-        const char *passwd, const char *encoding, SircSessionFlag ircflag);
-void server_info_free(ServerInfo *info);
-
-Server* server_new(const char *name, const char *host, int port,
-        const char *passwd, const char *encoding, SircSessionFlag flag,
-        const char *nick, const char *username, const char *realname);
+Server* server_new_from_prefs(ServerPrefs *prefs);
 void server_free(Server *srv);
 int server_connect(Server *srv);
 void server_disconnect(Server *srv);
@@ -180,5 +190,9 @@ void user_set_me(User *user, bool me);
 
 Message* message_new(Chat *chat, User *user, const char *content, MessageType type);
 void message_free(Message *msg);
+
+ServerPrefs* server_prefs_new();
+bool server_prefs_is_valid(ServerPrefs *prefs);
+void server_prefs_free(ServerPrefs *prefs);
 
 #endif /* __SERVER_H */

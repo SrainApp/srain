@@ -24,6 +24,7 @@
 #include "srain.h"
 #include "log.h"
 #include "utils.h"
+#include "prefs.h"
 
 SuiAppEvents ui_app_events;
 SuiEvents ui_events;
@@ -71,39 +72,49 @@ void server_init(){
     irc_events.error = server_irc_event_error;
     irc_events.numeric = server_irc_event_numeric;
 
+    prefs_init();
     server_cmd_init();
 
-    sui_main_loop(&ui_app_events);
+    /* Read prefs **/
+    char *prefs_res;
+    SuiAppPrefs ui_app_prefs = {0};
+
+    prefs_res = prefs_read();
+
+    if (prefs_res){
+        ERR_FR("Read prefs failed: %s", prefs_res);
+        g_free(prefs_res);
+    }
+
+    prefs_read_sui_app_prefs(&ui_app_prefs);
+
+    sui_main_loop(&ui_app_events, &ui_app_prefs);
 }
 
 void server_finalize(){
-
+    prefs_finalize();
 }
 
-Server* server_new(const char *name,
-        const char *host,
-        int port,
-        const char *passwd,
-        const char *encoding,
-        SircSessionFlag ircflag,
-        const char *nick,
-        const char *username,
-        const char *realname){
+Server* server_new_from_prefs(ServerPrefs *prefs){
     Server *srv;
+
+    g_return_val_if_fail(server_prefs_is_valid(prefs), NULL);
 
     srv = g_malloc0(sizeof(Server));
 
     srv->registered = FALSE;
     srv->user_quit = FALSE;
     srv->stat = SERVER_UNCONNECTED;
-
-    srv->info = server_info_new(name, host, port, passwd, encoding, ircflag);
-    if (!srv->info) goto bad;
+    srv->prefs = prefs;
 
     srv->chat = chat_new(srv, META_SERVER);
     if (!srv->chat) goto bad;
 
-    srv->user = user_new(srv->chat, nick, username, realname, USER_CHIGUA);
+    srv->user = user_new(srv->chat,
+            prefs->nickname,
+            prefs->username,
+            prefs->realname,
+            USER_CHIGUA);
     if (!srv->user) goto bad;
     user_set_me(srv->user, TRUE);
 
@@ -120,8 +131,8 @@ Server* server_new(const char *name,
     /* srv->ignore_list = NULL; */ // by g_malloc0()
     /* srv->brigebot_list = NULL; */ // by g_malloc0()
 
-    /* Get IRC handler */
-    srv->irc = sirc_new_session(&irc_events, ircflag);
+    /* sirc */
+    srv->irc = sirc_new_session(&irc_events, prefs->irc);
     if (!srv->irc) goto bad;
     sirc_set_ctx(srv->irc, srv);
 
@@ -133,9 +144,9 @@ bad:
 }
 
 void server_free(Server *srv){
-    if (srv->info != NULL){
-        server_info_free(srv->info);
-        srv->info = NULL;
+    if (srv->prefs != NULL){
+        server_prefs_free(srv->prefs);
+        srv->prefs = NULL;
     }
 
     if (srv->user != NULL){
@@ -174,7 +185,7 @@ void server_free(Server *srv){
 int server_connect(Server *srv){
     srv->stat = SERVER_CONNECTING;
 
-    sirc_connect(srv->irc, srv->info->host, srv->info->port);
+    sirc_connect(srv->irc, srv->prefs->host, srv->prefs->port);
 
     return SRN_OK;
 }

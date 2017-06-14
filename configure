@@ -1,12 +1,17 @@
 #!/bin/sh
 
 prefix=/usr/local
+config_dir=/etc/xdg
 debugsym=true
 
 for arg in "$@"; do
     case "$arg" in
     --prefix=*)
         prefix=`echo $arg | sed 's/--prefix=//'`
+        ;;
+
+    --config-dir=*)
+        config_dir=`echo $arg | sed 's/--config-dir=//'`
         ;;
 
     --enable-debug)
@@ -28,6 +33,7 @@ done
 
 echo 'Generating makefile ...'
 echo "PREFIX = $prefix" > Makefile
+echo "CONFIG_DIR = $config_dir" >> Makefile
 if $debugsym; then
     echo 'DBGFLAGS = -ggdb' >> Makefile
 fi

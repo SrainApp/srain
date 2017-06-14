@@ -19,7 +19,6 @@
 #include "srain_window.h"
 #include "srain_chat.h"
 #include "srain_msg.h"
-#include "srain_image.h"
 
 #include "plugin.h"
 #include "download.h"
@@ -195,10 +194,9 @@ static void nick_button_on_click(GtkWidget *widget, gpointer *user_data){
 }
 
 /* ================ SRAIN_SRAIN_MSG ================ */
-void srain_msg_append_image(SrainMsg *smsg, const char *url) {
+void srain_msg_append_image(SrainMsg *smsg, const char *url, SrainImageFlag flag) {
     SrainImage *simg = srain_image_new();
-    srain_image_set_from_url_async(simg, url, 300,
-            SRAIN_IMAGE_ENLARGE | SRAIN_IMAGE_SPININER );
+    srain_image_set_from_url_async(simg, url, 300, flag);
 
     gtk_container_add(GTK_CONTAINER(smsg->padding_box), GTK_WIDGET(simg));
     gtk_container_set_border_width(GTK_CONTAINER(simg), 6);
@@ -363,8 +361,6 @@ static gboolean set_avatar_retry_timeout(gpointer user_data){
 }
 
 SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *msg){
-    char *avatar_path;
-    GdkPixbuf *pixbuf;
     SrainRecvMsg *smsg;
 
     smsg = g_object_new(SRAIN_TYPE_RECV_MSG, NULL);
@@ -372,21 +368,32 @@ SrainRecvMsg *srain_recv_msg_new(const char *nick, const char *id, const char *m
     gtk_label_set_text(smsg->identify_label, id);
     srain_msg_set_msg(SRAIN_MSG(smsg), msg);
 
-    avatar_path = get_avatar_file(nick);
+    return smsg;
+}
 
-    if (avatar_path){
-        gtk_widget_show(GTK_WIDGET(smsg->avatar_image));
-        pixbuf = gdk_pixbuf_new_from_file_at_size(
-                avatar_path, 36, 36, NULL);
-        if (pixbuf){
-            gtk_image_set_from_pixbuf(smsg->avatar_image, pixbuf);
-            g_object_unref(pixbuf);
+void srain_recv_msg_show_avatar(SrainRecvMsg *smsg, bool isshow){
+    if (isshow){
+        const char *nick;
+        char *avatar_path;
+        GdkPixbuf *pixbuf;
+
+        nick = gtk_label_get_text(smsg->nick_label);
+        avatar_path = get_avatar_file(nick);
+
+        if (avatar_path){
+            // gtk_widget_show(GTK_WIDGET(smsg->avatar_image));
+            pixbuf = gdk_pixbuf_new_from_file_at_size(
+                    avatar_path, 36, 36, NULL);
+            if (pixbuf){
+                gtk_image_set_from_pixbuf(smsg->avatar_image, pixbuf);
+                g_object_unref(pixbuf);
+            }
+            g_free(avatar_path);
+        } else {
+            g_object_set_data(G_OBJECT(smsg), "left-times", (void *)5);
+            g_timeout_add(5000, (GSourceFunc)set_avatar_retry_timeout, smsg);
         }
-        g_free(avatar_path);
-    } else {
-        g_object_set_data(G_OBJECT(smsg), "left-times", (void *)5);
-        g_timeout_add(5000, (GSourceFunc)set_avatar_retry_timeout, smsg);
     }
 
-    return smsg;
+    gtk_widget_set_visible(GTK_WIDGET(smsg->avatar_image), isshow);
 }

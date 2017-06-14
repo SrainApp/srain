@@ -1,6 +1,6 @@
 /**
  * @file chat_log.c
- * @brief Message filter for chat logging 
+ * @brief Message filter for chat logging
  * @author Shengyu Zhang <silverrainz@outlook.com>
  * @version 1.0
  * @date 2016-08-21
@@ -44,7 +44,7 @@ bool chat_log(const Message *msg, FilterFlag flag, void *user_data){
     basename = g_string_new("");
 
     g_string_append_printf(basename, "%s.%s.log", datestr, msg->chat->name);
-    file = create_log_file(msg->chat->srv->info->name, basename->str);
+    file = create_log_file(msg->chat->srv->prefs->name, basename->str);
 
     if (!file){
         ERR_FR("Failed to create log file");
