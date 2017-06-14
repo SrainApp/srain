@@ -26,7 +26,7 @@ Build & Debug
 .. code-block:: shell
 
     mkdir build
-    ./configure --prefix=$PWD/build --enable-debug
+    ./configure --prefix=$PWD/build --config-dir=$PWD/build/etc --enable-debug
     make
     make run
 
@@ -61,7 +61,7 @@ For Other Linux Distributions
     # Intall the above dependencies, then
     # Note: the configure script doesn't check dependiencies.
     mkdir build
-    ./configure --prefix=/usr/local --disable-debug
+    ./configure --prefix=/usr/local --config-dir=/etc --disable-debug
     make
     make DESTDIR=/ install
 
