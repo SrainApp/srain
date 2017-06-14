@@ -20,15 +20,15 @@ static Server* ctx_get_server(SuiSession *sui);
 static Chat* ctx_get_chat(SuiSession *sui);
 
 void server_ui_event_activate(SuiEvent event, const char *params[], int count){
-    const char *prefs_res = NULL;
+    char *errmsg = NULL;
 
     /* We have read prefs in `server_init()`, read it again for reporting error
      * on a message dialog. */
-    prefs_res = prefs_read();
+    errmsg = prefs_read();
 
-    if (prefs_res){
-        sui_message_box(_("Error"), prefs_res);
-        g_free(prefs_res);
+    if (errmsg){
+        sui_message_box(_("Error"), errmsg);
+        g_free(errmsg);
     }
 
     rc_read();
@@ -36,8 +36,8 @@ void server_ui_event_activate(SuiEvent event, const char *params[], int count){
 }
 
 void server_ui_event_connect(SuiEvent event, const char *params[], int count){
+    char *errmsg;
     Server *srv;
-    SircSessionFlag ircflag;
 
     g_return_if_fail(count == 9);
     const char *name = params[0];
@@ -55,11 +55,33 @@ void server_ui_event_connect(SuiEvent event, const char *params[], int count){
         realname = "Can you can a can?";
     }
 
-    ircflag = 0;
-    if (ssl) ircflag |= SIRC_SESSION_SSL;
-    if (notverify) ircflag |= SIRC_SESSION_SSL_NOTVERIFY;
+    ServerPrefs *prefs = server_prefs_new();
 
-    srv = server_new(name, host, port, passwd, encoding, ircflag, nick, username, realname);
+    errmsg = prefs_read_server_prefs(prefs, name);
+    if (errmsg){
+        // TODO ...
+        g_free(errmsg);
+    }
+
+    prefs->name = g_strdup(name);
+    prefs->host = g_strdup(host);
+    prefs->port = port;
+    prefs->passwd = g_strdup(passwd);
+    prefs->encoding = g_strdup(encoding);
+    prefs->nickname = g_strdup(nick);
+    prefs->username = g_strdup(username);
+    prefs->realname = g_strdup(realname);
+
+    prefs->irc->use_ssl = ssl;
+    prefs->irc->verify_ssl_cert = !notverify;
+
+    if (!server_prefs_is_valid(prefs)){
+        // TODO
+        ERR_FR("Not completed ServerPrefs");
+        return;
+    }
+
+    srv = server_new_from_prefs(prefs);
     g_return_if_fail(srv);
 
     server_connect(srv);

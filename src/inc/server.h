@@ -170,6 +170,7 @@ void server_info_free(ServerInfo *info);
 Server* server_new(const char *name, const char *host, int port,
         const char *passwd, const char *encoding, SircPrefs *irc_prefs,
         const char *nick, const char *username, const char *realname);
+Server* server_new_from_prefs(ServerPrefs *prefs);
 void server_free(Server *srv);
 int server_connect(Server *srv);
 void server_disconnect(Server *srv);

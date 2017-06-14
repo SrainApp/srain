@@ -26,6 +26,7 @@
 #include "command.h"
 #include "filter.h"
 #include "decorator.h"
+#include "prefs.h"
 
 typedef struct _ServerCmdContext {
     Chat *chat;
@@ -242,7 +243,9 @@ static int on_command_connect(Command *cmd, void *user_data){
     const char *host;
     const char *nick;
     char *port, *passwd, *ssl, *realname;
-    SircSessionFlag ircflag;
+    char *errmsg;
+    Server *srv;
+    ServerPrefs *prefs;
 
     host = command_get_arg(cmd, 0);
     nick = command_get_arg(cmd, 1);
@@ -255,16 +258,45 @@ static int on_command_connect(Command *cmd, void *user_data){
     command_get_opt(cmd, "-ssl", &ssl);
     command_get_opt(cmd, "-realname", &realname);
 
-    ircflag = 0;
-    if (strcmp(ssl, "on") == 0){
-        ircflag |= SIRC_SESSION_SSL;
-    }
-    else if (strcmp(ssl, "notverify") == 0){
-        ircflag |= SIRC_SESSION_SSL | SIRC_SESSION_SSL_NOTVERIFY;
+    prefs = server_prefs_new();
+
+    errmsg = prefs_read_server_prefs(prefs, host);
+    if (errmsg){
+        // TODO ...
+        ERR_FR("%s", errmsg);
+        server_prefs_free(prefs);
+        g_free(errmsg);
+
+        return SRN_ERR;
     }
 
-    Server *srv = server_new(host, host, atoi(port), passwd, "UTF-8", ircflag,
-            nick, PACKAGE_NAME, realname);
+    LOG_FR("defmsg: %s", prefs->part_message);
+
+    prefs->name = g_strdup(host);
+    prefs->host = g_strdup(host);
+    prefs->port = atoi(port);
+    prefs->passwd = g_strdup(passwd);
+    prefs->encoding = g_strdup("UTF-8");
+    prefs->nickname = g_strdup(nick);
+    prefs->username = g_strdup(PACKAGE_NAME);
+    prefs->realname = g_strdup(realname);
+
+    if (strcmp(ssl, "on") == 0){
+        prefs->irc->use_ssl = TRUE;
+        prefs->irc->verify_ssl_cert = TRUE;
+    }
+    else if (strcmp(ssl, "notverify") == 0){
+        prefs->irc->use_ssl = TRUE;
+        prefs->irc->verify_ssl_cert = FALSE;
+    }
+
+    if (!server_prefs_is_valid(prefs)){
+        // TODO
+        ERR_FR("Not completed ServerPrefs");
+        return SRN_ERR;
+    }
+
+    srv = server_new_from_prefs(prefs);
 
     g_return_val_if_fail(srv, SRN_ERR);
 
