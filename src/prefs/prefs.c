@@ -29,9 +29,9 @@ config_t builtin_cfg;
 
 static char* prefs_read_file(config_t *cfg, const char *file);
 
-static int config_setting_lookup_bool_ex(const config_setting_t *config, const char *path, bool *value);
 static int config_lookup_string_ex(const config_t *config, const char *path, char **value);
-static int config_setting_lookup_string_ex(const config_setting_t *config, const char *path, char **value);
+static int config_setting_lookup_bool_ex(const config_setting_t *config, const char *name, bool *value);
+static int config_setting_lookup_string_ex(const config_setting_t *config, const char *name, char **value);
 
 static void read_sirc_prefs_from_irc(config_setting_t *irc, SircPrefs *prefs);
 static void read_sirc_prefs_from_server_list(config_setting_t *server_list, SircPrefs *prefs, const char *srv_name);
@@ -249,8 +249,6 @@ static void read_sui_prefs_from_cfg(config_t *cfg, SuiPrefs *prefs,
 
 static void read_server_prefs_from_server(config_setting_t *server,
         ServerPrefs *prefs){
-    config_setting_t *irc;
-
     /* Read server meta info */
     config_setting_lookup_string_ex(server, "name", &prefs->name);
     config_setting_lookup_string_ex(server, "host", &prefs->host);
@@ -259,17 +257,26 @@ static void read_server_prefs_from_server(config_setting_t *server,
     config_setting_lookup_string_ex(server, "encoding", &prefs->encoding);
 
     /* Read server.user */
-    config_setting_lookup_string_ex(server, "user.nickname", &prefs->nickname);
-    config_setting_lookup_string_ex(server, "user.username", &prefs->username);
-    config_setting_lookup_string_ex(server, "user.realname", &prefs->realname);
+    config_setting_t *user;
+    user = config_setting_lookup(server, "user");
+    if (user){
+        config_setting_lookup_string_ex(user, "nickname", &prefs->nickname);
+        config_setting_lookup_string_ex(user, "username", &prefs->username);
+        config_setting_lookup_string_ex(user, "realname", &prefs->realname);
+    }
 
     /* Read server.default_messages */
-    config_setting_lookup_string_ex(server, "default_messages.part", &prefs->part_message);
-    config_setting_lookup_string_ex(server, "default_messages.kick", &prefs->kick_message);
-    config_setting_lookup_string_ex(server, "default_messages.away", &prefs->away_message);
-    config_setting_lookup_string_ex(server, "default_messages.quit", &prefs->quit_message);
+    config_setting_t *default_messages;
+    default_messages = config_setting_lookup(server, "default_messages");
+    if (default_messages){
+        config_setting_lookup_string_ex(default_messages, "part", &prefs->part_message);
+        config_setting_lookup_string_ex(default_messages, "kick", &prefs->kick_message);
+        config_setting_lookup_string_ex(default_messages, "away", &prefs->away_message);
+        config_setting_lookup_string_ex(default_messages, "quit", &prefs->quit_message);
+    }
 
     /* Read server.irc */
+    config_setting_t *irc;
     irc = config_setting_lookup(server, "irc");
     if (irc){
         read_sirc_prefs_from_irc(irc, prefs->irc);
@@ -405,11 +412,11 @@ static void read_server_prefs_list_from_cfg(config_t *cfg, GSList **prefs_list){
 
 /* The "bool" in libconfig is actually an integer, transform it to fit bool in "stdbool.h". */
 static int config_setting_lookup_bool_ex(const config_setting_t *config,
-        const char *path, bool *value){
+        const char *name, bool *value){
     int intval;
     int ret;
 
-    ret = config_setting_lookup_bool(config, path, &intval);
+    ret = config_setting_lookup_bool(config, name, &intval);
 
     if (ret == CONFIG_TRUE){
         *value = (bool)intval;
@@ -433,11 +440,12 @@ static int config_lookup_string_ex(const config_t *config, const char *path, cha
 }
 
 /* This function will allocate a new string, you should free it after used. */
-static int config_setting_lookup_string_ex(const config_setting_t *config, const char *path, char **value){
+static int config_setting_lookup_string_ex(const config_setting_t *config,
+        const char *name, char **value){
     int ret;
     const char *constval = NULL;
 
-    ret = config_setting_lookup_string(config, path, &constval);
+    ret = config_setting_lookup_string(config, name, &constval);
 
     if (constval){
         *value = g_strdup(constval);
