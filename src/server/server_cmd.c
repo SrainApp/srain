@@ -270,8 +270,6 @@ static int on_command_connect(Command *cmd, void *user_data){
         return SRN_ERR;
     }
 
-    LOG_FR("defmsg: %s", prefs->part_message);
-
     prefs->name = g_strdup(host);
     prefs->host = g_strdup(host);
     prefs->port = atoi(port);

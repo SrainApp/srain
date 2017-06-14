@@ -18,7 +18,7 @@ ServerPrefs* server_prefs_new(){
 
 bool server_prefs_is_valid(ServerPrefs *prefs){
     return (prefs &&
-            prefs->name 
+            prefs->name
             && prefs->host
             && prefs->passwd
             && prefs->encoding

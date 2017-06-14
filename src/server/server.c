@@ -95,62 +95,17 @@ void server_finalize(){
     prefs_finalize();
 }
 
-Server* server_new(const char *name, const char *host, int port,
-        const char *passwd, const char *encoding, SircPrefs *irc_prefs,
-        const char *nick, const char *username, const char *realname){
-    Server *srv;
-
-    srv = g_malloc0(sizeof(Server));
-
-    srv->registered = FALSE;
-    srv->user_quit = FALSE;
-    srv->stat = SERVER_UNCONNECTED;
-
-    srv->info = server_info_new(name, host, port, passwd, encoding, 0);
-    if (!srv->info) goto bad;
-
-    srv->chat = chat_new(srv, META_SERVER);
-    if (!srv->chat) goto bad;
-
-    srv->user = user_new(srv->chat, nick, username, realname, USER_CHIGUA);
-    if (!srv->user) goto bad;
-    user_set_me(srv->user, TRUE);
-
-    // FIXME: Corss-required between chat_new() and user_new()
-    srv->chat->user = user_ref(srv->user);
-
-    /* NOTE: Ping related issuses are not handled in server.c */
-    /* srv->last_pong = 0; */ // by g_malloc0()
-    /* srv->ping_timer = 0; */ // by g_malloc0()
-    /* srv->delay = 0; */ // by g_malloc0()
-
-    srv->cur_chat = srv->chat;
-    /* srv->chat_list = NULL; */ // by g_malloc0()
-    /* srv->ignore_list = NULL; */ // by g_malloc0()
-    /* srv->brigebot_list = NULL; */ // by g_malloc0()
-
-    /* sirc */
-    srv->irc = sirc_new_session(&irc_events, srv->prefs->irc);
-    if (!srv->irc) goto bad;
-    sirc_set_ctx(srv->irc, srv);
-
-    return srv;
-
-bad:
-    server_free(srv);
-    return NULL;
-}
-
 Server* server_new_from_prefs(ServerPrefs *prefs){
     Server *srv;
 
-    g_return_val_if_fail(!server_prefs_is_valid(prefs), NULL);
+    g_return_val_if_fail(server_prefs_is_valid(prefs), NULL);
 
     srv = g_malloc0(sizeof(Server));
 
     srv->registered = FALSE;
     srv->user_quit = FALSE;
     srv->stat = SERVER_UNCONNECTED;
+    srv->prefs = prefs;
 
     srv->chat = chat_new(srv, META_SERVER);
     if (!srv->chat) goto bad;
@@ -189,11 +144,6 @@ bad:
 }
 
 void server_free(Server *srv){
-    if (srv->info != NULL){
-        server_info_free(srv->info);
-        srv->info = NULL;
-    }
-
     if (srv->prefs != NULL){
         server_prefs_free(srv->prefs);
         srv->prefs = NULL;
@@ -235,7 +185,7 @@ void server_free(Server *srv){
 int server_connect(Server *srv){
     srv->stat = SERVER_CONNECTING;
 
-    sirc_connect(srv->irc, srv->info->host, srv->info->port);
+    sirc_connect(srv->irc, srv->prefs->host, srv->prefs->port);
 
     return SRN_OK;
 }

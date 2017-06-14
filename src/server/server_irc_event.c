@@ -49,7 +49,7 @@ static gboolean irc_period_ping(gpointer user_data){
     /* Check whether ping time out */
     if (time - srv->last_pong > SERVER_PING_TIMEOUT){
         /* Reconnect */
-        WARN_FR("Reconnecting to %s...", srv->info->name);
+        WARN_FR("Reconnecting to %s...", srv->prefs->name);
         server_disconnect(srv);
         server_connect(srv);
 
@@ -73,12 +73,12 @@ void server_irc_event_connect(SircSession *sirc, const char *event){
     user = srv->user;
     srv->stat = SERVER_CONNECTED;
     chat_add_misc_message_fmt(srv->chat, "", _("Connected to %s(%s:%d)"),
-            srv->info->name, srv->info->host, srv->info->port);
+            srv->prefs->name, srv->prefs->host, srv->prefs->port);
 
     /* Send connection password, you should send it command before sending
      * the NICK/USER combination. */
-    if (strlen(srv->info->passwd) > 0){
-        sirc_cmd_pass(srv->irc, srv->info->passwd);
+    if (strlen(srv->prefs->passwd) > 0){
+        sirc_cmd_pass(srv->irc, srv->prefs->passwd);
     }
     sirc_cmd_nick(srv->irc, user->nick);
     sirc_cmd_user(srv->irc, user->username, "hostname", "servername", user->realname);
@@ -96,7 +96,7 @@ void server_irc_event_connect(SircSession *sirc, const char *event){
             sirc_cmd_join(srv->irc, chat->name, NULL);
         }
         chat_add_misc_message_fmt(chat, "", _("Connected to %s(%s:%d)"),
-                srv->info->name, srv->info->host, srv->info->port);
+                srv->prefs->name, srv->prefs->host, srv->prefs->port);
 
         list = g_slist_next(list);
     }
@@ -133,10 +133,10 @@ void server_irc_event_disconnect(SircSession *sirc, const char *event,
         }
         if (msg){
             chat_add_error_message_fmt(chat, "", _("Disconnected from %s(%s:%d): %s"),
-                    srv->info->name, srv->info->host, srv->info->port, msg);
+                    srv->prefs->name, srv->prefs->host, srv->prefs->port, msg);
         } else {
             chat_add_misc_message_fmt(chat, "", _("Disconnected from %s(%s:%d)"),
-                    srv->info->name, srv->info->host, srv->info->port);
+                    srv->prefs->name, srv->prefs->host, srv->prefs->port);
         }
 
         list = g_slist_next(list);
@@ -144,10 +144,10 @@ void server_irc_event_disconnect(SircSession *sirc, const char *event,
 
     if (msg){
         chat_add_error_message_fmt(srv->chat, "", _("Disconnected from %s(%s:%d): %s"),
-                srv->info->name, srv->info->host, srv->info->port, msg);
+                srv->prefs->name, srv->prefs->host, srv->prefs->port, msg);
     } else {
         chat_add_misc_message_fmt(srv->chat, "", _("Disconnected from %s(%s:%d)"),
-                srv->info->name, srv->info->host, srv->info->port);
+                srv->prefs->name, srv->prefs->host, srv->prefs->port);
     }
 
     if (srv->user_quit){
@@ -875,7 +875,7 @@ void server_irc_event_numeric (SircSession *sirc, int event,
 
                 WARN_FR("Unspported message, You can report it at " PACKAGE_WEBSITE);
                 WARN_FR("server: %s, event: %d, origin: %s, count: %u, params: [",
-                        srv->info->name, event, origin, count);
+                        srv->prefs->name, event, origin, count);
                 for (int i = 0; i < count; i++) LOG("'%s', ", params[i]); LOG("]\n");
             }
     }

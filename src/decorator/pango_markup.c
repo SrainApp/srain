@@ -138,8 +138,8 @@ static int pango_markup(Message *msg, DecoratorFlag flag, void *user_data){
                     break;
                 case MATCH_CHANNEL:
                     markuped_url = g_markup_printf_escaped("<a href=\"irc://%s:%d/%s\">%s</a>",
-                            msg->chat->srv->info->host,
-                            msg->chat->srv->info->port,
+                            msg->chat->srv->prefs->host,
+                            msg->chat->srv->prefs->port,
                             url + 1,
                             url);
                     break;

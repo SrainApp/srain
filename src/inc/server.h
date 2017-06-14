@@ -129,15 +129,6 @@ struct _Server {
     SircSession *irc;
 };
 
-struct _ServerInfo {
-    char name[NAME_LEN];
-    char host[HOST_LEN];
-    int port;
-    char passwd[PASSWD_LEN];
-    const char *encoding;
-    SircSessionFlag ircflag;
-};
-
 struct _ServerPrefs {
     /* For specificed server */
     char *name;
@@ -163,13 +154,6 @@ struct _ServerPrefs {
 void server_init();
 void server_finalize();
 
-ServerInfo *server_info_new(const char *name, const char *host, int port,
-        const char *passwd, const char *encoding, SircSessionFlag ircflag);
-void server_info_free(ServerInfo *info);
-
-Server* server_new(const char *name, const char *host, int port,
-        const char *passwd, const char *encoding, SircPrefs *irc_prefs,
-        const char *nick, const char *username, const char *realname);
 Server* server_new_from_prefs(ServerPrefs *prefs);
 void server_free(Server *srv);
 int server_connect(Server *srv);

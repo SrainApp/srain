@@ -40,7 +40,7 @@ Chat *chat_new(Server *srv, const char *name){
 
     /* sui */
     chat->ui_prefs = sui_prefs_new();
-    res = prefs_read_sui_prefs(chat->ui_prefs, chat->srv->info->name, chat->name);
+    res = prefs_read_sui_prefs(chat->ui_prefs, chat->srv->prefs->name, chat->name);
     if (res){
         ERR_FR("Read sui prefs failed: %s", res);
         g_free(res);
@@ -59,7 +59,7 @@ Chat *chat_new(Server *srv, const char *name){
     }
 
     sui_set_ctx(chat->ui, chat);
-    sui_start_session(chat->ui, name, srv->info->name);
+    sui_start_session(chat->ui, name, srv->prefs->name);
 
     sui_add_completion(chat->ui, chat->name);
     for (int i = 0; cmd_binds[i].name != NULL; i++){
