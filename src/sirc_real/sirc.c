@@ -25,7 +25,6 @@
 #include "log.h"
 
 struct _SircSession {
-    int fd;
     int bufptr;
     char buf[SIRC_BUF_LEN];
     GSocketClient *client;
@@ -53,7 +52,6 @@ SircSession* sirc_new_session(SircEvents *events, SircPrefs *prefs){
 
     sirc = g_malloc0(sizeof(SircSession));
 
-    sirc->fd = -1;
     sirc->events = events;
     sirc->prefs = prefs;
     /* sirc->bufptr = 0; // via g_malloc0() */
@@ -81,12 +79,6 @@ void sirc_free_session(SircSession *sirc){
     }
 
     g_free(sirc);
-}
-
-int sirc_get_fd(SircSession *sirc){
-    g_return_val_if_fail(sirc, -1);
-
-    return sirc->fd;
 }
 
 GIOStream* sirc_get_stream(SircSession *sirc){
