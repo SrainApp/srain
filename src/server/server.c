@@ -30,8 +30,6 @@ SuiAppEvents ui_app_events;
 SuiEvents ui_events;
 SircEvents irc_events;
 
-static GSList *server_list;
-
 void server_init(){
     /* UI event */
     ui_events.disconnect = server_ui_event_disconnect;
@@ -99,6 +97,7 @@ Server* server_new_from_prefs(ServerPrefs *prefs){
     Server *srv;
 
     g_return_val_if_fail(server_prefs_is_valid(prefs), NULL);
+    g_return_val_if_fail(!server_list_get_server(prefs->name), NULL);
 
     srv = g_malloc0(sizeof(Server));
 
@@ -136,6 +135,8 @@ Server* server_new_from_prefs(ServerPrefs *prefs){
     if (!srv->irc) goto bad;
     sirc_set_ctx(srv->irc, srv);
 
+    /* Add into server_list */
+    server_list_add(srv);
     return srv;
 
 bad:
@@ -144,6 +145,8 @@ bad:
 }
 
 void server_free(Server *srv){
+    g_return_if_fail(server_list_is_server(srv));
+
     if (srv->prefs != NULL){
         server_prefs_free(srv->prefs);
         srv->prefs = NULL;
@@ -179,10 +182,14 @@ void server_free(Server *srv){
         srv->chat_list = NULL;
     }
 
+    /* Remove from server_list */
+    server_list_rm(srv);
     g_free(srv);
 }
 
 int server_connect(Server *srv){
+    g_return_val_if_fail(server_list_is_server(srv), SRN_ERR);
+
     srv->stat = SERVER_CONNECTING;
 
     sirc_connect(srv->irc, srv->prefs->host, srv->prefs->port);
@@ -191,6 +198,8 @@ int server_connect(Server *srv){
 }
 
 void server_disconnect(Server *srv){
+    g_return_if_fail(server_list_is_server(srv));
+
     if (srv->stat == SERVER_CONNECTED) {
         sirc_disconnect(srv->irc);
     }
@@ -204,10 +213,14 @@ void server_disconnect(Server *srv){
  * @return TRUE if registered
  */
 bool server_is_registered(Server *srv){
+    g_return_val_if_fail(server_list_is_server(srv), FALSE);
+
     return srv->stat == SERVER_CONNECTED && srv->registered == TRUE;
 }
 
 void server_wait_until_registered(Server *srv){
+    g_return_if_fail(server_list_is_server(srv));
+
     /* Waiting for connection established */
     while (srv->stat == SERVER_CONNECTING) sui_proc_pending_event();
     /* Waiting until server registered */
@@ -218,6 +231,8 @@ void server_wait_until_registered(Server *srv){
 int server_add_chat(Server *srv, const char *name){
     GSList *lst;
     Chat *chat;
+
+    g_return_val_if_fail(server_list_is_server(srv), SRN_ERR);
 
     lst = srv->chat_list;
     while (lst) {
@@ -239,6 +254,8 @@ int server_add_chat(Server *srv, const char *name){
 int server_rm_chat(Server *srv, const char *name){
     GSList *lst;
     Chat *chat;
+
+    g_return_val_if_fail(server_list_is_server(srv), SRN_ERR);
 
     lst = srv->chat_list;
     while (lst) {
@@ -264,6 +281,8 @@ Chat* server_get_chat(Server *srv, const char *name) {
     GSList *lst;
     Chat *chat;
 
+    g_return_val_if_fail(server_list_is_server(srv), NULL);
+
     lst = srv->chat_list;
     while (lst) {
         chat = lst->data;
@@ -288,6 +307,8 @@ Chat* server_get_chat(Server *srv, const char *name) {
  */
 Chat* server_get_chat_fallback(Server *srv, const char *name) {
     Chat *chat;
+
+    g_return_val_if_fail(server_list_is_server(srv), NULL);
 
     if (!name || !(chat = server_get_chat(srv, name))){
         chat = srv->chat;

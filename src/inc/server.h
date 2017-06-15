@@ -195,4 +195,10 @@ ServerPrefs* server_prefs_new();
 bool server_prefs_is_valid(ServerPrefs *prefs);
 void server_prefs_free(ServerPrefs *prefs);
 
+/* Server list */
+bool server_list_is_server(Server *srv);
+Server *server_list_get_server(const char *name);
+int server_list_add(Server *srv);
+int server_list_rm(Server *srv);
+
 #endif /* __SERVER_H */
