@@ -103,8 +103,9 @@ static void show_about_dialog(gpointer user_data){
     GtkWidget *window = user_data;
     const gchar *authors[] = { PACKAGE_AUTHOR " <" PACKAGE_EMAIL ">", NULL };
     const gchar **documentors = authors;
-    const gchar *version = g_strdup_printf(_("%s\nRunning against GTK+ %d.%d.%d"),
+    const gchar *version = g_strdup_printf(_("%s%s\nRunning against GTK+ %d.%d.%d"),
             PACKAGE_VERSION,
+            PACKAGE_BUILD,
             gtk_get_major_version(),
             gtk_get_minor_version(),
             gtk_get_micro_version());
@@ -112,7 +113,7 @@ static void show_about_dialog(gpointer user_data){
     gtk_show_about_dialog(GTK_WINDOW(window),
             "program-name", PACKAGE_NAME,
             "version", version,
-            "copyright", "(C) 2016 " PACKAGE_AUTHOR,
+            "copyright", "(C) " PACKAGE_COPYRIGHT_DATES " " PACKAGE_AUTHOR,
             "license-type", GTK_LICENSE_GPL_3_0,
             "website", PACKAGE_WEBSITE,
             "comments", PACKAGE_DESC,

@@ -17,6 +17,10 @@
 #define PACKAGE_VERSION "Undefined"
 #endif
 
+#ifndef PACKAGE_BUILD
+#define PACKAGE_BUILD "Undefined"
+#endif
+
 #ifndef PACKAGE_AUTHOR
 #define PACKAGE_AUTHOR "Undefined"
 #endif
@@ -31,6 +35,10 @@
 
 #ifndef PACKAGE_WEBSITE
 #define PACKAGE_WEBSITE "Undefined"
+#endif
+
+#ifndef PACKAGE_COPYRIGHT_DATES
+#define PACKAGE_COPYRIGHT_DATES "Undefined"
 #endif
 
 #ifndef PACKAGE_DATA_DIR
