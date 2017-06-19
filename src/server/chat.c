@@ -61,6 +61,12 @@ Chat *chat_new(Server *srv, const char *name){
     sui_set_ctx(chat->ui, chat);
     sui_start_session(chat->ui, name, srv->prefs->name);
 
+    /* For a dialog, its user_list must have yourself and the dialogue target */
+    if (flag == SUI_SESSION_DIALOG){
+        chat_add_user(chat, srv->user->nick, USER_CHIGUA);
+        chat_add_user(chat, name, USER_CHIGUA);
+    }
+
     sui_add_completion(chat->ui, chat->name);
     for (int i = 0; cmd_binds[i].name != NULL; i++){
         sui_add_completion(chat->ui, cmd_binds[i].name);
