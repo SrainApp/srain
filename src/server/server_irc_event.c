@@ -567,11 +567,17 @@ void server_irc_event_ctcp_action(SircSession *sirc, const char *event,
 
     g_return_if_fail(msg);
     g_return_if_fail(count >= 1);
-    const char *chan = params[0];
+    const char *target = params[0];
 
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srv);
-    chat = server_get_chat_fallback(srv, chan);
+
+    if (sirc_is_chan(target)){
+        chat = server_get_chat(srv, target);
+    } else {
+        chat = server_get_chat_fallback(srv, origin);
+    }
+
     g_return_if_fail(chat);
 
     chat_add_action_message(chat, origin, msg);
