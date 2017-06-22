@@ -34,6 +34,7 @@ struct _SuiSession{
     void *ctx;
 };
 
+bool is_app_run = FALSE;
 SuiAppEvents *app_events = NULL;
 SuiAppPrefs *app_prefs = NULL;
 
@@ -47,10 +48,15 @@ void sui_main_loop(SuiAppEvents *events, SuiAppPrefs *prefs){
     snotify_init();
 
     if (theme_load(prefs->theme) == SRN_ERR){
-        ERR_FR("Failed to load theme '%s'", prefs->theme);
+        char *errmsg = g_strdup_printf(_("Failed to load theme '%s'"), prefs->theme);
+        ERR_FR(errmsg);
+        sui_message_box(_("Error"), errmsg);
+        g_free(errmsg);
     }
 
+    is_app_run = TRUE;
     g_application_run(G_APPLICATION(srain_app_new()), 0, NULL);
+    is_app_run = FALSE;
 
     snotify_finalize();
 }
@@ -479,6 +485,10 @@ void sui_rm_completion(SuiSession *sui, const char *keyword){
 
 void sui_message_box(const char *title, const char *msg){
     GtkMessageDialog *dia;
+
+    if (!is_app_run){
+        gtk_init(0, NULL);
+    }
 
     dia = GTK_MESSAGE_DIALOG(
             gtk_message_dialog_new(GTK_WINDOW(srain_win),
