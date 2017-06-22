@@ -27,6 +27,7 @@ int main(int argc, char **argv){
     signal(SIGINT, quit);
 
     i18n_init();
+    prefs_init();
     plugin_init();
 
     filter_init();
@@ -40,6 +41,7 @@ int main(int argc, char **argv){
 }
 
 static void quit(){
+    prefs_finalize();
     plugin_finalize();
     server_finalize();
 

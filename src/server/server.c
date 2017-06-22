@@ -70,27 +70,28 @@ void server_init(){
     irc_events.error = server_irc_event_error;
     irc_events.numeric = server_irc_event_numeric;
 
-    prefs_init();
     server_cmd_init();
 
     /* Read prefs **/
-    char *prefs_res;
+    char *errmsg;
     SuiAppPrefs ui_app_prefs = {0};
 
-    prefs_res = prefs_read();
-
-    if (prefs_res){
-        ERR_FR("Read prefs failed: %s", prefs_res);
-        g_free(prefs_res);
+    errmsg = prefs_read();
+    if (errmsg){
+        ERR_FR("Read prefs failed: %s", errmsg);
+        g_free(errmsg);
     }
 
-    prefs_read_sui_app_prefs(&ui_app_prefs);
+    errmsg = prefs_read_sui_app_prefs(&ui_app_prefs);
+    if (errmsg){
+        ERR_FR("Read sui app prefs failed: %s", errmsg);
+        g_free(errmsg);
+    }
 
     sui_main_loop(&ui_app_events, &ui_app_prefs);
 }
 
 void server_finalize(){
-    prefs_finalize();
 }
 
 Server* server_new_from_prefs(ServerPrefs *prefs){
@@ -147,10 +148,7 @@ bad:
 void server_free(Server *srv){
     g_return_if_fail(server_list_is_server(srv));
 
-    if (srv->prefs != NULL){
-        server_prefs_free(srv->prefs);
-        srv->prefs = NULL;
-    }
+    /* srv->prefs is hold by server_prefs_list, don't free it. */
 
     if (srv->user != NULL){
         user_free(srv->user);
