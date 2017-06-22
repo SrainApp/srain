@@ -9,6 +9,7 @@ Modern, beautiful IRC client written in GTK+ 3.
 Dependencies
 ------------
 
+- coreutils     (makedepends)
 - make          (makedepends)
 - gcc           (makedepends)
 - pkg-config    (makedepends)
