@@ -23,6 +23,7 @@ for arg in "$@"; do
         echo 'Usage: ./configure [options]'
         echo 'Options:'
         echo '  --prefix=<path>: Installation prefix'
+        echo '  --config-dir=<path>: Configure file location'
         echo '  --enable-debug: Include debug symbols'
         echo '  --disable-debug: Do not include debug symbols'
         echo 'All invalid options are silently ignored'
@@ -32,10 +33,11 @@ for arg in "$@"; do
 done
 
 echo 'Generating makefile ...'
-echo "PREFIX = $prefix" > Makefile
-echo "CONFIG_DIR = $config_dir" >> Makefile
+touch Makefile
+echo "PREFIX = $prefix" | tee -a Makefile
+echo "CONFIG_DIR = $config_dir" | tee -a Makefile
 if $debugsym; then
-    echo 'DBGFLAGS = -ggdb' >> Makefile
+    echo 'DBGFLAGS = -ggdb' | tee -a Makefile
 fi
 cat Makefile.in >> Makefile
 echo 'Configuration complete, type make to build.'
