@@ -258,9 +258,12 @@ static int on_command_connect(Command *cmd, void *user_data){
     command_get_opt(cmd, "-ssl", &ssl);
     command_get_opt(cmd, "-realname", &realname);
 
-    prefs = server_prefs_new();
+    prefs = server_prefs_new(host);
+    if (!prefs){
+        ERR_FR("Failed to create ServerPrefs '%s'", host);
+    }
 
-    errmsg = prefs_read_server_prefs(prefs, host);
+    errmsg = prefs_read_server_prefs(prefs);
     if (errmsg){
         // TODO ...
         ERR_FR("%s", errmsg);
@@ -295,7 +298,6 @@ static int on_command_connect(Command *cmd, void *user_data){
     }
 
     srv = server_new_from_prefs(prefs);
-
     g_return_val_if_fail(srv, SRN_ERR);
 
     def_srv = srv;

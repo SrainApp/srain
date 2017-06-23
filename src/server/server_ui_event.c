@@ -55,9 +55,13 @@ void server_ui_event_connect(SuiEvent event, const char *params[], int count){
         realname = "Can you can a can?";
     }
 
-    ServerPrefs *prefs = server_prefs_new();
+    ServerPrefs *prefs = server_prefs_new(name);
+    if (prefs){
+        ERR_FR("Failed to create ServerPrefs '%s'", name);
+        return;
+    }
 
-    errmsg = prefs_read_server_prefs(prefs, name);
+    errmsg = prefs_read_server_prefs(prefs);
     if (errmsg){
         // TODO ...
         g_free(errmsg);

@@ -191,6 +191,7 @@ void user_set_me(User *user, bool me);
 Message* message_new(Chat *chat, User *user, const char *content, MessageType type);
 void message_free(Message *msg);
 
+void server_prefs_list_init();
 ServerPrefs* server_prefs_new();
 bool server_prefs_is_valid(ServerPrefs *prefs);
 void server_prefs_free(ServerPrefs *prefs);

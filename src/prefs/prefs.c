@@ -5,7 +5,18 @@
  * @version 1.0
  * @date 2017-05-14
  *
- * Prefs priority:
+ * It read config from the sysetm-wide config file "builtin.cfg" and user-wide
+ * config file "srain.cfg". Path of system-wide config file is obtained by
+ * ``get_system_config_file()``, and the path of user-wide config file is obtained
+ * by ``get_config_file()``.
+ *
+ * The structure of these two files is same, but the priority of user-wide
+ * config file is bigger than system-wide config file.
+ *
+ * For the syntax of config file, refer to:
+ *   http://www.hyperrealm.com/libconfig/libconfig_manual.html#Configuration-Files
+ *
+ * [TODO] Prefs priority:
  *      builtin_cfg < user_cfg
  *      server < server_list
  *      chat < chat_list
@@ -38,9 +49,9 @@ static void read_sirc_prefs_from_server_list(config_setting_t *server_list, Sirc
 static void read_sirc_prefs_from_cfg(config_t *cfg, SircPrefs *prefs, const char *srv_name);
 
 static void read_server_prefs_from_server(config_setting_t *server, ServerPrefs *prefs);
-static void read_server_prefs_from_server_list(config_setting_t *server_list, ServerPrefs *prefs, const char *srv_name);
-static void read_server_prefs_from_cfg(config_t *cfg, ServerPrefs *prefs, const char *srv_name);
-static void read_server_prefs_list_from_cfg(config_t *cfg, GSList **list);
+static void read_server_prefs_from_server_list(config_setting_t *server_list, ServerPrefs *prefs);
+static void read_server_prefs_from_cfg(config_t *cfg, ServerPrefs *prefs);
+static void read_server_prefs_list_from_cfg(config_t *cfg);
 
 static void read_sui_prefs_from_chat(config_setting_t *chat, SuiPrefs *prefs);
 static void read_sui_prefs_from_chat_list(config_setting_t *chat_list, SuiPrefs *prefs, const char *chat_name);
@@ -96,16 +107,16 @@ char* prefs_read_sui_app_prefs(SuiAppPrefs *prefs){
     return NULL;
 }
 
-char *prefs_read_server_prefs_list(GSList **prefs_list){
-    read_server_prefs_list_from_cfg(&builtin_cfg, prefs_list);
-    read_server_prefs_list_from_cfg(&user_cfg, prefs_list);
+char *prefs_read_server_prefs_list(){
+    read_server_prefs_list_from_cfg(&builtin_cfg);
+    read_server_prefs_list_from_cfg(&user_cfg);
 
     return NULL;
 }
 
-char* prefs_read_server_prefs(ServerPrefs *prefs, const char *srv_name){
-    read_server_prefs_from_cfg(&builtin_cfg, prefs, srv_name);
-    read_server_prefs_from_cfg(&user_cfg, prefs, srv_name);
+char* prefs_read_server_prefs(ServerPrefs *prefs){
+    read_server_prefs_from_cfg(&builtin_cfg, prefs);
+    read_server_prefs_from_cfg(&user_cfg, prefs);
 
     return NULL;
 }
@@ -250,7 +261,8 @@ static void read_sui_prefs_from_cfg(config_t *cfg, SuiPrefs *prefs,
 static void read_server_prefs_from_server(config_setting_t *server,
         ServerPrefs *prefs){
     /* Read server meta info */
-    config_setting_lookup_string_ex(server, "name", &prefs->name);
+    // The name of prefs has been set.
+    // config_setting_lookup_string_ex(server, "name", &prefs->name);
     config_setting_lookup_string_ex(server, "host", &prefs->host);
     config_setting_lookup_int(server, "port", &prefs->port);
     config_setting_lookup_string_ex(server, "passwd", &prefs->passwd);
@@ -284,7 +296,7 @@ static void read_server_prefs_from_server(config_setting_t *server,
 }
 
 static void read_server_prefs_from_server_list(config_setting_t *server_list,
-        ServerPrefs *prefs, const char *srv_name){
+        ServerPrefs *prefs){
     int count;
 
     count = config_setting_length(server_list);
@@ -296,32 +308,29 @@ static void read_server_prefs_from_server_list(config_setting_t *server_list,
         if (!server) break;
 
         config_setting_lookup_string(server, "name", &name);
-        if (g_strcmp0(srv_name, name) != 0) continue;
+        if (g_strcmp0(prefs->name, name) != 0) continue;
 
-        DBG_FR("Read: server_list.[name = %s], srv_name: %s", name, srv_name);
+        DBG_FR("Read: server_list.[name = %s], srv_name: %s", name, prefs->name);
         read_server_prefs_from_server(server, prefs);
     }
 }
 
-static void read_server_prefs_from_cfg(config_t *cfg, ServerPrefs *prefs,
-        const char *srv_name){
+static void read_server_prefs_from_cfg(config_t *cfg, ServerPrefs *prefs){
     config_setting_t *server;
 
     /* Read server */
     server = config_lookup(cfg, "server");
     if (server){
-        DBG_FR("Read: server, srv_name: %s", srv_name);
+        DBG_FR("Read: server, srv_name: %s", prefs->name);
         read_server_prefs_from_server(server, prefs);
     }
 
-    /* Read server_list[name = srv_name] */
-    if (srv_name){
-        config_setting_t *server_list;
+    /* Read server_list[name = prefs->name] */
+    config_setting_t *server_list;
 
-        server_list = config_lookup(cfg, "server_list");
-        if (server_list){
-            read_server_prefs_from_server_list(server_list, prefs, srv_name);
-        }
+    server_list = config_lookup(cfg, "server_list");
+    if (server_list){
+        read_server_prefs_from_server_list(server_list, prefs);
     }
 }
 
@@ -377,7 +386,7 @@ static void read_sirc_prefs_from_cfg(config_t *cfg, SircPrefs *prefs,
     }
 }
 
-static void read_server_prefs_list_from_cfg(config_t *cfg, GSList **prefs_list){
+static void read_server_prefs_list_from_cfg(config_t *cfg){
     int count;
     ServerPrefs *prefs;
     config_setting_t *server;
@@ -396,16 +405,17 @@ static void read_server_prefs_list_from_cfg(config_t *cfg, GSList **prefs_list){
             config_setting_lookup_string(server, "name", &name);
             if (!name) break;
 
-            prefs = server_prefs_new();
-            /* TODO: Check ServerPrefs */
-            errmsg = prefs_read_server_prefs(prefs, name);
+            prefs = server_prefs_new(name);
+            if (!prefs){
+                ERR_FR("Failed to create ServerPrefs '%s'", name);
+            }
+
+            errmsg = prefs_read_server_prefs(prefs);
             if (errmsg){
                 g_free(errmsg);
                 g_free(prefs);
                 break;
             }
-
-            *prefs_list = g_slist_append(*prefs_list, prefs);
         }
     }
 }
