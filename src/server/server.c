@@ -82,6 +82,8 @@ void server_init(){
         g_free(errmsg);
     }
 
+    log_read_prefs();
+
     errmsg = prefs_read_sui_app_prefs(&ui_app_prefs);
     if (errmsg){
         ERR_FR("Read sui app prefs failed: %s", errmsg);

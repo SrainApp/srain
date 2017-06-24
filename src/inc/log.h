@@ -4,89 +4,74 @@
 #include <stdlib.h>
 #include <glib.h>
 
-#define DBG_PROMPT      "\e[37m[ DBG %s]\e[0m "
-#define INFO_PROMPT     "\e[32m[INFO %s]\e[0m "
-#define WARN_PROMPT     "\e[33m[WARN %s]\e[0m "
-#define ERR_PROMPT      "\e[31m[ ERR %s]\e[0m "
+#include "srain.h"
 
-#ifdef __DBG_ON
-    #define DBG_FR(...) _DBG_FR(__VA_ARGS__)
-    #define DBG_F(...) _DBG_F(__VA_ARGS__)
-    #define DBG(...) _DBG(__VA_ARGS__)
-#else
-    #define DBG_FR(...) ;
-    #define DBG_F(...) ;
-    #define DBG(...) ;
-#endif
+typedef enum _LogLevel LogLevel;
+typedef struct _LogPrefs LogPrefs;
 
-/* Print a line of debug message with fucntion name */
-#define _DBG_FR(...)                            \
-    do {                                        \
-        g_print(DBG_PROMPT, __FUNCTION__);      \
-        g_print(__VA_ARGS__);                   \
-        g_print("\n");                          \
-    } while (0);
+enum _LogLevel {
+    LOG_DEBUG,
+    LOG_INFO,
+    LOG_WARN,
+    LOG_ERROR,
+    LOG_MAX,
+};
 
-/* Print a line of debug message with fucntion name,
- * do not output the trailing newline */
-#define _DBG_F(...)                         \
-    do {                                    \
-        g_print(DBG_PROMPT, __FUNCTION__);  \
-        g_print(__VA_ARGS__);               \
-    } while (0);
+struct _LogPrefs {
+    bool prompt_color;
+    bool prompt_file;
+    bool prompt_function;
+    bool prompt_line;
 
-/* Print a log */
-#define _DBG(...)               \
-    do {                        \
-        g_print(__VA_ARGS__);   \
-    } while (0);
+    GSList *debug_files;
+    GSList *info_files;
+    GSList *warn_files;
+    GSList *error_files;
+};
+/* Debug output */
+#define DBG_FR(...) \
+    log_print(LOG_DEBUG, TRUE, TRUE, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 
-#ifdef __LOG_ON
-    #define LOG_FR(...) _LOG_FR(__VA_ARGS__)
-    #define LOG_F(...) _LOG_F(__VA_ARGS__)
-    #define LOG(...) _LOG(__VA_ARGS__)
-#else
-    #define LOG_FR(...) ;
-    #define LOG_F(...) ;
-    #define LOG(...) ;
-#endif
+#define DBG_F(...) \
+    log_print(LOG_DEBUG, TRUE, FALSE, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 
-/* Print a line of log with fucntion name */
-#define _LOG_FR(...)                                \
-    do {                                            \
-        g_print(INFO_PROMPT, __FUNCTION__);         \
-        g_print(__VA_ARGS__);                       \
-        g_print("\n");                              \
-    } while (0);
+#define DBG(...) \
+    log_print(LOG_DEBUG, FALSE, FALSE, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 
-/* Print a line of log with fucntion name
- * do not output the trailing newline */
-#define _LOG_F(...)                                 \
-    do {                                            \
-        g_print(INFO_PROMPT, __FUNCTION__);         \
-        g_print(__VA_ARGS__);                       \
-    } while (0);
+/* Info output */
+#define LOG_FR(...) \
+    log_print(LOG_INFO, TRUE, TRUE, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 
-/* Print a log */
-#define _LOG(...)               \
-    do {                        \
-        g_print(__VA_ARGS__);   \
-    } while (0);
+#define LOG_F(...) \
+    log_print(LOG_INFO, TRUE, FALSE, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 
-/* Print a line of warning message with fucntion name */
-#define WARN_FR(...)                                    \
-    do {                                                \
-        g_printerr(WARN_PROMPT, __FUNCTION__);          \
-        g_printerr(__VA_ARGS__);                        \
-        g_printerr("\n");                               \
-    } while (0);
+#define LOG(...) \
+    log_print(LOG_INFO, FALSE, FALSE, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 
-/* Print a line of error message with fucntion name */
-#define ERR_FR(...)                                 \
-    do {                                            \
-        g_printerr(ERR_PROMPT, __FUNCTION__);       \
-        g_printerr(__VA_ARGS__);                    \
-        g_printerr("\n");                           \
-    } while (0);
+/* Warn output */
+#define WARN_FR(...) \
+    log_print(LOG_WARN, TRUE, TRUE, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
+
+#define WARN_F(...) \
+    log_print(LOG_WARN, TRUE, FALSE, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
+
+#define WARN(...) \
+    log_print(LOG_WARN, FALSE, FALSE, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
+
+#define ERR_FR(...) \
+    log_print(LOG_ERROR, TRUE, TRUE, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
+
+#define ERR_F(...) \
+    log_print(LOG_ERROR, TRUE, FALSE, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
+
+#define ERR(...) \
+    log_print(LOG_ERROR, FALSE, FALSE, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
+
+void log_init();
+void log_read_prefs();
+void log_finalize();
+void log_print(LogLevel lv, bool print_prompt, bool new_line,
+        const char *file, const char *func, int line,
+        const char *fmt, ...);
 
 #endif /* __LOG_H */

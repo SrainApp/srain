@@ -53,7 +53,7 @@ bool chat_log(const Message *msg, FilterFlag flag, void *user_data){
 
     fp = fopen(file, "a+");
     if (!fp){
-        ERR_FR("Failed to open file '%s'", file)
+        ERR_FR("Failed to open file '%s'", file);
         goto cleanup2;
     }
 

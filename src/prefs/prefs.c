@@ -44,6 +44,8 @@ static int config_lookup_string_ex(const config_t *config, const char *path, cha
 static int config_setting_lookup_bool_ex(const config_setting_t *config, const char *name, bool *value);
 static int config_setting_lookup_string_ex(const config_setting_t *config, const char *name, char **value);
 
+static void read_log_prefs_from_cfg(config_t *cfg, LogPrefs *prefs);
+
 static void read_sirc_prefs_from_irc(config_setting_t *irc, SircPrefs *prefs);
 static void read_sirc_prefs_from_server_list(config_setting_t *server_list, SircPrefs *prefs, const char *srv_name);
 static void read_sirc_prefs_from_cfg(config_t *cfg, SircPrefs *prefs, const char *srv_name);
@@ -95,6 +97,13 @@ char* prefs_read(){
     if (errmsg){
         return errmsg;
     }
+
+    return NULL;
+}
+
+char* prefs_read_log_prefs(LogPrefs *prefs){
+    read_log_prefs_from_cfg(&builtin_cfg, prefs);
+    read_log_prefs_from_cfg(&user_cfg, prefs);
 
     return NULL;
 }
@@ -417,6 +426,45 @@ static void read_server_prefs_list_from_cfg(config_t *cfg){
                 break;
             }
         }
+    }
+}
+
+// TODO: A better name
+static void read_log_files_from_log(config_setting_t *log, const char *name,
+        GSList **lst){
+    config_setting_t *file;
+    config_setting_t *files;
+
+    files = config_setting_lookup(log, name);
+    if (files){
+        int count = config_setting_length(files);
+        for (int i = 0; i < count; i++){
+            file = config_setting_get_elem(files, i);
+            if (!file) break;
+
+            const char *f = config_setting_get_string(file);
+            if (f){
+                *lst = g_slist_append(*lst, g_strdup(f));
+            }
+        }
+    }
+}
+
+static void read_log_prefs_from_cfg(config_t *cfg, LogPrefs *prefs){
+    config_setting_t *log;
+
+    log = config_lookup(cfg, "log");
+
+    if (log){
+        config_setting_lookup_bool_ex(log, "prompt_color", &prefs->prompt_color);
+        config_setting_lookup_bool_ex(log, "prompt_file", &prefs->prompt_file);
+        config_setting_lookup_bool_ex(log, "prompt_function", &prefs->prompt_function);
+        config_setting_lookup_bool_ex(log, "prompt_line", &prefs->prompt_line);
+
+        read_log_files_from_log(log, "debug_files", &prefs->debug_files);
+        read_log_files_from_log(log, "info_files", &prefs->info_files);
+        read_log_files_from_log(log, "warn_files", &prefs->warn_files);
+        read_log_files_from_log(log, "error_files", &prefs->error_files);
     }
 }
 

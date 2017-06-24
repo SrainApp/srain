@@ -17,17 +17,21 @@
 #include "decorator.h"
 
 #include "i18n.h"
+#include "prefs.h"
 #include "plugin.h"
 #include "file_helper.h"
 
 static void quit();
 
 int main(int argc, char **argv){
-    create_user_file();
     signal(SIGINT, quit);
 
+    log_init();
     i18n_init();
     prefs_init();
+
+    create_user_file();
+
     plugin_init();
 
     filter_init();
@@ -44,6 +48,7 @@ static void quit(){
     prefs_finalize();
     plugin_finalize();
     server_finalize();
+    log_finalize();
 
     exit(0);
 }
