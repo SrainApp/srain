@@ -57,6 +57,9 @@ run:
 	$(BUILD_DIR)/bin/srain
 
 bt:
+	export XDG_CONFIG_DIRS=$(BUILD_DIR)/xdg:/etc/xdg; \
+	export XDG_CONFIG_HOME=$(BUILD_DIR); \
+	export XDG_DATA_DIRS=$(BUILD_DIR)/share:/usr/share; \
 	$(DB) $(BUILD_DIR)/bin/srain -ex 'r' -ex 'bt' -ex 'q'
 
 gtk_dbg:
