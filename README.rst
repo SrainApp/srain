@@ -19,7 +19,7 @@ Dependencies
 - python >= 3.2
 - libcurl
 - libnotify
-- libconfig
+- libconfig >= 1.5
 
 Build & Debug
 -------------
