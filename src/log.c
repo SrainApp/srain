@@ -35,13 +35,13 @@ static LogPrefs *log_prefs_new();
 static void log_prefs_free(LogPrefs *prefs);
 
 static bool is_exist(GSList *files, const char *file);
-static bool log_enabled(LogLevel lv, const char *file);
+static bool is_enabled(LogLevel lv, const char *file);
 
 void log_init(){
     log_prefs = log_prefs_new();
 
    /* Inital preset for prefs moduele */
-    log_prefs->debug_files = g_slist_append(log_prefs->debug_files, g_strdup("*"));
+    log_prefs->debug_targets = g_slist_append(log_prefs->debug_targets, g_strdup("*"));
 }
 
 void log_read_prefs(){
@@ -64,17 +64,17 @@ static LogPrefs *log_prefs_new(){
 }
 
 static void log_prefs_free(LogPrefs *prefs){
-    if (prefs->debug_files){
-        g_slist_free_full(prefs->debug_files, g_free);
+    if (prefs->debug_targets){
+        g_slist_free_full(prefs->debug_targets, g_free);
     }
-    if (prefs->info_files){
-        g_slist_free_full(prefs->info_files, g_free);
+    if (prefs->info_targets){
+        g_slist_free_full(prefs->info_targets, g_free);
     }
-    if (prefs->warn_files){
-        g_slist_free_full(prefs->warn_files, g_free);
+    if (prefs->warn_targets){
+        g_slist_free_full(prefs->warn_targets, g_free);
     }
-    if (prefs->error_files){
-        g_slist_free_full(prefs->error_files, g_free);
+    if (prefs->error_targets){
+        g_slist_free_full(prefs->error_targets, g_free);
     }
 
     g_free(prefs);
@@ -92,14 +92,14 @@ static void log_prefs_free(LogPrefs *prefs){
  * @param fmt Format string
  * @param ...
  */
-void log_print(LogLevel lv, bool print_prompt, bool new_line, 
+void log_print(LogLevel lv, bool print_prompt, bool new_line,
         const char *file, const char *func, int line,
         const char *fmt, ...){
     va_list args;
     GString *prompt;
     GString *output;
 
-    if (!file || !log_enabled(lv, file)) {
+    if (!file || !is_enabled(lv, file)) {
         return;
     }
 
@@ -148,12 +148,12 @@ void log_print(LogLevel lv, bool print_prompt, bool new_line,
     g_string_free(output, TRUE);
 }
 
-static bool is_exist(GSList *files, const char *file){
+static bool is_exist(GSList *targets, const char *file){
     GSList *lst;
 
-    lst = files;
+    lst = targets;
     while (lst){
-        /* A "*" matchs all files */
+        /* A "*" matchs all targets */
         if (g_strcmp0(lst->data, "*") == 0){
             return TRUE;
         }
@@ -166,19 +166,19 @@ static bool is_exist(GSList *files, const char *file){
     return FALSE;
 }
 
-static bool log_enabled(LogLevel lv, const char *file){
+static bool is_enabled(LogLevel lv, const char *file){
     bool enable;
 
     enable = FALSE;
     switch (lv){
         case LOG_ERROR:
-            enable = enable || is_exist(log_prefs->error_files, file);
+            enable = enable || is_exist(log_prefs->error_targets, file);
         case LOG_WARN:
-            enable = enable || is_exist(log_prefs->warn_files, file);
+            enable = enable || is_exist(log_prefs->warn_targets, file);
         case LOG_INFO:
-            enable = enable || is_exist(log_prefs->info_files, file);
+            enable = enable || is_exist(log_prefs->info_targets, file);
         case LOG_DEBUG:
-            enable = enable || is_exist(log_prefs->debug_files, file);
+            enable = enable || is_exist(log_prefs->debug_targets, file);
             break;
         default:
             enable = FALSE;

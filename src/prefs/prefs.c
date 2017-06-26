@@ -45,6 +45,7 @@ static int config_setting_lookup_bool_ex(const config_setting_t *config, const c
 static int config_setting_lookup_string_ex(const config_setting_t *config, const char *name, char **value);
 
 static void read_log_prefs_from_cfg(config_t *cfg, LogPrefs *prefs);
+static void read_log_targets_from_log(config_setting_t *log, const char *name, GSList **lst);
 
 static void read_sirc_prefs_from_irc(config_setting_t *irc, SircPrefs *prefs);
 static void read_sirc_prefs_from_server_list(config_setting_t *server_list, SircPrefs *prefs, const char *srv_name);
@@ -429,24 +430,25 @@ static void read_server_prefs_list_from_cfg(config_t *cfg){
     }
 }
 
-// TODO: A better name
-static void read_log_files_from_log(config_setting_t *log, const char *name,
+static void read_log_targets_from_log(config_setting_t *log, const char *name,
         GSList **lst){
-    config_setting_t *file;
-    config_setting_t *files;
+    config_setting_t *targets;
 
-    files = config_setting_lookup(log, name);
-    if (files){
-        int count = config_setting_length(files);
-        for (int i = 0; i < count; i++){
-            file = config_setting_get_elem(files, i);
-            if (!file) break;
+    targets = config_setting_lookup(log, name);
+    if (!targets) return;
 
-            const char *f = config_setting_get_string(file);
-            if (f){
-                *lst = g_slist_append(*lst, g_strdup(f));
-            }
-        }
+    int count = config_setting_length(targets);
+    for (int i = 0; i < count; i++){
+        const char *val;
+        config_setting_t *target;
+
+        target = config_setting_get_elem(targets, i);
+        if (!target) break;
+
+        val = config_setting_get_string(target);
+        if (!val) continue;
+
+        *lst = g_slist_append(*lst, g_strdup(val));
     }
 }
 
@@ -461,10 +463,10 @@ static void read_log_prefs_from_cfg(config_t *cfg, LogPrefs *prefs){
         config_setting_lookup_bool_ex(log, "prompt_function", &prefs->prompt_function);
         config_setting_lookup_bool_ex(log, "prompt_line", &prefs->prompt_line);
 
-        read_log_files_from_log(log, "debug_files", &prefs->debug_files);
-        read_log_files_from_log(log, "info_files", &prefs->info_files);
-        read_log_files_from_log(log, "warn_files", &prefs->warn_files);
-        read_log_files_from_log(log, "error_files", &prefs->error_files);
+        read_log_targets_from_log(log, "debug_targets", &prefs->debug_targets);
+        read_log_targets_from_log(log, "info_targets", &prefs->info_targets);
+        read_log_targets_from_log(log, "warn_targets", &prefs->warn_targets);
+        read_log_targets_from_log(log, "error_targets", &prefs->error_targets);
     }
 }
 

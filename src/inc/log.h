@@ -23,10 +23,10 @@ struct _LogPrefs {
     bool prompt_function;
     bool prompt_line;
 
-    GSList *debug_files;
-    GSList *info_files;
-    GSList *warn_files;
-    GSList *error_files;
+    GSList *debug_targets;
+    GSList *info_targets;
+    GSList *warn_targets;
+    GSList *error_targets;
 };
 /* Debug output */
 #define DBG_FR(...) \
