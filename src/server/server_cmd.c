@@ -214,7 +214,6 @@ static Server *def_srv; // Default server
  ******************************************************************************/
 
 void server_cmd_init(){
-    commmad_set_context(&cmd_ctx);
 }
 
 /**
@@ -232,7 +231,7 @@ int server_cmd(Chat *chat, const char *cmd){
 
     scctx.chat = chat;
 
-    return command_proc(cmd, &scctx);
+    return command_proc(&cmd_ctx, cmd, &scctx);
 }
 
 /*******************************************************************************
