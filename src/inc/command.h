@@ -5,6 +5,15 @@
 #define COMMAND_MAX_ARGS    20
 #define COMMAND_ARB_ARGC    -1
 #define COMMAND_OPT_PREFIX  '-'
+#define COMMAND_MAX_SUBCMD  10
+#define COMMAND_EMPTY       {   \
+    .name = NULL,               \
+    .subcmd = {NULL},           \
+    .argc = 0,                  \
+    .opt_key = {NULL},          \
+    .opt_default_val = {NULL},  \
+    .cb = NULL,                 \
+    }
 
 typedef struct _Command Command;
 
@@ -12,6 +21,7 @@ typedef int (CommandCallback) (Command *cmd, void *user_data);
 
 typedef struct {
     char *name;
+    char *subcmd[COMMAND_MAX_SUBCMD];
     int argc;
     char *opt_key[COMMAND_MAX_OPTS];
     char *opt_default_val[COMMAND_MAX_OPTS];
@@ -19,6 +29,7 @@ typedef struct {
 } CommandBind;
 
 struct _Command {
+    char *subcmd;
     char *argv[COMMAND_MAX_ARGS];
     char *opt_key[COMMAND_MAX_OPTS];
     char *opt_val[COMMAND_MAX_OPTS];
@@ -32,6 +43,7 @@ typedef struct {
     void (*on_unknown_cmd) (const char *cmd, void *user_data);
     void (*on_unknown_opt) (Command *cmd, const char *opt, void *user_data);
     void (*on_missing_opt_val) (Command *cmd, const char *opt, void *user_data);
+    void (*on_missing_arg) (Command *cmd, void *user_data);
     void (*on_too_many_opt) (Command *cmd, void *user_data);
     void (*on_too_many_arg) (Command *cmd, void *user_data);
     void (*on_callback_fail) (Command *cmd, void *user_data);

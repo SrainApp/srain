@@ -52,7 +52,7 @@ int command_proc(CommandContext *ctx, const char *rawcmd, void *user_data){
     int ret;
     Command *cmd;
 
-    if (!ctx) return -1;
+    if (!ctx) return SRN_ERR;
 
     for (int i = 0; ctx->binds[i].name != NULL; i++){
         if (g_str_has_prefix(rawcmd, ctx->binds[i].name)){
@@ -60,11 +60,11 @@ int command_proc(CommandContext *ctx, const char *rawcmd, void *user_data){
             if (command_parse(ctx, cmd, user_data) == 0){
                 // callback
                 ret = cmd->bind->cb(cmd, user_data);
-                if (ret < 0){
+                if (ret != SRN_OK){
                     ctx->on_callback_fail(cmd, user_data);
                 }
             } else {
-                ret = -1;
+                ret = SRN_ERR;
             }
             command_free(cmd);
             return ret;
@@ -72,7 +72,7 @@ int command_proc(CommandContext *ctx, const char *rawcmd, void *user_data){
     }
 
     ctx->on_unknown_cmd(rawcmd, user_data);
-    return -1;
+    return SRN_ERR;
 }
 
 /**
@@ -98,8 +98,8 @@ const char *command_get_arg(Command *cmd, unsigned index){
  * @param opt_val Can be NULL. If this argument has a value, it will return via this param,
  *        you do not need to free it
  *
- * @return 1 if this argument is specified in the command,
- *         0 if this argument is not specified in the command or there no such
+ * @return SRN_OK if this argument is specified in the command,
+ *         SRN_ERR if this argument is not specified in the command or there no such
  *         optional argument
  */
 int command_get_opt(Command *cmd, const char *opt_key, char **opt_val){
@@ -110,7 +110,7 @@ int command_get_opt(Command *cmd, const char *opt_key, char **opt_val){
             if (opt_val != NULL){
                 *opt_val = cmd->opt_val[i];
             }
-            return 1;
+            return SRN_OK;
         }
         i++;
     }
@@ -122,13 +122,13 @@ int command_get_opt(Command *cmd, const char *opt_key, char **opt_val){
             if (opt_val != NULL){
                 *opt_val = cmd->bind->opt_default_val[i];
             }
-            return 1;
+            return SRN_OK;
         }
         i++;
     }
 
     ERR_FR("No such option '%s'", opt_key);
-    return 0;
+    return SRN_ERR;
 }
 
 static Command* command_new(CommandBind *bind, const char *rawcmd){
@@ -249,12 +249,27 @@ static int get_last_quote_arg(char *ptr, char **arg){
 static int command_parse(CommandContext *ctx, Command *cmd, void *user_data){
     int ret;
     int nopt = 0;
+    int narg = 0;
     char *ptr, *tmp;
     CommandBind *bind = cmd->bind;
 
     /* Skip command name */
     ret = get_arg(cmd->rawcmd, &tmp, &ptr);
     g_return_val_if_fail(ret == SRN_OK, SRN_ERR);
+
+    /* Subcommand */
+    if (ptr){
+        for (int i = 0; cmd->bind->subcmd[i]; i++){
+            if (!g_str_has_prefix(ptr, cmd->bind->subcmd[i])){
+                continue;
+            }
+            /* Subcommand found */
+            cmd->subcmd = ptr;
+            DBG_FR("subcmd: %s", cmd->subcmd);
+
+            get_arg(ptr, &tmp, &ptr);
+        }
+    }
 
     /* Get options */
     while (ptr && *ptr == COMMAND_OPT_PREFIX){
@@ -299,39 +314,27 @@ static int command_parse(CommandContext *ctx, Command *cmd, void *user_data){
     cmd->opt_key[nopt] = NULL;
 
     /* Get arguments */
-    if (!ptr){
-        if (bind->argc == 0){
-            return SRN_OK;
-        } else {
-            goto missing_arg;
-        }
-    }
-
-    if (bind->argc == 0){
-        goto too_many_arg;
-    }
-
     if (bind->argc == COMMAND_ARB_ARGC){
         cmd->argv[0] = ptr;
         return SRN_OK;
     }
 
-    int narg = 0;
-    for (int i = 0; i < bind->argc - 1; i++){
-        if (get_quote_arg(ptr, &cmd->argv[narg], &ptr) != SRN_OK){
-            return SRN_ERR;
-        }
-        if (!ptr){
-            cmd->argv[narg] = NULL;
-            goto missing_arg;
+    for (int i = 0; i < bind->argc; i++){
+        if (i != bind->argc - 1){
+            if (get_quote_arg(ptr, &cmd->argv[narg], &ptr) != SRN_OK){
+                goto missing_arg;
+            }
+            if (!ptr){
+                cmd->argv[narg] = NULL;
+                goto missing_arg;
+            }
+        }  else {
+            if (get_last_quote_arg(ptr, &cmd->argv[narg]) != SRN_OK){
+                goto missing_arg;
+            }
         }
         narg++;
     }
-    if (!ptr){
-        cmd->argv[narg] = NULL;
-        goto missing_arg;
-    }
-    get_last_quote_arg(ptr, &cmd->argv[narg]);
 
     /* Debug output */
     {
@@ -352,50 +355,51 @@ static int command_parse(CommandContext *ctx, Command *cmd, void *user_data){
     // Don't care
 missing_arg:
     // TODO: it shoule be cared
-    WARN_FR("Missing argument");
-    return 0;
+    WARN_FR("Missing argument, expect %d, actually %d", cmd->bind->argc, narg);
+    ctx->on_missing_arg(cmd, user_data);
+    return SRN_ERR;
 
 unknown_opt:
     WARN_FR("Unknown option '%s'", cmd->opt_key[nopt]);
     ctx->on_unknown_opt(cmd, cmd->opt_key[nopt], user_data);
-    return -1;
+    return SRN_ERR;
 
 too_many_opt:
-    WARN_FR("Too many options");
+    WARN_FR("Too many options, options count limit to %d", COMMAND_MAX_OPTS);
     ctx->on_too_many_opt(cmd, user_data);
-    return -1;
+    return SRN_ERR;
 
 missing_opt_val:
     WARN_FR("Missing vaule for option '%s'", cmd->opt_key[nopt]);
     ctx->on_missing_opt_val(cmd, cmd->opt_key[nopt], user_data);
-    return -1;
+    return SRN_ERR;
 
 too_many_arg:
-    WARN_FR("Too many arguments");
+    WARN_FR("Too many arguments, expect %d", cmd->bind->argc);
     ctx->on_too_many_arg(cmd, user_data);
-    return -1;
+    return SRN_ERR;
 }
 
 /* inner test case */
 void get_quote_arg_test() {
     char *start, *end;
-    assert(get_quote_arg(strdup("'test'"), &start, &end) == 0);
+    assert(get_quote_arg(strdup("'test'"), &start, &end) == SRN_OK);
     assert(strcmp(start, "test") == 0);
     assert(strcmp(end, "\0") == 0);
 
-    assert(get_quote_arg(strdup("'test''123'"), &start, &end) == 0);
+    assert(get_quote_arg(strdup("'test''123'"), &start, &end) == SRN_OK);
     assert(strcmp(start, "test") == 0);
     assert(strcmp(end, "'123'") == 0);
 
-    assert(get_quote_arg(strdup("test   123 4"), &start, &end) == 0);
+    assert(get_quote_arg(strdup("test   123 4"), &start, &end) == SRN_OK);
     assert(strcmp(start, "test") == 0);
     assert(strcmp(end, "123 4") == 0);
 
-    assert(get_quote_arg(strdup("'test"), &start, &end) == -1);
+    assert(get_quote_arg(strdup("'test"), &start, &end) == SRN_ERR);
 
-    assert(get_quote_arg(strdup("'test\\'"), &start, &end) == -1);
+    assert(get_quote_arg(strdup("'test\\'"), &start, &end) == SRN_ERR);
 
-    assert(get_quote_arg(strdup("'test\\\\''"), &start, &end) == 0);
+    assert(get_quote_arg(strdup("'test\\\\''"), &start, &end) == SRN_OK);
     assert(strcmp(start, "test\\\\") == 0);
     assert(strcmp(end, "'") == 0);
 }
