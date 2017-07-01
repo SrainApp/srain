@@ -59,6 +59,7 @@ static int on_command_list(Command *cmd, void *user_data);
 
 static void on_unknown_cmd(const char *cmd, void *user_data);
 static void on_unknown_opt(Command *cmd, const char *opt, void *user_data);
+static void on_missing_arg(Command *cmd, int narg, void *user_data);
 static void on_missing_opt_val(Command *cmd, const char *opt, void *user_data);
 static void on_too_many_opt(Command *cmd, void *user_data);
 static void on_too_many_arg(Command *cmd, void *user_data);
@@ -66,135 +67,175 @@ static void on_callback_fail(Command *cmd, void *user_data);
 
 CommandBind cmd_binds[] = {
     {
-        "/connect", 2, // <hosts> <nick>
-        {"-port", "-ssl", "-passwd", "-realname", NULL},
-        {"6667", "off", "", "Can you can a can?", NULL},
-        on_command_connect
+        .name = "/connect",
+        .argc = 2, // <hosts> <nick>
+        .opt_key = {"-port", "-ssl", "-passwd", "-realname", NULL},
+        .opt_default_val = {"6667", "off", "", "Can you can a can?", NULL},
+        .flag = 0,
+        .cb = on_command_connect,
     },
     {
-        "/relay", 1, // <nick>
-        {"-cur", NULL},
-        {NULL},
-        on_command_relay
+        .name = "/relay",
+        .argc = 1, // <nick>
+        .opt_key = {"-cur", NULL},
+        .opt_default_val = {NULL},
+        .flag = 0,
+        .cb = on_command_relay,
     },
     {
-        "/unrelay", 1, // <nick>
-        {"-cur", NULL},
-        {NULL},
-        on_command_unrelay
+        .name = "/unrelay",
+        .argc = 1, // <nick>
+        .opt_key = {"-cur", NULL},
+        .opt_default_val = {NULL},
+        .flag = 0,
+        .cb = on_command_unrelay,
     },
     {
-        "/ignore", 1, // <nick>
-        {"-cur", NULL},
-        {NULL, NULL},
-        on_command_ignore
+        .name = "/ignore",
+        .argc = 1, // <nick>
+        .opt_key = {"-cur", NULL},
+        .opt_default_val = {NULL, NULL},
+        .flag = 0,
+        .cb = on_command_ignore,
     },
     {
-        "/unignore", 1, // <nick>
-        {"-cur", NULL},
-        {NULL},
-        on_command_unignore
+        .name = "/unignore",
+        .argc = 1, // <nick>
+        .opt_key = {"-cur", NULL},
+        .opt_default_val = {NULL},
+        .flag = 0,
+        .cb = on_command_unignore,
     },
     {
-        "/rignore", 2, // <name> <pattern>
-        {"-cur", NULL},
-        {NULL, NULL},
-        on_command_rignore
+        .name = "/rignore",
+        .argc = 2, // <name> <pattern>
+        .opt_key = {"-cur", NULL},
+        .opt_default_val = {NULL, NULL},
+        .flag = 0,
+        .cb = on_command_rignore,
     },
     {
-        "/unrignore", 1, // <name>
-        {"-cur", NULL},
-        {NULL},
-        on_command_unrignore
+        .name = "/unrignore",
+        .argc = 1, // <name>
+        .opt_key = {"-cur", NULL},
+        .opt_default_val = {NULL},
+        .flag = 0,
+        .cb = on_command_unrignore,
     },
     {
-        "/query", 1, // <nick>
-        {NULL},
-        {NULL},
-        on_command_query
+        .name = "/query",
+        .argc = 1, // <nick>
+        .opt_key = {NULL},
+        .opt_default_val = {NULL},
+        .flag = 0,
+        .cb = on_command_query,
     },
     {
-        "/unquery", 1, // <nick>
-        {NULL},
-        {NULL},
-        on_command_unquery
+        .name = "/unquery",
+        .argc = 1, // <nick>
+        .opt_key = {NULL},
+        .opt_default_val = {NULL},
+        .flag = COMMAND_FLAG_OMIT_ARG,
+        .cb = on_command_unquery,
     },
     {
-        "/join", 1, // <channel>
-        {NULL},
-        {NULL},
-        on_command_join
+        .name = "/join",
+        .argc = 1, // <channel>
+        .opt_key = {NULL},
+        .opt_default_val = {NULL},
+        .flag = 0,
+        .cb = on_command_join,
     },
     {
-        "/part", 2, // <channel> <reason>
-        {NULL},
-        {NULL},
-        on_command_part
+        .name = "/part",
+        .argc = 2, // <channel> <reason>
+        .opt_key = {NULL},
+        .opt_default_val = {NULL},
+        .flag = COMMAND_FLAG_OMIT_ARG,
+        .cb = on_command_part,
     },
     {
-        "/quit", 1, // <reason>
-        {NULL},
-        {NULL},
-        on_command_quit
+        .name = "/quit",
+        .argc = 1, // <reason>
+        .opt_key = {NULL},
+        .opt_default_val = {NULL},
+        .flag = 0,
+        .cb = on_command_quit,
     },
     {
-        "/topic", 1, // <topic>
-        {"-rm", NULL},
-        {NULL, NULL},
-        on_command_topic
+        .name = "/topic",
+        .argc = 1, // <topic>
+        .opt_key = {"-rm", NULL},
+        .opt_default_val = {NULL, NULL},
+        .flag = COMMAND_FLAG_OMIT_ARG,
+        .cb = on_command_topic,
     },
     {
-        "/msg", 2, // <target> <message>
-        {NULL},
-        {NULL},
-        on_command_msg
+        .name = "/msg",
+        .argc = 2, // <target> <message>
+        .opt_key = {NULL},
+        .opt_default_val = {NULL},
+        .flag = 0,
+        .cb = on_command_msg,
     },
     {
-        "/me", 1, // <message>
-        {NULL},
-        {NULL},
-        on_command_me
+        .name = "/me",
+        .argc = 1, // <message>
+        .opt_key = {NULL},
+        .opt_default_val = {NULL},
+        .flag = 0,
+        .cb = on_command_me,
     },
 
     {
-        "/nick", 1, // <new_nick>
-        {NULL},
-        {NULL},
-        on_command_nick
+        .name = "/nick",
+        .argc = 1, // <new_nick>
+        .opt_key = {NULL},
+        .opt_default_val = {NULL},
+        .flag = 0,
+        .cb = on_command_nick,
     },
     {
-        "/whois", 1, // <nick>
-        {NULL},
-        {NULL},
-        on_command_whois
+        .name = "/whois",
+        .argc = 1, // <nick>
+        .opt_key = {NULL},
+        .opt_default_val = {NULL},
+        .flag = 0,
+        .cb = on_command_whois,
     },
     {
-        "/invite", 2, // <nick> <channel>
-        {NULL},
-        {NULL},
-        on_command_invite
+        .name = "/invite",
+        .argc = 2, // <nick> <channel>
+        .opt_key = {NULL},
+        .opt_default_val = {NULL},
+        .flag = COMMAND_FLAG_OMIT_ARG,
+        .cb = on_command_invite,
     },
     {
-        "/kick", 3, // <nick> <channel> <reason>
-        {NULL},
-        {NULL},
-        on_command_kick
+        .name = "/kick",
+        .argc = 3, // <nick> <channel> <reason>
+        .opt_key = {NULL},
+        .opt_default_val = {NULL},
+        .flag = COMMAND_FLAG_OMIT_ARG,
+        .cb = on_command_kick,
     },
     {
-        "/mode", 2, // <target> <mode>
-        {NULL},
-        {NULL},
-        on_command_mode
+        .name = "/mode",
+        .argc = 2, // <target> <mode>
+        .opt_key = {NULL},
+        .opt_default_val = {NULL},
+        .flag = 0,
+        .cb = on_command_mode,
     },
     {
-        "/list", 1, // <channel>
-        {NULL},
-        {NULL},
-        on_command_list
+        .name = "/list",
+        .argc = 1, // <channel>
+        .opt_key = {NULL},
+        .opt_default_val = {NULL},
+        .flag = 0,
+        .cb = on_command_list,
     },
-    {
-        NULL, 0, {NULL}, {NULL}, NULL
-    },
+    COMMAND_EMPTY,
 };
 
 static CommandContext cmd_ctx = {
@@ -202,6 +243,7 @@ static CommandContext cmd_ctx = {
     .on_unknown_cmd = on_unknown_cmd,
     .on_unknown_opt = on_unknown_opt,
     .on_missing_opt_val = on_missing_opt_val,
+    .on_missing_arg = on_missing_arg,
     .on_too_many_opt = on_too_many_opt,
     .on_too_many_arg = on_too_many_arg,
     .on_callback_fail = on_callback_fail,
@@ -441,7 +483,8 @@ static int on_command_query(Command *cmd, void *user_data){
     const char *nick;
     Server *srv;
 
-    g_return_val_if_fail(srv = scctx_get_server(user_data), SRN_ERR);
+    srv = scctx_get_server(user_data);
+    g_return_val_if_fail(srv, SRN_ERR);
 
     nick = command_get_arg(cmd, 0);
     g_return_val_if_fail(nick, SRN_ERR);
@@ -453,10 +496,13 @@ static int on_command_unquery(Command *cmd, void *user_data){
     const char *nick;
     Server *srv;
 
-    g_return_val_if_fail(srv = scctx_get_server(user_data), SRN_ERR);
+    srv = scctx_get_server(user_data);
+    g_return_val_if_fail(srv, SRN_ERR);
 
     nick = command_get_arg(cmd, 0);
-    g_return_val_if_fail(nick, SRN_ERR);
+    if (!nick){
+        nick = srv->cur_chat->name;
+    }
 
     return server_rm_chat(srv, nick);
 }
@@ -466,7 +512,8 @@ static int on_command_join(Command *cmd, void *user_data){
     const char *passwd;
     Server *srv;
 
-    g_return_val_if_fail(srv = scctx_get_server(user_data), SRN_ERR);
+    srv = scctx_get_server(user_data);
+    g_return_val_if_fail(srv, SRN_ERR);
 
     chan = command_get_arg(cmd, 0);
     passwd = command_get_arg(cmd, 1);
@@ -482,10 +529,9 @@ static int on_command_part(Command *cmd, void *user_data){
     Server *srv;
     Chat *chat;
 
-    g_return_val_if_fail(srv = scctx_get_server(user_data), SRN_ERR);
+    srv = scctx_get_server(user_data);
+    g_return_val_if_fail(srv, SRN_ERR);
     chat = scctx_get_chat(user_data);
-
-    LOG_FR("chat: %p", chat);
 
     chan = command_get_arg(cmd, 0);
     reason = command_get_arg(cmd, 1);
@@ -502,7 +548,8 @@ static int on_command_quit(Command *cmd, void *user_data){
     const char *reason;
     Server *srv;
 
-    g_return_val_if_fail(srv = scctx_get_server(user_data), SRN_ERR);
+    srv = scctx_get_server(user_data);
+    g_return_val_if_fail(srv, SRN_ERR);
 
     reason = command_get_arg(cmd, 0);
     if (!reason) reason = PACKAGE_NAME " " PACKAGE_VERSION " " "quit.";
@@ -515,8 +562,10 @@ static int on_command_topic(Command *cmd, void *user_data){
     Server *srv;
     Chat *chat;
 
-    g_return_val_if_fail(srv = scctx_get_server(user_data), SRN_ERR);
-    g_return_val_if_fail(chat = scctx_get_chat(user_data), SRN_ERR);
+    srv = scctx_get_server(user_data);
+    g_return_val_if_fail(srv, SRN_ERR);
+    chat = scctx_get_chat(user_data);
+    g_return_val_if_fail(chat, SRN_ERR);
 
     topic = command_get_arg(cmd, 0);
 
@@ -570,7 +619,8 @@ static int on_command_nick(Command *cmd, void *user_data){
     const char *nick;
     Server *srv;
 
-    g_return_val_if_fail(srv = scctx_get_server(user_data), SRN_ERR);
+    srv = scctx_get_server(user_data);
+    g_return_val_if_fail(srv, SRN_ERR);
 
     nick = command_get_arg(cmd, 0);
     g_return_val_if_fail(nick, SRN_ERR);
@@ -582,7 +632,8 @@ static int on_command_whois(Command *cmd, void *user_data){
     const char *nick;
     Server *srv;
 
-    g_return_val_if_fail(srv = scctx_get_server(user_data), SRN_ERR);
+    srv = scctx_get_server(user_data);
+    g_return_val_if_fail(srv, SRN_ERR);
 
     nick = command_get_arg(cmd, 0);
     g_return_val_if_fail(nick, SRN_ERR);
@@ -596,7 +647,8 @@ static int on_command_invite(Command *cmd, void *user_data){
     Server *srv;
     Chat *chat;
 
-    g_return_val_if_fail(srv = scctx_get_server(user_data), SRN_ERR);
+    srv = scctx_get_server(user_data);
+    g_return_val_if_fail(srv, SRN_ERR);
     chat = scctx_get_chat(user_data);
 
     nick = command_get_arg(cmd, 0);
@@ -616,14 +668,21 @@ static int on_command_kick(Command *cmd, void *user_data){
     const char *chan;
     const char *reason;
     Server *srv;
+    Chat *chat;
 
-    g_return_val_if_fail(srv = scctx_get_server(user_data), SRN_ERR);
+    srv = scctx_get_server(user_data);
+    g_return_val_if_fail(srv, SRN_ERR);
+    chat = scctx_get_chat(user_data);
 
     nick = command_get_arg(cmd, 0);
     chan = command_get_arg(cmd, 1);
-    reason = command_get_arg(cmd, 3);
+    reason = command_get_arg(cmd, 2);
+
     g_return_val_if_fail(nick, SRN_ERR);
-    g_return_val_if_fail(chan, SRN_ERR);
+
+    if (!chan && chat) {
+        chan = chat->name;
+    }
 
     return sirc_cmd_kick(srv->irc, nick, chan, reason);
 }
@@ -633,7 +692,8 @@ static int on_command_mode(Command *cmd, void *user_data){
     const char *target;
     Server *srv;
 
-    g_return_val_if_fail(srv = scctx_get_server(user_data), SRN_ERR);
+    srv = scctx_get_server(user_data);
+    g_return_val_if_fail(srv, SRN_ERR);
 
     target = command_get_arg(cmd, 0);
     mode = command_get_arg(cmd, 1);
@@ -679,6 +739,17 @@ static void on_missing_opt_val(Command *cmd, const char *opt, void *user_data){
 
     chat_add_error_message_fmt(chat, chat->user->nick,
             _("Option missing value: %s"), opt);
+}
+
+static void on_missing_arg(Command *cmd, int narg, void *user_data){
+    Chat *chat;
+
+    chat = scctx_get_chat(user_data);
+    g_return_if_fail(chat);
+
+    chat_add_error_message_fmt(chat, chat->user->nick,
+            _("Missing arguments, expecting %d, actually %d"),
+            cmd->bind->argc, narg);
 }
 
 static void on_too_many_opt(Command *cmd, void *user_data){
