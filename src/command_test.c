@@ -72,11 +72,11 @@ static int on_command_connect_test(Command *cmd, void *user_data){
                 assert(command_get_arg(cmd, 2) == NULL);
 
                 char *tmp;
-                assert(command_get_opt(cmd, "-ssl", &tmp) == SRN_OK);
+                assert(command_get_opt(cmd, "-ssl", &tmp));
                 assert(strcmp(tmp, "on") == 0);
-                assert(command_get_opt(cmd, "-port", &tmp) == SRN_OK);
+                assert(command_get_opt(cmd, "-port", &tmp));
                 assert(strcmp(tmp, "6667") == 0);
-                assert(command_get_opt(cmd, "-nosuch", &tmp) == SRN_ERR);
+                assert(!command_get_opt(cmd, "-nosuch", &tmp));
                 break;
             }
         case 2:
@@ -86,7 +86,7 @@ static int on_command_connect_test(Command *cmd, void *user_data){
                 assert(command_get_arg(cmd, 2) == NULL);
 
                 char *tmp;
-                assert(command_get_opt(cmd, "-ssl", &tmp) == SRN_OK);
+                assert(command_get_opt(cmd, "-ssl", &tmp));
                 assert(strcmp(tmp, "-on") == 0);
                 break;
             }
@@ -102,7 +102,7 @@ static int on_command_topic_test(Command *cmd, void *user_data){
                 assert(command_get_arg(cmd, 0) == NULL);
 
                 char *tmp;
-                assert(command_get_opt(cmd, "-del", &tmp) == SRN_OK);
+                assert(command_get_opt(cmd, "-del", &tmp));
                 assert(tmp == NULL);
                 break;
             }

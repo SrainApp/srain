@@ -159,7 +159,7 @@ CommandBind cmd_binds[] = {
         .argc = 1, // <reason>
         .opt_key = {NULL},
         .opt_default_val = {NULL},
-        .flag = 0,
+        .flag = COMMAND_FLAG_OMIT_ARG,
         .cb = on_command_quit,
     },
     {

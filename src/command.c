@@ -26,8 +26,6 @@
 #include <assert.h>
 
 #include "command.h"
-#include "srain.h"
-
 #include "log.h"
 
 static Command* command_new(CommandBind *bind, const char *rawcmd);
@@ -39,7 +37,8 @@ static int get_quote_arg(char *ptr, char **arg, char **next);
 static int get_last_quote_arg(char *ptr, char **arg);
 
 /**
- * @brief command_proc Check and parse command, and call the corresponding callback function
+ * @brief command_proc Check and parse command, and call the corresponding
+ *      callback function
  *
  * @param ctx A CommandContext
  * @param rawcmd A string of command
@@ -91,18 +90,24 @@ const char *command_get_arg(Command *cmd, unsigned index){
 }
 
 /**
- * @brief command_get_opt Get the optional argument in the command
+ * @brief command_get_opt Whether the option is specified in the command
  *
  * @param cmd
- * @param opt_key The name of optional argument
- * @param opt_val Can be NULL. If this argument has a value, it will return via this param,
- *        you do not need to free it
+ * @param opt_key The name of option
+ * @param opt_val Can be NULL. If this option has a value, it will return via
+ *          this param, you do not need to free it
  *
- * @return SRN_OK if this argument is specified in the command,
- *         SRN_ERR if this argument is not specified in the command or there no such
+ * @return TRUE if this option is specified in the command,
+ *         FALSE if this option is not specified in the command or there no such
  *         optional argument
+ *
+ * .. note::
+ *
+ *      Whatever the option is specified in the command, if this option
+ *      have a value, it will be return to the ``opt_key``
+ *
  */
-int command_get_opt(Command *cmd, const char *opt_key, char **opt_val){
+bool command_get_opt(Command *cmd, const char *opt_key, char **opt_val){
     unsigned i = 0;
 
     while (cmd->opt_key[i] != NULL){
@@ -110,7 +115,7 @@ int command_get_opt(Command *cmd, const char *opt_key, char **opt_val){
             if (opt_val != NULL){
                 *opt_val = cmd->opt_val[i];
             }
-            return SRN_OK;
+            return TRUE;
         }
         i++;
     }
@@ -122,13 +127,13 @@ int command_get_opt(Command *cmd, const char *opt_key, char **opt_val){
             if (opt_val != NULL){
                 *opt_val = cmd->bind->opt_default_val[i];
             }
-            return SRN_OK;
+            return FALSE;
         }
         i++;
     }
 
     ERR_FR("No such option '%s'", opt_key);
-    return SRN_ERR;
+    return FALSE;
 }
 
 static Command* command_new(CommandBind *bind, const char *rawcmd){
@@ -330,16 +335,15 @@ static int command_parse(CommandContext *ctx, Command *cmd, void *user_data){
             if (get_quote_arg(ptr, &cmd->argv[narg], &ptr) != SRN_OK){
                 goto missing_arg;
             }
-            if (!ptr){
-                cmd->argv[narg] = NULL;
-                goto missing_arg;
-            }
         }  else {
             if (get_last_quote_arg(ptr, &cmd->argv[narg]) != SRN_OK){
                 goto missing_arg;
             }
         }
         narg++;
+        if (!ptr){
+            goto missing_arg;
+        }
     }
 
     /* Debug output */
@@ -363,7 +367,7 @@ missing_arg:
     if (cmd->bind->flag & COMMAND_FLAG_OMIT_ARG){
         return SRN_OK;
     }
-    ctx->on_missing_arg(cmd, user_data);
+    ctx->on_missing_arg(cmd, narg, user_data);
     return SRN_ERR;
 
 unknown_opt:
@@ -381,10 +385,14 @@ missing_opt_val:
     ctx->on_missing_opt_val(cmd, cmd->opt_key[nopt], user_data);
     return SRN_ERR;
 
+#if 0
 too_many_arg:
+    /* Currently, we regard all remaining text as the last argument, so this
+     * label is never used. */
     WARN_FR("Too many arguments, expect %d", cmd->bind->argc);
     ctx->on_too_many_arg(cmd, user_data);
     return SRN_ERR;
+#endif
 }
 
 /* inner test case */
