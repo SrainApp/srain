@@ -3,6 +3,7 @@
  */
 #include <glib.h>
 #include <assert.h>
+#include <string.h>
 
 #include "srain.h"
 #include "command.h"
@@ -19,14 +20,16 @@ static CommandBind cmd_binds_test[] = {
         .argc = 2,
         .opt_key = {"-port", "-ssl", "-passwd", "-realname", NULL},
         .opt_default_val = {"6667", "off", "", "Can you can a can?", NULL},
+        .flag = 0,
         .cb = on_command_connect_test
     },
     {
         .name = "/topic",
         .subcmd = {"rm"},
-        .argc = COMMAND_ARB_ARGC,
+        .argc = 1,
         .opt_key = {"-del", NULL},
         .opt_default_val = {NULL, NULL},
+        .flag = COMMAND_FLAG_OMIT_ARG,
         .cb = on_command_topic_test
     },
     COMMAND_EMPTY,
@@ -110,12 +113,13 @@ static int on_command_topic_test(Command *cmd, void *user_data){
             }
         case 3:
             {
-                assert(strcmp(command_get_arg(cmd, 0), "'This is a topic'") == 0);
+                LOG_FR("%s", command_get_arg(cmd, 0));
+                assert(strcmp(command_get_arg(cmd, 0), "This is a topic") == 0);
                 break;
             }
         case 4:
             {
-                assert(strcmp(command_get_arg(cmd, 0), "'-del'") == 0);
+                assert(strcmp(command_get_arg(cmd, 0), "-del") == 0);
                 break;
             }
     }

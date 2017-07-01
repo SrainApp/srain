@@ -175,6 +175,8 @@ static int get_arg(char *ptr, char **arg, char **next){
 static int get_quote_arg(char *ptr, char **arg, char **next){
     bool quote;
     bool escape;
+    char *arg_in;
+    char *next_in;
 
     g_return_val_if_fail(ptr && arg && next, SRN_ERR);
     g_return_val_if_fail(*ptr != '\0', SRN_ERR);
@@ -188,22 +190,30 @@ static int get_quote_arg(char *ptr, char **arg, char **next){
     quote = TRUE;
     escape = FALSE;
     *ptr++ = '\0';
-    *arg = ptr;
+    arg_in = ptr;
 
     while (*ptr && quote) {
         if (!escape && *ptr == '\\'){
             escape = TRUE;
+            ptr++;
+        }
+        else if (escape && *ptr == '\\'){
+            strcpy(ptr, ptr + 1);
+            escape = FALSE;
         }
         else if (escape && *ptr == '\''){
             strcpy(ptr, ptr + 1);
-        }
-        else if (!escape && *ptr == '\''){
-            *ptr = '\0';
-            quote = FALSE;
-        } else {
             escape = FALSE;
         }
-        ptr++;
+        else if (!escape && *ptr == '\''){
+            quote = FALSE;
+            *ptr++ = '\0';
+            break;
+        }
+        else {
+            escape = FALSE;
+            ptr++;
+        }
     }
 
     if (quote){
@@ -211,12 +221,16 @@ static int get_quote_arg(char *ptr, char **arg, char **next){
         return SRN_ERR;
     }
 
-    *next = ptr;
-    *next = g_strchug(*next);
-    if (*next == '\0'){
+    next_in = ptr;
+    next_in = g_strchug(next_in);
+    if (*next_in == '\0'){
         /* Reach end */
         *next = NULL;
+    } else {
+        *next = next_in;
     }
+
+    *arg = arg_in;
 
     DBG_FR("arg: '%s'", *arg);
 
@@ -233,15 +247,12 @@ static int get_last_quote_arg(char *ptr, char **arg){
 
     if (*ptr == '\''){
         char *next;
-        if (get_quote_arg(ptr, arg, &next) != SRN_OK){
-            return SRN_ERR;
-        }
-        if (next) {
-            return SRN_ERR;
-        }
+        return get_quote_arg(ptr, arg, &next);
+    } else {
+        *arg = ptr;
     }
 
-    *arg = ptr;
+    DBG_FR("arg: '%s'", *arg);
 
     return SRN_OK;
 }
@@ -314,11 +325,6 @@ static int command_parse(CommandContext *ctx, Command *cmd, void *user_data){
     cmd->opt_key[nopt] = NULL;
 
     /* Get arguments */
-    if (bind->argc == COMMAND_ARB_ARGC){
-        cmd->argv[0] = ptr;
-        return SRN_OK;
-    }
-
     for (int i = 0; i < bind->argc; i++){
         if (i != bind->argc - 1){
             if (get_quote_arg(ptr, &cmd->argv[narg], &ptr) != SRN_OK){
@@ -352,10 +358,11 @@ static int command_parse(CommandContext *ctx, Command *cmd, void *user_data){
 
     return SRN_OK;
 
-    // Don't care
 missing_arg:
-    // TODO: it shoule be cared
     WARN_FR("Missing argument, expect %d, actually %d", cmd->bind->argc, narg);
+    if (cmd->bind->flag & COMMAND_FLAG_OMIT_ARG){
+        return SRN_OK;
+    }
     ctx->on_missing_arg(cmd, user_data);
     return SRN_ERR;
 
@@ -385,7 +392,7 @@ void get_quote_arg_test() {
     char *start, *end;
     assert(get_quote_arg(strdup("'test'"), &start, &end) == SRN_OK);
     assert(strcmp(start, "test") == 0);
-    assert(strcmp(end, "\0") == 0);
+    assert(end == NULL);
 
     assert(get_quote_arg(strdup("'test''123'"), &start, &end) == SRN_OK);
     assert(strcmp(start, "test") == 0);
@@ -399,7 +406,7 @@ void get_quote_arg_test() {
 
     assert(get_quote_arg(strdup("'test\\'"), &start, &end) == SRN_ERR);
 
-    assert(get_quote_arg(strdup("'test\\\\''"), &start, &end) == SRN_OK);
-    assert(strcmp(start, "test\\\\") == 0);
-    assert(strcmp(end, "'") == 0);
+    assert(get_quote_arg(strdup("'test\\\\'"), &start, &end) == SRN_OK);
+    assert(strcmp(start, "test\\") == 0);
+    assert(end == NULL);
 }
