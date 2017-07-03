@@ -6,7 +6,6 @@
  * @date 2016-08-21
  */
 
-#define __LOG_ON
 
 #include <stdio.h>
 #include <glib.h>

@@ -6,7 +6,6 @@
  * @date 2016-04-01
  */
 
-#define __LOG_ON
 
 #include <gtk/gtk.h>
 #include <string.h>

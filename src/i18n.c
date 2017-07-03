@@ -1,4 +1,3 @@
-#define __LOG_ON
 
 #include "i18n.h"
 #include "meta.h"

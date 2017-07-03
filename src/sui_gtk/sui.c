@@ -5,8 +5,6 @@
  * @date 2016-06-29
  */
 
-#define __LOG_ON
-#define __DBG_ON
 
 #include <gtk/gtk.h>
 #include <string.h>

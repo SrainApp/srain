@@ -9,7 +9,6 @@
  * call `server_cmd()` for every line
  */
 
-#define __LOG_ON
 
 #include <stdio.h>
 #include <string.h>

@@ -6,8 +6,6 @@
  * @date 2016-07-19
  */
 
-#define __LOG_ON
-#define __DBG_ON
 
 #include <string.h>
 #include <strings.h>

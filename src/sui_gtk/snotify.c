@@ -6,8 +6,6 @@
  * @date 2016-08-26
  */
 
-#define __DBG_ON
-#define __LOG_ON
 
 #include <libnotify/notify.h>
 #include <glib.h>

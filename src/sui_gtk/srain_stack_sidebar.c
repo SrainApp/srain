@@ -30,7 +30,6 @@
  *      Ikey Doherty <michael.i.doherty@intel.com>
  */
 
-#define __LOG_ON
 
 #include <gtk/gtk.h>
 

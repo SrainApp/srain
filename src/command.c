@@ -17,8 +17,6 @@
  *
  */
 
-// #define __DBG_ON
-#define __LOG_ON
 
 #include <glib.h>
 #include <string.h>

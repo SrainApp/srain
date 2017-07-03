@@ -6,7 +6,6 @@
  * @date 2016-03-01
  */
 
-#define __LOG_ON
 
 #include <stdlib.h>
 #include <signal.h>

@@ -11,7 +11,6 @@
  *
  */
 
-// #define __LOG_ON
 
 #include <gtk/gtk.h>
 #include <string.h>

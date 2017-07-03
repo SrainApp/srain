@@ -8,7 +8,6 @@
  * Note: Unlike SrainUserList, SrainMagList is subclass of GtkScrolledWindow
  */
 
-#define __LOG_ON
 
 #include <gtk/gtk.h>
 #include <string.h>

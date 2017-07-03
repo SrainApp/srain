@@ -22,8 +22,6 @@
  *      chat < chat_list
  */
 
-#define __LOG_ON
-#define __DBG_ON
 
 #include <glib.h>
 #include <libconfig.h>

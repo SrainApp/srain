@@ -7,7 +7,6 @@
  *
  */
 
-// #define __LOG_ON
 
 #include <stdio.h>
 #include <unistd.h>

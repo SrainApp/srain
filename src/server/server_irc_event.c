@@ -7,8 +7,6 @@
  *
  */
 
-#define __DBG_ON
-#define __LOG_ON
 
 #include <stdio.h>
 #include <glib.h>
