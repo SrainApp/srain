@@ -105,7 +105,7 @@ const char *command_get_arg(Command *cmd, unsigned index){
  *      have a value, it will be return to the ``opt_key``
  *
  */
-bool command_get_opt(Command *cmd, const char *opt_key, char **opt_val){
+bool command_get_opt(Command *cmd, const char *opt_key, const char **opt_val){
     unsigned i = 0;
 
     while (cmd->opt_key[i] != NULL){

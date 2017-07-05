@@ -58,7 +58,7 @@ typedef struct {
 
 int command_proc(CommandContext *ctx, const char *rawcmd, void *user_data);
 const char *command_get_arg(Command *cmd, unsigned index);
-bool command_get_opt(Command *cmd, const char *opt_key, char **opt_val);
+bool command_get_opt(Command *cmd, const char *opt_key, const char **opt_val);
 
 void command_test();
 void get_quote_arg_test();

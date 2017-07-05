@@ -33,6 +33,7 @@ typedef struct _ServerCmdContext {
 static Server* scctx_get_server(ServerCmdContext *scctx);
 static Chat* scctx_get_chat(ServerCmdContext *scctx);
 
+static int on_command_server(Command *cmd, void *user_data);
 static int on_command_connect(Command *cmd, void *user_data);
 static int on_command_relay(Command *cmd, void *user_data);
 static int on_command_unrelay(Command *cmd, void *user_data);
@@ -64,6 +65,17 @@ static void on_too_many_arg(Command *cmd, void *user_data);
 static void on_callback_fail(Command *cmd, void *user_data);
 
 CommandBind cmd_binds[] = {
+    {
+        .name = "/server",
+        .subcmd = {"add", "rm", "set", "connect", "disconnect", NULL},
+        .argc = 1, // <name>
+        .opt_key =
+        {"-host", "-port", "-tls", "-tls-valid-all", "-pwd", "-nick", "-user", "-real", "-encode",  NULL},
+        .opt_default_val =
+        {NULL,      "6667",     NULL,    NULL,   "Zaidan",   "Srain",    "Can you can a can?",   "UTF-8",    NULL},
+        .flag = 0,
+        .cb = on_command_server,
+    },
     {
         .name = "/connect",
         .argc = 2, // <hosts> <nick>
@@ -278,10 +290,80 @@ int server_cmd(Chat *chat, const char *cmd){
  * Command callbacks
  ******************************************************************************/
 
+static int on_command_server(Command *cmd, void *user_data){
+    bool tls;
+    bool tls_vaild_all;
+    char *errmsg;
+    const char *subcmd;
+    const char *name;
+    const char *host;
+    const char *port;
+    const char *passwd;
+    const char *nick;
+    const char *user;
+    const char *real;
+    const char *encoding;
+
+    Server *srv;
+    ServerPrefs *prefs;
+
+    name = command_get_arg(cmd, 0);
+    g_return_val_if_fail(name, SRN_ERR);
+
+    // TODO: subcmd
+    subcmd = cmd->subcmd;
+    if (!subcmd) {
+        ERR_FR("No subcommand specified");
+    }
+
+    prefs = server_prefs_new(name);
+    if (!prefs){
+        ERR_FR("Failed to create ServerPrefs '%s'", host);
+    }
+
+    errmsg = prefs_read_server_prefs(prefs);
+    if (errmsg){
+        ERR_FR("%s", errmsg);
+        g_free(errmsg);
+        return SRN_ERR;
+    }
+
+    command_get_opt(cmd, "-host", &host);
+    command_get_opt(cmd, "-port", &port);
+    tls = command_get_opt(cmd, "-tls", NULL);
+    tls_vaild_all = command_get_opt(cmd, "-tls-vaild-all", NULL);
+    command_get_opt(cmd, "-pwd", &passwd);
+    command_get_opt(cmd, "-nick", &nick);
+    command_get_opt(cmd, "-user", &user);
+    command_get_opt(cmd, "-real", &real);
+    command_get_opt(cmd, "-encode", &encoding);
+
+    // FIXME: memory leak
+    prefs->name = g_strdup(host);
+    prefs->host = g_strdup(host);
+    prefs->port = atoi(port);
+    prefs->passwd = g_strdup(passwd);
+    prefs->encoding = g_strdup(encoding);
+    prefs->nickname = g_strdup(nick);
+    prefs->username = g_strdup(user);
+    prefs->realname = g_strdup(real);
+    prefs->irc->use_ssl = tls;
+    prefs->irc->verify_ssl_cert = !tls_vaild_all;
+
+    if (!server_prefs_is_valid(prefs)){
+        ERR_FR("Not completed ServerPrefs");
+        return SRN_ERR;
+    }
+    srv = server_new_from_prefs(prefs);
+    g_return_val_if_fail(srv, SRN_ERR);
+
+    return SRN_OK;
+}
+
 static int on_command_connect(Command *cmd, void *user_data){
     const char *host;
     const char *nick;
-    char *port, *passwd, *ssl, *realname;
+    const char *port, *passwd, *ssl, *realname;
     char *errmsg;
     Server *srv;
     ServerPrefs *prefs;
@@ -312,6 +394,7 @@ static int on_command_connect(Command *cmd, void *user_data){
         return SRN_ERR;
     }
 
+    // FIXME: memory leak
     prefs->name = g_strdup(host);
     prefs->host = g_strdup(host);
     prefs->port = atoi(port);
