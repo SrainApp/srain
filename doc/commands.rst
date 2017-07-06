@@ -2,6 +2,25 @@
 Commands
 ========
 
+Syntax
+======
+
+Syntax::
+
+    <command> [subcommand] [option] [argument]
+
+A ``command`` is a string starts with a slash ``/`` and doesn't contain any
+whitespace, e.g. ``/join``
+
+A ``subcommand`` is a specified the detailed operation of this command.
+
+A ``option`` starts with a ``-`` and may has a value.
+
+Command::
+
+    /server [add|rm|set|connect|disconnect] [-port <port>] [-tls on|off|notverify]
+    [-realname <realname>] [-passwd <passwd>] [-host <host>] [-nick <nick>] <name>
+
 Command::
 
     /connect [-port <port>] [-ssl on|off|notverify] [-realname <realname>] [-passwd <passwd>] <host> <nick>

@@ -87,6 +87,23 @@ ServerPrefs* server_prefs_new(const char *name){
     return prefs;
 }
 
+ServerPrefs* server_prefs_get_by_name(const char *name){
+    GSList *lst;
+    ServerPrefs *prefs;
+
+    lst = server_prefs_list;
+
+    while (lst){
+        prefs = lst->data;
+        if (g_ascii_strcasecmp(prefs->name, name) == 0){
+            return prefs;
+        }
+        lst = g_slist_next(lst);
+    }
+
+    return NULL;
+}
+
 bool server_prefs_is_valid(ServerPrefs *prefs){
     /* Whether prefs exists in server_prefs_list? */
     if (!prefs || !g_slist_find(server_prefs_list, prefs)){
