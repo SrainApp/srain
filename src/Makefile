@@ -15,7 +15,6 @@ DEFS = -D PACKAGE='"$(PACKAGE)"' \
 	   -D PACKAGE_DATA_DIR='"$(PACKAGE_DATA_DIR)"' \
 	   -D PACKAGE_CONFIG_DIR='"$(PACKAGE_CONFIG_DIR)"' \
 	   -D PACKAGE_COPYRIGHT_DATES='"$(PACKAGE_COPYRIGHT_DATES)"'
-CFLAGS = -std=gnu99 -O2 -Wall -I$(PWD)/src/inc -Wno-deprecated-declarations
 GTK3FLAGS = $(shell pkg-config --cflags gtk+-3.0)
 GTK3LIBS = $(shell pkg-config --libs gtk+-3.0)
 PY3FLAGS = $(shell pkg-config --cflags python3)
@@ -27,9 +26,11 @@ LIBNOTIFYLIBS = $(shell pkg-config --libs libnotify)
 LIBCONFIGFLAGS = $(shell pkg-config --cflags libconfig)
 LIBCONFIGLIBS = $(shell pkg-config --libs libconfig)
 
-CFLAGS += $(DEFS) $(GTK3FLAGS)  $(GTK3LIBS) $(PY3FLAGS) $(PY3LIBS) \
-		  $(CURLFLAGS) $(CURLLIBS) $(LIBIRCCLINETFLAGS) $(LIBIRCCLINETLIBS) \
-		  $(LIBNOTIFYFLAGS) $(LIBNOTIFYLIBS) $(LIBCONFIGFLAGS) $(LIBCONFIGLIBS)
+CFLAGS = -std=gnu99 -O2 -Wall -I$(PWD)/src/inc -Wno-deprecated-declarations \
+		 $(DEFS) $(GTK3FLAGS) $(PY3FLAGS) $(CURLFLAGS) $(LIBIRCCLINETFLAGS) \
+		 $(LIBNOTIFYFLAGS) $(LIBCONFIGFLAGS)
+LDFLAGS = $(GTK3LIBS) $(PY3LIBS) $(CURLLIBS) $(LIBIRCCLINETLIBS) \
+		  $(LIBNOTIFYLIBS) $(LIBCONFIGLIBS)
 
 SRCS = $(wildcard *.c */*.c $(BUILD_DIR)/resources.c)
 OBJS = $(patsubst %.c, $(BUILD_DIR)/%.o, $(notdir $(SRCS)))
@@ -44,4 +45,4 @@ $(BUILD_DIR)/%.o: */%.c
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) $^ -o $@
+	$(CC) $^ -o $@ $(LDFLAGS)
