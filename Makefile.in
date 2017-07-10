@@ -26,7 +26,7 @@ DEL = rm -rf
 INSTALL = install -v
 DB = gdb
 
-BUILD_DIR = $(PWD)/build
+BUILD_DIR = $(CURDIR)/build
 TARGET = $(BUILD_DIR)/srain.out
 
 default: src/Makefile data/ui/Makefile
