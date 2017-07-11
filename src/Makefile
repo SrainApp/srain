@@ -26,7 +26,7 @@ LIBNOTIFYLIBS = $(shell pkg-config --libs libnotify)
 LIBCONFIGFLAGS = $(shell pkg-config --cflags libconfig)
 LIBCONFIGLIBS = $(shell pkg-config --libs libconfig)
 
-CFLAGS = -std=gnu99 -O2 -Wall -I$(CURDIR)/src/inc -Wno-deprecated-declarations \
+CFLAGS = -std=gnu99 -O2 -Wall -Iinc -Wno-deprecated-declarations \
 		 $(DEFS) $(GTK3FLAGS) $(PY3FLAGS) $(CURLFLAGS) $(LIBIRCCLINETFLAGS) \
 		 $(LIBNOTIFYFLAGS) $(LIBCONFIGFLAGS)
 LDFLAGS = $(GTK3LIBS) $(PY3LIBS) $(CURLLIBS) $(LIBIRCCLINETLIBS) \
