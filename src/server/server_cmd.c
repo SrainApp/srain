@@ -80,8 +80,10 @@ CommandBind cmd_binds[] = {
     {
         .name = "/connect",
         .argc = 2, // <hosts> <nick>
-        .opt_key = {"-port", "-ssl", "-passwd", "-realname", NULL},
-        .opt_default_val = {"6667", "off", "", "Can you can a can?", NULL},
+        .opt_key =
+        {"-host", "-port", "-tls", "-tls-valid-all", "-pwd", "-nick", "-user", "-real", "-encode",  NULL},
+        .opt_default_val =
+        {NULL, "6667", NULL, NULL, "Zaidan", "Srain", "Can you can a can?", "UTF-8", NULL},
         .flag = 0,
         .cb = on_command_connect,
     },
@@ -321,61 +323,105 @@ static int on_command_server(Command *cmd, void *user_data){
         prefs = server_prefs_get_prefs(name);
     }
 
-    if (g_ascii_strcasecmp(subcmd, "add") == 0){
-    } else if (g_ascii_strcasecmp(subcmd, "set") == 0){
-    } else if (g_ascii_strcasecmp(subcmd, "rm") == 0){
-    } else if (g_ascii_strcasecmp(subcmd, "connect") == 0){
-        if (!server_prefs_is_valid(prefs)){
-            ERR_FR("Not completed ServerPrefs");
-            return SRN_ERR;
-        }
-        srv = server_new_from_prefs(prefs);
-        g_return_val_if_fail(srv, SRN_ERR);
-        // server_connect() ?
-        return SRN_OK;
-    } else if (g_ascii_strcasecmp(subcmd, "disconnect") == 0){
-    }
-
     if (!prefs){
         ERR_FR("Failed to get ServerPrefs '%s'", host);
     }
 
-    errmsg = prefs_read_server_prefs(prefs);
-    if (errmsg){
-        ERR_FR("%s", errmsg);
-        g_free(errmsg);
-        return SRN_ERR;
+    if (g_ascii_strcasecmp(subcmd, "add") == 0){
+        errmsg = prefs_read_server_prefs(prefs);
+        if (errmsg){
+            ERR_FR("%s", errmsg);
+            g_free(errmsg);
+            return SRN_ERR;
+        }
     }
 
-    if (command_get_opt(cmd, "-host", &host)){
-        str_assign(&prefs->host, host);
-    }
-    if (command_get_opt(cmd, "-port", &port)){
-        prefs->port = atoi(port);
-    }
-    if (command_get_opt(cmd, "-pwd", &passwd)){
-        str_assign(&prefs->passwd, passwd);
-    }
-    if (command_get_opt(cmd, "-nick", &nick)){
-        str_assign(&prefs->nickname, nick);
-    }
-    if (command_get_opt(cmd, "-user", &user)){
-        str_assign(&prefs->username, user);
-    }
-    if (command_get_opt(cmd, "-real", &real)){
-        str_assign(&prefs->realname, real);
-    }
-    if (command_get_opt(cmd, "-encode", &encoding)){
-        str_assign(&prefs->encoding, encoding);
-    }
-    if (command_get_opt(cmd, "-tls", NULL)){
-        prefs->irc->use_ssl = true;
-    }
-    if (command_get_opt(cmd, "-tls-vaild-all", NULL)){
-        prefs->irc->verify_ssl_cert = false;
+    if (g_ascii_strcasecmp(subcmd, "add") == 0
+            || g_ascii_strcasecmp(subcmd, "set") == 0){
+        if (command_get_opt(cmd, "-host", &host)){
+            str_assign(&prefs->host, host);
+        }
+        if (command_get_opt(cmd, "-port", &port)){
+            prefs->port = atoi(port);
+        }
+        if (command_get_opt(cmd, "-pwd", &passwd)){
+            str_assign(&prefs->passwd, passwd);
+        }
+        if (command_get_opt(cmd, "-nick", &nick)){
+            str_assign(&prefs->nickname, nick);
+        }
+        if (command_get_opt(cmd, "-user", &user)){
+            str_assign(&prefs->username, user);
+        }
+        if (command_get_opt(cmd, "-real", &real)){
+            str_assign(&prefs->realname, real);
+        }
+        if (command_get_opt(cmd, "-encode", &encoding)){
+            str_assign(&prefs->encoding, encoding);
+        }
+        if (command_get_opt(cmd, "-tls", NULL)){
+            prefs->irc->use_ssl = true;
+        }
+        if (command_get_opt(cmd, "-tls-vaild-all", NULL)){
+            prefs->irc->verify_ssl_cert = false;
+        }
+
+        return SRN_OK;
     }
 
-    return SRN_OK;
+    if (g_ascii_strcasecmp(subcmd, "connect") == 0){
+        srv = server_list_get_server(name);
+        if (!srv) { // Create one
+            if (!server_prefs_is_valid(prefs)){
+                ERR_FR("Not completed ServerPrefs");
+                return SRN_ERR;
+            }
+            srv = server_new_from_prefs(prefs);
+            g_return_val_if_fail(srv, SRN_ERR);
+        }
+
+        def_srv = srv;
+        server_connect(srv);
+        server_wait_until_registered(def_srv);
+
+        if (!server_is_registered(srv)){
+            def_srv = NULL;
+            return SRN_ERR;
+        }
+
+        return SRN_OK;
+    }
+
+    if (g_ascii_strcasecmp(subcmd, "disconnect") == 0){
+        srv = server_list_get_server(name);
+        g_return_val_if_fail(srv, SRN_ERR);
+
+        if (srv->stat != SERVER_CONNECTED){
+            return SRN_ERR;
+        }
+
+        server_disconnect(srv);
+        return SRN_OK;
+    }
+
+    if (g_ascii_strcasecmp(subcmd, "rm") == 0){
+        srv = server_list_get_server(name);
+        if (srv) {
+            if (srv->stat != SERVER_DISCONNECTED) {
+                return SRN_ERR;
+            }
+            server_free(srv);
+        }
+
+       prefs = server_prefs_get_prefs(name);
+       if (prefs){
+           server_prefs_free(prefs);
+       }
+    }
+
+    ERR_FR("Unknown subcommand: %s", subcmd);
+
+    return SRN_ERR;
 }
 
 static int on_command_connect(Command *cmd, void *user_data){
