@@ -25,6 +25,7 @@
 #include "filter.h"
 #include "decorator.h"
 #include "prefs.h"
+#include "utils.h"
 
 typedef struct _ServerCmdContext {
     Chat *chat;
@@ -291,8 +292,6 @@ int server_cmd(Chat *chat, const char *cmd){
  ******************************************************************************/
 
 static int on_command_server(Command *cmd, void *user_data){
-    bool tls;
-    bool tls_vaild_all;
     char *errmsg;
     const char *subcmd;
     const char *name;
@@ -316,19 +315,16 @@ static int on_command_server(Command *cmd, void *user_data){
         return SRN_ERR;
     }
 
-    if (g_ascii_strcasecmp(subcmd, "add") == 0
-            || g_ascii_strcasecmp(subcmd, "set") == 0){
-        if (g_ascii_strcasecmp(subcmd, "add") == 0){
-            prefs = server_prefs_new(name);
-        } else {
-            prefs = server_prefs_get_prefs(name);
-        }
-    }
-    else if (g_ascii_strcasecmp(subcmd, "rm") == 0){
+    if (g_ascii_strcasecmp(subcmd, "add") == 0){
+        prefs = server_prefs_new(name);
+    } else {
         prefs = server_prefs_get_prefs(name);
     }
-    else if (g_ascii_strcasecmp(subcmd, "connect") == 0){
-        prefs = server_prefs_get_prefs(name);
+
+    if (g_ascii_strcasecmp(subcmd, "add") == 0){
+    } else if (g_ascii_strcasecmp(subcmd, "set") == 0){
+    } else if (g_ascii_strcasecmp(subcmd, "rm") == 0){
+    } else if (g_ascii_strcasecmp(subcmd, "connect") == 0){
         if (!server_prefs_is_valid(prefs)){
             ERR_FR("Not completed ServerPrefs");
             return SRN_ERR;
@@ -337,8 +333,7 @@ static int on_command_server(Command *cmd, void *user_data){
         g_return_val_if_fail(srv, SRN_ERR);
         // server_connect() ?
         return SRN_OK;
-    }
-    else if (g_ascii_strcasecmp(subcmd, "disconnect") == 0){
+    } else if (g_ascii_strcasecmp(subcmd, "disconnect") == 0){
     }
 
     if (!prefs){
@@ -352,27 +347,26 @@ static int on_command_server(Command *cmd, void *user_data){
         return SRN_ERR;
     }
 
-    // FIXME: memory leak
     if (command_get_opt(cmd, "-host", &host)){
-        prefs->host = g_strdup(host);
+        str_assign(&prefs->host, host);
     }
     if (command_get_opt(cmd, "-port", &port)){
         prefs->port = atoi(port);
     }
     if (command_get_opt(cmd, "-pwd", &passwd)){
-        prefs->passwd = g_strdup(passwd);
+        str_assign(&prefs->passwd, passwd);
     }
     if (command_get_opt(cmd, "-nick", &nick)){
-        prefs->nickname = g_strdup(nick);
+        str_assign(&prefs->nickname, nick);
     }
     if (command_get_opt(cmd, "-user", &user)){
-        prefs->username = g_strdup(user);
+        str_assign(&prefs->username, user);
     }
     if (command_get_opt(cmd, "-real", &real)){
-        prefs->realname = g_strdup(real);
+        str_assign(&prefs->realname, real);
     }
     if (command_get_opt(cmd, "-encode", &encoding)){
-        prefs->encoding = g_strdup(encoding);
+        str_assign(&prefs->encoding, encoding);
     }
     if (command_get_opt(cmd, "-tls", NULL)){
         prefs->irc->use_ssl = true;
@@ -385,10 +379,14 @@ static int on_command_server(Command *cmd, void *user_data){
 }
 
 static int on_command_connect(Command *cmd, void *user_data){
-    const char *host;
-    const char *nick;
-    const char *port, *passwd, *ssl, *realname;
     char *errmsg;
+    const char *host;
+    const char *port;
+    const char *passwd;
+    const char *nick;
+    const char *user;
+    const char *real;
+    const char *encoding;
     Server *srv;
     ServerPrefs *prefs;
 
@@ -397,11 +395,6 @@ static int on_command_connect(Command *cmd, void *user_data){
 
     g_return_val_if_fail(host, SRN_ERR);
     g_return_val_if_fail(nick, SRN_ERR);
-
-    command_get_opt(cmd, "-port", &port);
-    command_get_opt(cmd, "-passwd", &passwd);
-    command_get_opt(cmd, "-ssl", &ssl);
-    command_get_opt(cmd, "-realname", &realname);
 
     prefs = server_prefs_new(host);
     if (!prefs){
@@ -418,29 +411,38 @@ static int on_command_connect(Command *cmd, void *user_data){
         return SRN_ERR;
     }
 
-    // FIXME: memory leak
-    prefs->name = g_strdup(host);
-    prefs->host = g_strdup(host);
-    prefs->port = atoi(port);
-    prefs->passwd = g_strdup(passwd);
-    prefs->encoding = g_strdup("UTF-8");
-    prefs->nickname = g_strdup(nick);
-    prefs->username = g_strdup(PACKAGE_NAME);
-    prefs->realname = g_strdup(realname);
-
-    if (strcmp(ssl, "on") == 0){
-        prefs->irc->use_ssl = TRUE;
-        prefs->irc->verify_ssl_cert = TRUE;
-    }
-    else if (strcmp(ssl, "notverify") == 0){
-        prefs->irc->use_ssl = TRUE;
-        prefs->irc->verify_ssl_cert = FALSE;
-    }
-
     if (!server_prefs_is_valid(prefs)){
         // TODO
         ERR_FR("Not completed ServerPrefs");
         return SRN_ERR;
+    }
+
+    if (command_get_opt(cmd, "-host", &host)){
+        str_assign(&prefs->host, host);
+    }
+    if (command_get_opt(cmd, "-port", &port)){
+        prefs->port = atoi(port);
+    }
+    if (command_get_opt(cmd, "-pwd", &passwd)){
+        str_assign(&prefs->passwd, passwd);
+    }
+    if (command_get_opt(cmd, "-nick", &nick)){
+        str_assign(&prefs->nickname, nick);
+    }
+    if (command_get_opt(cmd, "-user", &user)){
+        str_assign(&prefs->username, user);
+    }
+    if (command_get_opt(cmd, "-real", &real)){
+        str_assign(&prefs->realname, real);
+    }
+    if (command_get_opt(cmd, "-encode", &encoding)){
+        str_assign(&prefs->encoding, encoding);
+    }
+    if (command_get_opt(cmd, "-tls", NULL)){
+        prefs->irc->use_ssl = true;
+    }
+    if (command_get_opt(cmd, "-tls-vaild-all", NULL)){
+        prefs->irc->verify_ssl_cert = false;
     }
 
     srv = server_new_from_prefs(prefs);

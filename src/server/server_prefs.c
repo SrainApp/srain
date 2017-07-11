@@ -87,7 +87,7 @@ ServerPrefs* server_prefs_new(const char *name){
     return prefs;
 }
 
-ServerPrefs* server_prefs_get_by_name(const char *name){
+ServerPrefs* server_prefs_get_prefs(const char *name){
     GSList *lst;
     ServerPrefs *prefs;
 

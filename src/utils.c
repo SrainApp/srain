@@ -44,3 +44,10 @@ void time_to_str(time_t time, char *timestr, size_t size, const char *fmt){
 
     timestr[size-1] = '\0';
 }
+
+void str_assign(char **left, const char *right){
+    if (*left) {
+        g_free(*left);
+    }
+    *left = g_strdup(right);
+}
