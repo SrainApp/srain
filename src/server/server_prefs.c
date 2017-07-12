@@ -112,7 +112,7 @@ bool server_prefs_is_valid(ServerPrefs *prefs){
 
     return (prefs->name
             && prefs->host
-            && prefs->passwd
+            // && prefs->passwd
             && prefs->encoding
             && prefs->nickname
             && prefs->username

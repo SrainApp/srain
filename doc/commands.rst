@@ -18,12 +18,14 @@ A ``option`` starts with a ``-`` and may has a value.
 
 Command::
 
-    /server [add|rm|set|connect|disconnect] [-port <port>] [-tls on|off|notverify]
-    [-realname <realname>] [-passwd <passwd>] [-host <host>] [-nick <nick>] <name>
+    /server [add|rm|set|connect|disconnect]
+        [-host <host>] [-port <port>] [-passwd <password>] [-tls] [-tls_]
+        [-nick <nickname>] [-user <username>] [-real <realname>] <name>
 
 Command::
 
-    /connect [-port <port>] [-ssl on|off|notverify] [-realname <realname>] [-passwd <passwd>] <host> <nick>
+    /connect [-port <port>]  [-pwd <password>] [-tls] [-tls-valid-all]
+        [-user <username>] [-real <realname>] <host> <nick>
 
 Add a server into your server list. It will become the default server
 automaticly.
@@ -31,18 +33,15 @@ automaticly.
 * ``host``: IRC server host
 * ``nick``: The nickname you want to use
 * ``-port``: IRC server port, if no specified, use ``6667``
-* ``-ssl``:
-
-  - ``on``: Use secure server connections with SSL
-  - ``off``: On the contrary
-  - ``notverify``: Disables the certificate verification
-
-* ``-passwd``: The password of the server
-* ``-realname``: Set your realname
+* ``-pwd``: The password of the server
+* ``-tls``: Use secure connections with TLS
+* ``-tls-valid-all``: Don't verify TLS certificate
+* ``-user``: Set your username
+* ``-real``: Set your realname
 
 Example::
 
-    /connect -realname 'I am srainbot' -ssl notverify -port 6697 chat.freenode.org srainbot
+    /connect -real 'I am srainbot' -tls -port 6697 chat.freenode.org srainbot
     /connect 127.0.0.1 srainbot
 
 **The following commands should excuted after a ``/connect`` command**

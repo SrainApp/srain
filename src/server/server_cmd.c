@@ -73,7 +73,7 @@ CommandBind cmd_binds[] = {
         .opt_key =
         {"-host", "-port", "-tls", "-tls-valid-all", "-pwd", "-nick", "-user", "-real", "-encode",  NULL},
         .opt_default_val =
-        {NULL, "6667", NULL, NULL, "Zaidan", "Srain", "Can you can a can?", "UTF-8", NULL},
+        {NULL, "6667", NULL, NULL, NULL, "Zaidan", "Srain", "Can you can a can?", "UTF-8", NULL},
         .flag = 0,
         .cb = on_command_server,
     },
@@ -81,9 +81,9 @@ CommandBind cmd_binds[] = {
         .name = "/connect",
         .argc = 2, // <hosts> <nick>
         .opt_key =
-        {"-host", "-port", "-tls", "-tls-valid-all", "-pwd", "-nick", "-user", "-real", "-encode",  NULL},
+        {"-port", "-tls", "-tls-valid-all", "-pwd", "-user", "-real", "-encode",  NULL},
         .opt_default_val =
-        {NULL, "6667", NULL, NULL, "Zaidan", "Srain", "Can you can a can?", "UTF-8", NULL},
+        {"6667", NULL, NULL, NULL, "Srain", "Can you can a can?", "UTF-8", NULL},
         .flag = 0,
         .cb = on_command_connect,
     },
@@ -362,7 +362,7 @@ static int on_command_server(Command *cmd, void *user_data){
         if (command_get_opt(cmd, "-tls", NULL)){
             prefs->irc->use_ssl = true;
         }
-        if (command_get_opt(cmd, "-tls-vaild-all", NULL)){
+        if (command_get_opt(cmd, "-tls-valid-all", NULL)){
             prefs->irc->verify_ssl_cert = false;
         }
 
@@ -457,37 +457,31 @@ static int on_command_connect(Command *cmd, void *user_data){
         return SRN_ERR;
     }
 
-    if (!server_prefs_is_valid(prefs)){
+    // if (!server_prefs_is_valid(prefs)){
         // TODO
-        ERR_FR("Not completed ServerPrefs");
-        return SRN_ERR;
-    }
+        // ERR_FR("Not completed ServerPrefs");
+        // return SRN_ERR;
+    // }
 
-    if (command_get_opt(cmd, "-host", &host)){
-        str_assign(&prefs->host, host);
-    }
-    if (command_get_opt(cmd, "-port", &port)){
-        prefs->port = atoi(port);
-    }
-    if (command_get_opt(cmd, "-pwd", &passwd)){
-        str_assign(&prefs->passwd, passwd);
-    }
-    if (command_get_opt(cmd, "-nick", &nick)){
-        str_assign(&prefs->nickname, nick);
-    }
-    if (command_get_opt(cmd, "-user", &user)){
-        str_assign(&prefs->username, user);
-    }
-    if (command_get_opt(cmd, "-real", &real)){
-        str_assign(&prefs->realname, real);
-    }
-    if (command_get_opt(cmd, "-encode", &encoding)){
-        str_assign(&prefs->encoding, encoding);
-    }
+    str_assign(&prefs->host, host);
+    str_assign(&prefs->nickname, nick);
+
+    /* Different with /server, we use default value of command here */
+    command_get_opt(cmd, "-port", &port);
+    prefs->port = atoi(port);
+    command_get_opt(cmd, "-pwd", &passwd);
+    str_assign(&prefs->passwd, passwd);
+    command_get_opt(cmd, "-user", &user);
+    str_assign(&prefs->username, user);
+    command_get_opt(cmd, "-real", &real);
+    str_assign(&prefs->realname, real);
+    command_get_opt(cmd, "-encode", &encoding);
+    str_assign(&prefs->encoding, encoding);
+
     if (command_get_opt(cmd, "-tls", NULL)){
         prefs->irc->use_ssl = true;
     }
-    if (command_get_opt(cmd, "-tls-vaild-all", NULL)){
+    if (command_get_opt(cmd, "-tls-valid-all", NULL)){
         prefs->irc->verify_ssl_cert = false;
     }
 

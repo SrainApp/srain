@@ -75,7 +75,7 @@ void server_irc_event_connect(SircSession *sirc, const char *event){
 
     /* Send connection password, you should send it command before sending
      * the NICK/USER combination. */
-    if (strlen(srv->prefs->passwd) > 0){
+    if (srv->prefs->passwd){
         sirc_cmd_pass(srv->irc, srv->prefs->passwd);
     }
     sirc_cmd_nick(srv->irc, user->nick);
