@@ -114,6 +114,6 @@ static SrnErr* srn_err_new(int id, const char *msg){
 }
 
 static void srn_err_free(SrnErr *err){
-    g_free(&err->msg);
+    g_free(err->msg);
     g_free(err);
 }

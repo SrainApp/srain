@@ -23,6 +23,7 @@
 #include "log.h"
 #include "utils.h"
 #include "prefs.h"
+#include "i18n.h"
 
 SuiAppEvents ui_app_events;
 SuiEvents ui_events;
@@ -76,7 +77,7 @@ void server_init(){
 
     errmsg = prefs_read();
     if (errmsg){
-        ERR_FR("Read prefs failed: %s", errmsg);
+        sui_message_box(_("Prefs read error"), errmsg);
         g_free(errmsg);
     }
 

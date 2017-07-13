@@ -13,24 +13,18 @@
 #include "rc.h"
 #include "filter.h"
 #include "prefs.h"
+#include "ret.h"
 
 static Server* ctx_get_server(SuiSession *sui);
 static Chat* ctx_get_chat(SuiSession *sui);
 
 void server_ui_event_activate(SuiEvent event, const char *params[], int count){
-    char *errmsg = NULL;
+    SrnRet ret;
 
-    /* We have read prefs in `server_init()`, read it again for reporting error
-     * on a message dialog. */
-    errmsg = prefs_read();
-
-    if (errmsg){
-        sui_message_box(_("Error"), errmsg);
-        g_free(errmsg);
+    ret = rc_read();
+    if (ret != SRN_OK){
+        sui_message_box(_("Error occurred while running commands"), ERRMSG(ret));
     }
-
-    rc_read();
-    // TODO: welcome or command error report
 }
 
 void server_ui_event_connect(SuiEvent event, const char *params[], int count){
