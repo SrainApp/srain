@@ -483,6 +483,7 @@ void sui_rm_completion(SuiSession *sui, const char *keyword){
 
 void sui_message_box(const char *title, const char *msg){
     GtkMessageDialog *dia;
+    char *markuped_msg;
 
     if (!is_app_run){
         gtk_init(0, NULL);
@@ -498,7 +499,10 @@ void sui_message_box(const char *title, const char *msg){
             );
 
     gtk_window_set_title(GTK_WINDOW(dia), title);
-    gtk_message_dialog_set_markup(GTK_MESSAGE_DIALOG(dia), msg);
+    // TODO: accpet markuped message
+    markuped_msg = g_markup_escape_text(msg, -1);
+    gtk_message_dialog_set_markup(GTK_MESSAGE_DIALOG(dia), markuped_msg);
+    g_free(markuped_msg);
 
     /* Without this, message dialog cannot be displayed on the center of screen */
     sui_proc_pending_event();

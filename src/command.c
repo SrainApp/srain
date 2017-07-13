@@ -25,14 +25,15 @@
 
 #include "command.h"
 #include "log.h"
+#include "i18n.h"
 
 static Command* command_new(CommandBind *bind, const char *rawcmd);
 static void command_free(Command *cmd);
-static int command_parse(CommandContext *ctx, Command *cmd, void *user_data);
+static SrnRet command_parse(CommandContext *ctx, Command *cmd, void *user_data);
 
-static int get_arg(char *ptr, char **arg, char **next);
-static int get_quote_arg(char *ptr, char **arg, char **next);
-static int get_last_quote_arg(char *ptr, char **arg);
+static SrnRet get_arg(char *ptr, char **arg, char **next);
+static SrnRet get_quote_arg(char *ptr, char **arg, char **next);
+static SrnRet get_last_quote_arg(char *ptr, char **arg);
 
 /**
  * @brief command_proc Check and parse command, and call the corresponding
@@ -45,7 +46,7 @@ static int get_last_quote_arg(char *ptr, char **arg);
  * @return SRN_ERR if failed, the reason is various(no such command, no enouch
  *         argument, callback function failed, etc.)
  */
-int command_proc(CommandContext *ctx, const char *rawcmd, void *user_data){
+SrnRet command_proc(CommandContext *ctx, const char *rawcmd, void *user_data){
     int ret;
     Command *cmd;
 
@@ -54,22 +55,20 @@ int command_proc(CommandContext *ctx, const char *rawcmd, void *user_data){
     for (int i = 0; ctx->binds[i].name != NULL; i++){
         if (g_str_has_prefix(rawcmd, ctx->binds[i].name)){
             cmd = command_new(&ctx->binds[i], rawcmd);
-            if (command_parse(ctx, cmd, user_data) == 0){
+            ret = command_parse(ctx, cmd, user_data);
+            if (ret == SRN_OK){
                 // callback
                 ret = cmd->bind->cb(cmd, user_data);
-                if (ret != SRN_OK){
-                    ctx->on_callback_fail(cmd, user_data);
-                }
-            } else {
-                ret = SRN_ERR;
+            } else if (ret == SRN_ERR) {
+                // TODO: decorate
+                ret = ERR(_("Sorry, command parse failed, please report a bug to <" PACKAGE_WEBSITE "/issues> ."));
             }
             command_free(cmd);
             return ret;
         }
     }
 
-    ctx->on_unknown_cmd(rawcmd, user_data);
-    return SRN_ERR;
+    return ERR(_("Unknown command: %s"), rawcmd);
 }
 
 /**
@@ -151,7 +150,7 @@ static void command_free(Command *cmd){
     g_free(cmd);
 }
 
-static int get_arg(char *ptr, char **arg, char **next){
+static SrnRet get_arg(char *ptr, char **arg, char **next){
     char *arg_in;
     char *next_in;
     g_return_val_if_fail(ptr && arg && next, SRN_ERR);
@@ -175,7 +174,7 @@ static int get_arg(char *ptr, char **arg, char **next){
     return SRN_ERR;
 }
 
-static int get_quote_arg(char *ptr, char **arg, char **next){
+static SrnRet get_quote_arg(char *ptr, char **arg, char **next){
     bool quote;
     bool escape;
     char *arg_in;
@@ -220,8 +219,7 @@ static int get_quote_arg(char *ptr, char **arg, char **next){
     }
 
     if (quote){
-        ERR_FR("Unterminal quote");
-        return SRN_ERR;
+        return ERR(_("Unclosed single quotation"));
     }
 
     next_in = ptr;
@@ -240,7 +238,7 @@ static int get_quote_arg(char *ptr, char **arg, char **next){
     return SRN_OK;
 }
 
-static int get_last_quote_arg(char *ptr, char **arg){
+static SrnRet get_last_quote_arg(char *ptr, char **arg){
     g_return_val_if_fail(ptr && arg, SRN_ERR);
     g_return_val_if_fail(*ptr != '\0', SRN_ERR);
 
@@ -260,7 +258,7 @@ static int get_last_quote_arg(char *ptr, char **arg){
     return SRN_OK;
 }
 
-static int command_parse(CommandContext *ctx, Command *cmd, void *user_data){
+static SrnRet command_parse(CommandContext *ctx, Command *cmd, void *user_data){
     int ret;
     int nopt = 0;
     int narg = 0;
@@ -361,35 +359,25 @@ static int command_parse(CommandContext *ctx, Command *cmd, void *user_data){
     return SRN_OK;
 
 missing_arg:
-    WARN_FR("Missing argument, expect %d, actually %d", cmd->bind->argc, narg);
     if (cmd->bind->flag & COMMAND_FLAG_OMIT_ARG){
         return SRN_OK;
     }
-    ctx->on_missing_arg(cmd, narg, user_data);
-    return SRN_ERR;
+    return ERR(_("Missing argument, expect %d, actually %d"), cmd->bind->argc, narg);
 
 unknown_opt:
-    WARN_FR("Unknown option '%s'", cmd->opt_key[nopt]);
-    ctx->on_unknown_opt(cmd, cmd->opt_key[nopt], user_data);
-    return SRN_ERR;
+    return ERR(_("Unknown option %s"), cmd->opt_key[nopt]);
 
 too_many_opt:
-    WARN_FR("Too many options, options count limit to %d", COMMAND_MAX_OPTS);
-    ctx->on_too_many_opt(cmd, user_data);
-    return SRN_ERR;
+    return ERR(_("Too many options, options count limit to %d"), COMMAND_MAX_OPTS);
 
 missing_opt_val:
-    WARN_FR("Missing vaule for option '%s'", cmd->opt_key[nopt]);
-    ctx->on_missing_opt_val(cmd, cmd->opt_key[nopt], user_data);
-    return SRN_ERR;
+    return ERR(_("Missing vaule for option %s"), cmd->opt_key[nopt]);
 
 #if 0
 too_many_arg:
     /* Currently, we regard all remaining text as the last argument, so this
      * label is never used. */
-    WARN_FR("Too many arguments, expect %d", cmd->bind->argc);
-    ctx->on_too_many_arg(cmd, user_data);
-    return SRN_ERR;
+    return ERR(_("Too many arguments, expect %d"), cmd->bind->argc);
 #endif
 }
 

@@ -20,6 +20,7 @@
 #include "meta.h"
 #include "i18n.h"
 #include "log.h"
+#include "rc.h"
 #include "file_helper.h"
 
 SrnRet rc_read(){

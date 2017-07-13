@@ -277,9 +277,9 @@ void server_cmd_init(){
  * @param chat Can be NULL
  * @param cmd
  *
- * @return SRN_ERR or result of `command_proc()`
+ * @return SRN_OK or SRN_ERR or other error
  */
-int server_cmd(Chat *chat, const char *cmd){
+SrnRet server_cmd(Chat *chat, const char *cmd){
     ServerCmdContext scctx;
 
     g_return_val_if_fail(cmd, SRN_ERR);

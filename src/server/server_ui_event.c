@@ -111,8 +111,10 @@ void server_ui_event_send(SuiSession *sui, SuiEvent event, const char *params[],
 
     // Command or message?
     if (msg[0] == '/'){
-        if (server_cmd(chat, msg) == SRN_OK){
-            // Nothing to do.
+        SrnRet ret;
+        ret = server_cmd(chat, msg);
+        if (ret != SRN_OK){
+            chat_add_error_message(chat, chat->user->nick, ERRMSG(ret));
         }
     } else {
         chat_add_sent_message(chat, msg);
