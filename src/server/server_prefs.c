@@ -19,6 +19,7 @@
 
 #include "prefs.h"
 #include "log.h"
+#include "i18n.h"
 
 static GSList *server_prefs_list = NULL;
 
@@ -104,24 +105,58 @@ ServerPrefs* server_prefs_get_prefs(const char *name){
     return NULL;
 }
 
-bool server_prefs_is_valid(ServerPrefs *prefs){
+SrnRet server_prefs_is_valid(ServerPrefs *prefs){
+    const char *fmt = _("Missing field in ServerPrefs: %s");
+
     /* Whether prefs exists in server_prefs_list? */
     if (!prefs || !g_slist_find(server_prefs_list, prefs)){
-            return FALSE;
+        return ERR(_("Invalid ServerPrefs instance"));
      }
 
-    return (prefs->name
-            && prefs->host
-            // && prefs->passwd
-            && prefs->encoding
-            && prefs->nickname
-            && prefs->username
-            && prefs->realname
-            && prefs->part_message
-            && prefs->kick_message
-            && prefs->away_message
-            && prefs->quit_message
-            && prefs->irc);
+    if (!prefs->name) {
+        return ERR(fmt, "name");
+    }
+    if (!prefs->host) {
+        return ERR(fmt, "host");
+    }
+
+    // passwd can be NULL
+    // if (!prefs->passwd) {
+    //    return ERR(fmt, "password");
+    // }
+
+    if (!prefs->encoding) {
+        return ERR(fmt, "encoding");
+    }
+    if (!prefs->nickname) {
+        return ERR(fmt, "nickname");
+    }
+    if (!prefs->username) {
+        return ERR(fmt, "username");
+    }
+    if (!prefs->realname) {
+        return ERR(fmt, "realname");
+    }
+    if (!prefs->part_message) {
+        return ERR(fmt, "part_message");
+    }
+    if (!prefs->kick_message) {
+        return ERR(fmt, "kick_message");
+    }
+    if (!prefs->away_message) {
+        return ERR(fmt, "away_message");
+    }
+    if (!prefs->quit_message) {
+        return ERR(fmt, "quit_message");
+    }
+    if (!prefs->irc) {
+        return ERR(fmt, "irc");
+    }
+    if (!prefs->name) {
+        return ERR(fmt, "name");
+    }
+
+    return sirc_prefs_is_valid(prefs->irc);
 }
 
 void server_prefs_free(ServerPrefs *prefs){

@@ -6,6 +6,7 @@
 
 #include "sirc/sirc.h"
 #include "sui/sui.h"
+#include "ret.h"
 
 /* In millseconds */
 #define SERVER_PING_INTERVAL    (60 * 1000)
@@ -195,7 +196,7 @@ void message_free(Message *msg);
 void server_prefs_list_init();
 ServerPrefs* server_prefs_new(const char *name);
 ServerPrefs* server_prefs_get_prefs(const char *name);
-bool server_prefs_is_valid(ServerPrefs *prefs);
+SrnRet server_prefs_is_valid(ServerPrefs *prefs);
 void server_prefs_free(ServerPrefs *prefs);
 
 /* Server list */

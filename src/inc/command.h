@@ -24,7 +24,7 @@
 typedef int CommandFlag;
 typedef struct _Command Command;
 
-typedef int (CommandCallback) (Command *cmd, void *user_data);
+typedef SrnRet (CommandCallback) (Command *cmd, void *user_data);
 
 typedef struct {
     char *name;

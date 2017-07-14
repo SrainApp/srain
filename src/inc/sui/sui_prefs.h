@@ -6,6 +6,7 @@
 #endif
 
 #include "srain.h"
+#include "ret.h"
 
 typedef struct _SuiAppPrefs SuiAppPrefs;
 typedef struct _SuiPrefs SuiPrefs;
@@ -24,11 +25,11 @@ struct _SuiPrefs {
 };
 
 SuiAppPrefs *sui_app_prefs_new();
-bool sui_app_prefs_is_valid(SuiAppPrefs *prefs);
+SrnRet sui_app_prefs_is_valid(SuiAppPrefs *prefs);
 void sui_app_prefs_free(SuiAppPrefs *prefs);
 
 SuiPrefs *sui_prefs_new();
-bool sui_prefs_is_valid(SuiPrefs *prefs);
+SrnRet sui_prefs_is_valid(SuiPrefs *prefs);
 void sui_prefs_free(SuiPrefs *prefs);
 
 #endif /* __SUI_PREFS_H */

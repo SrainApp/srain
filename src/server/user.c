@@ -8,8 +8,8 @@ User *user_new(Chat *chat, const char *nick, const char *username,
 
     g_return_val_if_fail(chat, NULL);
     g_return_val_if_fail(nick, NULL);
-    if (!username) username = "";
-    if (!realname) realname = "";
+    if (!username) username = nick;
+    if (!realname) realname = nick;
 
     user = g_malloc0(sizeof(User));
 

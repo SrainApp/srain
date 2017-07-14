@@ -1,6 +1,7 @@
 #include <glib.h>
 
 #include "sui/sui.h"
+#include "i18n.h"
 
 SuiAppPrefs *sui_app_prefs_new(){
     SuiAppPrefs *prefs;
@@ -10,10 +11,18 @@ SuiAppPrefs *sui_app_prefs_new(){
     return prefs;
 }
 
-bool sui_app_prefs_is_valid(SuiAppPrefs *prefs){
-    return (prefs
-            && prefs->theme);
+SrnRet sui_app_prefs_is_valid(SuiAppPrefs *prefs){
+    const char *fmt = _("Missing field in SuiAppPrefs: %s");
+
+    if (!prefs){
+        return ERR(_("Invalid SuiAppPrefs instance"));
+    }
+    if (!prefs->theme){
+        return ERR(fmt, "theme");
+    }
+    return SRN_OK;
 }
+
 void sui_app_prefs_free(SuiAppPrefs *prefs){
     g_return_if_fail(prefs);
 
@@ -33,8 +42,11 @@ SuiPrefs *sui_prefs_new(){
     return prefs;
 }
 
-bool sui_prefs_is_valid(SuiPrefs *prefs){
-    return prefs;
+SrnRet sui_prefs_is_valid(SuiPrefs *prefs){
+    if (!prefs){
+        return ERR(_("Invalid SuiPrefs instance"));
+    }
+    return SRN_OK;
 }
 
 void sui_prefs_free(SuiPrefs *prefs){

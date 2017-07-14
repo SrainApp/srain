@@ -47,7 +47,7 @@ static SrnRet get_last_quote_arg(char *ptr, char **arg);
  *         argument, callback function failed, etc.)
  */
 SrnRet command_proc(CommandContext *ctx, const char *rawcmd, void *user_data){
-    int ret;
+    SrnRet ret;
     Command *cmd;
 
     if (!ctx) return SRN_ERR;
@@ -259,10 +259,10 @@ static SrnRet get_last_quote_arg(char *ptr, char **arg){
 }
 
 static SrnRet command_parse(CommandContext *ctx, Command *cmd, void *user_data){
-    int ret;
     int nopt = 0;
     int narg = 0;
     char *ptr, *tmp;
+    SrnRet ret;
     CommandBind *bind = cmd->bind;
 
     /* Skip command name */
@@ -271,7 +271,9 @@ static SrnRet command_parse(CommandContext *ctx, Command *cmd, void *user_data){
 
     /* Subcommand */
     if (ptr){
+        bool has_subcmd = FALSE;
         for (int i = 0; cmd->bind->subcmd[i]; i++){
+            has_subcmd = TRUE;
             if (!g_str_has_prefix(ptr, cmd->bind->subcmd[i])){
                 continue;
             }
@@ -280,6 +282,9 @@ static SrnRet command_parse(CommandContext *ctx, Command *cmd, void *user_data){
             DBG_FR("subcmd: %s", cmd->subcmd);
 
             get_arg(ptr, &tmp, &ptr);
+        }
+        if (has_subcmd && !cmd->subcmd) {
+            goto unknown_subcmd;
         }
     }
 
@@ -372,6 +377,9 @@ too_many_opt:
 
 missing_opt_val:
     return ERR(_("Missing vaule for option %s"), cmd->opt_key[nopt]);
+
+unknown_subcmd:
+    return ERR(_("Unknown sub command: %s"), ptr);
 
 #if 0
 too_many_arg:
