@@ -57,14 +57,6 @@ static SrnRet on_command_kick(Command *cmd, void *user_data);
 static SrnRet on_command_mode(Command *cmd, void *user_data);
 static SrnRet on_command_list(Command *cmd, void *user_data);
 
-static void on_unknown_cmd(const char *cmd, void *user_data);
-static void on_unknown_opt(Command *cmd, const char *opt, void *user_data);
-static void on_missing_arg(Command *cmd, int narg, void *user_data);
-static void on_missing_opt_val(Command *cmd, const char *opt, void *user_data);
-static void on_too_many_opt(Command *cmd, void *user_data);
-static void on_too_many_arg(Command *cmd, void *user_data);
-static void on_callback_fail(Command *cmd, void *user_data);
-
 CommandBind cmd_binds[] = {
     {
         .name = "/server",
@@ -253,13 +245,6 @@ CommandBind cmd_binds[] = {
 
 static CommandContext cmd_ctx = {
     .binds = cmd_binds,
-    .on_unknown_cmd = on_unknown_cmd,
-    .on_unknown_opt = on_unknown_opt,
-    .on_missing_opt_val = on_missing_opt_val,
-    .on_missing_arg = on_missing_arg,
-    .on_too_many_opt = on_too_many_opt,
-    .on_too_many_arg = on_too_many_arg,
-    .on_callback_fail = on_callback_fail,
 };
 
 static Server *def_srv; // Default server
@@ -859,79 +844,6 @@ static SrnRet on_command_mode(Command *cmd, void *user_data){
 
 static SrnRet on_command_list(Command *cmd, void *user_data){
     return SRN_OK;
-}
-
-/*******************************************************************************
- * Error callbacks
- ******************************************************************************/
-
-static void on_unknown_cmd(const char *cmd, void *user_data){
-    Chat *chat;
-
-    chat = scctx_get_chat(user_data);
-    g_return_if_fail(chat);
-
-    chat_add_error_message_fmt(chat, chat->user->nick,
-            _("No such command: %s"), cmd);
-}
-
-static void on_unknown_opt(Command *cmd, const char *opt, void *user_data){
-    Chat *chat;
-
-    chat = scctx_get_chat(user_data);
-    g_return_if_fail(chat);
-
-    chat_add_error_message_fmt(chat, chat->user->nick,
-            _("No such option: %s"), opt);
-}
-
-static void on_missing_opt_val(Command *cmd, const char *opt, void *user_data){
-    Chat *chat;
-
-    chat = scctx_get_chat(user_data);
-    g_return_if_fail(chat);
-
-    chat_add_error_message_fmt(chat, chat->user->nick,
-            _("Option missing value: %s"), opt);
-}
-
-static void on_missing_arg(Command *cmd, int narg, void *user_data){
-    Chat *chat;
-
-    chat = scctx_get_chat(user_data);
-    g_return_if_fail(chat);
-
-    chat_add_error_message_fmt(chat, chat->user->nick,
-            _("Missing arguments, expecting %d, actually %d"),
-            cmd->bind->argc, narg);
-}
-
-static void on_too_many_opt(Command *cmd, void *user_data){
-    Chat *chat;
-
-    chat = scctx_get_chat(user_data);
-    g_return_if_fail(chat);
-
-    chat_add_error_message_fmt(chat, chat->user->nick, _("Too many options"));
-}
-
-static void on_too_many_arg(Command *cmd, void *user_data){
-    Chat *chat;
-
-    chat = scctx_get_chat(user_data);
-    g_return_if_fail(chat);
-
-    chat_add_error_message_fmt(chat, chat->user->nick, _("Too many arguments"));
-}
-
-static void on_callback_fail(Command *cmd, void *user_data){
-    Chat *chat;
-
-    chat = scctx_get_chat(user_data);
-    g_return_if_fail(chat);
-
-    chat_add_error_message_fmt(chat, chat->user->nick,
-            _("Command failed: %s"), cmd->rawcmd);
 }
 
 /*******************************************************************************

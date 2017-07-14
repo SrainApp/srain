@@ -48,13 +48,6 @@ struct _Command {
 
 typedef struct {
     CommandBind *binds;
-    void (*on_unknown_cmd) (const char *cmd, void *user_data);
-    void (*on_unknown_opt) (Command *cmd, const char *opt, void *user_data);
-    void (*on_missing_opt_val) (Command *cmd, const char *opt, void *user_data);
-    void (*on_missing_arg) (Command *cmd, int narg, void *user_data);
-    void (*on_too_many_opt) (Command *cmd, void *user_data);
-    void (*on_too_many_arg) (Command *cmd, void *user_data);
-    void (*on_callback_fail) (Command *cmd, void *user_data);
 } CommandContext;
 
 SrnRet command_proc(CommandContext *ctx, const char *rawcmd, void *user_data);

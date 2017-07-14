@@ -55,6 +55,7 @@ SrnRet rc_read(){
                 break;
             }
         }
+        nline++;
     }
 
 fin:
