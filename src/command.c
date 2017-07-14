@@ -61,14 +61,14 @@ SrnRet command_proc(CommandContext *ctx, const char *rawcmd, void *user_data){
                 ret = cmd->bind->cb(cmd, user_data);
             } else if (ret == SRN_ERR) {
                 // TODO: decorate
-                ret = ERR(_("Sorry, command parse failed, please report a bug to <" PACKAGE_WEBSITE "/issues> ."));
+                ret = RET_ERR(_("Sorry, command parse failed, please report a bug to <" PACKAGE_WEBSITE "/issues> ."));
             }
             command_free(cmd);
             return ret;
         }
     }
 
-    return ERR(_("Unknown command: %s"), rawcmd);
+    return RET_ERR(_("Unknown command: %s"), rawcmd);
 }
 
 /**
@@ -219,7 +219,7 @@ static SrnRet get_quote_arg(char *ptr, char **arg, char **next){
     }
 
     if (quote){
-        return ERR(_("Unclosed single quotation"));
+        return RET_ERR(_("Unclosed single quotation"));
     }
 
     next_in = ptr;
@@ -367,25 +367,25 @@ missing_arg:
     if (cmd->bind->flag & COMMAND_FLAG_OMIT_ARG){
         return SRN_OK;
     }
-    return ERR(_("Missing argument, expect %d, actually %d"), cmd->bind->argc, narg);
+    return RET_ERR(_("Missing argument, expect %d, actually %d"), cmd->bind->argc, narg);
 
 unknown_opt:
-    return ERR(_("Unknown option %s"), cmd->opt_key[nopt]);
+    return RET_ERR(_("Unknown option %s"), cmd->opt_key[nopt]);
 
 too_many_opt:
-    return ERR(_("Too many options, options count limit to %d"), COMMAND_MAX_OPTS);
+    return RET_ERR(_("Too many options, options count limit to %d"), COMMAND_MAX_OPTS);
 
 missing_opt_val:
-    return ERR(_("Missing vaule for option %s"), cmd->opt_key[nopt]);
+    return RET_ERR(_("Missing vaule for option %s"), cmd->opt_key[nopt]);
 
 unknown_subcmd:
-    return ERR(_("Unknown sub command: %s"), ptr);
+    return RET_ERR(_("Unknown sub command: %s"), ptr);
 
 #if 0
 too_many_arg:
     /* Currently, we regard all remaining text as the last argument, so this
      * label is never used. */
-    return ERR(_("Too many arguments, expect %d"), cmd->bind->argc);
+    return RET_ERR(_("Too many arguments, expect %d"), cmd->bind->argc);
 #endif
 }
 

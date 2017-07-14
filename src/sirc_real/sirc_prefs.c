@@ -13,7 +13,7 @@ SircPrefs *sirc_prefs_new(){
 
 SrnRet sirc_prefs_is_valid(SircPrefs *prefs){
     if (!prefs){
-        return ERR(_("Invalid ServerPrefs instance"));
+        return RET_ERR(_("Invalid ServerPrefs instance"));
     }
     return SRN_OK;
 }

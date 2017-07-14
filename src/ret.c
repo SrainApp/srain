@@ -1,6 +1,6 @@
 /**
  * @file ret.c
- * @brief Srain return value, support for returning error message
+ * @brief Srain return value, which can carry message
  * @author Shengyu Zhang <silverrainz@outlook.com>
  * @version 1.0
  * @date 2017-07-13
@@ -11,70 +11,64 @@
 #include "i18n.h"
 #include "ret.h"
 
-#define SRN_RET_ERR_COUNT 512
+#define SRN_RET_MESSAGE_COUNT 512
 
-typedef struct _SrnErr SrnErr;
+typedef struct _SrnRetMessage SrnRetMessage;
 
-struct _SrnErr {
-    int id;
+struct _SrnRetMessage {
+    SrnRet id;
+    int no;
     char *msg;
 };
 
-static int errid = 0;
-static GSList *err_list = NULL;
+static SrnRet msgid = 0;
+static GSList *msg_list = NULL;
 static GMutex mutex;
 
-static SrnErr* srn_err_new(int id, const char *msg);
-static void srn_err_free(SrnErr *err);
+static SrnRetMessage* srn_ret_message_new(SrnRet id, int no, const char *msg);
+static void srn_ret_message_free(SrnRetMessage *rmsg);
+static SrnRet ret_with_message(int no, const char *fmt, va_list ap);
 
 void ret_init(){
     g_mutex_init(&mutex);
 }
 
 void ret_finalize(){
-    g_slist_free_full(err_list, (GDestroyNotify)srn_err_free);
+    g_slist_free_full(msg_list, (GDestroyNotify)srn_ret_message_free);
 }
 
 SrnRet ret_err(const char *fmt, ...){
-    int id;
+    SrnRet id;
     va_list args;
-    GString *msg;
-    SrnErr *err;
 
-    g_mutex_lock(&mutex);
-
-    if (g_slist_length(err_list) > SRN_RET_ERR_COUNT){
-        // If err_list full
-        GSList *last;
-        last = g_slist_last(err_list);
-        srn_err_free((SrnErr *)last->data);
-        err_list = g_slist_delete_link(err_list, last);
-    }
-
-    msg = g_string_new(NULL);
     va_start(args, fmt);
-    g_string_append_vprintf(msg, fmt, args);
+    id = ret_with_message(SRN_ERR, fmt, args);
     va_end(args);
 
-    err = srn_err_new(++errid, msg->str);
-    g_string_free(msg, TRUE);
-
-    err_list = g_slist_prepend(err_list, err);
-
-    g_mutex_unlock(&mutex);
-
-    return err->id;
+    return id;
 }
 
-const char *ret_errmsg(int id){
+SrnRet ret_ok(const char *fmt, ...){
+    SrnRet id;
+    va_list args;
+
+    va_start(args, fmt);
+    id = ret_with_message(SRN_OK, fmt, args);
+    va_end(args);
+
+    return id;
+}
+
+const char *ret_get_message(SrnRet id){
     const char *msg;
     GSList *lst;
-    SrnErr *err;
+    SrnRetMessage *err;
 
     g_mutex_lock(&mutex);
 
+    msg = NULL;
+
     if (id == SRN_OK) {
-        msg =  _("No error occurred");
         goto fin;
     }
     if (id == SRN_ERR) {
@@ -82,8 +76,7 @@ const char *ret_errmsg(int id){
         goto fin;
     }
 
-    msg = NULL;
-    lst = err_list;
+    lst = msg_list;
     while (lst){
         err = lst->data;
 
@@ -96,24 +89,80 @@ const char *ret_errmsg(int id){
 
 fin:
     g_mutex_unlock(&mutex);
-    if (!msg){
+    if (id != SRN_OK && !msg){
         msg = _("Invalid error id, maybe this error is removed because out of date");
     }
 
     return msg;
 }
 
-static SrnErr* srn_err_new(int id, const char *msg){
-    SrnErr *err;
+int ret_get_no(SrnRet id){
+    int no;
+    GSList *lst;
+    SrnRetMessage *rmsg;
 
-    err = g_malloc0(sizeof(SrnErr));
-    err->id = id;
-    err->msg = g_strdup(msg);
+    no = SRN_ERR;
+    g_mutex_lock(&mutex);
 
-    return err;
+    if (id == SRN_OK || id == SRN_ERR){
+        no = id;
+        goto fin;
+    }
+
+    rmsg = NULL;
+    lst = msg_list;
+    while (lst){
+        rmsg = lst->data;
+        if (rmsg->id == id) {
+            no = rmsg->no;
+            break;
+        }
+        lst = g_slist_next(lst);
+    }
+
+fin:
+    g_mutex_unlock(&mutex);
+    return no;
 }
 
-static void srn_err_free(SrnErr *err){
-    g_free(err->msg);
-    g_free(err);
+static SrnRet ret_with_message(int no, const char *fmt, va_list ap){
+    GString *msg;
+    SrnRetMessage *rmsg;
+
+    g_mutex_lock(&mutex);
+
+    if (g_slist_length(msg_list) > SRN_RET_MESSAGE_COUNT){
+        // If msg_list full
+        GSList *last;
+        last = g_slist_last(msg_list);
+        srn_ret_message_free((SrnRetMessage *)last->data);
+        msg_list = g_slist_delete_link(msg_list, last);
+    }
+
+    msg = g_string_new(NULL);
+    g_string_append_vprintf(msg, fmt, ap);
+
+    rmsg = srn_ret_message_new(++msgid, no, msg->str);
+    g_string_free(msg, TRUE);
+
+    msg_list = g_slist_prepend(msg_list, rmsg);
+
+    g_mutex_unlock(&mutex);
+
+    return rmsg->id;
+}
+
+static SrnRetMessage* srn_ret_message_new(SrnRet id, int no, const char *msg){
+    SrnRetMessage *rmsg;
+
+    rmsg = g_malloc0(sizeof(SrnRetMessage));
+    rmsg->id = id;
+    rmsg->msg = g_strdup(msg);
+
+    return rmsg;
+}
+
+static void srn_ret_message_free(SrnRetMessage *rmsg){
+    g_free(rmsg->msg);
+    g_free(rmsg);
 }

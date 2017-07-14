@@ -299,7 +299,7 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
 
     subcmd = cmd->subcmd;
     if (!subcmd) {
-        return ERR(_("No subcommand specified"));
+        return RET_ERR(_("No subcommand specified"));
     }
 
     if (g_ascii_strcasecmp(subcmd, "add") == 0){
@@ -309,7 +309,7 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
     }
 
     if (!prefs){
-        return ERR("Failed to get/create ServerPrefs '%s'", name);
+        return RET_ERR("Failed to get/create ServerPrefs '%s'", name);
     }
 
     if (g_ascii_strcasecmp(subcmd, "add") == 0){
@@ -370,7 +370,7 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
 
         if (!server_is_registered(srv)){
             server_free(srv);
-            return ERR(_("Failed to register on server '%s'"), prefs->name);
+            return RET_ERR(_("Failed to register on server '%s'"), prefs->name);
         }
 
         def_srv = srv;
@@ -382,11 +382,11 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
         srv = server_list_get_server(name);
         if (!srv) {
             // FIXME: better errmsg?
-            return ERR(_("Can not disconnect from a server which is not connected"));
+            return RET_ERR(_("Can not disconnect from a server which is not connected"));
         }
 
         if (srv->stat != SERVER_CONNECTED){
-            return ERR(_("Can not disconnect from a server which is not connected"));
+            return RET_ERR(_("Can not disconnect from a server which is not connected"));
         }
 
         server_disconnect(srv);
@@ -398,7 +398,7 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
         srv = server_list_get_server(name);
         if (srv) {
             if (srv->stat == SERVER_CONNECTED) {
-                return ERR(_("Can not remove a server which is still connected"));
+                return RET_ERR(_("Can not remove a server which is still connected"));
             }
             server_free(srv);
         }
@@ -407,7 +407,7 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
         if (prefs){
             server_prefs_free(prefs);
         } else {
-            return ERR(_("No such server: %s"), name);
+            return RET_ERR(_("No such server: %s"), name);
         }
     }
 
@@ -435,7 +435,7 @@ static SrnRet on_command_connect(Command *cmd, void *user_data){
 
     prefs = server_prefs_new(host);
     if (!prefs){
-        return ERR("Failed to create ServerPrefs '%s'", host);
+        return RET_ERR("Failed to create ServerPrefs '%s'", host);
     }
 
     errmsg = prefs_read_server_prefs(prefs);
@@ -477,7 +477,7 @@ static SrnRet on_command_connect(Command *cmd, void *user_data){
 
     srv = server_new_from_prefs(prefs);
     if (!srv) {
-        return ERR(_("Failed to create server %s"), prefs->name);
+        return RET_ERR(_("Failed to create server %s"), prefs->name);
     }
 
     def_srv = srv;
@@ -487,7 +487,7 @@ static SrnRet on_command_connect(Command *cmd, void *user_data){
 
     if (!server_is_registered(srv)){
         def_srv = NULL;
-        return ERR(_("Failed to register on server %s"), prefs->name);
+        return RET_ERR(_("Failed to register on server %s"), prefs->name);
     }
 
     return SRN_OK;

@@ -34,13 +34,13 @@ SrnRet rc_read(){
 
     rc_file = get_config_file("srainrc");
     if (!rc_file) {
-        ret = ERR(_("Rc file not found: %s"), rc_file);
+        ret = RET_ERR(_("Rc file not found: %s"), rc_file);
         goto fin;
     }
 
     fp = fopen(rc_file, "r");
     if (!fp){
-        ret = ERR(_("Can not open rc file: %s"), rc_file);
+        ret = RET_ERR(_("Can not open rc file: %s"), rc_file);
         goto fin;
     }
 
@@ -51,7 +51,7 @@ SrnRet rc_read(){
         if (line && line[0] != '#'){
             strtok(line, "\n");
             if ((ret = server_cmd(NULL, line)) != SRN_OK){
-                ret = ERR("Command failed at line %d: %s", nline, ERRMSG(ret));
+                ret = RET_ERR("Command failed at line %d: %s", nline, RET_MSG(ret));
                 break;
             }
         }

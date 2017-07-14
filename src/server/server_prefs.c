@@ -110,50 +110,50 @@ SrnRet server_prefs_is_valid(ServerPrefs *prefs){
 
     /* Whether prefs exists in server_prefs_list? */
     if (!prefs || !g_slist_find(server_prefs_list, prefs)){
-        return ERR(_("Invalid ServerPrefs instance"));
+        return RET_ERR(_("Invalid ServerPrefs instance"));
      }
 
     if (!prefs->name) {
-        return ERR(fmt, "name");
+        return RET_ERR(fmt, "name");
     }
     if (!prefs->host) {
-        return ERR(fmt, "host");
+        return RET_ERR(fmt, "host");
     }
 
     // passwd can be NULL
     // if (!prefs->passwd) {
-    //    return ERR(fmt, "password");
+    //    return RET_ERR(fmt, "password");
     // }
 
     if (!prefs->encoding) {
-        return ERR(fmt, "encoding");
+        return RET_ERR(fmt, "encoding");
     }
     if (!prefs->nickname) {
-        return ERR(fmt, "nickname");
+        return RET_ERR(fmt, "nickname");
     }
     if (!prefs->username) {
-        return ERR(fmt, "username");
+        return RET_ERR(fmt, "username");
     }
     if (!prefs->realname) {
-        return ERR(fmt, "realname");
+        return RET_ERR(fmt, "realname");
     }
     if (!prefs->part_message) {
-        return ERR(fmt, "part_message");
+        return RET_ERR(fmt, "part_message");
     }
     if (!prefs->kick_message) {
-        return ERR(fmt, "kick_message");
+        return RET_ERR(fmt, "kick_message");
     }
     if (!prefs->away_message) {
-        return ERR(fmt, "away_message");
+        return RET_ERR(fmt, "away_message");
     }
     if (!prefs->quit_message) {
-        return ERR(fmt, "quit_message");
+        return RET_ERR(fmt, "quit_message");
     }
     if (!prefs->irc) {
-        return ERR(fmt, "irc");
+        return RET_ERR(fmt, "irc");
     }
     if (!prefs->name) {
-        return ERR(fmt, "name");
+        return RET_ERR(fmt, "name");
     }
 
     return sirc_prefs_is_valid(prefs->irc);

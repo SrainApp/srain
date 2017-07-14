@@ -15,10 +15,10 @@ SrnRet sui_app_prefs_is_valid(SuiAppPrefs *prefs){
     const char *fmt = _("Missing field in SuiAppPrefs: %s");
 
     if (!prefs){
-        return ERR(_("Invalid SuiAppPrefs instance"));
+        return RET_ERR(_("Invalid SuiAppPrefs instance"));
     }
     if (!prefs->theme){
-        return ERR(fmt, "theme");
+        return RET_ERR(fmt, "theme");
     }
     return SRN_OK;
 }
@@ -44,7 +44,7 @@ SuiPrefs *sui_prefs_new(){
 
 SrnRet sui_prefs_is_valid(SuiPrefs *prefs){
     if (!prefs){
-        return ERR(_("Invalid SuiPrefs instance"));
+        return RET_ERR(_("Invalid SuiPrefs instance"));
     }
     return SRN_OK;
 }

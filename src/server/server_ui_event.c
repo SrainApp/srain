@@ -23,7 +23,7 @@ void server_ui_event_activate(SuiEvent event, const char *params[], int count){
 
     ret = rc_read();
     if (ret != SRN_OK){
-        sui_message_box(_("Error occurred while running commands"), ERRMSG(ret));
+        sui_message_box(_("Error occurred while running commands"), RET_MSG(ret));
     }
 }
 
@@ -114,7 +114,7 @@ void server_ui_event_send(SuiSession *sui, SuiEvent event, const char *params[],
         SrnRet ret;
         ret = server_cmd(chat, msg);
         if (ret != SRN_OK){
-            chat_add_error_message(chat, chat->user->nick, ERRMSG(ret));
+            chat_add_error_message(chat, chat->user->nick, RET_MSG(ret));
         }
     } else {
         chat_add_sent_message(chat, msg);
