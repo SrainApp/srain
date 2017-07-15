@@ -8,8 +8,10 @@
 /* Just alias */
 #define RET_OK(...) ret_ok(__VA_ARGS__)
 #define RET_ERR(...) ret_err(__VA_ARGS__)
-#define RET_IS_OK(id) ((id) == SRN_OK || ret_get_no((id)) == SRN_OK)
-#define RET_IS_ERR(id) ((id) == SRN_ERR || ret_get_no((id)) == SRN_ERR)
+#define RET_IS_OK(id) ({ typeof (id) _id = (id); \
+        (_id == SRN_OK || ret_get_no(_id) == SRN_OK);})
+#define RET_IS_ERR(id) ({ typeof (id) _id = (id); \
+        (_id == SRN_ERR || ret_get_no(_id) == SRN_ERR);})
 #define RET_MSG(id) ret_get_message((id))
 
 typedef int SrnRet;
