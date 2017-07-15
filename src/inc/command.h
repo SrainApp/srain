@@ -2,6 +2,7 @@
 #define __COMMAND_H
 
 #include "srain.h"
+#include "ret.h"
 
 #define COMMAND_MAX_OPTS        20
 #define COMMAND_MAX_ARGS        20
@@ -23,7 +24,7 @@
 typedef int CommandFlag;
 typedef struct _Command Command;
 
-typedef int (CommandCallback) (Command *cmd, void *user_data);
+typedef SrnRet (CommandCallback) (Command *cmd, void *user_data);
 
 typedef struct {
     char *name;
@@ -47,18 +48,11 @@ struct _Command {
 
 typedef struct {
     CommandBind *binds;
-    void (*on_unknown_cmd) (const char *cmd, void *user_data);
-    void (*on_unknown_opt) (Command *cmd, const char *opt, void *user_data);
-    void (*on_missing_opt_val) (Command *cmd, const char *opt, void *user_data);
-    void (*on_missing_arg) (Command *cmd, int narg, void *user_data);
-    void (*on_too_many_opt) (Command *cmd, void *user_data);
-    void (*on_too_many_arg) (Command *cmd, void *user_data);
-    void (*on_callback_fail) (Command *cmd, void *user_data);
 } CommandContext;
 
-int command_proc(CommandContext *ctx, const char *rawcmd, void *user_data);
+SrnRet command_proc(CommandContext *ctx, const char *rawcmd, void *user_data);
 const char *command_get_arg(Command *cmd, unsigned index);
-bool command_get_opt(Command *cmd, const char *opt_key, char **opt_val);
+bool command_get_opt(Command *cmd, const char *opt_key, const char **opt_val);
 
 void command_test();
 void get_quote_arg_test();

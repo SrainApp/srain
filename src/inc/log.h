@@ -64,9 +64,6 @@ struct _LogPrefs {
 #define ERR_F(...) \
     log_print(LOG_ERROR, TRUE, FALSE, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 
-#define ERR(...) \
-    log_print(LOG_ERROR, FALSE, FALSE, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
-
 void log_init();
 void log_read_prefs();
 void log_finalize();

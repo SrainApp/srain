@@ -2,8 +2,9 @@
 #define __SERVER_CMD_H
 
 #include "server.h"
+#include "ret.h"
 
 void server_cmd_init();
-int server_cmd(Chat *chat, const char *cmd);
+SrnRet server_cmd(Chat *chat, const char *cmd);
 
 #endif /* __SERVER_CMD_H */

@@ -6,6 +6,7 @@
 
 #include "sirc/sirc.h"
 #include "sui/sui.h"
+#include "ret.h"
 
 /* In millseconds */
 #define SERVER_PING_INTERVAL    (60 * 1000)
@@ -29,7 +30,6 @@ typedef struct _Message Message;
 typedef struct _User User;
 typedef struct _Chat Chat;
 typedef enum   _ServerStatus ServerStatus;
-typedef struct _ServerInfo ServerInfo;
 typedef struct _Server Server;
 typedef struct _ServerPrefs ServerPrefs;
 
@@ -103,7 +103,6 @@ struct _Chat {
 };
 
 enum _ServerStatus {
-    SERVER_UNCONNECTED,
     SERVER_CONNECTING,
     SERVER_CONNECTED,
     SERVER_DISCONNECTED,
@@ -113,7 +112,6 @@ struct _Server {
     ServerStatus stat;
     bool registered;    // Whether the user has registered(Own a nickname)?
     bool user_quit;     // Whether the user has received a QUIT message originated by himself?
-    ServerInfo *info;
     ServerPrefs *prefs;
     User *user;         // Used to store your nick, username, realname
     Chat *chat;         // Hold all messages that do not belong to any other Chat
@@ -149,6 +147,9 @@ struct _ServerPrefs {
     char *quit_message;
 
     SircPrefs *irc;
+
+    // ...
+    Server *srv;
 };
 
 void server_init();
@@ -192,8 +193,9 @@ Message* message_new(Chat *chat, User *user, const char *content, MessageType ty
 void message_free(Message *msg);
 
 void server_prefs_list_init();
-ServerPrefs* server_prefs_new();
-bool server_prefs_is_valid(ServerPrefs *prefs);
+ServerPrefs* server_prefs_new(const char *name);
+ServerPrefs* server_prefs_get_prefs(const char *name);
+SrnRet server_prefs_is_valid(ServerPrefs *prefs);
 void server_prefs_free(ServerPrefs *prefs);
 
 /* Server list */

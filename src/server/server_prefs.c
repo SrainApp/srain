@@ -19,6 +19,8 @@
 
 #include "prefs.h"
 #include "log.h"
+#include "utils.h"
+#include "i18n.h"
 
 static GSList *server_prefs_list = NULL;
 
@@ -32,7 +34,7 @@ static int server_prefs_list_add(ServerPrefs *prefs){
     lst = server_prefs_list;
     while (lst){
         old_prefs = lst->data;
-        if (strcasecmp(prefs->name, old_prefs->name) == 0){
+        if (g_ascii_strcasecmp(prefs->name, old_prefs->name) == 0){
             return SRN_ERR;
         }
         lst = g_slist_next(lst);
@@ -87,24 +89,80 @@ ServerPrefs* server_prefs_new(const char *name){
     return prefs;
 }
 
-bool server_prefs_is_valid(ServerPrefs *prefs){
+ServerPrefs* server_prefs_get_prefs(const char *name){
+    GSList *lst;
+    ServerPrefs *prefs;
+
+    lst = server_prefs_list;
+
+    while (lst){
+        prefs = lst->data;
+        if (g_ascii_strcasecmp(prefs->name, name) == 0){
+            return prefs;
+        }
+        lst = g_slist_next(lst);
+    }
+
+    return NULL;
+}
+
+SrnRet server_prefs_is_valid(ServerPrefs *prefs){
+    const char *fmt = _("Missing field in ServerPrefs: %s");
+
     /* Whether prefs exists in server_prefs_list? */
     if (!prefs || !g_slist_find(server_prefs_list, prefs)){
-            return FALSE;
+        return RET_ERR(_("Invalid ServerPrefs instance"));
      }
 
-    return (prefs->name
-            && prefs->host
-            && prefs->passwd
-            && prefs->encoding
-            && prefs->nickname
-            && prefs->username
-            && prefs->realname
-            && prefs->part_message
-            && prefs->kick_message
-            && prefs->away_message
-            && prefs->quit_message
-            && prefs->irc);
+    if (!prefs->name) {
+        return RET_ERR(fmt, "name");
+    }
+
+    if (!prefs->host) {
+        return RET_ERR(fmt, "host");
+    }
+
+    if (!prefs->passwd) {
+        str_assign(&prefs->passwd, "");
+    }
+
+    if (!prefs->encoding) {
+        str_assign(&prefs->encoding, "UTF-8");
+    }
+
+    if (!prefs->nickname) {
+        return RET_ERR(fmt, "nickname");
+    }
+
+    if (!prefs->username) {
+        str_assign(&prefs->username, prefs->nickname);
+    }
+
+    if (!prefs->realname) {
+        str_assign(&prefs->username, prefs->nickname);
+    }
+
+    if (!prefs->part_message) {
+        str_assign(&prefs->part_message, "");
+    }
+
+    if (!prefs->kick_message) {
+        str_assign(&prefs->kick_message, "");
+    }
+
+    if (!prefs->away_message) {
+        str_assign(&prefs->away_message, "");
+    }
+
+    if (!prefs->quit_message) {
+        str_assign(&prefs->quit_message, "");
+    }
+
+    if (!prefs->irc) {
+        return RET_ERR(fmt, "irc");
+    }
+
+    return sirc_prefs_is_valid(prefs->irc);
 }
 
 void server_prefs_free(ServerPrefs *prefs){

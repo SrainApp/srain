@@ -15,6 +15,7 @@
 #include "filter.h"
 #include "decorator.h"
 
+#include "ret.h"
 #include "i18n.h"
 #include "prefs.h"
 #include "plugin.h"
@@ -25,6 +26,7 @@ static void quit();
 int main(int argc, char **argv){
     signal(SIGINT, quit);
 
+    ret_init();
     log_init();
     i18n_init();
     prefs_init();
@@ -48,6 +50,7 @@ static void quit(){
     plugin_finalize();
     server_finalize();
     log_finalize();
+    ret_finalize();
 
     exit(0);
 }

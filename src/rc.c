@@ -9,7 +9,6 @@
  * call `server_cmd()` for every line
  */
 
-
 #include <stdio.h>
 #include <string.h>
 #include <gtk/gtk.h>
@@ -21,42 +20,53 @@
 #include "meta.h"
 #include "i18n.h"
 #include "log.h"
+#include "rc.h"
 #include "file_helper.h"
 
-int rc_read(){
-    FILE *fp;
+SrnRet rc_read(){
+    int nline;
+    FILE *fp = NULL;
     char *line;
     size_t len;
     ssize_t read;
-    char *rc_file;
+    char *rc_file = NULL;
+    SrnRet ret = SRN_OK;
 
     rc_file = get_config_file("srainrc");
-    if (!rc_file) return SRN_ERR;
+    if (!rc_file) {
+        ret = RET_ERR(_("Rc file not found: %s"), rc_file);
+        goto fin;
+    }
 
     fp = fopen(rc_file, "r");
-
     if (!fp){
-        ERR_FR("Failed to open %s", rc_file);
-        g_free(rc_file);
-        return SRN_ERR;
+        ret = RET_ERR(_("Can not open rc file: %s"), rc_file);
+        goto fin;
     }
-    g_free(rc_file);
 
     len = 0;
+    nline = 1;
     line = NULL;
     while ((read = getline(&line, &len, fp)) != -1) {
         if (line && line[0] != '#'){
             strtok(line, "\n");
-            if (server_cmd(NULL, line) != SRN_OK){
-                ERR_FR("Command failed: %s", line);
+            if (!RET_IS_OK(ret = server_cmd(NULL, line))){
+                ret = RET_ERR("Command failed at line %d: %s", nline, RET_MSG(ret));
                 break;
             }
         }
+        nline++;
     }
 
-    if (line) free(line);
-
-    fclose(fp);
-
-    return SRN_OK;
+fin:
+    if (rc_file) {
+        g_free(rc_file);
+    }
+    if (fp){
+        fclose(fp);
+    }
+    if (line) {
+        free(line);
+    }
+    return ret;
 }

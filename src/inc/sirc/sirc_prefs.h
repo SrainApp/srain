@@ -6,6 +6,7 @@
 #endif
 
 #include "srain.h"
+#include "ret.h"
 
 typedef struct _SircPrefs SircPrefs;
 
@@ -18,7 +19,7 @@ struct _SircPrefs {
 };
 
 SircPrefs *sirc_prefs_new();
-bool sirc_prefs_is_valid(SircPrefs *prefs);
+SrnRet sirc_prefs_is_valid(SircPrefs *prefs);
 void sirc_prefs_free(SircPrefs *prefs);
 
 #endif /* __SIRC_PREFS_H */

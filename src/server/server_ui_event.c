@@ -13,24 +13,18 @@
 #include "rc.h"
 #include "filter.h"
 #include "prefs.h"
+#include "ret.h"
 
 static Server* ctx_get_server(SuiSession *sui);
 static Chat* ctx_get_chat(SuiSession *sui);
 
 void server_ui_event_activate(SuiEvent event, const char *params[], int count){
-    char *errmsg = NULL;
+    SrnRet ret;
 
-    /* We have read prefs in `server_init()`, read it again for reporting error
-     * on a message dialog. */
-    errmsg = prefs_read();
-
-    if (errmsg){
-        sui_message_box(_("Error"), errmsg);
-        g_free(errmsg);
+    ret = rc_read();
+    if (!RET_IS_OK(ret)){
+        sui_message_box(_("Error occurred while running commands"), RET_MSG(ret));
     }
-
-    rc_read();
-    // TODO: welcome or command error report
 }
 
 void server_ui_event_connect(SuiEvent event, const char *params[], int count){
@@ -117,8 +111,18 @@ void server_ui_event_send(SuiSession *sui, SuiEvent event, const char *params[],
 
     // Command or message?
     if (msg[0] == '/'){
-        if (server_cmd(chat, msg) == SRN_OK){
-            // Nothing to do.
+        SrnRet ret;
+        ret = server_cmd(chat, msg);
+        // FIXME: chat may be invalid now
+        if (!server_list_is_server(srv)){
+            return;
+        }
+        if (ret != SRN_OK){
+            if (RET_IS_OK(ret)){
+                chat_add_misc_message(chat, chat->user->nick, RET_MSG(ret));
+            } else {
+                chat_add_error_message(chat, chat->user->nick, RET_MSG(ret));
+            }
         }
     } else {
         chat_add_sent_message(chat, msg);

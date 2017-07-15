@@ -11,7 +11,6 @@
 
 static int on_command_connect_test(Command *cmd, void *user_data);
 static int on_command_topic_test(Command *cmd, void *user_data);
-static void on_anything_error();
 
 static CommandBind cmd_binds_test[] = {
     {
@@ -37,13 +36,6 @@ static CommandBind cmd_binds_test[] = {
 
 static CommandContext context_test = {
     .binds = cmd_binds_test,
-    .on_unknown_cmd = on_anything_error,
-    .on_unknown_opt = on_anything_error,
-    .on_missing_opt_val = on_anything_error,
-    .on_missing_arg = on_anything_error,
-    .on_too_many_opt = on_anything_error,
-    .on_too_many_arg = on_anything_error,
-    .on_callback_fail = on_anything_error,
 };
 
 void command_test(){
@@ -124,8 +116,4 @@ static int on_command_topic_test(Command *cmd, void *user_data){
             }
     }
     return 0;
-}
-
-static void on_anything_error(){
-    LOG_FR("Some error occured");
 }

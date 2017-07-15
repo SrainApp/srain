@@ -23,6 +23,7 @@
 #include "log.h"
 #include "utils.h"
 #include "prefs.h"
+#include "i18n.h"
 
 SuiAppEvents ui_app_events;
 SuiEvents ui_events;
@@ -76,7 +77,7 @@ void server_init(){
 
     errmsg = prefs_read();
     if (errmsg){
-        ERR_FR("Read prefs failed: %s", errmsg);
+        sui_message_box(_("Prefs read error"), errmsg);
         g_free(errmsg);
     }
 
@@ -97,14 +98,14 @@ void server_finalize(){
 Server* server_new_from_prefs(ServerPrefs *prefs){
     Server *srv;
 
-    g_return_val_if_fail(server_prefs_is_valid(prefs), NULL);
+    g_return_val_if_fail(server_prefs_is_valid(prefs) == SRN_OK, NULL);
     g_return_val_if_fail(!server_list_get_server(prefs->name), NULL);
 
     srv = g_malloc0(sizeof(Server));
 
     srv->registered = FALSE;
     srv->user_quit = FALSE;
-    srv->stat = SERVER_UNCONNECTED;
+    srv->stat = SERVER_DISCONNECTED;
     srv->prefs = prefs;
 
     srv->chat = chat_new(srv, META_SERVER);

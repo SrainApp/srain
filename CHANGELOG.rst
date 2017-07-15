@@ -12,7 +12,7 @@ Srain's git repositories.
 - Changed:
 
   - The third time of refactor ;-)
-  - New command parser, for the syntax, refer to ``./doc/commands.rst``
+  - New command parser, for the syntax, refer to ``docs/commands.rst``
   - Changed the format of Chat log
   - The ``/relay`` command doesn't support custom delimiter, this function will
     be implemented as python plugin in the future
@@ -25,7 +25,8 @@ Srain's git repositories.
   - Install script for Gentoo, thanks to @rtlanceroad !
   - Support to ignore message using  regular expression, thanks to @zwindl !
     Use command ``/rignore <name> <pattern>`` to have a try.
-  - Config file support [WIP]
+  - Config file support
+  - Configurable log module, more convenient for developing and reporting issue
 
 - Removed:
 
