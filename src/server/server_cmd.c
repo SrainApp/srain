@@ -63,9 +63,9 @@ CommandBind cmd_binds[] = {
         .subcmd = {"add", "rm", "set", "connect", "disconnect", NULL},
         .argc = 1, // <name>
         .opt_key =
-        {"-host", "-port", "-tls", "-tls-valid-all", "-pwd", "-nick", "-user", "-real", "-encode",  NULL},
+        {"-host", "-port", "-tls", "-tls-not-verify", "-pwd", "-nick", "-user", "-real", "-encode",  NULL},
         .opt_default_val =
-        {NULL, "6667", NULL, NULL, NULL, "Zaidan", "Srain", "Can you can a can?", "UTF-8", NULL},
+        {"localhost", "6667", NULL, NULL, NULL, "Zaidan", "Srain", "Can you can a can?", "UTF-8", NULL},
         .flag = 0,
         .cb = on_command_server,
     },
@@ -73,7 +73,7 @@ CommandBind cmd_binds[] = {
         .name = "/connect",
         .argc = 2, // <hosts> <nick>
         .opt_key =
-        {"-port", "-tls", "-tls-valid-all", "-pwd", "-user", "-real", "-encode",  NULL},
+        {"-port", "-tls", "-tls-not-verify", "-pwd", "-user", "-real", "-encode",  NULL},
         .opt_default_val =
         {"6667", NULL, NULL, NULL, "Srain", "Can you can a can?", "UTF-8", NULL},
         .flag = 0,
@@ -298,18 +298,18 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
     g_return_val_if_fail(name, SRN_ERR);
 
     subcmd = cmd->subcmd;
-    if (!subcmd) {
-        return RET_ERR(_("No subcommand specified"));
-    }
+    g_return_val_if_fail(subcmd, SRN_ERR);
 
     if (g_ascii_strcasecmp(subcmd, "add") == 0){
         prefs = server_prefs_new(name);
+        if (!prefs){
+            return RET_ERR("Server already exist: %s", name);
+        }
     } else {
         prefs = server_prefs_get_prefs(name);
-    }
-
-    if (!prefs){
-        return RET_ERR("Failed to get/create ServerPrefs '%s'", name);
+        if (!prefs){
+            return RET_ERR("No such server: %s", name);
+        }
     }
 
     if (g_ascii_strcasecmp(subcmd, "add") == 0){
@@ -317,6 +317,7 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
         if (errmsg){
             ERR_FR("%s", errmsg);
             g_free(errmsg);
+            // TODO prefs error report
             return SRN_ERR;
         }
     }
@@ -347,29 +348,33 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
         if (command_get_opt(cmd, "-tls", NULL)){
             prefs->irc->use_ssl = true;
         }
-        if (command_get_opt(cmd, "-tls-valid-all", NULL)){
+        if (command_get_opt(cmd, "-tls-not-verify", NULL)){
             prefs->irc->verify_ssl_cert = false;
         }
 
-        return SRN_OK;
+        return RET_OK(_("Server '%s' is created"), name);
     }
 
     if (g_ascii_strcasecmp(subcmd, "connect") == 0){
         srv = server_list_get_server(name);
         if (!srv) { // Create one
             ret = server_prefs_is_valid(prefs);
-            if (ret != SRN_OK){
+            if (!RET_IS_OK(ret)){
                 return ret;
             }
             srv = server_new_from_prefs(prefs);
             g_return_val_if_fail(srv, SRN_ERR);
         }
 
+        if (srv->stat != SERVER_DISCONNECTED) {
+            return RET_ERR("Can not connect to a connected server");
+        }
+
         server_connect(srv);
         server_wait_until_registered(srv);
 
         if (!server_is_registered(srv)){
-            server_free(srv);
+            // server_free(srv);
             return RET_ERR(_("Failed to register on server '%s'"), prefs->name);
         }
 
@@ -382,11 +387,11 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
         srv = server_list_get_server(name);
         if (!srv) {
             // FIXME: better errmsg?
-            return RET_ERR(_("Can not disconnect from a server which is not connected"));
+            return RET_ERR(_("Can not disconnect from a unconnected server"));
         }
 
         if (srv->stat != SERVER_CONNECTED){
-            return RET_ERR(_("Can not disconnect from a server which is not connected"));
+            return RET_ERR(_("Can not disconnect from a unconnected server"));
         }
 
         server_disconnect(srv);
@@ -409,9 +414,13 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
         } else {
             return RET_ERR(_("No such server: %s"), name);
         }
+
+        /* Just return a SRN_OK, server is freed, if you return RET_OK with a
+         * message, it may cause segfault. */
+        return SRN_OK;
     }
 
-    return SRN_OK;
+    return RET_ERR("Unknown sub command: %s", subcmd);
 }
 
 static SrnRet on_command_connect(Command *cmd, void *user_data){
@@ -466,7 +475,7 @@ static SrnRet on_command_connect(Command *cmd, void *user_data){
     if (command_get_opt(cmd, "-tls", NULL)){
         prefs->irc->use_ssl = true;
     }
-    if (command_get_opt(cmd, "-tls-valid-all", NULL)){
+    if (command_get_opt(cmd, "-tls-not-verify", NULL)){
         prefs->irc->verify_ssl_cert = false;
     }
 
@@ -731,9 +740,7 @@ static SrnRet on_command_msg(Command *cmd, void *user_data){
      * TODO: A better way?
      */
     if (sirc_cmd_msg(srv->irc, target, msg) == SRN_OK){
-        chat_add_misc_message_fmt(srv->cur_chat, srv->user->nick,
-                "A message has been sent to \"%s\"", target);
-        return SRN_OK;
+        return RET_OK(_("A message has been sent to \"%s\""), target);
     } else {
         return SRN_ERR;
     }

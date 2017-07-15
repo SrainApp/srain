@@ -24,7 +24,7 @@ Command::
 
 Command::
 
-    /connect [-port <port>]  [-pwd <password>] [-tls] [-tls-valid-all]
+    /connect [-port <port>]  [-pwd <password>] [-tls] [-tls-not-verify]
         [-user <username>] [-real <realname>] <host> <nick>
 
 Add a server into your server list. It will become the default server
@@ -35,7 +35,7 @@ automaticly.
 * ``-port``: IRC server port, if no specified, use ``6667``
 * ``-pwd``: The password of the server
 * ``-tls``: Use secure connections with TLS
-* ``-tls-valid-all``: Don't verify TLS certificate
+* ``-tls-not-verify``: Don't verify TLS certificate
 * ``-user``: Set your username
 * ``-real``: Set your realname
 

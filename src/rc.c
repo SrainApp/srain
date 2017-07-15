@@ -50,7 +50,7 @@ SrnRet rc_read(){
     while ((read = getline(&line, &len, fp)) != -1) {
         if (line && line[0] != '#'){
             strtok(line, "\n");
-            if ((ret = server_cmd(NULL, line)) != SRN_OK){
+            if (!RET_IS_OK(ret = server_cmd(NULL, line))){
                 ret = RET_ERR("Command failed at line %d: %s", nline, RET_MSG(ret));
                 break;
             }

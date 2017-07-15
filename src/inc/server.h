@@ -103,7 +103,6 @@ struct _Chat {
 };
 
 enum _ServerStatus {
-    SERVER_UNCONNECTED,
     SERVER_CONNECTING,
     SERVER_CONNECTED,
     SERVER_DISCONNECTED,

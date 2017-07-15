@@ -19,6 +19,7 @@
 
 #include "prefs.h"
 #include "log.h"
+#include "utils.h"
 #include "i18n.h"
 
 static GSList *server_prefs_list = NULL;
@@ -33,7 +34,7 @@ static int server_prefs_list_add(ServerPrefs *prefs){
     lst = server_prefs_list;
     while (lst){
         old_prefs = lst->data;
-        if (strcasecmp(prefs->name, old_prefs->name) == 0){
+        if (g_ascii_strcasecmp(prefs->name, old_prefs->name) == 0){
             return SRN_ERR;
         }
         lst = g_slist_next(lst);
@@ -116,44 +117,49 @@ SrnRet server_prefs_is_valid(ServerPrefs *prefs){
     if (!prefs->name) {
         return RET_ERR(fmt, "name");
     }
+
     if (!prefs->host) {
         return RET_ERR(fmt, "host");
     }
 
-    // passwd can be NULL
-    // if (!prefs->passwd) {
-    //    return RET_ERR(fmt, "password");
-    // }
+    if (!prefs->passwd) {
+        str_assign(&prefs->passwd, "");
+    }
 
     if (!prefs->encoding) {
-        return RET_ERR(fmt, "encoding");
+        str_assign(&prefs->encoding, "UTF-8");
     }
+
     if (!prefs->nickname) {
         return RET_ERR(fmt, "nickname");
     }
+
     if (!prefs->username) {
-        return RET_ERR(fmt, "username");
+        str_assign(&prefs->username, prefs->nickname);
     }
+
     if (!prefs->realname) {
-        return RET_ERR(fmt, "realname");
+        str_assign(&prefs->username, prefs->nickname);
     }
+
     if (!prefs->part_message) {
-        return RET_ERR(fmt, "part_message");
+        str_assign(&prefs->part_message, "");
     }
+
     if (!prefs->kick_message) {
-        return RET_ERR(fmt, "kick_message");
+        str_assign(&prefs->kick_message, "");
     }
+
     if (!prefs->away_message) {
-        return RET_ERR(fmt, "away_message");
+        str_assign(&prefs->away_message, "");
     }
+
     if (!prefs->quit_message) {
-        return RET_ERR(fmt, "quit_message");
+        str_assign(&prefs->quit_message, "");
     }
+
     if (!prefs->irc) {
         return RET_ERR(fmt, "irc");
-    }
-    if (!prefs->name) {
-        return RET_ERR(fmt, "name");
     }
 
     return sirc_prefs_is_valid(prefs->irc);

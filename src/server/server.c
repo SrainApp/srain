@@ -105,7 +105,7 @@ Server* server_new_from_prefs(ServerPrefs *prefs){
 
     srv->registered = FALSE;
     srv->user_quit = FALSE;
-    srv->stat = SERVER_UNCONNECTED;
+    srv->stat = SERVER_DISCONNECTED;
     srv->prefs = prefs;
 
     srv->chat = chat_new(srv, META_SERVER);

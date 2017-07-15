@@ -10,6 +10,7 @@
 
 #include "i18n.h"
 #include "ret.h"
+#include "log.h"
 
 #define SRN_RET_MESSAGE_COUNT 512
 
@@ -157,7 +158,10 @@ static SrnRetMessage* srn_ret_message_new(SrnRet id, int no, const char *msg){
 
     rmsg = g_malloc0(sizeof(SrnRetMessage));
     rmsg->id = id;
+    rmsg->no = no;
     rmsg->msg = g_strdup(msg);
+
+    DBG_FR("SrnRet: id: %d, no: %d, msg: %s", id, no, msg);
 
     return rmsg;
 }
