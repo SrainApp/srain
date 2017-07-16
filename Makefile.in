@@ -45,6 +45,15 @@ install-data: data/Makefile
 install-po: po/Makefile
 	$(MAKE) -C po
 
+install-doc: doc/Makefile
+	$(MAKE) -C doc install
+
+doc: doc/Makefile
+	$(MAKE) -C doc
+
+view-doc: doc/Makefile
+	$(MAKE) -C view
+
 run:
 	$(MAKE) -C data config
 	$(MAKE) PREFIX=$(BUILD_DIR)

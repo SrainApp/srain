@@ -1,6 +1,10 @@
-===========
-Preferences
-===========
+==================
+Preferences Manual
+==================
+
+.. note::
+
+    Under construction.
 
 =============================== =======
 Key                             Value

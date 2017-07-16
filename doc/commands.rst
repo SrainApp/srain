@@ -1,13 +1,16 @@
-========
-Commands
-========
+=====================
+Srain Commands Manual
+=====================
 
-Syntax
-======
+.. _commands:
 
+Commands Syntax
+===============
+
+A command is a line string that following 
 Syntax::
 
-    <command> [subcommand] [option] [argument]
+    <command> [subcommand] [ <option> [value] ]... [argument]...
 
 A ``command`` is a string starts with a slash ``/`` and doesn't contain any
 whitespace, e.g. ``/join``
@@ -16,13 +19,23 @@ A ``subcommand`` is a specified the detailed operation of this command.
 
 A ``option`` starts with a ``-`` and may has a value.
 
-Command::
+Commands Usage
+==============
+
+/server
+-------
+
+Usage::
 
     /server [add|rm|set|connect|disconnect]
-        [-host <host>] [-port <port>] [-passwd <password>] [-tls] [-tls_]
+        [-host <host>] [-port <port>] [-passwd <password>] [-tls] [-tls-not-verify]
         [-nick <nickname>] [-user <username>] [-real <realname>] <name>
 
-Command::
+
+/connect
+--------
+
+Usage::
 
     /connect [-port <port>]  [-pwd <password>] [-tls] [-tls-not-verify]
         [-user <username>] [-real <realname>] <host> <nick>

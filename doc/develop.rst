@@ -1,6 +1,11 @@
-=========
-Srain Doc
-=========
+=====================
+Development Documents
+=====================
+
+.. warning::
+
+    This document is written in Chinese and already out of date.
+    It will be updated or removed in the future.
 
 Current version：0.05
 
@@ -8,8 +13,6 @@ Summary
 =======
 
 Srain 致力于实现一个轻量/美观/易用的现代化 IRC 客户端。
-
-.. warning:: Out of date
 
 当前项目的目录结构如下::
 

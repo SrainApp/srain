@@ -1,18 +1,19 @@
-=========================
-Change Log for Srain User
-=========================
+==========
+Change Log
+==========
 
-This change log is oriented to Srain's user, mainly records changes in the usage
-of Srain. For changes in architecture, design and code, refer to commit logs of
-Srain's git repositories.
+2017-08-xx Version 0.06
+=======================
 
-2017-05-xx Version 0.06 [draft]
-===============================
+.. warning::
+
+    Version 0.06 is still a draft, features and documentation are not yet
+    complete. you can You can experience it by using the -git version.
 
 - Changed:
 
   - The third time of refactor ;-)
-  - New command parser, for the syntax, refer to ``docs/commands.rst``
+  - New command parser, for the syntax, refer to :ref:`commands`.
   - Changed the format of Chat log
   - The ``/relay`` command doesn't support custom delimiter, this function will
     be implemented as python plugin in the future
@@ -27,6 +28,7 @@ Srain's git repositories.
     Use command ``/rignore <name> <pattern>`` to have a try.
   - Config file support
   - Configurable log module, more convenient for developing and reporting issue
+  - New Return value type, for more friendly error reporting
 
 - Removed:
 
@@ -76,7 +78,9 @@ Srain's git repositories.
   - Stronger {upload,avatar} plugin
   - Fixed a lot of bugs
 
-0.05 is the first stable release of Srain, enjoy~
+.. note::
+
+    0.05 is the first stable release of Srain, enjoy~
 
 2016-04-30 Version 0.03
 =======================
@@ -87,8 +91,10 @@ Srain's git repositories.
 - /quit command will close all SrainChan of a server
 - Fix GTK-Warning when close a SrainCHan
 
-NB: 0.03 is a pre-release, some functions are no completed yet.
-it also has some undetected bugs.
+.. note::
+
+    0.03 is a pre-release, some functions are no completed yet.
+    it also has some undetected bugs.
 
 2016-04-13 Version 0.02
 =======================
@@ -96,8 +102,10 @@ it also has some undetected bugs.
 - Bugs fixed
 - Port to GTK+-3.20
 
-NB: 0.02 is a pre-release, some functions are no completed yet.
-it also has some undetected bugs.
+.. note::
+
+    0.02 is a pre-release, some functions are no completed yet.
+    it also has some undetected bugs.
 
 2016-04-07 Version 0.01
 =======================
@@ -115,5 +123,7 @@ it also has some undetected bugs.
 - Nick auto completion
 - Combine message from same person
 
-NB: 0.01 is a pre-release, some functions are no completed yet.
-it also has some undetected bugs.
+.. note::
+
+    0.01 is a pre-release, some functions are no completed yet.
+    it also has some undetected bugs.
