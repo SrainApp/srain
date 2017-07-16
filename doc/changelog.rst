@@ -8,14 +8,14 @@ Change Log
 .. warning::
 
     Version 0.06 is still a draft, features and documentation are not yet
-    complete. you can You can experience it by using the -git version.
+    complete. You can experience it by using the ``-git`` version.
 
 - Changed:
 
   - The third time of refactor ;-)
-  - New command parser, for the syntax, refer to :ref:`commands`.
+  - New command parser, for the syntax, refer to :ref:`commands-syntax`.
   - Changed the format of Chat log
-  - The ``/relay`` command doesn't support custom delimiter, this function will
+  - The :ref:`commands-relay` command doesn't support custom delimiter, this function will
     be implemented as python plugin in the future
   - Use reStructuredText for document instead of Markdown
 
@@ -24,11 +24,12 @@ Change Log
   - Message filter: mechanism for filtering message
   - Message Decorator: mechanism for changing message
   - Install script for Gentoo, thanks to @rtlanceroad !
-  - Support to ignore message using  regular expression, thanks to @zwindl !
-    Use command ``/rignore <name> <pattern>`` to have a try.
+  - New command :ref:`commands-rignore` for ignore message using regular
+    expression, thanks to @zwindl !
   - Config file support
   - Configurable log module, more convenient for developing and reporting issue
   - New Return value type, for more friendly error reporting
+  - New command :ref:`commands-server` for IRC servers management
 
 - Removed:
 

@@ -1,7 +1,7 @@
 # Makefile
 
 .PHONY: install run bt clean cleanobj todo install-bin install-po install-data \
-		bt gtk_dbg
+		install-doc view-doc doc bt gtk_dbg
 
 # Export all variables
 export

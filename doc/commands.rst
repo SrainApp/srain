@@ -1,26 +1,53 @@
-=====================
-Srain Commands Manual
-=====================
-
-.. _commands:
-
-Commands Syntax
+===============
+Commands Manual
 ===============
 
-A command is a line string that following 
-Syntax::
+.. contents::
+    :depth: 3
 
-    <command> [subcommand] [ <option> [value] ]... [argument]...
+.. _commands-syntax:
 
-A ``command`` is a string starts with a slash ``/`` and doesn't contain any
-whitespace, e.g. ``/join``
+Syntax
+======
 
-A ``subcommand`` is a specified the detailed operation of this command.
+A command is a line of string that has the following format, different elements
+are separated with whitespace::
 
-A ``option`` starts with a ``-`` and may has a value.
+    <name> [subcommand] [<option> [value]]... [argument]...
 
-Commands Usage
-==============
+The command's ``name`` starts with a slash ``/`` and doesn't contain any
+whitespace, such as: ``/join``.
+
+A ``subcommand`` is a instruction behind the command name, it is optional.
+
+An ``option``, as its name, is optional too, starts with a hyphen ``-`` and may has a
+``value``.
+
+``option`` oftenly used as the switch of a flag or a way to chagne some
+default value. For an example, in command ``/connect -tls -port 6697``,
+option ``-tls`` is just a flag that tell srain use secure connections with TLS.
+And ``-port`` requires a ``value``, if ``-port`` is not specified, program will use
+the default value of it. Refer :ref:`commands-connect` for more details.
+
+If a ``vaule`` starts with a hyphen ``-`` or contains whitespaces, it should be
+enclosed by singly quotation mark ``'``.
+
+.. note::
+
+    All ``option`` should appear behind ``subcommand`` (If any), and before
+    ``argument``.
+
+An ``argument`` is similar to ``vaule``, but oftenly it doesn't have a default
+value so it can not be omit (actually it depends on the implement of the
+command). If the first ``argument`` starts with a hyphen ``-``, it should be
+enclosed by singly quotation mark ``'``. If an ``argument`` contains whitespaces,
+it should be quoted too. Specially, the last argument can contains whitespace
+without quoted.
+
+Usage
+=====
+
+.. _commands-server:
 
 /server
 -------
@@ -28,38 +55,85 @@ Commands Usage
 Usage::
 
     /server [add|rm|set|connect|disconnect]
-        [-host <host>] [-port <port>] [-passwd <password>] [-tls] [-tls-not-verify]
+        [-host <host>] [-port <port>] [-pwd <password>] [-tls] [-tls-not-verify]
         [-nick <nickname>] [-user <username>] [-real <realname>] <name>
 
+IRC server management.
+
+Sub commands:
+
+* ``add``: create a server with unique name, you can set server information via
+  options
+* ``rm``: remove a server, all options will be ignored, you can only remove a
+  server which is unconnected
+* ``set``: set server information via options
+* ``connect``: connect to specified server, all options will be ignored
+* ``disconnect``: disconnect from specified server, all options will be ignored
+
+Create a server and connect to connect to it immediately. It will become the
+default server automaticly.
+
+Options:
+
+* ``-host``: server host
+* ``-port``: server port, default ``6667``
+* ``-pwd``: connection password, default empty
+* ``-tls``: use secure connections with TLS
+* ``-tls-not-verify``: don't verify TLS certificate
+* ``-nick``: specify nickname
+* ``-user``: specify username, default same as nickname
+* ``-real``: specify realname, default same as nickname
+
+Arguments:
+
+* ``name``: unique name of server
+
+.. _commands-connect:
 
 /connect
 --------
 
 Usage::
 
-    /connect [-port <port>]  [-pwd <password>] [-tls] [-tls-not-verify]
+    /connect [-port <port>] [-pwd <password>] [-tls] [-tls-not-verify]
         [-user <username>] [-real <realname>] <host> <nick>
 
-Add a server into your server list. It will become the default server
-automaticly.
+Create a IRC server and connect to it immediately.
 
-* ``host``: IRC server host
-* ``nick``: The nickname you want to use
-* ``-port``: IRC server port, if no specified, use ``6667``
-* ``-pwd``: The password of the server
-* ``-tls``: Use secure connections with TLS
-* ``-tls-not-verify``: Don't verify TLS certificate
-* ``-user``: Set your username
-* ``-real``: Set your realname
+Options:
+
+* ``-port``: server port, default ``6667``
+* ``-pwd``: connection password, default empty
+* ``-tls``: use secure connections with TLS
+* ``-tls-not-verify``: don't verify TLS certificate
+* ``-user``: specify usernamem default same as nickname
+* ``-real``: specify realname, default same as nickname
+
+Arguments:
+
+* ``host``: server host
+* ``nick``: specify nickname
 
 Example::
 
     /connect -real 'I am srainbot' -tls -port 6697 chat.freenode.org srainbot
     /connect 127.0.0.1 srainbot
 
-**The following commands should excuted after a ``/connect`` command**
+--------------------------------------------------------------------------------
 
-Command::
+.. note::
+
+    The following commands should run under the context which has a
+    "default server", Briefly, **these command must executed after**
+    :ref:`commands-server` ``connect`` **or** :ref:`commands-connect`
+    **command.**
+
+.. _commands-relay:
+
+/relay & /unrelay
+-----------------
+
+Usage::
 
     /relay [-cur] <nick>
     /unrelay [-cur] <nick>
@@ -67,66 +141,118 @@ Command::
 Flag ``nick`` as a relay bot, show the real nick of the message sender.
 Use ``[`` and ``]`` as delimiter.
 
+Options:
+
+* ``-cur``: only effects the current chat
+
 Example::
 
     /relay teleboto
 
-* ``-cur``: Only effects the current chat
+.. warning::
 
-Command::
+    This command is unstable, it may be implement as a plugin in the future.
+
+/ignore & /unignore
+-------------------
+
+Usage::
 
     /ignore [-cur] <nick>
     /unignore [-cur] <nick>
 
 Ignore/unignore somebody's message.
 
-* ``-cur``: Only ignore in current chat
+Options:
 
-Command::
+* ``-cur``: only ignore in current chat
+
+.. _commands-rignore:
+
+/rignore & /unrignore
+---------------------
+
+Usage::
+
+    /rignore [-cur] <name> <pattern>
+    /unignore [-cur] <name>
+
+Ignore/unignore message which matches specified pattern.
+
+Options:
+
+* ``-cur``: only ignore in current chat
+
+Arguments:
+
+* ``name``: unique pattern name
+* ``pattern``: perl-compatible regex expression which used to match the
+  incoming message, for regex syntax, refer to
+  https://developer.gnome.org/glib/stable/glib-regex-syntax.html
+
+/query & /unquery
+-----------------
+
+Usage::
 
     /query <nick>
-    /unquery [<nick>]
+    /unquery [nick]
 
-Start/stop private chat with somebody.
+Start/stop private chat with somebody. For ``/unquery`` , If ``nick`` no
+specified, stop the current private chat.
 
-Command::
+.. _commands-join:
 
-    /join <channel>[,<channel>] [<passwd>[,<passwd>]]
+/join
+-----
 
-Join specifie channel(s), channels are separated by commas.
+Usage::
+
+    /join <channel>[,<channel>]... [<passwd>[,<passwd>]]...
+
+Join specified channel(s), channels are separated by commas ``,``.
 
 Example::
 
     /join #archinux-cn,#gzlug,#linuxba
-    # TODO
     /join #channel1,#channe2 passwd1
 
-Command::
+/part
+-----
 
-    /part [<channel>[,<channel>]] [<reason>]
+Usage::
+
+    /part [<channel>[,<channel>]]... [<reason>]
 
 Leave specified channel(s) with optional reason, channels are separated by
-commas.  If ``channel`` no specified, leave the current channel.
+commas ``,``. If ``channel`` no specified, leave the current channel.
 
 Example::
 
     /part #archinux-cn Zzz...
     /part #archlinux-cn,#tuna
+    /part
 
-Command::
+/quit
+-----
 
-    /quit [<reason>]
+Usage::
+
+    /quit [reason]
 
 Quit current server with optional reason.
 
-Command::
+/topic
+------
 
-    /topic [<topic>|-rm]
+Usage::
+
+    /topic [-rm|<topic>]
 
 Set the current channel's topic. If ``topic`` no specified, just display the
 current channel's topic.
 
-* ``-rm``: Remove current channel's topic
+* ``-rm``: remove current channel's topic
 
 Example::
 
@@ -137,56 +263,82 @@ Example::
     # Clear the topic
     /topic -rm
 
-Command::
+/msg
+----
+
+Usage::
 
     /msg <target> <message>
 
 Send message to a target, the target can be channel or somebody's nick. If you
-want to send a message to channel, you should join it first.
+want to send a message to channel, you should :ref:`commands-join` it first.
 
-Command::
+/me
+---
+
+Usage::
 
     /me <message>
 
 Send a action message to the current target.
 
-Command::
+
+/nick
+-----
+
+Usage::
 
     /nick <new_nick>
 
-Change you nick.
+Change your nickname.
 
-Command::
+/whois
+------
 
-    /whois [<nick>]
+Usage::
+
+    /whois <nick>
 
 Get somebody's information on the server.
 
-Command::
+/invite
+-------
 
-    /invite <nick> [<channel>]
+Usage::
 
-Invite somebody to join a channel. If ``channel`` no specified, fallback to
+    /invite <nick> [channel]
+
+Invite somebody to join a channel. If ``channel`` not specified, fallback to
 current channel.
 
-Command::
+/kick
+-----
 
-    /kick <nick> [<channel>] [<reason>]
+Usage::
 
-Kick somebody from a channel, with optional reason. If ``channel`` no specified, fallback to
-current channel.
+    /kick <nick> [channel] [reason]
 
-Command::
+Kick somebody from a channel, with optional reason. If ``channel`` not specified,
+fallback to current channel.
+
+/mode
+-----
+
+Usage::
 
     /mode <target> <mode>
 
-Change ``target``'s mode.
+Change ``target`` 's mode.
 
-Command::
+/list
+-----
+
+Usage::
 
     /list
 
 List all channels on the default server.
 
-Note:
+.. warning::
+
     This command is not implemented yet.
