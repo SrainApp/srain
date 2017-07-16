@@ -5,6 +5,7 @@
 #include <glib.h>
 
 #include "srain.h"
+#include "ret.h"
 
 typedef enum _LogLevel LogLevel;
 typedef struct _LogPrefs LogPrefs;
@@ -65,7 +66,7 @@ struct _LogPrefs {
     log_print(LOG_ERROR, TRUE, FALSE, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 
 void log_init();
-void log_read_prefs();
+SrnRet log_read_prefs();
 void log_finalize();
 void log_print(LogLevel lv, bool print_prompt, bool new_line,
         const char *file, const char *func, int line,

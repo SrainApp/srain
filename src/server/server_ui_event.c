@@ -14,6 +14,7 @@
 #include "filter.h"
 #include "prefs.h"
 #include "ret.h"
+#include "utils.h"
 
 static Server* ctx_get_server(SuiSession *sui);
 static Chat* ctx_get_chat(SuiSession *sui);
@@ -28,7 +29,7 @@ void server_ui_event_activate(SuiEvent event, const char *params[], int count){
 }
 
 void server_ui_event_connect(SuiEvent event, const char *params[], int count){
-    char *errmsg;
+    SrnRet ret;
     Server *srv;
 
     g_return_if_fail(count == 9);
@@ -43,37 +44,59 @@ void server_ui_event_connect(SuiEvent event, const char *params[], int count){
     const char *realname= params[8];
     const char *username = PACKAGE_NAME;
 
-    if (strlen(realname) == 0) {
-        realname = "Can you can a can?";
-    }
-
-    ServerPrefs *prefs = server_prefs_new(name);
-    if (prefs){
-        ERR_FR("Failed to create ServerPrefs '%s'", name);
+    if (!name){
+        sui_message_box(_("Create server failed"), _("You must specified a server naem"));
         return;
     }
 
-    errmsg = prefs_read_server_prefs(prefs);
-    if (errmsg){
-        // TODO ...
+    ServerPrefs *prefs = server_prefs_new(name);
+    if (!prefs){
+        char *errmsg = g_strdup_printf(_("Server already exist: %s"), name);
+        sui_message_box(_("Create server failed"), errmsg);
         g_free(errmsg);
+        return;
     }
 
-    prefs->name = g_strdup(name);
-    prefs->host = g_strdup(host);
-    prefs->port = port;
-    prefs->passwd = g_strdup(passwd);
-    prefs->encoding = g_strdup(encoding);
-    prefs->nickname = g_strdup(nick);
-    prefs->username = g_strdup(username);
-    prefs->realname = g_strdup(realname);
+    ret = prefs_read_server_prefs(prefs);
+    if (!RET_IS_OK(ret)){
+        sui_message_box(_("Read server prefs failed"), RET_MSG(ret));
+        return;
+    }
+
+    if (name){
+        str_assign(&prefs->name, name);
+    }
+    if (host){
+        str_assign(&prefs->host, host);
+    }
+    if (port){
+        prefs->port = port;
+    }
+    if (passwd){
+        str_assign(&prefs->passwd, passwd);
+    }
+    if (passwd){
+        str_assign(&prefs->name, name);
+    }
+    if (encoding){
+        str_assign(&prefs->encoding, encoding);
+    }
+    if (nick){
+        str_assign(&prefs->nickname, nick);
+    }
+    if (username){
+        str_assign(&prefs->username, username);
+    }
+    if (realname){
+        str_assign(&prefs->realname, realname);
+    }
 
     prefs->irc->use_ssl = ssl;
     prefs->irc->verify_ssl_cert = !notverify;
 
-    if (!server_prefs_is_valid(prefs)){
-        // TODO
-        ERR_FR("Not completed ServerPrefs");
+    ret = server_prefs_is_valid(prefs);
+    if (!RET_IS_OK(ret)){
+        sui_message_box(_("Create server failed"), RET_MSG(ret));
         return;
     }
 

@@ -279,7 +279,6 @@ SrnRet server_cmd(Chat *chat, const char *cmd){
  ******************************************************************************/
 
 static SrnRet on_command_server(Command *cmd, void *user_data){
-    char *errmsg;
     const char *subcmd;
     const char *name;
     const char *host;
@@ -294,31 +293,31 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
     Server *srv;
     ServerPrefs *prefs;
 
-    name = command_get_arg(cmd, 0);
-    g_return_val_if_fail(name, SRN_ERR);
-
     subcmd = cmd->subcmd;
     g_return_val_if_fail(subcmd, SRN_ERR);
+
+    name = command_get_arg(cmd, 0);
+    if (!name && def_srv){
+        name = def_srv->prefs->name;
+    }
+    g_return_val_if_fail(name, SRN_ERR);
 
     if (g_ascii_strcasecmp(subcmd, "add") == 0){
         prefs = server_prefs_new(name);
         if (!prefs){
-            return RET_ERR("Server already exist: %s", name);
+            return RET_ERR(_("Server already exist: %s"), name);
         }
     } else {
         prefs = server_prefs_get_prefs(name);
         if (!prefs){
-            return RET_ERR("No such server: %s", name);
+            return RET_ERR(_("No such server: %s"), name);
         }
     }
 
     if (g_ascii_strcasecmp(subcmd, "add") == 0){
-        errmsg = prefs_read_server_prefs(prefs);
-        if (errmsg){
-            ERR_FR("%s", errmsg);
-            g_free(errmsg);
-            // TODO prefs error report
-            return SRN_ERR;
+        ret = prefs_read_server_prefs(prefs);
+        if (!RET_IS_OK(ret)){
+            return ret;
         }
     }
 
@@ -367,18 +366,18 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
         }
 
         if (srv->stat != SERVER_DISCONNECTED) {
-            return RET_ERR("Can not connect to a connected server");
-        }
-
-        server_connect(srv);
-        server_wait_until_registered(srv);
-
-        if (!server_is_registered(srv)){
-            // server_free(srv);
-            return RET_ERR(_("Failed to register on server '%s'"), prefs->name);
+            return RET_ERR(_("Can not connect to a connected server"));
         }
 
         def_srv = srv;
+        server_connect(def_srv);
+
+        server_wait_until_registered(def_srv);
+        if (!server_is_registered(srv)){
+            def_srv = NULL;
+            // server_free(srv);
+            // return RET_ERR(_("Failed to register on server '%s'"), prefs->name);
+        }
 
         return SRN_OK;
     }
@@ -420,11 +419,10 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
         return SRN_OK;
     }
 
-    return RET_ERR("Unknown sub command: %s", subcmd);
+    return RET_ERR(_("Unknown sub command: %s"), subcmd);
 }
 
 static SrnRet on_command_connect(Command *cmd, void *user_data){
-    char *errmsg;
     const char *host;
     const char *port;
     const char *passwd;
@@ -444,17 +442,13 @@ static SrnRet on_command_connect(Command *cmd, void *user_data){
 
     prefs = server_prefs_new(host);
     if (!prefs){
-        return RET_ERR("Failed to create ServerPrefs '%s'", host);
+        return RET_ERR(_("Failed to create ServerPrefs '%s'"), host);
     }
 
-    errmsg = prefs_read_server_prefs(prefs);
-    if (errmsg){
-        // TODO ...
-        ERR_FR("%s", errmsg);
+    ret = prefs_read_server_prefs(prefs);
+    if (!RET_IS_OK(ret)){
         server_prefs_free(prefs);
-        g_free(errmsg);
-
-        return SRN_ERR;
+        return ret;
     }
 
     str_assign(&prefs->host, host);
@@ -493,10 +487,9 @@ static SrnRet on_command_connect(Command *cmd, void *user_data){
     server_connect(def_srv);
 
     server_wait_until_registered(def_srv);
-
     if (!server_is_registered(srv)){
         def_srv = NULL;
-        return RET_ERR(_("Failed to register on server %s"), prefs->name);
+        // return RET_ERR(_("Failed to register on server %s"), prefs->name);
     }
 
     return SRN_OK;

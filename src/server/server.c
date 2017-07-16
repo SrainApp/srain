@@ -72,21 +72,27 @@ void server_init(){
     server_cmd_init();
 
     /* Read prefs **/
-    char *errmsg;
+    SrnRet ret;
     SuiAppPrefs ui_app_prefs = {0};
 
-    errmsg = prefs_read();
-    if (errmsg){
-        sui_message_box(_("Prefs read error"), errmsg);
-        g_free(errmsg);
+    ret = prefs_read();
+    if (!RET_IS_OK(ret)){
+        sui_message_box(_("Prefs read error"), RET_MSG(ret));
     }
 
-    log_read_prefs();
+    ret = log_read_prefs();
+    if (!RET_IS_OK(ret)){
+        sui_message_box(_("Prefs read error"), RET_MSG(ret));
+    }
 
-    errmsg = prefs_read_sui_app_prefs(&ui_app_prefs);
-    if (errmsg){
-        ERR_FR("Read sui app prefs failed: %s", errmsg);
-        g_free(errmsg);
+    ret = prefs_read_server_prefs_list();
+    if (!RET_IS_OK(ret)){
+        sui_message_box(_("Prefs read error"), RET_MSG(ret));
+    }
+
+    ret = prefs_read_sui_app_prefs(&ui_app_prefs);
+    if (!RET_IS_OK(ret)){
+        sui_message_box(_("Prefs read error"), RET_MSG(ret));
     }
 
     sui_main_loop(&ui_app_events, &ui_app_prefs);

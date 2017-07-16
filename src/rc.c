@@ -51,7 +51,7 @@ SrnRet rc_read(){
         if (line && line[0] != '#'){
             strtok(line, "\n");
             if (!RET_IS_OK(ret = server_cmd(NULL, line))){
-                ret = RET_ERR("Command failed at line %d: %s", nline, RET_MSG(ret));
+                ret = RET_ERR(_("Command failed at line %d: %s"), nline, RET_MSG(ret));
                 break;
             }
         }

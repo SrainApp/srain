@@ -44,11 +44,11 @@ void log_init(){
     log_prefs->debug_targets = g_slist_append(log_prefs->debug_targets, g_strdup("*"));
 }
 
-void log_read_prefs(){
+SrnRet log_read_prefs(){
     log_prefs_free(log_prefs);
     log_prefs = log_prefs_new();
 
-    prefs_read_log_prefs(log_prefs);
+    return prefs_read_log_prefs(log_prefs);
 }
 
 void log_finalize(){

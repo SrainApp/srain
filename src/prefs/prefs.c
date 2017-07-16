@@ -36,27 +36,27 @@
 config_t user_cfg;
 config_t builtin_cfg;
 
-static char* prefs_read_file(config_t *cfg, const char *file);
+static SrnRet prefs_read_file(config_t *cfg, const char *file);
 
 static int config_lookup_string_ex(const config_t *config, const char *path, char **value);
 static int config_setting_lookup_bool_ex(const config_setting_t *config, const char *name, bool *value);
 static int config_setting_lookup_string_ex(const config_setting_t *config, const char *name, char **value);
 
-static void read_log_prefs_from_cfg(config_t *cfg, LogPrefs *prefs);
-static void read_log_targets_from_log(config_setting_t *log, const char *name, GSList **lst);
+static SrnRet read_log_prefs_from_cfg(config_t *cfg, LogPrefs *prefs);
+static SrnRet read_log_targets_from_log(config_setting_t *log, const char *name, GSList **lst);
 
-static void read_sirc_prefs_from_irc(config_setting_t *irc, SircPrefs *prefs);
-static void read_sirc_prefs_from_server_list(config_setting_t *server_list, SircPrefs *prefs, const char *srv_name);
-static void read_sirc_prefs_from_cfg(config_t *cfg, SircPrefs *prefs, const char *srv_name);
+static SrnRet read_sirc_prefs_from_irc(config_setting_t *irc, SircPrefs *prefs);
+static SrnRet read_sirc_prefs_from_server_list(config_setting_t *server_list, SircPrefs *prefs, const char *srv_name);
+static SrnRet read_sirc_prefs_from_cfg(config_t *cfg, SircPrefs *prefs, const char *srv_name);
 
-static void read_server_prefs_from_server(config_setting_t *server, ServerPrefs *prefs);
-static void read_server_prefs_from_server_list(config_setting_t *server_list, ServerPrefs *prefs);
-static void read_server_prefs_from_cfg(config_t *cfg, ServerPrefs *prefs);
-static void read_server_prefs_list_from_cfg(config_t *cfg);
+static SrnRet read_server_prefs_from_server(config_setting_t *server, ServerPrefs *prefs);
+static SrnRet read_server_prefs_from_server_list(config_setting_t *server_list, ServerPrefs *prefs);
+static SrnRet read_server_prefs_from_cfg(config_t *cfg, ServerPrefs *prefs);
+static SrnRet read_server_prefs_list_from_cfg(config_t *cfg);
 
-static void read_sui_prefs_from_chat(config_setting_t *chat, SuiPrefs *prefs);
-static void read_sui_prefs_from_chat_list(config_setting_t *chat_list, SuiPrefs *prefs, const char *chat_name);
-static void read_sui_prefs_from_cfg(config_t *cfg, SuiPrefs *prefs, const char *srv_name, const char *chat_name);
+static SrnRet read_sui_prefs_from_chat(config_setting_t *chat, SuiPrefs *prefs);
+static SrnRet read_sui_prefs_from_chat_list(config_setting_t *chat_list, SuiPrefs *prefs, const char *chat_name);
+static SrnRet read_sui_prefs_from_cfg(config_t *cfg, SuiPrefs *prefs, const char *srv_name, const char *chat_name);
 
 void prefs_init(){
     config_init(&user_cfg);
@@ -68,83 +68,118 @@ void prefs_finalize(){
     config_destroy(&builtin_cfg);
 };
 
-char* prefs_read(){
+SrnRet prefs_read(){
     char *path;
-    char *errmsg;
+    SrnRet ret;
 
     path = get_system_config_file("builtin.cfg");
     if (!path){
-        return g_strdup(_("File 'builtin.cfg' not found."));
+        return RET_ERR(_("System config file %s not found"), "builtin.cfg");
     }
 
-    errmsg = prefs_read_file(&builtin_cfg, path);
-    g_free(path);
-
-    if (errmsg){
-        return errmsg;
+    ret = prefs_read_file(&builtin_cfg, path);
+    if (!RET_IS_OK(ret)){
+        return RET_ERR(_("Error occurred while reading %s: %s"), path, RET_MSG(ret));
     }
 
     path = get_config_file("srain.cfg");
     if (!path){
-        // return g_strdup(_("File 'builtin.cfg' not found."));
-        return NULL;
+        // It is not an error
+        return RET_OK(_("User config file %s not found"), "srain.cfg");
     }
 
-    errmsg = prefs_read_file(&user_cfg, path);
-    g_free(path);
-
-    if (errmsg){
-        return errmsg;
+    ret = prefs_read_file(&user_cfg, path);
+    if (!RET_IS_OK(ret)){
+        return RET_ERR(_("Error occurred while reading %s: %s"), path, RET_MSG(ret));
     }
 
-    return NULL;
+    return SRN_OK;
 }
 
-char* prefs_read_log_prefs(LogPrefs *prefs){
-    read_log_prefs_from_cfg(&builtin_cfg, prefs);
-    read_log_prefs_from_cfg(&user_cfg, prefs);
+SrnRet prefs_read_log_prefs(LogPrefs *prefs){
+    SrnRet ret;
 
-    return NULL;
+    ret = read_log_prefs_from_cfg(&builtin_cfg, prefs);
+    if (!RET_IS_OK(ret)){
+        return RET_ERR(_("Error occurred while read log prefs in %s: %s"), "builtin.cfg", RET_MSG(ret));
+    }
+    ret = read_log_prefs_from_cfg(&user_cfg, prefs);
+    if (!RET_IS_OK(ret)){
+        return RET_ERR(_("Error occurred while read log prefs in %s: %s"), "srain.cfg", RET_MSG(ret));
+    }
+
+    return SRN_OK;
 }
 
-char* prefs_read_sui_app_prefs(SuiAppPrefs *prefs){
+SrnRet prefs_read_sui_app_prefs(SuiAppPrefs *prefs){
     // TODO: read_sui_app_prefs_from_cfg()
     config_lookup_string_ex(&builtin_cfg, "application.theme", &prefs->theme);
     config_lookup_string_ex(&user_cfg, "application.theme", &prefs->theme);
 
-    return NULL;
+    return SRN_OK;
 }
 
-char *prefs_read_server_prefs_list(){
-    read_server_prefs_list_from_cfg(&builtin_cfg);
-    read_server_prefs_list_from_cfg(&user_cfg);
+SrnRet prefs_read_server_prefs_list(){
+    SrnRet ret;
 
-    return NULL;
+    ret = read_server_prefs_list_from_cfg(&builtin_cfg);
+    if (!RET_IS_OK(ret)){
+        return RET_ERR(_("Error occurred while read server prefs list in %s: %s"), "builtin.cfg", RET_MSG(ret));
+    }
+    ret = read_server_prefs_list_from_cfg(&user_cfg);
+    if (!RET_IS_OK(ret)){
+        return RET_ERR(_("Error occurred while read server prefs list in %s: %s"), "srain.cfg", RET_MSG(ret));
+    }
+
+    return SRN_OK;
 }
 
-char* prefs_read_server_prefs(ServerPrefs *prefs){
-    read_server_prefs_from_cfg(&builtin_cfg, prefs);
+SrnRet prefs_read_server_prefs(ServerPrefs *prefs){
+    SrnRet ret;
+
+    ret = read_server_prefs_from_cfg(&builtin_cfg, prefs);
+    if (!RET_IS_OK(ret)){
+        return RET_ERR(_("Error occurred while read server prefs in %s: %s"), "builtin.cfg", RET_MSG(ret));
+    }
     read_server_prefs_from_cfg(&user_cfg, prefs);
+    if (!RET_IS_OK(ret)){
+        return RET_ERR(_("Error occurred while read server prefs in %s: %s"), "srain.cfg", RET_MSG(ret));
+    }
 
-    return NULL;
+    return SRN_OK;
 }
 
-char* prefs_read_sirc_prefs(SircPrefs *prefs, const char *srv_name){
-    read_sirc_prefs_from_cfg(&builtin_cfg, prefs, srv_name);
+SrnRet prefs_read_sirc_prefs(SircPrefs *prefs, const char *srv_name){
+    SrnRet ret;
+
+    ret = read_sirc_prefs_from_cfg(&builtin_cfg, prefs, srv_name);
+    if (!RET_IS_OK(ret)){
+        return RET_ERR(_("Error occurred while read irc prefs in %s: %s"), "builtin.cfg", RET_MSG(ret));
+    }
     read_sirc_prefs_from_cfg(&user_cfg, prefs, srv_name);
+    if (!RET_IS_OK(ret)){
+        return RET_ERR(_("Error occurred while read irc prefs in %s: %s"), "srain.cfg", RET_MSG(ret));
+    }
 
-    return NULL;
+    return SRN_OK;
 }
 
-char *prefs_read_sui_prefs(SuiPrefs *prefs, const char *srv_name,
+SrnRet prefs_read_sui_prefs(SuiPrefs *prefs, const char *srv_name,
         const char *chat_name){
-    read_sui_prefs_from_cfg(&builtin_cfg, prefs, srv_name, chat_name);
+    SrnRet ret;
+    ret = read_sui_prefs_from_cfg(&builtin_cfg, prefs, srv_name, chat_name);
+    if (!RET_IS_OK(ret)){
+        return RET_ERR(_("Error occurred while read ui prefs in %s: %s"), "builtin.cfg", RET_MSG(ret));
+    }
     read_sui_prefs_from_cfg(&user_cfg, prefs, srv_name, chat_name);
+    if (!RET_IS_OK(ret)){
+        return RET_ERR(_("Error occurred while read ui prefs in %s: %s"), "srain.cfg", RET_MSG(ret));
+    }
 
-    return NULL;
+    return SRN_OK;
 }
 
-static char *prefs_read_file(config_t *cfg, const char *file){
+static SrnRet prefs_read_file(config_t *cfg, const char *file){
     char *dir;
     const char *version;
 
@@ -153,37 +188,39 @@ static char *prefs_read_file(config_t *cfg, const char *file){
     g_free(dir);
 
     if (!config_read_file(cfg, file)){
-        return g_strdup_printf(_("Error found in %s line %d: %s"),
-                config_error_file(cfg),
+        return RET_ERR(_("At line %d: %s"),
                 config_error_line(cfg),
                 config_error_text(cfg));
     }
 
     /* Verify configure version */
     if (!config_lookup_string(cfg, "version", &version)){
-        return g_strdup_printf(_("No version found in config'%s'"), file);
+        return RET_ERR(_("No version found"));
     }
 
     /* TODO:
-    if (strcmp(version, PACKAGE_VERSION) != 0){
-        return g_strdup_printf(_("Version in config file '%s' is not macth"), file);
+    if (g_strcmp0(version, PACKAGE_VERSION) != 0){
+        return RET_ERR(_("Version doesn't macth");
     }
     */
 
-    return NULL;
+    return SRN_OK;
 }
 
-static void read_sui_prefs_from_chat(config_setting_t *chat, SuiPrefs *prefs){
+static SrnRet read_sui_prefs_from_chat(config_setting_t *chat, SuiPrefs *prefs){
     config_setting_lookup_bool_ex(chat, "notify", &prefs->notify);
     config_setting_lookup_bool_ex(chat, "show_topic", &prefs->show_topic);
     config_setting_lookup_bool_ex(chat, "show_avatar", &prefs->show_avatar);
     config_setting_lookup_bool_ex(chat, "show_user_list", &prefs->show_user_list);
     config_setting_lookup_bool_ex(chat, "preview_image", &prefs->preview_image);
+
+    return SRN_OK;
 }
 
-static void read_sui_prefs_from_chat_list(config_setting_t *chat_list,
+static SrnRet read_sui_prefs_from_chat_list(config_setting_t *chat_list,
         SuiPrefs *prefs, const char *chat_name){
     int count;
+    SrnRet ret;
 
     count = config_setting_length(chat_list);
     for (int i = 0; i < count; i++){
@@ -197,12 +234,16 @@ static void read_sui_prefs_from_chat_list(config_setting_t *chat_list,
         if (g_strcmp0(chat_name, name) != 0) continue;
 
         DBG_FR("Read: chat_list.%s, chat_name: %s", name, chat_name);
-        read_sui_prefs_from_chat(chat, prefs);
+        ret = read_sui_prefs_from_chat(chat, prefs);
+        if (!RET_IS_OK(ret)) return ret;
     }
+
+    return SRN_OK;
 }
 
-static void read_sui_prefs_from_cfg(config_t *cfg, SuiPrefs *prefs,
+static SrnRet read_sui_prefs_from_cfg(config_t *cfg, SuiPrefs *prefs,
         const char *srv_name, const char *chat_name){
+    SrnRet ret;
 
     /* Read server.chat */
     {
@@ -211,7 +252,8 @@ static void read_sui_prefs_from_cfg(config_t *cfg, SuiPrefs *prefs,
         chat = config_lookup(cfg, "server.chat");
         if (chat){
             DBG_FR("Read: server.chat, srv_name: %s, chat_name: %s", srv_name, chat_name);
-            read_sui_prefs_from_chat(chat, prefs);
+            ret = read_sui_prefs_from_chat(chat, prefs);
+            if (!RET_IS_OK(ret)) return ret;
         }
     }
 
@@ -221,7 +263,8 @@ static void read_sui_prefs_from_cfg(config_t *cfg, SuiPrefs *prefs,
 
         chat_list = config_lookup(cfg, "server.chat_list");
         if (chat_list){
-            read_sui_prefs_from_chat_list(chat_list, prefs, chat_name);
+            ret = read_sui_prefs_from_chat_list(chat_list, prefs, chat_name);
+            if (!RET_IS_OK(ret)) return ret;
         }
     }
 
@@ -249,7 +292,8 @@ static void read_sui_prefs_from_cfg(config_t *cfg, SuiPrefs *prefs,
                 if (chat){
                     DBG_FR("Read server_list.[name = %s].chat, srv_name: %s, chat_name: %s",
                             name, srv_name, chat_name);
-                    read_sui_prefs_from_chat(chat, prefs);
+                    ret =read_sui_prefs_from_chat(chat, prefs);
+                    if (!RET_IS_OK(ret)) return ret;
                 }
 
                 /* Read server_list.[name = srv_name].chat_list[name = chat_name] */
@@ -258,16 +302,21 @@ static void read_sui_prefs_from_cfg(config_t *cfg, SuiPrefs *prefs,
 
                     chat_list = config_setting_lookup(server, "server.chat_list");
                     if (chat_list){
-                        read_sui_prefs_from_chat_list(chat_list, prefs, chat_name);
+                        ret = read_sui_prefs_from_chat_list(chat_list, prefs, chat_name);
+                        if (!RET_IS_OK(ret)) return ret;
                     }
                 }
             }
         }
     }
+
+    return SRN_OK;
 }
 
-static void read_server_prefs_from_server(config_setting_t *server,
+static SrnRet read_server_prefs_from_server(config_setting_t *server,
         ServerPrefs *prefs){
+    SrnRet ret;
+
     /* Read server meta info */
     // The name of prefs has been set.
     // config_setting_lookup_string_ex(server, "name", &prefs->name);
@@ -299,13 +348,17 @@ static void read_server_prefs_from_server(config_setting_t *server,
     config_setting_t *irc;
     irc = config_setting_lookup(server, "irc");
     if (irc){
-        read_sirc_prefs_from_irc(irc, prefs->irc);
+        ret = read_sirc_prefs_from_irc(irc, prefs->irc);
+        if (!RET_IS_OK(ret)) return ret;
     }
+
+    return SRN_OK;
 }
 
-static void read_server_prefs_from_server_list(config_setting_t *server_list,
+static SrnRet read_server_prefs_from_server_list(config_setting_t *server_list,
         ServerPrefs *prefs){
     int count;
+    SrnRet ret;
 
     count = config_setting_length(server_list);
     for (int i = 0; i < count; i++){
@@ -319,18 +372,23 @@ static void read_server_prefs_from_server_list(config_setting_t *server_list,
         if (g_strcmp0(prefs->name, name) != 0) continue;
 
         DBG_FR("Read: server_list.[name = %s], srv_name: %s", name, prefs->name);
-        read_server_prefs_from_server(server, prefs);
+        ret = read_server_prefs_from_server(server, prefs);
+        if (!RET_IS_OK(ret)) return ret;
     }
+
+    return SRN_OK;
 }
 
-static void read_server_prefs_from_cfg(config_t *cfg, ServerPrefs *prefs){
+static SrnRet read_server_prefs_from_cfg(config_t *cfg, ServerPrefs *prefs){
+    SrnRet ret;
     config_setting_t *server;
 
     /* Read server */
     server = config_lookup(cfg, "server");
     if (server){
         DBG_FR("Read: server, srv_name: %s", prefs->name);
-        read_server_prefs_from_server(server, prefs);
+        ret = read_server_prefs_from_server(server, prefs);
+        if (!RET_IS_OK(ret)) return ret;
     }
 
     /* Read server_list[name = prefs->name] */
@@ -338,17 +396,22 @@ static void read_server_prefs_from_cfg(config_t *cfg, ServerPrefs *prefs){
 
     server_list = config_lookup(cfg, "server_list");
     if (server_list){
-        read_server_prefs_from_server_list(server_list, prefs);
+        ret = read_server_prefs_from_server_list(server_list, prefs);
+        if (!RET_IS_OK(ret)) return ret;
     }
+
+    return SRN_OK;
 }
 
-static void read_sirc_prefs_from_irc(config_setting_t *irc, SircPrefs *prefs){
+static SrnRet read_sirc_prefs_from_irc(config_setting_t *irc, SircPrefs *prefs){
     config_setting_lookup_bool_ex(irc, "auto_reconnect", &prefs->auto_reconnect);
     config_setting_lookup_bool_ex(irc, "use_ssl", &prefs->use_ssl);
     config_setting_lookup_bool_ex(irc, "verify_ssl_cert", &prefs->verify_ssl_cert);
+
+    return SRN_OK;
 }
 
-static void read_sirc_prefs_from_server_list(config_setting_t *server_list,
+static SrnRet read_sirc_prefs_from_server_list(config_setting_t *server_list,
         SircPrefs *prefs, const char *srv_name){
     int count;
 
@@ -370,17 +433,21 @@ static void read_sirc_prefs_from_server_list(config_setting_t *server_list,
         DBG_FR("Read: server_list.[name = %s].irc, srv_name: %s", name, srv_name);
         read_sirc_prefs_from_irc(server, prefs);
     }
+
+    return SRN_OK;
 }
 
-static void read_sirc_prefs_from_cfg(config_t *cfg, SircPrefs *prefs,
+static SrnRet read_sirc_prefs_from_cfg(config_t *cfg, SircPrefs *prefs,
         const char *srv_name){
+    SrnRet ret;
     config_setting_t *irc;
 
     /* Read server.irc */
     irc = config_lookup(cfg, "server.irc");
     if (irc){
         DBG_FR("Read: server.irc, srv_name: %s", srv_name);
-        read_sirc_prefs_from_irc(irc, prefs);
+        ret = read_sirc_prefs_from_irc(irc, prefs);
+        if (!RET_IS_OK(ret)) return ret;
     }
 
     /* Read server_list[name = srv_name] */
@@ -389,12 +456,16 @@ static void read_sirc_prefs_from_cfg(config_t *cfg, SircPrefs *prefs,
 
         server_list = config_lookup(cfg, "server_list");
         if (server_list){
-            read_sirc_prefs_from_server_list(server_list, prefs, srv_name);
+            ret = read_sirc_prefs_from_server_list(server_list, prefs, srv_name);
+            if (!RET_IS_OK(ret)) return ret;
         }
     }
+
+    return SRN_OK;
 }
 
-static void read_server_prefs_list_from_cfg(config_t *cfg){
+static SrnRet read_server_prefs_list_from_cfg(config_t *cfg){
+    SrnRet ret;
     int count;
     ServerPrefs *prefs;
     config_setting_t *server;
@@ -405,35 +476,36 @@ static void read_server_prefs_list_from_cfg(config_t *cfg){
     if (server_list){
         count = config_setting_length(server_list);
         for (int i = 0; i < count; i++){
-            char *errmsg = NULL;
             const char *name = NULL;
             server = config_setting_get_elem(server_list, i);
             if (!server) break;
 
-            config_setting_lookup_string(server, "name", &name);
-            if (!name) break;
+            if (config_setting_lookup_string(server, "name", &name) != CONFIG_TRUE) {
+                return RET_ERR(_("Server[%d] in server_list doesn't have a name"), i);
+            }
 
             prefs = server_prefs_new(name);
             if (!prefs){
-                ERR_FR("Failed to create ServerPrefs '%s'", name);
+                return RET_ERR(_("Server already exist: %s"), name);
             }
 
-            errmsg = prefs_read_server_prefs(prefs);
-            if (errmsg){
-                g_free(errmsg);
+            ret = prefs_read_server_prefs(prefs);
+            if (!RET_IS_OK(ret)){
                 g_free(prefs);
-                break;
+                return ret;
             }
         }
     }
+
+    return SRN_OK;
 }
 
-static void read_log_targets_from_log(config_setting_t *log, const char *name,
+static SrnRet read_log_targets_from_log(config_setting_t *log, const char *name,
         GSList **lst){
     config_setting_t *targets;
 
     targets = config_setting_lookup(log, name);
-    if (!targets) return;
+    if (!targets) return SRN_OK;
 
     int count = config_setting_length(targets);
     for (int i = 0; i < count; i++){
@@ -448,9 +520,12 @@ static void read_log_targets_from_log(config_setting_t *log, const char *name,
 
         *lst = g_slist_append(*lst, g_strdup(val));
     }
+
+    return SRN_OK;
 }
 
-static void read_log_prefs_from_cfg(config_t *cfg, LogPrefs *prefs){
+static SrnRet read_log_prefs_from_cfg(config_t *cfg, LogPrefs *prefs){
+    SrnRet ret;
     config_setting_t *log;
 
     log = config_lookup(cfg, "log");
@@ -461,11 +536,17 @@ static void read_log_prefs_from_cfg(config_t *cfg, LogPrefs *prefs){
         config_setting_lookup_bool_ex(log, "prompt_function", &prefs->prompt_function);
         config_setting_lookup_bool_ex(log, "prompt_line", &prefs->prompt_line);
 
-        read_log_targets_from_log(log, "debug_targets", &prefs->debug_targets);
-        read_log_targets_from_log(log, "info_targets", &prefs->info_targets);
-        read_log_targets_from_log(log, "warn_targets", &prefs->warn_targets);
-        read_log_targets_from_log(log, "error_targets", &prefs->error_targets);
+        ret = read_log_targets_from_log(log, "debug_targets", &prefs->debug_targets);
+        if (!RET_IS_OK(ret)) return ret;
+        ret = read_log_targets_from_log(log, "info_targets", &prefs->info_targets);
+        if (!RET_IS_OK(ret)) return ret;
+        ret = read_log_targets_from_log(log, "warn_targets", &prefs->warn_targets);
+        if (!RET_IS_OK(ret)) return ret;
+        ret = read_log_targets_from_log(log, "error_targets", &prefs->error_targets);
+        if (!RET_IS_OK(ret)) return ret;
     }
+
+    return SRN_OK;
 }
 
 /* The "bool" in libconfig is actually an integer, transform it to fit bool in "stdbool.h". */

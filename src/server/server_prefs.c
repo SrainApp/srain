@@ -58,19 +58,6 @@ static int server_prefs_list_rm(ServerPrefs *prefs){
     return SRN_OK;
 }
 
-/**
- * @brief server_prefs_list_init Generating ServerPrefs from config file
- */
-void server_prefs_list_init(){
-    char *errmsg;
-
-    errmsg = prefs_read_server_prefs_list();
-    if (errmsg){
-        ERR_FR("Read server prefs list failed: %s", errmsg);
-        g_free(errmsg);
-    }
-}
-
 ServerPrefs* server_prefs_new(const char *name){
     ServerPrefs *prefs;
     SircPrefs *irc_prefs;
