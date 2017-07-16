@@ -81,7 +81,7 @@ static const char* srain_entry_completion_compute_prefix(
     for (i = 0; i < len; i++){
         prefix = g_queue_peek_nth(comp->queue, i);
         if (strncmp(prefix, key, strlen(key)) == 0){
-            LOG_FR("queue matched");
+            DBG_FR("queue matched");
             return prefix;
         }
     }
@@ -157,7 +157,7 @@ SrainEntryCompletion* srain_entry_completion_new(GtkEntry *entry){
  */
 int srain_entry_completion_add_keyword(SrainEntryCompletion *comp,
         const char *keyword, SECKeywordType type){
-    LOG_FR("keyword: '%s', type: %d", keyword, type);
+    DBG_FR("keyword: '%s', type: %d", keyword, type);
     int len;
 
     if (!is_legal_keyword(keyword)){
@@ -170,13 +170,13 @@ int srain_entry_completion_add_keyword(SrainEntryCompletion *comp,
         if (g_queue_get_length(comp->queue) > TMP_QUEUE_LEN){
             data = g_queue_pop_tail(comp->queue);
             g_free(data);
-            LOG_FR("Queue full");
+            DBG_FR("Queue full");
         }
 
         len = g_queue_get_length(comp->queue);
         while (len > 0){
             if (strcmp(keyword, g_queue_peek_nth(comp->queue, --len)) == 0){
-                LOG_FR("Duplicate");
+                DBG_FR("Duplicate");
                 return -1;
             }
         }
@@ -219,7 +219,7 @@ int srain_entry_completion_rm_keyword(SrainEntryCompletion *comp,
     tree_model = GTK_TREE_MODEL(comp->list);
 
     if (!gtk_tree_model_get_iter_first(tree_model, &iter)){
-        LOG_FR("empty");
+        DBG_FR("empty");
         return -1;
     }
 
@@ -233,7 +233,7 @@ int srain_entry_completion_rm_keyword(SrainEntryCompletion *comp,
         g_value_unset(&val);
     } while (gtk_tree_model_iter_next(tree_model, &iter));
 
-    LOG_FR("not found");
+    DBG_FR("not found");
 
     return -1;
 }
@@ -283,5 +283,5 @@ void srain_entry_completion_complete(SrainEntryCompletion *comp){
         // cur_pos, cur_pos + strlen(prefix) - strlen(word));
     }
 
-    LOG_FR("cur_pos: %d, word: '%s', word_len: %d, prefix: '%s'", cur_pos, word, word_len, prefix);
+    DBG_FR("cur_pos: %d, word: '%s', word_len: %d, prefix: '%s'", cur_pos, word, word_len, prefix);
 }

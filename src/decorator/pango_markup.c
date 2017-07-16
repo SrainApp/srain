@@ -173,7 +173,7 @@ static int pango_markup(Message *msg, DecoratorFlag flag, void *user_data){
         ptr += end;
     }
 
-    LOG_FR("Result: %s", dcontent->str);
+    DBG_FR("Result: %s", dcontent->str);
 
     g_free(msg->dcontent);
     msg->dcontent = dcontent->str;
