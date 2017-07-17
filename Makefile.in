@@ -28,6 +28,8 @@ DB = gdb
 
 BUILD_DIR = $(CURDIR)/build
 TARGET = $(BUILD_DIR)/srain.out
+FAKE_XDG_CONFIG_HOME = $(BUILD_DIR)
+FAKE_XDG_DATA_DIR = $(BUILD_DIR)/share:/usr/share:/usr/local/share
 
 default: src/Makefile data/ui/Makefile
 	mkdir -p $(BUILD_DIR) | true
@@ -60,15 +62,13 @@ run:
 	$(MAKE) install-bin
 	$(MAKE) install-po
 	$(INSTALL) -Dm644 srainrc.example $(BUILD_DIR)/srain/srainrc
-	export XDG_CONFIG_DIRS=$(BUILD_DIR)/xdg:/etc/xdg; \
-	export XDG_CONFIG_HOME=$(BUILD_DIR); \
-	export XDG_DATA_DIRS=$(BUILD_DIR)/share:/usr/share; \
+	export XDG_CONFIG_HOME=$(FAKE_XDG_CONFIG_HOME); \
+	export XDG_DATA_DIRS=$(FAKE_XDG_DATA_DIR); \
 	$(BUILD_DIR)/bin/srain
 
 bt:
-	export XDG_CONFIG_DIRS=$(BUILD_DIR)/xdg:/etc/xdg; \
-	export XDG_CONFIG_HOME=$(BUILD_DIR); \
-	export XDG_DATA_DIRS=$(BUILD_DIR)/share:/usr/share; \
+	export XDG_CONFIG_HOME=$(FAKE_XDG_CONFIG_HOME); \
+	export XDG_DATA_DIRS=$(FAKE_XDG_DATA_DIR); \
 	$(DB) $(BUILD_DIR)/bin/srain -ex 'r' -ex 'bt' -ex 'q'
 
 gtk_dbg:

@@ -15,11 +15,14 @@ Dependencies
 - pkg-config    (makedepends)
 - gettext       (makedepends)
 - imagemagick   (makedepends)
+- glib
+- glib-networking (TLS support)
 - gtk >= 3.16
 - python >= 3.2
 - libcurl
 - libnotify
 - libconfig >= 1.5
+- python3-sphinx (document)
 
 Build & Debug
 -------------
