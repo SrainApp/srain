@@ -24,17 +24,17 @@
 #include "file_helper.h"
 
 SrnRet rc_read(){
-    int nline;
+    int nline = 1;
     FILE *fp = NULL;
-    char *line;
-    size_t len;
+    char *line = NULL;
+    size_t len = 0;
     ssize_t read;
     char *rc_file = NULL;
     SrnRet ret = SRN_OK;
 
     rc_file = get_config_file("srainrc");
     if (!rc_file) {
-        ret = RET_ERR(_("Rc file not found: %s"), rc_file);
+        ret = RET_ERR(_("User rc file not found"));
         goto fin;
     }
 
@@ -43,10 +43,6 @@ SrnRet rc_read(){
         ret = RET_ERR(_("Can not open rc file: %s"), rc_file);
         goto fin;
     }
-
-    len = 0;
-    nline = 1;
-    line = NULL;
     while ((read = getline(&line, &len, fp)) != -1) {
         if (line && line[0] != '#'){
             strtok(line, "\n");
