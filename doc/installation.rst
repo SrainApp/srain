@@ -2,8 +2,8 @@
 Installation
 ============
 
-Srain now can runs on most GNU/Linux distributions and macOS, Windows support in
-in plan.
+Srain can run on most GNU/Linux distributions and macOS, Windows support is in
+plan.
 
 Dependences
 ===========
@@ -41,14 +41,18 @@ Arch Linux
 
 .. code-block:: console
 
-    # pacman -S ...
+    # pacman -S coreutils make gcc pkg-config imagemagick # building
+    # pacman -S glib2 glib-networking gtk3 gettext python curl libnotify libconfig
 
 openSUSE
 ~~~~~~~~
 
 .. code-block:: console
 
-    # zypper in ...
+    # zypper in make gcc pkg-config imagemagick gettext-tools gtk3-devel>=3.16 libcurl-devel python3-devel libnotify-devel libconfig-devel>=1.5 # building
+    # zypper in gtk3 libcurl4 gettext-runtime python3 libnotify-tools libconfig9>=1.5
+
+.. TODO  libconfig and its version
 
 Ubuntu & Debian
 ~~~~~~~~~~~~~~~
@@ -62,8 +66,8 @@ macOS
 
 .. code-block:: console
 
-    $ brew install coreutils gcc pkg-config imagemagick # Building
-    $ brew install glib glib-networking gettext gtk+3 python3 curl libnotify libconfig
+    $ brew install coreutils gcc pkg-config imagemagick # building
+    $ brew install glib glib-networking gtk+3 gettext python3 curl libnotify libconfig
 
 Compile & Install
 -------------------
