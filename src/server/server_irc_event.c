@@ -131,7 +131,8 @@ void server_irc_event_disconnect(SircSession *sirc, const char *event,
             chat->joined = FALSE;
         }
         if (msg){
-            chat_add_error_message_fmt(chat, "", _("Disconnected from %s(%s:%d): %s"),
+            /* Only report error message to server chat */
+            chat_add_misc_message_fmt(chat, "", _("Disconnected from %s(%s:%d): %s"),
                     srv->prefs->name, srv->prefs->host, srv->prefs->port, msg);
         } else {
             chat_add_misc_message_fmt(chat, "", _("Disconnected from %s(%s:%d)"),
@@ -142,9 +143,19 @@ void server_irc_event_disconnect(SircSession *sirc, const char *event,
     }
 
     if (msg){
+        /* Disconnected because of some error */
         chat_add_error_message_fmt(srv->chat, "", _("Disconnected from %s(%s:%d): %s"),
                 srv->prefs->name, srv->prefs->host, srv->prefs->port, msg);
+
+        /* If user trying connect to a TLS port via non-TLS connection, it will
+         * be reset, give user some hints. */
+        if (!srv->prefs->irc->use_ssl && srv->prefs->port == 6697) {
+            chat_add_error_message_fmt(srv->chat, "",
+                    _("It seems that you connect to a TLS port(%d) without enable TLS connection, try to enable it and reconnect"),
+                    srv->prefs->port);
+        }
     } else {
+        /* Peacefully disconnected */
         chat_add_misc_message_fmt(srv->chat, "", _("Disconnected from %s(%s:%d)"),
                 srv->prefs->name, srv->prefs->host, srv->prefs->port);
     }

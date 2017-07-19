@@ -131,6 +131,7 @@ static void sirc_recv(SircSession *sirc){
 static void on_recv_ready(GObject *obj, GAsyncResult *res, gpointer user_data){
     int size;
     GInputStream *in;
+    GError *err;
     SircSession *sirc;
     SircMessage imsg;
 
@@ -149,8 +150,13 @@ static void on_recv_ready(GObject *obj, GAsyncResult *res, gpointer user_data){
     }
     */
 
+    err = NULL;
     in = G_INPUT_STREAM(obj);
-    size = g_input_stream_read_finish(in, res, NULL);
+    size = g_input_stream_read_finish(in, res, &err);
+    if (err != NULL){
+        on_disconnect(sirc, err->message);
+        return;
+    }
     g_return_if_fail(size == 1);
 
     sirc->bufptr++;
