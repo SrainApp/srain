@@ -11,9 +11,10 @@ Srain documentation
     :titlesonly:
 
     guide
-    faq
+    installation
     commands
     prefs
+    faq
     develop
     changelog
     resources
