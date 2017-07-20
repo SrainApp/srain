@@ -20,8 +20,9 @@
 
 #define DOMAIN_PATTERN      "[_\\pL\\pN\\pS][-_\\pL\\pN\\pS]*(\\.[-_\\pL\\pN\\pS]+)*"
 
+#define TLD_PATTERN         "\\.[\\pL][-\\pL\\pN]*[\\pL]"
 /* Ref: https://w3techs.com/technologies/overview/top_level_domain/all */
-#define TLD_PATTERN         "\\.(com|ru|org|net|de|jp|uk|br|it|pl|fr|in|au|ir"  \
+#define POP_TLD_PATTERN     "\\.(com|ru|org|net|de|jp|uk|br|it|pl|fr|in|au|ir"  \
                             "|info|nl|cn|es|cz|kr|ca|eu|ua|co|gr|ro|za|biz|ch"  \
                             "|se|tw|mx|vn|hu|be|at|tr|dk|tv|me|ar|sk|no|us|fi"  \
                             "|id|cl|xyz|io|pt|by|il|ie|nz|kz|hk|lt|cc|my|sg"    \
@@ -31,6 +32,8 @@
 
 #define PORT_PATTERN        "(:[1-9][0-9]{0,4})"
 #define HOST_PATTERN        "(" DOMAIN_PATTERN TLD_PATTERN "|" IP_PATTERN ")" PORT_PATTERN "?"
+/* Only match popular tld name for signal */
+#define SINGLY_HOST_PATTERN "(" DOMAIN_PATTERN POP_TLD_PATTERN "|" IP_PATTERN ")" PORT_PATTERN "?" "\\b"
 
 /* For convenience, last character of URL is limited */
 #define URL_PATH_PATTERN    "(/[A-Za-z0-9-_.~:/?#\\[\\]@!&'()*+,;=%|]*[A-Za-z0-9-_/])?/?"
@@ -63,7 +66,7 @@ static char* patterns[MATCH_MAX + 1] = {
     [MATCH_URL] = URL_PATTERN,
     [MATCH_CHANNEL] = CHANNEL_PATTERN,
     [MATCH_EMAIL] = EMAIL_PATTERN,
-    [MATCH_HOST] = HOST_PATTERN,
+    [MATCH_HOST] = SINGLY_HOST_PATTERN,
 };
 
 static bool match_pattern(const char *pattern, const char *str, int *start, int *end) {
