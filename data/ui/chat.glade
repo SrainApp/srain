@@ -114,6 +114,7 @@
           <object class="GtkRevealer" id="topic_revealer">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="transition_type">none</property>
             <child>
               <object class="GtkLabel" id="topic_label">
                 <property name="visible">True</property>
@@ -192,7 +193,7 @@
           <object class="GtkRevealer" id="user_list_revealer">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="transition_type">slide-right</property>
+            <property name="transition_type">none</property>
             <child>
               <placeholder/>
             </child>

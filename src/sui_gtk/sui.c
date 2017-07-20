@@ -116,7 +116,6 @@ int sui_start_session(SuiSession *sui, const char *name, const char *remark){
         return SRN_ERR;
     }
 
-    srain_chat_show_topic(sui->chat, sui->prefs->show_topic);
     srain_chat_show_user_list(sui->chat, sui->prefs->show_user_list);
 
     return SRN_OK;
@@ -336,6 +335,9 @@ void sui_set_topic(SuiSession *sui, const char *topic){
 
     g_return_if_fail(SRAIN_IS_CHAT(chat));
 
+    if (sui->prefs->show_topic) {
+        srain_chat_show_topic(sui->chat, TRUE);
+    }
     srain_chat_set_topic(chat, topic);
 }
 
