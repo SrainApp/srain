@@ -2,8 +2,13 @@
 Change Log
 ==========
 
-2017-08-xx Version 0.06
-=======================
+.. contents::
+    :local:
+    :depth: 1
+    :backlinks: none
+
+2017-08-xx Version 0.06 [Draft]
+===============================
 
 .. warning::
 

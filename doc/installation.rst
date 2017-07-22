@@ -5,6 +5,11 @@ Installation
 Srain can run on most GNU/Linux distributions and macOS, Windows support is in
 plan.
 
+.. contents::
+    :local:
+    :depth: 3
+    :backlinks: none
+
 Dependences
 ===========
 
@@ -36,13 +41,18 @@ installation.
 Install Dependences
 -------------------
 
+.. note::
+
+    The accurate package name is depending on platform,
+    the following commands just for reference.
+
 Arch Linux
 ~~~~~~~~~~
 
 .. code-block:: console
 
-    # pacman -S coreutils make gcc pkg-config imagemagick # building
-    # pacman -S glib2 glib-networking gtk3 gettext python curl libnotify libconfig
+    # pacman -S make gcc pkg-config imagemagick # building
+    # pacman -S glib-networking gtk3 gettext python curl libnotify libconfig
 
 openSUSE
 ~~~~~~~~
@@ -52,9 +62,7 @@ openSUSE
     # zypper in make gcc pkg-config imagemagick gettext-tools gtk3-devel>=3.16 libcurl-devel python3-devel libnotify-devel libconfig-devel>=1.5 # building
     # zypper in gtk3 libcurl4 gettext-runtime python3 libnotify-tools libconfig9>=1.5
 
-.. TODO  libconfig and its version
-
-Ubuntu & Debian
+Debian & Ubuntu
 ~~~~~~~~~~~~~~~
 
 .. code-block:: console
@@ -98,7 +106,7 @@ Distribution Package
 Arch Linux
 ----------
 
-AUR Package `srain`_ and `srain-git`_ (git version) are available on AUR,
+Packages `srain`_ and `srain-git`_ (git version) are available on AUR,
 it is quite easy to install using yaourt:
 
 .. code-block:: console

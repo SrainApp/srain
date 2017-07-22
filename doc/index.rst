@@ -3,11 +3,16 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Srain documentation
+Srain Documentation
 ===================
 
+Welcome to Srain documentation!
+
+The source code of this documentation is hosted on https://github.com/SilverRainZ/srain/tree/master/doc .
+If you found any mistake, feel free to file an issue or pull request.
+
 .. toctree::
-    :caption: Contents:
+    :caption: All pages:
     :titlesonly:
 
     guide
@@ -22,7 +27,7 @@ Srain documentation
 
 .. include:: ../README.rst
 
-Indices and tables
+Indices and Tables
 ==================
 
 * :ref:`genindex`
