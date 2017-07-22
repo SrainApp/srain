@@ -82,6 +82,7 @@ int sui_ren_user(SuiSession *sui, const char *old_nick, const char *new_nick, Us
 
 /* Misc */
 void sui_set_topic(SuiSession *sui, const char *topic);
+void sui_set_topic_setter(SuiSession *sui, const char *setter);
 void sui_message_box(const char *title, const char *msg);
 
 #endif /* __SUI_H */

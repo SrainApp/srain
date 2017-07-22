@@ -776,6 +776,22 @@ void server_irc_event_numeric (SircSession *sirc, int event,
 
                 break;
             }
+        case SIRC_RFC_RPL_TOPICWHOTIME:
+            {
+                g_return_if_fail(count >= 4);
+                char timestr[64];
+                const char *chan = params[1];
+                const char *who = params[2];
+                time_t time = strtoul(params[3], NULL, 10);
+
+                Chat *chat = server_get_chat(srv, chan);
+                g_return_if_fail(chat);
+
+                time_to_str(time, timestr, sizeof(timestr), _("%Y-%m-%d %T"));
+                char *setter = g_strdup_printf(_("By %s at %s"), who, timestr);
+                chat_set_topic_setter(chat, setter);
+                g_free(setter);
+            }
 
             /************************ WHOIS message ************************/
         case SIRC_RFC_RPL_WHOISUSER:

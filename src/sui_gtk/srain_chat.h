@@ -28,6 +28,7 @@ SrainChat* srain_chat_new(SuiSession *sui, const char *name, const char *remark,
 
 void srain_chat_fcous_entry(SrainChat *chat);
 void srain_chat_set_topic(SrainChat *chat, const char *topic);
+void srain_chat_set_topic_setter(SrainChat *chat, const char *setter);
 void srain_chat_insert_text(SrainChat *chat, const char *text, int pos);
 
 SrainUserList* srain_chat_get_user_list(SrainChat *chat);

@@ -543,6 +543,10 @@ void chat_set_topic(Chat *chat, const char *origin, const char *topic){
     message_free(msg);
 }
 
+void chat_set_topic_setter(Chat *chat, const char *setter){
+    sui_set_topic_setter(chat->ui, setter);
+}
+
 static void add_message(Chat *chat, Message *msg){
     chat->msg_list = g_list_append(chat->msg_list, msg);
     chat->last_msg = msg;
