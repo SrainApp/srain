@@ -315,7 +315,8 @@ void server_irc_event_part(SircSession *sirc, const char *event,
         snprintf(buf, sizeof(buf), _("%s has left"), origin);
     }
 
-    g_return_if_fail(chat = server_get_chat(srv, chan));
+    chat = server_get_chat(srv, chan);
+    g_return_if_fail(chat);
 
     chat_add_misc_message(chat, origin, buf);
     chat_rm_user(chat, origin);
@@ -462,8 +463,10 @@ void server_irc_event_kick(SircSession *sirc, const char *event,
     const char *kick_nick = count >= 2 ? params[1] : ""; // TODO: ???
     const char *reason = msg;
 
-    g_return_if_fail(srv = sirc_get_ctx(sirc));
-    g_return_if_fail(chat = server_get_chat(srv, chan));
+    srv = sirc_get_ctx(sirc);
+    g_return_if_fail(srv);
+    chat = server_get_chat(srv, chan);
+    g_return_if_fail(chat);
 
     if (strncasecmp(kick_nick, srv->user->nick, NICK_LEN) == 0){
         /* You are kicked 23333 */
@@ -500,9 +503,12 @@ void server_irc_event_channel(SircSession *sirc, const char *event,
 
     const char *chan = params[0];
 
-    g_return_if_fail(srv = sirc_get_ctx(sirc));
-    g_return_if_fail(chat = server_get_chat(srv, chan));
-    g_return_if_fail(user = chat_get_user(chat, origin));
+    srv = sirc_get_ctx(sirc);
+    g_return_if_fail(srv);
+    chat = server_get_chat(srv, chan);
+    g_return_if_fail(chat);
+    user = chat_get_user(chat, origin);
+    g_return_if_fail(user);
 
     chat_add_recv_message(chat, origin, msg);
 }
@@ -547,8 +553,8 @@ void server_irc_event_channel_notice(SircSession *sirc, const char *event,
     g_return_if_fail(count >= 1);
     const char *chan = params[0];
 
-    g_return_if_fail(srv = sirc_get_ctx(sirc));
-
+    srv = sirc_get_ctx(sirc);
+    g_return_if_fail(srv);
     chat = server_get_chat_fallback(srv, chan);
     g_return_if_fail(chat);
 
@@ -641,7 +647,8 @@ void server_irc_event_numeric (SircSession *sirc, int event,
         const char *origin, const char **params, int count, const char *msg){
     Server *srv;
 
-    g_return_if_fail(srv = sirc_get_ctx(sirc));
+    srv = sirc_get_ctx(sirc);
+    g_return_if_fail(srv);
 
     switch (event) {
         case SIRC_RFC_RPL_WELCOME:
