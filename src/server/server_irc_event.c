@@ -16,7 +16,6 @@
 #include "server.h"
 #include "server_irc_event.h"
 
-#include "sui/sui.h"
 #include "sirc/sirc.h"
 
 #include "srain.h"
@@ -489,7 +488,7 @@ void server_irc_event_kick(SircSession *sirc, const char *event,
     }
 
     chat_add_misc_message(chat, kick_nick, buf);
-    sui_rm_user(chat->ui, kick_nick);
+    chat_rm_user(chat, kick_nick);
 }
 
 void server_irc_event_channel(SircSession *sirc, const char *event,
