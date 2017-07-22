@@ -5,21 +5,6 @@
  * @version 1.0
  * @date 2017-05-14
  *
- * It read config from the sysetm-wide config file "builtin.cfg" and user-wide
- * config file "srain.cfg". Path of system-wide config file is obtained by
- * ``get_system_config_file()``, and the path of user-wide config file is obtained
- * by ``get_config_file()``.
- *
- * The structure of these two files is same, but the priority of user-wide
- * config file is bigger than system-wide config file.
- *
- * For the syntax of config file, refer to:
- *   http://www.hyperrealm.com/libconfig/libconfig_manual.html#Configuration-Files
- *
- * [TODO] Prefs priority:
- *      builtin_cfg < user_cfg
- *      server < server_list
- *      chat < chat_list
  */
 
 
