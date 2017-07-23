@@ -238,16 +238,6 @@ static void srain_chat_init(SrainChat *self){
 
     g_signal_connect(self->upload_image_button, "clicked",
             G_CALLBACK(upload_image_button_on_click), self->input_entry);
-
-    /* command completion */
-    /* TODO: get cmdlist from command_filter
-    int i;
-    for (i = 0; cmd_list[i] != 0; i++){
-        srain_entry_completion_add_keyword(self->completion,
-                cmd_list[i], KEYWORD_NORMAL);
-    }
-    */
-
 }
 
 static void srain_chat_finalize(GObject *object){

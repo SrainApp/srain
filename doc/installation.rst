@@ -75,7 +75,7 @@ macOS
 .. code-block:: console
 
     $ brew install coreutils gcc pkg-config imagemagick # building
-    $ brew install glib glib-networking gtk+3 gettext python3 curl libnotify libconfig
+    $ brew install glib-networking gtk+3 gettext python3 curl libnotify libconfig
 
 Compile & Install
 -------------------

@@ -824,9 +824,14 @@ void server_irc_event_numeric (SircSession *sirc, int event,
             }
         case SIRC_RFC_RPL_WHOISIDLE:
             {
-                g_return_if_fail(count >= 4); // TODO: resolve timestamp
+                g_return_if_fail(count >= 4);
+                const char *who = params[1];
+                const char *sec = params[2];
+                time_t since = strtoul(params[3], NULL, 10);
+                char timestr[64];
+                time_to_str(since, timestr, sizeof(timestr), _("%Y-%m-%d %T"));
                 chat_add_misc_message_fmt(srv->cur_chat, origin, _("%s is idle for %s seconds since %s"),
-                        params[1], params[2], params[3]);
+                        who, sec, since);
                 break;
             }
         case SIRC_RFC_RPL_WHOWAS_TIME:

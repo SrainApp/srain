@@ -5,16 +5,6 @@
  * @version 1.0
  * @date 2016-11-05
  *
- * Command syntax::
- *
- *      <command> [option] [arguments...]
- *
- * A ``command`` is a string that doesn't contain whitespace. Usually it starts
- * with a slash('/'), it is not necessarhy.
- *
- * A ``option`` starts with a '-' and maybe have a value. ``option`` is optional
- * for a command, if it is specified, it should behind ``command``.
- *
  */
 
 
