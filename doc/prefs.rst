@@ -41,9 +41,9 @@ Priority and Fallback
 =====================
 
 A **group** is a collection of configuration. The same group in different place
-have different priority. 
+have different priority.
 
-.. code-block:: nginx
+.. code-block:: default
 
     log: {}
     application: {}
@@ -54,18 +54,18 @@ have different priority.
         user = {}
         default_messages = {}
         irc = {}
-        chat = { }; # A ``chat`` group directly in ``server``
+        chat = { } # A ``chat`` group directly in ``server``
 
         chat_list = (
             { }, # A ``chat`` group in ``chat_list``
             # ...
-        );
-    };
+        )
+    }
 
     server_list: (
         { }, # A ``server`` group in ``server_list``
         # ...
-    );
+    )
 
 For example, A ``server`` group contains the information(not all) of connection
 to IRC servers.  ``server`` group can appear at the top level of configuration
@@ -86,7 +86,7 @@ As same as the relationship between top level ``server`` and ``server_list``,
 
 As mentioned above, The priority of user configuration always higher than
 system's, so we can get the priority sorting of ``server`` and ``chat`` group:
-    
+
 .. code-block:: none
 
     server_list(user) >
@@ -119,4 +119,3 @@ configuration file, but note:
    duplicated ``server`` in ``server_list`` before using
 
 .. literalinclude:: ../data/builtin.cfg
-    :language: nginx
