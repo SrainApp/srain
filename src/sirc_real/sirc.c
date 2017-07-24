@@ -270,7 +270,7 @@ static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data
     }
 
 
-    if (sirc->prefs->use_ssl){
+    if (sirc->prefs->tls){
          GIOStream *tls_conn;
 
          err = NULL;
@@ -279,12 +279,12 @@ static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data
              ERR_FR("Could not create TLS connection: %s", err->message);
          }
 
-         if (sirc->prefs->verify_ssl_cert){
-             g_tls_client_connection_set_validation_flags(
-                     G_TLS_CLIENT_CONNECTION(tls_conn), G_TLS_CERTIFICATE_VALIDATE_ALL);
-         } else {
+         if (sirc->prefs->tls_not_verify){
              g_tls_client_connection_set_validation_flags(
                      G_TLS_CLIENT_CONNECTION(tls_conn), 0);
+         } else {
+             g_tls_client_connection_set_validation_flags(
+                     G_TLS_CLIENT_CONNECTION(tls_conn), G_TLS_CERTIFICATE_VALIDATE_ALL);
          }
 
          g_signal_connect(tls_conn, "accept-certificate",
@@ -298,7 +298,7 @@ static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data
 
     /* If use TLS, trigger "CONNECT" event after TLS handshake,
      * see `on_handshake_ready` */
-    if (sirc->prefs->use_ssl){
+    if (sirc->prefs->tls){
         // ...
     } else {
         on_connect_finish(sirc);

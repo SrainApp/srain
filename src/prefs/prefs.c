@@ -390,8 +390,8 @@ static SrnRet read_server_prefs_from_cfg(config_t *cfg, ServerPrefs *prefs){
 
 static SrnRet read_sirc_prefs_from_irc(config_setting_t *irc, SircPrefs *prefs){
     config_setting_lookup_bool_ex(irc, "auto_reconnect", &prefs->auto_reconnect);
-    config_setting_lookup_bool_ex(irc, "use_ssl", &prefs->use_ssl);
-    config_setting_lookup_bool_ex(irc, "verify_ssl_cert", &prefs->verify_ssl_cert);
+    config_setting_lookup_bool_ex(irc, "tls", &prefs->tls);
+    config_setting_lookup_bool_ex(irc, "tls_not_verify", &prefs->tls_not_verify);
 
     return SRN_OK;
 }

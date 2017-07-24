@@ -148,7 +148,7 @@ void server_irc_event_disconnect(SircSession *sirc, const char *event,
 
         /* If user trying connect to a TLS port via non-TLS connection, it will
          * be reset, give user some hints. */
-        if (!srv->prefs->irc->use_ssl && srv->prefs->port == 6697) {
+        if (!srv->prefs->irc->tls && srv->prefs->port == 6697) {
             chat_add_error_message_fmt(srv->chat, "",
                     _("It seems that you connect to a TLS port(%d) without enable TLS connection, try to enable it and reconnect"),
                     srv->prefs->port);

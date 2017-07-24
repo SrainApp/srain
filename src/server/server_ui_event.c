@@ -37,7 +37,7 @@ void server_ui_event_connect(SuiEvent event, const char *params[], int count){
     const char *host = params[1];
     int port = atoi(params[2]);
     const char *passwd = params[3];
-    bool ssl = strcmp(params[4], "TRUE") == 0 ? TRUE : FALSE;
+    bool tls = strcmp(params[4], "TRUE") == 0 ? TRUE : FALSE;
     bool notverify = strcmp(params[5], "TRUE") == 0 ? TRUE : FALSE;
     const char *encoding = params[6];
     const char *nick = params[7];
@@ -91,8 +91,8 @@ void server_ui_event_connect(SuiEvent event, const char *params[], int count){
         str_assign(&prefs->realname, realname);
     }
 
-    prefs->irc->use_ssl = ssl;
-    prefs->irc->verify_ssl_cert = !notverify;
+    prefs->irc->tls = tls;
+    prefs->irc->tls_not_verify = notverify;
 
     ret = server_prefs_is_valid(prefs);
     if (!RET_IS_OK(ret)){

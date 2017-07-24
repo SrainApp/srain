@@ -345,10 +345,10 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
             str_assign(&prefs->encoding, encoding);
         }
         if (command_get_opt(cmd, "-tls", NULL)){
-            prefs->irc->use_ssl = true;
+            prefs->irc->tls = true;
         }
         if (command_get_opt(cmd, "-tls-not-verify", NULL)){
-            prefs->irc->verify_ssl_cert = false;
+            prefs->irc->tls_not_verify = TRUE;
         }
 
         return RET_OK(_("Server '%s' is created"), name);
@@ -467,10 +467,10 @@ static SrnRet on_command_connect(Command *cmd, void *user_data){
     str_assign(&prefs->encoding, encoding);
 
     if (command_get_opt(cmd, "-tls", NULL)){
-        prefs->irc->use_ssl = true;
+        prefs->irc->tls = TRUE;
     }
     if (command_get_opt(cmd, "-tls-not-verify", NULL)){
-        prefs->irc->verify_ssl_cert = false;
+        prefs->irc->tls_not_verify = TRUE;
     }
 
     ret = server_prefs_is_valid(prefs);

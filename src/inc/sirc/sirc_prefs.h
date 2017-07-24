@@ -12,10 +12,10 @@ typedef struct _SircPrefs SircPrefs;
 
 struct _SircPrefs {
     bool auto_reconnect;
-    bool use_ssl;
-    bool verify_ssl_cert;
-    // bool use_ipv6;
-    // bool use_sasl;
+    bool tls;
+    bool tls_not_verify;
+    // bool ipv6;
+    // bool sasl;
 };
 
 SircPrefs *sirc_prefs_new();

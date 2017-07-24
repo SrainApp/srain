@@ -16,7 +16,7 @@
 #include "log.h"
 
 /* Some patterns are copied from hexchat/src/common/url.c */
-#define PROTO_PATTERN       "(http|https|ftp|git|svn|irc|xmpp)"
+#define PROTO_PATTERN       "(http|https|ftp|git|svn|irc|ircs|xmpp)"
 
 #define DOMAIN_PATTERN      "[_\\pL\\pN\\pS][-_\\pL\\pN\\pS]*(\\.[-_\\pL\\pN\\pS]+)*"
 
@@ -150,11 +150,19 @@ static int pango_markup(Message *msg, DecoratorFlag flag, void *user_data){
                     markuped_url = g_markup_printf_escaped("<a href=\"http://%s\">%s</a>", url, url);
                     break;
                 case MATCH_CHANNEL:
-                    markuped_url = g_markup_printf_escaped("<a href=\"irc://%s:%d/%s\">%s</a>",
-                            msg->chat->srv->prefs->host,
-                            msg->chat->srv->prefs->port,
-                            url + 1,
-                            url);
+                    if (msg->chat->srv->prefs->irc->tls){
+                        markuped_url = g_markup_printf_escaped("<a href=\"ircs://%s:%d/%s\">%s</a>",
+                                msg->chat->srv->prefs->host,
+                                msg->chat->srv->prefs->port,
+                                url + 1,
+                                url);
+                    } else {
+                        markuped_url = g_markup_printf_escaped("<a href=\"irc://%s:%d/%s\">%s</a>",
+                                msg->chat->srv->prefs->host,
+                                msg->chat->srv->prefs->port,
+                                url + 1,
+                                url);
+                    }
                     break;
                 case MATCH_EMAIL:
                     markuped_url = g_markup_printf_escaped("<a href=\"mailto:%s\">%s</a>", url, url);
