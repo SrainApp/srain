@@ -52,7 +52,7 @@ Arch Linux
 .. code-block:: console
 
     # pacman -S make gcc pkg-config imagemagick # building
-    # pacman -S glib-networking gtk3 gettext python curl libnotify libconfig
+    # pacman -S gettext glib-networking gtk3 python curl libnotify libconfig
 
 openSUSE
 ~~~~~~~~
@@ -60,14 +60,15 @@ openSUSE
 .. code-block:: console
 
     # zypper in make gcc pkg-config imagemagick gettext-tools gtk3-devel>=3.16 libcurl-devel python3-devel libnotify-devel libconfig-devel>=1.5 # building
-    # zypper in gtk3 libcurl4 gettext-runtime python3 libnotify-tools libconfig9>=1.5
+    # zypper in gettext-runtime glib-networking gtk3 python3 libcurl4 libnotify-tools libconfig9>=1.5
 
 Debian & Ubuntu
 ~~~~~~~~~~~~~~~
 
 .. code-block:: console
 
-    # apt-get install ...
+    # apt-get install make gcc pkg-config imagemagick gettext libgtk-3-dev>=3.16 libpython3-dev python3-dev libcurl4-dev libnotify-dev libconfig-dev>=1.5 # building
+    # apt-get install glib-networking libgtk3.0-0>=3.16 python3 libcurl4 libnotify4 libconfig9>=1.5
 
 macOS
 ~~~~~
@@ -75,12 +76,29 @@ macOS
 .. code-block:: console
 
     $ brew install coreutils gcc pkg-config imagemagick # building
-    $ brew install glib-networking gtk+3 gettext python3 curl libnotify libconfig
+    $ brew install gettext glib-networking gtk+3 python3 curl libnotify libconfig
 
 Compile & Install
 -------------------
 
-After installing the aboved dependencies, complile and install:
+After installing the aboved dependencies, download the source code:
+
+Get stable(require ``wget`` and ``tar``):
+
+.. code-block:: console
+
+    $ wget https://github.com/SilverRainZ/srain/archive/0.05.1.tar.gz
+    $ tar -xvzf 0.05.1.tar.gz
+    $ cd srain-0.05.1
+
+Get git version(require ``git``):
+
+.. code-block:: console
+
+    $ git clone https://github.com/SilverRainZ/srain.git
+    $ cd srain
+
+Complile and install:
 
 .. code-block:: console
 
@@ -93,7 +111,7 @@ After installing the aboved dependencies, complile and install:
     The configure script **doesn't** check any dependience. So you should make
     sure that you have fully installed all dependencies.
 
-Install documents
+Install documents:
 
 .. code-block:: console
 
