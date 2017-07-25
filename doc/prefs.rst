@@ -2,7 +2,7 @@
 Preferences Manual
 ==================
 
-Srain uses `Libconfig`_ as configuration file backend.
+Srain uses `Libconfig`_ to process configuration file.
 
 .. _Libconfig: http://www.hyperrealm.com/libconfig/
 
@@ -17,13 +17,13 @@ Configuration File
 The path of sysetm wide configuration file ``builtin.cfg`` depends on the
 compile flag ``--config-dir``, default to be ``/etc/srain``.
 
-The path user wide configuration file ``srain.cfg`` is ``$XDG_CONFIG_HOME/srain``,
+The path of user wide configuration file ``srain.cfg`` is ``$XDG_CONFIG_HOME/srain``,
 usually it is ``~/.config/srain``.
 
 The difference between sysetm wide and user wide configuration file is the
-priority, **The configuration in user wide configuration always overwrite the
-one in system wide configuration file**. For more details about priority,
-refer to :ref:`prefs-priority-and-fallback`.
+priority, **The user wide configuration always overwrite the one in system wide
+configuration**. For more details about priority, refer to
+:ref:`prefs-priority-and-fallback`.
 
 Syntax
 ======
@@ -40,7 +40,7 @@ For an example configuration, refer to :ref:`prefs-example`.
 Priority and Fallback
 =====================
 
-A **group** is a collection of configuration. The same group in different place
+A **group** is a collection of configurations. The same group in different place
 have different priority.
 
 .. code-block:: default
