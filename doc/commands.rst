@@ -13,7 +13,7 @@ Syntax
 ======
 
 A command is a line of string that has the following format, different elements
-are separated with whitespace::
+are separated by whitespace::
 
     <name> [subcommand] [<option> [value]]... [argument]...
 

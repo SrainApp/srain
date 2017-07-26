@@ -14,13 +14,13 @@ Srain uses `Libconfig`_ to process configuration file.
 Configuration File
 ==================
 
-The path of sysetm wide configuration file ``builtin.cfg`` depends on the
+The path of system wide configuration file ``builtin.cfg`` depends on the
 compile flag ``--config-dir``, default to be ``/etc/srain``.
 
 The path of user wide configuration file ``srain.cfg`` is ``$XDG_CONFIG_HOME/srain``,
 usually it is ``~/.config/srain``.
 
-The difference between sysetm wide and user wide configuration file is the
+The difference between system wide and user wide configuration file is the
 priority, **The user wide configuration always overwrite the one in system wide
 configuration**. For more details about priority, refer to
 :ref:`prefs-priority-and-fallback`.
@@ -91,8 +91,8 @@ system's, so we can get the priority sorting of ``server`` and ``chat`` group:
 
     server_list(user) >
     top level server(user) >
-    server_list(sysetm) >
-    top level server(sysetm)
+    server_list(system) >
+    top level server(system)
 
     chat_list in server_list(user) >
     chat in server_list(user) >
@@ -112,7 +112,7 @@ Here is the default system wide configuration file used by Srain, all
 configurable items are already listed here. you can make a copy as your user
 configuration file, but note:
 
-1. User configuration always overwrite sysetm's, **if you don't know what does
+1. User configuration always overwrite system's, **if you don't know what does
    this option means, please remove it from your user configuration rather than
    overwrite it**
 2. The ``server``'s ``name`` in ``server_list`` is unique, please remoeve the
