@@ -226,3 +226,66 @@ void server_prefs_free(ServerPrefs *prefs){
         prefs->irc = NULL;
     }
 }
+
+char* server_prefs_dump(ServerPrefs *prefs){
+    char *passwd;
+    char *dump;
+    char *irc_dump;
+    GString *str;
+
+    g_return_val_if_fail(prefs, NULL);
+
+    if (prefs->passwd && prefs->passwd[0] != '\0') {
+        passwd = "********";
+    } else {
+        passwd = NULL;
+    }
+
+    irc_dump = sirc_prefs_dump(prefs->irc);
+
+    str = g_string_new("");
+    g_string_append_printf(str,
+            _("*** Server name: %s\n"
+                "\tHost: %s, Port: %d, Password: %s, Encoding: %s\n"
+                "\tNickname: %s, Username: %s, Realname: %s\n"
+                "\tPart: %s, Kick: %s, Away: %s, Quit: %s\n"
+                "\tIRC configuration: %s"),
+            prefs->name,
+            prefs->host, prefs->port, passwd, prefs->encoding,
+            prefs->nickname, prefs->username, prefs->realname,
+            prefs->part_message, prefs->kick_message, prefs->away_message, prefs->quit_message,
+            irc_dump);
+
+    g_free(irc_dump);
+    dump = str->str;
+    g_string_free(str, FALSE);
+
+    return dump;
+}
+
+char* server_prefs_list_dump(){
+    char *dump;
+    GSList *lst;
+    GString *str;
+
+    str = g_string_new("");
+
+    lst = server_prefs_list;
+    while (lst){
+        char *srv_dump;
+        ServerPrefs *srv_prefs;
+
+        srv_prefs = lst->data;
+        srv_dump = server_prefs_dump(srv_prefs);
+        g_string_append_printf(str, _("%s"), srv_dump);
+        g_free(srv_dump);
+
+        lst = g_slist_next(lst);
+        if (lst) str = g_string_append(str, "\n\n");
+    }
+
+    dump = str->str;
+    g_string_free(str, FALSE);
+
+    return dump;
+}

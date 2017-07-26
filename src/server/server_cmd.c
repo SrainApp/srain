@@ -60,13 +60,13 @@ static SrnRet on_command_list(Command *cmd, void *user_data);
 CommandBind cmd_binds[] = {
     {
         .name = "/server",
-        .subcmd = {"add", "rm", "set", "connect", "disconnect", NULL},
+        .subcmd = {"add", "rm", "list", "set", "connect", "disconnect", NULL},
         .argc = 1, // <name>
         .opt_key =
         {"-host", "-port", "-tls", "-tls-not-verify", "-pwd", "-nick", "-user", "-real", "-encode",  NULL},
         .opt_default_val =
         {"localhost", "6667", NULL, NULL, NULL, "Zaidan", "Srain", "Can you can a can?", "UTF-8", NULL},
-        .flag = 0,
+        .flag = COMMAND_FLAG_OMIT_ARG,
         .cb = on_command_server,
     },
     {
@@ -296,11 +296,23 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
     subcmd = cmd->subcmd;
     g_return_val_if_fail(subcmd, SRN_ERR);
 
+    if (g_ascii_strcasecmp(subcmd, "list") == 0){
+        char *dump = server_prefs_list_dump();
+        char static_dump[1024];
+        g_strlcpy(static_dump, dump, sizeof(static_dump));
+        g_free(dump);
+
+        return RET_OK("%s", static_dump);
+    }
+
     name = command_get_arg(cmd, 0);
+    // TODO: fallback current chat
     if (!name && def_srv){
         name = def_srv->prefs->name;
     }
-    g_return_val_if_fail(name, SRN_ERR);
+    if (!name) {
+        return RET_ERR(_("Missing argument <name>"));
+    }
 
     if (g_ascii_strcasecmp(subcmd, "add") == 0){
         prefs = server_prefs_new(name);

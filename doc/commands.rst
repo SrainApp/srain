@@ -59,7 +59,7 @@ Usage
 
 Usage::
 
-    /server [add|rm|set|connect|disconnect]
+    /server [add|rm|list|set|connect|disconnect]
         [-host <host>] [-port <port>] [-pwd <password>] [-tls] [-tls-not-verify]
         [-nick <nickname>] [-user <username>] [-real <realname>] <name>
 
@@ -71,6 +71,7 @@ Sub commands:
   options
 * ``rm``: remove a server, all options will be ignored, you can only remove a
   server which is unconnected
+* ``list``: list all available servers
 * ``set``: set server information via options
 * ``connect``: connect to specified server, all options will be ignored
 * ``disconnect``: disconnect from specified server, all options will be ignored
