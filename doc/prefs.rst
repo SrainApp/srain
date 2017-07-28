@@ -70,8 +70,8 @@ have different priority.
 For example, A ``server`` group contains the information(not all) of connection
 to IRC servers.  ``server`` group can appear at the top level of configuration
 file, or be an element of ``server_list`` list with a unique ``name``. The top
-level ``server`` usually used to specify the global configuration, and
-``server_list`` used to specify specified IRC servers.
+level ``server`` is often used to specify the global configuration, and
+``server_list`` is used to specify specified IRC servers.
 
 The configuration in ``server_list`` can overwrite the top level ``server``, and
 if an option is not specified in ``server_list``, It will fallback to ``server``.
@@ -82,7 +82,7 @@ group can contain a ``chat`` group and a ``chat_list`` list. Elements in
 ``chat_list`` are also identified with an unique ``name``.
 
 As same as the relationship between top level ``server`` and ``server_list``,
-``chat_list`` used to specify a specified chat and has higher priority.
+``chat_list`` is used to specify a specified chat and has higher priority.
 
 As mentioned above, The priority of user configuration is always higher than
 system's, so we can get the priority sorting of ``server`` and ``chat`` group:

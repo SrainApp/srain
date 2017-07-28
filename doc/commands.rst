@@ -192,7 +192,7 @@ Options:
 Arguments:
 
 * ``name``: unique pattern name
-* ``pattern``: perl-compatible regex expression which used to match the
+* ``pattern``: perl-compatible regex expression which is used to match the
   incoming message, for regex syntax, refer to
   https://developer.gnome.org/glib/stable/glib-regex-syntax.html
 
