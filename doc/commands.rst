@@ -25,28 +25,28 @@ A ``subcommand`` is a instruction behind the command name, it is optional.
 An ``option``, as its name, is optional too, starts with a hyphen ``-`` and may
 has a ``value``.
 
-``option`` oftenly used as the switch of a flag or a way to chagne some
-default value. For an example, in command ``/connect -tls -port 6697``,
-option ``-tls`` is just a flag that tell srain use secure connections with TLS.
+``option`` is often used as the switch of a flag or a way to change some
+default values. For example, The command ``/connect -tls -port 6697``,
+option ``-tls`` is just a flag that tells srain use secure connections with TLS.
 And ``-port`` requires a ``value``, if ``-port`` is not specified, program will
-use the default value of it. Refer :ref:`commands-connect` for more details.
+use the default value ``6667``. Check :ref:`commands-connect` for more details.
 
 If a ``vaule`` starts with a hyphen ``-`` or contains whitespaces, it should be
-enclosed by singly quotation mark ``'``.
+enclosed by single quotation mark ``'``.
 
 .. note::
 
     All ``option`` should appear behind ``subcommand`` (If any), and before
     ``argument``.
 
-An ``argument`` is similar to ``vaule``, but oftenly it doesn't have a default
-value so it can not be omit (actually it depends on the implement of the
+An ``argument`` is similar to ``vaule``, but commonly it doesn't have a default
+value so it can not be omitted (actually it depends on the implement of the
 command). If the first ``argument`` starts with a hyphen ``-``, it should be
-enclosed by singly quotation mark ``'``. If an ``argument`` contains whitespaces,
-it should be quoted too. Specially, the last argument can contains whitespace
+enclosed by single quotation mark ``'``. If an ``argument`` contains whitespaces,
+it should be quoted too. Specially, the last argument can contain whitespace
 without quoted.
 
-If you want to use a singly quotation mark in a quoted text, use backslash ``\``
+If you want to use a single quotation mark in a quoted text, use backslash ``\``
 to escape it. For backslash itself, use double backslash ``\\``.
 
 Usage

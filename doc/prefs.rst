@@ -77,14 +77,14 @@ The configuration in ``server_list`` can overwrite the top level ``server``, and
 if an option is not specified in ``server_list``, It will fallback to ``server``.
 
 Another similar group is ``chat``, chat contains configuration of chat panel,
-such as whether show topic, whether save chat log and etc. Every ``server``
-group can contains a ``chat`` group and a ``chat_list`` list. Elements in
-``chat_list`` are also identified with unique ``name``.
+such as whether to show topic, whether to save chat log and etc. Every ``server``
+group can contain a ``chat`` group and a ``chat_list`` list. Elements in
+``chat_list`` are also identified with an unique ``name``.
 
 As same as the relationship between top level ``server`` and ``server_list``,
 ``chat_list`` used to specify a specified chat and has higher priority.
 
-As mentioned above, The priority of user configuration always higher than
+As mentioned above, The priority of user configuration is always higher than
 system's, so we can get the priority sorting of ``server`` and ``chat`` group:
 
 .. code-block:: none
