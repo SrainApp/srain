@@ -13,9 +13,9 @@ plan.
 Dependences
 ===========
 
-=================== =============== =======
-Name                Notes           Version
-=================== =============== =======
+=================== =========================== =======
+Name                Notes                       Version
+=================== =========================== =======
 coreutils           building
 make                building
 gcc                 building
@@ -24,13 +24,15 @@ imagemagick         building
 gettext
 glib2
 glib-networking     TLS support
-gtk+3                               >= 3.16
-python3                             >= 3.2
+gtk+3                                           >= 3.16
+python3                                         >= 3.2
 libcurl
 libnotify
-libconfig                           >= 1.5
+libconfig                                       >= 1.5
 python3-sphinx      document
-=================== =============== =======
+python3-urllib3     avatar and pastebin support
+python3-request     avatar and pastebin support
+=================== =========================== =======
 
 Manual Installation
 ===================
@@ -155,7 +157,7 @@ more details.
 Debian
 ------
 
-`dfceaef`_ has written `Debian package script for srain`_, but it is already
+`dfceaef`_ has written `Debian package script for Srain`_, but it is already
 **out of date**, I will be glad if anyone can fix it.
 
 .. _dfceaef: https://github.com/yangfl
