@@ -46,7 +46,7 @@ void sui_main_loop(SuiAppEvents *events, SuiAppPrefs *prefs){
     snotify_init();
 
     if (theme_load(prefs->theme) == SRN_ERR){
-        char *errmsg = g_strdup_printf(_("Failed to load theme '%s'"), prefs->theme);
+        char *errmsg = g_strdup_printf(_("Failed to load theme \"%s\""), prefs->theme);
         ERR_FR(errmsg);
         sui_message_box(_("Error"), errmsg);
         g_free(errmsg);

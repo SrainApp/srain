@@ -1,4 +1,3 @@
-
 #include "i18n.h"
 #include "meta.h"
 #include "log.h"

@@ -363,7 +363,7 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
             prefs->irc->tls_not_verify = TRUE;
         }
 
-        return RET_OK(_("Server '%s' is created"), name);
+        return RET_OK(_("Server \"%s\" is created"), name);
     }
 
     if (g_ascii_strcasecmp(subcmd, "connect") == 0){
@@ -454,7 +454,7 @@ static SrnRet on_command_connect(Command *cmd, void *user_data){
 
     prefs = server_prefs_new(host);
     if (!prefs){
-        return RET_ERR(_("Failed to create ServerPrefs '%s'"), host);
+        return RET_ERR(_("Failed to create ServerPrefs \"%s\""), host);
     }
 
     ret = prefs_read_server_prefs(prefs);
@@ -492,7 +492,7 @@ static SrnRet on_command_connect(Command *cmd, void *user_data){
 
     srv = server_new_from_prefs(prefs);
     if (!srv) {
-        return RET_ERR(_("Failed to create server %s"), prefs->name);
+        return RET_ERR(_("Failed to create server \"%s\""), prefs->name);
     }
 
     def_srv = srv;
@@ -501,7 +501,7 @@ static SrnRet on_command_connect(Command *cmd, void *user_data){
     server_wait_until_registered(def_srv);
     if (!server_is_registered(srv)){
         def_srv = NULL;
-        // return RET_ERR(_("Failed to register on server %s"), prefs->name);
+        // return RET_ERR(_("Failed to register on server \"%s\""), prefs->name);
     }
 
     return SRN_OK;

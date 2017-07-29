@@ -45,7 +45,7 @@ void server_ui_event_connect(SuiEvent event, const char *params[], int count){
     const char *username = PACKAGE_NAME;
 
     if (!name){
-        sui_message_box(_("Create server failed"), _("You must specified a server naem"));
+        sui_message_box(_("Create server failed"), _("You must specified a server name"));
         return;
     }
 
