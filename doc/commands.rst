@@ -164,6 +164,8 @@ Usage::
 Flag ``nick`` as a relay bot, show the real nick of the message sender.
 Use ``[`` and ``]`` as delimiter.
 
+Refer :ref:`faq-relay-message-transform` to see its effect.
+
 Options:
 
 * ``-cur``: only effects the current chat

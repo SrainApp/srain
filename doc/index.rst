@@ -8,24 +8,25 @@ Srain Documentation
 
 Welcome to Srain documentation!
 
-The source code of this documentation is hosted on https://github.com/SilverRainZ/srain/tree/master/doc .
-If you found any mistake, feel free to file an issue or pull request.
+The source code of this documentation is hosted on `GitHub`_.
+If you found any mistake, feel free to file issue or pull request.
+
+.. _GitHub: https://github.com/SilverRainZ/srain/tree/master/doc
 
 .. toctree::
     :caption: All pages:
     :titlesonly:
 
-    guide
+    start
     installation
     commands
     prefs
-    faq
     develop
+    misc
+    faq
     changelog
     resources
 
-
-.. include:: ../README.rst
 
 Indices and Tables
 ==================
