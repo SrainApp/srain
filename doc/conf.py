@@ -111,6 +111,8 @@ html_sidebars = {
     ]
 }
 
+html_logo = '../data/icons/raw/srain.png'
+html_favicon = html_logo
 
 # -- Options for HTMLHelp output ------------------------------------------
 
