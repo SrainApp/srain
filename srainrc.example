@@ -1,2 +1,4 @@
-/connect -ssl on -port 6697 chat.freenode.org srainbot
+# Connect to freenode
+/server connect freenode
+# Join channel #srain
 /join #srain

@@ -7,6 +7,23 @@ Commands Manual
     :depth: 3
     :backlinks: none
 
+.. _commands-context:
+
+Context
+=======
+
+User can run commands by typing them in the input entry on UI.
+
+The rc(**r**\ un **c**\ ommand) file ``srainrc`` allows you save commands in
+file and run it at each time the Srain starts. The location of rc file is
+``$XDG_CONFIG_HOME/srain``, usually it is ``~/.config/srain``. Every line in rc
+file should be a valid command, empty line or line prefixed with ``#`` will be
+ignored.
+
+Here is an example of rc file:
+
+.. literalinclude:: ../srainrc.example
+
 .. _commands-syntax:
 
 Syntax
