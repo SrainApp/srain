@@ -5,7 +5,7 @@ Miscellaneous
 Hot Keys
 ========
 
-* ``ctrl + j/k``: chat panel
+* ``ctrl + j/k``: swith chat panel
 * ``up/down``: scroll message list
 
 .. note:: Custom hot key will be supported in the future.
