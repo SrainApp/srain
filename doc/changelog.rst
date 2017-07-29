@@ -7,13 +7,13 @@ Change Log
     :depth: 1
     :backlinks: none
 
-2017-08-xx Version 0.06 [Draft]
-===============================
+.. warning
 
-.. warning::
-
-    Version 0.06 is still a draft, features and documentation are not yet
+    This version is still a draft, features and documentation are not yet
     complete. You can experience it by using the ``-git`` version.
+
+2017-07-29 Version 0.06
+=======================
 
 - Changed:
 
@@ -35,6 +35,8 @@ Change Log
   - Configurable log module, more convenient for developing and reporting issue
   - New Return value type, for more friendly error reporting
   - New command :ref:`commands-server` for IRC servers management
+  - Srain home page is available at: https://srain.im
+  - Srain help documentation is available at: https://doc.srain.im
 
 - Removed:
 

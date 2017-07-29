@@ -89,9 +89,9 @@ Get stable(require ``wget`` and ``tar``):
 
 .. code-block:: console
 
-    $ wget https://github.com/SilverRainZ/srain/archive/0.05.1.tar.gz
-    $ tar -xvzf 0.05.1.tar.gz
-    $ cd srain-0.05.1
+    $ wget https://github.com/SilverRainZ/srain/archive/0.06.tar.gz
+    $ tar -xvzf 0.06.tar.gz
+    $ cd srain-0.06
 
 Get git version(require ``git``):
 
