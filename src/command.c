@@ -17,6 +17,16 @@
 #include "log.h"
 #include "i18n.h"
 
+struct _Command {
+    char *subcmd;
+    char *argv[COMMAND_MAX_ARGS];
+    char *opt_key[COMMAND_MAX_OPTS];
+    char *opt_val[COMMAND_MAX_OPTS];
+
+    CommandBind *bind;
+    char *rawcmd;
+};
+
 static Command* command_new(CommandBind *bind, const char *rawcmd);
 static void command_free(Command *cmd);
 static SrnRet command_parse(CommandContext *ctx, Command *cmd, void *user_data);
@@ -62,6 +72,19 @@ SrnRet command_proc(CommandContext *ctx, const char *rawcmd, void *user_data){
 }
 
 /**
+ * @brief command_get_subcmd Get the sub command of the command
+ *
+ * @param cmd
+ *
+ * @return NULL or sub command
+ */
+const char *command_get_subcmd(Command *cmd){
+    g_return_val_if_fail(cmd, NULL);
+
+    return cmd->subcmd;
+}
+
+/**
  * @brief command_get_arg Get the nth argument in the command
  *
  * @param cmd
@@ -70,6 +93,8 @@ SrnRet command_proc(CommandContext *ctx, const char *rawcmd, void *user_data){
  * @return NULL or the nth argument, you do not need to free it
  */
 const char *command_get_arg(Command *cmd, unsigned index){
+    g_return_val_if_fail(cmd, NULL);
+
     if (index < cmd->bind->argc){
         return cmd->argv[index];
     }
@@ -97,8 +122,10 @@ const char *command_get_arg(Command *cmd, unsigned index){
 bool command_get_opt(Command *cmd, const char *opt_key, const char **opt_val){
     unsigned i = 0;
 
+    g_return_val_if_fail(cmd, FALSE);
+
     while (cmd->opt_key[i] != NULL){
-        if (strcasecmp(cmd->opt_key[i], opt_key) == 0){
+        if (g_ascii_strcasecmp(cmd->opt_key[i], opt_key) == 0){
             if (opt_val != NULL){
                 *opt_val = cmd->opt_val[i];
             }
@@ -109,17 +136,23 @@ bool command_get_opt(Command *cmd, const char *opt_key, const char **opt_val){
 
     // Option no specified in command
     i = 0;
-    while (cmd->bind->opt_key[i] != NULL){
-        if (strcasecmp(cmd->bind->opt_key[i], opt_key) == 0){
-            if (opt_val != NULL){
-                *opt_val = cmd->bind->opt_default_val[i];
+    while (cmd->bind->opt[i].key != NULL){
+        if (g_ascii_strcasecmp(cmd->bind->opt[i].key, opt_key) == 0){
+            if (cmd->bind->opt[i].val == COMMAND_OPT_NO_VAL){
+                // Nothing todo
+            } else if (cmd->bind->opt[i].val == COMMAND_OPT_NO_DEFAULT){
+                WARN_FR("No default value for opiton '%s'", opt_key);
+            } else {
+                if (opt_val != NULL){
+                    *opt_val = cmd->bind->opt[i].val;
+                }
             }
             return FALSE;
         }
         i++;
     }
 
-    ERR_FR("No such option '%s'", opt_key);
+    WARN_FR("No such option '%s'", opt_key);
     return FALSE;
 }
 
@@ -264,6 +297,7 @@ static SrnRet command_parse(CommandContext *ctx, Command *cmd, void *user_data){
         bool has_subcmd = FALSE;
         for (int i = 0; cmd->bind->subcmd[i]; i++){
             has_subcmd = TRUE;
+            if (!ptr) break;
             if (!g_str_has_prefix(ptr, cmd->bind->subcmd[i])){
                 continue;
             }
@@ -281,8 +315,8 @@ static SrnRet command_parse(CommandContext *ctx, Command *cmd, void *user_data){
     /* Get options */
     while (ptr && *ptr == COMMAND_OPT_PREFIX){
         int i;
-        for (i = 0; bind->opt_key[i] != NULL; i++){
-            if (g_str_has_prefix(ptr, bind->opt_key[i])){
+        for (i = 0; bind->opt[i].key != NULL; i++){
+            if (g_str_has_prefix(ptr, bind->opt[i].key)){
                 break;
             }
         }
@@ -292,14 +326,14 @@ static SrnRet command_parse(CommandContext *ctx, Command *cmd, void *user_data){
             return SRN_ERR;
         }
 
-        if (bind->opt_key[i] == NULL){
+        if (bind->opt[i].key == NULL){
             goto unknown_opt;
         }
 
         DBG_FR("Option '%s' found", cmd->opt_key[nopt]);
 
         /* Option has value */
-        if (bind->opt_default_val[i] != NULL){
+        if (bind->opt[i].val != COMMAND_OPT_NO_VAL){
             if (!ptr || *ptr == '-'){
                 goto missing_opt_val;
             }
@@ -342,7 +376,7 @@ static SrnRet command_parse(CommandContext *ctx, Command *cmd, void *user_data){
         DBG_FR("command: %s", cmd->bind->name);
         for (int i = 0; i < nopt; i++){
             DBG_FR("opt: '%s'", cmd->opt_key[i]);
-            if (bind->opt_default_val[i] != NULL)
+            if (bind->opt[i].val != COMMAND_OPT_NO_VAL)
                 DBG_FR("val: '%s'", cmd->opt_val[i]);
         }
 

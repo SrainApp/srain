@@ -62,132 +62,153 @@ CommandBind cmd_binds[] = {
         .name = "/server",
         .subcmd = {"add", "rm", "list", "set", "connect", "disconnect", NULL},
         .argc = 1, // <name>
-        .opt_key =
-        {"-host", "-port", "-tls", "-tls-not-verify", "-pwd", "-nick", "-user", "-real", "-encode",  NULL},
-        .opt_default_val =
-        {"localhost", "6667", NULL, NULL, NULL, "Zaidan", "Srain", "Can you can a can?", "UTF-8", NULL},
+        .opt = {
+            { .key = "-host",           .val = COMMAND_OPT_NO_DEFAULT },
+            { .key = "-port",           .val = "6667" },
+            { .key = "-tls",            .val = COMMAND_OPT_NO_VAL },
+            { .key = "-tls-not-verify", .val = COMMAND_OPT_NO_VAL },
+            { .key = "-pwd",            .val = COMMAND_OPT_NO_DEFAULT },
+            { .key = "-nick",           .val = COMMAND_OPT_NO_DEFAULT },
+            { .key = "-user",           .val = "Srain" },
+            { .key = "-real",           .val = "Can you can a can?" },
+            { .key = "-encode",       .val = "UTF-8" },
+            COMMAND_EMPTY_OPT,
+        },
         .flag = COMMAND_FLAG_OMIT_ARG,
         .cb = on_command_server,
     },
     {
         .name = "/connect",
         .argc = 2, // <hosts> <nick>
-        .opt_key =
-        {"-port", "-tls", "-tls-not-verify", "-pwd", "-user", "-real", "-encode",  NULL},
-        .opt_default_val =
-        {"6667", NULL, NULL, NULL, "Srain", "Can you can a can?", "UTF-8", NULL},
+        .opt = {
+            { .key = "-port",           .val = "6667" },
+            { .key = "-tls",            .val = COMMAND_OPT_NO_VAL },
+            { .key = "-tls-not-verify", .val = COMMAND_OPT_NO_VAL },
+            { .key = "-pwd",            .val = COMMAND_OPT_NO_DEFAULT },
+            { .key = "-user",           .val = "Srain" },
+            { .key = "-real",           .val = "Can you can a can?" },
+            { .key = "-encoding",       .val = "UTF-8" },
+            COMMAND_EMPTY_OPT,
+        },
         .flag = 0,
         .cb = on_command_connect,
     },
     {
         .name = "/relay",
         .argc = 1, // <nick>
-        .opt_key = {"-cur", NULL},
-        .opt_default_val = {NULL},
+        .opt = {
+            {.key = "-cur", .val = COMMAND_OPT_NO_VAL },
+            COMMAND_EMPTY_OPT,
+        },
         .flag = 0,
         .cb = on_command_relay,
     },
     {
         .name = "/unrelay",
         .argc = 1, // <nick>
-        .opt_key = {"-cur", NULL},
-        .opt_default_val = {NULL},
+        .opt = {
+            {.key = "-cur", .val = COMMAND_OPT_NO_VAL },
+            COMMAND_EMPTY_OPT,
+        },
         .flag = 0,
         .cb = on_command_unrelay,
     },
     {
         .name = "/ignore",
         .argc = 1, // <nick>
-        .opt_key = {"-cur", NULL},
-        .opt_default_val = {NULL, NULL},
+        .opt = {
+            {.key = "-cur", .val = COMMAND_OPT_NO_VAL },
+            COMMAND_EMPTY_OPT,
+        },
         .flag = 0,
         .cb = on_command_ignore,
     },
     {
         .name = "/unignore",
         .argc = 1, // <nick>
-        .opt_key = {"-cur", NULL},
-        .opt_default_val = {NULL},
+        .opt = {
+            {.key = "-cur", .val = COMMAND_OPT_NO_VAL },
+            COMMAND_EMPTY_OPT,
+        },
         .flag = 0,
         .cb = on_command_unignore,
     },
     {
         .name = "/rignore",
         .argc = 2, // <name> <pattern>
-        .opt_key = {"-cur", NULL},
-        .opt_default_val = {NULL, NULL},
+        .opt = {
+            {.key = "-cur", .val = COMMAND_OPT_NO_VAL },
+            COMMAND_EMPTY_OPT,
+        },
         .flag = 0,
         .cb = on_command_rignore,
     },
     {
         .name = "/unrignore",
         .argc = 1, // <name>
-        .opt_key = {"-cur", NULL},
-        .opt_default_val = {NULL},
+        .opt = {
+            {.key = "-cur", .val = COMMAND_OPT_NO_VAL },
+            COMMAND_EMPTY_OPT,
+        },
         .flag = 0,
         .cb = on_command_unrignore,
     },
     {
         .name = "/query",
         .argc = 1, // <nick>
-        .opt_key = {NULL},
-        .opt_default_val = {NULL},
+        .opt = { COMMAND_EMPTY_OPT },
         .flag = 0,
         .cb = on_command_query,
     },
     {
         .name = "/unquery",
         .argc = 1, // <nick>
-        .opt_key = {NULL},
-        .opt_default_val = {NULL},
+        .opt = { COMMAND_EMPTY_OPT },
         .flag = COMMAND_FLAG_OMIT_ARG,
         .cb = on_command_unquery,
     },
     {
         .name = "/join",
         .argc = 1, // <channel>
-        .opt_key = {NULL},
-        .opt_default_val = {NULL},
+        .opt = { COMMAND_EMPTY_OPT },
         .flag = 0,
         .cb = on_command_join,
     },
     {
         .name = "/part",
         .argc = 2, // <channel> <reason>
-        .opt_key = {NULL},
-        .opt_default_val = {NULL},
+        .opt = { COMMAND_EMPTY_OPT },
         .flag = COMMAND_FLAG_OMIT_ARG,
         .cb = on_command_part,
     },
     {
         .name = "/quit",
         .argc = 1, // <reason>
-        .opt_key = {NULL},
-        .opt_default_val = {NULL},
+        .opt = { COMMAND_EMPTY_OPT },
         .flag = COMMAND_FLAG_OMIT_ARG,
         .cb = on_command_quit,
     },
     {
         .name = "/topic",
         .argc = 1, // <topic>
-        .opt_key = {"-rm", NULL},
-        .opt_default_val = {NULL, NULL},
+        .opt = {
+            {.key = "-rm", .val = COMMAND_OPT_NO_VAL },
+            COMMAND_EMPTY_OPT,
+        },
         .flag = COMMAND_FLAG_OMIT_ARG,
         .cb = on_command_topic,
     },
     {
         .name = "/msg",
         .argc = 2, // <target> <message>
-        .opt_key = {NULL},
-        .opt_default_val = {NULL},
+        .opt = { COMMAND_EMPTY_OPT },
         .flag = 0,
         .cb = on_command_msg,
     },
     {
         .name = "/me",
         .argc = 1, // <message>
-        .opt_key = {NULL},
-        .opt_default_val = {NULL},
+        .opt = { COMMAND_EMPTY_OPT },
         .flag = 0,
         .cb = on_command_me,
     },
@@ -195,48 +216,42 @@ CommandBind cmd_binds[] = {
     {
         .name = "/nick",
         .argc = 1, // <new_nick>
-        .opt_key = {NULL},
-        .opt_default_val = {NULL},
+        .opt = { COMMAND_EMPTY_OPT },
         .flag = 0,
         .cb = on_command_nick,
     },
     {
         .name = "/whois",
         .argc = 1, // <nick>
-        .opt_key = {NULL},
-        .opt_default_val = {NULL},
+        .opt = { COMMAND_EMPTY_OPT },
         .flag = 0,
         .cb = on_command_whois,
     },
     {
         .name = "/invite",
         .argc = 2, // <nick> <channel>
-        .opt_key = {NULL},
-        .opt_default_val = {NULL},
+        .opt = { COMMAND_EMPTY_OPT },
         .flag = COMMAND_FLAG_OMIT_ARG,
         .cb = on_command_invite,
     },
     {
         .name = "/kick",
         .argc = 3, // <nick> <channel> <reason>
-        .opt_key = {NULL},
-        .opt_default_val = {NULL},
+        .opt = { COMMAND_EMPTY_OPT },
         .flag = COMMAND_FLAG_OMIT_ARG,
         .cb = on_command_kick,
     },
     {
         .name = "/mode",
         .argc = 2, // <target> <mode>
-        .opt_key = {NULL},
-        .opt_default_val = {NULL},
+        .opt = { COMMAND_EMPTY_OPT },
         .flag = 0,
         .cb = on_command_mode,
     },
     {
         .name = "/list",
         .argc = 1, // <channel>
-        .opt_key = {NULL},
-        .opt_default_val = {NULL},
+        .opt = { COMMAND_EMPTY_OPT },
         .flag = 0,
         .cb = on_command_list,
     },
@@ -293,7 +308,7 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
     Server *srv;
     ServerPrefs *prefs;
 
-    subcmd = cmd->subcmd;
+    subcmd = command_get_subcmd(cmd);
     g_return_val_if_fail(subcmd, SRN_ERR);
 
     if (g_ascii_strcasecmp(subcmd, "list") == 0){
