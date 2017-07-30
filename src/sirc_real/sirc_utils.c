@@ -4,7 +4,10 @@
 #include "srain.h"
 
 bool sirc_nick_cmp(const char *nick1, const char *nick2){
-    return strcasecmp(nick1, nick2) == 0;
+    g_return_val_if_fail(nick1, FALSE);
+    g_return_val_if_fail(nick2, FALSE);
+
+    return g_ascii_strcasecmp(nick1, nick2) == 0;
 }
 
 bool sirc_prefix_is_server(const char *prefix){

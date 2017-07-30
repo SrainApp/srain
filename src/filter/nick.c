@@ -88,7 +88,7 @@ bool nick(const Message *msg, FilterFlag flag, void *user_data){
 
     g_return_val_if_fail(msg->user, TRUE);
     g_return_val_if_fail(msg->chat, TRUE);
-    g_return_val_if_fail(msg->chat->srv, TRUE);
+    g_return_val_if_fail(server_list_is_server(msg->chat->srv), TRUE);
 
     for (i = 0, lst = msg->chat->ignore_nick_list;
             i < 2;

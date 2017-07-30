@@ -314,14 +314,15 @@ static void on_disconnect_ready(GObject *obj, GAsyncResult *result, gpointer use
     sirc = user_data;
     err = NULL;
 
-    if (!g_io_stream_close_finish(stream, result, &err)){
+    g_io_stream_close_finish(stream, result, &err);
+    g_object_unref(stream);
+    sirc->stream = NULL;
+
+    if (err){
         on_disconnect(sirc, err->message);
     } else {
         on_disconnect(sirc, NULL);
     }
-
-    g_object_unref(sirc->stream);
-    sirc->stream = NULL;
 }
 
 static void on_disconnect(SircSession *sirc, const char *reason){
