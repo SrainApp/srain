@@ -25,8 +25,6 @@ int theme_load(const char *theme){
     char *name;
     char *theme_file;
 
-    if (!theme) theme = "default";
-
     name = g_strdup_printf("%s.css", theme);
 
     theme_file = get_theme_file(name);

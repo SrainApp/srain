@@ -174,9 +174,9 @@ static void join_button_on_click(gpointer user_data){
 
 static void conn_button_on_click(gpointer user_data){
     int count;
-    bool ssl;
-    bool notverify;
-    const char *addr;
+    bool tls;
+    bool tls_not_verify;
+    const char *host;
     const char *port;
     const char *passwd;
     const char *nick;
@@ -186,31 +186,28 @@ static void conn_button_on_click(gpointer user_data){
 
     conn_entries = user_data;
 
-    addr = gtk_entry_get_text(conn_entries->conn_addr_entry);
+    host = gtk_entry_get_text(conn_entries->conn_addr_entry);
     port = gtk_entry_get_text(conn_entries->conn_port_entry);
     passwd = gtk_entry_get_text(conn_entries->conn_pwd_entry);
     nick = gtk_entry_get_text(conn_entries->conn_nick_entry);
     realname = gtk_entry_get_text(conn_entries->conn_real_entry);
-    ssl = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(conn_entries->conn_ssl_check_button));
-    notverify = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(conn_entries->conn_no_verfiy_check_button));
+    tls = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(conn_entries->conn_ssl_check_button));
+    tls_not_verify = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(conn_entries->conn_no_verfiy_check_button));
 
-    if (strlen(addr) == 0) return;
-    if (strlen(nick) == 0) return;
-
+    // FIXME: this is a bad interface
     count = 0;
-    params[count++] = addr;
-    params[count++] = addr;
+    params[count++] = host; // name
+    params[count++] = host;
     params[count++] = port;
     params[count++] = passwd;
-    if (ssl) {
+    if (tls) {
         params[count++] = "TRUE";
     } else {
         params[count++] = "FALSE";
     }
-    if (notverify) {
+    if (tls_not_verify) {
         params[count++] = "TRUE";
     } else {
-
         params[count++] = "FALSE";
     }
     params[count++] = "UTF-8";

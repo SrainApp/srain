@@ -104,7 +104,7 @@ void server_finalize(){
 Server* server_new_from_prefs(ServerPrefs *prefs){
     Server *srv;
 
-    g_return_val_if_fail(server_prefs_is_valid(prefs) == SRN_OK, NULL);
+    g_return_val_if_fail(RET_IS_OK(server_prefs_is_valid(prefs)), NULL);
     g_return_val_if_fail(!server_list_get_server(prefs->name), NULL);
 
     srv = g_malloc0(sizeof(Server));

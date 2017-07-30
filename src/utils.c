@@ -7,6 +7,9 @@
  */
 
 #include <glib.h>
+#include <string.h>
+
+#include "srain.h"
 
 /* Datetime utilities */
 
@@ -50,4 +53,16 @@ void str_assign(char **left, const char *right){
         g_free(*left);
     }
     *left = g_strdup(right);
+}
+
+bool str_is_empty(const char *str){
+    if (!str) {
+        return TRUE;
+    }
+    while (*str) {
+        if (!g_ascii_isspace(*str++)){
+            return FALSE;
+        }
+    }
+    return TRUE;
 }

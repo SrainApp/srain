@@ -44,7 +44,7 @@ void server_ui_event_connect(SuiEvent event, const char *params[], int count){
     const char *realname= params[8];
     const char *username = PACKAGE_NAME;
 
-    if (!name){
+    if (str_is_empty(name)){
         sui_message_box(_("Create server failed"), _("You must specified a server name"));
         return;
     }
@@ -63,33 +63,13 @@ void server_ui_event_connect(SuiEvent event, const char *params[], int count){
         return;
     }
 
-    if (name){
-        str_assign(&prefs->name, name);
-    }
-    if (host){
-        str_assign(&prefs->host, host);
-    }
-    if (port){
-        prefs->port = port;
-    }
-    if (passwd){
-        str_assign(&prefs->passwd, passwd);
-    }
-    if (passwd){
-        str_assign(&prefs->name, name);
-    }
-    if (encoding){
-        str_assign(&prefs->encoding, encoding);
-    }
-    if (nick){
-        str_assign(&prefs->nickname, nick);
-    }
-    if (username){
-        str_assign(&prefs->username, username);
-    }
-    if (realname){
-        str_assign(&prefs->realname, realname);
-    }
+    str_assign(&prefs->host, host);
+    prefs->port = port;
+    str_assign(&prefs->passwd, passwd);
+    str_assign(&prefs->encoding, encoding);
+    str_assign(&prefs->nickname, nick);
+    str_assign(&prefs->username, username);
+    str_assign(&prefs->realname, realname);
 
     prefs->irc->tls = tls;
     prefs->irc->tls_not_verify = notverify;

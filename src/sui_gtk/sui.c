@@ -21,6 +21,7 @@
 #include "i18n.h"
 #include "log.h"
 #include "meta.h"
+#include "ret.h"
 
 struct _SuiSession{
     SrainChat *chat;
@@ -37,11 +38,18 @@ SuiAppEvents *app_events = NULL;
 SuiAppPrefs *app_prefs = NULL;
 
 void sui_main_loop(SuiAppEvents *events, SuiAppPrefs *prefs){
+    SrnRet ret;
+
     g_return_if_fail(events);
     g_return_if_fail(prefs);
 
     app_events = events;
     app_prefs = prefs;
+
+    ret = sui_app_prefs_is_valid(app_prefs);
+    if (!RET_IS_OK(ret)){
+        sui_message_box(_("Error"), RET_MSG(ret));
+    }
 
     snotify_init();
 
@@ -64,10 +72,17 @@ void sui_proc_pending_event(){
 }
 
 SuiSession *sui_new_session(SuiEvents *events, SuiPrefs *prefs, SuiSessionFlag flag){
+    SrnRet ret;
     SuiSession *sui;
 
     g_return_val_if_fail(events, NULL);
     g_return_val_if_fail(prefs, NULL);
+
+    ret = sui_prefs_is_valid(prefs);
+    if (!RET_IS_OK(ret)){
+        sui_message_box(_("Error"), RET_MSG(ret));
+        return NULL;
+    }
 
     sui = g_malloc0(sizeof(SuiSession));
 

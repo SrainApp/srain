@@ -101,52 +101,60 @@ SrnRet server_prefs_is_valid(ServerPrefs *prefs){
         return RET_ERR(_("Invalid ServerPrefs instance"));
      }
 
-    if (!prefs->name) {
+    if (str_is_empty(prefs->name)) {
         return RET_ERR(fmt, "name");
     }
 
-    if (!prefs->host) {
+    if (str_is_empty(prefs->host)) {
         return RET_ERR(fmt, "host");
     }
 
-    if (!prefs->passwd) {
-        str_assign(&prefs->passwd, "");
+    if (str_is_empty(prefs->passwd)) {
+        // Password can be NULL
     }
 
-    if (!prefs->encoding) {
+    if (str_is_empty(prefs->encoding)) {
         str_assign(&prefs->encoding, "UTF-8");
     }
 
-    if (!prefs->nickname) {
+    if (str_is_empty(prefs->nickname)) {
         return RET_ERR(fmt, "nickname");
     }
 
-    if (!prefs->username) {
+    if (str_is_empty(prefs->username)) {
         str_assign(&prefs->username, prefs->nickname);
     }
 
-    if (!prefs->realname) {
+    if (str_is_empty(prefs->realname)) {
         str_assign(&prefs->username, prefs->nickname);
     }
 
-    if (!prefs->part_message) {
-        str_assign(&prefs->part_message, "");
+    if (str_is_empty(prefs->part_message)) {
+        str_assign(&prefs->part_message, "Leaving");
     }
 
-    if (!prefs->kick_message) {
-        str_assign(&prefs->kick_message, "");
+    if (str_is_empty(prefs->kick_message)) {
+        str_assign(&prefs->kick_message, "Kick");
     }
 
-    if (!prefs->away_message) {
-        str_assign(&prefs->away_message, "");
+    if (str_is_empty(prefs->away_message)) {
+        str_assign(&prefs->away_message, _("Away"));
     }
 
-    if (!prefs->quit_message) {
-        str_assign(&prefs->quit_message, "");
+    if (str_is_empty(prefs->quit_message)) {
+        str_assign(&prefs->quit_message, "El Psy Congroo.");
     }
 
     if (!prefs->irc) {
         return RET_ERR(fmt, "irc");
+    }
+
+    if (prefs->port == 0) {
+        if (prefs->irc->tls) {
+            prefs->port = 6697;
+        } else {
+            prefs->port = 6667;
+        }
     }
 
     return sirc_prefs_is_valid(prefs->irc);

@@ -64,14 +64,14 @@ CommandBind cmd_binds[] = {
         .argc = 1, // <name>
         .opt = {
             { .key = "-host",           .val = COMMAND_OPT_NO_DEFAULT },
-            { .key = "-port",           .val = "6667" },
+            { .key = "-port",           .val = COMMAND_OPT_NO_DEFAULT },
             { .key = "-tls",            .val = COMMAND_OPT_NO_VAL },
             { .key = "-tls-not-verify", .val = COMMAND_OPT_NO_VAL },
             { .key = "-pwd",            .val = COMMAND_OPT_NO_DEFAULT },
             { .key = "-nick",           .val = COMMAND_OPT_NO_DEFAULT },
-            { .key = "-user",           .val = "Srain" },
-            { .key = "-real",           .val = "Can you can a can?" },
-            { .key = "-encode",       .val = "UTF-8" },
+            { .key = "-user",           .val = COMMAND_OPT_NO_DEFAULT },
+            { .key = "-real",           .val = COMMAND_OPT_NO_DEFAULT },
+            { .key = "-encode",         .val = COMMAND_OPT_NO_DEFAULT },
             COMMAND_EMPTY_OPT,
         },
         .flag = COMMAND_FLAG_OMIT_ARG,
@@ -81,13 +81,13 @@ CommandBind cmd_binds[] = {
         .name = "/connect",
         .argc = 2, // <hosts> <nick>
         .opt = {
-            { .key = "-port",           .val = "6667" },
+            { .key = "-port",           .val = COMMAND_OPT_NO_DEFAULT },
             { .key = "-tls",            .val = COMMAND_OPT_NO_VAL },
             { .key = "-tls-not-verify", .val = COMMAND_OPT_NO_VAL },
             { .key = "-pwd",            .val = COMMAND_OPT_NO_DEFAULT },
-            { .key = "-user",           .val = "Srain" },
-            { .key = "-real",           .val = "Can you can a can?" },
-            { .key = "-encoding",       .val = "UTF-8" },
+            { .key = "-user",           .val = COMMAND_OPT_NO_DEFAULT },
+            { .key = "-real",           .val = COMMAND_OPT_NO_DEFAULT },
+            { .key = "-encodeing",      .val = COMMAND_OPT_NO_DEFAULT },
             COMMAND_EMPTY_OPT,
         },
         .flag = 0,
@@ -378,7 +378,11 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
             prefs->irc->tls_not_verify = TRUE;
         }
 
-        return RET_OK(_("Server \"%s\" is created"), name);
+        if (g_ascii_strcasecmp(subcmd, "add") == 0){
+            return RET_OK(_("Server \"%s\" is created"), name);
+        } else {
+            return RET_OK(_("Server \"%s\" is motified"), name);
+        }
     }
 
     if (g_ascii_strcasecmp(subcmd, "connect") == 0){
@@ -402,8 +406,7 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
         server_wait_until_registered(def_srv);
         if (!server_is_registered(srv)){
             def_srv = NULL;
-            // server_free(srv);
-            // return RET_ERR(_("Failed to register on server '%s'"), prefs->name);
+            return RET_ERR(_("Failed to register on server '%s'"), prefs->name);
         }
 
         return SRN_OK;
@@ -459,7 +462,7 @@ static SrnRet on_command_connect(Command *cmd, void *user_data){
     const char *encoding;
     Server *srv;
     ServerPrefs *prefs;
-    SrnRet ret;
+    SrnRet ret = SRN_OK;
 
     host = command_get_arg(cmd, 0);
     nick = command_get_arg(cmd, 1);
@@ -481,27 +484,27 @@ static SrnRet on_command_connect(Command *cmd, void *user_data){
     str_assign(&prefs->host, host);
     str_assign(&prefs->nickname, nick);
 
-    /* Different with /server, we use default value of command here */
-    command_get_opt(cmd, "-port", &port);
-    prefs->port = atoi(port);
-    command_get_opt(cmd, "-pwd", &passwd);
-    str_assign(&prefs->passwd, passwd);
-    command_get_opt(cmd, "-user", &user);
-    str_assign(&prefs->username, user);
-    command_get_opt(cmd, "-real", &real);
-    str_assign(&prefs->realname, real);
-    command_get_opt(cmd, "-encode", &encoding);
-    str_assign(&prefs->encoding, encoding);
+    if (command_get_opt(cmd, "-port", &port)){
+        prefs->port = atoi(port);
+    }
+    if (command_get_opt(cmd, "-pwd", &passwd)){
+        str_assign(&prefs->passwd, passwd);
+    }
+    if (command_get_opt(cmd, "-user", &user)){
+        str_assign(&prefs->username, user);
+    }
+    if (command_get_opt(cmd, "-real", &real)){
+        str_assign(&prefs->realname, real);
+    }
+    if (command_get_opt(cmd, "-encode", &encoding)){
+        str_assign(&prefs->encoding, encoding);
+    }
 
-    if (command_get_opt(cmd, "-tls", NULL)){
-        prefs->irc->tls = TRUE;
-    }
-    if (command_get_opt(cmd, "-tls-not-verify", NULL)){
-        prefs->irc->tls_not_verify = TRUE;
-    }
+    prefs->irc->tls = command_get_opt(cmd, "-tls", NULL);
+    prefs->irc->tls_not_verify = command_get_opt(cmd, "-tls-not-verify", NULL);
 
     ret = server_prefs_is_valid(prefs);
-    if (ret != SRN_OK) {
+    if (!RET_IS_OK(ret)) {
         return ret;
     }
 
@@ -516,7 +519,7 @@ static SrnRet on_command_connect(Command *cmd, void *user_data){
     server_wait_until_registered(def_srv);
     if (!server_is_registered(srv)){
         def_srv = NULL;
-        // return RET_ERR(_("Failed to register on server \"%s\""), prefs->name);
+        return RET_ERR(_("Failed to register on server \"%s\""), prefs->name);
     }
 
     return SRN_OK;

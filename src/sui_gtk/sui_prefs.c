@@ -2,6 +2,7 @@
 
 #include "sui/sui.h"
 #include "i18n.h"
+#include "utils.h"
 
 SuiAppPrefs *sui_app_prefs_new(){
     SuiAppPrefs *prefs;
@@ -17,7 +18,7 @@ SrnRet sui_app_prefs_is_valid(SuiAppPrefs *prefs){
     if (!prefs){
         return RET_ERR(_("Invalid SuiAppPrefs instance"));
     }
-    if (!prefs->theme){
+    if (str_is_empty(prefs->theme)){
         return RET_ERR(fmt, "theme");
     }
     return SRN_OK;
