@@ -39,7 +39,7 @@ Now you have joined the channel `#srain`_.
 Connect Using Command
 =====================
 
-Enter enter the following commands in input entry::
+Enter the following commands in input entry::
 
     /server connect freenode
     /join #srain

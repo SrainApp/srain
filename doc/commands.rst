@@ -93,7 +93,7 @@ Sub commands:
 * ``connect``: connect to specified server, all options will be ignored
 * ``disconnect``: disconnect from specified server, all options will be ignored
 
-Create a server and connect to connect to it immediately. It will become the
+Create a server and connect to it immediately. It will become the
 default server automaticly.
 
 Options:
@@ -147,7 +147,7 @@ Example::
 .. note::
 
     The following commands should run under the context which has a
-    "default server", Briefly, **these command must executed after**
+    "default server", Briefly, **these commands must be executed after**
     :ref:`commands-server` ``connect`` **or** :ref:`commands-connect`
     **command.**
 
@@ -176,7 +176,7 @@ Example::
 
 .. warning::
 
-    This command is unstable, it may be implement as a plugin in the future.
+    This command is unstable, it may be implemented as a plugin in the future.
 
 /ignore & /unignore
 -------------------
@@ -223,8 +223,8 @@ Usage::
     /query <nick>
     /unquery [nick]
 
-Start/stop private chat with somebody. For ``/unquery`` , If ``nick`` no
-specified, stop the current private chat.
+Start/stop private chat with somebody. For ``/unquery`` , If no ``nick`` is
+specified, it stops the current private chat.
 
 .. _commands-join:
 
@@ -250,7 +250,7 @@ Usage::
     /part [<channel>[,<channel>]]... [<reason>]
 
 Leave specified channel(s) with optional reason, channels are separated by
-commas ``,``. If ``channel`` no specified, leave the current channel.
+commas ``,``. If no ``channel`` is specified, it leaves the current channel.
 
 Example::
 
@@ -274,8 +274,8 @@ Usage::
 
     /topic [-rm|<topic>]
 
-Set the current channel's topic. If ``topic`` no specified, just display the
-current channel's topic.
+Set the current channel's topic. If no ``topic`` specified, it just displays
+the current channel's topic.
 
 * ``-rm``: remove current channel's topic
 
@@ -305,7 +305,7 @@ Usage::
 
     /me <message>
 
-Send a action message to the current target.
+Send an action message to the current target.
 
 
 /nick
@@ -333,8 +333,8 @@ Usage::
 
     /invite <nick> [channel]
 
-Invite somebody to join a channel. If ``channel`` not specified, fallback to
-current channel.
+Invite somebody to join a channel. If no ``channel`` is specified, it falls
+back to current channel.
 
 /kick
 -----
@@ -343,8 +343,8 @@ Usage::
 
     /kick <nick> [channel] [reason]
 
-Kick somebody from a channel, with optional reason. If ``channel`` not specified,
-fallback to current channel.
+Kick somebody from a channel, with optional reason. If no ``channel`` is
+specified, it falls back to current channel.
 
 /mode
 -----

@@ -3,7 +3,7 @@ Installation
 ============
 
 Srain can run on most GNU/Linux distributions and macOS, Windows support is in
-plan.
+the plan.
 
 .. contents::
     :local:

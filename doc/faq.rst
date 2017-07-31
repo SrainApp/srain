@@ -7,26 +7,26 @@ Frequently Asked Questions
     :depth: 3
     :backlinks: none
 
-Is Srain support Windows?
-=========================
+Does Srain support Windows?
+===========================
 
-No yet, Windows support is in plan.
+Not yet, Windows support is in the plan.
 
-Why does the upload image button not works?
-===========================================
+Why does the image upload button not work?
+==========================================
 
-This function is implemented by a python plugin, you should install
-``python3-urllib3`` and ``python3-request`` to let it works.
+This function is implemented by a python plugin, therefore you should install
+``python3-urllib3`` and ``python3-request`` to let it work.
 
 Why can't I see people's avatar?
 ================================
 
 There is not a specification for user avatar in IRC protocol
 (`IRCv3`_ has an idea about it), so currently the avatar function is simply
-implemented by a python plugin, you should install ``python3-urllib3`` and
-``python3-request`` to let it works.
+implemented by a python plugin, therefore you should install
+``python3-urllib3`` and ``python3-request`` to let it work.
 
-Beside that, you should set ``show_avatar`` to ``true`` in your configuration.
+Besides, you should set ``show_avatar`` to ``true`` in your configuration.
 
 .. _IRCv3: http://ircv3.net/
 

@@ -5,10 +5,10 @@ Miscellaneous
 Hot Keys
 ========
 
-* ``ctrl + j/k``: swith chat panel
+* ``ctrl + j/k``: switch chat panel
 * ``up/down``: scroll message list
 
-.. note:: Custom hot key will be supported in the future.
+.. note:: Customized hot keys will be supported in the future.
 
 .. _misc-chat-logs:
 
