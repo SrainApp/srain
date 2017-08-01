@@ -111,22 +111,33 @@ void regex_filter_free_list(Chat *chat){
 }
 
 bool regex(const Message *msg, FilterFlag flag, void *user_data){
-    int i;
     GSList *lst;
     NamedPattern *np;
 
-    for (i = 0, lst = msg->chat->ignore_regex_list;
-            i < 2;
-            i++, lst = msg->chat->srv->chat->ignore_regex_list){
-        while (lst){
-            if (lst->data){
-                np = lst->data;
-                if(g_regex_match_simple(np->pattern, msg->content, 0, 0)){
-                    return FALSE;
-                }
+    g_return_val_if_fail(msg->chat, TRUE);
+    g_return_val_if_fail(server_list_is_server(msg->chat->srv), TRUE);
+    g_return_val_if_fail(msg->chat->srv->chat, TRUE);
+
+    lst = msg->chat->ignore_regex_list;
+    while (lst){
+        if (lst->data){
+            np = lst->data;
+            if(g_regex_match_simple(np->pattern, msg->content, 0, 0)){
+                return FALSE;
             }
-            lst = g_slist_next(lst);
         }
+        lst = g_slist_next(lst);
+    }
+
+    lst = msg->chat->srv->chat->ignore_regex_list;
+    while (lst){
+        if (lst->data){
+            np = lst->data;
+            if(g_regex_match_simple(np->pattern, msg->content, 0, 0)){
+                return FALSE;
+            }
+        }
+        lst = g_slist_next(lst);
     }
 
     return TRUE;
