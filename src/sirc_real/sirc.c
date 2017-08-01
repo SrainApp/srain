@@ -23,6 +23,7 @@
 #include "log.h"
 
 struct _SircSession {
+    bool fin; // Connection is finished, used to prevent re-entered of disconnect event
     int bufptr;
     char buf[SIRC_BUF_LEN];
     GSocketClient *client;
@@ -157,7 +158,11 @@ static void on_recv_ready(GObject *obj, GAsyncResult *res, gpointer user_data){
         on_disconnect(sirc, err->message);
         return;
     }
-    g_return_if_fail(size == 1);
+    if (size == 0){
+        /* Connection closed */
+        on_disconnect(sirc, NULL);
+        return;
+    }
 
     sirc->bufptr++;
     if (sirc->bufptr > sizeof(sirc->buf)){
@@ -326,10 +331,17 @@ static void on_disconnect_ready(GObject *obj, GAsyncResult *result, gpointer use
 }
 
 static void on_disconnect(SircSession *sirc, const char *reason){
+    if (sirc->fin){
+        WARN_FR("Called while sirc->fin = TRUE");
+        return;
+    } else {
+        sirc->fin = TRUE;
+    }
     sirc->events->disconnect(sirc, "DISCONNECT", "", NULL, 0, reason);
 }
 
 static void on_connect_finish(SircSession *sirc){
+    sirc->fin = FALSE;
     sirc->events->connect(sirc, "CONNECT");
 
     sirc_recv(sirc);

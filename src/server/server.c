@@ -194,6 +194,7 @@ void server_free(Server *srv){
 
 int server_connect(Server *srv){
     g_return_val_if_fail(server_list_is_server(srv), SRN_ERR);
+    g_return_val_if_fail(srv->stat == SERVER_DISCONNECTED, SRN_ERR);
 
     srv->stat = SERVER_CONNECTING;
 
@@ -204,10 +205,9 @@ int server_connect(Server *srv){
 
 void server_disconnect(Server *srv){
     g_return_if_fail(server_list_is_server(srv));
+    g_return_val_if_fail(srv->stat == SERVER_CONNECTED, SRN_ERR);
 
-    if (srv->stat == SERVER_CONNECTED) {
-        sirc_disconnect(srv->irc);
-    }
+    sirc_disconnect(srv->irc);
 }
 
 /**

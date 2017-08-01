@@ -65,10 +65,12 @@ void server_irc_event_connect(SircSession *sirc, const char *event){
     Chat *chat;
 
     srv = sirc_get_ctx(sirc);
-    g_return_if_fail(srv);
+    g_return_if_fail(server_list_is_server(srv));
+    g_return_if_fail(srv->stat == SERVER_CONNECTING);
 
-    user = srv->user;
     srv->stat = SERVER_CONNECTED;
+    user = srv->user;
+
     chat_add_misc_message_fmt(srv->chat, "", _("Connected to %s(%s:%d)"),
             srv->prefs->name, srv->prefs->host, srv->prefs->port);
 
@@ -110,6 +112,7 @@ void server_irc_event_disconnect(SircSession *sirc, const char *event,
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srv);
 
+    g_return_if_fail(srv->stat == SERVER_CONNECTED);
     srv->stat = SERVER_DISCONNECTED;
 
     /* Stop peroid ping */
@@ -162,7 +165,8 @@ void server_irc_event_disconnect(SircSession *sirc, const char *event,
         server_free(srv);
     } else {
         // TODO: reconnect logic
-        // server_connect(srv);
+        WARN_FR("Reconnecting to %s...", srv->prefs->name);
+        server_connect(srv);
     }
 }
 
@@ -252,8 +256,6 @@ void server_irc_event_quit(SircSession *sirc, const char *event,
     if (sirc_nick_cmp(origin, srv->user->nick)){
         srv->registered = FALSE;
         srv->user_quit = TRUE;
-
-        server_disconnect(srv);
     }
 }
 
