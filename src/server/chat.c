@@ -21,7 +21,7 @@ static bool whether_merge_last_message(Chat *chat, Message *msg);
 
 Chat *chat_new(Server *srv, const char *name){
     bool ischan;
-    char *res;
+    SrnRet ret;
     Chat *chat;
     SuiSessionFlag flag;
 
@@ -40,11 +40,9 @@ Chat *chat_new(Server *srv, const char *name){
 
     /* sui */
     chat->ui_prefs = sui_prefs_new();
-    res = prefs_read_sui_prefs(chat->ui_prefs, chat->srv->prefs->name, chat->name);
-    if (res){
-        ERR_FR("Read sui prefs failed: %s", res);
-        g_free(res);
-        res = NULL;
+    ret = prefs_read_sui_prefs(chat->ui_prefs, chat->srv->prefs->name, chat->name);
+    if (!RET_IS_OK(ret)){
+        ERR_FR("Read sui prefs failed: %s", RET_MSG(ret));
     }
 
     flag = ischan ? SUI_SESSION_CHANNEL : SUI_SESSION_DIALOG;
