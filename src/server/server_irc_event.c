@@ -906,16 +906,44 @@ void server_irc_event_numeric (SircSession *sirc, int event,
                 Chat *chat = server_get_chat(srv, chan);
                 if (!chat) chat = srv->cur_chat;
 
-                chat_add_misc_message_fmt(srv->cur_chat, origin, _("%s: %s"),
-                        chan,msg);
+                chat_add_misc_message_fmt(chat, origin, _("%s: %s"), chan, msg);
+                break;
+            }
+            /************************ MISC message ************************/
+        case SIRC_RFC_RPL_CHANNEL_URL:
+            {
+                srv = sirc_get_ctx(sirc);
+                g_return_if_fail(srv);
+                g_return_if_fail(count >= 2);
+                g_return_if_fail(msg);
+
+                const char *chan = params[1];
+
+                Chat *chat = server_get_chat(srv, chan);
+                if (!chat) chat = srv->cur_chat;
+
+                chat_add_misc_message_fmt(chat, origin, _("URL of %s is: %s"),
+                        chan, msg);
                 break;
             }
         default:
             {
                 // Error message
                 if (event >= 400 && event < 600){
-                    g_return_if_fail(msg);
-                    chat_add_error_message_fmt(srv->cur_chat, origin, _("ERROR[%3d]: %s"), event, msg);
+                    GString *buf;
+
+                    buf = g_string_new(NULL);
+
+                    if (msg) g_string_append_printf(buf, "%s: ", msg);
+                    for (int i = 1; i < count; i++){
+                        g_string_append_printf(buf, "%s ", params[i]);
+                    }
+
+                    chat_add_error_message_fmt(srv->cur_chat, origin,
+                            _("ERROR[%3d] %s"), event, buf->str);
+
+                    g_string_free(buf, TRUE);
+
                     return;
                 }
 
@@ -923,6 +951,7 @@ void server_irc_event_numeric (SircSession *sirc, int event,
                 WARN_FR("server: %s, event: %d, origin: %s, count: %u, params: [",
                         srv->prefs->name, event, origin, count);
                 for (int i = 0; i < count; i++) LOG("'%s', ", params[i]); LOG("]\n");
+                WARN_FR("msg: %s", msg);
             }
     }
 }
