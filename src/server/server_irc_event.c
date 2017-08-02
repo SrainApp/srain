@@ -791,6 +791,8 @@ void server_irc_event_numeric (SircSession *sirc, int event,
                 char *setter = g_strdup_printf(_("By %s at %s"), who, timestr);
                 chat_set_topic_setter(chat, setter);
                 g_free(setter);
+
+                break;
             }
 
             /************************ WHOIS message ************************/
