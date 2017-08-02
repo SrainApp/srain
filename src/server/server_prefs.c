@@ -184,16 +184,6 @@ void server_prefs_free(ServerPrefs *prefs){
         prefs->encoding = NULL;
     }
 
-    if (prefs->passwd){
-        g_free(prefs->passwd);
-        prefs->passwd = NULL;
-    }
-
-    if (prefs->encoding){
-        g_free(prefs->encoding);
-        prefs->encoding = NULL;
-    }
-
     if (prefs->nickname){
         g_free(prefs->nickname);
         prefs->nickname = NULL;
@@ -243,7 +233,7 @@ char* server_prefs_dump(ServerPrefs *prefs){
 
     g_return_val_if_fail(prefs, NULL);
 
-    if (prefs->passwd && prefs->passwd[0] != '\0') {
+    if (!str_is_empty(prefs->passwd)){
         passwd = "********";
     } else {
         passwd = NULL;

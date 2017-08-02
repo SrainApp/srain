@@ -74,7 +74,7 @@ void server_irc_event_connect(SircSession *sirc, const char *event){
     chat_add_misc_message_fmt(srv->chat, "", _("Connected to %s(%s:%d)"),
             srv->prefs->name, srv->prefs->host, srv->prefs->port);
 
-    if (srv->prefs->passwd){
+    if (!str_is_empty(srv->prefs->passwd)){
         /* Send connection password, you should send it command before sending
          * the NICK/USER combination. */
         sirc_cmd_pass(srv->irc, srv->prefs->passwd);
