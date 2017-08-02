@@ -22,47 +22,73 @@
 #include "log.h"
 #include "rc.h"
 #include "file_helper.h"
+#include "utils.h"
 
 SrnRet rc_read(){
     int nline = 1;
-    FILE *fp = NULL;
+    char *path = NULL;
     char *line = NULL;
-    size_t len = 0;
-    ssize_t read;
-    char *rc_file = NULL;
+    gsize len = 0;
+    GError *err = NULL;
+    GFile *file = NULL;
+    GFileInputStream *fins = NULL;
+    GDataInputStream *dins = NULL;
     SrnRet ret = SRN_OK;
 
-    rc_file = get_config_file("srainrc");
-    if (!rc_file) {
-        ret = RET_ERR(_("User rc file not found"));
+    path = get_config_file("srainrc");
+    if (!path) {
+        ret = RET_ERR(_("Rc file not found"));
         goto fin;
     }
 
-    fp = fopen(rc_file, "r");
-    if (!fp){
-        ret = RET_ERR(_("Can not open rc file: %s"), rc_file);
+    file = g_file_new_for_path(path);
+
+    err = NULL;
+    fins = g_file_read(file, NULL, &err);
+    if (err) {
+        ret = RET_ERR(_("%s"), err->message);
         goto fin;
     }
-    while ((read = getline(&line, &len, fp)) != -1) {
-        if (line && line[0] != '#'){
-            strtok(line, "\n");
-            if (!RET_IS_OK(ret = server_cmd(NULL, line))){
-                ret = RET_ERR(_("Command failed at line %d: %s"), nline, RET_MSG(ret));
-                break;
-            }
+
+    dins = g_data_input_stream_new(G_INPUT_STREAM(fins));
+
+    for (;;) {
+        err = NULL;
+        line = g_data_input_stream_read_line(dins, &len, NULL, &err);
+
+        if (err) {
+            ret = RET_ERR(_("%s"), err->message);
+            goto fin;
+        }
+        if (!line) {
+            break;
+        }
+        if (line[0] == '#' || str_is_empty(line)) {
+            g_free(line);
+            continue;
+        }
+
+        ret = server_cmd(NULL, line);
+        if (!RET_IS_OK(ret)){
+            ret = RET_ERR(_("Command failed at line %d: %s"), nline, RET_MSG(ret));
+            g_free(line);
+            goto fin;
         }
         nline++;
     }
 
 fin:
-    if (rc_file) {
-        g_free(rc_file);
+    if (path) {
+        g_free(path);
     }
-    if (fp){
-        fclose(fp);
+    if (file){
+        g_object_unref(file);
     }
-    if (line) {
-        free(line);
+    if (fins) {
+        g_object_unref(fins);
+    }
+    if (dins) {
+        g_object_unref(dins);
     }
     return ret;
 }
