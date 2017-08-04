@@ -1,16 +1,6 @@
-/**
- * @file srain_stack_sidebar.c
- * @brief A simplified, customized stacksidebar implement
- * @author Shengyu Zhang <silverrainz@outlook.com>
- * @version 1.0
- * @date 2016-03-06
- *
- * a simplified, customized stacksidebar implement, modified from
- * <git.gnome.org/browse/gtk+/tree/gtk/gtkstacksidebar.c>
- */
-
 /*
- * Copyright(c) 2014 Intel Corporation
+ * Copyright (C) 2014 Intel Corporation
+ * Copyright (C) 2016-2017 Shengyu Zhang <srain@srain.im>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -30,6 +20,15 @@
  *      Ikey Doherty <michael.i.doherty@intel.com>
  */
 
+/**
+ * @file srain_stack_sidebar.c
+ * @brief A simplified, customized stacksidebar implementation
+ * @author Shengyu Zhang <silverrainz@outlook.com>
+ * @version 1.0
+ * @date 2016-03-06
+ *
+ * Originated from <git.gnome.org/browse/gtk+/tree/gtk/gtkstacksidebar.c>.
+ */
 
 #include <gtk/gtk.h>
 

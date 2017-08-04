@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2004-2012 George Yunaev <gyunaev@ulduzsoft.com>
- *                    2017 Shengyu Zhang <sliverrainz@outlook.com>
+ * Copyright (C) 2017 Shengyu Zhang <sliverrainz@outlook.com>
  *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by

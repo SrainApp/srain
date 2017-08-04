@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2004-2012 George Yunaev <gyunaev@ulduzsoft.com>
- *               2017      Shengyu Zhang <silverainz@outlook.com>
+ * Copyright (C) 2017 Shengyu Zhang <silverainz@outlook.com>
  *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -13,7 +13,7 @@
  * License for more details.
  */
 
-/* This file is borrowed from libircclient(include/libirc_events.h) */
+/* This file is originated from libircclient(include/libirc_events.h) */
 
 #ifndef __SIRC_EVENT_H
 #define __SIRC_EVENT_H
