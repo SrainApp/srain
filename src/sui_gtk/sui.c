@@ -18,8 +18,8 @@
 
 /* @file sui.c
  * @brief Srain UI module interfaces
- * @author Shengyu Zhang <silverrainz@outlook.com>
- * @version 1.0
+ * @author Shengyu Zhang <srain@srain.im>
+ * @version 0.06
  * @date 2016-06-29
  */
 

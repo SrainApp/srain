@@ -19,8 +19,8 @@
 /**
  * @file file_helper.c
  * @brief Get application data files' path
- * @author Shengyu Zhang <silverrainz@outlook.com>
- * @version 1.0
+ * @author Shengyu Zhang <srain@srain.im>
+ * @version 0.06
  * @date 2016-06-12
  */
 

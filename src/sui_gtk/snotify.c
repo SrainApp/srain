@@ -19,8 +19,8 @@
 /**
  * @file snotify.c
  * @brief Libnotify based desktop notification
- * @author Shengyu Zhang <silverrainz@outlook.com>
- * @version 1.0
+ * @author Shengyu Zhang <srain@srain.im>
+ * @version 0.06
  * @date 2016-08-26
  */
 

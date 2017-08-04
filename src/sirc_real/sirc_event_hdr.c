@@ -19,8 +19,8 @@
 /**
  * @file sirc_event_hdr.c
  * @brief IRC event handler
- * @author Shengyu Zhang <silverrainz@outlook.com>
- * @version 1.0
+ * @author Shengyu Zhang <srain@srain.im>
+ * @version 0.06
  * @date 2017-01-28
  *
  */

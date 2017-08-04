@@ -19,8 +19,8 @@
 /**
  * @file pango_markup.c
  * @brief Decorator for escaping message and render url
- * @author Shengyu Zhang <silverrainz@outlook.com>
- * @version 1.0
+ * @author Shengyu Zhang <srain@srain.im>
+ * @version 0.06
  * @date 2017-03-11
  */
 

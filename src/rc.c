@@ -19,8 +19,8 @@
 /**
  * @file rc.c
  * @brief Run command from file
- * @author Shengyu Zhang <silverrainz@outlook.com>
- * @version 1.0
+ * @author Shengyu Zhang <srain@srain.im>
+ * @version 0.06
  * @date 2016-03-01
  */
 

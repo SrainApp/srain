@@ -19,8 +19,8 @@
 /**
  * @file server_ui_event.c
  * @brief Server UI event callbacks
- * @author Shengyu Zhang <silverrainz@outlook.com>
- * @version 1.0
+ * @author Shengyu Zhang <srain@srain.im>
+ * @version 0.06
  * @date 2016-07-19
  */
 

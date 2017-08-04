@@ -19,8 +19,8 @@
 /**
  * @file srain_user_list.c
  * @brief Listbox used to display user list of chatnel
- * @author Shengyu Zhang <silverrainz@outlook.com>
- * @version 1.0
+ * @author Shengyu Zhang <srain@srain.im>
+ * @version 0.06
  * @date 2016-04-03
  */
 

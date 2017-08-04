@@ -1,10 +1,10 @@
 /**
-* @file app.css
-* @brief Application style, GTK+ >= 3.19 required
-* @author Shengyu Zhang <silverrainz@outlook.com>
-* @version 1.0
-* @date 2016-05-24
-*/
+ * @file app.css
+ * @brief Application style, GTK+ >= 3.19 required
+ * @author Shengyu Zhang <srain@srain.im>
+ * @version 0.06
+ * @date 2016-05-24
+ */
 
 @import url("./reset.css");
 @import url("./app-min.css");

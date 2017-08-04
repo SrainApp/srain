@@ -19,8 +19,8 @@
  /**
  * @file io_stream.c
  * @brief Unused GIOStream wrapper
- * @author Shengyu Zhang <silverrainz@outlook.com>
- * @version 1.0
+ * @author Shengyu Zhang <srain@srain.im>
+ * @version 0.06
  * @date 2017-04-11
  *
  */

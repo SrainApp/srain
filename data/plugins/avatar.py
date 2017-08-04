@@ -1,7 +1,7 @@
 ##
 # @file avatar.py
 # @brief Smart avatar plugin for srain
-# @author SY Zhang <silverrainz@outlook.com>
+# @author Shengyu Zhang <srain@srain.im>
 # @version 1.0
 # @date 2016-08-26
 #

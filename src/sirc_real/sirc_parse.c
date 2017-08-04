@@ -20,7 +20,7 @@
  * @file sirc_parse.c
  * @brief Raw IRC data parser
  * @author Shengyu Zhang <silverrain@outlook.com>
- * @version 1.0
+ * @version 0.06
  * @date 2016-03-01
  *
  */

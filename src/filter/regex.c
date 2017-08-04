@@ -20,8 +20,8 @@
  * @file regex.c
  * @brief Regex message filter
  * @author Z.Wind.L <zwindl@protonmail.com>
- *         Shengyu Zhang <silverrainz@outlook.com>
- * @version 1.0
+ *         Shengyu Zhang <srain@srain.im>
+ * @version 0.06
  * @date 2017-03-16
  */
 
