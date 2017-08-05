@@ -144,7 +144,7 @@ SrnRet server_prefs_is_valid(ServerPrefs *prefs){
     }
 
     if (str_is_empty(prefs->realname)) {
-        str_assign(&prefs->username, prefs->nickname);
+        str_assign(&prefs->realname, prefs->nickname);
     }
 
     if (str_is_empty(prefs->part_message)) {

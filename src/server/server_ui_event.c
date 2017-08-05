@@ -88,13 +88,25 @@ void server_ui_event_connect(SuiEvent event, const char *params[], int count){
         return;
     }
 
-    str_assign(&prefs->host, host);
     prefs->port = port;
-    str_assign(&prefs->passwd, passwd);
-    str_assign(&prefs->encoding, encoding);
-    str_assign(&prefs->nickname, nick);
-    str_assign(&prefs->username, username);
-    str_assign(&prefs->realname, realname);
+    if (!str_is_empty(host)){
+        str_assign(&prefs->host, host);
+    }
+    if (!str_is_empty(passwd)){
+        str_assign(&prefs->passwd, passwd);
+    }
+    if (!str_is_empty(encoding)){
+        str_assign(&prefs->encoding, encoding);
+    }
+    if (!str_is_empty(nick)){
+        str_assign(&prefs->nickname, nick);
+    }
+    if (!str_is_empty(username)){
+        str_assign(&prefs->username, username);
+    }
+    if (!str_is_empty(realname)){
+        str_assign(&prefs->realname, realname);
+    }
 
     prefs->irc->tls = tls;
     prefs->irc->tls_not_verify = notverify;
@@ -119,8 +131,8 @@ void server_ui_event_disconnect(SuiSession *sui, SuiEvent event, const char *par
     srv = ctx_get_server(sui);
     g_return_if_fail(srv);
 
-    if (sirc_cmd_quit(srv->irc, "QUIT") == SRN_ERR){
-        server_free(srv);
+    if (!SRN_IS_OK(sirc_cmd_quit(srv->irc, "QUIT"))){
+        server_free(srv); // FIXME
     }
 }
 
