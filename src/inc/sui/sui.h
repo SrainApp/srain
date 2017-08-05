@@ -58,7 +58,7 @@ enum _UserType {
 #include "sui_prefs.h"
 #undef __IN_SUI_H
 
-void sui_main_loop(SuiAppEvents *events, SuiAppPrefs *prefs);
+void sui_main_loop(int argc, char *argv[], SuiAppEvents *events, SuiAppPrefs *prefs);
 void sui_proc_pending_event();
 
 /* SuiSession */

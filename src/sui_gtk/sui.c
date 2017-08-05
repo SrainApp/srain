@@ -54,7 +54,7 @@ bool is_app_run = FALSE;
 SuiAppEvents *app_events = NULL;
 SuiAppPrefs *app_prefs = NULL;
 
-void sui_main_loop(SuiAppEvents *events, SuiAppPrefs *prefs){
+void sui_main_loop(int argc, char *argv[], SuiAppEvents *events, SuiAppPrefs *prefs){
     SrnRet ret;
 
     g_return_if_fail(events);
@@ -78,7 +78,7 @@ void sui_main_loop(SuiAppEvents *events, SuiAppPrefs *prefs){
     }
 
     is_app_run = TRUE;
-    g_application_run(G_APPLICATION(srain_app_new()), 0, NULL);
+    g_application_run(G_APPLICATION(srain_app_new()), argc, argv);
     is_app_run = FALSE;
 
     snotify_finalize();

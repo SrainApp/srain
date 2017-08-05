@@ -22,6 +22,9 @@ done
 # Version in configuration file
 sed -i "s/version = \"${OLDVER}\"/version = \"${NEWVER}\"/" "data/builtin.cfg"
 
+# Version in desktop file
+sed -i "s/Version=${OLDVER}/Version=${NEWVER}/" "data/Srain.desktop"
+
 # Version in documentations
 sed -i "s/version = '${OLDVER}'/version = '${NEWVER}'/" "doc/conf.py"
 sed -i "s/release = '${OLDVER}'/release = '${NEWVER}'/" "doc/conf.py"

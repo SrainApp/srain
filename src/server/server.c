@@ -47,7 +47,7 @@ SuiAppEvents ui_app_events;
 SuiEvents ui_events;
 SircEvents irc_events;
 
-void server_init(){
+void server_init_and_run(int argc, char *argv[]){
     /* UI event */
     ui_events.disconnect = server_ui_event_disconnect;
     ui_events.send = server_ui_event_send;
@@ -113,7 +113,7 @@ void server_init(){
         sui_message_box(_("Prefs read error"), RET_MSG(ret));
     }
 
-    sui_main_loop(&ui_app_events, &ui_app_prefs);
+    sui_main_loop(argc, argv, &ui_app_events, &ui_app_prefs);
 }
 
 void server_finalize(){

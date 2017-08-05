@@ -1,11 +1,13 @@
 [Desktop Entry]
-Version=1.0
+Version=0.06
 Type=Application
 Name=Srain
-GenericName=IRC client
-Comment=It does not look like an IRC client.
+GenericName=Srain IRC client
+Comment=Modern, beautiful IRC client written in GTK+ 3.
 TryExec=srain
 Exec=srain %u
 Icon=srain
-Categories=InstantMessaging;Network
+MimeType=x-scheme-handler/irc;x-scheme-handler/ircs;
+Categories=GTK;IM;Network;IRCClient;
+Keywords=GTK;IM;Network;IRCClient;Chat
 Terminal=false

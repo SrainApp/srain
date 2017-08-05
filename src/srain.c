@@ -40,7 +40,7 @@
 
 static void quit();
 
-int main(int argc, char **argv){
+int main(int argc, char *argv[]){
     signal(SIGINT, quit);
 
     ret_init();
@@ -55,7 +55,7 @@ int main(int argc, char **argv){
     filter_init();
     decorator_init();
 
-    server_init();
+    server_init_and_run(argc, argv);
 
     quit();
 

@@ -131,7 +131,7 @@ void server_ui_event_disconnect(SuiSession *sui, SuiEvent event, const char *par
     srv = ctx_get_server(sui);
     g_return_if_fail(srv);
 
-    if (!SRN_IS_OK(sirc_cmd_quit(srv->irc, "QUIT"))){
+    if (!RET_IS_OK(sirc_cmd_quit(srv->irc, "QUIT"))){
         server_free(srv); // FIXME
     }
 }
