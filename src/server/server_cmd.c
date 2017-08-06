@@ -105,7 +105,7 @@ CommandBind cmd_binds[] = {
             { .key = "-pwd",            .val = COMMAND_OPT_NO_DEFAULT },
             { .key = "-user",           .val = COMMAND_OPT_NO_DEFAULT },
             { .key = "-real",           .val = COMMAND_OPT_NO_DEFAULT },
-            { .key = "-encodeing",      .val = COMMAND_OPT_NO_DEFAULT },
+            { .key = "-encode",         .val = COMMAND_OPT_NO_DEFAULT },
             COMMAND_EMPTY_OPT,
         },
         .flag = 0,
@@ -411,7 +411,9 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
                 return ret;
             }
             srv = server_new_from_prefs(prefs);
-            g_return_val_if_fail(srv, SRN_ERR);
+            if (!srv) {
+                return RET_ERR(_("Failed to instantate server \"%s\""), prefs->name);
+            }
         }
 
         if (srv->stat != SERVER_DISCONNECTED) {
@@ -490,7 +492,7 @@ static SrnRet on_command_connect(Command *cmd, void *user_data){
 
     prefs = server_prefs_new(host);
     if (!prefs){
-        return RET_ERR(_("Failed to create ServerPrefs \"%s\""), host);
+        return RET_ERR(_("Failed to create server \"%s\""), host);
     }
 
     ret = prefs_read_server_prefs(prefs);
@@ -528,7 +530,7 @@ static SrnRet on_command_connect(Command *cmd, void *user_data){
 
     srv = server_new_from_prefs(prefs);
     if (!srv) {
-        return RET_ERR(_("Failed to create server \"%s\""), prefs->name);
+        return RET_ERR(_("Failed to instantate server \"%s\""), prefs->name);
     }
 
     def_srv = srv;
