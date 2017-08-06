@@ -130,7 +130,7 @@ void server_ui_event_connect(SuiEvent event, const char *params[], int count){
 
     srv = server_new_from_prefs(prefs);
     if (!srv) {
-        ret = RET_ERR(_("Failed to instantate server \"%s\""), prefs->name);
+        ret = RET_ERR(_("Failed to instantiate server \"%s\""), prefs->name);
         sui_message_box(_("Create server failed"), RET_MSG(ret));
         return;
     }

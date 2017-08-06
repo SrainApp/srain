@@ -412,7 +412,7 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
             }
             srv = server_new_from_prefs(prefs);
             if (!srv) {
-                return RET_ERR(_("Failed to instantate server \"%s\""), prefs->name);
+                return RET_ERR(_("Failed to instantiate server \"%s\""), prefs->name);
             }
         }
 
@@ -530,7 +530,7 @@ static SrnRet on_command_connect(Command *cmd, void *user_data){
 
     srv = server_new_from_prefs(prefs);
     if (!srv) {
-        return RET_ERR(_("Failed to instantate server \"%s\""), prefs->name);
+        return RET_ERR(_("Failed to instantiate server \"%s\""), prefs->name);
     }
 
     def_srv = srv;

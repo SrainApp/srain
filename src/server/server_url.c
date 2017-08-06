@@ -119,7 +119,7 @@ SrnRet server_url_open(const char *url){
         // If no such Server, create one
         srv = server_new_from_prefs(prefs);
         if (!srv) {
-            ret =  RET_ERR(_("Failed to intantiate server \"%s\""), host);
+            ret =  RET_ERR(_("Failed to instantiate server \"%s\""), host);
             goto fin;
         }
         new_srv = TRUE;
