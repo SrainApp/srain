@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 0.06\n"
 "Report-Msgid-Bugs-To: srain@srain.im\n"
-"POT-Creation-Date: 2017-08-06 09:39+0800\n"
+"POT-Creation-Date: 2017-08-06 14:48+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -76,7 +76,7 @@ msgstr ""
 msgid "%Y-%m-%d %T"
 msgstr ""
 
-#: ../src/rc.c:64 ../src/rc.c:75 ../src/server/server_prefs.c:296
+#: ../src/rc.c:64 ../src/rc.c:75 ../src/server/server_prefs.c:325
 #, c-format
 msgid "%s"
 msgstr ""
@@ -184,17 +184,17 @@ msgstr ""
 msgid "*** <b>%s</b> %s ***"
 msgstr ""
 
-#: ../src/server/server_prefs.c:264
+#: ../src/server/server_prefs.c:293
 #, c-format
 msgid ""
-"*** Server name: %s\n"
+"*** Server name: %s, Instance: %p\n"
 "\tHost: %s, Port: %d, Password: %s, Encoding: %s\n"
 "\tNickname: %s, Username: %s, Realname: %s\n"
 "\tPart: %s, Kick: %s, Away: %s, Quit: %s\n"
 "\tIRC configuration: %s"
 msgstr ""
 
-#: ../src/server/server_cmd.c:784
+#: ../src/server/server_cmd.c:786
 #, c-format
 msgid "A message has been sent to \"%s\""
 msgstr ""
@@ -220,24 +220,20 @@ msgstr ""
 msgid "At line %d: %s"
 msgstr ""
 
-#: ../src/server/server_prefs.c:159
-msgid "Away"
-msgstr ""
-
 #: ../src/server/server_irc_event.c:807
 #, c-format
 msgid "By %s at %s"
 msgstr ""
 
-#: ../src/server/server_cmd.c:418
+#: ../src/server/server_cmd.c:420
 msgid "Can not connect to a connected server"
 msgstr ""
 
-#: ../src/server/server_cmd.c:437 ../src/server/server_cmd.c:441
+#: ../src/server/server_cmd.c:439 ../src/server/server_cmd.c:443
 msgid "Can not disconnect from a unconnected server"
 msgstr ""
 
-#: ../src/server/server_cmd.c:453
+#: ../src/server/server_cmd.c:455
 msgid "Can not remove a server which is still connected"
 msgstr ""
 
@@ -271,8 +267,8 @@ msgstr ""
 msgid "Copy message"
 msgstr ""
 
-#: ../src/server/server_ui_event.c:73 ../src/server/server_ui_event.c:80
-#: ../src/server/server_ui_event.c:116
+#: ../src/server/server_ui_event.c:84 ../src/server/server_ui_event.c:91
+#: ../src/server/server_ui_event.c:127 ../src/server/server_ui_event.c:134
 msgid "Create server failed"
 msgstr ""
 
@@ -310,6 +306,10 @@ msgstr ""
 msgid "Error"
 msgstr ""
 
+#: ../src/server/server_ui_event.c:53
+msgid "Error occurred while opening URL"
+msgstr ""
+
 #: ../src/prefs/prefs.c:159 ../src/prefs/prefs.c:163
 #, c-format
 msgid "Error occurred while read irc prefs in %s: %s"
@@ -340,18 +340,19 @@ msgstr ""
 msgid "Error occurred while reading %s: %s"
 msgstr ""
 
-#: ../src/server/server_ui_event.c:52
+#: ../src/server/server_ui_event.c:63
 msgid "Error occurred while running commands"
 msgstr ""
 
-#: ../src/server/server_cmd.c:493
-#, c-format
-msgid "Failed to create ServerPrefs \"%s\""
-msgstr ""
-
-#: ../src/server/server_cmd.c:531
+#: ../src/server/server_cmd.c:495 ../src/server/server_url.c:86
 #, c-format
 msgid "Failed to create server \"%s\""
+msgstr ""
+
+#: ../src/server/server_cmd.c:415 ../src/server/server_cmd.c:533
+#: ../src/server/server_url.c:122 ../src/server/server_ui_event.c:133
+#, c-format
+msgid "Failed to instantiate server \"%s\""
 msgstr ""
 
 #: ../src/sui_gtk/sui.c:74
@@ -359,7 +360,13 @@ msgstr ""
 msgid "Failed to load theme \"%s\""
 msgstr ""
 
-#: ../src/server/server_cmd.c:427 ../src/server/server_cmd.c:540
+#: ../src/server/server_url.c:57
+#, c-format
+msgid "Failed to parse \"%s\" as a URL"
+msgstr ""
+
+#: ../src/server/server_cmd.c:429 ../src/server/server_cmd.c:542
+#: ../src/server/server_url.c:138
 #, c-format
 msgid "Failed to register on server \"%s\""
 msgstr ""
@@ -386,12 +393,17 @@ msgstr ""
 msgid "Forward to..."
 msgstr ""
 
+#: ../src/server/server_url.c:76
+#, c-format
+msgid "Host is empty in URL \"%s\""
+msgstr ""
+
 #: ../src/filter/regex.c:76
 #, c-format
 msgid "Invail pattern: %s"
 msgstr ""
 
-#: ../src/server/server_prefs.c:119 ../src/sirc_real/sirc_prefs.c:34
+#: ../src/server/server_prefs.c:143 ../src/sirc_real/sirc_prefs.c:34
 msgid "Invalid ServerPrefs instance"
 msgstr ""
 
@@ -443,7 +455,7 @@ msgstr ""
 msgid "Missing argument, expect %d, actually %d"
 msgstr ""
 
-#: ../src/server/server_prefs.c:115
+#: ../src/server/server_prefs.c:140
 #, c-format
 msgid "Missing field in ServerPrefs: %s"
 msgstr ""
@@ -462,7 +474,7 @@ msgstr ""
 msgid "Nickname:"
 msgstr ""
 
-#: ../src/server/server_cmd.c:358 ../src/server/server_cmd.c:462
+#: ../src/server/server_cmd.c:358 ../src/server/server_cmd.c:464
 #, c-format
 msgid "No such server: %s"
 msgstr ""
@@ -495,8 +507,8 @@ msgstr ""
 msgid "Password:"
 msgstr ""
 
-#: ../src/server/server.c:98 ../src/server/server.c:103
-#: ../src/server/server.c:108 ../src/server/server.c:113
+#: ../src/server/server.c:99 ../src/server/server.c:104
+#: ../src/server/server.c:109 ../src/server/server.c:114
 msgid "Prefs read error"
 msgstr ""
 
@@ -508,7 +520,7 @@ msgstr ""
 msgid "Rc file not found"
 msgstr ""
 
-#: ../src/server/server_ui_event.c:87
+#: ../src/server/server_ui_event.c:98
 msgid "Read server prefs failed"
 msgstr ""
 
@@ -527,7 +539,7 @@ msgid "Server \"%s\" is motified"
 msgstr ""
 
 #: ../src/prefs/prefs.c:490 ../src/server/server_cmd.c:353
-#: ../src/server/server_ui_event.c:79
+#: ../src/server/server_ui_event.c:90
 #, c-format
 msgid "Server already exist: %s"
 msgstr ""
@@ -601,9 +613,14 @@ msgstr ""
 msgid "Unknown option %s"
 msgstr ""
 
-#: ../src/command.c:422 ../src/server/server_cmd.c:470
+#: ../src/command.c:422 ../src/server/server_cmd.c:472
 #, c-format
 msgid "Unknown sub command: %s"
+msgstr ""
+
+#: ../src/server/server_url.c:64
+#, c-format
+msgid "Unsupported protocol: %s"
 msgstr ""
 
 #: ../data/ui/chat.glade:293
@@ -645,7 +662,7 @@ msgstr ""
 msgid "You has joined"
 msgstr ""
 
-#: ../src/server/server_ui_event.c:73
+#: ../src/server/server_ui_event.c:84
 msgid "You must specified a server name"
 msgstr ""
 

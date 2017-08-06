@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 0.06\n"
 "Report-Msgid-Bugs-To: srain@srain.im\n"
-"POT-Creation-Date: 2017-08-06 09:35+0800\n"
+"POT-Creation-Date: 2017-08-06 14:48+0800\n"
 "PO-Revision-Date: 2016-12-18 01:44+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -76,7 +76,7 @@ msgstr "\"%s\" 无法在 %s 的转发机器人列表中被找到"
 msgid "%Y-%m-%d %T"
 msgstr "%Y 年 %m 月 %d 日 %T"
 
-#: ../src/rc.c:64 ../src/rc.c:75 ../src/server/server_prefs.c:296
+#: ../src/rc.c:64 ../src/rc.c:75 ../src/server/server_prefs.c:325
 #, c-format
 msgid "%s"
 msgstr "%s"
@@ -188,22 +188,22 @@ msgstr "(这条消息无法被正确显示)."
 msgid "*** <b>%s</b> %s ***"
 msgstr "*** <b>%s</b> %s ***"
 
-#: ../src/server/server_prefs.c:264
+#: ../src/server/server_prefs.c:293
 #, c-format
 msgid ""
-"*** Server name: %s\n"
+"*** Server name: %s, Instance: %p\n"
 "\tHost: %s, Port: %d, Password: %s, Encoding: %s\n"
 "\tNickname: %s, Username: %s, Realname: %s\n"
 "\tPart: %s, Kick: %s, Away: %s, Quit: %s\n"
 "\tIRC configuration: %s"
 msgstr ""
-"*** 服务器名称：%s\n"
+"*** 服务器名称：%s，实例：%p\n"
 "\t主机名：%s，端口：%d，密码：%s，编码：%s\n"
 "\t昵称：%s，用户名：%s，真实姓名：%s\n"
 "\t离开消息：%s，踢出消息：%s，暂离消息：%s，退出消息：%s\n"
 "\tIRC 配置：%s"
 
-#: ../src/server/server_cmd.c:784
+#: ../src/server/server_cmd.c:786
 #, c-format
 msgid "A message has been sent to \"%s\""
 msgstr "消息已发送至 \"%s\""
@@ -229,24 +229,20 @@ msgstr "地址"
 msgid "At line %d: %s"
 msgstr "在第 %d 行：%s"
 
-#: ../src/server/server_prefs.c:159
-msgid "Away"
-msgstr ""
-
 #: ../src/server/server_irc_event.c:807
 #, c-format
 msgid "By %s at %s"
 msgstr "%s 于 %s 设置"
 
-#: ../src/server/server_cmd.c:418
+#: ../src/server/server_cmd.c:420
 msgid "Can not connect to a connected server"
 msgstr "不能重复连接到已连接的服务器"
 
-#: ../src/server/server_cmd.c:437 ../src/server/server_cmd.c:441
+#: ../src/server/server_cmd.c:439 ../src/server/server_cmd.c:443
 msgid "Can not disconnect from a unconnected server"
 msgstr "无法从未连接的服务器断开连接"
 
-#: ../src/server/server_cmd.c:453
+#: ../src/server/server_cmd.c:455
 msgid "Can not remove a server which is still connected"
 msgstr "无法删除已连接的服务器"
 
@@ -280,8 +276,8 @@ msgstr "已连接到 %s(%s:%d)"
 msgid "Copy message"
 msgstr "复制消息"
 
-#: ../src/server/server_ui_event.c:73 ../src/server/server_ui_event.c:80
-#: ../src/server/server_ui_event.c:116
+#: ../src/server/server_ui_event.c:84 ../src/server/server_ui_event.c:91
+#: ../src/server/server_ui_event.c:127 ../src/server/server_ui_event.c:134
 msgid "Create server failed"
 msgstr "创建服务器失败"
 
@@ -319,6 +315,10 @@ msgstr "错误[%3d]: %s"
 msgid "Error"
 msgstr "错误"
 
+#: ../src/server/server_ui_event.c:53
+msgid "Error occurred while opening URL"
+msgstr "打开 URL 时发生错误"
+
 #: ../src/prefs/prefs.c:159 ../src/prefs/prefs.c:163
 #, c-format
 msgid "Error occurred while read irc prefs in %s: %s"
@@ -349,26 +349,33 @@ msgstr "读取 UI 配置 %s 时发生错误：%s"
 msgid "Error occurred while reading %s: %s"
 msgstr "读取 %s 时发生错误：%s"
 
-#: ../src/server/server_ui_event.c:52
+#: ../src/server/server_ui_event.c:63
 msgid "Error occurred while running commands"
 msgstr "运行命令时发生错误"
 
-#: ../src/server/server_cmd.c:493
-#, c-format
-msgid "Failed to create ServerPrefs \"%s\""
-msgstr "无法创建服务器配置 ‘%s’"
-
-#: ../src/server/server_cmd.c:531
+#: ../src/server/server_cmd.c:495 ../src/server/server_url.c:86
 #, c-format
 msgid "Failed to create server \"%s\""
 msgstr "无法创建服务器 \"%s\""
+
+#: ../src/server/server_cmd.c:415 ../src/server/server_cmd.c:533
+#: ../src/server/server_url.c:122 ../src/server/server_ui_event.c:133
+#, c-format
+msgid "Failed to instantiate server \"%s\""
+msgstr "无法实例化服务器 \"%s\""
 
 #: ../src/sui_gtk/sui.c:74
 #, c-format
 msgid "Failed to load theme \"%s\""
 msgstr "无法加载主题 \"%s\""
 
-#: ../src/server/server_cmd.c:427 ../src/server/server_cmd.c:540
+#: ../src/server/server_url.c:57
+#, c-format
+msgid "Failed to parse \"%s\" as a URL"
+msgstr "无法将 \"%s\" 解析为 URL"
+
+#: ../src/server/server_cmd.c:429 ../src/server/server_cmd.c:542
+#: ../src/server/server_url.c:138
 #, c-format
 msgid "Failed to register on server \"%s\""
 msgstr "无法在服务器 \"%s\" 上注册"
@@ -395,12 +402,17 @@ msgstr "禁用"
 msgid "Forward to..."
 msgstr "转发到……"
 
+#: ../src/server/server_url.c:76
+#, c-format
+msgid "Host is empty in URL \"%s\""
+msgstr "URL \"%s\" 中的 host 是空的"
+
 #: ../src/filter/regex.c:76
 #, c-format
 msgid "Invail pattern: %s"
 msgstr "无效的正则表达式：%s"
 
-#: ../src/server/server_prefs.c:119 ../src/sirc_real/sirc_prefs.c:34
+#: ../src/server/server_prefs.c:143 ../src/sirc_real/sirc_prefs.c:34
 msgid "Invalid ServerPrefs instance"
 msgstr "无效的服务器配置"
 
@@ -454,7 +466,7 @@ msgstr "缺少参数 <服务器名称>"
 msgid "Missing argument, expect %d, actually %d"
 msgstr "缺少参数，期望 %d 个，实际上只有 %d 个"
 
-#: ../src/server/server_prefs.c:115
+#: ../src/server/server_prefs.c:140
 #, c-format
 msgid "Missing field in ServerPrefs: %s"
 msgstr "服务器配置中缺少了以下选项：%s"
@@ -473,7 +485,7 @@ msgstr "可选参数 %s 缺少参数值"
 msgid "Nickname:"
 msgstr "昵称："
 
-#: ../src/server/server_cmd.c:358 ../src/server/server_cmd.c:462
+#: ../src/server/server_cmd.c:358 ../src/server/server_cmd.c:464
 #, c-format
 msgid "No such server: %s"
 msgstr "没有这个服务器：%s"
@@ -506,8 +518,8 @@ msgstr "可选的"
 msgid "Password:"
 msgstr "密码："
 
-#: ../src/server/server.c:98 ../src/server/server.c:103
-#: ../src/server/server.c:108 ../src/server/server.c:113
+#: ../src/server/server.c:99 ../src/server/server.c:104
+#: ../src/server/server.c:109 ../src/server/server.c:114
 msgid "Prefs read error"
 msgstr "配置读取错误"
 
@@ -519,7 +531,7 @@ msgstr "退出"
 msgid "Rc file not found"
 msgstr "rc 文件未找到"
 
-#: ../src/server/server_ui_event.c:87
+#: ../src/server/server_ui_event.c:98
 msgid "Read server prefs failed"
 msgstr "服务器配置读取错误"
 
@@ -538,7 +550,7 @@ msgid "Server \"%s\" is motified"
 msgstr "服务器 \"%s\" 已修改"
 
 #: ../src/prefs/prefs.c:490 ../src/server/server_cmd.c:353
-#: ../src/server/server_ui_event.c:79
+#: ../src/server/server_ui_event.c:90
 #, c-format
 msgid "Server already exist: %s"
 msgstr "服务器已存在：%s"
@@ -572,7 +584,7 @@ msgstr "系统配置文件 %s 未找到"
 #: ../src/sirc_real/sirc_prefs.c:48
 #, c-format
 msgid "TLS: %s, TLS verify certificate: %s"
-msgstr "TLS: %s, 验证 TLS 证书: %s"
+msgstr "TLS：%s, 验证 TLS 证书：%s"
 
 #: ../src/command.c:428
 #, c-format
@@ -612,10 +624,15 @@ msgstr "没有这个命令：%s"
 msgid "Unknown option %s"
 msgstr "没有这个选项：%s"
 
-#: ../src/command.c:422 ../src/server/server_cmd.c:470
+#: ../src/command.c:422 ../src/server/server_cmd.c:472
 #, c-format
 msgid "Unknown sub command: %s"
 msgstr "没有这个子命令：%s"
+
+#: ../src/server/server_url.c:64
+#, c-format
+msgid "Unsupported protocol: %s"
+msgstr "不支持的协议：%s"
 
 #: ../data/ui/chat.glade:293
 msgid "Upload image"
@@ -658,7 +675,7 @@ msgstr "你被 %s 踢出了频道：%s"
 msgid "You has joined"
 msgstr "你加入了频道"
 
-#: ../src/server/server_ui_event.c:73
+#: ../src/server/server_ui_event.c:84
 msgid "You must specified a server name"
 msgstr "你需要指定服务器名称"
 
