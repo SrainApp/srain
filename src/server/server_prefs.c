@@ -85,6 +85,7 @@ ServerPrefs* server_prefs_new(const char *name){
 
     prefs->name = g_strdup(name);
     prefs->irc = irc_prefs;
+    prefs->srv = NULL;
 
     if (server_prefs_list_add(prefs) != SRN_OK){
         server_prefs_free(prefs);
@@ -111,13 +112,36 @@ ServerPrefs* server_prefs_get_prefs(const char *name){
     return NULL;
 }
 
+bool server_prefs_is_valid(ServerPrefs *prefs){
+    /* Whether prefs exists in server_prefs_list? */
+    return prefs && g_slist_find(server_prefs_list, prefs);
+}
+
+bool server_prefs_is_server_valid(Server *srv){
+    GSList *lst;
+    ServerPrefs *prefs;
+
+    if (!srv) return FALSE;
+
+    lst = server_prefs_list;
+    while (lst){
+        prefs = lst->data;
+        if (prefs->srv == srv){
+            return TRUE;
+        }
+
+        lst = g_slist_next(lst);
+    }
+
+    return FALSE;
+}
+
 SrnRet server_prefs_check(ServerPrefs *prefs){
     const char *fmt = _("Missing field in ServerPrefs: %s");
 
-    /* Whether prefs exists in server_prefs_list? */
-    if (!prefs || !g_slist_find(server_prefs_list, prefs)){
+    if (!server_prefs_is_valid(prefs)){
         return RET_ERR(_("Invalid ServerPrefs instance"));
-     }
+    }
 
     if (str_is_empty(prefs->name)) {
         return RET_ERR(fmt, "name");
@@ -241,6 +265,11 @@ void server_prefs_free(ServerPrefs *prefs){
         sirc_prefs_free(prefs->irc);
         prefs->irc = NULL;
     }
+
+    if (prefs->srv){
+        server_free(prefs->srv);
+        prefs->srv = NULL;
+    }
 }
 
 char* server_prefs_dump(ServerPrefs *prefs){
@@ -261,12 +290,12 @@ char* server_prefs_dump(ServerPrefs *prefs){
 
     str = g_string_new("");
     g_string_append_printf(str,
-            _("*** Server name: %s\n"
+            _("*** Server name: %s, Instance: %p\n"
                 "\tHost: %s, Port: %d, Password: %s, Encoding: %s\n"
                 "\tNickname: %s, Username: %s, Realname: %s\n"
                 "\tPart: %s, Kick: %s, Away: %s, Quit: %s\n"
                 "\tIRC configuration: %s"),
-            prefs->name,
+            prefs->name, prefs->srv,
             prefs->host, prefs->port, passwd, prefs->encoding,
             prefs->nickname, prefs->username, prefs->realname,
             prefs->part_message, prefs->kick_message, prefs->away_message, prefs->quit_message,

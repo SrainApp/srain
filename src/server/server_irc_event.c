@@ -81,7 +81,7 @@ void server_irc_event_connect(SircSession *sirc, const char *event){
     Chat *chat;
 
     srv = sirc_get_ctx(sirc);
-    g_return_if_fail(server_list_is_server(srv));
+    g_return_if_fail(server_is_valid(srv));
     g_return_if_fail(srv->stat == SERVER_CONNECTING);
 
     srv->stat = SERVER_CONNECTED;

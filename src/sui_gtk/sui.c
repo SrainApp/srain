@@ -63,7 +63,7 @@ void sui_main_loop(int argc, char *argv[], SuiAppEvents *events, SuiAppPrefs *pr
     app_events = events;
     app_prefs = prefs;
 
-    ret = sui_app_prefs_is_valid(app_prefs);
+    ret = sui_app_prefs_check(app_prefs);
     if (!RET_IS_OK(ret)){
         sui_message_box(_("Error"), RET_MSG(ret));
     }
@@ -95,7 +95,7 @@ SuiSession *sui_new_session(SuiEvents *events, SuiPrefs *prefs, SuiSessionFlag f
     g_return_val_if_fail(events, NULL);
     g_return_val_if_fail(prefs, NULL);
 
-    ret = sui_prefs_is_valid(prefs);
+    ret = sui_prefs_check(prefs);
     if (!RET_IS_OK(ret)){
         sui_message_box(_("Error"), RET_MSG(ret));
         return NULL;

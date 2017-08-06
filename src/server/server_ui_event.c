@@ -154,7 +154,7 @@ void server_ui_event_send(SuiSession *sui, SuiEvent event, const char *params[],
         SrnRet ret;
         ret = server_cmd(chat, msg);
         // FIXME: chat may be invalid now
-        if (!server_list_is_server(srv)){
+        if (!server_is_valid(srv)){
             return;
         }
         if (ret != SRN_OK){

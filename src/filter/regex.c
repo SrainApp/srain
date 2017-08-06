@@ -132,7 +132,7 @@ bool regex(const Message *msg, FilterFlag flag, void *user_data){
     NamedPattern *np;
 
     g_return_val_if_fail(msg->chat, TRUE);
-    g_return_val_if_fail(server_list_is_server(msg->chat->srv), TRUE);
+    g_return_val_if_fail(server_is_valid(msg->chat->srv), TRUE);
     g_return_val_if_fail(msg->chat->srv->chat, TRUE);
 
     lst = msg->chat->ignore_regex_list;

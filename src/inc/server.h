@@ -174,7 +174,9 @@ void server_init_and_run(int argc, char *argv[]);
 void server_finalize();
 
 Server* server_new_from_prefs(ServerPrefs *prefs);
+Server *server_get_by_name(const char *name);
 void server_free(Server *srv);
+bool server_is_valid(Server *srv);
 int server_connect(Server *srv);
 void server_disconnect(Server *srv);
 bool server_is_registered(Server *srv);
@@ -213,15 +215,11 @@ void message_free(Message *msg);
 
 ServerPrefs* server_prefs_new(const char *name);
 ServerPrefs* server_prefs_get_prefs(const char *name);
+bool server_prefs_is_valid(ServerPrefs *prefs);
+bool server_prefs_is_server_valid(Server *srv);
 SrnRet server_prefs_check(ServerPrefs *prefs);
 char* server_prefs_dump(ServerPrefs *prefs);
 void server_prefs_free(ServerPrefs *prefs);
 char* server_prefs_list_dump();
-
-/* Server list */
-bool server_list_is_server(Server *srv);
-Server *server_list_get_server(const char *name);
-int server_list_add(Server *srv);
-int server_list_rm(Server *srv);
 
 #endif /* __SERVER_H */

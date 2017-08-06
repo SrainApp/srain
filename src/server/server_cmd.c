@@ -404,7 +404,7 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
     }
 
     if (g_ascii_strcasecmp(subcmd, "connect") == 0){
-        srv = server_list_get_server(name);
+        srv = server_get_by_name(name);
         if (!srv) { // Create one
             ret = server_prefs_check(prefs);
             if (!RET_IS_OK(ret)){
@@ -431,7 +431,7 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
     }
 
     if (g_ascii_strcasecmp(subcmd, "disconnect") == 0){
-        srv = server_list_get_server(name);
+        srv = server_get_by_name(name);
         if (!srv) {
             // FIXME: better errmsg?
             return RET_ERR(_("Can not disconnect from a unconnected server"));
@@ -447,7 +447,7 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
     }
 
     if (g_ascii_strcasecmp(subcmd, "rm") == 0){
-        srv = server_list_get_server(name);
+        srv = server_get_by_name(name);
         if (srv) {
             if (srv->stat == SERVER_CONNECTED) {
                 return RET_ERR(_("Can not remove a server which is still connected"));

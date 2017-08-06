@@ -123,7 +123,7 @@ Server* server_new_from_prefs(ServerPrefs *prefs){
     Server *srv;
 
     g_return_val_if_fail(RET_IS_OK(server_prefs_check(prefs)), NULL);
-    g_return_val_if_fail(!server_list_get_server(prefs->name), NULL);
+    g_return_val_if_fail(!server_get_by_name(prefs->name), NULL);
 
     srv = g_malloc0(sizeof(Server));
 
@@ -171,7 +171,7 @@ bad:
 }
 
 void server_free(Server *srv){
-    g_return_if_fail(server_list_is_server(srv));
+    g_return_if_fail(server_is_valid(srv));
 
     /* srv->prefs is hold by server_prefs_list, don't free it. */
 
@@ -210,8 +210,23 @@ void server_free(Server *srv){
     g_free(srv);
 }
 
+bool server_is_valid(Server *srv){
+    return server_prefs_is_server_valid(srv);
+}
+
+Server *server_get_by_name(const char *name){
+    ServerPrefs *prefs;
+
+    prefs =  server_prefs_get_prefs(name);
+    if (prefs) {
+        return prefs->srv;
+    }
+
+    return NULL;
+}
+
 int server_connect(Server *srv){
-    g_return_val_if_fail(server_list_is_server(srv), SRN_ERR);
+    g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
     g_return_val_if_fail(srv->stat == SERVER_DISCONNECTED, SRN_ERR);
 
     srv->stat = SERVER_CONNECTING;
@@ -222,7 +237,7 @@ int server_connect(Server *srv){
 }
 
 void server_disconnect(Server *srv){
-    g_return_if_fail(server_list_is_server(srv));
+    g_return_if_fail(server_is_valid(srv));
     g_return_if_fail(srv->stat == SERVER_CONNECTED);
 
     sirc_disconnect(srv->irc);
@@ -236,13 +251,13 @@ void server_disconnect(Server *srv){
  * @return TRUE if registered
  */
 bool server_is_registered(Server *srv){
-    g_return_val_if_fail(server_list_is_server(srv), FALSE);
+    g_return_val_if_fail(server_is_valid(srv), FALSE);
 
     return srv->stat == SERVER_CONNECTED && srv->registered == TRUE;
 }
 
 void server_wait_until_registered(Server *srv){
-    g_return_if_fail(server_list_is_server(srv));
+    g_return_if_fail(server_is_valid(srv));
 
     /* Waiting for connection established */
     while (srv->stat == SERVER_CONNECTING) sui_proc_pending_event();
@@ -255,7 +270,7 @@ int server_add_chat(Server *srv, const char *name){
     GSList *lst;
     Chat *chat;
 
-    g_return_val_if_fail(server_list_is_server(srv), SRN_ERR);
+    g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
 
     lst = srv->chat_list;
     while (lst) {
@@ -278,7 +293,7 @@ int server_rm_chat(Server *srv, const char *name){
     GSList *lst;
     Chat *chat;
 
-    g_return_val_if_fail(server_list_is_server(srv), SRN_ERR);
+    g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
 
     lst = srv->chat_list;
     while (lst) {
@@ -304,7 +319,7 @@ Chat* server_get_chat(Server *srv, const char *name) {
     GSList *lst;
     Chat *chat;
 
-    g_return_val_if_fail(server_list_is_server(srv), NULL);
+    g_return_val_if_fail(server_is_valid(srv), NULL);
 
     lst = srv->chat_list;
     while (lst) {
@@ -331,7 +346,7 @@ Chat* server_get_chat(Server *srv, const char *name) {
 Chat* server_get_chat_fallback(Server *srv, const char *name) {
     Chat *chat;
 
-    g_return_val_if_fail(server_list_is_server(srv), NULL);
+    g_return_val_if_fail(server_is_valid(srv), NULL);
 
     if (!name || !(chat = server_get_chat(srv, name))){
         chat = srv->chat;
