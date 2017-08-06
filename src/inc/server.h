@@ -213,7 +213,7 @@ void message_free(Message *msg);
 
 ServerPrefs* server_prefs_new(const char *name);
 ServerPrefs* server_prefs_get_prefs(const char *name);
-SrnRet server_prefs_is_valid(ServerPrefs *prefs);
+SrnRet server_prefs_check(ServerPrefs *prefs);
 char* server_prefs_dump(ServerPrefs *prefs);
 void server_prefs_free(ServerPrefs *prefs);
 char* server_prefs_list_dump();

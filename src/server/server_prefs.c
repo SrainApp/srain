@@ -111,7 +111,7 @@ ServerPrefs* server_prefs_get_prefs(const char *name){
     return NULL;
 }
 
-SrnRet server_prefs_is_valid(ServerPrefs *prefs){
+SrnRet server_prefs_check(ServerPrefs *prefs){
     const char *fmt = _("Missing field in ServerPrefs: %s");
 
     /* Whether prefs exists in server_prefs_list? */
@@ -156,7 +156,7 @@ SrnRet server_prefs_is_valid(ServerPrefs *prefs){
     }
 
     if (str_is_empty(prefs->away_message)) {
-        str_assign(&prefs->away_message, _("Away"));
+        str_assign(&prefs->away_message, "Away");
     }
 
     if (str_is_empty(prefs->quit_message)) {
@@ -175,7 +175,7 @@ SrnRet server_prefs_is_valid(ServerPrefs *prefs){
         }
     }
 
-    return sirc_prefs_is_valid(prefs->irc);
+    return sirc_prefs_check(prefs->irc);
 }
 
 void server_prefs_free(ServerPrefs *prefs){

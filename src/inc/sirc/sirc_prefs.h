@@ -36,7 +36,7 @@ struct _SircPrefs {
 };
 
 SircPrefs *sirc_prefs_new();
-SrnRet sirc_prefs_is_valid(SircPrefs *prefs);
+SrnRet sirc_prefs_check(SircPrefs *prefs);
 char* sirc_prefs_dump(SircPrefs *prefs);
 void sirc_prefs_free(SircPrefs *prefs);
 

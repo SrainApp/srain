@@ -30,7 +30,7 @@ SuiAppPrefs *sui_app_prefs_new(){
     return prefs;
 }
 
-SrnRet sui_app_prefs_is_valid(SuiAppPrefs *prefs){
+SrnRet sui_app_prefs_check(SuiAppPrefs *prefs){
     const char *fmt = _("Missing field in SuiAppPrefs: %s");
 
     if (!prefs){
@@ -61,7 +61,7 @@ SuiPrefs *sui_prefs_new(){
     return prefs;
 }
 
-SrnRet sui_prefs_is_valid(SuiPrefs *prefs){
+SrnRet sui_prefs_check(SuiPrefs *prefs){
     if (!prefs){
         return RET_ERR(_("Invalid SuiPrefs instance"));
     }

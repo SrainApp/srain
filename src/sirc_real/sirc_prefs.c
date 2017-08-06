@@ -29,7 +29,7 @@ SircPrefs *sirc_prefs_new(){
     return prefs;
 }
 
-SrnRet sirc_prefs_is_valid(SircPrefs *prefs){
+SrnRet sirc_prefs_check(SircPrefs *prefs){
     if (!prefs){
         return RET_ERR(_("Invalid ServerPrefs instance"));
     }

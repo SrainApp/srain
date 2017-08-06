@@ -406,7 +406,7 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
     if (g_ascii_strcasecmp(subcmd, "connect") == 0){
         srv = server_list_get_server(name);
         if (!srv) { // Create one
-            ret = server_prefs_is_valid(prefs);
+            ret = server_prefs_check(prefs);
             if (!RET_IS_OK(ret)){
                 return ret;
             }
@@ -521,7 +521,7 @@ static SrnRet on_command_connect(Command *cmd, void *user_data){
     prefs->irc->tls = command_get_opt(cmd, "-tls", NULL);
     prefs->irc->tls_not_verify = command_get_opt(cmd, "-tls-not-verify", NULL);
 
-    ret = server_prefs_is_valid(prefs);
+    ret = server_prefs_check(prefs);
     if (!RET_IS_OK(ret)) {
         return ret;
     }

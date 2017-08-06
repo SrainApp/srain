@@ -122,7 +122,7 @@ void server_finalize(){
 Server* server_new_from_prefs(ServerPrefs *prefs){
     Server *srv;
 
-    g_return_val_if_fail(RET_IS_OK(server_prefs_is_valid(prefs)), NULL);
+    g_return_val_if_fail(RET_IS_OK(server_prefs_check(prefs)), NULL);
     g_return_val_if_fail(!server_list_get_server(prefs->name), NULL);
 
     srv = g_malloc0(sizeof(Server));
@@ -161,8 +161,8 @@ Server* server_new_from_prefs(ServerPrefs *prefs){
     if (!srv->irc) goto bad;
     sirc_set_ctx(srv->irc, srv);
 
-    /* Add into server_list */
-    server_list_add(srv);
+    prefs->srv = srv;   // Link server to its prefs
+
     return srv;
 
 bad:
@@ -205,8 +205,8 @@ void server_free(Server *srv){
         srv->chat_list = NULL;
     }
 
-    /* Remove from server_list */
-    server_list_rm(srv);
+    srv->prefs->srv = NULL; // Unlink server from its prefs
+
     g_free(srv);
 }
 

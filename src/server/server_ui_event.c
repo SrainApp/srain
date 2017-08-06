@@ -111,7 +111,7 @@ void server_ui_event_connect(SuiEvent event, const char *params[], int count){
     prefs->irc->tls = tls;
     prefs->irc->tls_not_verify = notverify;
 
-    ret = server_prefs_is_valid(prefs);
+    ret = server_prefs_check(prefs);
     if (!RET_IS_OK(ret)){
         sui_message_box(_("Create server failed"), RET_MSG(ret));
         return;
