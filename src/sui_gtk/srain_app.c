@@ -66,13 +66,20 @@ static GOptionEntry option_entries[] = {
     {NULL}
 };
 
-static void activate(GApplication *app){
+static SrnRet create_window(GApplication *app){
     if (srain_win){
         gtk_window_present(GTK_WINDOW(srain_win));
-    } else {
-        srain_win = srain_window_new(SRAIN_APP(app));
-        gtk_window_present(GTK_WINDOW(srain_win));
+        return SRN_ERR;
+    };
 
+    srain_win = srain_window_new(SRAIN_APP(app));
+    gtk_window_present(GTK_WINDOW(srain_win));
+
+    return SRN_OK;
+}
+
+static void activate(GApplication *app){
+    if (RET_IS_OK(create_window(app))){
         sui_event_hdr(NULL, SUI_EVENT_ACTIVATE, NULL, 0);
     }
 }
@@ -97,7 +104,7 @@ static gint command_line(GApplication *app,
 
     if (g_variant_dict_lookup(options, G_OPTION_REMAINING, "^as", &urls)){
         /* If we have URLs to open, activate app firstly. */
-        activate(app);
+        create_window(app);
 
         len =  g_strv_length(urls);
         sui_event_hdr(NULL, SUI_EVENT_OPEN, (const char **)urls, len);
