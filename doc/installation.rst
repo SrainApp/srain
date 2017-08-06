@@ -26,7 +26,8 @@ glib2
 glib-networking     TLS support
 gtk+3                                           >= 3.16
 python3                                         >= 3.2
-libcurl
+libcurl             will be removed soon
+libsoup                                         == 2.4
 libnotify
 libconfig                                       >= 1.5
 python3-sphinx      document
@@ -48,13 +49,18 @@ Install Dependences
     The accurate package name is depending on platform,
     the following commands just for reference.
 
+.. warning::
+
+    The new dependency ``libsoup`` hasn't included in the following packages,
+    for it is hard to maintains a list of packages  for every platform. Sorry!
+
 Arch Linux
 ~~~~~~~~~~
 
 .. code-block:: console
 
     # pacman -S make gcc pkg-config imagemagick # building
-    # pacman -S gettext glib-networking gtk3 python curl libnotify libconfig
+    # pacman -S gettext glib-networking gtk3 python curl libsoup libnotify libconfig
 
 openSUSE
 ~~~~~~~~

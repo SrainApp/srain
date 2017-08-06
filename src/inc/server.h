@@ -222,4 +222,6 @@ char* server_prefs_dump(ServerPrefs *prefs);
 void server_prefs_free(ServerPrefs *prefs);
 char* server_prefs_list_dump();
 
+SrnRet server_url_open(const char *url);
+
 #endif /* __SERVER_H */

@@ -44,6 +44,17 @@
 static Server* ctx_get_server(SuiSession *sui);
 static Chat* ctx_get_chat(SuiSession *sui);
 
+void server_ui_event_open(SuiEvent event, const char *params[], int count){
+    SrnRet ret = SRN_OK;
+
+    for (int i = 0; i < count; i ++){
+        ret = server_url_open(params[i]);
+        if (!RET_IS_OK(ret)){
+            sui_message_box(_("Error occurred while opening URL"), RET_MSG(ret));
+        }
+    }
+}
+
 void server_ui_event_activate(SuiEvent event, const char *params[], int count){
     SrnRet ret;
 
@@ -118,7 +129,11 @@ void server_ui_event_connect(SuiEvent event, const char *params[], int count){
     }
 
     srv = server_new_from_prefs(prefs);
-    g_return_if_fail(srv);
+    if (!srv) {
+        ret = RET_ERR(_("Failed to instantate server \"%s\""), prefs->name);
+        sui_message_box(_("Create server failed"), RET_MSG(ret));
+        return;
+    }
 
     server_connect(srv);
 }

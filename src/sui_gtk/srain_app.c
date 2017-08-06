@@ -96,6 +96,9 @@ static gint command_line(GApplication *app,
     options = g_application_command_line_get_options_dict(cmdline);
 
     if (g_variant_dict_lookup(options, G_OPTION_REMAINING, "^as", &urls)){
+        /* If we have URLs to open, activate app firstly. */
+        activate(app);
+
         len =  g_strv_length(urls);
         sui_event_hdr(NULL, SUI_EVENT_OPEN, (const char **)urls, len);
         g_strfreev(urls);

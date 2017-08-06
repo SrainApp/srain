@@ -61,6 +61,7 @@ void server_init_and_run(int argc, char *argv[]){
     ui_events.ignore = server_ui_event_ignore;
     ui_events.cutover = server_ui_event_cutover;
 
+    ui_app_events.open = server_ui_event_open;
     ui_app_events.activate = server_ui_event_activate;
     ui_app_events.connect = server_ui_event_connect;
 

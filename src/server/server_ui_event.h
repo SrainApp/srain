@@ -21,6 +21,7 @@
 
 #include "sui/sui.h"
 
+void server_ui_event_open(SuiEvent event, const char *params[], int count);
 void server_ui_event_activate(SuiEvent event, const char *params[], int count);
 void server_ui_event_connect(SuiEvent event, const char *params[], int count);
 

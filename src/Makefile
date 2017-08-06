@@ -25,12 +25,14 @@ LIBNOTIFYFLAGS = $(shell pkg-config --cflags libnotify)
 LIBNOTIFYLIBS = $(shell pkg-config --libs libnotify)
 LIBCONFIGFLAGS = $(shell pkg-config --cflags libconfig)
 LIBCONFIGLIBS = $(shell pkg-config --libs libconfig)
+LIBSOUPFLAGS = $(shell pkg-config --cflags libsoup-2.4)
+LIBSOUPLIBS = $(shell pkg-config --libs libsoup-2.4)
 
 CFLAGS = -std=gnu99 -O2 -Wall -Iinc -Wno-deprecated-declarations \
 		 $(DEFS) $(GTK3FLAGS) $(PY3FLAGS) $(CURLFLAGS) $(LIBIRCCLINETFLAGS) \
-		 $(LIBNOTIFYFLAGS) $(LIBCONFIGFLAGS)
+		 $(LIBNOTIFYFLAGS) $(LIBCONFIGFLAGS) $(LIBSOUPFLAGS)
 LDFLAGS = $(GTK3LIBS) $(PY3LIBS) $(CURLLIBS) $(LIBIRCCLINETLIBS) \
-		  $(LIBNOTIFYLIBS) $(LIBCONFIGLIBS)
+		  $(LIBNOTIFYLIBS) $(LIBCONFIGLIBS) $(LIBSOUPLIBS)
 
 SRCS = $(wildcard *.c */*.c $(BUILD_DIR)/resources.c)
 OBJS = $(patsubst %.c, $(BUILD_DIR)/%.o, $(notdir $(SRCS)))

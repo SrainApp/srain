@@ -51,7 +51,10 @@ void sui_event_hdr(SuiSession *sui, SuiEvent event, const char *params[], int co
 
     switch (event) {
         /* App events */
-
+        case SUI_EVENT_OPEN:
+            g_return_if_fail(app_events->open);
+            app_events->open(event, params, count);
+            break;
         case SUI_EVENT_ACTIVATE:
             g_return_if_fail(app_events->activate);
             app_events->activate(event, params, count);
