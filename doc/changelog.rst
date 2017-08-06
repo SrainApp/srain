@@ -7,10 +7,26 @@ Change Log
     :depth: 1
     :backlinks: none
 
-.. warning
+2017-08-xx Version 0.06.1
+=========================
+
+.. warning::
 
     This version is still a draft, features and documentation are not yet
     complete. You can experience it by using the ``-git`` version.
+
+- Added:
+
+  - Added GPL copyright statements
+  - ``RPL_CHANNEL_URL`` (328) message support
+  - Command line options support, type ``srain -h`` for help message
+  - Support for Creating server and joining channel from IRC URL
+
+- Improved:
+
+  - Fixed the crash when QUIT
+  - Fixed: avoid sending empty password
+  - More empty parameters checks
 
 2017-07-29 Version 0.06
 =======================
