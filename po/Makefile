@@ -1,5 +1,7 @@
 # Makefile
 
+.PHONY: po mo
+
 INSTALL = install -v
 XGETTEXTFLAG = --sort-output --from-code=UTF-8 \
 			   --package-name=$(PACKAGE_NAME) \
@@ -15,7 +17,7 @@ default: mo
 
 srain.pot: $(SRCS) $(UIS)
 	xgettext $(XGETTEXTFLAG) -LGlade -ktranslatable -o $@ $(UIS)
-	xgettext $(XGETTEXTFLAG) -LC -k_ -o $@ $(SRCS) -j
+	xgettext $(XGETTEXTFLAG) -LC -k_ -kN_ -o $@ $(SRCS) -j
 
 po: srain.pot LANGS
 	for i in $(LANGS); do \

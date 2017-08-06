@@ -424,7 +424,7 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
         server_wait_until_registered(def_srv);
         if (!server_is_registered(srv)){
             def_srv = NULL;
-            return RET_ERR(_("Failed to register on server '%s'"), prefs->name);
+            return RET_ERR(_("Failed to register on server \"%s\""), prefs->name);
         }
 
         return SRN_OK;
