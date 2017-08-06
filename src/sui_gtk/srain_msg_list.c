@@ -239,7 +239,7 @@ void srain_msg_list_add_message(SrainMsgList *list, SuiMessage *smsg){
 void srain_msg_list_highlight_message(SuiMessage *smsg){
     GtkWidget *row;
 
-    row = gtk_widget_get_parent(smsg);
+    row = gtk_widget_get_parent(GTK_WIDGET(smsg));
     g_return_if_fail(GTK_IS_LIST_BOX_ROW(row));
 
     gtk_widget_set_name(GTK_WIDGET(row), "mentioned_msg");
