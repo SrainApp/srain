@@ -27,7 +27,7 @@ glib-networking     TLS support
 gtk+3                                           >= 3.16
 python3                                         >= 3.2
 libcurl             will be removed soon
-libsoup                                         == 2.4
+libsoup
 libnotify
 libconfig                                       >= 1.5
 python3-sphinx      document
@@ -75,8 +75,8 @@ Debian & Ubuntu
 
 .. code-block:: console
 
-    # apt-get install make gcc pkg-config imagemagick gettext libgtk-3-dev>=3.16 libpython3-dev python3-dev libcurl4-dev libnotify-dev libconfig-dev>=1.5 # building
-    # apt-get install glib-networking libgtk3.0-0>=3.16 python3 libcurl4 libnotify4 libconfig9>=1.5
+    # apt-get install make gcc pkg-config imagemagick gettext libgtk-3-dev>=3.16 libpython3-dev python3-dev libcurl4-dev libsoup2.4-dev libnotify-dev libconfig-dev>=1.5 # building
+    # apt-get install glib-networking libgtk3.0-0>=3.16 python3 libcurl4 libsoup2.4 libnotify4 libconfig9>=1.5
 
 macOS
 ~~~~~
@@ -84,7 +84,7 @@ macOS
 .. code-block:: console
 
     $ brew install coreutils gcc pkg-config imagemagick # building
-    $ brew install gettext glib-networking gtk+3 python3 curl libnotify libconfig
+    $ brew install gettext glib-networking gtk+3 python3 curl libsoup libnotify libconfig
 
 Compile & Install
 -------------------
