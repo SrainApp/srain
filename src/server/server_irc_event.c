@@ -663,7 +663,6 @@ void server_irc_event_numeric (SircSession *sirc, int event,
         const char *origin, const char **params, int count, const char *msg){
     Server *srv;
 
-    LOG_FR("%p", sirc);
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(server_is_valid(srv));
 

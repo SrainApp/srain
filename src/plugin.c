@@ -102,7 +102,7 @@ void plugin_init(){
             continue;
         }
 
-        LOG_FR("Plugin `%s` loaded", plugins[i].mod_name);
+        // LOG_FR("Plugin `%s` loaded", plugins[i].mod_name);
 
         plugins[i].func = py_func;
     }

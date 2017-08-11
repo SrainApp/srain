@@ -244,7 +244,6 @@ int create_user_file(){
     cache_dir = NULL;
 
     data_dir = g_build_filename(g_get_user_data_dir(), "srain", NULL);
-    LOG_FR("%s", data_dir);
     res = mkdir(data_dir, 0700);
     if (res == -1) {
         if (errno != EEXIST){

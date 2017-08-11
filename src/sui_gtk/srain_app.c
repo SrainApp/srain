@@ -103,7 +103,7 @@ static gint command_line(GApplication *app,
     options = g_application_command_line_get_options_dict(cmdline);
 
     if (g_variant_dict_lookup(options, G_OPTION_REMAINING, "^as", &urls)){
-        /* If we have URLs to open, activate app firstly. */
+        /* If we have URLs to open, create window firstly. */
         create_window(app);
 
         len =  g_strv_length(urls);

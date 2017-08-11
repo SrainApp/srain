@@ -33,5 +33,5 @@ void i18n_init(){
     // Set the current default message catalog to DOMAINNAME.
     textdomain (GETTEXT_PACKAGE);
 
-    LOG_FR(_("Language: English"));
+    // LOG_FR(_("Language: English"));
 }
