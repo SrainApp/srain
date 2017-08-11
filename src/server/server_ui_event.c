@@ -144,7 +144,7 @@ void server_ui_event_disconnect(SuiSession *sui, SuiEvent event, const char *par
     g_return_if_fail(count == 0);
 
     srv = ctx_get_server(sui);
-    g_return_if_fail(srv);
+    g_return_if_fail(server_is_valid(srv));
 
     if (!RET_IS_OK(sirc_cmd_quit(srv->irc, "QUIT"))){
         server_free(srv); // FIXME
@@ -161,7 +161,7 @@ void server_ui_event_send(SuiSession *sui, SuiEvent event, const char *params[],
 
     srv = ctx_get_server(sui);
     chat = ctx_get_chat(sui);
-    g_return_if_fail(srv);
+    g_return_if_fail(server_is_valid(srv));
     g_return_if_fail(chat);
 
     // Command or message?
@@ -194,7 +194,7 @@ void server_ui_event_join(SuiSession *sui, SuiEvent event, const char *params[],
     passwd = count == 2 ? params[1] : NULL;
 
     srv = ctx_get_server(sui);
-    g_return_if_fail(srv);
+    g_return_if_fail(server_is_valid(srv));
 
     sirc_cmd_join(srv->irc, name, passwd);
 }
@@ -206,7 +206,7 @@ void server_ui_event_part(SuiSession *sui, SuiEvent event, const char *params[],
     g_return_if_fail(count == 0);
     srv = ctx_get_server(sui);
     chat = ctx_get_chat(sui);
-    g_return_if_fail(srv);
+    g_return_if_fail(server_is_valid(srv));
     g_return_if_fail(chat);
 
     if (chat->joined) {
@@ -224,7 +224,7 @@ void server_ui_event_query(SuiSession *sui, SuiEvent event, const char *params[]
     name = params[0];
 
     srv = ctx_get_server(sui);
-    g_return_if_fail(srv);
+    g_return_if_fail(server_is_valid(srv));
 
     server_add_chat(srv, name);
 }
@@ -235,7 +235,7 @@ void server_ui_event_unquery(SuiSession *sui, SuiEvent event, const char *params
 
     srv = ctx_get_server(sui);
     chat = ctx_get_chat(sui);
-    g_return_if_fail(srv);
+    g_return_if_fail(server_is_valid(srv));
     g_return_if_fail(chat);
 
     server_rm_chat(srv, chat->name);
@@ -251,7 +251,7 @@ void server_ui_event_kick(SuiSession *sui, SuiEvent event, const char *params[],
 
     srv = ctx_get_server(sui);
     chat = ctx_get_chat(sui);
-    g_return_if_fail(srv);
+    g_return_if_fail(server_is_valid(srv));
     g_return_if_fail(chat);
 
     sirc_cmd_kick(srv->irc, nick, chat->name, "Kick.");
@@ -267,7 +267,7 @@ void server_ui_event_invite(SuiSession *sui, SuiEvent event, const char *params[
 
     srv = ctx_get_server(sui);
     chat = ctx_get_chat(sui);
-    g_return_if_fail(srv);
+    g_return_if_fail(server_is_valid(srv));
     g_return_if_fail(chat);
 
     sirc_cmd_invite(srv->irc, nick, chat->name);
@@ -281,7 +281,7 @@ void server_ui_event_whois(SuiSession *sui, SuiEvent event, const char *params[]
     nick = params[0];
 
     srv = ctx_get_server(sui);
-    g_return_if_fail(srv);
+    g_return_if_fail(server_is_valid(srv));
 
     sirc_cmd_whois(srv->irc, nick);
 }
@@ -306,7 +306,7 @@ void server_ui_event_cutover(SuiSession *sui, SuiEvent event, const char *params
     g_return_if_fail(count == 0);
 
     srv = ctx_get_server(sui);
-    g_return_if_fail(srv);
+    g_return_if_fail(server_is_valid(srv));
     chat = ctx_get_chat(sui);
     g_return_if_fail(chat);
 
