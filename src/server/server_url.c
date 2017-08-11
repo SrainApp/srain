@@ -151,7 +151,7 @@ SrnRet server_url_open(const char *url){
         join_comma_separated_chans(srv, fragment);
     }
 
-    ret = SRN_OK;
+    return SRN_OK;
 
 fin:
     if (suri){
@@ -170,7 +170,7 @@ fin:
 static void join_comma_separated_chans(Server *srv, const char *comma_chans){
     char *chans;
     const char *chan;
-    
+
     /* TODO: how to distinguish between channel and password if channel doen't
      * start with a '#'?
      */
