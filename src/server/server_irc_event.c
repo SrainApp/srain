@@ -850,7 +850,7 @@ void server_irc_event_numeric (SircSession *sirc, int event,
                 char timestr[64];
                 time_to_str(since, timestr, sizeof(timestr), _("%Y-%m-%d %T"));
                 chat_add_misc_message_fmt(srv->cur_chat, origin, _("%s is idle for %s seconds since %s"),
-                        who, sec, since);
+                        who, sec, timestr);
                 break;
             }
         case SIRC_RFC_RPL_WHOWAS_TIME:
