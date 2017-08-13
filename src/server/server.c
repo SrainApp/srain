@@ -128,9 +128,10 @@ Server* server_new_from_prefs(ServerPrefs *prefs){
 
     srv = g_malloc0(sizeof(Server));
 
-    srv->registered = FALSE;
-    srv->user_quit = FALSE;
     srv->stat = SERVER_DISCONNECTED;
+    srv->disconn_reason = SERVER_DISCONN_REASON_CLOSE;
+    srv->registered = FALSE;
+
     srv->prefs = prefs;
 
     srv->chat = chat_new(srv, META_SERVER);
@@ -148,14 +149,12 @@ Server* server_new_from_prefs(ServerPrefs *prefs){
     srv->chat->user = user_ref(srv->user);
 
     /* NOTE: Ping related issuses are not handled in server.c */
+    srv->reconn_interval = SERVER_RECONN_INTERVAL;
     /* srv->last_pong = 0; */ // by g_malloc0()
-    /* srv->ping_timer = 0; */ // by g_malloc0()
     /* srv->delay = 0; */ // by g_malloc0()
+    /* srv->ping_timer = 0; */ // by g_malloc0()
 
     srv->cur_chat = srv->chat;
-    /* srv->chat_list = NULL; */ // by g_malloc0()
-    /* srv->ignore_list = NULL; */ // by g_malloc0()
-    /* srv->brigebot_list = NULL; */ // by g_malloc0()
 
     /* sirc */
     srv->irc = sirc_new_session(&irc_events, prefs->irc);
@@ -240,6 +239,12 @@ int server_connect(Server *srv){
 void server_disconnect(Server *srv){
     g_return_if_fail(server_is_valid(srv));
     g_return_if_fail(srv->stat == SERVER_CONNECTED);
+
+    srv->stat = SERVER_DISCONNECTING;
+    /* Overwrite default disconnect reason */
+    if (srv->disconn_reason == SERVER_DISCONN_REASON_CLOSE){
+        srv->disconn_reason = SERVER_DISCONN_REASON_USER_CLOSE;
+    }
 
     sirc_disconnect(srv->irc);
 }

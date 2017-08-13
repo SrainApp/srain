@@ -27,8 +27,10 @@
 #include "ret.h"
 
 /* In millseconds */
-#define SERVER_PING_INTERVAL    (60 * 1000)
+#define SERVER_PING_INTERVAL    (30 * 1000)
 #define SERVER_PING_TIMEOUT     (SERVER_PING_INTERVAL * 2)
+#define SERVER_RECONN_INTERVAL  (5 * 1000)
+#define SERVER_RECONN_STEP      SERVER_RECONN_INTERVAL
 
 /* In seconds */
 #define MESSAGE_MERGE_INTERVAL  60
@@ -48,6 +50,7 @@ typedef struct _Message Message;
 typedef struct _User User;
 typedef struct _Chat Chat;
 typedef enum   _ServerStatus ServerStatus;
+typedef enum   _ServerDisconnReason ServerDisconnReason;
 typedef struct _Server Server;
 typedef struct _ServerPrefs ServerPrefs;
 
@@ -123,21 +126,32 @@ struct _Chat {
 enum _ServerStatus {
     SERVER_CONNECTING,
     SERVER_CONNECTED,
+    SERVER_DISCONNECTING,
     SERVER_DISCONNECTED,
 };
 
+enum _ServerDisconnReason {
+    SERVER_DISCONN_REASON_CLOSE,        // Connection closed by remote server
+    SERVER_DISCONN_REASON_USER_CLOSE,   // Connection closed by user
+    SERVER_DISCONN_REASON_QUIT,         // User sent a QUIT message
+    SERVER_DISCONN_REASON_TIMEOUT,      // Connection closed because of ping timeout
+};
+
 struct _Server {
+    /* Status */
     ServerStatus stat;
-    bool registered;    // Whether the user has registered(Own a nickname)?
-    bool user_quit;     // Whether the user has received a QUIT message originated by himself?
-    ServerPrefs *prefs;
-    User *user;         // Used to store your nick, username, realname
-    Chat *chat;         // Hold all messages that do not belong to any other Chat
+    ServerDisconnReason disconn_reason; // The reason of disconnect
+    bool registered;                    // Whether the user has registered(Own a nickname)?
 
     /* Keep alive */
-    unsigned long last_pong;    // Last pong time, in ms
-    unsigned long delay;        // Delay in ms
+    unsigned long last_pong;        // Last pong time, in ms
+    unsigned long delay;            // Delay in ms
+    unsigned long reconn_interval;  // Interval of next reconnect, in ms
     int ping_timer;
+
+    ServerPrefs *prefs; // All required static informations
+    User *user;         // Used to store your nick, username, realname
+    Chat *chat;         // Hold all messages that do not belong to any other Chat
 
     Chat *cur_chat;
     GSList *chat_list;

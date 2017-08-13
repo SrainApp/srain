@@ -171,7 +171,7 @@ static void on_recv_ready(GObject *obj, GAsyncResult *res, gpointer user_data){
 
     err = NULL;
     in = G_INPUT_STREAM(obj);
-    size = g_input_stream_read_finish(in, res, &err);
+    size = g_input_stream_read_finish(in, res, &err);;
     if (err != NULL){
         on_disconnect(sirc, err->message);
         return;
@@ -349,17 +349,10 @@ static void on_disconnect_ready(GObject *obj, GAsyncResult *result, gpointer use
 }
 
 static void on_disconnect(SircSession *sirc, const char *reason){
-    if (sirc->fin){
-        WARN_FR("Called while sirc->fin = TRUE");
-        return;
-    } else {
-        sirc->fin = TRUE;
-    }
     sirc->events->disconnect(sirc, "DISCONNECT", "", NULL, 0, reason);
 }
 
 static void on_connect_finish(SircSession *sirc){
-    sirc->fin = FALSE;
     sirc->events->connect(sirc, "CONNECT");
 
     sirc_recv(sirc);
