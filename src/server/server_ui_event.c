@@ -20,7 +20,7 @@
  * @file server_ui_event.c
  * @brief Server UI event callbacks
  * @author Shengyu Zhang <srain@srain.im>
- * @version 0.06
+ * @version 0.06.1
  * @date 2016-07-19
  */
 

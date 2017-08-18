@@ -20,7 +20,7 @@
  * @file download.c
  * @brief Download file from a given url and save it to cache dir
  * @author Shengyu Zhang <srain@srain.im>
- * @version 0.06
+ * @version 0.06.1
  * @date 2016-03-18
  *
  * TODO: Use libsoup instead

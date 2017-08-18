@@ -20,7 +20,7 @@
  * @file file_helper.c
  * @brief Get application data files' path
  * @author Shengyu Zhang <srain@srain.im>
- * @version 0.06
+ * @version 0.06.1
  * @date 2016-06-12
  */
 

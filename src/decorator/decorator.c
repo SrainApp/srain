@@ -21,7 +21,7 @@
  * @brief Decorator is a mechanism for processing XML fromatted message in
  *        flow style
  * @author Shengyu Zhang <srain@srain.im>
- * @version 0.06
+ * @version 0.06.1
  * @date 2017-05-06
  */
 

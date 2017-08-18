@@ -20,7 +20,7 @@
  * @file tray_icon.c
  * @brief System tray's callback functions
  * @author Shengyu Zhang <srain@srain.im>
- * @version 0.06
+ * @version 0.06.1
  * @date 2016-03-01
  *
  * system tray is defined in data/ui/window.glade,

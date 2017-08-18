@@ -20,7 +20,7 @@
  * @file sirc_event_hdr.c
  * @brief IRC event handler
  * @author Shengyu Zhang <srain@srain.im>
- * @version 0.06
+ * @version 0.06.1
  * @date 2017-01-28
  *
  */

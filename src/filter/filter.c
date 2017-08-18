@@ -21,7 +21,7 @@
  * @brief Filter is a mechanism for filtering XML fromatted message in
  *        flow style
  * @author Shengyu Zhang <srain@srain.im>
- * @version 0.06
+ * @version 0.06.1
  * @date 2017-03-16
  */
 

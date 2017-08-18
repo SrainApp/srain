@@ -12,7 +12,7 @@ PACKAGE_NAME = Srain
 PACKAGE_BUILD = $(shell [ -d .git ] && \
 				git rev-parse --git-dir > /dev/null 2>&1 && \
 				echo -n -git@0.`git rev-list --count HEAD`.`git describe --always`)
-PACKAGE_VERSION = 0.06
+PACKAGE_VERSION = 0.06.1
 PACKAGE_AUTHOR = Shengyu Zhang
 PACKAGE_EMAIL = srain@srain.im
 PACKAGE_DESC = Modern, beautiful IRC client written in GTK+ 3.

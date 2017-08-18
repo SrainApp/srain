@@ -20,7 +20,7 @@
  * @file srain.c
  * @brief Main function here
  * @author Shengyu Zhang <srain@srain.im>
- * @version 0.06
+ * @version 0.06.1
  * @date 2016-03-01
  */
 

@@ -20,7 +20,7 @@
  * @file server_prefs.c
  * @brief Server Preference {con,de}structor
  * @author Shengyu Zhang <srain@srain.im>
- * @version 0.06
+ * @version 0.06.1
  * @date 2017-06-23
  *
  * ServerPrefs ia a structure which store all informations required by a Server.

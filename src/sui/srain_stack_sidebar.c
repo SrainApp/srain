@@ -24,7 +24,7 @@
  * @file srain_stack_sidebar.c
  * @brief A simplified, customized stacksidebar implementation
  * @author Shengyu Zhang <srain@srain.im>
- * @version 0.06
+ * @version 0.06.1
  * @date 2016-03-06
  *
  * Originated from <git.gnome.org/browse/gtk+/tree/gtk/gtkstacksidebar.c>.

@@ -20,7 +20,7 @@
  * @file server_irc_event.c
  * @brief Server IRC event callbacks
  * @author Shengyu Zhang <srain@srain.im>
- * @version 0.06
+ * @version 0.06.1
  * @date 2016-07-19
  */
 
