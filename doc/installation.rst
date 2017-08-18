@@ -51,8 +51,9 @@ Install Dependences
 
 .. warning::
 
-    The new dependency ``libsoup`` hasn't included in the following packages,
-    for it is hard to maintains a list of packages  for every platform. Sorry!
+    The new dependency ``libsoup`` hasn't included in some of the following
+    packages, for it is hard to maintain a list of packages for every platform.
+    Sorry!
 
 Arch Linux
 ~~~~~~~~~~

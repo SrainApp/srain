@@ -7,13 +7,13 @@ Change Log
     :depth: 1
     :backlinks: none
 
-2017-08-xx Version 0.06.1
-=========================
-
-.. warning::
+.. warning ::
 
     This version is still a draft, features and documentation are not yet
     complete. You can experience it by using the ``-git`` version.
+
+2017-08-18 Version 0.06.1
+=========================
 
 - Added:
 
@@ -21,12 +21,17 @@ Change Log
   - ``RPL_CHANNEL_URL`` (328) message support
   - Command line options support, type ``srain -h`` for help message
   - Support for Creating server and joining channel from IRC URL
+  - New dependency libsoup
+  - Add reconnect timer: if connection fails, Srain will wait for 5 seconds
+    then try to connect again. If it still fails, waiting time will increase by
+    5 second
 
 - Improved:
 
   - Fixed the crash when QUIT
   - Fixed: avoid sending empty password
   - More empty parameters checks
+  - Imporve server connection status control
 
 2017-07-29 Version 0.06
 =======================
