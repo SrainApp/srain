@@ -256,6 +256,9 @@ static void srain_chat_init(SrainChat *self){
 
     g_signal_connect(self->upload_image_button, "clicked",
             G_CALLBACK(upload_image_button_on_click), self->input_entry);
+
+    g_signal_connect(self->topic_label, "activate-link",
+            G_CALLBACK(activate_link), self);
 }
 
 static void srain_chat_finalize(GObject *object){

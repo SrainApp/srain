@@ -29,6 +29,7 @@
 #include <assert.h>
 
 #include "srain_window.h"
+#include "sui_event_hdr.h"
 
 #include "theme.h"
 #include "i18n.h"
@@ -183,4 +184,21 @@ void scale_size_to(int src_width, int src_height,
         *dst_width = src_width;
         *dst_height = src_height;
     }
+}
+
+/**
+ * @brief activate_link General "activate-link" signal callback
+ *
+ * @param label
+ * @param uri
+ * @param user_data
+ *
+ * @return
+ */
+gboolean activate_link(GtkLabel *label, const char *uri, gpointer user_data){
+    const char *params[]  = { uri };
+
+    sui_event_hdr(NULL, SUI_EVENT_OPEN, params, 1);
+
+    return TRUE;
 }

@@ -232,6 +232,9 @@ SrainMsgList* srain_msg_list_new(void){
 }
 
 void srain_msg_list_add_message(SrainMsgList *list, SuiMessage *smsg){
+    g_signal_connect(smsg->msg_label, "activate-link",
+            G_CALLBACK(activate_link), NULL);
+
     gtk_list_box_add_unfocusable_row(list->list_box, GTK_WIDGET(smsg));
     smart_scroll(list, 0);
 }
