@@ -9,7 +9,7 @@ if [ ! -e LICENSE ]; then
 fi
 
 # Version in Makefile.in
-sed -i "s/^PACKAGE_NEWVER = ${OLDVER}/PACKAGE_NEWVER = ${NEWVER}/" "Makefile.in"
+sed -i "s/^PACKAGE_VERSION = ${OLDVER}/PACKAGE_VERSION = ${NEWVER}/" "Makefile.in"
 
 # Version in source code preface comment
 for c in $(find ./src -name '*.c'); do
