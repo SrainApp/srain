@@ -7,10 +7,15 @@ Change Log
     :depth: 1
     :backlinks: none
 
-.. warning ::
+2017-09-xx Version 0.06.2[Draft]
+================================
 
-    This version is still a draft, features and documentation are not yet
-    complete. You can experience it by using the ``-git`` version.
+- Improved:
+
+  - Better error reporting while operating the UI
+  - IRC URL can be opened directly within the application
+  - Text in input entry, connection panel and join panel will not be cleared
+    while operation is not successful
 
 2017-08-18 Version 0.06.1
 =========================
