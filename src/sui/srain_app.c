@@ -26,6 +26,7 @@
 
 #include <gtk/gtk.h>
 
+#include "sui/sui.h"
 #include "theme.h"
 #include "sui_common.h"
 #include "sui_event_hdr.h"
@@ -86,7 +87,10 @@ static void activate(GApplication *app){
         return;
     }
 
-    sui_event_hdr(NULL, SUI_EVENT_ACTIVATE, NULL);
+    ret = sui_event_hdr(NULL, SUI_EVENT_ACTIVATE, NULL);
+    if (!RET_IS_OK(ret)){
+        sui_message_box(_("Error"), RET_MSG(ret));
+    }
 }
 
 static gint handle_local_options(GApplication *app, GVariantDict *options,

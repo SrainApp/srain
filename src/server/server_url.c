@@ -157,9 +157,6 @@ fin:
     if (suri){
         soup_uri_free(suri);
     }
-    if (new_srv && srv){
-        server_free(srv);
-    }
     if (new_prefs && prefs){
         server_prefs_free(prefs);
     }

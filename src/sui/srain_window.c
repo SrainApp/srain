@@ -28,6 +28,7 @@
 #include <string.h>
 #include <assert.h>
 
+#include "sui/sui.h"
 #include "sui_common.h"
 #include "sui_event_hdr.h"
 #include "theme.h"
@@ -167,6 +168,7 @@ static void join_button_on_click(gpointer user_data){
     const char *chan;
     const char *pwd;
     GVariantDict *params;
+    SrnRet ret;
     JoinEntries *join_entries;
     SrainChat *chat;
 
@@ -182,12 +184,16 @@ static void join_button_on_click(gpointer user_data){
     g_variant_dict_insert(params, "channel", SUI_EVENT_PARAM_STRING, chan);
     g_variant_dict_insert(params, "password", SUI_EVENT_PARAM_STRING, pwd);
 
-    sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_JOIN, params);
+    ret = sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_JOIN, params);
 
     g_variant_dict_unref(params);
 
-    gtk_entry_set_text(join_entries->join_chat_entry, "");
-    gtk_entry_set_text(join_entries->join_pwd_entry, "");
+    if (RET_IS_OK(ret)){
+        gtk_entry_set_text(join_entries->join_chat_entry, "");
+        gtk_entry_set_text(join_entries->join_pwd_entry, "");
+    } else {
+        sui_message_box(_("Error"), RET_MSG(ret));
+    }
 }
 
 static void conn_button_on_click(gpointer user_data){
@@ -200,6 +206,7 @@ static void conn_button_on_click(gpointer user_data){
     gboolean tls_not_verify;
     GVariantDict *params;
     ConnEntries *conn_entries;
+    SrnRet ret = SRN_ERR;
 
     conn_entries = user_data;
 
@@ -221,7 +228,8 @@ static void conn_button_on_click(gpointer user_data){
     g_variant_dict_insert(params, "tls", SUI_EVENT_PARAM_BOOL, tls);
     g_variant_dict_insert(params, "tls-not-verify", SUI_EVENT_PARAM_BOOL, tls_not_verify);
 
-    if (RET_IS_OK(sui_event_hdr(NULL, SUI_EVENT_CONNECT, params))){
+    ret = sui_event_hdr(NULL, SUI_EVENT_CONNECT, params);
+    if (RET_IS_OK(ret)){
         gtk_entry_set_text(conn_entries->conn_addr_entry, "");
         gtk_entry_set_text(conn_entries->conn_port_entry, "");
         gtk_entry_set_text(conn_entries->conn_pwd_entry, "");
@@ -229,6 +237,8 @@ static void conn_button_on_click(gpointer user_data){
         gtk_entry_set_text(conn_entries->conn_real_entry, "");
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(conn_entries->conn_ssl_check_button), FALSE);
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(conn_entries->conn_no_verfiy_check_button), FALSE);
+    } else {
+        sui_message_box(_("Error"), RET_MSG(ret));
     }
 
     g_variant_dict_unref(params);

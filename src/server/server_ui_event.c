@@ -49,15 +49,13 @@ SrnRet server_ui_event_open(SuiEvent event, GVariantDict *params){
     char **urls;
     SrnRet ret = SRN_OK;
 
-    LOG_FR("hit");
-
     g_variant_dict_lookup(params, "urls", SUI_EVENT_PARAM_STRINGS, &urls);
     len =  g_strv_length(urls);
 
     for (int i = 0; i < len; i ++){
         ret = server_url_open(urls[i]);
         if (!RET_IS_OK(ret)){
-            sui_message_box(_("Error occurred while opening URL"), RET_MSG(ret));
+            return ret;
         }
     }
 
@@ -65,15 +63,7 @@ SrnRet server_ui_event_open(SuiEvent event, GVariantDict *params){
 }
 
 SrnRet server_ui_event_activate(SuiEvent event, GVariantDict *params){
-    SrnRet ret;
-
-    ret = rc_read();
-
-    if (!RET_IS_OK(ret)){
-        sui_message_box(_("Error occurred while running commands"), RET_MSG(ret));
-    }
-
-    return ret;
+    return rc_read();
 }
 
 SrnRet server_ui_event_connect(SuiEvent event, GVariantDict *params){
@@ -105,7 +95,7 @@ SrnRet server_ui_event_connect(SuiEvent event, GVariantDict *params){
 
     ServerPrefs *prefs = server_prefs_new(name);
     if (!prefs){
-       return RET_ERR(_("Server already exist: %s"));
+        return RET_ERR(_("Server already exist: %s"));
     }
 
     ret = prefs_read_server_prefs(prefs);
@@ -316,8 +306,6 @@ SrnRet server_ui_event_ignore(SuiSession *sui, SuiEvent event, GVariantDict *par
     g_return_val_if_fail(chat, SRN_ERR);
 
     g_variant_dict_lookup(params, "nick", SUI_EVENT_PARAM_STRING, &nick);
-
-    LOG_FR("nick: %s", nick);
 
     return nick_filter_add_nick(chat, nick);
 }
