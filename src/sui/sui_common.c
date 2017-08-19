@@ -30,9 +30,10 @@
 
 #include "srain_window.h"
 #include "sui_event_hdr.h"
-
 #include "theme.h"
+
 #include "i18n.h"
+#include "log.h"
 
 extern SrainWindow *srain_win;
 
@@ -196,9 +197,25 @@ void scale_size_to(int src_width, int src_height,
  * @return
  */
 gboolean activate_link(GtkLabel *label, const char *uri, gpointer user_data){
-    const char *params[]  = { uri };
+    const char *urls[]  = { uri, NULL};
+    GVariantDict *params;
 
-    sui_event_hdr(NULL, SUI_EVENT_OPEN, params, 1);
+    params = g_variant_dict_new(NULL);
+    g_variant_dict_insert(params, "urls", SUI_EVENT_PARAM_STRINGS, urls, -1);
+
+    if (!RET_IS_OK(sui_event_hdr(NULL, SUI_EVENT_OPEN, params))){
+        GError *err = NULL;
+
+        gtk_show_uri_on_window(GTK_WINDOW(srain_win), uri,
+                gtk_get_current_event_time(), &err);
+
+        if (err) {
+            ERR_FR("Failed to open URL '%s': %s", uri, err->message); // TODO message box
+            return FALSE;
+        }
+    }
+
+    g_variant_dict_unref(params);
 
     return TRUE;
 }

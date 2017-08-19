@@ -79,9 +79,14 @@ static SrnRet create_window(GApplication *app){
 }
 
 static void activate(GApplication *app){
-    if (RET_IS_OK(create_window(app))){
-        sui_event_hdr(NULL, SUI_EVENT_ACTIVATE, NULL, 0);
+    SrnRet ret;
+
+    ret = create_window(app);
+    if (!RET_IS_OK(ret)){
+        return;
     }
+
+    sui_event_hdr(NULL, SUI_EVENT_ACTIVATE, NULL);
 }
 
 static gint handle_local_options(GApplication *app, GVariantDict *options,
@@ -96,18 +101,22 @@ static gint handle_local_options(GApplication *app, GVariantDict *options,
 
 static gint command_line(GApplication *app,
         GApplicationCommandLine *cmdline, gpointer user_data){
-    int len;
-    gchar **urls;
+    char **urls;
     GVariantDict *options;
+    GVariantDict* params;
 
     options = g_application_command_line_get_options_dict(cmdline);
-
     if (g_variant_dict_lookup(options, G_OPTION_REMAINING, "^as", &urls)){
         /* If we have URLs to open, create window firstly. */
         create_window(app);
 
-        len =  g_strv_length(urls);
-        sui_event_hdr(NULL, SUI_EVENT_OPEN, (const char **)urls, len);
+        params = g_variant_dict_new(NULL);
+        g_variant_dict_insert(params, "urls", SUI_EVENT_PARAM_STRINGS,
+                urls, g_strv_length(urls));
+
+        sui_event_hdr(NULL, SUI_EVENT_OPEN, params);
+
+        g_variant_dict_unref(params);
         g_strfreev(urls);
     }
 

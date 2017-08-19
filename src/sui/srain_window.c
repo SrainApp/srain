@@ -164,42 +164,42 @@ static void popover_entry_on_activate(GtkWidget *widget, gpointer user_data){
 }
 
 static void join_button_on_click(gpointer user_data){
-    int count;
-    const char *name;
+    const char *chan;
     const char *pwd;
+    GVariantDict *params;
     JoinEntries *join_entries;
     SrainChat *chat;
-    const char *params[2];
 
     join_entries = user_data;
 
-    name = gtk_entry_get_text(join_entries->join_chat_entry);
+    chan = gtk_entry_get_text(join_entries->join_chat_entry);
     pwd = gtk_entry_get_text(join_entries->join_pwd_entry);
     chat = srain_window_get_cur_chat(srain_win);
 
     g_return_if_fail(chat);
 
-    count = 0;
-    params[count++] = name;
-    params[count++] = pwd;
+    params = g_variant_dict_new(NULL);
+    g_variant_dict_insert(params, "channel", SUI_EVENT_PARAM_STRING, chan);
+    g_variant_dict_insert(params, "password", SUI_EVENT_PARAM_STRING, pwd);
 
-    sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_JOIN, params, count);
+    sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_JOIN, params);
+
+    g_variant_dict_unref(params);
 
     gtk_entry_set_text(join_entries->join_chat_entry, "");
     gtk_entry_set_text(join_entries->join_pwd_entry, "");
 }
 
 static void conn_button_on_click(gpointer user_data){
-    int count;
-    bool tls;
-    bool tls_not_verify;
     const char *host;
     const char *port;
     const char *passwd;
     const char *nick;
     const char *realname;
+    gboolean tls;
+    gboolean tls_not_verify;
+    GVariantDict *params;
     ConnEntries *conn_entries;
-    const char *params[9];
 
     conn_entries = user_data;
 
@@ -211,33 +211,27 @@ static void conn_button_on_click(gpointer user_data){
     tls = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(conn_entries->conn_ssl_check_button));
     tls_not_verify = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(conn_entries->conn_no_verfiy_check_button));
 
-    // FIXME: this is a bad interface
-    count = 0;
-    params[count++] = host; // name
-    params[count++] = host;
-    params[count++] = port;
-    params[count++] = passwd;
-    if (tls) {
-        params[count++] = "TRUE";
-    } else {
-        params[count++] = "FALSE";
-    }
-    if (tls_not_verify) {
-        params[count++] = "TRUE";
-    } else {
-        params[count++] = "FALSE";
-    }
-    params[count++] = "UTF-8";
-    params[count++] = nick;
-    params[count++] = realname;
+    params = g_variant_dict_new(NULL);
+    g_variant_dict_insert(params, "name", SUI_EVENT_PARAM_STRING, host);
+    g_variant_dict_insert(params, "host", SUI_EVENT_PARAM_STRING, host);
+    g_variant_dict_insert(params, "port", SUI_EVENT_PARAM_INT, atoi(port));
+    g_variant_dict_insert(params, "password", SUI_EVENT_PARAM_STRING, passwd);
+    g_variant_dict_insert(params, "nick", SUI_EVENT_PARAM_STRING, nick);
+    g_variant_dict_insert(params, "realname", SUI_EVENT_PARAM_STRING, realname);
+    g_variant_dict_insert(params, "tls", SUI_EVENT_PARAM_BOOL, tls);
+    g_variant_dict_insert(params, "tls-not-verify", SUI_EVENT_PARAM_BOOL, tls_not_verify);
 
-    sui_event_hdr(NULL, SUI_EVENT_CONNECT, params, count);
+    if (RET_IS_OK(sui_event_hdr(NULL, SUI_EVENT_CONNECT, params))){
+        gtk_entry_set_text(conn_entries->conn_addr_entry, "");
+        gtk_entry_set_text(conn_entries->conn_port_entry, "");
+        gtk_entry_set_text(conn_entries->conn_pwd_entry, "");
+        gtk_entry_set_text(conn_entries->conn_nick_entry, "");
+        gtk_entry_set_text(conn_entries->conn_real_entry, "");
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(conn_entries->conn_ssl_check_button), FALSE);
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(conn_entries->conn_no_verfiy_check_button), FALSE);
+    }
 
-    gtk_entry_set_text(conn_entries->conn_addr_entry, "");
-    gtk_entry_set_text(conn_entries->conn_port_entry, "");
-    gtk_entry_set_text(conn_entries->conn_pwd_entry, "");
-    gtk_entry_set_text(conn_entries->conn_nick_entry, "");
-    gtk_entry_set_text(conn_entries->conn_real_entry, "");
+    g_variant_dict_unref(params);
 }
 
 static gboolean CTRL_J_K_on_press(GtkAccelGroup *group, GObject *obj,

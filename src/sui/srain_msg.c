@@ -103,10 +103,8 @@ static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_da
     char *sel_msg;
     char *line;
     const char *remark;
-    GString *str;
     SrainChat *chat;
     SrainRecvMsg *smsg;
-    const char *params[1];
 
     smsg = SRAIN_RECV_MSG(user_data);
     if ((sel_msg = label_get_selection(smsg->msg_label)) == NULL) return;
@@ -118,17 +116,21 @@ static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_da
 
     line = strtok(sel_msg, "\n");
     while (line){
-        str = g_string_new("");
-        g_string_printf(str, _("%s <fwd %s@%s>"), line,
+        char *fwd;
+        GVariantDict *params;
+
+        fwd = g_strdup_printf(_("%s <fwd %s@%s>"), line,
                 gtk_label_get_text(smsg->nick_label),
                 srain_chat_get_name(srain_window_get_cur_chat(srain_win)));
         line = strtok(NULL, "\n");
 
-        count = 0;
-        params[count++] = str->str;
-        sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_SEND, params, count);
+        params = g_variant_dict_new(NULL);
+        g_variant_dict_insert(params, "message", SUI_EVENT_PARAM_STRING, fwd);
 
-        g_string_free(str, TRUE);
+        sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_SEND, params);
+
+        g_variant_dict_unref(params);
+        g_free(fwd);
     }
 
     g_free(sel_msg);

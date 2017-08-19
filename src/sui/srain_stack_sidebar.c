@@ -214,7 +214,7 @@ on_child_changed(GtkWidget *widget, GParamSpec *pspec, SrainStackSidebar *sideba
         gtk_list_box_select_row(sidebar->list, GTK_LIST_BOX_ROW(row));
     }
 
-    sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_CUTOVER, NULL, 0);
+    sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_CUTOVER, NULL);
 }
 
 static void

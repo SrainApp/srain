@@ -42,6 +42,7 @@
 #include "plugin.h"
 #include "log.h"
 #include "i18n.h"
+#include "utils.h"
 
 struct _SrainChat {
     GtkBox parent;
@@ -99,13 +100,13 @@ static void close_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
 
     switch (chat->type){
         case CHAT_SERVER:
-            sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_DISCONNECT, NULL, 0);
+            sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_DISCONNECT, NULL);
             break;
         case CHAT_CHANNEL:
-            sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_PART, NULL, 0);
+            sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_PART, NULL);
             break;
         case CHAT_PRIVATE:
-            sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_UNQUERY, NULL, 0);
+            sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_UNQUERY, NULL);
             break;
         default:
             break;
@@ -192,31 +193,28 @@ static void upload_image_button_on_click(GtkWidget *widget, gpointer user_data){
 
 }
 
-static int is_blank(const char *str){
-    while (*str){
-        if (*str != '\t' && *str != ' ')
-            return 0;
-        str++;
-    }
-    return 1;
-}
-
 static void input_entry_on_activate(SrainChat *chat){
-    int count;
-    char *input;
-    const char *params[1];
+    const char *input;
+    GVariantDict *params;
+    SrnRet ret;
 
-    input = g_strdup(gtk_entry_get_text(chat->input_entry));
+    input = gtk_entry_get_text(chat->input_entry);
 
-    if (is_blank(input)) goto ret;
+    if (str_is_empty(input)) goto RET;
 
-    count = 0;
-    params[count++] = input;
-    sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_SEND, params, count);
+    params = g_variant_dict_new(NULL);
+    g_variant_dict_insert(params, "message", SUI_EVENT_PARAM_STRING, input);
 
-ret:
+    ret = sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_SEND, params);
+
+    g_variant_dict_unref(params);
+
+    if (!RET_IS_OK(ret)){
+        return; // Don't empty the input_entry if error occured
+    }
+
+RET:
     gtk_entry_set_text(chat->input_entry, "");
-    g_free(input);
 
     return;
 }

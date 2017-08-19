@@ -44,59 +44,73 @@
 static Server* ctx_get_server(SuiSession *sui);
 static Chat* ctx_get_chat(SuiSession *sui);
 
-void server_ui_event_open(SuiEvent event, const char *params[], int count){
+SrnRet server_ui_event_open(SuiEvent event, GVariantDict *params){
+    int len;
+    char **urls;
     SrnRet ret = SRN_OK;
 
-    for (int i = 0; i < count; i ++){
-        ret = server_url_open(params[i]);
+    LOG_FR("hit");
+
+    g_variant_dict_lookup(params, "urls", SUI_EVENT_PARAM_STRINGS, &urls);
+    len =  g_strv_length(urls);
+
+    for (int i = 0; i < len; i ++){
+        ret = server_url_open(urls[i]);
         if (!RET_IS_OK(ret)){
             sui_message_box(_("Error occurred while opening URL"), RET_MSG(ret));
         }
     }
+
+    return ret;
 }
 
-void server_ui_event_activate(SuiEvent event, const char *params[], int count){
+SrnRet server_ui_event_activate(SuiEvent event, GVariantDict *params){
     SrnRet ret;
 
     ret = rc_read();
+
     if (!RET_IS_OK(ret)){
         sui_message_box(_("Error occurred while running commands"), RET_MSG(ret));
     }
+
+    return ret;
 }
 
-void server_ui_event_connect(SuiEvent event, const char *params[], int count){
-    SrnRet ret;
+SrnRet server_ui_event_connect(SuiEvent event, GVariantDict *params){
+    const char *name = NULL;
+    const char *host = NULL;
+    int port = 0;
+    const char *passwd = NULL;
+    const char *encoding = "UTF-8"; // TODO
+    const char *nick = NULL;
+    const char *realname= "";
+    const char *username = PACKAGE_NAME; // TODO
+    gboolean tls = FALSE;
+    gboolean tls_not_verify = FALSE;
+    SrnRet ret = SRN_ERR;
     Server *srv;
 
-    g_return_if_fail(count == 9);
-    const char *name = params[0];
-    const char *host = params[1];
-    int port = atoi(params[2]);
-    const char *passwd = params[3];
-    bool tls = strcmp(params[4], "TRUE") == 0 ? TRUE : FALSE;
-    bool notverify = strcmp(params[5], "TRUE") == 0 ? TRUE : FALSE;
-    const char *encoding = params[6];
-    const char *nick = params[7];
-    const char *realname= params[8];
-    const char *username = PACKAGE_NAME;
+    g_variant_dict_lookup(params, "name", SUI_EVENT_PARAM_STRING, &name);
+    g_variant_dict_lookup(params, "host", SUI_EVENT_PARAM_STRING, &host);
+    g_variant_dict_lookup(params, "port", SUI_EVENT_PARAM_INT, &port);
+    g_variant_dict_lookup(params, "password", SUI_EVENT_PARAM_STRING, &passwd);
+    g_variant_dict_lookup(params, "nick", SUI_EVENT_PARAM_STRING, &nick);
+    g_variant_dict_lookup(params, "realname", SUI_EVENT_PARAM_STRING, &realname);
+    g_variant_dict_lookup(params, "tls", SUI_EVENT_PARAM_BOOL, &tls);
+    g_variant_dict_lookup(params, "tls-not-verify", SUI_EVENT_PARAM_BOOL, &tls_not_verify);
 
     if (str_is_empty(name)){
-        sui_message_box(_("Create server failed"), _("You must specified a server name"));
-        return;
+        return RET_ERR(_("You must specified a server name"));
     }
 
     ServerPrefs *prefs = server_prefs_new(name);
     if (!prefs){
-        char *errmsg = g_strdup_printf(_("Server already exist: %s"), name);
-        sui_message_box(_("Create server failed"), errmsg);
-        g_free(errmsg);
-        return;
+       return RET_ERR(_("Server already exist: %s"));
     }
 
     ret = prefs_read_server_prefs(prefs);
     if (!RET_IS_OK(ret)){
-        sui_message_box(_("Read server prefs failed"), RET_MSG(ret));
-        return;
+        return ret;
     }
 
     prefs->port = port;
@@ -120,197 +134,206 @@ void server_ui_event_connect(SuiEvent event, const char *params[], int count){
     }
 
     prefs->irc->tls = tls;
-    prefs->irc->tls_not_verify = notverify;
+    prefs->irc->tls_not_verify = tls_not_verify;
 
     ret = server_prefs_check(prefs);
     if (!RET_IS_OK(ret)){
-        sui_message_box(_("Create server failed"), RET_MSG(ret));
-        return;
+        return ret;
     }
 
     srv = server_new_from_prefs(prefs);
     if (!srv) {
-        ret = RET_ERR(_("Failed to instantiate server \"%s\""), prefs->name);
-        sui_message_box(_("Create server failed"), RET_MSG(ret));
-        return;
+        return RET_ERR(_("Failed to instantiate server \"%s\""), prefs->name);
     }
 
-    server_connect(srv);
+    return server_connect(srv);
 }
 
-void server_ui_event_disconnect(SuiSession *sui, SuiEvent event, const char *params[], int count){
+SrnRet server_ui_event_disconnect(SuiSession *sui, SuiEvent event, GVariantDict *params){
+    SrnRet ret;
     Server *srv;
 
-    g_return_if_fail(count == 0);
-
     srv = ctx_get_server(sui);
-    g_return_if_fail(server_is_valid(srv));
+    g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
 
-    if (!RET_IS_OK(sirc_cmd_quit(srv->irc, "QUIT"))){
+    ret = sirc_cmd_quit(srv->irc, "QUIT");
+    if (!RET_IS_OK(ret)){
         server_free(srv); // FIXME
+        return SRN_ERR;
     }
+
+    return ret;
 }
 
-void server_ui_event_send(SuiSession *sui, SuiEvent event, const char *params[], int count){
-    const char *msg;
+SrnRet server_ui_event_send(SuiSession *sui, SuiEvent event, GVariantDict *params){
+    const char *msg = NULL;
+    SrnRet ret = SRN_ERR;
     Server *srv;
     Chat *chat;
 
-    g_return_if_fail(count == 1);
-    msg = params[0];
-
     srv = ctx_get_server(sui);
     chat = ctx_get_chat(sui);
-    g_return_if_fail(server_is_valid(srv));
-    g_return_if_fail(chat);
+    g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
+    g_return_val_if_fail(chat, SRN_ERR);
+
+    g_variant_dict_lookup(params, "message", SUI_EVENT_PARAM_STRING, &msg);
+    g_return_val_if_fail(!str_is_empty(msg), SRN_ERR);
 
     // Command or message?
     if (msg[0] == '/'){
-        SrnRet ret;
         ret = server_cmd(chat, msg);
         // FIXME: chat may be invalid now
         if (!server_is_valid(srv)){
-            return;
+            return SRN_ERR;
         }
-        if (ret != SRN_OK){
-            if (RET_IS_OK(ret)){
+        if (RET_IS_OK(ret)){
+            if (ret != SRN_OK) { // Has OK message
                 chat_add_misc_message(chat, chat->user->nick, RET_MSG(ret));
-            } else {
-                chat_add_error_message(chat, chat->user->nick, RET_MSG(ret));
             }
+        } else {
+            chat_add_error_message(chat, chat->user->nick, RET_MSG(ret));
         }
     } else {
-        chat_add_sent_message(chat, msg);
+        if (chat == chat->srv->chat) {
+            ret = RET_ERR(_("Can not send message to a server"));
+            chat_add_error_message(chat, chat->user->nick, RET_MSG(ret));
+            return ret;
+        }
+
+        ret = sirc_cmd_msg(chat->srv->irc, chat->name, msg);
+        if (RET_IS_OK(ret)){
+            chat_add_sent_message(chat, msg);
+        } else {
+            chat_add_error_message_fmt(chat, chat->user->nick,
+                    _("Failed to send message: %s"), RET_MSG(ret));
+        }
     }
+
+    return ret;
 }
 
-void server_ui_event_join(SuiSession *sui, SuiEvent event, const char *params[], int count){
-    const char *name;
-    const char *passwd;
+SrnRet server_ui_event_join(SuiSession *sui, SuiEvent event, GVariantDict *params){
+    const char *chan = NULL;
+    const char *passwd = NULL;
     Server *srv;
 
-    g_return_if_fail(count == 1 || count == 2);
-    name = params[0];
-    passwd = count == 2 ? params[1] : NULL;
-
     srv = ctx_get_server(sui);
-    g_return_if_fail(server_is_valid(srv));
+    g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
 
-    sirc_cmd_join(srv->irc, name, passwd);
+    g_variant_dict_lookup(params, "channel", SUI_EVENT_PARAM_STRING, &chan);
+    g_variant_dict_lookup(params, "password", SUI_EVENT_PARAM_STRING, &passwd);
+
+    return sirc_cmd_join(srv->irc, chan, passwd);
 }
 
-void server_ui_event_part(SuiSession *sui, SuiEvent event, const char *params[], int count){
+SrnRet server_ui_event_part(SuiSession *sui, SuiEvent event, GVariantDict *params){
     Server *srv;
     Chat *chat;
 
-    g_return_if_fail(count == 0);
     srv = ctx_get_server(sui);
     chat = ctx_get_chat(sui);
-    g_return_if_fail(server_is_valid(srv));
-    g_return_if_fail(chat);
+    g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
+    g_return_val_if_fail(chat, SRN_ERR);
 
     if (chat->joined) {
-        sirc_cmd_part(srv->irc, chat->name, "Leave.");
+        return sirc_cmd_part(srv->irc, chat->name, "Leave.");
     } else {
-        server_rm_chat(srv, chat->name);
+        return server_rm_chat(srv, chat->name);
     }
 }
 
-void server_ui_event_query(SuiSession *sui, SuiEvent event, const char *params[], int count){
-    const char *name;
+SrnRet server_ui_event_query(SuiSession *sui, SuiEvent event, GVariantDict *params){
+    const char *nick = NULL;
     Server *srv;
 
-    g_return_if_fail(count == 1);
-    name = params[0];
-
     srv = ctx_get_server(sui);
-    g_return_if_fail(server_is_valid(srv));
+    g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
 
-    server_add_chat(srv, name);
+    g_variant_dict_lookup(params, "nick", SUI_EVENT_PARAM_STRING, &nick);
+
+    return server_add_chat(srv, nick);;
 }
 
-void server_ui_event_unquery(SuiSession *sui, SuiEvent event, const char *params[], int count){
+SrnRet server_ui_event_unquery(SuiSession *sui, SuiEvent event, GVariantDict *params){
     Server *srv;
     Chat *chat;
 
     srv = ctx_get_server(sui);
     chat = ctx_get_chat(sui);
-    g_return_if_fail(server_is_valid(srv));
-    g_return_if_fail(chat);
+    g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
+    g_return_val_if_fail(chat, SRN_ERR);
 
-    server_rm_chat(srv, chat->name);
+    return server_rm_chat(srv, chat->name);
 }
 
-void server_ui_event_kick(SuiSession *sui, SuiEvent event, const char *params[], int count){
-    const char *nick;
+SrnRet server_ui_event_kick(SuiSession *sui, SuiEvent event, GVariantDict *params){
+    const char *nick = NULL;
     Server *srv;
     Chat *chat;
 
-    g_return_if_fail(count == 1);
-    nick = params[0];
-
     srv = ctx_get_server(sui);
     chat = ctx_get_chat(sui);
-    g_return_if_fail(server_is_valid(srv));
-    g_return_if_fail(chat);
+    g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
+    g_return_val_if_fail(chat, SRN_ERR);
 
-    sirc_cmd_kick(srv->irc, nick, chat->name, "Kick.");
+    g_variant_dict_lookup(params, "nick", SUI_EVENT_PARAM_STRING, &nick);
+
+    return sirc_cmd_kick(srv->irc, nick, chat->name, "Kick.");
 }
 
-void server_ui_event_invite(SuiSession *sui, SuiEvent event, const char *params[], int count){
-    const char *nick;
+SrnRet server_ui_event_invite(SuiSession *sui, SuiEvent event, GVariantDict *params){
+    const char *nick = NULL;
     Server *srv;
     Chat *chat;
 
-    g_return_if_fail(count == 1);
-    nick = params[0];
-
     srv = ctx_get_server(sui);
     chat = ctx_get_chat(sui);
-    g_return_if_fail(server_is_valid(srv));
-    g_return_if_fail(chat);
+    g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
+    g_return_val_if_fail(chat, SRN_ERR);
 
-    sirc_cmd_invite(srv->irc, nick, chat->name);
+    g_variant_dict_lookup(params, "nick", SUI_EVENT_PARAM_STRING, &nick);
+
+    return sirc_cmd_invite(srv->irc, nick, chat->name);
 }
 
-void server_ui_event_whois(SuiSession *sui, SuiEvent event, const char *params[], int count){
-    const char *nick;
+SrnRet server_ui_event_whois(SuiSession *sui, SuiEvent event, GVariantDict *params){
+    const char *nick = NULL;
     Server *srv;
 
-    g_return_if_fail(count == 1);
-    nick = params[0];
-
     srv = ctx_get_server(sui);
-    g_return_if_fail(server_is_valid(srv));
+    g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
 
-    sirc_cmd_whois(srv->irc, nick);
+    g_variant_dict_lookup(params, "nick", SUI_EVENT_PARAM_STRING, &nick);
+
+    return sirc_cmd_whois(srv->irc, nick);
 }
 
-void server_ui_event_ignore(SuiSession *sui, SuiEvent event, const char *params[], int count){
-    const char *nick;
+SrnRet server_ui_event_ignore(SuiSession *sui, SuiEvent event, GVariantDict *params){
+    const char *nick = NULL;
     Chat *chat;
 
-    g_return_if_fail(count == 1);
-    nick = params[0];
-
     chat = ctx_get_chat(sui);
-    g_return_if_fail(chat);
+    g_return_val_if_fail(chat, SRN_ERR);
 
-    nick_filter_add_nick(chat, nick);
+    g_variant_dict_lookup(params, "nick", SUI_EVENT_PARAM_STRING, &nick);
+
+    LOG_FR("nick: %s", nick);
+
+    return nick_filter_add_nick(chat, nick);
 }
 
-void server_ui_event_cutover(SuiSession *sui, SuiEvent event, const char *params[], int count){
+SrnRet server_ui_event_cutover(SuiSession *sui, SuiEvent event, GVariantDict *params){
     Server *srv;
     Chat *chat;
 
-    g_return_if_fail(count == 0);
-
     srv = ctx_get_server(sui);
-    g_return_if_fail(server_is_valid(srv));
+    g_return_val_if_fail(server_is_valid(srv), SRN_ERR); // FIXME
     chat = ctx_get_chat(sui);
-    g_return_if_fail(chat);
+    g_return_val_if_fail(chat, SRN_ERR);
 
     srv->cur_chat = chat;
+
+    return SRN_OK;
 }
 
 /* Get a Server object from SuiSession context (sui->ctx) */

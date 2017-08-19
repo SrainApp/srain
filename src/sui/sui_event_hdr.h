@@ -21,6 +21,6 @@
 
 #include "sui/sui.h"
 
-void sui_event_hdr(SuiSession *sui, SuiEvent event, const char *params[], int count);
+SrnRet sui_event_hdr(SuiSession *sui, SuiEvent event, GVariantDict *params);
 
 #endif /* __SUI_EVENT_HDR_H */

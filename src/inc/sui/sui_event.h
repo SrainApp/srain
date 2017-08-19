@@ -19,9 +19,18 @@
 #ifndef __SUI_EVENT_H
 #define __SUI_EVENT_H
 
+#include <glib.h>
+
+#include "srain.h"
+
 #ifndef __IN_SUI_H
 	#error This file should not be included directly, include just sui.h
 #endif
+
+#define SUI_EVENT_PARAM_BOOL    "b"
+#define SUI_EVENT_PARAM_INT     "i"
+#define SUI_EVENT_PARAM_STRING  "&s"
+#define SUI_EVENT_PARAM_STRINGS "^a&s"
 
 typedef enum {
     SUI_EVENT_OPEN,
@@ -38,13 +47,12 @@ typedef enum {
     SUI_EVENT_WHOIS,
     SUI_EVENT_IGNORE,
     SUI_EVENT_CUTOVER,
+    SUI_EVENT_UNKNOWN,
 } SuiEvent;
 
-typedef void (*SuiAppEventCallback) (SuiEvent event,
-        const char *params[], int count);
+typedef int (*SuiAppEventCallback) (SuiEvent event, GVariantDict *params);
 
-typedef void (*SuiEventCallback) (SuiSession *sui, SuiEvent event,
-        const char *params[], int count);
+typedef int (*SuiEventCallback) (SuiSession *sui, SuiEvent event, GVariantDict *params);
 
 typedef struct {
     SuiEventCallback disconnect;
