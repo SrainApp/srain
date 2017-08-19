@@ -778,10 +778,6 @@ static SrnRet on_command_msg(Command *cmd, void *user_data){
     g_return_val_if_fail(msg, SRN_ERR);
     g_return_val_if_fail(target, SRN_ERR);
 
-    /* Note: we can not use chat_add_sent_message() here, for there is maybe no
-     * a Chat named `target`.
-     * TODO: A better way?
-     */
     if (sirc_cmd_msg(srv->irc, target, msg) == SRN_OK){
         return RET_OK(_("A message has been sent to \"%s\""), target);
     } else {
@@ -791,13 +787,30 @@ static SrnRet on_command_msg(Command *cmd, void *user_data){
 
 static SrnRet on_command_me(Command *cmd, void *user_data){
     const char *msg;
+    SrnRet ret;
+    Server *srv;
     Chat *chat;
 
+    srv = scctx_get_server(user_data);
+    g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
     chat = scctx_get_chat(user_data);
     g_return_val_if_fail(chat, SRN_ERR);
-
     msg = command_get_arg(cmd, 0);
     g_return_val_if_fail(msg, SRN_ERR);
+
+    if (chat == chat->srv->chat) {
+        ret = RET_ERR(_("Can not send message to a server"));
+        chat_add_error_message(chat, chat->user->nick, ret);
+        return ret;
+    }
+
+    ret = sirc_cmd_action(chat->srv->irc, chat->name, msg);
+
+    if (!RET_IS_OK(ret)){
+        chat_add_error_message_fmt(chat, chat->user->nick,
+                _("Failed to send action message: %s"), RET_MSG(ret));
+        return ret;
+    }
 
     chat_add_action_message(chat, chat->user->nick, msg);
 

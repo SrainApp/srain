@@ -231,29 +231,16 @@ User* chat_get_user(Chat *chat, const char *nick){
 }
 
 
-/* TODO: Append message in Chat->msg_list */
 void chat_add_sent_message(Chat *chat, const char *content){
     User *user;
     Message *msg;
     DecoratorFlag dflag;
     FilterFlag fflag;
 
-    if (chat == chat->srv->chat) {
-        chat_add_error_message(chat, chat->user->nick,
-                _("Can not send message to a server"));
-        return;
-    }
-
     user = chat->user;
     dflag = DECORATOR_PANGO_MARKUP;
     fflag = FILTER_CHAT_LOG;
     msg = message_new(chat, user, content, MESSAGE_SENT);
-
-    if (sirc_cmd_msg(chat->srv->irc, chat->name, content) != SRN_OK){
-        chat_add_error_message_fmt(chat, chat->user->nick,
-                _("Failed to send message \"%s\""), msg->content);
-        goto cleanup;
-    }
 
     if (!filter_message(msg, fflag, NULL)){
         /* Ignore this message */
@@ -359,12 +346,6 @@ void chat_add_action_message(Chat *chat, const char *origin, const char *content
 
     user = chat_get_user(chat, origin);
 
-    if (user && user->me && chat == chat->srv->chat) {
-        chat_add_error_message(chat, chat->user->nick,
-                _("Can not send message to a server"));
-        return;
-    }
-
     if (!user){
         user = user_new(chat, origin, NULL, NULL, USER_CHIGUA);
         invalid_user = TRUE;
@@ -376,12 +357,6 @@ void chat_add_action_message(Chat *chat, const char *origin, const char *content
     msg = message_new(chat, user, content, MESSAGE_ACTION);
 
     if (user->me){
-        if (sirc_cmd_action(chat->srv->irc, chat->name, content) != SRN_OK){
-            chat_add_error_message_fmt(chat, user->nick,
-                    _("Failed to send action message \"%s\""),
-                    msg->content);
-            goto cleanup;
-        }
     } else {
         fflag |= FILTER_NICK | FILTER_REGEX;
         dflag |= DECORATOR_RELAY | DECORATOR_MIRC_STRIP | DECORATOR_MENTION;
