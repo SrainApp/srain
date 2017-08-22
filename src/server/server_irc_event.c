@@ -63,7 +63,6 @@ static gboolean irc_period_ping(gpointer user_data){
         WARN_FR("Server %s ping timeout, %lums", srv->prefs->name, time - srv->last_pong);
 
         /* Disconnect */
-        srv->registered = FALSE;
         srv->disconn_reason = SERVER_DISCONN_REASON_TIMEOUT;
         server_disconnect(srv);
 
@@ -90,45 +89,38 @@ static gboolean irc_reconnect(gpointer user_data){
 void server_irc_event_connect(SircSession *sirc, const char *event){
     GSList *list;
     Server *srv;
-    User *user;
     Chat *chat;
 
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(server_is_valid(srv));
     g_return_if_fail(srv->stat == SERVER_CONNECTING);
 
-    user = srv->user;
+    /* Update state */
+    srv->stat = SERVER_CONNECTED;
 
     chat_add_misc_message_fmt(srv->chat, "", _("Connected to %s(%s:%d)"),
             srv->prefs->name, srv->prefs->host, srv->prefs->port);
+    list = srv->chat_list;
+    while (list){
+        chat = list->data;
+        chat_add_misc_message_fmt(chat, "", _("Connected to %s(%s:%d)"),
+                srv->prefs->name, srv->prefs->host, srv->prefs->port);
+        list = g_slist_next(list);
+    }
 
     if (!str_is_empty(srv->prefs->passwd)){
         /* Send connection password, you should send it command before sending
          * the NICK/USER combination. */
         sirc_cmd_pass(srv->irc, srv->prefs->passwd);
     }
-    sirc_cmd_nick(srv->irc, user->nick);
-    sirc_cmd_user(srv->irc, user->username, "hostname", "servername", user->realname);
-
-    /* Join all channels already exists */
-    list = srv->chat_list;
-    while (list){
-        chat = list->data;
-
-        if (sirc_is_chan(chat->name)){
-            sirc_cmd_join(srv->irc, chat->name, NULL);
-        }
-        chat_add_misc_message_fmt(chat, "", _("Connected to %s(%s:%d)"),
-                srv->prefs->name, srv->prefs->host, srv->prefs->port);
-
-        list = g_slist_next(list);
-    }
-
-    srv->stat = SERVER_CONNECTED;
+    sirc_cmd_nick(srv->irc, srv->user->nick);
+    sirc_cmd_user(srv->irc, srv->user->username, "hostname", "servername",
+            srv->user->realname);
 }
 
 void server_irc_event_disconnect(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count, const char *msg){
+    bool reconnect = FALSE;
     GSList *list;
     Server *srv;
     Chat *chat;
@@ -140,6 +132,10 @@ void server_irc_event_disconnect(SircSession *sirc, const char *event,
             || srv->stat == SERVER_CONNECTED
             || srv->stat == SERVER_DISCONNECTING);
 
+    /* Update state */
+    srv->stat = SERVER_DISCONNECTED;
+    srv->registered = FALSE;
+
     /* Stop peroid ping */
     if (srv->ping_timer){
         g_source_remove(srv->ping_timer);
@@ -147,6 +143,29 @@ void server_irc_event_disconnect(SircSession *sirc, const char *event,
         DBG_FR("Ping timer %d removed", srv->ping_timer);
 
         srv->ping_timer = 0;
+    }
+
+    switch (srv->disconn_reason){
+        case SERVER_DISCONN_REASON_USER_CLOSE:
+            // Nothing to do
+            break;
+        case SERVER_DISCONN_REASON_QUIT:
+            server_free(srv);
+            return;
+        case SERVER_DISCONN_REASON_TIMEOUT:
+            msg = _("Ping time out");
+            reconnect = TRUE;
+            break;
+        case SERVER_DISCONN_REASON_CLOSE:
+            reconnect = TRUE;
+            break;
+        default:
+            ERR_FR("Unknown disconnect reason: %d", srv->disconn_reason);
+    }
+
+    // Add reconnect timer
+    if (reconnect) {
+        g_timeout_add(srv->reconn_interval, irc_reconnect, srv);
     }
 
     /* Mark all channels as unjoined */
@@ -163,6 +182,14 @@ void server_irc_event_disconnect(SircSession *sirc, const char *event,
         } else {
             chat_add_misc_message_fmt(chat, "", _("Disconnected from %s(%s:%d)"),
                     srv->prefs->name, srv->prefs->host, srv->prefs->port);
+        }
+        if (reconnect){
+            chat_add_misc_message_fmt(chat, "",
+                    _("Trying reconnect to %s(%s:%d) after %.1lfs..."),
+                    srv->prefs->name,
+                    srv->prefs->host,
+                    srv->prefs->port,
+                    (srv->reconn_interval * 1.0) / 1000);
         }
 
         list = g_slist_next(list);
@@ -186,37 +213,30 @@ void server_irc_event_disconnect(SircSession *sirc, const char *event,
                 srv->prefs->name, srv->prefs->host, srv->prefs->port);
     }
 
-    switch (srv->disconn_reason){
-        case SERVER_DISCONN_REASON_USER_CLOSE:
-            // Nothing to do
-            break;
-        case SERVER_DISCONN_REASON_QUIT:
-            server_free(srv);
-            break;
-        case SERVER_DISCONN_REASON_CLOSE:
-        case SERVER_DISCONN_REASON_TIMEOUT:
-            chat_add_misc_message_fmt(srv->chat, "", _("Trying reconnect to %s(%s:%d) after %.1lfs..."),
-                    srv->prefs->name, srv->prefs->host, srv->prefs->port, (srv->reconn_interval * 1.0) / 1000);
-            g_timeout_add(srv->reconn_interval, irc_reconnect, srv);
-            break;
+    if (reconnect){
+        chat_add_misc_message_fmt(srv->chat, "",
+                _("Trying reconnect to %s(%s:%d) after %.1lfs..."),
+                srv->prefs->name,
+                srv->prefs->host,
+                srv->prefs->port,
+                (srv->reconn_interval * 1.0) / 1000);
     }
-
-    srv->stat = SERVER_DISCONNECTED;
 }
 
 void server_irc_event_welcome(SircSession *sirc, int event,
         const char *origin, const char **params, int count, const char *msg){
+    GSList *list;
     Server *srv;
 
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(server_is_valid(srv));
 
     g_return_if_fail(count >= 1);
-
     const char *nick = params[0];
 
     /* You have registered when you recived a RPL_WELCOME(001) message */
     srv->registered = TRUE;
+    /* Reset default disconnect reason */
     srv->disconn_reason = SERVER_DISCONN_REASON_CLOSE;
 
     /* Start peroid ping */
@@ -225,9 +245,19 @@ void server_irc_event_welcome(SircSession *sirc, int event,
     DBG_FR("Ping timer %d created", srv->ping_timer);
 
     /* Resest reconnect interval */
-    srv->reconn_interval = 0;
+    srv->reconn_interval = SERVER_RECONN_INTERVAL;
 
     user_rename(srv->user, nick);
+
+    /* Join all channels already exists */
+    list = srv->chat_list;
+    while (list){
+        Chat *chat = list->data;
+        if (sirc_is_chan(chat->name)){
+            sirc_cmd_join(srv->irc, chat->name, NULL);
+        }
+        list = g_slist_next(list);
+    }
 }
 
 void server_irc_event_nick(SircSession *sirc, const char *event,
@@ -296,7 +326,6 @@ void server_irc_event_quit(SircSession *sirc, const char *event,
 
     /* You quit */
     if (sirc_nick_cmp(origin, srv->user->nick)){
-        srv->registered = FALSE;
         srv->disconn_reason = SERVER_DISCONN_REASON_QUIT;
     }
 }
