@@ -157,7 +157,7 @@ bool command_get_opt(Command *cmd, const char *opt_key, const char **opt_val){
             if (cmd->bind->opt[i].val == COMMAND_OPT_NO_VAL){
                 // Nothing todo
             } else if (cmd->bind->opt[i].val == COMMAND_OPT_NO_DEFAULT){
-                WARN_FR("No default value for opiton '%s'", opt_key);
+                DBG_FR("No default value for opiton '%s'", opt_key);
             } else {
                 if (opt_val != NULL){
                     *opt_val = cmd->bind->opt[i].val;

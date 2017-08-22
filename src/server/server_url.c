@@ -46,7 +46,6 @@ SrnRet server_url_open(const char *url){
     const char *path;
     const char *fragment;
     bool new_prefs = FALSE;
-    bool new_srv = FALSE;
     SoupURI *suri = NULL;
     SrnRet ret = SRN_ERR;
     ServerPrefs *prefs = NULL;
@@ -122,7 +121,6 @@ SrnRet server_url_open(const char *url){
             ret =  RET_ERR(_("Failed to instantiate server \"%s\""), host);
             goto fin;
         }
-        new_srv = TRUE;
     } else {
         srv = prefs->srv;
     }

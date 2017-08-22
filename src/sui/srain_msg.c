@@ -99,7 +99,6 @@ static void copy_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
 }
 
 static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_data){
-    int count;
     char *sel_msg;
     char *line;
     const char *remark;

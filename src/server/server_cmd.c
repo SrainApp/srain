@@ -800,7 +800,7 @@ static SrnRet on_command_me(Command *cmd, void *user_data){
 
     if (chat == chat->srv->chat) {
         ret = RET_ERR(_("Can not send message to a server"));
-        chat_add_error_message(chat, chat->user->nick, ret);
+        chat_add_error_message(chat, chat->user->nick, RET_MSG(ret));
         return ret;
     }
 

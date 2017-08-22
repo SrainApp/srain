@@ -198,6 +198,8 @@ static void on_recv_ready(GObject *obj, GAsyncResult *res, gpointer user_data){
         sirc->bufptr -= 2;
         sirc->buf[sirc->bufptr] = '\0';
 
+        DBG_FR("Line: %s", sirc->buf);
+
         if (sirc_parse(sirc->buf, &imsg) == SRN_OK){
             sirc_event_hdr(sirc, &imsg);
         }

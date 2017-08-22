@@ -192,6 +192,8 @@ int sirc_cmd_raw(SircSession *sirc, const char *fmt, ...){
 
     // TODO send it totally
 
+    DBG_FR("Sent: %s", buf);
+
     return (io_stream_write(stream, buf, len) < 0) ?
         SRN_ERR : SRN_OK;
 }
