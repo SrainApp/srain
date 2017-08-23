@@ -757,30 +757,27 @@ void server_irc_event_numeric (SircSession *sirc, int event,
         case SIRC_RFC_ERR_NICKNAMEINUSE:
             {
                 g_return_if_fail(msg);
+                g_return_if_fail(count == 2);
+
+                const char *nick = params[1];
 
                 chat_add_error_message_fmt(srv->cur_chat, origin,
-                        _("ERROR[%3d]: %s"), event, msg);
+                        _("ERROR[%3d] %s %s"), event, nick, msg);
 
                 /* If you don't have a nickname (unregistered) yet, try a nick
                  * with a trailing underline('_') */
                 if (!srv->registered){
-                    int len = strlen(srv->user->nick);
+                    char *new_nick = g_strdup_printf("%s_", nick);
 
-                    if (len < sizeof(srv->user->nick) - 1){
-                        char new_nick[NICK_LEN];
+                    // FIXME: ircd-seven will truncate the nick without
+                    // returning a error message if it reaches the length
+                    // limiation, at this time the new_nick is same to the
+                    // registered old nick in the server view.
+                    sirc_cmd_nick(srv->irc, new_nick);
+                    chat_add_misc_message_fmt(srv->cur_chat, origin,
+                            _("Trying nickname: \"%s\"..."), new_nick);
 
-                        g_strlcpy(new_nick, srv->user->nick, sizeof(new_nick));
-
-                        new_nick[len] = '_';
-                        new_nick[len + 1] = '\0';
-                        sirc_cmd_nick(srv->irc, new_nick);
-
-                        chat_add_misc_message_fmt(srv->cur_chat, origin,
-                                _("Trying nickname: \"%s\"..."), new_nick);
-                    } else {
-                        chat_add_error_message_fmt(srv->cur_chat, origin,
-                                _("Your nickname is too long to add a trailing underline"));
-                    }
+                    g_free(new_nick);
                 }
                 break;
             }
