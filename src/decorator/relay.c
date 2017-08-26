@@ -28,7 +28,7 @@
 #include "log.h"
 #include "i18n.h"
 
-static int relay(Message *msg, DecoratorFlag flag, void *user_data);
+static char* relay(Message *msg, int index, const char *frag);
 
 Decorator relay_decroator = {
     .name = "relay",
@@ -91,21 +91,26 @@ void relay_decroator_free_list(Chat *chat){
     chat->relaybot_list = NULL;
 }
 
-static int relay(Message *msg, DecoratorFlag flag, void *user_data){
+static char* relay(Message *msg, int index, const char *frag){
     int i;
     char *dnick;
-    char *dcontent;
+    char *dcontent = NULL;
     GSList *lst;
     GError *err;
     GRegex *regex;
     GMatchInfo *match_info;
+
+    if (index != 0) {
+        DBG_FR("Only accept 0 while index = %d", index);
+        return NULL;
+    }
 
     /* ref: https://github.com/tuna/scripts/blob/master/weechat_bot2human.py#L46 */
     err = NULL;
     regex = g_regex_new("(\x03[0-9,]+)?\\[(?<nick>[^:]+?)\\]\x0f? (?<text>.*)", 0, 0, &err);
     if (!regex){
         ERR_FR("g_regex_new() failed: %s", err->message);
-        return SRN_ERR;
+        return NULL;
     }
 
     for (i = 0, lst = msg->chat->relaybot_list;
@@ -114,20 +119,19 @@ static int relay(Message *msg, DecoratorFlag flag, void *user_data){
         while (lst){
             if (sirc_nick_cmp(msg->user->nick, lst->data)){
                 DBG_FR("Brige bot '%s' found", (char *)lst->data);
-                g_regex_match(regex, msg->dcontent, 0, &match_info);
+                g_regex_match(regex, frag, 0, &match_info);
 
                 if (g_match_info_matches(match_info)){
                     dnick = g_match_info_fetch_named(match_info, "nick");
                     dcontent = g_match_info_fetch_named(match_info, "text");
 
                     g_free(msg->dname);
-                    g_free(msg->dcontent);
                     msg->dname = dnick;
-                    msg->dcontent = dcontent;
                     msg->role = g_strdup(msg->user->nick);
 
-                    DBG_FR("Match nick: %s", dnick);
-                    DBG_FR("Match content: %s", dcontent);
+                    LOG_FR("Relay message matched, nick: %s, content: %s", dnick, dcontent);
+
+                    goto FIN;
                 }
 
                 g_match_info_free(match_info);
@@ -138,7 +142,8 @@ static int relay(Message *msg, DecoratorFlag flag, void *user_data){
         }
     }
 
+FIN:
     g_regex_unref(regex);
 
-    return SRN_OK;
+    return dcontent;
 }

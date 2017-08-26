@@ -29,7 +29,18 @@
 
 typedef int DecoratorFlag;
 
-typedef int (DecoratorFunc) (Message *msg, DecoratorFlag flag, void *user_data);;
+/**
+ * @brief DecoratorFunc Decorator module will parse the ``dcontent`` of Message,
+ *      Divide it text by xml into several fragments. And pass the Message,
+ *      fragment, the index of fragment to this function.
+ *
+ * @param msg A Message instance
+ * @param index The index of ``frag`` in the current ``msg``
+ * @param frag Fragment of ``msg->dcontent``, doesn't contain any XML tags
+ *
+ * @return The decorated fragment, should be freed by ``g_free()``
+ */
+typedef char* (DecoratorFunc) (Message *msg, int index, const char *frag);
 
 typedef struct _Decorator {
     const char *name;
@@ -37,8 +48,7 @@ typedef struct _Decorator {
 } Decorator;
 
 void decorator_init();
-int decorate_message(Message *msg, DecoratorFlag flag, void *user_data);
-// char* decorate_content(const char *content, DecoratorFlag flag);
+SrnRet decorate_message(Message *msg, DecoratorFlag flag, void *user_data);
 
 int relay_decroator_add_nick(Chat *chat, const char *nick);
 int relay_decroator_rm_nick(Chat *chat, const char *nick);

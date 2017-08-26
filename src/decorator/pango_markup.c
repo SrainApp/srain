@@ -62,7 +62,7 @@
 
 #define EMAIL_PATTERN       "[a-z0-9][._+%a-z0-9-]+@" HOST_PATTERN
 
-static int pango_markup(Message *msg, DecoratorFlag flag, void *user_data);
+static char* pango_markup(Message *msg, int index, const char *frag);
 
 Decorator pango_markup_decroator = {
     .name = "pango_markup",
@@ -115,17 +115,17 @@ fin:
     return ret;
 }
 
-static int pango_markup(Message *msg, DecoratorFlag flag, void *user_data){
+static char* pango_markup(Message *msg, int index, const char *frag){
     int start, end;
     int tmpstart, tmpend;
     char *left;
-    char *ptr, *ptrend;
+    const char *ptr, *ptrend;
     char *url, *markuped_url;
     GString *dcontent;
     MatchType type;
 
-    ptr = msg->dcontent;
-    ptrend = msg->dcontent + strlen(msg->dcontent);
+    ptr = frag;
+    ptrend = frag + strlen(frag);
     dcontent = g_string_new(NULL);
 
     while (ptr < ptrend) {
@@ -201,11 +201,9 @@ static int pango_markup(Message *msg, DecoratorFlag flag, void *user_data){
         ptr += end;
     }
 
-    DBG_FR("Result: %s", dcontent->str);
-
-    g_free(msg->dcontent);
-    msg->dcontent = dcontent->str;
+    char *str;
+    str = dcontent->str;
     g_string_free(dcontent, FALSE);
 
-    return SRN_OK;
+    return str;
 }

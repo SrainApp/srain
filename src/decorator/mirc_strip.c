@@ -24,20 +24,20 @@
 #include "srain.h"
 #include "log.h"
 
-static int mirc_stirp(Message *msg, DecoratorFlag flag, void *user_data);
+static char *mirc_stirp(Message *msg, int index, const char *frag);
 
 Decorator mirc_strip_decroator = {
     .name = "mirc_strip",
     .func = mirc_stirp,
 };
 
-int mirc_stirp(Message *msg, DecoratorFlag flag, void *user_data){
+static char *mirc_stirp(Message *msg, int index, const char *frag){
     int i;
     int j;
     int len;
     char *str;
 
-    str = g_strdup(msg->dcontent);
+    str = g_strdup(frag);
 
     j = 0;
     len = strlen(str);
@@ -63,8 +63,5 @@ int mirc_stirp(Message *msg, DecoratorFlag flag, void *user_data){
 
     str[j] = '\0';
 
-    g_free(msg->dcontent);
-    msg->dcontent = str;
-
-    return SRN_OK;
+    return str;
 }

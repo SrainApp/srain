@@ -26,25 +26,27 @@
 #include "srain.h"
 #include "log.h"
 
-static int mention(Message *msg, DecoratorFlag flag, void *user_data);
+static char* mention(Message *msg, int index, const char *frag);
 
 Decorator mention_decroator = {
     .name = "mention",
     .func = mention,
 };
 
-
-static int mention(Message *msg, DecoratorFlag flag, void *user_data){
-    char *nick;
+static char* mention(Message *msg, int index, const char *frag){
+    char *nick = NULL;
     char pattern[128];
     GError *err;
-    GRegex *regex;
-    GMatchInfo *match_info;
+    GRegex *regex = NULL;
+    GMatchInfo *match_info = NULL;
+
+    if (msg->mentioned){
+        goto FIN;
+    }
 
     /* Genertate pattern */
     nick = g_regex_escape_string(msg->chat->srv->user->nick, -1);
     snprintf(pattern, sizeof(pattern), "\\b%s\\b", nick);
-    g_free(nick);
 
     DBG_FR("Generated pattern: %s", pattern);
 
@@ -52,16 +54,24 @@ static int mention(Message *msg, DecoratorFlag flag, void *user_data){
     regex = g_regex_new(pattern, G_REGEX_CASELESS, 0, &err);
     if (!regex){
         ERR_FR("g_regex_new() failed: %s", err->message);
-        return SRN_ERR;
+        goto FIN;
     }
 
-    if (g_regex_match(regex, msg->dcontent, 0, &match_info)){
-        DBG_FR("Matchted");
+    if (g_regex_match(regex, frag, 0, &match_info)){
+        LOG_FR("Mentioned, nick: %s, content: %s", nick, frag);
         msg->mentioned = TRUE;
     }
 
-    g_match_info_free(match_info);
-    g_regex_unref(regex);
+FIN:
+    if (match_info){
+        g_match_info_free(match_info);
+    }
+    if (regex){
+        g_regex_unref(regex);
+    }
+    if (nick){
+        g_free(nick);
+    }
 
-    return SRN_OK;
+    return NULL;
 }

@@ -26,24 +26,57 @@
  */
 
 #include <glib.h>
-#include <string.h>
 
 #include "decorator.h"
 
 #include "srain.h"
 #include "log.h"
+#include "utils.h"
 
 #define MAX_DECORATOR   32  // Bits of a DecoratorFlag(int)
+
+#define DECORATOR_TAG_FIRST     1 << 0
+#define DECORATOR_TAG_LAST      1 << 1
+
+typedef struct _DecoratorContext {
+    int index;
+    Message *msg;
+    Decorator *decorator;
+    GString *str;
+} DecoratorContext;
+
+static SrnRet do_decorate(DecoratorContext *ctx);
+void start_element(GMarkupParseContext *context, const gchar *element_name,
+        const gchar **attribute_names, const gchar **attribute_values,
+        gpointer user_data, GError **error);
+static void end_element(GMarkupParseContext *context, const gchar *element_name,
+        gpointer user_data, GError **error);
+static void text(GMarkupParseContext *context, const gchar *text, gsize text_len,
+        gpointer user_data, GError **error);
+static void passthrough(GMarkupParseContext *context,
+        const gchar *passthrough_text, gsize text_len, gpointer user_data,
+        GError **error);
+static void error(GMarkupParseContext *context, GError *error,
+        gpointer user_data);
 
 extern Decorator relay_decroator;
 extern Decorator mirc_strip_decroator;
 extern Decorator pango_markup_decroator;
 extern Decorator mention_decroator;
-
 static Decorator *decorators[MAX_DECORATOR];
 
+static GMarkupParser parser = {
+    .start_element = start_element,
+    .end_element = end_element,
+    .text = text,
+    .passthrough = passthrough,
+    .error = error,
+};
+
 void decorator_init(){
-    memset(decorators, 0, sizeof(decorators));
+    for (int i = 0; i < MAX_DECORATOR; i++){
+        decorators[i] = NULL;
+    }
 
     decorators[0] = &relay_decroator;
     decorators[2] = &mirc_strip_decroator;
@@ -51,46 +84,155 @@ void decorator_init(){
     decorators[4] = &mention_decroator;
 }
 
-int decorate_message(Message *msg, DecoratorFlag flag, void *user_data){
-    int ret;
-
+SrnRet decorate_message(Message *msg, DecoratorFlag flag, void *user_data){
     for (int i = 0; i < MAX_DECORATOR; i++){
-        if ((flag & (1 << i))
-                && decorators[i]
-                && decorators[i]->name
-                && decorators[i]->func){
+        DecoratorContext *ctx;
 
-            DBG_FR("Run decorator '%s' for message %p", decorators[i]->name, msg);
-
-            ret = decorators[i]->func(msg, flag, user_data);
-            if (ret != SRN_OK){
-                ERR_FR("Decorator '%s' return %d for message %p",
-                        decorators[i]->name, ret, msg);
-
-                return ret;
-            }
-        } else {
+        if (!(flag & (1 << i))
+                || !decorators[i]
+                || !decorators[i]->name
+                || !decorators[i]->func){
             // DBG_FR("No available decorator for bit %d", i);
+            continue;
         }
+
+        DBG_FR("Run decorator '%s' for message %p", decorators[i]->name, msg);
+
+        // Set decorator context
+        ctx = g_malloc0(sizeof(DecoratorContext));
+        ctx->index = 0;
+        ctx->msg = msg;
+        ctx->decorator = decorators[i];
+        ctx->str = g_string_new(NULL);
+
+        do_decorate(ctx);
+
+        g_string_free(ctx->str, TRUE);
+        g_free(ctx);
     }
+
+    LOG_FR("Decorated message: %s", msg->dcontent);
 
     return SRN_OK;
 }
 
-/*
-char* decorate_content(const char *content, DecoratorFlag flag){
-    char *dcontent;
+/**
+ * @brief do_decorate
+ *
+ * @param ctx
+ *
+ * @return
+ *
+ * NOTE: This functions shouldn't motify Message(``ctx->msg``) directly.
+ */
+static SrnRet do_decorate(DecoratorContext *ctx){
+    GError *err;
+    GMarkupParseContext *parse_ctx;
 
-    Message *msg = message_new(NULL, NULL, content);
+    parse_ctx = g_markup_parse_context_new(&parser, 0, ctx, NULL);
+    g_markup_parse_context_parse(parse_ctx, "<markup>", -1, NULL);
 
-    if (decorate_message(msg, flag, NULL) == SRN_OK){
-        dcontent = g_strdup(msg->dcontent);
-    } else {
-        dcontent = NULL;
+    err = NULL;
+    g_markup_parse_context_parse(parse_ctx, ctx->msg->dcontent, -1, &err);
+    if (err){
+        ERR_FR("Markup parse error: %s", err->message);
+        return SRN_ERR;
     }
 
-    message_free(msg);
+    g_markup_parse_context_parse(parse_ctx, "</markup>", -1, NULL);
+    g_markup_parse_context_end_parse(parse_ctx, NULL);
+    g_markup_parse_context_free(parse_ctx);
 
-    return dcontent;
+    str_assign(&ctx->msg->dcontent, ctx->str->str);
+
+    DBG_FR("Decorator '%s' decorated message: %s",
+            ctx->decorator->name, ctx->msg->dcontent);
+
+    return SRN_OK;
 }
-*/
+
+/* Makeup parser callbacks
+ * ref: https://developer.gnome.org/glib/stable/glib-Simple-XML-Subset-Parser.html#GMarkupParser
+ */
+
+void start_element(GMarkupParseContext *context, const gchar *element_name,
+        const gchar **attribute_names, const gchar **attribute_values,
+        gpointer user_data, GError **error){
+    DecoratorContext *ctx = user_data;
+
+    if (g_strcmp0(element_name, "markup") == 0){
+        return;
+    }
+
+    GString *attr_list = g_string_new(NULL);
+    int i = 0;
+    while (attribute_names[i] != NULL){
+        g_string_append_printf(attr_list, " %s=\"%s\"",
+                attribute_names[i], attribute_values[i]);
+        i++;
+    }
+
+    DBG_FR("Start tag: %s, attr: %s", element_name, attr_list->str);
+
+    g_string_append_printf(ctx->str, "<%s%s>", element_name, attr_list->str);
+
+    g_string_free(attr_list, TRUE);
+}
+
+static void end_element(GMarkupParseContext *context, const gchar *element_name,
+        gpointer user_data, GError **error){
+    DecoratorContext *ctx = user_data;
+
+    if (g_strcmp0(element_name, "markup") == 0){
+        return;
+    }
+
+    DBG_FR("End tag: %s", element_name);
+
+    g_string_append_printf(ctx->str, "</%s>", element_name);
+}
+
+/* NOTE: text is not nul-terminated */
+static void text(GMarkupParseContext *context, const gchar *text, gsize text_len,
+        gpointer user_data, GError **error){
+    char *frag;
+    char *dfrag;
+    DecoratorContext *ctx = user_data;
+
+    if (text_len == 0){
+        // No text between two xml tags
+        return;
+    }
+
+    frag = g_strndup(text, text_len);
+    DBG_FR("Decorating: index: %d, fragment: %s", ctx->index, frag);
+
+    dfrag = ctx->decorator->func(ctx->msg, ctx->index, frag);
+    ctx->index++;
+    DBG_FR("Decorated fragment: %s", dfrag);
+
+    if (!dfrag) { // ``ctx->decorator`` doesn't do any change to ``frag``
+        dfrag = g_markup_escape_text(frag, -1);
+    }
+
+    ctx->str = g_string_append(ctx->str, dfrag);
+
+    g_free(dfrag);
+    g_free(frag);
+}
+
+/* Called for strings that should be re-saved verbatim in this same
+ * position, but are not otherwise interpretable.  At the moment
+ * this includes comments and processing instructions.
+ * NOTE: text is not nul-terminated.
+ */
+static void passthrough(GMarkupParseContext *context,
+        const gchar *passthrough_text, gsize text_len, gpointer user_data,
+        GError **error){
+    /* Ignore comments for now */
+}
+
+static void error(GMarkupParseContext *context, GError *error,
+        gpointer user_data){
+    ERR_FR("Markup parse error: %s", error->message);
+}
