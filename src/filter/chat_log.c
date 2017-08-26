@@ -39,14 +39,14 @@
 #include "i18n.h"
 #include "file_helper.h"
 
-static bool chat_log(const Message *msg, FilterFlag flag, void *user_data);
+static bool chat_log(const Message *msg, const char *content);
 
 Filter chat_log_filter = {
     .name = "chat_log",
     .func = chat_log,
 };
 
-bool chat_log(const Message *msg, FilterFlag flag, void *user_data){
+static bool chat_log(const Message *msg, const char *content){
     char timestr[32];
     char datestr[32];
     FILE *fp;
@@ -76,20 +76,21 @@ bool chat_log(const Message *msg, FilterFlag flag, void *user_data){
 
     switch (msg->type){
         case MESSAGE_SENT:
-            fprintf(fp,"[%s] <%s*> %s\n", timestr, msg->user->nick, msg->content);
+            fprintf(fp,"[%s] <%s*> %s\n", timestr, msg->user->nick, content);
             break;
         case MESSAGE_RECV:
+            // FIXME: relay message
         case MESSAGE_NOTICE:
-            fprintf(fp,"[%s] <%s> %s\n", timestr, msg->user->nick, msg->content);
+            fprintf(fp,"[%s] <%s> %s\n", timestr, msg->user->nick, content);
             break;
         case MESSAGE_ACTION:
-            fprintf(fp,"[%s] * %s %s\n", timestr, msg->user->nick, msg->content);
+            fprintf(fp,"[%s] * %s %s\n", timestr, msg->user->nick, content);
             break;
         case MESSAGE_MISC:
-            fprintf(fp,"[%s] = %s\n", timestr, msg->content);
+            fprintf(fp,"[%s] = %s\n", timestr, content);
             break;
         case MESSAGE_ERROR:
-            fprintf(fp,"[%s] ! %s\n", timestr, msg->content);
+            fprintf(fp,"[%s] ! %s\n", timestr, content);
             break;
         case MESSAGE_UNKNOWN:
         default:

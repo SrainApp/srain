@@ -41,7 +41,7 @@ typedef struct _NamedPattern {
 } NamedPattern;
 
 static void named_pattern_free(NamedPattern *np);
-static bool regex(const Message *msg, FilterFlag flag, void *user_data);
+static bool regex(const Message *msg, const char *content);
 
 Filter regex_filter = {
     .name = "regex",
@@ -127,7 +127,7 @@ void regex_filter_free_list(Chat *chat){
     chat->ignore_regex_list = NULL;
 }
 
-bool regex(const Message *msg, FilterFlag flag, void *user_data){
+static bool regex(const Message *msg, const char *content){
     GSList *lst;
     NamedPattern *np;
 
@@ -139,7 +139,7 @@ bool regex(const Message *msg, FilterFlag flag, void *user_data){
     while (lst){
         if (lst->data){
             np = lst->data;
-            if(g_regex_match_simple(np->pattern, msg->content, 0, 0)){
+            if(g_regex_match_simple(np->pattern, content, 0, 0)){
                 return FALSE;
             }
         }
@@ -150,7 +150,7 @@ bool regex(const Message *msg, FilterFlag flag, void *user_data){
     while (lst){
         if (lst->data){
             np = lst->data;
-            if(g_regex_match_simple(np->pattern, msg->content, 0, 0)){
+            if(g_regex_match_simple(np->pattern, content, 0, 0)){
                 return FALSE;
             }
         }

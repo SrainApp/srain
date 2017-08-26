@@ -26,7 +26,6 @@
  */
 
 #include <glib.h>
-#include <string.h>
 
 #include "filter.h"
 
@@ -35,14 +34,44 @@
 
 #define MAX_FILTER   32  // Bits of a FilterFlag(int)
 
+typedef struct _FilterContext {
+    const Message *msg;
+    Filter *filter;
+    GString *str;
+} FilterContext;
+
+static bool do_filter(FilterContext *ctx);
+static void start_element(GMarkupParseContext *context, const gchar *element_name,
+        const gchar **attribute_names, const gchar **attribute_values,
+        gpointer user_data, GError **error);
+static void end_element(GMarkupParseContext *context, const gchar *element_name,
+        gpointer user_data, GError **error);
+static void text(GMarkupParseContext *context, const gchar *text, gsize text_len,
+        gpointer user_data, GError **error);
+static void passthrough(GMarkupParseContext *context,
+        const gchar *passthrough_text, gsize text_len, gpointer user_data,
+        GError **error);
+static void error(GMarkupParseContext *context, GError *error,
+        gpointer user_data);
+
 extern Filter nick_filter;
 extern Filter regex_filter;
 extern Filter chat_log_filter;
 
 static Filter *filters[MAX_FILTER];
 
+static GMarkupParser parser = {
+    .start_element = start_element,
+    .end_element = end_element,
+    .text = text,
+    .passthrough = passthrough,
+    .error = error,
+};
+
 void filter_init(){
-    memset(filters, 0, sizeof(filters));
+    for (int i = 0; i < MAX_FILTER; i++){
+        filters[i] = NULL;
+    }
 
     filters[0] = &nick_filter;
     filters[1] = &regex_filter;
@@ -53,21 +82,97 @@ bool filter_message(const Message *msg, FilterFlag flag, void *user_data){
     int ret;
 
     for (int i = 0; i < MAX_FILTER; i++){
-        if ((flag & (1 << i))
-                && filters[i]
-                && filters[i]->name
-                && filters[i]->func){
+        FilterContext *ctx;
 
-            DBG_FR("Run filter '%s' for message %p", filters[i]->name, msg);
+        if (!(flag & (1 << i))
+                || !filters[i]
+                || !filters[i]->name
+                || !filters[i]->func){
+            // DBG_FR("No available filter for bit %d", i);
+            continue;
+        }
 
-            ret = filters[i]->func(msg, flag, user_data);
-            if (!ret){
-                DBG_FR("Filter '%s' blocked message %p", filters[i]->name, msg);
+        DBG_FR("Run filter '%s' for message %p", filters[i]->name, msg);
 
-                break;
-            }
+        ctx = g_malloc0(sizeof(FilterContext));
+        ctx->msg = msg;
+        ctx->filter = filters[i];
+        ctx->str = g_string_new(NULL);
+
+        ret = do_filter(ctx);
+
+        g_string_free(ctx->str, TRUE);
+        g_free(ctx);
+
+        if (!ret){
+            LOG_FR("Filter '%s' blocked message %p", filters[i]->name, msg);
+            break;
         }
     }
 
     return ret;
+}
+
+static bool do_filter(FilterContext *ctx){
+    GError *err;
+    GMarkupParseContext *parse_ctx;
+
+    parse_ctx = g_markup_parse_context_new(&parser, 0, ctx, NULL);
+    g_markup_parse_context_parse(parse_ctx, "<markup>", -1, NULL);
+
+    err = NULL;
+    g_markup_parse_context_parse(parse_ctx, ctx->msg->dcontent, -1, &err);
+    if (err){
+        ERR_FR("Markup parse error: %s", err->message);
+        return FALSE;
+    }
+
+    g_markup_parse_context_parse(parse_ctx, "</markup>", -1, NULL);
+    g_markup_parse_context_end_parse(parse_ctx, NULL);
+    g_markup_parse_context_free(parse_ctx);
+
+    return ctx->filter->func(ctx->msg, ctx->str->str);
+}
+
+
+/* Makeup parser callbacks
+ * ref: https://developer.gnome.org/glib/stable/glib-Simple-XML-Subset-Parser.html#GMarkupParser
+ */
+
+static void start_element(GMarkupParseContext *context, const gchar *element_name,
+        const gchar **attribute_names, const gchar **attribute_values,
+        gpointer user_data, GError **error){
+}
+
+static void end_element(GMarkupParseContext *context, const gchar *element_name,
+        gpointer user_data, GError **error){
+}
+
+/* NOTE: text is not nul-terminated */
+static void text(GMarkupParseContext *context, const gchar *text, gsize text_len,
+        gpointer user_data, GError **error){
+    FilterContext *ctx = user_data;
+
+    if (text_len == 0){
+        // No text between two xml tags
+        return;
+    }
+
+    ctx->str = g_string_append_len(ctx->str, text, text_len);
+}
+
+/* Called for strings that should be re-saved verbatim in this same
+ * position, but are not otherwise interpretable.  At the moment
+ * this includes comments and processing instructions.
+ * NOTE: text is not nul-terminated.
+ */
+static void passthrough(GMarkupParseContext *context,
+        const gchar *passthrough_text, gsize text_len, gpointer user_data,
+        GError **error){
+    /* Ignore comments for now */
+}
+
+static void error(GMarkupParseContext *context, GError *error,
+        gpointer user_data){
+    ERR_FR("Markup parse error: %s", error->message);
 }

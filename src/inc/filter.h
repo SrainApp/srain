@@ -28,7 +28,7 @@
 
 typedef int FilterFlag;
 
-typedef bool (FilterFunc) (const Message *msg, FilterFlag flag, void *user_data);;
+typedef bool (FilterFunc) (const Message *msg, const char *text);
 
 typedef struct _Filter {
     const char *name;

@@ -37,7 +37,7 @@
 #include "log.h"
 #include "i18n.h"
 
-static bool nick(const Message *msg, FilterFlag flag, void *user_data);
+static bool nick(const Message *msg, const char *content);
 
 Filter nick_filter = {
     .name = "nick",
@@ -100,7 +100,7 @@ void nick_filter_free_list(Chat *chat){
     chat->ignore_nick_list = NULL;
 }
 
-bool nick(const Message *msg, FilterFlag flag, void *user_data){
+static bool nick(const Message *msg, const char *content){
     GSList *lst;
 
     g_return_val_if_fail(msg->chat, TRUE);
