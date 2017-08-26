@@ -16,6 +16,8 @@ Change Log
   - IRC URL can be opened directly within the application
   - Text in input entry, connection panel and join panel will not be cleared
     while operation is not successful
+  - Fixed: in some cases, nickname registration will case infinity loop
+  - Decorator now can process pure xml message
 
 2017-08-18 Version 0.06.1
 =========================
