@@ -242,12 +242,11 @@ void chat_add_sent_message(Chat *chat, const char *content){
     fflag = FILTER_CHAT_LOG;
     msg = message_new(chat, user, content, MESSAGE_SENT);
 
-    if (!filter_message(msg, fflag, NULL)){
-        /* Ignore this message */
+    if (decorate_message(msg, dflag, NULL) != SRN_OK){
         goto cleanup;
     }
-
-    if (decorate_message(msg, dflag, NULL) != SRN_OK){
+    if (!filter_message(msg, fflag, NULL)){
+        /* Ignore this message */
         goto cleanup;
     }
 
@@ -292,11 +291,10 @@ void chat_add_recv_message(Chat *chat, const char *origin, const char *content){
 
     msg = message_new(chat, user, content, MESSAGE_RECV);
 
-    if (!filter_message(msg, fflag, NULL)){
+    if (decorate_message(msg, dflag, NULL) != SRN_OK){
         goto cleanup;
     }
-
-    if (decorate_message(msg, dflag, NULL) != SRN_OK){
+    if (!filter_message(msg, fflag, NULL)){
         goto cleanup;
     }
 
@@ -362,10 +360,10 @@ void chat_add_action_message(Chat *chat, const char *origin, const char *content
         dflag |= DECORATOR_RELAY | DECORATOR_MIRC_STRIP | DECORATOR_MENTION;
     }
 
-    if (!filter_message(msg, fflag, NULL)){
+    if (decorate_message(msg, dflag, NULL) != SRN_OK){
         goto cleanup;
     }
-    if (decorate_message(msg, dflag, NULL) != SRN_OK){
+    if (!filter_message(msg, fflag, NULL)){
         goto cleanup;
     }
 
@@ -417,11 +415,10 @@ void chat_add_misc_message(Chat *chat, const char *origin, const char *content){
     fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
     msg = message_new(chat, user, content, MESSAGE_MISC);
 
-    if (!filter_message(msg, fflag, NULL)){
+    if (decorate_message(msg, dflag, NULL) != SRN_OK){
         goto cleanup;
     }
-
-    if (decorate_message(msg, dflag, NULL) != SRN_OK){
+    if (!filter_message(msg, fflag, NULL)){
         goto cleanup;
     }
 
@@ -470,10 +467,10 @@ void chat_add_error_message(Chat *chat, const char *origin, const char *content)
     fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
     msg = message_new(chat, user, content, MESSAGE_ERROR);
 
-    if (!filter_message(msg, fflag, NULL)){
+    if (decorate_message(msg, dflag, NULL) != SRN_OK){
         goto cleanup;
     }
-    if (decorate_message(msg, dflag, NULL) != SRN_OK){
+    if (!filter_message(msg, fflag, NULL)){
         goto cleanup;
     }
 
