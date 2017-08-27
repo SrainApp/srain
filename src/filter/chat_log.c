@@ -76,21 +76,20 @@ static bool chat_log(const Message *msg, const char *content){
 
     switch (msg->type){
         case MESSAGE_SENT:
-            fprintf(fp,"[%s] <%s*> %s\n", timestr, msg->user->nick, content);
+            fprintf(fp,"[%s] <%s*> %s\n", timestr, msg->user->nick, msg->content);
             break;
         case MESSAGE_RECV:
-            // FIXME: relay message
         case MESSAGE_NOTICE:
-            fprintf(fp,"[%s] <%s> %s\n", timestr, msg->user->nick, content);
+            fprintf(fp,"[%s] <%s> %s\n", timestr, msg->user->nick, msg->content);
             break;
         case MESSAGE_ACTION:
-            fprintf(fp,"[%s] * %s %s\n", timestr, msg->user->nick, content);
+            fprintf(fp,"[%s] * %s %s\n", timestr, msg->user->nick, msg->content);
             break;
         case MESSAGE_MISC:
-            fprintf(fp,"[%s] = %s\n", timestr, content);
+            fprintf(fp,"[%s] = %s\n", timestr, msg->content);
             break;
         case MESSAGE_ERROR:
-            fprintf(fp,"[%s] ! %s\n", timestr, content);
+            fprintf(fp,"[%s] ! %s\n", timestr, msg->content);
             break;
         case MESSAGE_UNKNOWN:
         default:
