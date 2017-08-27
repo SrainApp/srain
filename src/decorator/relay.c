@@ -27,6 +27,7 @@
 #include "srain.h"
 #include "log.h"
 #include "i18n.h"
+#include "utils.h"
 
 static char* relay(Message *msg, int index, const char *frag);
 
@@ -92,7 +93,6 @@ void relay_decroator_free_list(Chat *chat){
 }
 
 static char* relay(Message *msg, int index, const char *frag){
-    int i;
     char *dnick;
     char *dcontent = NULL;
     GSList *lst;
@@ -113,33 +113,50 @@ static char* relay(Message *msg, int index, const char *frag){
         return NULL;
     }
 
-    for (i = 0, lst = msg->chat->relaybot_list;
-            i < 2;
-            i++, lst = msg->chat->srv->chat->relaybot_list){
-        while (lst){
-            if (sirc_nick_cmp(msg->user->nick, lst->data)){
-                DBG_FR("Brige bot '%s' found", (char *)lst->data);
-                g_regex_match(regex, frag, 0, &match_info);
+    lst = msg->chat->relaybot_list;
+    while (lst){
+        if (sirc_nick_cmp(msg->user->nick, lst->data)){
+            DBG_FR("Brige bot '%s' found", (char *)lst->data);
+            g_regex_match(regex, frag, 0, &match_info);
 
-                if (g_match_info_matches(match_info)){
-                    dnick = g_match_info_fetch_named(match_info, "nick");
-                    dcontent = g_match_info_fetch_named(match_info, "text");
+            if (g_match_info_matches(match_info)){
+                dnick = g_match_info_fetch_named(match_info, "nick");
+                dcontent = g_match_info_fetch_named(match_info, "text");
 
-                    g_free(msg->dname);
-                    msg->dname = dnick;
-                    msg->role = g_strdup(msg->user->nick);
+                str_assign(&msg->dname, dnick);
+                str_assign(&msg->role, msg->user->nick);
 
-                    LOG_FR("Relay message matched, nick: %s, content: %s", dnick, dcontent);
-
-                    goto FIN;
-                }
+                LOG_FR("Relay message matched, nick: %s, content: %s", dnick, dcontent);
 
                 g_match_info_free(match_info);
-
+                goto FIN;
             }
-
-            lst = g_slist_next(lst);
+            g_match_info_free(match_info);
         }
+        lst = g_slist_next(lst);
+    }
+
+    lst = msg->chat->srv->chat->relaybot_list;
+    while (lst){
+        if (sirc_nick_cmp(msg->user->nick, lst->data)){
+            DBG_FR("Brige bot '%s' found", (char *)lst->data);
+            g_regex_match(regex, frag, 0, &match_info);
+
+            if (g_match_info_matches(match_info)){
+                dnick = g_match_info_fetch_named(match_info, "nick");
+                dcontent = g_match_info_fetch_named(match_info, "text");
+
+                str_assign(&msg->dname, dnick);
+                str_assign(&msg->role, msg->user->nick);
+
+                LOG_FR("Relay message matched, nick: %s, content: %s", dnick, dcontent);
+
+                g_match_info_free(match_info);
+                goto FIN;
+            }
+            g_match_info_free(match_info);
+        }
+        lst = g_slist_next(lst);
     }
 
 FIN:

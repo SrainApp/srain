@@ -78,6 +78,18 @@ void filter_init(){
     filters[2] = &chat_log_filter;
 }
 
+/**
+ * @brief filter_message Converts the XML formatted message to plain text, then
+ *      pass the plain text to each filter module, if a filter returns ``FALSE``,
+ *      This message will not be passed to the next module.
+ *
+ * @param msg A Message instance, ``msg->dcontent`` should be valid XML which
+ *      may without root tag
+ * @param flag Indicates which filter modules to use
+ * @param user_data Deprecated
+ *
+ * @return FALSE if this message should be ignored
+ */
 bool filter_message(const Message *msg, FilterFlag flag, void *user_data){
     int ret;
 

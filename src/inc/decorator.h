@@ -30,13 +30,14 @@
 typedef int DecoratorFlag;
 
 /**
- * @brief DecoratorFunc Decorator module will parse the ``dcontent`` of Message,
- *      Divide it text by xml into several fragments. And pass the Message,
- *      fragment, the index of fragment to this function.
+ * @brief DecoratorFunc Any decorator module should implement this function,
+ *      accepts the text fragment of XML message, decorates it then return
+ *      the decorated fragment.
  *
- * @param msg A Message instance
+ * @param msg A Message instance, ``msg->dcontent`` should be valid XML which
+ *      may without root tag
  * @param index The index of ``frag`` in the current ``msg``
- * @param frag Fragment of ``msg->dcontent``, doesn't contain any XML tags
+ * @param frag Plain text fragment of ``msg->dcontent``
  *
  * @return The decorated fragment, should be freed by ``g_free()``
  */

@@ -28,7 +28,17 @@
 
 typedef int FilterFlag;
 
-typedef bool (FilterFunc) (const Message *msg, const char *text);
+/**
+ * @brief FilterFunc Any filter module should implement this function,
+ *      accepts the plain text of XML message
+ *
+ * @param msg A Message instance, ``msg->dcontent`` should be valid XML which
+ *      may without root tag
+ * @param content The plain text of ``msg->dcontent``
+ *
+ * @return FALSE if filter thinks this message should be ignored
+ */
+typedef bool (FilterFunc) (const Message *msg, const char *content);
 
 typedef struct _Filter {
     const char *name;

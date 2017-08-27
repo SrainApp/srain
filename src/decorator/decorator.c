@@ -35,9 +35,6 @@
 
 #define MAX_DECORATOR   32  // Bits of a DecoratorFlag(int)
 
-#define DECORATOR_TAG_FIRST     1 << 0
-#define DECORATOR_TAG_LAST      1 << 1
-
 typedef struct _DecoratorContext {
     int index;
     Message *msg;
@@ -46,7 +43,7 @@ typedef struct _DecoratorContext {
 } DecoratorContext;
 
 static SrnRet do_decorate(DecoratorContext *ctx);
-void start_element(GMarkupParseContext *context, const gchar *element_name,
+static void start_element(GMarkupParseContext *context, const gchar *element_name,
         const gchar **attribute_names, const gchar **attribute_values,
         gpointer user_data, GError **error);
 static void end_element(GMarkupParseContext *context, const gchar *element_name,
@@ -84,6 +81,24 @@ void decorator_init(){
     decorators[4] = &mention_decroator;
 }
 
+/**
+ * @brief decorate_message Parse the XML formatted message, pass the plain
+ *      text fragment(the text between XML tags) to decorator module.
+ *      Decorator module returns the decorated fragment and this function
+ *      combines the decorated fragment with the original tags. Finally the
+ *      decorated message will be stored in ``msg->dcontent`` and may be passed
+ *      to the next decorator modules.
+ *
+ * @param msg A Message instance, ``msg->dcontent`` should be valid XML which
+ *      may without root tag
+ * @param flag Indicates which decorator modules to use
+ * @param user_data Deprecated
+ *
+ * @return SRN_OK if success
+ *
+ * NOTE: As mentioned aboved, decorator module's DecoratorFunc may be called
+ * multiple times for single Message instance.
+ */
 SrnRet decorate_message(Message *msg, DecoratorFlag flag, void *user_data){
     for (int i = 0; i < MAX_DECORATOR; i++){
         DecoratorContext *ctx;
@@ -116,15 +131,6 @@ SrnRet decorate_message(Message *msg, DecoratorFlag flag, void *user_data){
     return SRN_OK;
 }
 
-/**
- * @brief do_decorate
- *
- * @param ctx
- *
- * @return
- *
- * NOTE: This functions shouldn't motify Message(``ctx->msg``) directly.
- */
 static SrnRet do_decorate(DecoratorContext *ctx){
     GError *err;
     GMarkupParseContext *parse_ctx;
@@ -155,7 +161,7 @@ static SrnRet do_decorate(DecoratorContext *ctx){
  * ref: https://developer.gnome.org/glib/stable/glib-Simple-XML-Subset-Parser.html#GMarkupParser
  */
 
-void start_element(GMarkupParseContext *context, const gchar *element_name,
+static void start_element(GMarkupParseContext *context, const gchar *element_name,
         const gchar **attribute_names, const gchar **attribute_values,
         gpointer user_data, GError **error){
     DecoratorContext *ctx = user_data;
