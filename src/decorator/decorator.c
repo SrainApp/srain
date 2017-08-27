@@ -57,6 +57,7 @@ static void error(GMarkupParseContext *context, GError *error,
         gpointer user_data);
 
 extern Decorator relay_decroator;
+extern Decorator mirc_colorize_decroator;
 extern Decorator mirc_strip_decroator;
 extern Decorator pango_markup_decroator;
 extern Decorator mention_decroator;
@@ -75,8 +76,9 @@ void decorator_init(){
         decorators[i] = NULL;
     }
 
-    decorators[0] = &relay_decroator;
-    decorators[2] = &mirc_strip_decroator;
+    decorators[0] = &mirc_strip_decroator;
+    decorators[1] = &mirc_colorize_decroator;
+    decorators[2] = &relay_decroator;;
     decorators[3] = &pango_markup_decroator;
     decorators[4] = &mention_decroator;
 }
