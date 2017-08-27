@@ -280,7 +280,12 @@ void chat_add_recv_message(Chat *chat, const char *origin, const char *content){
     DecoratorFlag dflag;
     FilterFlag fflag;
 
-    dflag = DECORATOR_PANGO_MARKUP |DECORATOR_RELAY | DECORATOR_MIRC_STRIP | DECORATOR_MENTION;
+    dflag = DECORATOR_PANGO_MARKUP | DECORATOR_RELAY | DECORATOR_MENTION;
+    if (chat->ui_prefs->render_mirc_color) {
+        dflag |= DECORATOR_MIRC_COLORIZE;
+    } else {
+        dflag |= DECORATOR_MIRC_STRIP;
+    }
     fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
 
     user = chat_get_user(chat, origin);
@@ -350,6 +355,11 @@ void chat_add_action_message(Chat *chat, const char *origin, const char *content
     }
 
     dflag = DECORATOR_PANGO_MARKUP;
+    if (chat->ui_prefs->render_mirc_color) {
+        dflag |= DECORATOR_MIRC_COLORIZE;
+    } else {
+        dflag |= DECORATOR_MIRC_STRIP;
+    }
     fflag = FILTER_CHAT_LOG;
 
     msg = message_new(chat, user, content, MESSAGE_ACTION);
@@ -357,7 +367,7 @@ void chat_add_action_message(Chat *chat, const char *origin, const char *content
     if (user->me){
     } else {
         fflag |= FILTER_NICK | FILTER_REGEX;
-        dflag |= DECORATOR_RELAY | DECORATOR_MIRC_STRIP | DECORATOR_MENTION;
+        dflag |= DECORATOR_RELAY | DECORATOR_MENTION;
     }
 
     if (decorate_message(msg, dflag, NULL) != SRN_OK){
@@ -518,7 +528,13 @@ void chat_set_topic(Chat *chat, const char *origin, const char *topic){
         invalid_user = TRUE;
     }
 
-    dflag = DECORATOR_MIRC_STRIP | DECORATOR_PANGO_MARKUP;
+    dflag = DECORATOR_PANGO_MARKUP;
+    if (chat->ui_prefs->render_mirc_color) {
+        dflag |= DECORATOR_MIRC_COLORIZE;
+    } else {
+        dflag |= DECORATOR_MIRC_STRIP;
+    }
+
     msg = message_new(chat, user, topic, MESSAGE_UNKNOWN);
 
     if (decorate_message(msg, dflag, NULL) == SRN_OK){

@@ -215,6 +215,7 @@ static SrnRet read_sui_prefs_from_chat(config_setting_t *chat, SuiPrefs *prefs){
     config_setting_lookup_bool_ex(chat, "show_avatar", &prefs->show_avatar);
     config_setting_lookup_bool_ex(chat, "show_user_list", &prefs->show_user_list);
     config_setting_lookup_bool_ex(chat, "preview_image", &prefs->preview_image);
+    config_setting_lookup_bool_ex(chat, "render_mirc_color", &prefs->render_mirc_color);
 
     return SRN_OK;
 }

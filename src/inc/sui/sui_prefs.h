@@ -40,6 +40,7 @@ struct _SuiPrefs {
     bool show_avatar;
     bool show_user_list;
     bool preview_image;
+    bool render_mirc_color;
 };
 
 SuiAppPrefs *sui_app_prefs_new();
