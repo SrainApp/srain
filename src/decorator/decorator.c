@@ -76,9 +76,9 @@ void decorator_init(){
         decorators[i] = NULL;
     }
 
-    decorators[0] = &mirc_strip_decroator;
-    decorators[1] = &mirc_colorize_decroator;
-    decorators[2] = &relay_decroator;;
+    decorators[0] = &relay_decroator;
+    decorators[1] = &mirc_strip_decroator;
+    decorators[2] = &mirc_colorize_decroator;
     decorators[3] = &pango_markup_decroator;
     decorators[4] = &mention_decroator;
 }

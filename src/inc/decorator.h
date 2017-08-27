@@ -21,9 +21,9 @@
 
 #include "server.h"
 
-#define DECORATOR_MIRC_STRIP    1 << 0
-#define DECORATOR_MIRC_COLORIZE 1 << 1
-#define DECORATOR_RELAY         1 << 2
+#define DECORATOR_RELAY         1 << 0
+#define DECORATOR_MIRC_STRIP    1 << 1
+#define DECORATOR_MIRC_COLORIZE 1 << 2
 #define DECORATOR_PANGO_MARKUP  1 << 3
 #define DECORATOR_MENTION       1 << 4
 
