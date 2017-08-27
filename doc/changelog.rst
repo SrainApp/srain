@@ -10,6 +10,10 @@ Change Log
 2017-09-xx Version 0.06.2[Draft]
 ================================
 
+- Added:
+
+  - MIRC color support, can be configured via ``render_mirc_color`` option
+
 - Improved:
 
   - Better error reporting while operating the UI
@@ -17,7 +21,7 @@ Change Log
   - Text in input entry, connection panel and join panel will not be cleared
     while operation is not successful
   - Fixed: in some cases, nickname registration will case infinity loop
-  - Decorator now can process pure xml message
+  - Decorator and filter now can process xml message
 
 2017-08-18 Version 0.06.1
 =========================
