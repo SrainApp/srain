@@ -27,7 +27,7 @@
             <property name="wrap">True</property>
             <property name="selectable">True</property>
             <attributes>
-              <attribute name="weight" value="normal"/>
+                <attribute name="stretch" value="normal"/>
             </attributes>
           </object>
           <packing>
