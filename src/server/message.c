@@ -44,7 +44,7 @@ Message* message_new(Chat *chat, User *user, const char *content, MessageType ty
 
     /* Decorated */
     msg->dname = g_strdup(user->nick);
-    msg->dcontent = g_strdup(content);
+    msg->dcontent = g_markup_escape_text(content, -1);
 
     return msg;
 }
