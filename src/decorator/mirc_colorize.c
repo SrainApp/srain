@@ -256,9 +256,19 @@ static void do_colorize(ColorlizeContext *ctx, char ch){
                     WARN_FR("Invalid mirc background color: %u", ctx->bg_color);
                     break;
                 }
-                g_string_append_printf(ctx->str,
-                        "<span foreground=\"%s\" background=\"%s\">",
-                        color_map[ctx->fg_color], color_map[ctx->bg_color]);
+                if (ctx->fg_color == DEAFULT_FG_COLOR) {
+                    if (ctx->bg_color == DEAFULT_BG_COLOR) {
+                        ctx->ptr--; // Default color, tag can be omitted
+                    } else {
+                        g_string_append_printf(ctx->str,
+                                "<span background=\"%s\">",
+                                color_map[ctx->bg_color]);
+                    }
+                } else {
+                    g_string_append_printf(ctx->str,
+                            "<span foreground=\"%s\">",
+                            color_map[ctx->fg_color]);
+                }
                 break;
         }
     } else {
