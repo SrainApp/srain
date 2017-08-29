@@ -30,12 +30,12 @@
 #include "utils.h"
 
 static char* relay(Message *msg, int index, const char *frag);
+static char* do_relay(GSList *lst, Message *msg, const char *frag);
 
 Decorator relay_decroator = {
     .name = "relay",
     .func = relay,
 };
-
 int relay_decroator_add_nick(Chat *chat, const char *nick){
     GSList *lst;
 
@@ -93,17 +93,27 @@ void relay_decroator_free_list(Chat *chat){
 }
 
 static char* relay(Message *msg, int index, const char *frag){
-    char *dnick;
-    char *dcontent = NULL;
-    GSList *lst;
-    GError *err;
-    GRegex *regex;
-    GMatchInfo *match_info;
+    char *dcontent;
 
     if (index != 0) {
         DBG_FR("Only accept 0 while index = %d", index);
         return NULL;
     }
+
+    dcontent = do_relay(msg->chat->relaybot_list, msg, frag);
+    if (!dcontent) {
+        dcontent = do_relay(msg->chat->srv->chat->relaybot_list, msg, frag);
+    }
+
+    return dcontent;
+}
+
+static char* do_relay(GSList *lst, Message *msg, const char *frag){
+    char *dnick;
+    char *dcontent = NULL;
+    GError *err;
+    GRegex *regex;
+    GMatchInfo *match_info;
 
     /* ref: https://github.com/tuna/scripts/blob/master/weechat_bot2human.py#L46 */
     err = NULL;
@@ -113,53 +123,32 @@ static char* relay(Message *msg, int index, const char *frag){
         return NULL;
     }
 
-    lst = msg->chat->relaybot_list;
     while (lst){
         if (sirc_nick_cmp(msg->user->nick, lst->data)){
             DBG_FR("Brige bot '%s' found", (char *)lst->data);
             g_regex_match(regex, frag, 0, &match_info);
 
             if (g_match_info_matches(match_info)){
-                dnick = g_match_info_fetch_named(match_info, "nick");
-                dcontent = g_match_info_fetch_named(match_info, "text");
+                char *tmp;
 
+                dnick = g_match_info_fetch_named(match_info, "nick");
+                tmp = g_match_info_fetch_named(match_info, "text");
+
+                str_assign(&msg->role, msg->dname);
                 str_assign(&msg->dname, dnick);
-                str_assign(&msg->role, msg->user->nick);
+                dcontent = g_markup_escape_text(tmp, -1);
 
                 LOG_FR("Relay message matched, nick: %s, content: %s", dnick, dcontent);
 
+                g_free(tmp);
+                g_free(dnick);
                 g_match_info_free(match_info);
-                goto FIN;
             }
             g_match_info_free(match_info);
         }
         lst = g_slist_next(lst);
     }
 
-    lst = msg->chat->srv->chat->relaybot_list;
-    while (lst){
-        if (sirc_nick_cmp(msg->user->nick, lst->data)){
-            DBG_FR("Brige bot '%s' found", (char *)lst->data);
-            g_regex_match(regex, frag, 0, &match_info);
-
-            if (g_match_info_matches(match_info)){
-                dnick = g_match_info_fetch_named(match_info, "nick");
-                dcontent = g_match_info_fetch_named(match_info, "text");
-
-                str_assign(&msg->dname, dnick);
-                str_assign(&msg->role, msg->user->nick);
-
-                LOG_FR("Relay message matched, nick: %s, content: %s", dnick, dcontent);
-
-                g_match_info_free(match_info);
-                goto FIN;
-            }
-            g_match_info_free(match_info);
-        }
-        lst = g_slist_next(lst);
-    }
-
-FIN:
     g_regex_unref(regex);
 
     return dcontent;
