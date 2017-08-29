@@ -142,7 +142,6 @@ static char* do_relay(GSList *lst, Message *msg, const char *frag){
 
                 g_free(tmp);
                 g_free(dnick);
-                g_match_info_free(match_info);
             }
             g_match_info_free(match_info);
         }
