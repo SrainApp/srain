@@ -16,10 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file mirc_strip.c
+ * @brief mIRC strip decorator
+ * @author Shengyu Zhang <srain@srain.im>
+ * @version 0.06.1
+ * @date 2017-05-06
+ */
+
 #include <string.h>
 #include <glib.h>
 
 #include "decorator.h"
+#include "mirc.h"
 
 #include "srain.h"
 #include "log.h"
@@ -32,36 +41,65 @@ Decorator mirc_strip_decroator = {
 };
 
 static char *mirc_stirp(Message *msg, int index, const char *frag){
-    int i;
     int j;
     int len;
-    char *str;
+    char *dfrag;
+    GString *str;
 
-    str = g_strdup(frag);
+    str = g_string_new(NULL);
 
     j = 0;
-    len = strlen(str);
+    len = strlen(frag);
 
-    for (i = 0; i < len; i++){
-        switch (str[i]){
-            case 2: case 0xf: case 0x16:
-            case 0x1d: case 0x1f:
-                break;
-            case 3:  // irc color code
-                if (str[i+1] >= '0' && str[i+1] <= '9'){
-                    if (str[i+2] >= '0' && str[i+2] <= '9'){
-                        i += 2;
-                    } else {
-                        i += 1;
+    for (int i = 0; i < len; i++){
+        switch (frag[i]){
+            case MIRC_COLOR:
+                {
+                    const char *startptr = &frag[i] + 1;
+                    char *endptr = NULL;
+                    strtoul(startptr, &endptr, 10);
+                    if (endptr > startptr){ // Get foreground color
+                        while (endptr - startptr > 2){ // Wrong number of digits
+                            endptr--;
+                        }
                     }
+                    i += endptr - startptr;
+                    if (*endptr == ',') { // background color exists
+                        endptr++;
+                        startptr = endptr;
+                        endptr = NULL;
+                        strtoul(startptr, &endptr, 10);
+                        if (endptr > startptr){ // Get background color
+                            while (endptr - startptr > 2){ // Wrong number of digits
+                                endptr--;
+                            }
+                        }
+                        i += endptr - startptr;
+                    }
+                    break;
                 }
+            case MIRC_BOLD:
+            case MIRC_ITALICS:
+            case MIRC_UNDERLINE:
+            case MIRC_BLINK:
+            case MIRC_REVERSE:
+            case MIRC_PLAIN:
                 break;
             default:
-                str[j++] = str[i];
+                {
+                    // No control character, it is a utf-8 sequence
+                    const char *next = g_utf8_next_char(&frag[i]);
+                    char *escape = g_markup_escape_text(&frag[i], next - &frag[i]);
+                    str = g_string_append(str, escape);
+                    g_free(escape);
+                    i += next - &frag[i] - 1;
+                    break;
+                }
         }
     }
 
-    str[j] = '\0';
+    dfrag = str->str;
+    g_string_free(str, FALSE);
 
-    return str;
+    return dfrag;
 }
