@@ -170,11 +170,8 @@ static bool is_exist(GSList *targets, const char *file){
 
     lst = targets;
     while (lst){
-        /* A "*" matchs all targets */
-        if (g_strcmp0(lst->data, "*") == 0){
-            return TRUE;
-        }
-        if (g_strcmp0(lst->data, file) == 0){
+        /* Only match prefix, so a empty string "" matchs all targets */
+        if (g_str_has_prefix(file, lst->data)){
             return TRUE;
         }
         lst = g_slist_next(lst);
