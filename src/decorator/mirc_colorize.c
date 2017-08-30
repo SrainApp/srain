@@ -46,9 +46,6 @@ typedef struct _ColorlizeContext {
     GString *str;
 } ColorlizeContext;
 
-#define DEAFULT_FG_COLOR    MIRC_COLOR_BLACK
-#define DEAFULT_BG_COLOR    MIRC_COLOR_WHITE
-
 // TODO: define in theme CSS?
 static const char *color_map[] = {
     [MIRC_COLOR_WHITE]          = "#FFFFFF",
@@ -67,6 +64,7 @@ static const char *color_map[] = {
     [MIRC_COLOR_MAGENTA]        = "#FF00FF",
     [MIRC_COLOR_GRAY]           = "#7F7F7F",
     [MIRC_COLOR_LIGHT_GRAY]     = "#D2D2D2",
+    [MIRC_COLOR_UNKNOWN]        = "", // Preventing out of bound
 };
 
 static char *mirc_colorize(Message *msg, int index, const char *frag);
@@ -86,8 +84,8 @@ static char *mirc_colorize(Message *msg, int index, const char *frag){
     len = strlen(frag);
     str = g_string_new(NULL);
     ctx = g_malloc0(sizeof(ColorlizeContext));
-    ctx->fg_color = DEAFULT_FG_COLOR;
-    ctx->bg_color = DEAFULT_BG_COLOR;
+    ctx->fg_color = MIRC_COLOR_UNKNOWN;
+    ctx->bg_color = MIRC_COLOR_UNKNOWN;
     ctx->str = str;
 
     for (int i = 0; i < len; i++){
@@ -128,8 +126,8 @@ static char *mirc_colorize(Message *msg, int index, const char *frag){
                         i += endptr - startptr;
                     }
                     if (!has_fg_color && !has_bg_color) { // Clear previous color
-                        ctx->fg_color = DEAFULT_FG_COLOR;
-                        ctx->bg_color = DEAFULT_BG_COLOR;
+                        ctx->fg_color = MIRC_COLOR_UNKNOWN;
+                        ctx->bg_color = MIRC_COLOR_UNKNOWN;
                     }
                     do_colorize(ctx, MIRC_COLOR);
                     break;
@@ -175,8 +173,8 @@ static void do_colorize(ColorlizeContext *ctx, char ch){
     if (ch == MIRC_PLAIN){
         DBG_FR("Reset all format");
         // Reset color
-        ctx->fg_color = DEAFULT_FG_COLOR;
-        ctx->bg_color = DEAFULT_BG_COLOR;
+        ctx->fg_color = MIRC_COLOR_UNKNOWN;
+        ctx->bg_color = MIRC_COLOR_UNKNOWN;
         // Clear stack
         while (ptr >= 0){
             do_colorize(ctx, ctx->stack[ptr]);
@@ -219,16 +217,16 @@ static void do_colorize(ColorlizeContext *ctx, char ch){
                 // TODO: Not supported yet
                 break;
             case MIRC_COLOR:
-                if (ctx->fg_color >= MIRC_COLOR_UNKNOWN){
+                if (ctx->fg_color > MIRC_COLOR_UNKNOWN){
                     WARN_FR("Invalid mirc foreground color: %u", ctx->fg_color);
-                    break;
+                    ctx->fg_color = MIRC_COLOR_UNKNOWN;
                 }
-                if (ctx->bg_color >= MIRC_COLOR_UNKNOWN){
+                if (ctx->bg_color > MIRC_COLOR_UNKNOWN){
                     WARN_FR("Invalid mirc background color: %u", ctx->bg_color);
-                    break;
+                    ctx->bg_color = MIRC_COLOR_UNKNOWN;
                 }
-                if (ctx->fg_color == DEAFULT_FG_COLOR) {
-                    if (ctx->bg_color == DEAFULT_BG_COLOR) {
+                if (ctx->fg_color == MIRC_COLOR_UNKNOWN) {
+                    if (ctx->bg_color == MIRC_COLOR_UNKNOWN) {
                         ctx->ptr--; // Default color, tag can be omitted
                     } else {
                         g_string_append_printf(ctx->str,
@@ -277,7 +275,7 @@ static void do_colorize(ColorlizeContext *ctx, char ch){
         }
 
         if (ch == MIRC_COLOR) {
-            if (ctx->fg_color == DEAFULT_FG_COLOR && ctx->bg_color == DEAFULT_BG_COLOR ){
+            if (ctx->fg_color == MIRC_COLOR_UNKNOWN && ctx->bg_color == MIRC_COLOR_UNKNOWN ){
                 DBG_FR("Tag 0x%x closed with default {fore,back}ground color", ch);
             } else {
                 DBG_FR("Reopening tag 0x%x because foreground color = %u and background = %u",
