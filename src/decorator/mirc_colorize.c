@@ -18,7 +18,7 @@
 
 /**
  * @file mirc_colorize.c
- * @brief MIRC colorize decorator
+ * @brief mIRC colorize decorator
  * @author Shengyu Zhang <srain@srain.im>
  * @version 0.06.1
  * @date 2017-08-27
@@ -31,19 +31,10 @@
 #include <string.h>
 
 #include "decorator.h"
+#include "mirc.h"
 
 #include "srain.h"
 #include "log.h"
-
-/* MIRC color control characters */
-#define MIRC_UNKNOWN    0x00 // Not a part of protocol, only for convenience
-#define MIRC_BOLD       0x02
-#define MIRC_ITALICS    0x1D
-#define MIRC_UNDERLINE  0x1F
-#define MIRC_REVERSE    0x16
-#define MIRC_BLINK      0x06
-#define MIRC_PLAIN      0x0F
-#define MIRC_COLOR      0x03
 
 #define MAX_CTX_STACK_SIZE 128
 
@@ -54,26 +45,6 @@ typedef struct _ColorlizeContext {
     unsigned bg_color;
     GString *str;
 } ColorlizeContext;
-
-enum {
-    MIRC_COLOR_WHITE        = 0,
-    MIRC_COLOR_BLACK        = 1,
-    MIRC_COLOR_NAVY         = 2,
-    MIRC_COLOR_GREEN        = 3,
-    MIRC_COLOR_RED          = 4,
-    MIRC_COLOR_MAROON       = 5,
-    MIRC_COLOR_PURPLE       = 6,
-    MIRC_COLOR_OLIVE        = 7,
-    MIRC_COLOR_YELLOW       = 8,
-    MIRC_COLOR_LIGHT_GREEN  = 9,
-    MIRC_COLOR_TEAL         = 10,
-    MIRC_COLOR_CYAN         = 11,
-    MIRC_COLOR_ROYAL_BLUE   = 12,
-    MIRC_COLOR_MAGENTA      = 13,
-    MIRC_COLOR_GRAY         = 14,
-    MIRC_COLOR_LIGHT_GRAY   = 15,
-    MIRC_COLOR_UNKNOWN      = 16, // Not a part of protocol, only for convenience
-};
 
 #define DEAFULT_FG_COLOR    MIRC_COLOR_BLACK
 #define DEAFULT_BG_COLOR    MIRC_COLOR_WHITE
@@ -115,8 +86,8 @@ static char *mirc_colorize(Message *msg, int index, const char *frag){
     len = strlen(frag);
     str = g_string_new(NULL);
     ctx = g_malloc0(sizeof(ColorlizeContext));
-    ctx->fg_color = MIRC_COLOR_BLACK;
-    ctx->bg_color = MIRC_COLOR_WHITE;
+    ctx->fg_color = DEAFULT_FG_COLOR;
+    ctx->bg_color = DEAFULT_BG_COLOR;
     ctx->str = str;
 
     for (int i = 0; i < len; i++){
@@ -248,11 +219,11 @@ static void do_colorize(ColorlizeContext *ctx, char ch){
                 // TODO: Not supported yet
                 break;
             case MIRC_COLOR:
-                if (ctx->fg_color < 0 || ctx->fg_color >= MIRC_COLOR_UNKNOWN){
+                if (ctx->fg_color >= MIRC_COLOR_UNKNOWN){
                     WARN_FR("Invalid mirc foreground color: %u", ctx->fg_color);
                     break;
                 }
-                if (ctx->bg_color < 0 || ctx->bg_color >= MIRC_COLOR_UNKNOWN){
+                if (ctx->bg_color >= MIRC_COLOR_UNKNOWN){
                     WARN_FR("Invalid mirc background color: %u", ctx->bg_color);
                     break;
                 }
@@ -288,6 +259,9 @@ static void do_colorize(ColorlizeContext *ctx, char ch){
                     ctx->str = g_string_append(ctx->str, "</u>");
                     break;
                 case MIRC_REVERSE:
+                    // TODO: Not supported yet
+                    break;
+                case MIRC_BLINK:
                     // TODO: Not supported yet
                     break;
                 case MIRC_COLOR:

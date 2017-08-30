@@ -12,7 +12,7 @@ Change Log
 
 - Added:
 
-  - MIRC color support, can be configured via ``render_mirc_color`` option
+  - mIRC color support, can be configured via ``render_mirc_color`` option
 
 - Improved:
 
