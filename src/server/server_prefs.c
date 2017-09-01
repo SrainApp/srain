@@ -112,6 +112,23 @@ ServerPrefs* server_prefs_get_prefs(const char *name){
     return NULL;
 }
 
+ServerPrefs* server_prefs_get_prefs_by_host_port(const char *host, int port){
+    GSList *lst;
+    ServerPrefs *prefs;
+
+    lst = server_prefs_list;
+
+    while (lst){
+        prefs = lst->data;
+        if (g_ascii_strcasecmp(prefs->host, host) == 0 && prefs->port == port){
+            return prefs;
+        }
+        lst = g_slist_next(lst);
+    }
+
+    return NULL;
+}
+
 bool server_prefs_is_valid(ServerPrefs *prefs){
     /* Whether prefs exists in server_prefs_list? */
     return prefs && g_slist_find(server_prefs_list, prefs);

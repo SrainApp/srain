@@ -77,7 +77,7 @@ SrnRet server_url_open(const char *url){
     }
 
     /* Got ServerPrefs */
-    prefs = server_prefs_get_prefs(host);
+    prefs = server_prefs_get_prefs_by_host_port(host, port);
     if (!prefs){
         // If no such ServerPrefs, create one
         prefs = server_prefs_new(host);
@@ -87,34 +87,33 @@ SrnRet server_url_open(const char *url){
         }
         new_prefs = TRUE;
     }
-    ret = prefs_read_server_prefs(prefs);
-    if (!RET_IS_OK(ret)){
-        goto fin;
-    }
-
-    if (!str_is_empty(host)){
-        str_assign(&prefs->host, host);
-    }
-    if (port){
-        prefs->port = port;
-    }
-    if (!str_is_empty(passwd)){
-        str_assign(&prefs->passwd, passwd);
-    }
-    if (!str_is_empty(user)){
-        str_assign(&prefs->nickname, user);
-    }
-    if (g_ascii_strcasecmp(scheme, "ircs") == 0){
-        prefs->irc->tls = TRUE;
-    }
-
-    ret = server_prefs_check(prefs);
-    if (!RET_IS_OK(ret)){
-        goto fin;
-    }
-
     /* Instantiate Server */
     if (!prefs->srv){
+        ret = prefs_read_server_prefs(prefs);
+        if (!RET_IS_OK(ret)){
+            goto fin;
+        }
+        if (!str_is_empty(host)){
+            str_assign(&prefs->host, host);
+        }
+        if (port){
+            prefs->port = port;
+        }
+        if (!str_is_empty(passwd)){
+            str_assign(&prefs->passwd, passwd);
+        }
+        if (!str_is_empty(user)){
+            str_assign(&prefs->nickname, user);
+        }
+        if (g_ascii_strcasecmp(scheme, "ircs") == 0){
+            prefs->irc->tls = TRUE;
+        }
+
+        ret = server_prefs_check(prefs);
+        if (!RET_IS_OK(ret)){
+            goto fin;
+        }
+
         // If no such Server, create one
         srv = server_new_from_prefs(prefs);
         if (!srv) {

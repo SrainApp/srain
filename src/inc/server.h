@@ -229,6 +229,7 @@ void message_free(Message *msg);
 
 ServerPrefs* server_prefs_new(const char *name);
 ServerPrefs* server_prefs_get_prefs(const char *name);
+ServerPrefs* server_prefs_get_prefs_by_host_port(const char *host, int port);
 bool server_prefs_is_valid(ServerPrefs *prefs);
 bool server_prefs_is_server_valid(Server *srv);
 SrnRet server_prefs_check(ServerPrefs *prefs);
