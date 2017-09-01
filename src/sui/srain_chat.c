@@ -56,7 +56,6 @@ struct _SrainChat {
     GtkMenu *menu;
     GtkRevealer *topic_revealer;
     GtkLabel *topic_label;
-    GtkLabel *topic_setter_label;
 
     /* Menu */
     GtkMenuItem *toggle_topic_menu_item;
@@ -276,7 +275,6 @@ static void srain_chat_class_init(SrainChatClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, menu);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, topic_revealer);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, topic_label);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, topic_setter_label);
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, toggle_topic_menu_item);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainChat, close_menu_item);
@@ -332,8 +330,7 @@ void srain_chat_set_topic(SrainChat *chat, const char *topic){
 }
 
 void srain_chat_set_topic_setter(SrainChat *chat, const char *setter){
-    gtk_label_set_text(chat->topic_setter_label, setter);
-    gtk_widget_show(GTK_WIDGET(chat->topic_setter_label));
+    gtk_widget_set_tooltip_text(GTK_WIDGET(chat->topic_label), setter);
 }
 
 /**
