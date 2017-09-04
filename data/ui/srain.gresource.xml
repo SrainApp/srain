@@ -12,5 +12,7 @@
       <file preprocess="xml-stripblanks">msg_list.glade</file>
       <file preprocess="xml-stripblanks">user_list.glade</file>
       <file preprocess="xml-stripblanks">nick_menu.glade</file>
+      <file preprocess="xml-stripblanks">connect_window.glade</file>
+      <file preprocess="xml-stripblanks">join_window.glade</file>
   </gresource>
 </gresources>
