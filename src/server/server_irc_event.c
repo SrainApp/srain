@@ -163,6 +163,9 @@ void server_irc_event_disconnect(SircSession *sirc, const char *event,
             ERR_FR("Unknown disconnect reason: %d", srv->disconn_reason);
     }
 
+    /* Reset default disconnect reason */
+    srv->disconn_reason = SERVER_DISCONN_REASON_CLOSE;
+
     // Add reconnect timer
     if (reconnect) {
         g_timeout_add(srv->reconn_interval, irc_reconnect, srv);
@@ -236,8 +239,6 @@ void server_irc_event_welcome(SircSession *sirc, int event,
 
     /* You have registered when you recived a RPL_WELCOME(001) message */
     srv->registered = TRUE;
-    /* Reset default disconnect reason */
-    srv->disconn_reason = SERVER_DISCONN_REASON_CLOSE;
 
     /* Start peroid ping */
     srv->last_pong = get_time_since_first_call_ms();
