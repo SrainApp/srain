@@ -519,8 +519,14 @@ void server_irc_event_topic(SircSession *sirc, const char *event,
     g_return_if_fail(chat);
 
     chat_set_topic(chat, origin, topic);
-    chat_add_misc_message_fmt(chat, origin, _("%s changed topic to:\n\t%s"),
-            origin, topic);
+
+    if (strlen(topic) == 0) {
+        chat_add_misc_message_fmt(chat, origin, _("%s cleared topic"),
+                origin, topic);
+    } else {
+        chat_add_misc_message_fmt(chat, origin, _("%s changed topic to:\n\t%s"),
+                origin, topic);
+    }
 }
 
 void server_irc_event_kick(SircSession *sirc, const char *event,
@@ -831,6 +837,19 @@ void server_irc_event_numeric (SircSession *sirc, int event,
         case SIRC_RFC_RPL_ENDOFNAMES:
             break;
 
+        case SIRC_RFC_RPL_NOTOPIC:
+            {
+                g_return_if_fail(count >= 2);
+                const char *chan = params[1];
+
+                Chat *chat = server_get_chat(srv, chan);
+                g_return_if_fail(chat);
+
+                chat_add_misc_message_fmt(chat, origin,
+                        _("No topic is set"), chan);
+
+                break;
+            }
         case SIRC_RFC_RPL_TOPIC:
             {
                 g_return_if_fail(count >= 2);
@@ -842,6 +861,8 @@ void server_irc_event_numeric (SircSession *sirc, int event,
                 g_return_if_fail(chat);
 
                 chat_set_topic(chat, origin, topic);
+                chat_add_misc_message_fmt(chat, origin,
+                        _("The topic of this channel is:\n\t%s"), topic);
 
                 break;
             }

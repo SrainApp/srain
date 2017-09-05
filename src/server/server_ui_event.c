@@ -315,7 +315,9 @@ SrnRet server_ui_event_cutover(SuiSession *sui, SuiEvent event, GVariantDict *pa
     Chat *chat;
 
     srv = ctx_get_server(sui);
-    g_return_val_if_fail(server_is_valid(srv), SRN_ERR); // FIXME
+    // FIXME: server has not held by ServerPrefs now
+    // g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
+    g_return_val_if_fail(srv, SRN_ERR);
     chat = ctx_get_chat(sui);
     g_return_val_if_fail(chat, SRN_ERR);
 

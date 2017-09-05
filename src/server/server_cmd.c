@@ -758,9 +758,12 @@ static SrnRet on_command_topic(Command *cmd, void *user_data){
     chat = scctx_get_chat(user_data);
     g_return_val_if_fail(chat, SRN_ERR);
 
+    /* Command ""/topic" has flag COMMAND_FLAG_OMIT_ARG, we should deal with
+     * argument count byself. */
     topic = command_get_arg(cmd, 0);
-
-    if (command_get_opt(cmd, "-rm", NULL)) topic = "";
+    if (topic == NULL && command_get_opt(cmd, "-rm", NULL)) {
+        topic = "";
+    }
 
     return sirc_cmd_topic(srv->irc, chat->name, topic);
 }

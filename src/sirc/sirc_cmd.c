@@ -103,9 +103,14 @@ int sirc_cmd_quit(SircSession *sirc, const char *reason){
 // sirc_cmd_topic: For setting or removing a topic
 int sirc_cmd_topic(SircSession *sirc, const char *chan, const char *topic){
     g_return_val_if_fail(!str_is_empty(chan), SRN_ERR);
-    g_return_val_if_fail(!str_is_empty(topic), SRN_ERR);
 
-    return sirc_cmd_raw(sirc, "TOPIC %s :%s\r\n", chan, topic);
+    if (topic) {
+        // Clear (while topic == "") or set the topic of channel
+        return sirc_cmd_raw(sirc, "TOPIC %s :%s\r\n", chan, topic);
+    } else {
+        // Return the topic of channel
+        return sirc_cmd_raw(sirc, "TOPIC %s\r\n", chan);
+    }
 }
 
 // sirc_cmd_action: For executing an action (.e.g /me is hungry)

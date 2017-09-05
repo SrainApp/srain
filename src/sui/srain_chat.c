@@ -323,7 +323,12 @@ SrainChat* srain_chat_new(SuiSession *sui, const char *name, const char *remark,
 
 void srain_chat_set_topic(SrainChat *chat, const char *topic){
     gtk_label_set_markup(chat->topic_label, topic);
-    gtk_widget_show(GTK_WIDGET(chat->topic_label));
+
+    if (strlen(topic) == 0) {
+        gtk_widget_hide(GTK_WIDGET(chat->topic_label));
+    } else {
+        gtk_widget_show(GTK_WIDGET(chat->topic_label));
+    }
 }
 
 void srain_chat_set_topic_setter(SrainChat *chat, const char *setter){
