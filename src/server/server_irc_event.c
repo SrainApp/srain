@@ -749,7 +749,7 @@ void server_irc_event_numeric (SircSession *sirc, int event,
                 }
                 if (msg) g_string_append_printf(buf, "%s", msg);
 
-                // chat_add_recv_message(srv->chat, origin, buf->str);
+                chat_add_recv_message(srv->chat, origin, buf->str);
 
                 g_string_free(buf, TRUE);
 
