@@ -20,7 +20,7 @@
  * @file mirc_colorize.c
  * @brief mIRC colorize decorator
  * @author Shengyu Zhang <srain@srain.im>
- * @version 0.06.1
+ * @version 0.06.2
  * @date 2017-08-27
  *
  * ref: https://en.wikichip.org/wiki/irc/colors

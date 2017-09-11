@@ -20,7 +20,7 @@
  * @file chat_log.c
  * @brief Message filter for chat logging
  * @author Shengyu Zhang <srain@srain.im>
- * @version 0.06.1
+ * @version 0.06.2
  * @date 2016-08-21
  */
 

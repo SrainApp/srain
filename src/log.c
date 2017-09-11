@@ -20,7 +20,7 @@
  * @file log.c
  * @brief A configurable logger
  * @author Shengyu Zhang <srain@srain.im>
- * @version 0.06.1
+ * @version 0.06.2
  * @date 2017-06-24
  */
 

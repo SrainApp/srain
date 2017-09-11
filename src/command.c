@@ -20,7 +20,7 @@
  * @file command.c
  * @brief Simple line command interpreter
  * @author Shengyu Zhang <srain@srain.im>
- * @version 0.06.1
+ * @version 0.06.2
  * @date 2016-11-05
  */
 

@@ -20,7 +20,7 @@
  * @file ret.c
  * @brief Srain return value, which can carry message
  * @author Shengyu Zhang <srain@srain.im>
- * @version 0.06.1
+ * @version 0.06.2
  * @date 2017-07-13
  */
 

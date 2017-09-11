@@ -20,7 +20,7 @@
  * @file srain_msg_list.c
  * @brief A auto-scrolling, dynamic loading listbox used to display messages
  * @author Shengyu Zhang <srain@srain.im>
- * @version 0.06.1
+ * @version 0.06.2
  * @date 2016-05-19
  *
  * Note: Unlike SrainUserList, SrainMagList is subclass of GtkScrolledWindow

@@ -20,7 +20,7 @@
  * @file sui_event_hdr.c
  * @brief Sui event handler
  * @author Shengyu Zhang <srain@srain.im>
- * @version 0.06.1
+ * @version 0.06.2
  * @date UNKNOWN
  */
 

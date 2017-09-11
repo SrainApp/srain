@@ -20,7 +20,7 @@
  * @file prefs.c
  * @brief Libconfig based configure file reader
  * @author Shengyu Zhang <srain@srain.im>
- * @version 0.06.1
+ * @version 0.06.2
  * @date 2017-05-14
  */
 

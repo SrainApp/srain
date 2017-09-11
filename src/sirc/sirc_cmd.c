@@ -20,7 +20,7 @@
  * @file sirc_cmd.c
  * @brief IRC client commands
  * @author Shengyu Zhang <srain@srain.im>
- * @version 0.06.1
+ * @version 0.06.2
  * @date 2016-03-01
  *
  * Originated from <https://github.com/Themaister/simple-irc-bot>.

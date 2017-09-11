@@ -20,7 +20,7 @@
  * @file server_cmd.c
  * @brief Line comand definitions and callbacks
  * @author Shengyu Zhang <srain@srain.im>
- * @version 0.06.1
+ * @version 0.06.2
  * @date 2016-07-26
  */
 

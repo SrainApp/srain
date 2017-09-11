@@ -21,7 +21,7 @@
  * @brief Regex message filter
  * @author Z.Wind.L <zwindl@protonmail.com>
  *         Shengyu Zhang <srain@srain.im>
- * @version 0.06.1
+ * @version 0.06.2
  * @date 2017-03-16
  */
 

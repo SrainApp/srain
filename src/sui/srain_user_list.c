@@ -20,7 +20,7 @@
  * @file srain_user_list.c
  * @brief Listbox used to display user list of chatnel
  * @author Shengyu Zhang <srain@srain.im>
- * @version 0.06.1
+ * @version 0.06.2
  * @date 2016-04-03
  */
 
