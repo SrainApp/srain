@@ -7,8 +7,26 @@ Change Log
     :depth: 1
     :backlinks: none
 
-2017-09-xx Version 0.06.2[Draft]
+2017-10-xx Version 0.06.3[Draft]
 ================================
+
+- Added:
+
+  - Connection dialog, supporting connect to predefined server
+  - Join channel dialog, supporting channel search
+
+- Improved:
+
+  - Modified margin and padding of some widgets
+  - Improved the style of unread message counter
+
+- Removed:
+
+  - Connection popover panel
+  - Join channel popover panel
+
+2017-09-12 Version 0.06.2
+=========================
 
 - Added:
 
@@ -22,6 +40,7 @@ Change Log
     while operation is not successful
   - Fixed: in some cases, nickname registration will case infinity loop
   - Decorator and filter now can process xml message
+  - Imporved the handling of channel topic
 
 2017-08-18 Version 0.06.1
 =========================
