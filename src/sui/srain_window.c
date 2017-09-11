@@ -42,30 +42,13 @@
 #include "log.h"
 #include "i18n.h"
 
-typedef struct {
-    // join_popover
-    GtkEntry *join_chat_entry;
-    GtkEntry *join_pwd_entry;
-} JoinEntries;
-
-typedef struct {
-    // conn_popover
-    GtkEntry *conn_addr_entry;
-    GtkEntry *conn_port_entry;
-    GtkEntry *conn_pwd_entry;
-    GtkEntry *conn_nick_entry;
-    GtkEntry *conn_real_entry;
-    GtkCheckButton *conn_ssl_check_button;
-    GtkCheckButton *conn_no_verfiy_check_button;
-} ConnEntries;
-
 struct _SrainWindow {
     GtkApplicationWindow parent;
 
     // Header
     GtkButton *about_button;
-    GtkButton *conn_popover_button;
-    GtkButton *join_popover_button;
+    GtkButton *connect_button;
+    GtkButton *join_button;
     GtkSpinner *spinner;
 
     GtkBox *sidebar_box;
@@ -75,25 +58,6 @@ struct _SrainWindow {
     GtkMenu *tray_menu;
     GtkMenuItem *about_menu_item;
     GtkMenuItem *quit_menu_item;
-
-    // join_popover
-    GtkPopover *join_popover;
-    GtkEntry *join_chat_entry;
-    GtkEntry *join_pwd_entry;
-    GtkButton *join_button;
-    JoinEntries join_entries;
-
-    // conn_popover
-    GtkPopover *conn_popover;
-    GtkEntry *conn_addr_entry;
-    GtkEntry *conn_port_entry;
-    GtkEntry *conn_pwd_entry;
-    GtkEntry *conn_nick_entry;
-    GtkEntry *conn_real_entry;
-    GtkCheckButton *conn_ssl_check_button;
-    GtkCheckButton *conn_no_verfiy_check_button;
-    GtkButton *conn_button;
-    ConnEntries conn_entries;
 };
 
 struct _SrainWindowClass {
@@ -141,83 +105,30 @@ static void show_about_dialog(gpointer user_data){
             NULL);
 }
 
-static void popover_button_on_click(gpointer user_data){
-    GtkPopover *popover;
-
-    popover = user_data;
-    gtk_widget_set_visible(GTK_WIDGET(popover),
-            !gtk_widget_get_visible(GTK_WIDGET(popover)));
-}
-
-static void popover_entry_on_activate(GtkWidget *widget, gpointer user_data){
-    GtkWidget *parent;
-    GtkEntry *entry;
-    GtkButton *button;
-
-    entry = GTK_ENTRY(widget);
-    button = user_data;
-
-    parent = gtk_widget_get_parent(GTK_WIDGET(entry));
-
-    // Move focus to next entry, if reach the last one, "click" the button
-    if (!gtk_widget_child_focus(GTK_WIDGET(parent), GTK_DIR_TAB_FORWARD))
-        g_signal_emit_by_name(button, "clicked");
-}
-
 static void join_button_on_click(gpointer user_data){
     const char *chan;
     const char *pwd;
+
     GVariantDict *params;
-    SrnRet ret;
-    JoinEntries *join_entries;
-    SrainChat *chat;
-
-    join_entries = user_data;
-
-    chan = gtk_entry_get_text(join_entries->join_chat_entry);
-    pwd = gtk_entry_get_text(join_entries->join_pwd_entry);
-    chat = srain_window_get_cur_chat(srain_win);
-
-    g_return_if_fail(chat);
 
     params = g_variant_dict_new(NULL);
     g_variant_dict_insert(params, "channel", SUI_EVENT_PARAM_STRING, chan);
     g_variant_dict_insert(params, "password", SUI_EVENT_PARAM_STRING, pwd);
 
-    ret = sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_JOIN, params);
-
     g_variant_dict_unref(params);
-
-    if (RET_IS_OK(ret)){
-        gtk_entry_set_text(join_entries->join_chat_entry, "");
-        gtk_entry_set_text(join_entries->join_pwd_entry, "");
-    } else {
-        sui_message_box(_("Error"), RET_MSG(ret));
-    }
 }
 
-static void conn_button_on_click(gpointer user_data){
-    const char *host;
-    const char *port;
-    const char *passwd;
-    const char *nick;
-    const char *realname;
-    gboolean tls;
-    gboolean tls_not_verify;
-    GVariantDict *params;
-    ConnEntries *conn_entries;
-    SrnRet ret = SRN_ERR;
+static void connect_button_on_click(gpointer user_data){
+     const char *host;
+     const char *port;
+     const char *passwd;
+     const char *nick;
+     const char *realname;
+     gboolean tls;
+     gboolean tls_not_verify;
+     GVariantDict *params;
 
-    conn_entries = user_data;
-
-    host = gtk_entry_get_text(conn_entries->conn_addr_entry);
-    port = gtk_entry_get_text(conn_entries->conn_port_entry);
-    passwd = gtk_entry_get_text(conn_entries->conn_pwd_entry);
-    nick = gtk_entry_get_text(conn_entries->conn_nick_entry);
-    realname = gtk_entry_get_text(conn_entries->conn_real_entry);
-    tls = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(conn_entries->conn_ssl_check_button));
-    tls_not_verify = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(conn_entries->conn_no_verfiy_check_button));
-
+    // FIXME
     params = g_variant_dict_new(NULL);
     g_variant_dict_insert(params, "name", SUI_EVENT_PARAM_STRING, host);
     g_variant_dict_insert(params, "host", SUI_EVENT_PARAM_STRING, host);
@@ -227,19 +138,6 @@ static void conn_button_on_click(gpointer user_data){
     g_variant_dict_insert(params, "realname", SUI_EVENT_PARAM_STRING, realname);
     g_variant_dict_insert(params, "tls", SUI_EVENT_PARAM_BOOL, tls);
     g_variant_dict_insert(params, "tls-not-verify", SUI_EVENT_PARAM_BOOL, tls_not_verify);
-
-    ret = sui_event_hdr(NULL, SUI_EVENT_CONNECT, params);
-    if (RET_IS_OK(ret)){
-        gtk_entry_set_text(conn_entries->conn_addr_entry, "");
-        gtk_entry_set_text(conn_entries->conn_port_entry, "");
-        gtk_entry_set_text(conn_entries->conn_pwd_entry, "");
-        gtk_entry_set_text(conn_entries->conn_nick_entry, "");
-        gtk_entry_set_text(conn_entries->conn_real_entry, "");
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(conn_entries->conn_ssl_check_button), FALSE);
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(conn_entries->conn_no_verfiy_check_button), FALSE);
-    } else {
-        sui_message_box(_("Error"), RET_MSG(ret));
-    }
 
     g_variant_dict_unref(params);
 }
@@ -273,17 +171,6 @@ static void srain_window_init(SrainWindow *self){
 
     gtk_widget_init_template(GTK_WIDGET(self));
 
-    // Filling entries
-    self->join_entries.join_chat_entry = self->join_chat_entry;
-    self->join_entries.join_pwd_entry = self->join_pwd_entry;
-    self->conn_entries.conn_addr_entry = self->conn_addr_entry;
-    self->conn_entries.conn_port_entry = self->conn_port_entry;
-    self->conn_entries.conn_pwd_entry = self->conn_pwd_entry;
-    self->conn_entries.conn_nick_entry = self->conn_nick_entry;
-    self->conn_entries.conn_real_entry = self->conn_real_entry;
-    self->conn_entries.conn_ssl_check_button = self->conn_ssl_check_button;
-    self->conn_entries.conn_no_verfiy_check_button = self->conn_no_verfiy_check_button;
-
     /* stack sidebar init */
     self->sidebar = srain_stack_sidebar_new();
     gtk_widget_show(GTK_WIDGET(self->sidebar));
@@ -308,36 +195,10 @@ static void srain_window_init(SrainWindow *self){
     // Click to show/hide GtkPopover
     g_signal_connect_swapped(self->about_button, "clicked",
             G_CALLBACK(show_about_dialog), self);
-    g_signal_connect_swapped(self->join_popover_button, "clicked",
-            G_CALLBACK(popover_button_on_click), self->join_popover);
-    g_signal_connect_swapped(self->conn_popover_button, "clicked",
-            G_CALLBACK(popover_button_on_click), self->conn_popover);
-    g_signal_connect_swapped(self->join_button, "clicked",
-            G_CALLBACK(popover_button_on_click), self->join_popover);
-    g_signal_connect_swapped(self->conn_button, "clicked",
-            G_CALLBACK(popover_button_on_click), self->conn_popover);
-
-    // Click to submit entries' messages
-    g_signal_connect_swapped(self->join_button, "clicked",
-            G_CALLBACK(join_button_on_click), &(self->join_entries));
-    g_signal_connect_swapped(self->conn_button, "clicked",
-            G_CALLBACK(conn_button_on_click), &(self->conn_entries));
-
-    // Press ENTER to move focus or submit entries' messages
-    g_signal_connect(self->join_chat_entry, "activate",
-            G_CALLBACK(popover_entry_on_activate), self->join_button);
-    g_signal_connect(self->join_pwd_entry, "activate",
-            G_CALLBACK(popover_entry_on_activate), self->join_button);
-    g_signal_connect(self->conn_addr_entry, "activate",
-            G_CALLBACK(popover_entry_on_activate), self->conn_button);
-    g_signal_connect(self->conn_port_entry, "activate",
-            G_CALLBACK(popover_entry_on_activate), self->conn_button);
-    g_signal_connect(self->conn_pwd_entry, "activate",
-            G_CALLBACK(popover_entry_on_activate), self->conn_button);
-    g_signal_connect(self->conn_nick_entry, "activate",
-            G_CALLBACK(popover_entry_on_activate), self->conn_button);
-    g_signal_connect(self->conn_real_entry, "activate",
-            G_CALLBACK(popover_entry_on_activate), self->conn_button);
+    // g_signal_connect_swapped(self->join_button, "clicked",
+            // G_CALLBACK(), NULL);
+    // g_signal_connect_swapped(self->connect_button, "clicked",
+            // G_CALLBACK(), NULL);
 
     /* shortcut <C-j> and <C-k> */
     accel = gtk_accel_group_new();
@@ -362,8 +223,8 @@ static void srain_window_class_init(SrainWindowClass *class){
     gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
             "/org/gtk/srain/window.glade");
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, about_button);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, join_popover_button);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, conn_popover_button);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, join_button);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, connect_button);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, spinner);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, stack);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, tray_icon);
@@ -371,19 +232,6 @@ static void srain_window_class_init(SrainWindowClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, quit_menu_item);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, about_menu_item);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, sidebar_box);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, join_popover);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, conn_popover);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, join_chat_entry);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, join_pwd_entry);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, join_button);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, conn_addr_entry);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, conn_port_entry);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, conn_pwd_entry);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, conn_nick_entry);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, conn_real_entry);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, conn_ssl_check_button);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, conn_no_verfiy_check_button);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, conn_button);
 }
 
 SrainWindow* srain_window_new(SrainApp *app){
