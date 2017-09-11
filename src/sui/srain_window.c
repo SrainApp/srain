@@ -37,6 +37,8 @@
 #include "srain_chat.h"
 #include "srain_stack_sidebar.h"
 #include "tray_icon.h"
+#include "connect_dialog.h"
+#include "join_dialog.h"
 
 #include "meta.h"
 #include "log.h"
@@ -108,6 +110,11 @@ static void show_about_dialog(gpointer user_data){
 static void join_button_on_click(gpointer user_data){
     const char *chan;
     const char *pwd;
+    GtkWindow *parent;
+
+    parent = GTK_WINDOW(user_data);
+    join_dialog_run(parent);
+    return;
 
     GVariantDict *params;
 
@@ -127,6 +134,12 @@ static void connect_button_on_click(gpointer user_data){
      gboolean tls;
      gboolean tls_not_verify;
      GVariantDict *params;
+     GtkWindow *parent;
+
+    parent = GTK_WINDOW(user_data);
+    connect_dialog_run(parent);
+    return;
+
 
     // FIXME
     params = g_variant_dict_new(NULL);
@@ -195,10 +208,10 @@ static void srain_window_init(SrainWindow *self){
     // Click to show/hide GtkPopover
     g_signal_connect_swapped(self->about_button, "clicked",
             G_CALLBACK(show_about_dialog), self);
-    // g_signal_connect_swapped(self->join_button, "clicked",
-            // G_CALLBACK(), NULL);
-    // g_signal_connect_swapped(self->connect_button, "clicked",
-            // G_CALLBACK(), NULL);
+    g_signal_connect_swapped(self->connect_button, "clicked",
+            G_CALLBACK(connect_button_on_click), self);
+    g_signal_connect_swapped(self->join_button, "clicked",
+            G_CALLBACK(join_button_on_click), self);
 
     /* shortcut <C-j> and <C-k> */
     accel = gtk_accel_group_new();
