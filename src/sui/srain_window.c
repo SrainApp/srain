@@ -34,11 +34,11 @@
 #include "theme.h"
 #include "srain_app.h"
 #include "srain_window.h"
+#include "srain_connect_dialog.h"
+#include "srain_join_dialog.h"
 #include "srain_chat.h"
 #include "srain_stack_sidebar.h"
 #include "tray_icon.h"
-#include "connect_dialog.h"
-#include "join_dialog.h"
 
 #include "meta.h"
 #include "log.h"
@@ -113,7 +113,7 @@ static void join_button_on_click(gpointer user_data){
     GtkWindow *parent;
 
     parent = GTK_WINDOW(user_data);
-    join_dialog_run(parent);
+    // join_dialog_run(parent);
     return;
 
     GVariantDict *params;
@@ -137,7 +137,7 @@ static void connect_button_on_click(gpointer user_data){
      GtkWindow *parent;
 
     parent = GTK_WINDOW(user_data);
-    connect_dialog_run(parent);
+    // connect_dialog_run(parent);
     return;
 
 
