@@ -25,10 +25,13 @@
 #define SRAIN_JOIN_DIALOG(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SRAIN_TYPE_JOIN_DIALOG, SrainJoinDialog))
 #define SRAIN_IS_JOIN_DIALOG(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), SRAIN_TYPE_JOIN_DIALOG))
 
+#define SRAIN_JOIN_DIALOG_RESP_CANCEL   0
+#define SRAIN_JOIN_DIALOG_RESP_JOIN     1
+
 typedef struct _SrainJoinDialog SrainJoinDialog;
 typedef struct _SrainJoinDialogClass SrainJoinDialogClass;
 
 GType srain_join_dialog_get_type(void);
-SrainWindow *srain_join_dialog_new(GtkWindow *parent);
+SrainJoinDialog* srain_join_dialog_new(GtkWindow *parent, GVariantDict *params);
 
 #endif /* __SRAIN_JOIN_DIALOG_H */

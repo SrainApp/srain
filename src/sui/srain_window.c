@@ -107,50 +107,61 @@ static void show_about_dialog(gpointer user_data){
             NULL);
 }
 
-static void join_button_on_click(gpointer user_data){
-    const char *chan;
-    const char *pwd;
-    GtkWindow *parent;
-
-    parent = GTK_WINDOW(user_data);
-    // join_dialog_run(parent);
-    return;
-
+static void connect_button_on_click(gpointer user_data){
+    int resp;
     GVariantDict *params;
+    GtkWindow *parent;
+    SrainConnectDialog *dialog;
 
     params = g_variant_dict_new(NULL);
-    g_variant_dict_insert(params, "channel", SUI_EVENT_PARAM_STRING, chan);
-    g_variant_dict_insert(params, "password", SUI_EVENT_PARAM_STRING, pwd);
+    parent = GTK_WINDOW(user_data);
+    dialog = srain_connect_dialog_new(parent, params);
+
+    resp = gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(GTK_WIDGET(dialog));
+
+    DBG_FR("Connect dialog returns: %d", resp);
+
+    switch (resp) {
+        case SRAIN_CONNECT_DIALOG_RESP_CANCEL:
+            break;
+        case SRAIN_CONNECT_DIALOG_RESP_SAVE:
+            break;
+        case SRAIN_CONNECT_DIALOG_RESP_CONNECT:
+            // sui event
+            break;
+        default:
+            ERR_FR("Connect dialog returns unknown response id: %d", resp);
+    }
 
     g_variant_dict_unref(params);
 }
 
-static void connect_button_on_click(gpointer user_data){
-     const char *host;
-     const char *port;
-     const char *passwd;
-     const char *nick;
-     const char *realname;
-     gboolean tls;
-     gboolean tls_not_verify;
-     GVariantDict *params;
-     GtkWindow *parent;
 
-    parent = GTK_WINDOW(user_data);
-    // connect_dialog_run(parent);
-    return;
+static void join_button_on_click(gpointer user_data){
+    int resp;
+    GVariantDict *params;
+    GtkWindow *parent;
+    SrainJoinDialog *dialog;
 
-
-    // FIXME
     params = g_variant_dict_new(NULL);
-    g_variant_dict_insert(params, "name", SUI_EVENT_PARAM_STRING, host);
-    g_variant_dict_insert(params, "host", SUI_EVENT_PARAM_STRING, host);
-    g_variant_dict_insert(params, "port", SUI_EVENT_PARAM_INT, atoi(port));
-    g_variant_dict_insert(params, "password", SUI_EVENT_PARAM_STRING, passwd);
-    g_variant_dict_insert(params, "nick", SUI_EVENT_PARAM_STRING, nick);
-    g_variant_dict_insert(params, "realname", SUI_EVENT_PARAM_STRING, realname);
-    g_variant_dict_insert(params, "tls", SUI_EVENT_PARAM_BOOL, tls);
-    g_variant_dict_insert(params, "tls-not-verify", SUI_EVENT_PARAM_BOOL, tls_not_verify);
+    parent = GTK_WINDOW(user_data);
+    dialog = srain_join_dialog_new(parent, params);
+
+    resp = gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(GTK_WIDGET(dialog));
+
+    DBG_FR("Join dialog returns: %d", resp);
+
+    switch (resp) {
+        case SRAIN_JOIN_DIALOG_RESP_CANCEL:
+            break;
+        case SRAIN_JOIN_DIALOG_RESP_JOIN:
+            // sui event
+            break;
+        default:
+            ERR_FR("Join dialog returns unknown response id: %d", resp);
+    }
 
     g_variant_dict_unref(params);
 }

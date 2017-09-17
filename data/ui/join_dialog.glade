@@ -34,7 +34,7 @@
     <property name="can_focus">False</property>
     <property name="icon_name">view-refresh</property>
   </object>
-  <object class="GtkDialog" id="join_dialog">
+  <template class="SrainJoinDialog" parent="GtkDialog">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Join channel</property>
     <property name="modal">True</property>
@@ -69,8 +69,7 @@
                 <property name="label" translatable="yes">_Join</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="has_default">True</property>
-                <property name="receives_default">False</property>
+                <property name="receives_default">True</property>
                 <property name="use_underline">True</property>
               </object>
               <packing>
@@ -97,7 +96,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkEntry" id="channel_entry">
+                  <object class="GtkEntry" id="chan_entry">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                   </object>
@@ -132,6 +131,7 @@
               <object class="GtkRevealer" id="revealer">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="reveal_child">True</property>
                 <child>
                   <object class="GtkBox">
                     <property name="visible">True</property>
@@ -319,5 +319,5 @@
     <child>
       <placeholder/>
     </child>
-  </object>
+  </template>
 </interface>

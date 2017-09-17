@@ -25,10 +25,14 @@
 #define SRAIN_CONNECT_DIALOG(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SRAIN_TYPE_CONNECT_DIALOG, SrainConnectDialog))
 #define SRAIN_IS_CONNECT_DIALOG(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), SRAIN_TYPE_CONNECT_DIALOG))
 
+#define SRAIN_CONNECT_DIALOG_RESP_CANCEL    0
+#define SRAIN_CONNECT_DIALOG_RESP_SAVE      1
+#define SRAIN_CONNECT_DIALOG_RESP_CONNECT   2
+
 typedef struct _SrainConnectDialog SrainConnectDialog;
 typedef struct _SrainConnectDialogClass SrainConnectDialogClass;
 
 GType srain_connect_dialog_get_type(void);
-SrainWindow *srain_connect_dialog_new(GtkWindow *parent);
+SrainConnectDialog* srain_connect_dialog_new(GtkWindow *parent, GVariantDict *params);
 
 #endif /* __SRAIN_CONNECT_DIALOG_H */

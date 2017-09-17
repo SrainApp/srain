@@ -26,8 +26,13 @@
 
 #include <gtk/gtk.h>
 
+#include "srain_join_dialog.h"
+#include "sui/sui.h"
+
 struct _SrainJoinDialog {
     GtkDialog parent;
+
+    GVariantDict *params;   // Return value
 
     /* Search area */
     GtkEntry *chan_entry;
@@ -40,12 +45,85 @@ struct _SrainJoinDialog {
     GtkSpinButton *max_user_spin_button;
     GtkButton *refresh_button;
 
+    /* Channel list */
     GtkTreeView *chan_tree_view;
-    GtkTreeViewColumn *chan_tree_view_colunm;
-    GtkTreeViewColumn *users_tree_view_colunm;
-    GtkTreeViewColumn *topic_tree_view_colunm;
+    GtkTreeViewColumn *chan_tree_view_column;
+    GtkTreeViewColumn *users_tree_view_column;
+    GtkTreeViewColumn *topic_tree_view_column;
 
     /* Dialog button */
-    GtkButton *cancal_button;
+    GtkButton *cancel_button;
     GtkButton *join_button;
 };
+
+struct _SrainJoinDialogClass {
+    GtkDialogClass parent_class;
+};
+
+G_DEFINE_TYPE(SrainJoinDialog, srain_join_dialog, GTK_TYPE_DIALOG);
+
+static void cancel_button_on_click(gpointer user_data);
+static void join_button_on_click(gpointer user_data);
+
+static void srain_join_dialog_init(SrainJoinDialog *self){
+    gtk_widget_init_template(GTK_WIDGET(self));
+
+    g_signal_connect_swapped(self->cancel_button, "clicked",
+            G_CALLBACK(cancel_button_on_click), self);
+    g_signal_connect_swapped(self->join_button, "clicked",
+            G_CALLBACK(join_button_on_click), self);
+}
+
+static void srain_join_dialog_class_init(SrainJoinDialogClass *class){
+    gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
+            "/org/gtk/srain/join_dialog.glade");
+
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, chan_entry);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, advanced_check_button );
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, revealer);
+
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, regex_check_button);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, min_user_spin_button);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, max_user_spin_button);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, refresh_button);
+
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, chan_tree_view);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, chan_tree_view_column);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, users_tree_view_column);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, topic_tree_view_column);
+
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, cancel_button);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, join_button);
+}
+
+SrainJoinDialog* srain_join_dialog_new(GtkWindow *parent, GVariantDict *params){
+    SrainJoinDialog *dialog;
+
+    dialog = g_object_new(SRAIN_TYPE_JOIN_DIALOG, NULL);
+
+    gtk_window_set_transient_for(GTK_WINDOW(dialog), parent);
+    dialog->params = params;
+
+    return dialog;
+}
+
+static void cancel_button_on_click(gpointer user_data){
+    SrainJoinDialog *dialog;
+
+    dialog = user_data;
+    gtk_dialog_response(GTK_DIALOG(dialog), SRAIN_JOIN_DIALOG_RESP_CANCEL);
+}
+
+static void join_button_on_click(gpointer user_data){
+    const char *chan;
+    const char *passwd;
+    SrainJoinDialog *dialog;
+
+    dialog = user_data;
+    gtk_dialog_response(GTK_DIALOG(dialog), SRAIN_JOIN_DIALOG_RESP_JOIN);
+
+    return;
+
+    g_variant_dict_insert(dialog->params, "channel", SUI_EVENT_PARAM_STRING, chan);
+    g_variant_dict_insert(dialog->params, "password", SUI_EVENT_PARAM_STRING, passwd);
+}
