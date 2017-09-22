@@ -10,6 +10,13 @@ Change Log
 2017-10-xx Version 0.06.3[Draft]
 ================================
 
+- Changed:
+
+  - Configurable file option ``tls_not_verify`` in ``irc`` block in ``server``
+    block is renamed to ``tls_not_verify``, old option name is still supported
+  - Command option ``tls-not-verify`` for ``/server`` and ``/connect`` is
+    renamed to ``tls-noverify``, old option name is still supported
+
 - Added:
 
   - Connection dialog, supporting connect to predefined server
@@ -30,7 +37,8 @@ Change Log
 
 - Added:
 
-  - mIRC color support, can be configured via ``render_mirc_color`` option
+  - mIRC color support, can be disabled via setting ``render_mirc_color``
+    option in ``chat`` block in ``server`` block to ``false``
 
 - Improved:
 

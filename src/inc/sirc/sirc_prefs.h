@@ -30,7 +30,7 @@ typedef struct _SircPrefs SircPrefs;
 
 struct _SircPrefs {
     bool tls;
-    bool tls_not_verify;
+    bool tls_noverify;
     // bool ipv6;
     // bool sasl;
 };

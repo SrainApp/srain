@@ -76,7 +76,7 @@ SrnRet server_ui_event_connect(SuiEvent event, GVariantDict *params){
     const char *realname= "";
     const char *username = PACKAGE_NAME; // TODO
     gboolean tls = FALSE;
-    gboolean tls_not_verify = FALSE;
+    gboolean tls_noverify = FALSE;
     SrnRet ret = SRN_ERR;
     Server *srv;
 
@@ -87,7 +87,7 @@ SrnRet server_ui_event_connect(SuiEvent event, GVariantDict *params){
     g_variant_dict_lookup(params, "nick", SUI_EVENT_PARAM_STRING, &nick);
     g_variant_dict_lookup(params, "realname", SUI_EVENT_PARAM_STRING, &realname);
     g_variant_dict_lookup(params, "tls", SUI_EVENT_PARAM_BOOL, &tls);
-    g_variant_dict_lookup(params, "tls-not-verify", SUI_EVENT_PARAM_BOOL, &tls_not_verify);
+    g_variant_dict_lookup(params, "tls-noverify", SUI_EVENT_PARAM_BOOL, &tls_noverify);
 
     if (str_is_empty(name)){
         return RET_ERR(_("You must specified a server name"));
@@ -124,7 +124,7 @@ SrnRet server_ui_event_connect(SuiEvent event, GVariantDict *params){
     }
 
     prefs->irc->tls = tls;
-    prefs->irc->tls_not_verify = tls_not_verify;
+    prefs->irc->tls_noverify = tls_noverify;
 
     ret = server_prefs_check(prefs);
     if (!RET_IS_OK(ret)){

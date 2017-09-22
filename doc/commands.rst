@@ -77,7 +77,7 @@ Usage
 Usage::
 
     /server [add|rm|list|set|connect|disconnect]
-        [-host <host>] [-port <port>] [-pwd <password>] [-tls] [-tls-not-verify]
+        [-host <host>] [-port <port>] [-pwd <password>] [-tls] [-tls-noverify]
         [-nick <nickname>] [-user <username>] [-real <realname>] <name>
 
 IRC server management.
@@ -102,7 +102,7 @@ Options:
 * ``-port``: server port, default ``6667``
 * ``-pwd``: connection password, default empty
 * ``-tls``: use secure connections with TLS
-* ``-tls-not-verify``: don't verify TLS certificate
+* ``-tls-noverify``: use TLS connection without certificate verification
 * ``-nick``: specify nickname
 * ``-user``: specify username, default same as nickname
 * ``-real``: specify realname, default same as nickname
@@ -118,7 +118,7 @@ Arguments:
 
 Usage::
 
-    /connect [-port <port>] [-pwd <password>] [-tls] [-tls-not-verify]
+    /connect [-port <port>] [-pwd <password>] [-tls] [-tls-noverify]
         [-user <username>] [-real <realname>] <host> <nick>
 
 Create a IRC server and connect to it immediately.
@@ -128,7 +128,7 @@ Options:
 * ``-port``: server port, default ``6667``
 * ``-pwd``: connection password, default empty
 * ``-tls``: use secure connections with TLS
-* ``-tls-not-verify``: don't verify TLS certificate
+* ``-tls-noverify``: use TLS connection without certificate verification
 * ``-user``: specify usernamem default same as nickname
 * ``-real``: specify realname, default same as nickname
 

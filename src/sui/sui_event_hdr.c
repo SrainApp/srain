@@ -54,7 +54,7 @@ static SuiEventParamFormat formats[SUI_EVENT_UNKNOWN][SUI_EVENT_MAX_PARAM] = {
         { .key = "nick", .fmt = SUI_EVENT_PARAM_STRING, },
         { .key = "realname", .fmt = SUI_EVENT_PARAM_STRING, },
         { .key = "tls", .fmt = SUI_EVENT_PARAM_BOOL, },
-        { .key = "tls-not-verify", .fmt = SUI_EVENT_PARAM_BOOL, },
+        { .key = "tls-noverify", .fmt = SUI_EVENT_PARAM_BOOL, },
     },
     [SUI_EVENT_DISCONNECT] = {
         { .key = NULL, .fmt = NULL, },
