@@ -60,6 +60,10 @@ struct _SrainWindow {
     GtkMenu *tray_menu;
     GtkMenuItem *about_menu_item;
     GtkMenuItem *quit_menu_item;
+
+    // Dialogs
+    SrainConnectDialog *connect_dialog;
+    SrainJoinDialog *join_dialog;
 };
 
 struct _SrainWindowClass {
@@ -109,13 +113,12 @@ static void show_about_dialog(gpointer user_data){
 
 static void connect_button_on_click(gpointer user_data){
     int resp;
-    GVariantDict *params;
-    GtkWindow *parent;
+    SrainWindow *win;
     SrainConnectDialog *dialog;
 
-    params = g_variant_dict_new(NULL);
-    parent = GTK_WINDOW(user_data);
-    dialog = srain_connect_dialog_new(parent, params);
+    win = SRAIN_WINDOW(user_data);
+    dialog = srain_connect_dialog_new(GTK_WINDOW(win));
+    win->connect_dialog = dialog;
 
     resp = gtk_dialog_run(GTK_DIALOG(dialog));
     gtk_widget_destroy(GTK_WIDGET(dialog));
@@ -134,19 +137,18 @@ static void connect_button_on_click(gpointer user_data){
             ERR_FR("Connect dialog returns unknown response id: %d", resp);
     }
 
-    g_variant_dict_unref(params);
+    win->connect_dialog = NULL;
 }
 
 
 static void join_button_on_click(gpointer user_data){
     int resp;
-    GVariantDict *params;
-    GtkWindow *parent;
+    SrainWindow *win;
     SrainJoinDialog *dialog;
 
-    params = g_variant_dict_new(NULL);
-    parent = GTK_WINDOW(user_data);
-    dialog = srain_join_dialog_new(parent, params);
+    win = SRAIN_WINDOW(user_data);
+    dialog = srain_join_dialog_new(GTK_WINDOW(win));
+    win->join_dialog = dialog;
 
     resp = gtk_dialog_run(GTK_DIALOG(dialog));
     gtk_widget_destroy(GTK_WIDGET(dialog));
@@ -163,7 +165,7 @@ static void join_button_on_click(gpointer user_data){
             ERR_FR("Join dialog returns unknown response id: %d", resp);
     }
 
-    g_variant_dict_unref(params);
+    win->join_dialog = NULL;
 }
 
 static gboolean CTRL_J_K_on_press(GtkAccelGroup *group, GObject *obj,
@@ -364,4 +366,12 @@ int srain_window_is_active(SrainWindow *win){
     g_object_get(G_OBJECT(win), "is-active", &active, NULL);
 
     return active;
+}
+
+SrainConnectDialog *srain_window_get_connect_dialog(SrainWindow *win){
+    return win->connect_dialog;
+}
+
+SrainJoinDialog *srain_window_get_join_dialog(SrainWindow *win){
+    return win->join_dialog;
 }

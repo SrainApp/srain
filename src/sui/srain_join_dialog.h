@@ -32,6 +32,6 @@ typedef struct _SrainJoinDialog SrainJoinDialog;
 typedef struct _SrainJoinDialogClass SrainJoinDialogClass;
 
 GType srain_join_dialog_get_type(void);
-SrainJoinDialog* srain_join_dialog_new(GtkWindow *parent, GVariantDict *params);
+SrainJoinDialog* srain_join_dialog_new(GtkWindow *parent);
 
 #endif /* __SRAIN_JOIN_DIALOG_H */

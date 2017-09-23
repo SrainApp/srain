@@ -28,12 +28,15 @@
 #include <gtk/gtk.h>
 
 #include "sui/sui.h"
+#include "sui_event_hdr.h"
+#include "srain_window.h"
 #include "srain_connect_dialog.h"
+
+#include "srain.h"
+#include "i18n.h"
 
 struct _SrainConnectDialog {
     GtkDialog parent;
-
-    GVariantDict *params;   // Return value
 
     /* Server info */
     GtkEntry *name_entry;
@@ -99,13 +102,12 @@ static void srain_connect_dialog_class_init(SrainConnectDialogClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainConnectDialog, connect_button);
 }
 
-SrainConnectDialog* srain_connect_dialog_new(GtkWindow *parent, GVariantDict *params){
+SrainConnectDialog* srain_connect_dialog_new(GtkWindow *parent){
     SrainConnectDialog *dialog;
 
     dialog = g_object_new(SRAIN_TYPE_CONNECT_DIALOG, NULL);
 
     gtk_window_set_transient_for(GTK_WINDOW(dialog), parent);
-    dialog->params = params;
 
     return dialog;
 }
@@ -125,25 +127,45 @@ static void save_button_on_click(gpointer user_data){
 }
 
 static void connect_button_on_click(gpointer user_data){
+    const char *name;
     const char *host;
     const char *port;
     const char *passwd;
     const char *nick;
     const char *realname;
     gboolean tls;
-    gboolean tls_not_verify;
+    gboolean tls_noverify;
+    GVariantDict *params;
+    SrnRet ret;
     SrainConnectDialog *dialog;
 
     dialog = user_data;
-    gtk_dialog_response(GTK_DIALOG(dialog), SRAIN_CONNECT_DIALOG_RESP_CONNECT);
-    return;
+    params = g_variant_dict_new(NULL);
 
-    g_variant_dict_insert(dialog->params, "name", SUI_EVENT_PARAM_STRING, host);
-    g_variant_dict_insert(dialog->params, "host", SUI_EVENT_PARAM_STRING, host);
-    g_variant_dict_insert(dialog->params, "port", SUI_EVENT_PARAM_INT, atoi(port));
-    g_variant_dict_insert(dialog->params, "password", SUI_EVENT_PARAM_STRING, passwd);
-    g_variant_dict_insert(dialog->params, "nick", SUI_EVENT_PARAM_STRING, nick);
-    g_variant_dict_insert(dialog->params, "realname", SUI_EVENT_PARAM_STRING, realname);
-    g_variant_dict_insert(dialog->params, "tls", SUI_EVENT_PARAM_BOOL, tls);
-    g_variant_dict_insert(dialog->params, "tls-not-verify", SUI_EVENT_PARAM_BOOL, tls_not_verify);
+    name = gtk_entry_get_text(dialog->name_entry);
+    host = gtk_entry_get_text(dialog->host_entry);
+    port = gtk_entry_get_text(dialog->port_entry);
+    passwd = gtk_entry_get_text(dialog->passwd_entry);
+    nick = gtk_entry_get_text(dialog->nick_entry);
+    realname = gtk_entry_get_text(dialog->realname_entry);
+    tls = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(dialog->tls_check_button));
+    tls_noverify = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(dialog->tls_noverify_check_button));
+
+    g_variant_dict_insert(params, "name", SUI_EVENT_PARAM_STRING, name);
+    g_variant_dict_insert(params, "host", SUI_EVENT_PARAM_STRING, host);
+    g_variant_dict_insert(params, "port", SUI_EVENT_PARAM_INT, atoi(port));
+    g_variant_dict_insert(params, "password", SUI_EVENT_PARAM_STRING, passwd);
+    g_variant_dict_insert(params, "nick", SUI_EVENT_PARAM_STRING, nick);
+    g_variant_dict_insert(params, "realname", SUI_EVENT_PARAM_STRING, realname);
+    g_variant_dict_insert(params, "tls", SUI_EVENT_PARAM_BOOL, tls);
+    g_variant_dict_insert(params, "tls-noverify", SUI_EVENT_PARAM_BOOL, tls_noverify);
+
+    ret = sui_event_hdr(NULL, SUI_EVENT_CONNECT, params);
+    g_variant_dict_unref(params);
+
+    if (RET_IS_OK(ret)){
+        gtk_dialog_response(GTK_DIALOG(dialog), SRAIN_CONNECT_DIALOG_RESP_CONNECT);
+    } else {
+        sui_message_box(_("Error"), RET_MSG(ret));
+    }
 }

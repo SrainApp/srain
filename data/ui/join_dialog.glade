@@ -36,6 +36,7 @@
   </object>
   <template class="SrainJoinDialog" parent="GtkDialog">
     <property name="can_focus">False</property>
+    <property name="border_width">2</property>
     <property name="title" translatable="yes">Join channel</property>
     <property name="modal">True</property>
     <property name="window_position">center-on-parent</property>
@@ -95,6 +96,7 @@
               <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="spacing">2</property>
                 <child>
                   <object class="GtkEntry" id="chan_entry">
                     <property name="visible">True</property>
@@ -104,6 +106,18 @@
                     <property name="expand">True</property>
                     <property name="fill">True</property>
                     <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="passwd_entry">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="input_purpose">password</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
                   </packing>
                 </child>
                 <child>

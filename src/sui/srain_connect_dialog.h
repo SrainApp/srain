@@ -33,6 +33,6 @@ typedef struct _SrainConnectDialog SrainConnectDialog;
 typedef struct _SrainConnectDialogClass SrainConnectDialogClass;
 
 GType srain_connect_dialog_get_type(void);
-SrainConnectDialog* srain_connect_dialog_new(GtkWindow *parent, GVariantDict *params);
+SrainConnectDialog* srain_connect_dialog_new(GtkWindow *parent);
 
 #endif /* __SRAIN_CONNECT_DIALOG_H */

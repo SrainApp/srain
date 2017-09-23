@@ -26,16 +26,20 @@
 
 #include <gtk/gtk.h>
 
-#include "srain_join_dialog.h"
 #include "sui/sui.h"
+#include "sui_event_hdr.h"
+#include "srain_window.h"
+#include "srain_join_dialog.h"
+
+#include "srain.h"
+#include "i18n.h"
 
 struct _SrainJoinDialog {
     GtkDialog parent;
 
-    GVariantDict *params;   // Return value
-
     /* Search area */
     GtkEntry *chan_entry;
+    GtkEntry *passwd_entry;
     GtkCheckButton *advanced_check_button;
     GtkRevealer *revealer;
 
@@ -79,6 +83,7 @@ static void srain_join_dialog_class_init(SrainJoinDialogClass *class){
             "/org/gtk/srain/join_dialog.glade");
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, chan_entry);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, passwd_entry);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, advanced_check_button );
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, revealer);
 
@@ -96,13 +101,12 @@ static void srain_join_dialog_class_init(SrainJoinDialogClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, join_button);
 }
 
-SrainJoinDialog* srain_join_dialog_new(GtkWindow *parent, GVariantDict *params){
+SrainJoinDialog* srain_join_dialog_new(GtkWindow *parent){
     SrainJoinDialog *dialog;
 
     dialog = g_object_new(SRAIN_TYPE_JOIN_DIALOG, NULL);
 
     gtk_window_set_transient_for(GTK_WINDOW(dialog), parent);
-    dialog->params = params;
 
     return dialog;
 }
@@ -117,13 +121,29 @@ static void cancel_button_on_click(gpointer user_data){
 static void join_button_on_click(gpointer user_data){
     const char *chan;
     const char *passwd;
+    GVariantDict *params;
+    SrnRet ret;
     SrainJoinDialog *dialog;
+    SrainChat *chat;
 
     dialog = user_data;
-    gtk_dialog_response(GTK_DIALOG(dialog), SRAIN_JOIN_DIALOG_RESP_JOIN);
+    params = g_variant_dict_new(NULL);
+    chat = srain_window_get_cur_chat(srain_win);
 
-    return;
+    g_return_if_fail(chat);
 
-    g_variant_dict_insert(dialog->params, "channel", SUI_EVENT_PARAM_STRING, chan);
-    g_variant_dict_insert(dialog->params, "password", SUI_EVENT_PARAM_STRING, passwd);
+    chan = gtk_entry_get_text(dialog->chan_entry);
+    passwd = gtk_entry_get_text(dialog->passwd_entry);
+    chat = srain_window_get_cur_chat(srain_win);
+
+    g_variant_dict_insert(params, "channel", SUI_EVENT_PARAM_STRING, chan);
+    g_variant_dict_insert(params, "password", SUI_EVENT_PARAM_STRING, passwd);
+
+    ret = sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_JOIN, params);
+
+    if (RET_IS_OK(ret)){
+        gtk_dialog_response(GTK_DIALOG(dialog), SRAIN_JOIN_DIALOG_RESP_JOIN);
+    } else {
+        sui_message_box(_("Error"), RET_MSG(ret));
+    }
 }
