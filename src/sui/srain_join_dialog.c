@@ -33,9 +33,23 @@
 
 #include "srain.h"
 #include "i18n.h"
+#include "log.h"
+
+#define MATCH_CHANNEL               0
+#define MATCH_CHANNEL_WITH_REGEX    1
+#define MATCH_TOPIC_WITH_REGEX      2
+
+#define MATCH_LIST_STORE_COL_INDEX      0
+#define MATCH_LIST_STORE_COL_COMMENT    1
+
+#define CHAN_LIST_STORE_COL_CHANNEL     0
+#define CHAN_LIST_STORE_COL_USERS       1
+#define CHAN_LIST_STORE_COL_TOPIC       2
 
 struct _SrainJoinDialog {
     GtkDialog parent;
+
+    int match;
 
     /* Search area */
     GtkEntry *chan_entry;
@@ -44,13 +58,15 @@ struct _SrainJoinDialog {
     GtkRevealer *revealer;
 
     /* Filter */
-    GtkCheckButton *regex_check_button;
-    GtkSpinButton *min_user_spin_button;
-    GtkSpinButton *max_user_spin_button;
+    GtkComboBox *match_combo_box;
+    GtkListStore *match_list_store;
+    GtkSpinButton *min_users_spin_button;
+    GtkSpinButton *max_users_spin_button;
     GtkButton *refresh_button;
 
     /* Channel list */
     GtkTreeView *chan_tree_view;
+    GtkListStore *chan_list_store;
     GtkTreeViewColumn *chan_tree_view_column;
     GtkTreeViewColumn *users_tree_view_column;
     GtkTreeViewColumn *topic_tree_view_column;
@@ -66,16 +82,58 @@ struct _SrainJoinDialogClass {
 
 G_DEFINE_TYPE(SrainJoinDialog, srain_join_dialog, GTK_TYPE_DIALOG);
 
+static void srain_join_dialog_init(SrainJoinDialog *self);
+static void srain_join_dialog_class_init(SrainJoinDialogClass *class);
+
 static void cancel_button_on_click(gpointer user_data);
 static void join_button_on_click(gpointer user_data);
+static void advanced_check_button_on_toggled(GtkToggleButton *togglebutton,
+        gpointer user_data);
+static void match_combo_box_on_changed(GtkComboBox *combobox,
+        gpointer user_data);
+
+SrainJoinDialog* srain_join_dialog_new(GtkWindow *parent){
+    SrainJoinDialog *dialog;
+
+    dialog = g_object_new(SRAIN_TYPE_JOIN_DIALOG, NULL);
+
+    gtk_window_set_transient_for(GTK_WINDOW(dialog), parent);
+
+    return dialog;
+}
+
+void srain_join_dialog_add_chan_entry(SrainJoinDialog *dialog,
+        const char *chan, int users, const char *topic){
+    GtkTreeIter iter;
+
+    gtk_list_store_append(dialog->chan_list_store, &iter);
+    gtk_list_store_set(dialog->chan_list_store, &iter,
+            CHAN_LIST_STORE_COL_CHANNEL, chan,
+            CHAN_LIST_STORE_COL_USERS, users,
+            CHAN_LIST_STORE_COL_TOPIC, topic,
+            -1);
+}
+
+
+/*****************************************************************************
+ * Static functions
+ *****************************************************************************/
 
 static void srain_join_dialog_init(SrainJoinDialog *self){
     gtk_widget_init_template(GTK_WIDGET(self));
+
+    self->match = MATCH_CHANNEL;
+
+    srain_join_dialog_add_chan_entry(self, "#srain", 1, "Here");
 
     g_signal_connect_swapped(self->cancel_button, "clicked",
             G_CALLBACK(cancel_button_on_click), self);
     g_signal_connect_swapped(self->join_button, "clicked",
             G_CALLBACK(join_button_on_click), self);
+    g_signal_connect(self->advanced_check_button, "toggled",
+            G_CALLBACK(advanced_check_button_on_toggled), self);
+    g_signal_connect(self->match_combo_box, "changed",
+            G_CALLBACK(match_combo_box_on_changed), self);
 }
 
 static void srain_join_dialog_class_init(SrainJoinDialogClass *class){
@@ -87,28 +145,20 @@ static void srain_join_dialog_class_init(SrainJoinDialogClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, advanced_check_button );
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, revealer);
 
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, regex_check_button);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, min_user_spin_button);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, max_user_spin_button);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, match_combo_box);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, match_list_store);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, min_users_spin_button);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, max_users_spin_button);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, refresh_button);
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, chan_tree_view);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, chan_list_store);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, chan_tree_view_column);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, users_tree_view_column);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, topic_tree_view_column);
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, cancel_button);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, join_button);
-}
-
-SrainJoinDialog* srain_join_dialog_new(GtkWindow *parent){
-    SrainJoinDialog *dialog;
-
-    dialog = g_object_new(SRAIN_TYPE_JOIN_DIALOG, NULL);
-
-    gtk_window_set_transient_for(GTK_WINDOW(dialog), parent);
-
-    return dialog;
 }
 
 static void cancel_button_on_click(gpointer user_data){
@@ -130,7 +180,9 @@ static void join_button_on_click(gpointer user_data){
     params = g_variant_dict_new(NULL);
     chat = srain_window_get_cur_chat(srain_win);
 
-    g_return_if_fail(chat);
+    if (!SRAIN_IS_CHAT(chat)){
+       sui_message_box(_("Error"), _("Please connect to server before join any channel"));
+    }
 
     chan = gtk_entry_get_text(dialog->chan_entry);
     passwd = gtk_entry_get_text(dialog->passwd_entry);
@@ -146,4 +198,83 @@ static void join_button_on_click(gpointer user_data){
     } else {
         sui_message_box(_("Error"), RET_MSG(ret));
     }
+}
+
+static void advanced_check_button_on_toggled(GtkToggleButton *togglebutton,
+        gpointer user_data){
+    SrainJoinDialog *dialog;
+
+    dialog = user_data;
+
+    gtk_revealer_set_reveal_child(dialog->revealer,
+            gtk_toggle_button_get_active(togglebutton));
+}
+
+static void match_combo_box_on_changed(GtkComboBox *combobox,
+        gpointer user_data){
+    int match;
+    GtkTreeIter iter;
+    SrainJoinDialog *dialog;
+
+    dialog = user_data;
+
+    if (!gtk_combo_box_get_active_iter(combobox, &iter)){
+        ERR_FR("No acive item");
+    }
+
+    gtk_tree_model_get(GTK_TREE_MODEL(dialog->match_list_store), &iter,
+            MATCH_LIST_STORE_COL_INDEX, &match,
+            -1);
+    dialog->match = match;
+
+    DBG_FR("Selected index: %d", match);
+}
+
+gboolean chan_tree_view_visible_func(GtkTreeModel *model, GtkTreeIter *iter,
+        gpointer user_data){
+    int users;
+    int min_users;
+    int max_users;
+    char *chan;
+    char *topic;
+    const char *input;
+    gboolean visable;
+    SrainJoinDialog *dialog;
+
+    visable = FALSE;
+    dialog = user_data;
+    gtk_tree_model_get(model, iter,
+            CHAN_LIST_STORE_COL_CHANNEL, &chan,
+            CHAN_LIST_STORE_COL_USERS, &users,
+            CHAN_LIST_STORE_COL_TOPIC, &topic,
+            -1);
+
+    min_users = gtk_spin_button_get_value(dialog->min_users_spin_button);
+    max_users = gtk_spin_button_get_value(dialog->max_users_spin_button);
+    input = gtk_entry_get_text(dialog->chan_entry);
+
+    // Filter users
+    if (min_users != - 1 && users < min_users){
+        goto FIN;
+    }
+    if (max_users != - 1 && users > max_users){
+        goto FIN;
+    }
+
+    switch (dialog->match){
+        case MATCH_CHANNEL:
+            if (g_ascii_strcasecmp(input, chan) == 0){
+                visable = TRUE;
+            }
+            break;
+        case MATCH_CHANNEL_WITH_REGEX:
+        default:
+            ERR_FR("Unsupported match type");
+    }
+
+FIN:
+    g_free(chan);
+    g_free(topic);
+
+    return visable;
 }

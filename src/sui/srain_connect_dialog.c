@@ -112,6 +112,10 @@ SrainConnectDialog* srain_connect_dialog_new(GtkWindow *parent){
     return dialog;
 }
 
+/*****************************************************************************
+ * Static functions
+ *****************************************************************************/
+
 static void cancel_button_on_click(gpointer user_data){
     SrainConnectDialog *dialog;
 
