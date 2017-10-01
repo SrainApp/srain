@@ -34,6 +34,7 @@
 #include "srain.h"
 #include "i18n.h"
 #include "log.h"
+#include "utils.h"
 
 #define MATCH_CHANNEL               0
 #define MATCH_CHANNEL_WITH_REGEX    1
@@ -50,6 +51,7 @@ struct _SrainJoinDialog {
     GtkDialog parent;
 
     int match;
+    bool end;
 
     /* Search area */
     GtkEntry *chan_entry;
@@ -68,6 +70,10 @@ struct _SrainJoinDialog {
     GtkTreeViewColumn *users_tree_view_column;
     GtkTreeViewColumn *topic_tree_view_column;
 
+    /* Status */
+    GtkLabel *status_label;
+    GtkSpinner *status_spinner;
+
     /* Dialog button */
     GtkButton *cancel_button;
     GtkButton *join_button;
@@ -75,6 +81,7 @@ struct _SrainJoinDialog {
     /* Data model */
     GtkListStore *match_list_store;
     GtkListStore *chan_list_store;
+    GtkTreeModel *chan_tree_model_filter; // FilterTreeModel of chan_list_store
 };
 
 struct _SrainJoinDialogClass {
@@ -94,6 +101,12 @@ static void advanced_check_button_on_toggled(GtkToggleButton *togglebutton,
         gpointer user_data);
 static void match_combo_box_on_changed(GtkComboBox *combobox,
         gpointer user_data);
+static void refresh_button_on_clicked(GtkButton *button, gpointer user_data);
+static void chan_tree_view_on_row_activate(GtkTreeView *view,
+        GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data);
+gboolean chan_tree_visible_func(GtkTreeModel *model, GtkTreeIter *iter,
+        gpointer user_data);
+static void chan_tree_model_filter_refilter(gpointer user_data);
 
 SrainJoinDialog* srain_join_dialog_new(GtkWindow *parent){
     SrainJoinDialog *dialog;
@@ -105,9 +118,17 @@ SrainJoinDialog* srain_join_dialog_new(GtkWindow *parent){
     return dialog;
 }
 
-void srain_join_dialog_add_chan_entry(SrainJoinDialog *dialog,
+void srain_join_dialog_add_chan(SrainJoinDialog *dialog,
         const char *chan, int users, const char *topic){
+    char *status;
     GtkTreeIter iter;
+
+    /* If end = TURE, this chan is a start of  new chan list */
+    if (dialog->end) {
+        gtk_list_store_clear(dialog->chan_list_store);
+        dialog->end = FALSE;
+        gtk_spinner_start(dialog->status_spinner);
+    }
 
     gtk_list_store_append(dialog->chan_list_store, &iter);
     gtk_list_store_set(dialog->chan_list_store, &iter,
@@ -115,8 +136,19 @@ void srain_join_dialog_add_chan_entry(SrainJoinDialog *dialog,
             CHAN_LIST_STORE_COL_USERS, users,
             CHAN_LIST_STORE_COL_TOPIC, topic,
             -1);
+
+    /* Update status */
+    status = g_strdup_printf(_("Loading %d channnels..."),
+             gtk_tree_model_iter_n_children(
+                 GTK_TREE_MODEL(dialog->chan_list_store), NULL));
+    gtk_label_set_text(dialog->status_label, status);
+    g_free(status);
 }
 
+void srain_join_dialog_add_chan_end(SrainJoinDialog *dialog){
+    dialog->end = TRUE;
+    gtk_spinner_stop(dialog->status_spinner);
+}
 
 /*****************************************************************************
  * Static functions
@@ -125,6 +157,7 @@ void srain_join_dialog_add_chan_entry(SrainJoinDialog *dialog,
 static void srain_join_dialog_init(SrainJoinDialog *self){
     gtk_widget_init_template(GTK_WIDGET(self));
 
+    self->end = TRUE;
     self->match = MATCH_CHANNEL;
     match_combo_box_set_model(self);
     chan_tree_view_set_model(self);
@@ -133,14 +166,28 @@ static void srain_join_dialog_init(SrainJoinDialog *self){
             G_CALLBACK(cancel_button_on_click), self);
     g_signal_connect_swapped(self->join_button, "clicked",
             G_CALLBACK(join_button_on_click), self);
+    g_signal_connect_swapped(self->chan_entry, "activate",
+            G_CALLBACK(join_button_on_click), self);
     g_signal_connect(self->advanced_check_button, "toggled",
             G_CALLBACK(advanced_check_button_on_toggled), self);
     g_signal_connect(self->match_combo_box, "changed",
             G_CALLBACK(match_combo_box_on_changed), self);
+    g_signal_connect(self->refresh_button, "clicked",
+            G_CALLBACK(refresh_button_on_clicked), self);
+    g_signal_connect(self->chan_tree_view, "row-activated",
+            G_CALLBACK(chan_tree_view_on_row_activate), self);
 
-    // TODO: remove me
-    srain_join_dialog_add_chan_entry(self, "#srain", 1, "Here");
-
+    /* Filter condition changed */
+    g_signal_connect_swapped(self->chan_entry, "changed",
+            G_CALLBACK(chan_tree_model_filter_refilter), self);
+    g_signal_connect_swapped(self->match_combo_box, "changed",
+            G_CALLBACK(chan_tree_model_filter_refilter), self);
+    g_signal_connect_swapped(self->min_users_spin_button, "changed",
+            G_CALLBACK(chan_tree_model_filter_refilter), self);
+    g_signal_connect_swapped(self->max_users_spin_button, "changed",
+            G_CALLBACK(chan_tree_model_filter_refilter), self);
+    g_signal_connect_swapped(self->max_users_spin_button, "changed",
+            G_CALLBACK(chan_tree_model_filter_refilter), self);
 }
 
 static void srain_join_dialog_class_init(SrainJoinDialogClass *class){
@@ -160,6 +207,9 @@ static void srain_join_dialog_class_init(SrainJoinDialogClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, chan_tree_view_column);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, users_tree_view_column);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, topic_tree_view_column);
+
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, status_label);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, status_spinner);
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, cancel_button);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, join_button);
@@ -183,17 +233,20 @@ static void match_combo_box_set_model(SrainJoinDialog *dialog){
             MATCH_LIST_STORE_COL_COMMENT, "Match channel name",
             -1);
 
+    /* TODO
     gtk_list_store_append(store, &iter);
     gtk_list_store_set(store, &iter,
             MATCH_LIST_STORE_COL_INDEX, MATCH_CHANNEL_WITH_REGEX,
             MATCH_LIST_STORE_COL_COMMENT, "Match channel name with regular expression",
             -1);
+    */
 
     gtk_combo_box_set_model(combobox, GTK_TREE_MODEL(store));
 }
 
 static void chan_tree_view_set_model(SrainJoinDialog *dialog){
     GtkListStore *store;
+    GtkTreeModel *filter;
     GtkTreeView *view;
 
     /* 3 columns: channel name, users, topic */
@@ -201,11 +254,17 @@ static void chan_tree_view_set_model(SrainJoinDialog *dialog){
             G_TYPE_STRING,
             G_TYPE_INT,
             G_TYPE_STRING);
-
     store = dialog->chan_list_store;
     view = dialog->chan_tree_view;
 
-    gtk_tree_view_set_model(view, GTK_TREE_MODEL(store));
+    dialog->chan_tree_model_filter = gtk_tree_model_filter_new(
+            GTK_TREE_MODEL(store), NULL);
+    filter = dialog->chan_tree_model_filter;
+
+    gtk_tree_model_filter_set_visible_func(GTK_TREE_MODEL_FILTER(filter),
+            chan_tree_visible_func, dialog, NULL);
+
+    gtk_tree_view_set_model(view, filter);
 }
 
 static void cancel_button_on_click(gpointer user_data){
@@ -244,6 +303,8 @@ static void join_button_on_click(gpointer user_data){
     } else {
         sui_message_box(_("Error"), RET_MSG(ret));
     }
+
+    g_variant_dict_unref(params);
 }
 
 static void advanced_check_button_on_toggled(GtkToggleButton *togglebutton,
@@ -254,6 +315,10 @@ static void advanced_check_button_on_toggled(GtkToggleButton *togglebutton,
 
     gtk_revealer_set_reveal_child(dialog->revealer,
             gtk_toggle_button_get_active(togglebutton));
+
+    if (gtk_toggle_button_get_active(togglebutton)){
+        chan_tree_model_filter_refilter(dialog);
+    }
 }
 
 static void match_combo_box_on_changed(GtkComboBox *combobox,
@@ -276,13 +341,80 @@ static void match_combo_box_on_changed(GtkComboBox *combobox,
     DBG_FR("Selected index: %d", match);
 }
 
-gboolean chan_tree_view_visible_func(GtkTreeModel *model, GtkTreeIter *iter,
+static void refresh_button_on_clicked(GtkButton *button, gpointer user_data){
+    SrnRet ret;
+    SrainChat *chat;
+    SrainJoinDialog *dialog;
+
+    dialog = user_data;
+
+    chat = srain_window_get_cur_chat(srain_win);
+    if (!SRAIN_IS_CHAT(chat)){
+       sui_message_box(_("Error"), _("Please connect to server before join any channel"));
+    }
+
+    ret = sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_CHAN_LIST, NULL);
+    if (!RET_IS_OK(ret)){
+        sui_message_box(_("Error"), RET_MSG(ret));
+    }
+}
+
+static void chan_tree_view_on_row_activate(GtkTreeView *view,
+        GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data){
+    char *chan = NULL;
+    GtkTreeIter iter;
+    GtkTreeModel *model;
+    SrainJoinDialog *dialog;
+
+    dialog = user_data;
+    model = gtk_tree_view_get_model(view);
+    if (!gtk_tree_model_get_iter(model, &iter, path)){
+        ERR_FR("get iter");
+        return;
+    }
+
+    gtk_tree_model_get(model, &iter,
+            CHAN_LIST_STORE_COL_CHANNEL, &chan,
+            -1);
+    g_return_if_fail(chan);
+    gtk_entry_set_text(dialog->chan_entry, chan);
+
+    g_free(chan);
+}
+
+static void chan_tree_model_filter_refilter(gpointer user_data){
+    SrainJoinDialog *dialog;
+
+    dialog = user_data;
+
+    /* If advanced_check_button is not checked, disable filter functions */
+    if (!gtk_toggle_button_get_active(
+                GTK_TOGGLE_BUTTON(dialog->advanced_check_button))){
+        return;
+    }
+
+    gtk_tree_model_filter_refilter(
+           GTK_TREE_MODEL_FILTER(dialog->chan_tree_model_filter));
+
+    /* Update status */
+    if (dialog->end) {
+        char *status  = g_strdup_printf(_("Showing %d of %d channnels"),
+                gtk_tree_model_iter_n_children(
+                    GTK_TREE_MODEL(dialog->chan_tree_model_filter), NULL),
+                gtk_tree_model_iter_n_children(
+                    GTK_TREE_MODEL(dialog->chan_list_store), NULL));
+        gtk_label_set_text(dialog->status_label, status);
+        g_free(status);
+    }
+}
+
+gboolean chan_tree_visible_func(GtkTreeModel *model, GtkTreeIter *iter,
         gpointer user_data){
     int users;
     int min_users;
     int max_users;
-    char *chan;
-    char *topic;
+    char *chan = NULL;
+    char *topic = NULL;
     const char *input;
     gboolean visable;
     SrainJoinDialog *dialog;
@@ -294,12 +426,15 @@ gboolean chan_tree_view_visible_func(GtkTreeModel *model, GtkTreeIter *iter,
             CHAN_LIST_STORE_COL_USERS, &users,
             CHAN_LIST_STORE_COL_TOPIC, &topic,
             -1);
+    g_return_val_if_fail(chan && topic, FALSE);
+
+    DBG_FR("cha: %s, users: %d, topic: %s", chan, users, topic);
 
     min_users = gtk_spin_button_get_value(dialog->min_users_spin_button);
     max_users = gtk_spin_button_get_value(dialog->max_users_spin_button);
     input = gtk_entry_get_text(dialog->chan_entry);
 
-    // Filter users
+    /* Filter users */
     if (min_users != - 1 && users < min_users){
         goto FIN;
     }
@@ -309,7 +444,7 @@ gboolean chan_tree_view_visible_func(GtkTreeModel *model, GtkTreeIter *iter,
 
     switch (dialog->match){
         case MATCH_CHANNEL:
-            if (g_ascii_strcasecmp(input, chan) == 0){
+            if (str_is_empty(input) || g_strstr_len(chan, -1, input) != NULL){
                 visable = TRUE;
             }
             break;
@@ -321,6 +456,8 @@ gboolean chan_tree_view_visible_func(GtkTreeModel *model, GtkTreeIter *iter,
 FIN:
     g_free(chan);
     g_free(topic);
+
+    DBG_FR("visable: %d", visable);
 
     return visable;
 }

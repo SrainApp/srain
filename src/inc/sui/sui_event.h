@@ -47,6 +47,8 @@ typedef enum {
     SUI_EVENT_WHOIS,
     SUI_EVENT_IGNORE,
     SUI_EVENT_CUTOVER,
+    SUI_EVENT_SERVER_LIST,
+    SUI_EVENT_CHAN_LIST,
     SUI_EVENT_UNKNOWN,
 } SuiEvent;
 
@@ -66,12 +68,14 @@ typedef struct {
     SuiEventCallback whois;
     SuiEventCallback ignore;
     SuiEventCallback cutover;
+    SuiEventCallback chan_list;
 } SuiEvents;
 
 typedef struct {
     SuiAppEventCallback open;
     SuiAppEventCallback activate;
     SuiAppEventCallback connect;
+    SuiAppEventCallback server_list;
 } SuiAppEvents;
 
 #endif /* __SUI_EVENT_H */

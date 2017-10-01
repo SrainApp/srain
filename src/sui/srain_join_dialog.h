@@ -33,5 +33,8 @@ typedef struct _SrainJoinDialogClass SrainJoinDialogClass;
 
 GType srain_join_dialog_get_type(void);
 SrainJoinDialog* srain_join_dialog_new(GtkWindow *parent);
+void srain_join_dialog_and_chan(SrainJoinDialog *dialog,
+        const char *chan, int users, const char *topic);
+void srain_join_dialog_add_chan_end(SrainJoinDialog *dialog);
 
 #endif /* __SRAIN_JOIN_DIALOG_H */
