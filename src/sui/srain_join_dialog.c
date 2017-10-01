@@ -53,20 +53,17 @@ struct _SrainJoinDialog {
 
     /* Search area */
     GtkEntry *chan_entry;
-    GtkEntry *passwd_entry;
     GtkCheckButton *advanced_check_button;
     GtkRevealer *revealer;
 
     /* Filter */
     GtkComboBox *match_combo_box;
-    GtkListStore *match_list_store;
     GtkSpinButton *min_users_spin_button;
     GtkSpinButton *max_users_spin_button;
     GtkButton *refresh_button;
 
     /* Channel list */
     GtkTreeView *chan_tree_view;
-    GtkListStore *chan_list_store;
     GtkTreeViewColumn *chan_tree_view_column;
     GtkTreeViewColumn *users_tree_view_column;
     GtkTreeViewColumn *topic_tree_view_column;
@@ -74,6 +71,10 @@ struct _SrainJoinDialog {
     /* Dialog button */
     GtkButton *cancel_button;
     GtkButton *join_button;
+
+    /* Data model */
+    GtkListStore *match_list_store;
+    GtkListStore *chan_list_store;
 };
 
 struct _SrainJoinDialogClass {
@@ -84,6 +85,8 @@ G_DEFINE_TYPE(SrainJoinDialog, srain_join_dialog, GTK_TYPE_DIALOG);
 
 static void srain_join_dialog_init(SrainJoinDialog *self);
 static void srain_join_dialog_class_init(SrainJoinDialogClass *class);
+static void match_combo_box_set_model(SrainJoinDialog *dialog);
+static void chan_tree_view_set_model(SrainJoinDialog *dialog);
 
 static void cancel_button_on_click(gpointer user_data);
 static void join_button_on_click(gpointer user_data);
@@ -123,8 +126,8 @@ static void srain_join_dialog_init(SrainJoinDialog *self){
     gtk_widget_init_template(GTK_WIDGET(self));
 
     self->match = MATCH_CHANNEL;
-
-    srain_join_dialog_add_chan_entry(self, "#srain", 1, "Here");
+    match_combo_box_set_model(self);
+    chan_tree_view_set_model(self);
 
     g_signal_connect_swapped(self->cancel_button, "clicked",
             G_CALLBACK(cancel_button_on_click), self);
@@ -134,6 +137,10 @@ static void srain_join_dialog_init(SrainJoinDialog *self){
             G_CALLBACK(advanced_check_button_on_toggled), self);
     g_signal_connect(self->match_combo_box, "changed",
             G_CALLBACK(match_combo_box_on_changed), self);
+
+    // TODO: remove me
+    srain_join_dialog_add_chan_entry(self, "#srain", 1, "Here");
+
 }
 
 static void srain_join_dialog_class_init(SrainJoinDialogClass *class){
@@ -141,24 +148,64 @@ static void srain_join_dialog_class_init(SrainJoinDialogClass *class){
             "/org/gtk/srain/join_dialog.glade");
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, chan_entry);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, passwd_entry);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, advanced_check_button );
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, revealer);
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, match_combo_box);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, match_list_store);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, min_users_spin_button);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, max_users_spin_button);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, refresh_button);
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, chan_tree_view);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, chan_list_store);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, chan_tree_view_column);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, users_tree_view_column);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, topic_tree_view_column);
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, cancel_button);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinDialog, join_button);
+}
+
+static void match_combo_box_set_model(SrainJoinDialog *dialog){
+    GtkListStore *store;
+    GtkComboBox *combobox;
+    GtkTreeIter iter;
+
+    /* 2 columns: index, comment */
+    dialog->match_list_store = gtk_list_store_new(2,
+            G_TYPE_INT,
+            G_TYPE_STRING);
+    store = dialog->match_list_store;
+    combobox = dialog->match_combo_box;
+
+    gtk_list_store_append(store, &iter);
+    gtk_list_store_set(store, &iter,
+            MATCH_LIST_STORE_COL_INDEX, MATCH_CHANNEL,
+            MATCH_LIST_STORE_COL_COMMENT, "Match channel name",
+            -1);
+
+    gtk_list_store_append(store, &iter);
+    gtk_list_store_set(store, &iter,
+            MATCH_LIST_STORE_COL_INDEX, MATCH_CHANNEL_WITH_REGEX,
+            MATCH_LIST_STORE_COL_COMMENT, "Match channel name with regular expression",
+            -1);
+
+    gtk_combo_box_set_model(combobox, GTK_TREE_MODEL(store));
+}
+
+static void chan_tree_view_set_model(SrainJoinDialog *dialog){
+    GtkListStore *store;
+    GtkTreeView *view;
+
+    /* 3 columns: channel name, users, topic */
+    dialog->chan_list_store = gtk_list_store_new(3,
+            G_TYPE_STRING,
+            G_TYPE_INT,
+            G_TYPE_STRING);
+
+    store = dialog->chan_list_store;
+    view = dialog->chan_tree_view;
+
+    gtk_tree_view_set_model(view, GTK_TREE_MODEL(store));
 }
 
 static void cancel_button_on_click(gpointer user_data){
@@ -170,7 +217,6 @@ static void cancel_button_on_click(gpointer user_data){
 
 static void join_button_on_click(gpointer user_data){
     const char *chan;
-    const char *passwd;
     GVariantDict *params;
     SrnRet ret;
     SrainJoinDialog *dialog;
@@ -185,11 +231,11 @@ static void join_button_on_click(gpointer user_data){
     }
 
     chan = gtk_entry_get_text(dialog->chan_entry);
-    passwd = gtk_entry_get_text(dialog->passwd_entry);
     chat = srain_window_get_cur_chat(srain_win);
 
     g_variant_dict_insert(params, "channel", SUI_EVENT_PARAM_STRING, chan);
-    g_variant_dict_insert(params, "password", SUI_EVENT_PARAM_STRING, passwd);
+    // TODO: password support
+    g_variant_dict_insert(params, "password", SUI_EVENT_PARAM_STRING, "");
 
     ret = sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_JOIN, params);
 
