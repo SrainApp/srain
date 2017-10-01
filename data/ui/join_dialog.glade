@@ -148,13 +148,13 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkSpinButton" id="min_users_spin_button">
+                          <object class="GtkSpinButton" id="max_users_spin_button">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="max_length">5</property>
                             <property name="text" translatable="yes">0</property>
                             <property name="input_purpose">number</property>
-                            <property name="adjustment">min_users_adjustment</property>
+                            <property name="adjustment">max_users_adjustment</property>
                             <property name="climb_rate">2.2351741811588166e-10</property>
                             <property name="numeric">True</property>
                           </object>
@@ -169,7 +169,7 @@
                           <object class="GtkLabel">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Min users</property>
+                            <property name="label" translatable="yes">Max users</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -179,13 +179,13 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkSpinButton" id="max_users_spin_button">
+                          <object class="GtkSpinButton" id="min_users_spin_button">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="max_length">5</property>
                             <property name="text" translatable="yes">0</property>
                             <property name="input_purpose">number</property>
-                            <property name="adjustment">max_users_adjustment</property>
+                            <property name="adjustment">min_users_adjustment</property>
                             <property name="numeric">True</property>
                           </object>
                           <packing>
@@ -199,7 +199,7 @@
                           <object class="GtkLabel">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Max users</property>
+                            <property name="label" translatable="yes">Min users</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -251,9 +251,13 @@
                             </child>
                             <child>
                               <object class="GtkTreeViewColumn" id="chan_tree_view_column">
+                                <property name="resizable">True</property>
                                 <property name="title" translatable="yes">Channel</property>
                                 <child>
-                                  <object class="GtkCellRendererText"/>
+                                  <object class="GtkCellRendererText">
+                                    <property name="ellipsize">end</property>
+                                    <property name="width_chars">20</property>
+                                  </object>
                                   <attributes>
                                     <attribute name="text">0</attribute>
                                   </attributes>
@@ -262,9 +266,12 @@
                             </child>
                             <child>
                               <object class="GtkTreeViewColumn" id="users_tree_view_column">
+                                <property name="resizable">True</property>
                                 <property name="title" translatable="yes">Users</property>
                                 <child>
-                                  <object class="GtkCellRendererText"/>
+                                  <object class="GtkCellRendererText">
+                                    <property name="width_chars">5</property>
+                                  </object>
                                   <attributes>
                                     <attribute name="text">1</attribute>
                                   </attributes>
@@ -273,6 +280,7 @@
                             </child>
                             <child>
                               <object class="GtkTreeViewColumn" id="topic_tree_view_column">
+                                <property name="resizable">True</property>
                                 <property name="title" translatable="yes">Topic</property>
                                 <child>
                                   <object class="GtkCellRendererText"/>

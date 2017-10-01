@@ -145,9 +145,19 @@ void srain_join_dialog_add_chan(SrainJoinDialog *dialog,
     g_free(status);
 }
 
-void srain_join_dialog_add_chan_end(SrainJoinDialog *dialog){
+void srain_join_dialog_end_chan(SrainJoinDialog *dialog){
+    char *status;
+
     dialog->end = TRUE;
     gtk_spinner_stop(dialog->status_spinner);
+
+    status  = g_strdup_printf(_("Showing %d of %d channnels"),
+            gtk_tree_model_iter_n_children(
+                GTK_TREE_MODEL(dialog->chan_tree_model_filter), NULL),
+            gtk_tree_model_iter_n_children(
+                GTK_TREE_MODEL(dialog->chan_list_store), NULL));
+    gtk_label_set_text(dialog->status_label, status);
+    g_free(status);
 }
 
 /*****************************************************************************
@@ -426,9 +436,12 @@ gboolean chan_tree_visible_func(GtkTreeModel *model, GtkTreeIter *iter,
             CHAN_LIST_STORE_COL_USERS, &users,
             CHAN_LIST_STORE_COL_TOPIC, &topic,
             -1);
-    g_return_val_if_fail(chan && topic, FALSE);
 
     DBG_FR("cha: %s, users: %d, topic: %s", chan, users, topic);
+
+    if (!chan) {
+        goto FIN;
+    }
 
     min_users = gtk_spin_button_get_value(dialog->min_users_spin_button);
     max_users = gtk_spin_button_get_value(dialog->max_users_spin_button);
@@ -454,8 +467,12 @@ gboolean chan_tree_visible_func(GtkTreeModel *model, GtkTreeIter *iter,
     }
 
 FIN:
-    g_free(chan);
-    g_free(topic);
+    if (chan){
+        g_free(chan);
+    }
+    if (topic){
+        g_free(topic);
+    }
 
     DBG_FR("visable: %d", visable);
 

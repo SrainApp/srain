@@ -555,3 +555,33 @@ void sui_message_box(const char *title, const char *msg){
     gtk_dialog_run(GTK_DIALOG(dia));
     gtk_widget_destroy(GTK_WIDGET(dia));
 }
+
+void sui_chan_list_add(SuiSession *sui, const char *chan, int users,
+        const char *topic){
+    SrainJoinDialog *dialog;
+
+    g_return_if_fail(sui);
+    g_return_if_fail(chan);
+    g_return_if_fail(topic);
+
+    dialog = srain_window_get_join_dialog(srain_win);
+    if (!SRAIN_IS_JOIN_DIALOG(dialog)){ // Only effective while dialogs exists
+        return;
+    }
+
+    srain_join_dialog_add_chan(dialog, chan, users, topic);
+    sui_proc_pending_event();
+}
+
+void sui_chan_list_end(SuiSession *sui){
+    SrainJoinDialog *dialog;
+
+    g_return_if_fail(sui);
+
+    dialog = srain_window_get_join_dialog(srain_win);
+    if (!SRAIN_IS_JOIN_DIALOG(dialog)){ // Only effective while dialogs exists
+        return;
+    }
+
+    srain_join_dialog_end_chan(dialog);
+}
