@@ -32,6 +32,8 @@
 #include "server.h"
 #include "server_irc_event.h"
 
+#include "sui/sui.h"
+
 #include "sirc/sirc.h"
 
 #include "srain.h"
@@ -997,6 +999,31 @@ void server_irc_event_numeric (SircSession *sirc, int event,
                 if (!chat) chat = srv->cur_chat;
 
                 chat_add_misc_message_fmt(chat, origin, _("%s: %s"), chan, msg);
+                break;
+            }
+            /************************ LIST message ************************/
+        case SIRC_RFC_RPL_LISTSTART:
+            break;
+        case SIRC_RFC_RPL_LIST:
+            {
+                srv = sirc_get_ctx(sirc);
+                g_return_if_fail(server_is_valid(srv));
+                g_return_if_fail(count >= 3);
+
+                const char *chan = params[1];
+                int users = atoi(params[2]);
+                const char *topic = msg;
+
+                sui_chan_list_add(srv->chat->ui, chan, users, topic);
+                break;
+            }
+        case SIRC_RFC_RPL_LISTEND:
+            {
+                srv = sirc_get_ctx(sirc);
+                g_return_if_fail(server_is_valid(srv));
+                g_return_if_fail(count >= 1);
+
+                sui_chan_list_end(srv->chat->ui);
                 break;
             }
             /************************ MISC message ************************/

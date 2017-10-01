@@ -326,6 +326,15 @@ SrnRet server_ui_event_cutover(SuiSession *sui, SuiEvent event, GVariantDict *pa
     return SRN_OK;
 }
 
+SrnRet server_ui_event_chan_list(SuiSession *sui, SuiEvent event, GVariantDict *params){
+    Server *srv;
+
+    srv = ctx_get_server(sui);
+    g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
+
+    return sirc_cmd_list(srv->irc, NULL, NULL);
+}
+
 /* Get a Server object from SuiSession context (sui->ctx) */
 static Server* ctx_get_server(SuiSession *sui){
     void *ctx;
