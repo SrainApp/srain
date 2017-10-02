@@ -175,8 +175,10 @@ static void start_element(GMarkupParseContext *context, const gchar *element_nam
     GString *attr_list = g_string_new(NULL);
     int i = 0;
     while (attribute_names[i] != NULL){
+        char *escaped_value = g_markup_escape_text(attribute_values[i], -1);
         g_string_append_printf(attr_list, " %s=\"%s\"",
-                attribute_names[i], attribute_values[i]);
+                attribute_names[i], escaped_value);
+        g_free(escaped_value);
         i++;
     }
 
