@@ -39,8 +39,8 @@
 
 #define SERVER_LIST_STORE_COL_NAME  0
 
-#define PREDEFINEED_SERVER_PAGE     "perdefined_server_page"
-#define CUSTOM_SERVER_PAGE          "custeom_server_page"
+#define PAGE_PREDEFINEED_SERVER     "perdefined_server_page"
+#define PAGE_CUSTOM_SERVER          "custeom_server_page"
 
 struct _SrainConnectPopover {
     GtkPopover parent;
@@ -81,8 +81,7 @@ static void srain_connect_popover_init(SrainConnectPopover *self);
 static void srain_connect_popover_class_init(SrainConnectPopoverClass *class);
 static void server_combo_box_set_model(SrainConnectPopover *dialog);
 
-static void srain_connect_popover_on_visible(GObject *object,
-        GParamSpec *pspec, gpointer data);
+static void popover_on_visible(GObject *object, GParamSpec *pspec, gpointer data);
 static void connect_button_on_click(gpointer user_data);
 static void cancel_button_on_click(gpointer user_data);
 
@@ -141,7 +140,7 @@ static void srain_connect_popover_init(SrainConnectPopover *self){
     server_combo_box_set_model(self);
 
     g_signal_connect(self, "notify::visible",
-            G_CALLBACK(srain_connect_popover_on_visible), NULL);
+            G_CALLBACK(popover_on_visible), NULL);
     g_signal_connect_swapped(self->connect_button, "clicked",
             G_CALLBACK(connect_button_on_click), self);
     g_signal_connect_swapped(self->cancel_button, "clicked",
@@ -180,8 +179,7 @@ static void server_combo_box_set_model(SrainConnectPopover *dialog){
     gtk_combo_box_set_model(dialog->server_combo_box, GTK_TREE_MODEL(store));
 }
 
-static void srain_connect_popover_on_visible(GObject *object,
-        GParamSpec *pspec, gpointer data){
+static void popover_on_visible(GObject *object, GParamSpec *pspec, gpointer data){
     SrainConnectPopover *popover;
 
     popover = SRAIN_CONNECT_POPOVER(object);
@@ -214,15 +212,13 @@ static void connect_button_on_click(gpointer user_data){
     const char *realname;
     gboolean tls;
     gboolean tls_noverify;
-    GVariantDict *params;
+    GVariantDict *params = NULL;
     SrnRet ret;
     SrainConnectPopover *popover;
 
     popover = user_data;
-    params = g_variant_dict_new(NULL);
-
     page = gtk_stack_get_visible_child_name(popover->stack);
-    if (g_strcmp0(page, PREDEFINEED_SERVER_PAGE) == 0){
+    if (g_strcmp0(page, PAGE_PREDEFINEED_SERVER) == 0){
         GtkTreeIter iter;
 
         if (gtk_combo_box_get_active_iter(popover->server_combo_box, &iter)){
@@ -238,7 +234,7 @@ static void connect_button_on_click(gpointer user_data){
         passwd = "";
         tls = FALSE;
         tls_noverify = FALSE;
-    } else if (g_strcmp0(page, CUSTOM_SERVER_PAGE) == 0){
+    } else if (g_strcmp0(page, PAGE_CUSTOM_SERVER) == 0){
         name = gtk_entry_get_text(popover->name_entry);
         host = gtk_entry_get_text(popover->host_entry);
         port = gtk_entry_get_text(popover->port_entry);
@@ -256,6 +252,7 @@ static void connect_button_on_click(gpointer user_data){
     username = gtk_entry_get_text(popover->username_entry);
     realname = gtk_entry_get_text(popover->realname_entry);
 
+    params = g_variant_dict_new(NULL);
     g_variant_dict_insert(params, "name", SUI_EVENT_PARAM_STRING, name);
     g_variant_dict_insert(params, "host", SUI_EVENT_PARAM_STRING, host);
     g_variant_dict_insert(params, "port", SUI_EVENT_PARAM_INT, atoi(port));
