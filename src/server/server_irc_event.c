@@ -1003,7 +1003,14 @@ void server_irc_event_numeric (SircSession *sirc, int event,
             }
             /************************ LIST message ************************/
         case SIRC_RFC_RPL_LISTSTART:
-            break;
+            {
+                srv = sirc_get_ctx(sirc);
+                g_return_if_fail(server_is_valid(srv));
+                g_return_if_fail(count >= 1);
+
+                sui_chan_list_start(srv->chat->ui);
+                break;
+            }
         case SIRC_RFC_RPL_LIST:
             {
                 srv = sirc_get_ctx(sirc);
