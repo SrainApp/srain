@@ -40,7 +40,7 @@
 #define SERVER_LIST_STORE_COL_NAME  0
 
 #define PAGE_PREDEFINEED_SERVER     "perdefined_server_page"
-#define PAGE_CUSTOM_SERVER          "custeom_server_page"
+#define PAGE_CUSTOM_SERVER          "custom_server_page"
 
 struct _SrainConnectPopover {
     GtkPopover parent;
@@ -195,9 +195,6 @@ static void popover_on_visible(GObject *object, GParamSpec *pspec, gpointer data
             sui_message_box(_("Error"), msg);
             g_free(msg);
         }
-    } else {
-        /* Clear all users input while hiding */
-        srain_connect_popover_clear(popover);
     }
 }
 
@@ -279,4 +276,5 @@ static void cancel_button_on_click(gpointer user_data){
     popover = user_data;
 
     gtk_widget_set_visible(GTK_WIDGET(popover), FALSE);
+    srain_connect_popover_clear(popover);
 }

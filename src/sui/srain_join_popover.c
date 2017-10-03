@@ -200,6 +200,8 @@ static void srain_join_popover_init(SrainJoinPopover *self){
     g_signal_connect_swapped(self->passwd_entry, "activate",
             G_CALLBACK(join_button_on_click), self);
 
+    g_signal_connect_swapped(self->search_entry, "activate",
+            G_CALLBACK(join_button_on_click), self);
     g_signal_connect_swapped(self->refresh_button, "clicked",
             G_CALLBACK(refresh_button_on_clicked), self);
     g_signal_connect(self->match_combo_box, "changed",
@@ -208,7 +210,7 @@ static void srain_join_popover_init(SrainJoinPopover *self){
             G_CALLBACK(chan_tree_view_on_row_activate), self);
 
     /* Filter condition changed */
-    g_signal_connect_swapped(self->chan_entry, "changed",
+    g_signal_connect_swapped(self->search_entry, "changed",
             G_CALLBACK(chan_tree_model_filter_refilter), self);
     g_signal_connect_swapped(self->match_combo_box, "changed",
             G_CALLBACK(chan_tree_model_filter_refilter), self);
@@ -305,15 +307,7 @@ static void chan_tree_view_set_model(SrainJoinPopover *popover){
 }
 
 static void popover_on_visible(GObject *object, GParamSpec *pspec, gpointer data){
-    SrainJoinPopover *popover;
-
-    popover = SRAIN_JOIN_POPOVER(object);
-
-    if (gtk_widget_get_visible(GTK_WIDGET(popover))){
-    } else {
-        /* Clear all users input while hiding */
-        srain_join_popover_clear(popover);
-    }
+    /* Nothing to do... */
 }
 
 static void join_button_on_click(gpointer user_data){
@@ -379,6 +373,7 @@ static void cancel_button_on_click(gpointer user_data){
     popover = user_data;
 
     gtk_widget_set_visible(GTK_WIDGET(popover), FALSE);
+    srain_join_popover_clear(popover);
 }
 
 static void match_combo_box_on_changed(GtkComboBox *combobox,
@@ -492,7 +487,7 @@ gboolean chan_tree_visible_func(GtkTreeModel *model, GtkTreeIter *iter,
 
     min_users = gtk_spin_button_get_value(popover->min_users_spin_button);
     max_users = gtk_spin_button_get_value(popover->max_users_spin_button);
-    input = gtk_entry_get_text(popover->chan_entry);
+    input = gtk_entry_get_text(popover->search_entry);
 
     /* Filter users */
     if (min_users != - 1 && users < min_users){
