@@ -95,7 +95,7 @@ SrnRet server_ui_event_connect(SuiEvent event, GVariantDict *params){
 
     ServerPrefs *prefs = server_prefs_new(name);
     if (!prefs){
-        return RET_ERR(_("Server already exist: %s"));
+        return RET_ERR(_("Server already exist: %s"), name);
     }
 
     ret = prefs_read_server_prefs(prefs);
