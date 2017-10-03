@@ -34,9 +34,9 @@
 #include "theme.h"
 #include "srain_app.h"
 #include "srain_window.h"
-#include "srain_connect_dialog.h"
-#include "srain_join_dialog.h"
 #include "srain_chat.h"
+#include "srain_connect_popover.h"
+#include "srain_join_dialog.h"
 #include "srain_stack_sidebar.h"
 #include "tray_icon.h"
 
@@ -62,7 +62,7 @@ struct _SrainWindow {
     GtkMenuItem *quit_menu_item;
 
     // Dialogs
-    SrainConnectDialog *connect_dialog;
+    SrainConnectPopover *connect_popover;
     SrainJoinDialog *join_dialog;
 };
 
@@ -111,35 +111,13 @@ static void show_about_dialog(gpointer user_data){
             NULL);
 }
 
-static void connect_button_on_click(gpointer user_data){
-    int resp;
-    SrainWindow *win;
-    SrainConnectDialog *dialog;
+static void popover_button_on_click(gpointer user_data){
+    GtkPopover *popover;
 
-    win = SRAIN_WINDOW(user_data);
-    dialog = srain_connect_dialog_new(GTK_WINDOW(win));
-    win->connect_dialog = dialog;
-
-    resp = gtk_dialog_run(GTK_DIALOG(dialog));
-    gtk_widget_destroy(GTK_WIDGET(dialog));
-
-    DBG_FR("Connect dialog returns: %d", resp);
-
-    switch (resp) {
-        case SRAIN_CONNECT_DIALOG_RESP_CANCEL:
-            break;
-        case SRAIN_CONNECT_DIALOG_RESP_SAVE:
-            break;
-        case SRAIN_CONNECT_DIALOG_RESP_CONNECT:
-            // sui event
-            break;
-        default:
-            ERR_FR("Connect dialog returns unknown response id: %d", resp);
-    }
-
-    win->connect_dialog = NULL;
+    popover = user_data;
+    gtk_widget_set_visible(GTK_WIDGET(popover),
+            !gtk_widget_get_visible(GTK_WIDGET(popover)));
 }
-
 
 static void join_button_on_click(gpointer user_data){
     int resp;
@@ -197,12 +175,16 @@ static void srain_window_init(SrainWindow *self){
 
     gtk_widget_init_template(GTK_WIDGET(self));
 
-    /* stack sidebar init */
+    /* Stack sidebar init */
     self->sidebar = srain_stack_sidebar_new();
     gtk_widget_show(GTK_WIDGET(self->sidebar));
     gtk_box_pack_start(self->sidebar_box, GTK_WIDGET(self->sidebar),
             TRUE, TRUE, 0);
     srain_stack_sidebar_set_stack(self->sidebar, self->stack);
+
+    /* Popover init */
+    self->connect_popover = srain_connect_popover_new(self->connect_button);
+    // self->join_popover = srain_join_popover_new(self->join_button);
 
     theme_apply(GTK_WIDGET(self));
     theme_apply(GTK_WIDGET(self->tray_menu));
@@ -222,7 +204,7 @@ static void srain_window_init(SrainWindow *self){
     g_signal_connect_swapped(self->about_button, "clicked",
             G_CALLBACK(show_about_dialog), self);
     g_signal_connect_swapped(self->connect_button, "clicked",
-            G_CALLBACK(connect_button_on_click), self);
+            G_CALLBACK(popover_button_on_click), self->connect_popover);
     g_signal_connect_swapped(self->join_button, "clicked",
             G_CALLBACK(join_button_on_click), self);
 
@@ -368,8 +350,8 @@ int srain_window_is_active(SrainWindow *win){
     return active;
 }
 
-SrainConnectDialog *srain_window_get_connect_dialog(SrainWindow *win){
-    return win->connect_dialog;
+SrainConnectPopover *srain_window_get_connect_popover(SrainWindow *win){
+    return win->connect_popover;
 }
 
 SrainJoinDialog *srain_window_get_join_dialog(SrainWindow *win){

@@ -105,5 +105,6 @@ void sui_message_box(const char *title, const char *msg);
 
 void sui_chan_list_add(SuiSession *sui, const char *chan, int users, const char *topic);
 void sui_chan_list_end(SuiSession *sui);
+void sui_server_list_add(const char *server);
 
 #endif /* __SUI_H */

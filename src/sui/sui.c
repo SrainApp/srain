@@ -585,3 +585,10 @@ void sui_chan_list_end(SuiSession *sui){
 
     srain_join_dialog_end_chan(dialog);
 }
+
+void sui_server_list_add(const char *server){
+    SrainConnectPopover *popover;
+
+    popover = srain_window_get_connect_popover(srain_win);
+    srain_connect_popover_add_server(popover, server);
+}
