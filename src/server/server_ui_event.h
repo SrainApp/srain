@@ -24,6 +24,7 @@
 SrnRet server_ui_event_open(SuiEvent event, GVariantDict *params);
 SrnRet server_ui_event_activate(SuiEvent event, GVariantDict *params);
 SrnRet server_ui_event_connect(SuiEvent event, GVariantDict *params);
+SrnRet server_ui_event_server_list(SuiEvent event, GVariantDict *params);
 
 SrnRet server_ui_event_disconnect(SuiSession *sui, SuiEvent event, GVariantDict *params);
 SrnRet server_ui_event_send(SuiSession *sui, SuiEvent event, GVariantDict *params);

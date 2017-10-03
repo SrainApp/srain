@@ -139,6 +139,21 @@ SrnRet server_ui_event_connect(SuiEvent event, GVariantDict *params){
     return server_connect(srv);
 }
 
+SrnRet server_ui_event_server_list(SuiEvent event, GVariantDict *params){
+    // FIXME: dirty hack
+    extern GSList *server_prefs_list;
+    GSList *lst;
+
+    lst = server_prefs_list;
+    while (lst){
+        ServerPrefs *prefs = lst->data;
+        sui_server_list_add(prefs->name);
+        lst = g_slist_next(lst);
+    }
+
+    return SRN_OK;
+}
+
 SrnRet server_ui_event_disconnect(SuiSession *sui, SuiEvent event, GVariantDict *params){
     SrnRet ret;
     Server *srv;

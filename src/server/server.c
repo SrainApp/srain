@@ -65,6 +65,7 @@ void server_init_and_run(int argc, char *argv[]){
     ui_app_events.open = server_ui_event_open;
     ui_app_events.activate = server_ui_event_activate;
     ui_app_events.connect = server_ui_event_connect;
+    ui_app_events.server_list = server_ui_event_server_list;
 
     /* IRC event */
     irc_events.connect = server_irc_event_connect;
