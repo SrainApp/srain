@@ -23,7 +23,7 @@
 #include "srain_app.h"
 #include "srain_chat.h"
 #include "srain_connect_popover.h"
-#include "srain_join_dialog.h"
+#include "srain_join_popover.h"
 
 #define SRAIN_TYPE_WINDOW (srain_window_get_type())
 #define SRAIN_WINDOW(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SRAIN_TYPE_WINDOW, SrainWindow))
@@ -45,7 +45,7 @@ void srain_window_stack_sidebar_update(SrainWindow *win, SrainChat *chat, const 
 int srain_window_is_active(SrainWindow *win);
 void srain_window_tray_icon_stress(SrainWindow *win, int stress);
 SrainConnectPopover *srain_window_get_connect_popover(SrainWindow *win);
-SrainJoinDialog *srain_window_get_join_dialog(SrainWindow *win);
+SrainJoinPopover *srain_window_get_join_popover(SrainWindow *win);
 
 /* Only one SrainWindow instance in one application */
 extern SrainWindow *srain_win;

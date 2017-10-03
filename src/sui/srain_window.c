@@ -36,7 +36,7 @@
 #include "srain_window.h"
 #include "srain_chat.h"
 #include "srain_connect_popover.h"
-#include "srain_join_dialog.h"
+#include "srain_join_popover.h"
 #include "srain_stack_sidebar.h"
 #include "tray_icon.h"
 
@@ -61,9 +61,9 @@ struct _SrainWindow {
     GtkMenuItem *about_menu_item;
     GtkMenuItem *quit_menu_item;
 
-    // Dialogs
+    // Popovers
     SrainConnectPopover *connect_popover;
-    SrainJoinDialog *join_dialog;
+    SrainJoinPopover *join_popover;
 };
 
 struct _SrainWindowClass {
@@ -119,33 +119,6 @@ static void popover_button_on_click(gpointer user_data){
             !gtk_widget_get_visible(GTK_WIDGET(popover)));
 }
 
-static void join_button_on_click(gpointer user_data){
-    int resp;
-    SrainWindow *win;
-    SrainJoinDialog *dialog;
-
-    win = SRAIN_WINDOW(user_data);
-    dialog = srain_join_dialog_new(GTK_WINDOW(win));
-    win->join_dialog = dialog;
-
-    resp = gtk_dialog_run(GTK_DIALOG(dialog));
-    gtk_widget_destroy(GTK_WIDGET(dialog));
-
-    DBG_FR("Join dialog returns: %d", resp);
-
-    switch (resp) {
-        case SRAIN_JOIN_DIALOG_RESP_CANCEL:
-            break;
-        case SRAIN_JOIN_DIALOG_RESP_JOIN:
-            // sui event
-            break;
-        default:
-            ERR_FR("Join dialog returns unknown response id: %d", resp);
-    }
-
-    win->join_dialog = NULL;
-}
-
 static gboolean CTRL_J_K_on_press(GtkAccelGroup *group, GObject *obj,
         guint keyval, GdkModifierType mod, gpointer user_data){
     SrainStackSidebar *sidebar;
@@ -183,8 +156,10 @@ static void srain_window_init(SrainWindow *self){
     srain_stack_sidebar_set_stack(self->sidebar, self->stack);
 
     /* Popover init */
-    self->connect_popover = srain_connect_popover_new(self->connect_button);
-    // self->join_popover = srain_join_popover_new(self->join_button);
+    self->connect_popover = srain_connect_popover_new(
+            GTK_WIDGET(self->connect_button));
+    self->join_popover = srain_join_popover_new(
+            GTK_WIDGET(self->join_button));
 
     theme_apply(GTK_WIDGET(self));
     theme_apply(GTK_WIDGET(self->tray_menu));
@@ -206,7 +181,7 @@ static void srain_window_init(SrainWindow *self){
     g_signal_connect_swapped(self->connect_button, "clicked",
             G_CALLBACK(popover_button_on_click), self->connect_popover);
     g_signal_connect_swapped(self->join_button, "clicked",
-            G_CALLBACK(join_button_on_click), self);
+            G_CALLBACK(popover_button_on_click), self->join_popover);
 
     /* shortcut <C-j> and <C-k> */
     accel = gtk_accel_group_new();
@@ -354,6 +329,6 @@ SrainConnectPopover *srain_window_get_connect_popover(SrainWindow *win){
     return win->connect_popover;
 }
 
-SrainJoinDialog *srain_window_get_join_dialog(SrainWindow *win){
-    return win->join_dialog;
+SrainJoinPopover *srain_window_get_join_popover(SrainWindow *win){
+    return win->join_popover;
 }
