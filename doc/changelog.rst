@@ -19,18 +19,17 @@ Change Log
 
 - Added:
 
-  - Connection dialog, supporting connect to predefined server
-  - Join channel dialog, supporting channel search
+  - Connect popover supports connect to predefined server
+  - Join popover supports channel search
 
 - Improved:
 
   - Modified margin and padding of some widgets
   - Improved the style of unread message counter
-
-- Removed:
-
-  - Connection popover panel
-  - Join channel popover panel
+  - Fixed markup parse error of decorator
+  - Fixed crashing while connecting from connect popover
+  - Fixed use after free while removing user
+  - Improved the performance and extensibility of user list
 
 2017-09-12 Version 0.06.2
 =========================
