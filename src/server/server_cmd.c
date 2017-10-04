@@ -84,6 +84,8 @@ CommandBind cmd_binds[] = {
             { .key = "-host",           .val = COMMAND_OPT_NO_DEFAULT },
             { .key = "-port",           .val = COMMAND_OPT_NO_DEFAULT },
             { .key = "-tls",            .val = COMMAND_OPT_NO_VAL },
+            { .key = "-tls-noverify", .val = COMMAND_OPT_NO_VAL },
+            // Backward compatible
             { .key = "-tls-not-verify", .val = COMMAND_OPT_NO_VAL },
             { .key = "-pwd",            .val = COMMAND_OPT_NO_DEFAULT },
             { .key = "-nick",           .val = COMMAND_OPT_NO_DEFAULT },
@@ -101,6 +103,8 @@ CommandBind cmd_binds[] = {
         .opt = {
             { .key = "-port",           .val = COMMAND_OPT_NO_DEFAULT },
             { .key = "-tls",            .val = COMMAND_OPT_NO_VAL },
+            { .key = "-tls-noverify",   .val = COMMAND_OPT_NO_VAL },
+            // Backward compatible
             { .key = "-tls-not-verify", .val = COMMAND_OPT_NO_VAL },
             { .key = "-pwd",            .val = COMMAND_OPT_NO_DEFAULT },
             { .key = "-user",           .val = COMMAND_OPT_NO_DEFAULT },
@@ -392,8 +396,13 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
         if (command_get_opt(cmd, "-tls", NULL)){
             prefs->irc->tls = true;
         }
-        if (command_get_opt(cmd, "-tls-not-verify", NULL)){
-            prefs->irc->tls_not_verify = TRUE;
+        if (command_get_opt(cmd, "-tls-noverify", NULL)){
+            prefs->irc->tls = TRUE;
+            prefs->irc->tls_noverify = TRUE;
+        } else if (command_get_opt(cmd, "-tls-not-verify", NULL)){
+            // Backward compatible
+            prefs->irc->tls = TRUE;
+            prefs->irc->tls_noverify = TRUE;
         }
 
         if (g_ascii_strcasecmp(subcmd, "add") == 0){
@@ -521,7 +530,18 @@ static SrnRet on_command_connect(Command *cmd, void *user_data){
     }
 
     prefs->irc->tls = command_get_opt(cmd, "-tls", NULL);
-    prefs->irc->tls_not_verify = command_get_opt(cmd, "-tls-not-verify", NULL);
+
+    prefs->irc->tls_noverify = command_get_opt(cmd, "-tls-noverify", NULL);
+    if (prefs->irc->tls_noverify){
+        prefs->irc->tls = TRUE;
+    }
+    // Backward compatible
+    if (!prefs->irc->tls_noverify){
+        prefs->irc->tls_noverify = command_get_opt(cmd, "-tls-not-verify", NULL);
+        if (prefs->irc->tls_noverify){
+            prefs->irc->tls = TRUE;
+        }
+    }
 
     ret = server_prefs_check(prefs);
     if (!RET_IS_OK(ret)) {

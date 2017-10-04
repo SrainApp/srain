@@ -183,6 +183,7 @@
  */
 #define SIRC_RFC_RPL_ENDOFWHOWAS 369
 
+#define SIRC_RFC_RPL_LISTSTART 321
 
 /*! \brief 322 \<channel\> \<# visible\> :\<topic\>
  *

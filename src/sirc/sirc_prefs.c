@@ -46,7 +46,7 @@ char* sirc_prefs_dump(SircPrefs *prefs){
     str = g_string_new("");
     g_string_append_printf(str,
             _("TLS: %s, TLS verify certificate: %s"),
-            prefs->tls ? t : f, prefs->tls_not_verify ? f : t);
+            prefs->tls ? t : f, prefs->tls_noverify ? f : t);
 
     char *dump = str->str;
     g_string_free(str, FALSE);

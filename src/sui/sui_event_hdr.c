@@ -54,7 +54,7 @@ static SuiEventParamFormat formats[SUI_EVENT_UNKNOWN][SUI_EVENT_MAX_PARAM] = {
         { .key = "nick", .fmt = SUI_EVENT_PARAM_STRING, },
         { .key = "realname", .fmt = SUI_EVENT_PARAM_STRING, },
         { .key = "tls", .fmt = SUI_EVENT_PARAM_BOOL, },
-        { .key = "tls-not-verify", .fmt = SUI_EVENT_PARAM_BOOL, },
+        { .key = "tls-noverify", .fmt = SUI_EVENT_PARAM_BOOL, },
     },
     [SUI_EVENT_DISCONNECT] = {
         { .key = NULL, .fmt = NULL, },
@@ -97,6 +97,12 @@ static SuiEventParamFormat formats[SUI_EVENT_UNKNOWN][SUI_EVENT_MAX_PARAM] = {
     [SUI_EVENT_CUTOVER] = {
         { .key = NULL, .fmt = NULL, },
     },
+    [SUI_EVENT_SERVER_LIST] = {
+        { .key = NULL, .fmt = NULL, },
+    },
+    [SUI_EVENT_CHAN_LIST] = {
+        { .key = NULL, .fmt = NULL, },
+    },
 };
 
 static SrnRet check_params(SuiEvent event, GVariantDict *params);
@@ -121,6 +127,10 @@ SrnRet sui_event_hdr(SuiSession *sui, SuiEvent event, GVariantDict *params){
         case SUI_EVENT_CONNECT:
             g_return_val_if_fail(app_events->connect, SRN_ERR);
             return app_events->connect(event, params);
+            break;
+        case SUI_EVENT_SERVER_LIST:
+            g_return_val_if_fail(app_events->server_list, SRN_ERR);
+            return app_events->server_list(event, params);
             break;
         default:
             break;
@@ -175,6 +185,10 @@ SrnRet sui_event_hdr(SuiSession *sui, SuiEvent event, GVariantDict *params){
         case SUI_EVENT_CUTOVER:
             g_return_val_if_fail(events->cutover, SRN_ERR);
             return events->cutover(sui, event, params);
+            break;
+        case SUI_EVENT_CHAN_LIST:
+            g_return_val_if_fail(events->chan_list, SRN_ERR);
+            return events->chan_list(sui, event, params);
             break;
         default:
             ERR_FR("No such SuiEvent: %d", event);

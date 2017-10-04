@@ -10,27 +10,34 @@ Change Log
 2017-10-xx Version 0.06.3[Draft]
 ================================
 
+- Changed:
+
+  - Configurable file option ``tls_not_verify`` in ``irc`` block in ``server``
+    block is renamed to ``tls_not_verify``, old option name is still supported
+  - Command option ``tls-not-verify`` for ``/server`` and ``/connect`` is
+    renamed to ``tls-noverify``, old option name is still supported
+
 - Added:
 
-  - Connection dialog, supporting connect to predefined server
-  - Join channel dialog, supporting channel search
+  - Connect popover supports connect to predefined server
+  - Join popover supports channel search
 
 - Improved:
 
   - Modified margin and padding of some widgets
   - Improved the style of unread message counter
-
-- Removed:
-
-  - Connection popover panel
-  - Join channel popover panel
+  - Fixed markup parse error of decorator
+  - Fixed crashing while connecting from connect popover
+  - Fixed use after free while removing user
+  - Improved the performance and extensibility of user list
 
 2017-09-12 Version 0.06.2
 =========================
 
 - Added:
 
-  - mIRC color support, can be configured via ``render_mirc_color`` option
+  - mIRC color support, can be disabled via setting ``render_mirc_color``
+    option in ``chat`` block in ``server`` block to ``false``
 
 - Improved:
 

@@ -13,6 +13,8 @@
         <property name="name">padding_box</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="margin_left">10</property>
+        <property name="margin_right">10</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkLabel" id="msg_label">
@@ -25,9 +27,10 @@
             <property name="ypad">4</property>
             <property name="use_markup">True</property>
             <property name="wrap">True</property>
+            <property name="wrap_mode">word-char</property>
             <property name="selectable">True</property>
             <attributes>
-                <attribute name="stretch" value="normal"/>
+              <attribute name="stretch" value="normal"/>
             </attributes>
           </object>
           <packing>

@@ -407,8 +407,21 @@ static SrnRet read_server_prefs_from_cfg(config_t *cfg, ServerPrefs *prefs){
 }
 
 static SrnRet read_sirc_prefs_from_irc(config_setting_t *irc, SircPrefs *prefs){
+    int ret;
+
     config_setting_lookup_bool_ex(irc, "tls", &prefs->tls);
-    config_setting_lookup_bool_ex(irc, "tls_not_verify", &prefs->tls_not_verify);
+    ret = config_setting_lookup_bool_ex(irc, "tls_noverify", &prefs->tls_noverify);
+    if (prefs->tls_noverify) {
+        prefs->tls = TRUE;
+    }
+
+    // Backward compatible
+    if (ret != CONFIG_TRUE) {
+        config_setting_lookup_bool_ex(irc, "tls_not_verify", &prefs->tls_noverify);
+        if (prefs->tls_noverify) {
+            prefs->tls = TRUE;
+        }
+    }
 
     return SRN_OK;
 }

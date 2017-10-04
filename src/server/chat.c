@@ -202,9 +202,9 @@ int chat_rm_user(Chat *chat, const char *nick){
     while (lst){
         user = lst->data;
         if (sirc_nick_cmp(user->nick, nick)){
-            user_free(user);
             sui_rm_user(chat->ui, user->nick);
             chat->user_list = g_slist_delete_link(chat->user_list, lst);
+            user_free(user);
 
             return SRN_OK;
         }

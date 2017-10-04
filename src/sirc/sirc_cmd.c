@@ -173,6 +173,18 @@ int sirc_cmd_pass(SircSession *sirc, const char *pass){
     return sirc_cmd_raw(sirc, "PASS %s\r\n", pass);
 }
 
+int sirc_cmd_list(SircSession *sirc, const char *chan, const char *target){
+    if (!str_is_empty(chan)){
+        if (!str_is_empty(target)){
+            return sirc_cmd_raw(sirc, "LIST %s %s\r\n", chan, target);
+        } else {
+            return sirc_cmd_raw(sirc, "LIST %s\r\n", chan);
+        }
+    } else {
+            return sirc_cmd_raw(sirc, "LIST\r\n");
+    }
+}
+
 int sirc_cmd_raw(SircSession *sirc, const char *fmt, ...){
     char buf[SIRC_BUF_LEN];
     int len = 0;

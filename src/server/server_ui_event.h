@@ -24,6 +24,7 @@
 SrnRet server_ui_event_open(SuiEvent event, GVariantDict *params);
 SrnRet server_ui_event_activate(SuiEvent event, GVariantDict *params);
 SrnRet server_ui_event_connect(SuiEvent event, GVariantDict *params);
+SrnRet server_ui_event_server_list(SuiEvent event, GVariantDict *params);
 
 SrnRet server_ui_event_disconnect(SuiSession *sui, SuiEvent event, GVariantDict *params);
 SrnRet server_ui_event_send(SuiSession *sui, SuiEvent event, GVariantDict *params);
@@ -36,5 +37,6 @@ SrnRet server_ui_event_invite(SuiSession *sui, SuiEvent event, GVariantDict *par
 SrnRet server_ui_event_whois(SuiSession *sui, SuiEvent event, GVariantDict *params);
 SrnRet server_ui_event_ignore(SuiSession *sui, SuiEvent event, GVariantDict *params);
 SrnRet server_ui_event_cutover(SuiSession *sui, SuiEvent event, GVariantDict *params);
+SrnRet server_ui_event_chan_list(SuiSession *sui, SuiEvent event, GVariantDict *params);
 
 #endif /* __UI_EVENT_H */

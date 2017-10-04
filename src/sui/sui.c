@@ -282,7 +282,7 @@ SuiMessage *sui_add_recv_msg(SuiSession *sui, const char *nick, const char *id,
 }
 
 int sui_add_user(SuiSession *sui, const char *nick, UserType type){
-    int res;
+    SrnRet ret;
     SrainChat *chat;
     SrainUserList *list;
     SrainEntryCompletion *comp;
@@ -296,16 +296,17 @@ int sui_add_user(SuiSession *sui, const char *nick, UserType type){
 
     list = srain_chat_get_user_list(chat);
 
-    if ((res = srain_user_list_add(list, nick, type)) == 0){
+    ret = srain_user_list_add(list, nick, type);
+    if (RET_IS_OK(ret)){
         comp = srain_chat_get_entry_completion(chat);
         srain_entry_completion_add_keyword(comp, nick, KEYWORD_NORMAL);
     };
 
-    return res;
+    return ret;
 }
 
 int sui_rm_user(SuiSession *sui, const char *nick){
-    int res;
+    SrnRet ret;
     SrainChat *chat;
     SrainUserList *list;
     SrainEntryCompletion *comp;
@@ -319,17 +320,18 @@ int sui_rm_user(SuiSession *sui, const char *nick){
 
     list = srain_chat_get_user_list(chat);
 
-    if ((res = srain_user_list_rm(list, nick)) == 0){
+    ret = srain_user_list_rm(list, nick);
+    if (RET_IS_OK(ret)){
         comp = srain_chat_get_entry_completion(chat);
         srain_entry_completion_rm_keyword(comp, nick);
     }
 
-    return res;
+    return ret;
 }
 
 int sui_ren_user(SuiSession *sui, const char *old_nick, const char *new_nick,
         UserType type){
-    int ret;
+    SrnRet ret;
     SrainChat *chat;
     SrainUserList *list;
     SrainEntryCompletion *comp;
@@ -350,8 +352,7 @@ int sui_ren_user(SuiSession *sui, const char *old_nick, const char *new_nick,
     list = srain_chat_get_user_list(chat);
 
     ret = srain_user_list_rename(list, old_nick, new_nick, type);
-
-    if (ret == SRN_OK){
+    if (RET_IS_OK(ret)){
         comp = srain_chat_get_entry_completion(chat);
         srain_entry_completion_add_keyword(comp, old_nick, KEYWORD_NORMAL);
         srain_entry_completion_rm_keyword(comp, new_nick);
@@ -554,4 +555,42 @@ void sui_message_box(const char *title, const char *msg){
 
     gtk_dialog_run(GTK_DIALOG(dia));
     gtk_widget_destroy(GTK_WIDGET(dia));
+}
+
+void sui_chan_list_start(SuiSession *sui){
+    SrainJoinPopover *popover;
+
+    g_return_if_fail(sui);
+
+    popover = srain_window_get_join_popover(srain_win);
+    srain_join_popover_start_chan(popover);
+}
+
+void sui_chan_list_add(SuiSession *sui, const char *chan, int users,
+        const char *topic){
+    SrainJoinPopover *popover;
+
+    g_return_if_fail(sui);
+    g_return_if_fail(chan);
+    g_return_if_fail(topic);
+
+    popover = srain_window_get_join_popover(srain_win);
+    srain_join_popover_add_chan(popover, chan, users, topic);
+    sui_proc_pending_event();
+}
+
+void sui_chan_list_end(SuiSession *sui){
+    SrainJoinPopover *popover;
+
+    g_return_if_fail(sui);
+
+    popover = srain_window_get_join_popover(srain_win);
+    srain_join_popover_end_chan(popover);
+}
+
+void sui_server_list_add(const char *server){
+    SrainConnectPopover *popover;
+
+    popover = srain_window_get_connect_popover(srain_win);
+    srain_connect_popover_add_server(popover, server);
 }

@@ -30,7 +30,7 @@
                 <property name="margin_bottom">4</property>
                 <property name="use_markup">True</property>
                 <property name="wrap">True</property>
-                <property name="wrap_mode">char</property>
+                <property name="wrap_mode">word-char</property>
                 <property name="selectable">True</property>
                 <property name="max_width_chars">72</property>
                 <attributes>

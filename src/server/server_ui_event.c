@@ -76,7 +76,7 @@ SrnRet server_ui_event_connect(SuiEvent event, GVariantDict *params){
     const char *realname= "";
     const char *username = PACKAGE_NAME; // TODO
     gboolean tls = FALSE;
-    gboolean tls_not_verify = FALSE;
+    gboolean tls_noverify = FALSE;
     SrnRet ret = SRN_ERR;
     Server *srv;
 
@@ -87,7 +87,7 @@ SrnRet server_ui_event_connect(SuiEvent event, GVariantDict *params){
     g_variant_dict_lookup(params, "nick", SUI_EVENT_PARAM_STRING, &nick);
     g_variant_dict_lookup(params, "realname", SUI_EVENT_PARAM_STRING, &realname);
     g_variant_dict_lookup(params, "tls", SUI_EVENT_PARAM_BOOL, &tls);
-    g_variant_dict_lookup(params, "tls-not-verify", SUI_EVENT_PARAM_BOOL, &tls_not_verify);
+    g_variant_dict_lookup(params, "tls-noverify", SUI_EVENT_PARAM_BOOL, &tls_noverify);
 
     if (str_is_empty(name)){
         return RET_ERR(_("You must specified a server name"));
@@ -124,7 +124,7 @@ SrnRet server_ui_event_connect(SuiEvent event, GVariantDict *params){
     }
 
     prefs->irc->tls = tls;
-    prefs->irc->tls_not_verify = tls_not_verify;
+    prefs->irc->tls_noverify = tls_noverify;
 
     ret = server_prefs_check(prefs);
     if (!RET_IS_OK(ret)){
@@ -137,6 +137,21 @@ SrnRet server_ui_event_connect(SuiEvent event, GVariantDict *params){
     }
 
     return server_connect(srv);
+}
+
+SrnRet server_ui_event_server_list(SuiEvent event, GVariantDict *params){
+    // FIXME: dirty hack
+    extern GSList *server_prefs_list;
+    GSList *lst;
+
+    lst = server_prefs_list;
+    while (lst){
+        ServerPrefs *prefs = lst->data;
+        sui_server_list_add(prefs->name);
+        lst = g_slist_next(lst);
+    }
+
+    return SRN_OK;
 }
 
 SrnRet server_ui_event_disconnect(SuiSession *sui, SuiEvent event, GVariantDict *params){
@@ -324,6 +339,15 @@ SrnRet server_ui_event_cutover(SuiSession *sui, SuiEvent event, GVariantDict *pa
     srv->cur_chat = chat;
 
     return SRN_OK;
+}
+
+SrnRet server_ui_event_chan_list(SuiSession *sui, SuiEvent event, GVariantDict *params){
+    Server *srv;
+
+    srv = ctx_get_server(sui);
+    g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
+
+    return sirc_cmd_list(srv->irc, NULL, NULL);
 }
 
 /* Get a Server object from SuiSession context (sui->ctx) */

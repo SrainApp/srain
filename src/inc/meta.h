@@ -68,6 +68,6 @@
 #endif
 
 /* META_SERVER is a special name represent a IRC server */
-#define META_SERVER "Server "
+#define META_SERVER "Server"
 
 #endif /* __META_H */

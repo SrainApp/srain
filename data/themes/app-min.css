@@ -17,7 +17,7 @@
 .srainstacksidebaritem #count_label {
     color: @white_color;
     background-color: @red_color;
-    border-radius: 4px;
+    border-radius: 20px;
 }
 /* }} */
 

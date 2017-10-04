@@ -49,18 +49,19 @@
           <object class="GtkBox" id="title_box">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="margin_left">8</property>
+            <property name="margin_right">8</property>
+            <property name="spacing">8</property>
             <child>
               <object class="GtkLabel" id="name_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="halign">start</property>
-                <property name="margin_left">8</property>
-                <property name="margin_right">8</property>
                 <property name="margin_top">8</property>
                 <property name="margin_bottom">8</property>
                 <attributes>
-                  <attribute name="font-desc" value="&lt;输入值&gt; 11"/>
-                  <attribute name="weight" value="semibold"/>
+                  <attribute name="weight" value="bold"/>
+                  <attribute name="scale" value="1.2"/>
                 </attributes>
               </object>
               <packing>
@@ -73,6 +74,8 @@
               <object class="GtkLabel" id="remark_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="margin_top">8</property>
+                <property name="margin_bottom">8</property>
                 <style>
                   <class name="dim-label"/>
                 </style>
@@ -121,15 +124,15 @@
                 <property name="can_focus">False</property>
                 <property name="margin_left">8</property>
                 <property name="margin_right">8</property>
-                <property name="margin_bottom">4</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkLabel" id="topic_label">
                     <property name="can_focus">False</property>
                     <property name="halign">start</property>
+                    <property name="margin_bottom">8</property>
                     <property name="use_markup">True</property>
                     <property name="wrap">True</property>
-                    <property name="wrap_mode">char</property>
+                    <property name="wrap_mode">word-char</property>
                     <property name="selectable">True</property>
                     <attributes>
                       <attribute name="weight" value="normal"/>
@@ -139,21 +142,6 @@
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="topic_setter_label">
-                    <property name="can_focus">False</property>
-                    <property name="halign">end</property>
-                    <property name="justify">right</property>
-                    <style>
-                      <class name="dim-label"/>
-                    </style>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
                   </packing>
                 </child>
               </object>
@@ -273,8 +261,6 @@
           <object class="GtkEntry" id="input_entry">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="margin_top">2</property>
-            <property name="margin_bottom">2</property>
             <property name="has_frame">False</property>
             <property name="shadow_type">none</property>
           </object>

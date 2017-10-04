@@ -304,7 +304,7 @@ static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data
              ERR_FR("Could not create TLS connection: %s", err->message);
          }
 
-         if (sirc->prefs->tls_not_verify){
+         if (sirc->prefs->tls_noverify){
              g_tls_client_connection_set_validation_flags(
                      G_TLS_CLIENT_CONNECTION(tls_conn), 0);
          } else {

@@ -40,7 +40,7 @@
 #include "utils.h"
 #include "i18n.h"
 
-static GSList *server_prefs_list = NULL;
+GSList *server_prefs_list = NULL;
 
 static int server_prefs_list_add(ServerPrefs *prefs);
 static int server_prefs_list_rm(ServerPrefs *prefs);
