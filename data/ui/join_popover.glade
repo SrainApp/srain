@@ -74,7 +74,6 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="hexpand">True</property>
-                    <property name="placeholder_text" translatable="yes">Input channel name here…</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -98,7 +97,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="hexpand">True</property>
-                    <property name="placeholder_text" translatable="yes">Input channel password here (optional) …</property>
+                    <property name="placeholder_text" translatable="yes">Optional</property>
                     <property name="input_purpose">password</property>
                   </object>
                   <packing>
@@ -127,7 +126,6 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="progress_pulse_step">0</property>
-                        <property name="placeholder_text" translatable="yes">Input search keyword here…</property>
                       </object>
                       <packing>
                         <property name="expand">True</property>
