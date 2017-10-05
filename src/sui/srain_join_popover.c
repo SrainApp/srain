@@ -315,6 +315,7 @@ static void join_button_on_click(gpointer user_data){
     const char *chan;
     const char *passwd;
     GVariantDict *params;
+    g_autofree char *_chan = NULL;
     SrnRet ret;
     SrainJoinPopover *popover;
     SrainChat *chat;
@@ -341,8 +342,9 @@ static void join_button_on_click(gpointer user_data){
         if (gtk_tree_selection_get_selected(selection, &model, &iter)){
             /* If row in chan_tree_view has selected, use it as channel name */
             gtk_tree_model_get(model, &iter,
-                    CHAN_LIST_STORE_COL_CHANNEL, &chan,
+                    CHAN_LIST_STORE_COL_CHANNEL, &_chan,
                     -1);
+            chan = _chan;
         } else {
             /* else, use value from search_entry */
             chan = gtk_entry_get_text(popover->search_entry);

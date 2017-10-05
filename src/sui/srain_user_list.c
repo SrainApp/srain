@@ -129,7 +129,6 @@ SrnRet srain_user_list_rm(SrainUserList *list, const char *user){
     GtkTreeModel *model;
     UserType type;
 
-    ERR_FR("%s", user);
     model = GTK_TREE_MODEL(list->user_list_store);
 
     if (!gtk_tree_model_get_iter_first(model, &iter)){
@@ -372,8 +371,10 @@ static int user_list_store_sort_func(GtkTreeModel *model,
     } else {
         res = g_ascii_strcasecmp(name1, name2);
     }
-
     DBG_FR("Sorting '%s' and '%s', res: %d", name1, name2, res);
+
+    g_free(name1);
+    g_free(name2);
 
     return res;
 }

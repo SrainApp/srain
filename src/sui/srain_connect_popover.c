@@ -51,7 +51,6 @@ struct _SrainConnectPopover {
     GtkComboBox *server_combo_box;
 
     /* Custom server page*/
-    GtkEntry *name_entry;
     GtkEntry *host_entry;
     GtkEntry *port_entry;
     GtkEntry *passwd_entry;
@@ -111,11 +110,7 @@ void srain_connect_popover_add_server(SrainConnectPopover *popover, const char *
 }
 
 void srain_connect_popover_clear(SrainConnectPopover *popover){
-    /* Clear data model */
-    gtk_list_store_clear(popover->server_list_store);
-
     /* Clear custom server page input */
-    gtk_entry_set_text(popover->name_entry, "");
     gtk_entry_set_text(popover->host_entry, "");
     gtk_entry_set_text(popover->port_entry, "");
     gtk_entry_set_text(popover->passwd_entry, "");
@@ -155,7 +150,6 @@ static void srain_connect_popover_class_init(SrainConnectPopoverClass *class){
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainConnectPopover, server_combo_box);
 
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainConnectPopover, name_entry);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainConnectPopover, host_entry);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainConnectPopover, port_entry);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainConnectPopover, passwd_entry);
@@ -187,7 +181,7 @@ static void popover_on_visible(GObject *object, GParamSpec *pspec, gpointer data
     if (gtk_widget_get_visible(GTK_WIDGET(popover))){
         /* Update server list while displaying */
         SrnRet ret;
-        
+
         ret = sui_event_hdr(NULL, SUI_EVENT_SERVER_LIST, NULL);
         if (!RET_IS_OK(ret)){
             char *msg;
@@ -195,6 +189,9 @@ static void popover_on_visible(GObject *object, GParamSpec *pspec, gpointer data
             sui_message_box(_("Error"), msg);
             g_free(msg);
         }
+    } else {
+        /* Clear data model while hiding */
+        gtk_list_store_clear(popover->server_list_store);
     }
 }
 
@@ -209,6 +206,7 @@ static void connect_button_on_click(gpointer user_data){
     const char *realname;
     gboolean tls;
     gboolean tls_noverify;
+    g_autofree char* _name = NULL; // storing name from tree model
     GVariantDict *params = NULL;
     SrnRet ret;
     SrainConnectPopover *popover;
@@ -217,13 +215,16 @@ static void connect_button_on_click(gpointer user_data){
     page = gtk_stack_get_visible_child_name(popover->stack);
     if (g_strcmp0(page, PAGE_PREDEFINEED_SERVER) == 0){
         GtkTreeIter iter;
+        char *tmp;
 
         if (gtk_combo_box_get_active_iter(popover->server_combo_box, &iter)){
             gtk_tree_model_get(GTK_TREE_MODEL(popover->server_list_store), &iter,
-                    SERVER_LIST_STORE_COL_NAME, &name,
+                    SERVER_LIST_STORE_COL_NAME, &_name,
                     -1);
+            name = _name;
         } else {
-            name = "";
+            sui_message_box(_("Error"), _("No server is selected"));
+            return;
         }
         /* The following fields will be ignored */
         host = "";
@@ -232,7 +233,7 @@ static void connect_button_on_click(gpointer user_data){
         tls = FALSE;
         tls_noverify = FALSE;
     } else if (g_strcmp0(page, PAGE_CUSTOM_SERVER) == 0){
-        name = gtk_entry_get_text(popover->name_entry);
+        name = "";
         host = gtk_entry_get_text(popover->host_entry);
         port = gtk_entry_get_text(popover->port_entry);
         passwd = gtk_entry_get_text(popover->passwd_entry);
