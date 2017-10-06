@@ -10,7 +10,7 @@ XGETTEXTFLAG = --sort-output --from-code=UTF-8 \
 
 # Cover SRCS
 SRCS = $(wildcard ../src/*.c ../src/*/*.c $(BUILD_DIR)/resources.c)
-UIS = $(wildcard ../data/ui/*.glade)
+UIS = $(wildcard ../src/sui/glade/*.glade)
 LANGS = $(shell cat LANGS)
 
 default: mo
