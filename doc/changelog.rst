@@ -13,7 +13,7 @@ Change Log
 - Changed:
 
   - Configurable file option ``tls_not_verify`` in ``irc`` block in ``server``
-    block is renamed to ``tls_not_verify``, old option name is still supported
+    block is renamed to ``tls_noverify``, old option name is still supported
   - Command option ``tls-not-verify`` for ``/server`` and ``/connect`` is
     renamed to ``tls-noverify``, old option name is still supported
 

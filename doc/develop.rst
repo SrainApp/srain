@@ -1,41 +1,16 @@
-=====================
-Development Documents
-=====================
+=========================
+Development Specification
+=========================
 
-.. warning::
+.. code-block:: c
 
-    This document is written in Chinese and already out of date.
-    It will be updated or removed in the future.
-
-Current version：0.05
-
-Summary
-=======
-
-Srain 致力于实现一个轻量/美观/易用的现代化 IRC 客户端。
-
-当前项目的目录结构如下::
-
-    srain
-    ├── build
-    ├── data
-    │   ├── pixmaps // 图片
-    │   ├── plugins // 插件示例
-    │   ├── themes  // 主题
-    │   └── ui      // glade 文件
-    ├── doc         // 文档
-    ├── po          // 翻译文件
-    ├── test        // 部分测试脚本
-    └── src
-        ├── inc     // 头文件
-        ├── srv     // IRC 会话管理
-        └── ui      // 界面
+    int bus_count = 1;
 
 Codeing Style
 =============
 
 * Public header 用 ``__XXX_H`` 形式
-* 提倡在函数开头统一声明变量，而不是即用即声明，方便释放的时候统一处理
+* 提倡在作用域开头统一声明变量，而不是即用即声明，方便释放的时候统一处理
 * 缩进：四空格，无 Tab
 * 折行：
 
@@ -49,60 +24,21 @@ Codeing Style
 
   - 鼓励局部变量和函数参数使用缩写，全局变量及函数名，类型名不鼓励缩写
   - 宏大写，数据类型，类名用大驼峰法，变量使用全小写 + 下划线
-  - 文件名全小写，以下划线分隔（考虑换成连字符）
-  - UI 模块的导出函数必须以 ``ui_`` 开头，SRV 模块同理
+  - 文件名全小写，以下划线分隔
 
-* 注释 & 日志：
+* 注释：
 
   - 按英文规范，句首第一个单词首字符大写，多句时使用标点符号，同样每行不得超过
     80 字符（汉字以两字符计），链接可以不折行
-  - 日志级别： ``DGB_FR`` ``LOG_FR`` ``WARN_FR`` ``ERROR_FR`` ，输出时包含回车和
-    函数名， 目前仅能 在编译时使用宏 ``__DBG_ON`` ``__LOG_ON`` 控制
-  - Doxygen 貌似不好用（考虑换 sphinx）
 
-* Git commit: TODO
-* 单元测试：考虑引入 libcheck
+* Git commit log: 格式为 ``MODULE(TYPE): DESCRIPTION`` ，当前可用的模块(MODULE)
+  有： ``All Core Sirc Sui Prefs Filter Decorator Lib I18n Data Plugin Build
+  Script Doc...`` ，可用的提交类型(TYPE) 有： ``feat impl change fix improve
+  cleanup refactor update release misc...``
 
-Python Plugin
-=============
+* Change log: 应分为四类
 
-插件以 ``插件名.py`` 形式命名，放置在 ``$PREFIX/usr/share/srain/plugins`` 或者
-``$HOME/.config/srain/plugins`` 下，程序启动时（``plguin_init``）会自动加载。
-
-avatar
-------
-
-根据 ``token`` 和 ``nick`` 接收一个 nick，下载 36x36 的头像图片到 ``path``，以
-``nick`` 命名
-
-签名如下::
-
-    def avatar(nick, token, path):
-        pass
-
-upload
-------
-
-接收一个本地文件的路径 ``img`` ，将文件上传到指定的图床并返回对应的 url
-
-签名如下::
-
-    def upload(img):
-        pass
-
-scrshot
--------
-
-调用外部工具截屏并上传，TODO
-
-Test
-====
-
-我不知道怎么写测试…… :-(
-
-Internal Interface
-==================
-
-0.05 所用的基于字符串的接口不灵活且繁琐，已弃用。
-
-.. warning:: TODO
+  - Changed: 设计或功能上的改动，可能会带来兼容问题的一定要说明
+  - Added: 新增的功能或者依赖
+  - Removed: 移除的功能或者依赖
+  - Imporved: 性能或功能或易用性上的改善以及 bug 修复
