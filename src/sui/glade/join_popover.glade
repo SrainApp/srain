@@ -167,7 +167,6 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="max_length">5</property>
-                        <property name="text" translatable="yes">0</property>
                         <property name="input_purpose">number</property>
                         <property name="adjustment">max_users_adjustment</property>
                         <property name="climb_rate">2.2351741811588166e-10</property>
@@ -198,7 +197,6 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="max_length">5</property>
-                        <property name="text" translatable="yes">0</property>
                         <property name="input_purpose">number</property>
                         <property name="adjustment">min_users_adjustment</property>
                         <property name="numeric">True</property>
