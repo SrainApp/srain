@@ -1,5 +1,4 @@
 # Makefile
-
 .PHONY: install run bt clean cleanobj todo install-bin install-po install-data \
 		install-doc view-doc doc bt gtk_dbg
 
@@ -31,9 +30,8 @@ TARGET = $(BUILD_DIR)/srain.out
 FAKE_XDG_CONFIG_HOME = $(BUILD_DIR)
 FAKE_XDG_DATA_DIR = $(BUILD_DIR)/share:/usr/share:/usr/local/share
 
-default: src/Makefile data/ui/Makefile
+default: src/Makefile
 	mkdir -p $(BUILD_DIR) | true
-	$(MAKE) -C data/ui
 	$(MAKE) -C src
 
 install: install-bin install-data install-po
