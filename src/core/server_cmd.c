@@ -489,29 +489,30 @@ static SrnRet on_command_connect(Command *cmd, void *user_data){
     const char *user;
     const char *real;
     const char *encoding;
-    Server *srv;
-    ServerPrefs *prefs;
+    Server *srv = NULL;
+    ServerPrefs *prefs = NULL;
     SrnRet ret = SRN_OK;
 
     host = command_get_arg(cmd, 0);
     nick = command_get_arg(cmd, 1);
 
-    g_return_val_if_fail(host, SRN_ERR);
-    g_return_val_if_fail(nick, SRN_ERR);
-
-    prefs = server_prefs_new(host);
+    prefs = server_prefs_new_from_basename(host);
     if (!prefs){
-        return RET_ERR(_("Failed to create server \"%s\""), host);
+        ret = RET_ERR(_("Failed to create server \"%s\""), host);
+        goto FIN;
     }
 
     ret = prefs_read_server_prefs(prefs);
     if (!RET_IS_OK(ret)){
-        server_prefs_free(prefs);
-        return ret;
+        goto FIN;
     }
 
-    str_assign(&prefs->host, host);
-    str_assign(&prefs->nickname, nick);
+    if (!str_is_empty(host)){
+        str_assign(&prefs->host, host);
+    }
+    if (!str_is_empty(nick)){
+        str_assign(&prefs->nickname, nick);
+    }
 
     if (command_get_opt(cmd, "-port", &port)){
         prefs->port = atoi(port);
@@ -545,12 +546,13 @@ static SrnRet on_command_connect(Command *cmd, void *user_data){
 
     ret = server_prefs_check(prefs);
     if (!RET_IS_OK(ret)) {
-        return ret;
+        goto FIN;
     }
 
     srv = server_new_from_prefs(prefs);
     if (!srv) {
-        return RET_ERR(_("Failed to instantiate server \"%s\""), prefs->name);
+        ret = RET_ERR(_("Failed to instantiate server \"%s\""), prefs->name);
+        goto FIN;
     }
 
     def_srv = srv;
@@ -559,10 +561,21 @@ static SrnRet on_command_connect(Command *cmd, void *user_data){
     server_wait_until_registered(def_srv);
     if (!server_is_registered(srv)){
         def_srv = NULL;
-        return RET_ERR(_("Failed to register on server \"%s\""), prefs->name);
+        ret = RET_ERR(_("Failed to register on server \"%s\""), prefs->name);
+        goto FIN;
     }
 
-    return SRN_OK;
+    ret = SRN_OK;
+
+FIN:
+    if (srv){
+        server_free(srv);
+    }
+    if (prefs){
+        server_prefs_free(prefs);
+    }
+
+    return ret;
 }
 
 static SrnRet on_command_relay(Command *cmd, void *user_data){
