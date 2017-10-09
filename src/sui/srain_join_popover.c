@@ -363,7 +363,7 @@ static void join_button_on_click(gpointer user_data){
     g_variant_dict_unref(params);
 
     if (RET_IS_OK(ret)){
-        gtk_widget_set_visible(GTK_WIDGET(popover), FALSE);
+        gtk_button_clicked(popover->cancel_button);
     } else {
         sui_message_box(_("Error"), RET_MSG(ret));
     }

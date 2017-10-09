@@ -215,7 +215,6 @@ static void connect_button_on_click(gpointer user_data){
     page = gtk_stack_get_visible_child_name(popover->stack);
     if (g_strcmp0(page, PAGE_PREDEFINEED_SERVER) == 0){
         GtkTreeIter iter;
-        char *tmp;
 
         if (gtk_combo_box_get_active_iter(popover->server_combo_box, &iter)){
             gtk_tree_model_get(GTK_TREE_MODEL(popover->server_list_store), &iter,
@@ -265,7 +264,7 @@ static void connect_button_on_click(gpointer user_data){
     g_variant_dict_unref(params);
 
     if (RET_IS_OK(ret)){
-        gtk_widget_set_visible(GTK_WIDGET(popover), FALSE);
+        gtk_button_clicked(popover->cancel_button);
     } else {
         sui_message_box(_("Error"), RET_MSG(ret));
     }
