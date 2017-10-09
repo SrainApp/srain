@@ -95,6 +95,21 @@ ServerPrefs* server_prefs_new(const char *name){
     return prefs;
 }
 
+ServerPrefs* server_prefs_new_from_basename(const char *basename){
+    int i = 0;
+    ServerPrefs *prefs;
+
+    prefs = server_prefs_new(basename);
+    while (!prefs && i < 10){
+        /* If the name repeats, generates a name for it */
+        char *name = g_strdup_printf("%s#%d", basename, ++i);
+        prefs = server_prefs_new(name);
+        g_free(name);
+    }
+
+    return prefs;
+}
+
 ServerPrefs* server_prefs_get_prefs(const char *name){
     GSList *lst;
     ServerPrefs *prefs;

@@ -68,72 +68,87 @@ SrnRet server_ui_event_activate(SuiEvent event, GVariantDict *params){
 
 SrnRet server_ui_event_connect(SuiEvent event, GVariantDict *params){
     const char *name = NULL;
-    const char *host = NULL;
-    int port = 0;
-    const char *passwd = NULL;
-    const char *encoding = "UTF-8"; // TODO
     const char *nick = NULL;
     const char *realname= "";
-    const char *username = PACKAGE_NAME; // TODO
-    gboolean tls = FALSE;
-    gboolean tls_noverify = FALSE;
+    const char *username = "";
     SrnRet ret = SRN_ERR;
-    Server *srv;
+    Server *srv = NULL;
+    ServerPrefs *prefs = NULL;
 
     g_variant_dict_lookup(params, "name", SUI_EVENT_PARAM_STRING, &name);
-    g_variant_dict_lookup(params, "host", SUI_EVENT_PARAM_STRING, &host);
-    g_variant_dict_lookup(params, "port", SUI_EVENT_PARAM_INT, &port);
-    g_variant_dict_lookup(params, "password", SUI_EVENT_PARAM_STRING, &passwd);
-    g_variant_dict_lookup(params, "nick", SUI_EVENT_PARAM_STRING, &nick);
-    g_variant_dict_lookup(params, "realname", SUI_EVENT_PARAM_STRING, &realname);
-    g_variant_dict_lookup(params, "tls", SUI_EVENT_PARAM_BOOL, &tls);
-    g_variant_dict_lookup(params, "tls-noverify", SUI_EVENT_PARAM_BOOL, &tls_noverify);
+    if (!str_is_empty(name)){
+        /* If params "name" is not specified, connecting to predefined server */
+        prefs = server_prefs_get_prefs(name);
+        if (prefs->srv){
+            return RET_ERR(_("Server \"%s\" already exists"), name);
+        }
+    } else {
+        /* Else, it means that user is trying to connect to a custom server */
+        const char *host = NULL;
+        int port = 0;
+        const char *passwd = NULL;
+        const char *encoding = "UTF-8"; // TODO
+        gboolean tls = FALSE;
+        gboolean tls_noverify = FALSE;
 
-    if (str_is_empty(name)){
-        return RET_ERR(_("You must specified a server name"));
-    }
+        g_variant_dict_lookup(params, "host", SUI_EVENT_PARAM_STRING, &host);
+        g_variant_dict_lookup(params, "port", SUI_EVENT_PARAM_INT, &port);
+        g_variant_dict_lookup(params, "password", SUI_EVENT_PARAM_STRING, &passwd);
+        g_variant_dict_lookup(params, "nick", SUI_EVENT_PARAM_STRING, &nick);
+        g_variant_dict_lookup(params, "username", SUI_EVENT_PARAM_STRING, &username);
+        g_variant_dict_lookup(params, "realname", SUI_EVENT_PARAM_STRING, &realname);
+        g_variant_dict_lookup(params, "tls", SUI_EVENT_PARAM_BOOL, &tls);
+        g_variant_dict_lookup(params, "tls-noverify", SUI_EVENT_PARAM_BOOL, &tls_noverify);
 
-    ServerPrefs *prefs = server_prefs_new(name);
-    if (!prefs){
-        return RET_ERR(_("Server already exist: %s"), name);
-    }
+        /* Create ServerPrefs */
+        prefs = server_prefs_new_from_basename(host);
+        if (!prefs) {
+            return RET_ERR(_("Failed to create server \"%s\""), host);
+        }
+        ret = prefs_read_server_prefs(prefs);
+        if (!RET_IS_OK(ret)){
+            server_prefs_free(prefs);
+            return ret;
+        }
 
-    ret = prefs_read_server_prefs(prefs);
-    if (!RET_IS_OK(ret)){
-        return ret;
-    }
+        /* Create Server */
+        prefs->port = port;
+        if (!str_is_empty(host)){
+            str_assign(&prefs->host, host);
+        }
+        if (!str_is_empty(passwd)){
+            str_assign(&prefs->passwd, passwd);
+        }
+        if (!str_is_empty(encoding)){
+            str_assign(&prefs->encoding, encoding);
+        }
+        if (!str_is_empty(nick)){
+            str_assign(&prefs->nickname, nick);
+        }
+        if (!str_is_empty(username)){
+            str_assign(&prefs->username, username);
+        }
+        if (!str_is_empty(realname)){
+            str_assign(&prefs->realname, realname);
+        }
 
-    prefs->port = port;
-    if (!str_is_empty(host)){
-        str_assign(&prefs->host, host);
+        prefs->irc->tls = tls;
+        prefs->irc->tls_noverify = tls_noverify;
     }
-    if (!str_is_empty(passwd)){
-        str_assign(&prefs->passwd, passwd);
-    }
-    if (!str_is_empty(encoding)){
-        str_assign(&prefs->encoding, encoding);
-    }
-    if (!str_is_empty(nick)){
-        str_assign(&prefs->nickname, nick);
-    }
-    if (!str_is_empty(username)){
-        str_assign(&prefs->username, username);
-    }
-    if (!str_is_empty(realname)){
-        str_assign(&prefs->realname, realname);
-    }
-
-    prefs->irc->tls = tls;
-    prefs->irc->tls_noverify = tls_noverify;
 
     ret = server_prefs_check(prefs);
     if (!RET_IS_OK(ret)){
         return ret;
     }
-
     srv = server_new_from_prefs(prefs);
     if (!srv) {
-        return RET_ERR(_("Failed to instantiate server \"%s\""), prefs->name);
+        SrnRet ret;
+
+        ret = RET_ERR(_("Failed to instantiate server \"%s\""), prefs->name);
+        if (str_is_empty(name)){
+            server_prefs_free(prefs);
+        }
+        return ret;
     }
 
     return server_connect(srv);

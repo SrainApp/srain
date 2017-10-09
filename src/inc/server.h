@@ -228,6 +228,7 @@ Message* message_new(Chat *chat, User *user, const char *content, MessageType ty
 void message_free(Message *msg);
 
 ServerPrefs* server_prefs_new(const char *name);
+ServerPrefs* server_prefs_new_from_basename(const char *basename);
 ServerPrefs* server_prefs_get_prefs(const char *name);
 ServerPrefs* server_prefs_get_prefs_by_host_port(const char *host, int port);
 bool server_prefs_is_valid(ServerPrefs *prefs);
