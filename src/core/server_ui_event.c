@@ -94,9 +94,6 @@ SrnRet server_ui_event_connect(SuiEvent event, GVariantDict *params){
         g_variant_dict_lookup(params, "host", SUI_EVENT_PARAM_STRING, &host);
         g_variant_dict_lookup(params, "port", SUI_EVENT_PARAM_INT, &port);
         g_variant_dict_lookup(params, "password", SUI_EVENT_PARAM_STRING, &passwd);
-        g_variant_dict_lookup(params, "nick", SUI_EVENT_PARAM_STRING, &nick);
-        g_variant_dict_lookup(params, "username", SUI_EVENT_PARAM_STRING, &username);
-        g_variant_dict_lookup(params, "realname", SUI_EVENT_PARAM_STRING, &realname);
         g_variant_dict_lookup(params, "tls", SUI_EVENT_PARAM_BOOL, &tls);
         g_variant_dict_lookup(params, "tls-noverify", SUI_EVENT_PARAM_BOOL, &tls_noverify);
 
@@ -111,7 +108,6 @@ SrnRet server_ui_event_connect(SuiEvent event, GVariantDict *params){
             return ret;
         }
 
-        /* Create Server */
         prefs->port = port;
         if (!str_is_empty(host)){
             str_assign(&prefs->host, host);
@@ -122,24 +118,30 @@ SrnRet server_ui_event_connect(SuiEvent event, GVariantDict *params){
         if (!str_is_empty(encoding)){
             str_assign(&prefs->encoding, encoding);
         }
-        if (!str_is_empty(nick)){
-            str_assign(&prefs->nickname, nick);
-        }
-        if (!str_is_empty(username)){
-            str_assign(&prefs->username, username);
-        }
-        if (!str_is_empty(realname)){
-            str_assign(&prefs->realname, realname);
-        }
-
         prefs->irc->tls = tls;
         prefs->irc->tls_noverify = tls_noverify;
+    }
+
+    g_variant_dict_lookup(params, "nick", SUI_EVENT_PARAM_STRING, &nick);
+    g_variant_dict_lookup(params, "username", SUI_EVENT_PARAM_STRING, &username);
+    g_variant_dict_lookup(params, "realname", SUI_EVENT_PARAM_STRING, &realname);
+
+    if (!str_is_empty(nick)){
+        str_assign(&prefs->nickname, nick);
+    }
+    if (!str_is_empty(username)){
+        str_assign(&prefs->username, username);
+    }
+    if (!str_is_empty(realname)){
+        str_assign(&prefs->realname, realname);
     }
 
     ret = server_prefs_check(prefs);
     if (!RET_IS_OK(ret)){
         return ret;
     }
+
+    /* Create Server */
     srv = server_new_from_prefs(prefs);
     if (!srv) {
         SrnRet ret;
