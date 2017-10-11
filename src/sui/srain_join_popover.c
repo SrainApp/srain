@@ -269,14 +269,14 @@ static void match_combo_box_set_model(SrainJoinPopover *popover){
     gtk_list_store_append(store, &iter);
     gtk_list_store_set(store, &iter,
             MATCH_LIST_STORE_COL_INDEX, MATCH_CHANNEL,
-            MATCH_LIST_STORE_COL_COMMENT, "Match channel name",
+            MATCH_LIST_STORE_COL_COMMENT, _("Match channel name"),
             -1);
 
     /* TODO
     gtk_list_store_append(store, &iter);
     gtk_list_store_set(store, &iter,
             MATCH_LIST_STORE_COL_INDEX, MATCH_CHANNEL_WITH_REGEX,
-            MATCH_LIST_STORE_COL_COMMENT, "Match channel name with regular expression",
+            MATCH_LIST_STORE_COL_COMMENT, _("Match channel name with regular expression"),
             -1);
     */
 

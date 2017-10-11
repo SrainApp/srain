@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 0.06.2\n"
 "Report-Msgid-Bugs-To: srain@srain.im\n"
-"POT-Creation-Date: 2017-10-08 19:13+0800\n"
+"POT-Creation-Date: 2017-10-11 13:36+0800\n"
 "PO-Revision-Date: 2016-12-18 01:44+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/sui/glade/connect_popover.glade:129
+#: ../src/sui/glade/connect_popover.glade:133
 msgid " : "
 msgstr " : "
 
@@ -76,7 +76,7 @@ msgstr "\"%s\" 无法在 %s 的转发机器人列表中被找到"
 msgid "%Y-%m-%d %T"
 msgstr "%Y 年 %m 月 %d 日 %T"
 
-#: ../src/core/server_prefs.c:342 ../src/core/rc.c:64 ../src/core/rc.c:75
+#: ../src/core/server_prefs.c:357 ../src/core/rc.c:64 ../src/core/rc.c:75
 #, c-format
 msgid "%s"
 msgstr "%s"
@@ -193,7 +193,7 @@ msgstr "(这条消息无法被正确显示)."
 msgid "*** <b>%s</b> %s ***"
 msgstr "*** <b>%s</b> %s ***"
 
-#: ../src/core/server_prefs.c:310
+#: ../src/core/server_prefs.c:325
 #, c-format
 msgid ""
 "*** Server name: %s, Instance: %p\n"
@@ -208,12 +208,12 @@ msgstr ""
 "\t离开消息：%s，踢出消息：%s，暂离消息：%s，退出消息：%s\n"
 "\tIRC 配置：%s"
 
-#: ../src/core/server_cmd.c:805
+#: ../src/core/server_cmd.c:818
 #, c-format
 msgid "A message has been sent to \"%s\""
 msgstr "消息已发送至 \"%s\""
 
-#: ../src/sui/glade/window.glade:42 ../src/sui/glade/window.glade:174
+#: ../src/sui/glade/window.glade:46 ../src/sui/glade/window.glade:178
 msgid "About"
 msgstr "关于"
 
@@ -225,7 +225,7 @@ msgstr "关于 Srain"
 msgid "Action"
 msgstr "动作"
 
-#: ../src/sui/glade/connect_popover.glade:88
+#: ../src/sui/glade/connect_popover.glade:90
 msgid "Address:"
 msgstr "地址："
 
@@ -251,16 +251,16 @@ msgstr "无法从未连接的服务器断开连接"
 msgid "Can not remove a server which is still connected"
 msgstr "无法删除已连接的服务器"
 
-#: ../src/core/server_ui_event.c:203 ../src/core/server_cmd.c:825
+#: ../src/core/server_ui_event.c:220 ../src/core/server_cmd.c:838
 msgid "Can not send message to a server"
 msgstr "不允许直接向服务器发送消息"
 
-#: ../src/sui/glade/join_popover.glade:370
-#: ../src/sui/glade/connect_popover.glade:322 ../src/sui/sui_common.c:106
+#: ../src/sui/glade/join_popover.glade:374
+#: ../src/sui/glade/connect_popover.glade:326 ../src/sui/sui_common.c:106
 msgid "Cancel"
 msgstr "取消"
 
-#: ../src/sui/glade/join_popover.glade:268
+#: ../src/sui/glade/join_popover.glade:272
 msgid "Channel"
 msgstr "频道"
 
@@ -273,7 +273,7 @@ msgstr "频道："
 msgid "Command failed at line %d: %s"
 msgstr "命令在第 %d 行执行失败：%s"
 
-#: ../src/sui/glade/window.glade:58 ../src/sui/glade/connect_popover.glade:337
+#: ../src/sui/glade/window.glade:62 ../src/sui/glade/connect_popover.glade:341
 msgid "Connect"
 msgstr "连接"
 
@@ -286,7 +286,7 @@ msgstr "已连接到 %s(%s:%d)"
 msgid "Copy message"
 msgstr "复制消息"
 
-#: ../src/sui/glade/connect_popover.glade:208
+#: ../src/sui/glade/connect_popover.glade:212
 msgid "Custom Server"
 msgstr "自定义服务器"
 
@@ -320,8 +320,8 @@ msgid "ERROR[%3d] %s %s"
 msgstr "错误[%3d] %s %s"
 
 #: ../src/sui/srain_connect_popover.c:189
-#: ../src/sui/srain_connect_popover.c:226
-#: ../src/sui/srain_connect_popover.c:270 ../src/sui/srain_join_popover.c:325
+#: ../src/sui/srain_connect_popover.c:225
+#: ../src/sui/srain_connect_popover.c:269 ../src/sui/srain_join_popover.c:325
 #: ../src/sui/srain_join_popover.c:368 ../src/sui/srain_join_popover.c:407
 #: ../src/sui/srain_join_popover.c:413 ../src/sui/sui.c:68 ../src/sui/sui.c:76
 #: ../src/sui/sui.c:100 ../src/sui/sui.c:486 ../src/sui/srain_app.c:92
@@ -358,7 +358,8 @@ msgstr "读取 UI 配置 %s 时发生错误：%s"
 msgid "Error occurred while reading %s: %s"
 msgstr "读取 %s 时发生错误：%s"
 
-#: ../src/core/server_url.c:85 ../src/core/server_cmd.c:504
+#: ../src/core/server_url.c:85 ../src/core/server_ui_event.c:103
+#: ../src/core/server_cmd.c:501
 #, c-format
 msgid "Failed to create server \"%s\""
 msgstr "无法创建服务器 \"%s\""
@@ -368,8 +369,8 @@ msgstr "无法创建服务器 \"%s\""
 msgid "Failed to get server list: %s"
 msgstr "无法获取服务器列表：%s"
 
-#: ../src/core/server_url.c:120 ../src/core/server_ui_event.c:136
-#: ../src/core/server_cmd.c:424 ../src/core/server_cmd.c:553
+#: ../src/core/server_url.c:120 ../src/core/server_ui_event.c:149
+#: ../src/core/server_cmd.c:424 ../src/core/server_cmd.c:554
 #, c-format
 msgid "Failed to instantiate server \"%s\""
 msgstr "无法实例化服务器 \"%s\""
@@ -385,17 +386,17 @@ msgid "Failed to parse \"%s\" as a URL"
 msgstr "无法将 \"%s\" 解析为 URL"
 
 #: ../src/core/server_url.c:135 ../src/core/server_cmd.c:438
-#: ../src/core/server_cmd.c:562
+#: ../src/core/server_cmd.c:564
 #, c-format
 msgid "Failed to register on server \"%s\""
 msgstr "无法在服务器 \"%s\" 上注册"
 
-#: ../src/core/server_cmd.c:834
+#: ../src/core/server_cmd.c:847
 #, c-format
 msgid "Failed to send action message: %s"
 msgstr "无法发送动作消息：%s"
 
-#: ../src/core/server_ui_event.c:213
+#: ../src/core/server_ui_event.c:230
 #, c-format
 msgid "Failed to send message: %s"
 msgstr "无法发送消息：%s"
@@ -422,7 +423,7 @@ msgstr "URL \"%s\" 中的 host 是空的"
 msgid "Invail pattern: %s"
 msgstr "无效的正则表达式：%s"
 
-#: ../src/core/server_prefs.c:160 ../src/sirc/sirc_prefs.c:34
+#: ../src/core/server_prefs.c:175 ../src/sirc/sirc_prefs.c:34
 msgid "Invalid ServerPrefs instance"
 msgstr "无效的服务器配置"
 
@@ -451,11 +452,11 @@ msgstr ""
 "看起来你似乎对一个 TLS 端口(%d) 使用了非 TLS 加密的连接，请尝试启用 TLS 并重"
 "新连接"
 
-#: ../src/sui/glade/window.glade:74 ../src/sui/glade/join_popover.glade:385
+#: ../src/sui/glade/window.glade:78 ../src/sui/glade/join_popover.glade:389
 msgid "Join"
 msgstr "加入"
 
-#: ../src/sui/glade/join_popover.glade:111
+#: ../src/sui/glade/join_popover.glade:113
 msgid "Join Channel"
 msgstr "加入频道"
 
@@ -472,11 +473,15 @@ msgstr "加载图片"
 msgid "Loading %d channnels..."
 msgstr "正在加载第 %d 个频道……"
 
-#: ../src/sui/glade/join_popover.glade:186
+#: ../src/sui/srain_join_popover.c:272
+msgid "Match channel name"
+msgstr "匹配频道名"
+
+#: ../src/sui/glade/join_popover.glade:190
 msgid "Max users"
 msgstr "最多用户数"
 
-#: ../src/sui/glade/join_popover.glade:215
+#: ../src/sui/glade/join_popover.glade:219
 msgid "Min users"
 msgstr "最少用户数"
 
@@ -489,7 +494,7 @@ msgstr "缺少参数 <服务器名称>"
 msgid "Missing argument, expect %d, actually %d"
 msgstr "缺少参数，期望 %d 个，实际上只有 %d 个"
 
-#: ../src/core/server_prefs.c:157
+#: ../src/core/server_prefs.c:172
 #, c-format
 msgid "Missing field in ServerPrefs: %s"
 msgstr "服务器配置中缺少了以下选项：%s"
@@ -504,11 +509,11 @@ msgstr "主界面配置中缺少了如下选项：%s"
 msgid "Missing vaule for option %s"
 msgstr "可选参数 %s 缺少参数值"
 
-#: ../src/sui/glade/connect_popover.glade:240
+#: ../src/sui/glade/connect_popover.glade:244
 msgid "Nick name:"
 msgstr "昵称："
 
-#: ../src/sui/srain_connect_popover.c:226
+#: ../src/sui/srain_connect_popover.c:225
 msgid "No server is selected"
 msgstr "没有选中任何服务器"
 
@@ -525,7 +530,7 @@ msgstr "没有设置任何主题"
 msgid "No version found"
 msgstr "配置文件没有发现版本号"
 
-#: ../src/sui/glade/connect_popover.glade:188
+#: ../src/sui/glade/connect_popover.glade:192
 msgid "Noverify certification"
 msgstr "不校验服务器证书"
 
@@ -541,15 +546,15 @@ msgstr "打开文件"
 msgid "Open one or more IRC URLs"
 msgstr "打开一个或多个 IRC URL"
 
-#: ../src/sui/glade/join_popover.glade:100
-#: ../src/sui/glade/connect_popover.glade:164
-#: ../src/sui/glade/connect_popover.glade:277
-#: ../src/sui/glade/connect_popover.glade:301
+#: ../src/sui/glade/join_popover.glade:102
+#: ../src/sui/glade/connect_popover.glade:168
+#: ../src/sui/glade/connect_popover.glade:281
+#: ../src/sui/glade/connect_popover.glade:305
 msgid "Optional"
 msgstr "可选"
 
-#: ../src/sui/glade/join_popover.glade:87
-#: ../src/sui/glade/connect_popover.glade:100
+#: ../src/sui/glade/join_popover.glade:89
+#: ../src/sui/glade/connect_popover.glade:102
 msgid "Password:"
 msgstr "密码："
 
@@ -565,7 +570,7 @@ msgstr "在加入频道之前请先连接到服务器"
 msgid "Please connect to server before searching any channel"
 msgstr "在搜索频道之前请先连接到服务器"
 
-#: ../src/sui/glade/connect_popover.glade:75
+#: ../src/sui/glade/connect_popover.glade:77
 msgid "Predefined Server"
 msgstr "预定义服务器"
 
@@ -574,7 +579,7 @@ msgstr "预定义服务器"
 msgid "Prefs read error"
 msgstr "配置读取错误"
 
-#: ../src/sui/glade/window.glade:182
+#: ../src/sui/glade/window.glade:186
 msgid "Quit"
 msgstr "退出"
 
@@ -582,13 +587,18 @@ msgstr "退出"
 msgid "Rc file not found"
 msgstr "rc 文件未找到"
 
-#: ../src/sui/glade/connect_popover.glade:252
+#: ../src/sui/glade/connect_popover.glade:256
 msgid "Real name:"
 msgstr "真实姓名："
 
-#: ../src/sui/glade/join_popover.glade:352
+#: ../src/sui/glade/join_popover.glade:356
 msgid "Search Channel"
 msgstr "搜索频道"
+
+#: ../src/core/server_ui_event.c:83
+#, c-format
+msgid "Server \"%s\" already exists"
+msgstr "服务器 \"%s\" 已存在"
 
 #: ../src/core/server_cmd.c:409
 #, c-format
@@ -600,13 +610,12 @@ msgstr "服务器 \"%s\" 已创建"
 msgid "Server \"%s\" is motified"
 msgstr "服务器 \"%s\" 已修改"
 
-#: ../src/prefs/prefs.c:504 ../src/core/server_ui_event.c:98
-#: ../src/core/server_cmd.c:357
+#: ../src/prefs/prefs.c:504 ../src/core/server_cmd.c:357
 #, c-format
 msgid "Server already exist: %s"
 msgstr "服务器已存在：%s"
 
-#: ../src/sui/glade/connect_popover.glade:64
+#: ../src/sui/glade/connect_popover.glade:66
 msgid "Server:"
 msgstr "服务器："
 
@@ -632,7 +641,7 @@ msgstr "发生未知错误"
 msgid "Sorry, command parse failed, please report a bug to <"
 msgstr "抱歉，命令解析失败，请提交 bug 报告到 <"
 
-#: ../src/sui/glade/window.glade:164
+#: ../src/sui/glade/window.glade:22 ../src/sui/glade/window.glade:168
 msgid "Srain"
 msgstr "Srain"
 
@@ -665,7 +674,7 @@ msgstr "参数太多，只需要 %d 个"
 msgid "Too many options, options count limit to %d"
 msgstr "可选参数最多为 %d 个"
 
-#: ../src/sui/glade/join_popover.glade:297
+#: ../src/sui/glade/join_popover.glade:301
 msgid "Topic"
 msgstr "主题"
 
@@ -702,7 +711,7 @@ msgstr "没有这个命令：%s"
 msgid "Unknown option %s"
 msgstr "没有这个选项：%s"
 
-#: ../src/core/server_cmd.c:481 ../src/lib/command.c:422
+#: ../src/lib/command.c:422 ../src/core/server_cmd.c:481
 #, c-format
 msgid "Unknown sub command: %s"
 msgstr "没有这个子命令：%s"
@@ -716,7 +725,7 @@ msgstr "不支持的协议：%s"
 msgid "Upload image"
 msgstr "上传图片"
 
-#: ../src/sui/glade/connect_popover.glade:174
+#: ../src/sui/glade/connect_popover.glade:178
 msgid "Use secure connection"
 msgstr "使用安全连接"
 
@@ -725,11 +734,11 @@ msgstr "使用安全连接"
 msgid "User config file %s not found"
 msgstr "用户文件 %s 未找到"
 
-#: ../src/sui/glade/connect_popover.glade:288
+#: ../src/sui/glade/connect_popover.glade:292
 msgid "User name:"
 msgstr "用户名："
 
-#: ../src/sui/glade/join_popover.glade:283
+#: ../src/sui/glade/join_popover.glade:287
 msgid "Users"
 msgstr "用户数"
 
@@ -760,10 +769,6 @@ msgstr "你被 %s 踢出了频道：%s"
 #, c-format
 msgid "You has joined"
 msgstr "你加入了频道"
-
-#: ../src/core/server_ui_event.c:93
-msgid "You must specified a server name"
-msgstr "你需要指定服务器名称"
 
 #: ../src/sui/srain_app.c:65
 msgid "[URL...]"

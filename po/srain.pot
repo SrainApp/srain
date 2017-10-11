@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 0.06.2\n"
 "Report-Msgid-Bugs-To: srain@srain.im\n"
-"POT-Creation-Date: 2017-10-08 19:13+0800\n"
+"POT-Creation-Date: 2017-10-11 13:36+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/sui/glade/connect_popover.glade:129
+#: ../src/sui/glade/connect_popover.glade:133
 msgid " : "
 msgstr ""
 
@@ -76,7 +76,7 @@ msgstr ""
 msgid "%Y-%m-%d %T"
 msgstr ""
 
-#: ../src/core/server_prefs.c:342 ../src/core/rc.c:64 ../src/core/rc.c:75
+#: ../src/core/server_prefs.c:357 ../src/core/rc.c:64 ../src/core/rc.c:75
 #, c-format
 msgid "%s"
 msgstr ""
@@ -189,7 +189,7 @@ msgstr ""
 msgid "*** <b>%s</b> %s ***"
 msgstr ""
 
-#: ../src/core/server_prefs.c:310
+#: ../src/core/server_prefs.c:325
 #, c-format
 msgid ""
 "*** Server name: %s, Instance: %p\n"
@@ -199,12 +199,12 @@ msgid ""
 "\tIRC configuration: %s"
 msgstr ""
 
-#: ../src/core/server_cmd.c:805
+#: ../src/core/server_cmd.c:818
 #, c-format
 msgid "A message has been sent to \"%s\""
 msgstr ""
 
-#: ../src/sui/glade/window.glade:42 ../src/sui/glade/window.glade:174
+#: ../src/sui/glade/window.glade:46 ../src/sui/glade/window.glade:178
 msgid "About"
 msgstr ""
 
@@ -216,7 +216,7 @@ msgstr ""
 msgid "Action"
 msgstr ""
 
-#: ../src/sui/glade/connect_popover.glade:88
+#: ../src/sui/glade/connect_popover.glade:90
 msgid "Address:"
 msgstr ""
 
@@ -242,16 +242,16 @@ msgstr ""
 msgid "Can not remove a server which is still connected"
 msgstr ""
 
-#: ../src/core/server_ui_event.c:203 ../src/core/server_cmd.c:825
+#: ../src/core/server_ui_event.c:220 ../src/core/server_cmd.c:838
 msgid "Can not send message to a server"
 msgstr ""
 
-#: ../src/sui/glade/join_popover.glade:370
-#: ../src/sui/glade/connect_popover.glade:322 ../src/sui/sui_common.c:106
+#: ../src/sui/glade/join_popover.glade:374
+#: ../src/sui/glade/connect_popover.glade:326 ../src/sui/sui_common.c:106
 msgid "Cancel"
 msgstr ""
 
-#: ../src/sui/glade/join_popover.glade:268
+#: ../src/sui/glade/join_popover.glade:272
 msgid "Channel"
 msgstr ""
 
@@ -264,7 +264,7 @@ msgstr ""
 msgid "Command failed at line %d: %s"
 msgstr ""
 
-#: ../src/sui/glade/window.glade:58 ../src/sui/glade/connect_popover.glade:337
+#: ../src/sui/glade/window.glade:62 ../src/sui/glade/connect_popover.glade:341
 msgid "Connect"
 msgstr ""
 
@@ -277,7 +277,7 @@ msgstr ""
 msgid "Copy message"
 msgstr ""
 
-#: ../src/sui/glade/connect_popover.glade:208
+#: ../src/sui/glade/connect_popover.glade:212
 msgid "Custom Server"
 msgstr ""
 
@@ -311,8 +311,8 @@ msgid "ERROR[%3d] %s %s"
 msgstr ""
 
 #: ../src/sui/srain_connect_popover.c:189
-#: ../src/sui/srain_connect_popover.c:226
-#: ../src/sui/srain_connect_popover.c:270 ../src/sui/srain_join_popover.c:325
+#: ../src/sui/srain_connect_popover.c:225
+#: ../src/sui/srain_connect_popover.c:269 ../src/sui/srain_join_popover.c:325
 #: ../src/sui/srain_join_popover.c:368 ../src/sui/srain_join_popover.c:407
 #: ../src/sui/srain_join_popover.c:413 ../src/sui/sui.c:68 ../src/sui/sui.c:76
 #: ../src/sui/sui.c:100 ../src/sui/sui.c:486 ../src/sui/srain_app.c:92
@@ -349,7 +349,8 @@ msgstr ""
 msgid "Error occurred while reading %s: %s"
 msgstr ""
 
-#: ../src/core/server_url.c:85 ../src/core/server_cmd.c:504
+#: ../src/core/server_url.c:85 ../src/core/server_ui_event.c:103
+#: ../src/core/server_cmd.c:501
 #, c-format
 msgid "Failed to create server \"%s\""
 msgstr ""
@@ -359,8 +360,8 @@ msgstr ""
 msgid "Failed to get server list: %s"
 msgstr ""
 
-#: ../src/core/server_url.c:120 ../src/core/server_ui_event.c:136
-#: ../src/core/server_cmd.c:424 ../src/core/server_cmd.c:553
+#: ../src/core/server_url.c:120 ../src/core/server_ui_event.c:149
+#: ../src/core/server_cmd.c:424 ../src/core/server_cmd.c:554
 #, c-format
 msgid "Failed to instantiate server \"%s\""
 msgstr ""
@@ -376,17 +377,17 @@ msgid "Failed to parse \"%s\" as a URL"
 msgstr ""
 
 #: ../src/core/server_url.c:135 ../src/core/server_cmd.c:438
-#: ../src/core/server_cmd.c:562
+#: ../src/core/server_cmd.c:564
 #, c-format
 msgid "Failed to register on server \"%s\""
 msgstr ""
 
-#: ../src/core/server_cmd.c:834
+#: ../src/core/server_cmd.c:847
 #, c-format
 msgid "Failed to send action message: %s"
 msgstr ""
 
-#: ../src/core/server_ui_event.c:213
+#: ../src/core/server_ui_event.c:230
 #, c-format
 msgid "Failed to send message: %s"
 msgstr ""
@@ -413,7 +414,7 @@ msgstr ""
 msgid "Invail pattern: %s"
 msgstr ""
 
-#: ../src/core/server_prefs.c:160 ../src/sirc/sirc_prefs.c:34
+#: ../src/core/server_prefs.c:175 ../src/sirc/sirc_prefs.c:34
 msgid "Invalid ServerPrefs instance"
 msgstr ""
 
@@ -440,11 +441,11 @@ msgid ""
 "try to enable it and reconnect"
 msgstr ""
 
-#: ../src/sui/glade/window.glade:74 ../src/sui/glade/join_popover.glade:385
+#: ../src/sui/glade/window.glade:78 ../src/sui/glade/join_popover.glade:389
 msgid "Join"
 msgstr ""
 
-#: ../src/sui/glade/join_popover.glade:111
+#: ../src/sui/glade/join_popover.glade:113
 msgid "Join Channel"
 msgstr ""
 
@@ -461,11 +462,15 @@ msgstr ""
 msgid "Loading %d channnels..."
 msgstr ""
 
-#: ../src/sui/glade/join_popover.glade:186
+#: ../src/sui/srain_join_popover.c:272
+msgid "Match channel name"
+msgstr ""
+
+#: ../src/sui/glade/join_popover.glade:190
 msgid "Max users"
 msgstr ""
 
-#: ../src/sui/glade/join_popover.glade:215
+#: ../src/sui/glade/join_popover.glade:219
 msgid "Min users"
 msgstr ""
 
@@ -478,7 +483,7 @@ msgstr ""
 msgid "Missing argument, expect %d, actually %d"
 msgstr ""
 
-#: ../src/core/server_prefs.c:157
+#: ../src/core/server_prefs.c:172
 #, c-format
 msgid "Missing field in ServerPrefs: %s"
 msgstr ""
@@ -493,11 +498,11 @@ msgstr ""
 msgid "Missing vaule for option %s"
 msgstr ""
 
-#: ../src/sui/glade/connect_popover.glade:240
+#: ../src/sui/glade/connect_popover.glade:244
 msgid "Nick name:"
 msgstr ""
 
-#: ../src/sui/srain_connect_popover.c:226
+#: ../src/sui/srain_connect_popover.c:225
 msgid "No server is selected"
 msgstr ""
 
@@ -514,7 +519,7 @@ msgstr ""
 msgid "No version found"
 msgstr ""
 
-#: ../src/sui/glade/connect_popover.glade:188
+#: ../src/sui/glade/connect_popover.glade:192
 msgid "Noverify certification"
 msgstr ""
 
@@ -530,15 +535,15 @@ msgstr ""
 msgid "Open one or more IRC URLs"
 msgstr ""
 
-#: ../src/sui/glade/join_popover.glade:100
-#: ../src/sui/glade/connect_popover.glade:164
-#: ../src/sui/glade/connect_popover.glade:277
-#: ../src/sui/glade/connect_popover.glade:301
+#: ../src/sui/glade/join_popover.glade:102
+#: ../src/sui/glade/connect_popover.glade:168
+#: ../src/sui/glade/connect_popover.glade:281
+#: ../src/sui/glade/connect_popover.glade:305
 msgid "Optional"
 msgstr ""
 
-#: ../src/sui/glade/join_popover.glade:87
-#: ../src/sui/glade/connect_popover.glade:100
+#: ../src/sui/glade/join_popover.glade:89
+#: ../src/sui/glade/connect_popover.glade:102
 msgid "Password:"
 msgstr ""
 
@@ -554,7 +559,7 @@ msgstr ""
 msgid "Please connect to server before searching any channel"
 msgstr ""
 
-#: ../src/sui/glade/connect_popover.glade:75
+#: ../src/sui/glade/connect_popover.glade:77
 msgid "Predefined Server"
 msgstr ""
 
@@ -563,7 +568,7 @@ msgstr ""
 msgid "Prefs read error"
 msgstr ""
 
-#: ../src/sui/glade/window.glade:182
+#: ../src/sui/glade/window.glade:186
 msgid "Quit"
 msgstr ""
 
@@ -571,12 +576,17 @@ msgstr ""
 msgid "Rc file not found"
 msgstr ""
 
-#: ../src/sui/glade/connect_popover.glade:252
+#: ../src/sui/glade/connect_popover.glade:256
 msgid "Real name:"
 msgstr ""
 
-#: ../src/sui/glade/join_popover.glade:352
+#: ../src/sui/glade/join_popover.glade:356
 msgid "Search Channel"
+msgstr ""
+
+#: ../src/core/server_ui_event.c:83
+#, c-format
+msgid "Server \"%s\" already exists"
 msgstr ""
 
 #: ../src/core/server_cmd.c:409
@@ -589,13 +599,12 @@ msgstr ""
 msgid "Server \"%s\" is motified"
 msgstr ""
 
-#: ../src/prefs/prefs.c:504 ../src/core/server_ui_event.c:98
-#: ../src/core/server_cmd.c:357
+#: ../src/prefs/prefs.c:504 ../src/core/server_cmd.c:357
 #, c-format
 msgid "Server already exist: %s"
 msgstr ""
 
-#: ../src/sui/glade/connect_popover.glade:64
+#: ../src/sui/glade/connect_popover.glade:66
 msgid "Server:"
 msgstr ""
 
@@ -621,7 +630,7 @@ msgstr ""
 msgid "Sorry, command parse failed, please report a bug to <"
 msgstr ""
 
-#: ../src/sui/glade/window.glade:164
+#: ../src/sui/glade/window.glade:22 ../src/sui/glade/window.glade:168
 msgid "Srain"
 msgstr ""
 
@@ -652,7 +661,7 @@ msgstr ""
 msgid "Too many options, options count limit to %d"
 msgstr ""
 
-#: ../src/sui/glade/join_popover.glade:297
+#: ../src/sui/glade/join_popover.glade:301
 msgid "Topic"
 msgstr ""
 
@@ -689,7 +698,7 @@ msgstr ""
 msgid "Unknown option %s"
 msgstr ""
 
-#: ../src/core/server_cmd.c:481 ../src/lib/command.c:422
+#: ../src/lib/command.c:422 ../src/core/server_cmd.c:481
 #, c-format
 msgid "Unknown sub command: %s"
 msgstr ""
@@ -703,7 +712,7 @@ msgstr ""
 msgid "Upload image"
 msgstr ""
 
-#: ../src/sui/glade/connect_popover.glade:174
+#: ../src/sui/glade/connect_popover.glade:178
 msgid "Use secure connection"
 msgstr ""
 
@@ -712,11 +721,11 @@ msgstr ""
 msgid "User config file %s not found"
 msgstr ""
 
-#: ../src/sui/glade/connect_popover.glade:288
+#: ../src/sui/glade/connect_popover.glade:292
 msgid "User name:"
 msgstr ""
 
-#: ../src/sui/glade/join_popover.glade:283
+#: ../src/sui/glade/join_popover.glade:287
 msgid "Users"
 msgstr ""
 
@@ -744,10 +753,6 @@ msgstr ""
 #: ../src/core/server_irc_event.c:364
 #, c-format
 msgid "You has joined"
-msgstr ""
-
-#: ../src/core/server_ui_event.c:93
-msgid "You must specified a server name"
 msgstr ""
 
 #: ../src/sui/srain_app.c:65
