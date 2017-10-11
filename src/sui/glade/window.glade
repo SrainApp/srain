@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.0 -->
+<!-- Generated with glade 3.20.1 -->
 <interface>
   <requires lib="gtk+" version="3.16"/>
   <object class="GtkImage" id="about_image">
@@ -19,8 +19,10 @@
   </object>
   <template class="SrainWindow" parent="GtkApplicationWindow">
     <property name="can_focus">False</property>
-    <property name="default_width">900</property>
-    <property name="default_height">500</property>
+    <property name="title" translatable="yes">Srain</property>
+    <property name="window_position">center</property>
+    <property name="default_width">1050</property>
+    <property name="default_height">650</property>
     <property name="icon_name">srain</property>
     <child>
       <object class="GtkBox" id="window_box">
@@ -154,7 +156,7 @@
         </child>
       </object>
     </child>
-    <child type="titlebar">
+    <child>
       <placeholder/>
     </child>
   </template>
