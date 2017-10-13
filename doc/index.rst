@@ -11,6 +11,11 @@ Welcome to Srain documentation!
 The source code of this documentation is hosted on `GitHub`_.
 If you found any mistake, feel free to file issue or pull request.
 
+.. note::
+
+    As Srain is constantly improving, the latest version is always recommended.
+    Currently we aren't doing bug fix for the non-least version.
+
 .. _GitHub: https://github.com/SilverRainZ/srain/tree/master/doc
 
 .. toctree::
