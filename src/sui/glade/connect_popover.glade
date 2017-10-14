@@ -184,7 +184,7 @@
                 </child>
                 <child>
                   <object class="GtkCheckButton" id="tls_noverify_check_button">
-                    <property name="label" translatable="yes">Noverify certification</property>
+                    <property name="label" translatable="yes">Do not verify certificate</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>

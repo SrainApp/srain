@@ -18,7 +18,7 @@ Start Srain
 
 After the :doc:`installation` of Srain, you will find Srain in your
 applications list, if not, just type ``srain`` in your shell to run it. Then you
-will see Srain's Initial interface.
+will see Srain's initial interface.
 
 .. figure:: _static/srain-startup.png
 
@@ -34,8 +34,8 @@ also hosted on it. Let's start by connecting to freenode.
 
 .. _freenode: https://freenode.net/
 
-Connect to Predefined Server
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Predefined Server
+~~~~~~~~~~~~~~~~~
 
 Since version 0.06.3, Srain has a predefined list of commonly used IRC servers,
 freenode is one of it. If you want to add server into this list, refer to
@@ -43,17 +43,17 @@ freenode is one of it. If you want to add server into this list, refer to
 
 Click the connection button on the Srain header bar, select the page "Predefined
 Server", select the item "freenode" from candidate box with label "Server",
-enter your nickname, then click the "connect" button:
+enter your nickname, then click the "Connect" button:
 
 .. figure:: _static/srain-connect-predefined-server.png
 
-If everything goes well, srain should connected to freenode, then your would see
+If everything goes well, Srain should connected to freenode, then your would see
 some message from freenode's server:
 
 .. figure:: _static/srain-connected-server.png
 
-Connect to Custom Server
-~~~~~~~~~~~~~~~~~~~~~~~~
+Custom Server
+~~~~~~~~~~~~~
 
 While the server your want to connect to is not listed in the predefined list,
 switch to the page "Custom Server", enter the host name, port, and etc.
@@ -63,14 +63,13 @@ switch to the page "Custom Server", enter the host name, port, and etc.
     - If the port is a TLS port, make sure that the option
       "Use secure connection" is checked.
     - If the server's certificate is untrusted and you insist on continuing,
-      check the option "Not verify certificate". Then, click the "connect"
-      button.
+      check the option "Do not verify certificate".
 
-Then click the "connect" button:
+Then click the "Connect" button:
 
 .. figure:: _static/srain-connect-custom-server.png
 
-Using command
+Using Command
 ~~~~~~~~~~~~~
 
 Refer to :ref:`commands-server` and :ref:`commands-connect`.
@@ -91,7 +90,7 @@ Directly Join
 
 While your has a clear channel to join, such as `#srain`_, just click the join
 button, select the page "Join Channel", enter the channel name in the input
-entry with label "Channel", then click the "join" button:
+entry with label "Channel", then click the "Join" button:
 
 .. figure:: _static/srain-join-channel.png
 
@@ -110,7 +109,7 @@ should start receiving channel list from server:
 
 Then you can enter the keyword or specify the filter conditions to search
 channel. For example we enter "sra", select the channel you want to join from
-channe list, then click "join" button:
+channe list, then click "Join" button:
 
 .. figure:: _static/srain-searched-chennel.png
 
@@ -119,7 +118,7 @@ channe list, then click "join" button:
     If the channel requires a join password, try double click the row
     of channel.
 
-Using command
+Using Command
 ~~~~~~~~~~~~~
 
 Refer to :ref:`commands-join`.
