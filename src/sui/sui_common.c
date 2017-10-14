@@ -206,8 +206,12 @@ gboolean activate_link(GtkLabel *label, const char *uri, gpointer user_data){
     if (!RET_IS_OK(sui_event_hdr(NULL, SUI_EVENT_OPEN, params))){
         GError *err = NULL;
 
+#if GTK_CHECK_VERSION(3, 22, 0)
         gtk_show_uri_on_window(GTK_WINDOW(srain_win), uri,
                 gtk_get_current_event_time(), &err);
+#else
+        gtk_show_uri(NULL, uri, gtk_get_current_event_time(), &err);
+#endif
 
         if (err) {
             ERR_FR("Failed to open URL '%s': %s", uri, err->message); // TODO message box
