@@ -132,6 +132,10 @@ void srain_connect_popover_clear(SrainConnectPopover *popover){
 static void srain_connect_popover_init(SrainConnectPopover *self){
     gtk_widget_init_template(GTK_WIDGET(self));
 
+#if GTK_CHECK_VERSION(3, 18, 0)
+    gtk_stack_set_interpolate_size(self->stack, TRUE);
+#endif
+
     server_combo_box_set_model(self);
 
     g_signal_connect(self, "notify::visible",

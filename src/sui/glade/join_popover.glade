@@ -50,7 +50,6 @@
             <property name="hhomogeneous">False</property>
             <property name="vhomogeneous">False</property>
             <property name="transition_type">slide-left-right</property>
-            <property name="interpolate_size">True</property>
             <child>
               <object class="GtkGrid">
                 <property name="visible">True</property>

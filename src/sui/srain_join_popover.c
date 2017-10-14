@@ -187,6 +187,10 @@ void srain_join_popover_clear(SrainJoinPopover *popover){
 static void srain_join_popover_init(SrainJoinPopover *self){
     gtk_widget_init_template(GTK_WIDGET(self));
 
+#if GTK_CHECK_VERSION(3, 18, 0)
+    gtk_stack_set_interpolate_size(self->stack, TRUE);
+#endif
+
     self->adding = FALSE;
     self->match = MATCH_CHANNEL;
     match_combo_box_set_model(self);
