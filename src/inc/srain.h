@@ -28,7 +28,11 @@
 #define SRN_EAGAIN -2
 #define SRN_EEXIST -3
 
-#define SRN_TRUE    TRUE;
-#define SRN_FALSE   FALSE;
+#define SRN_TRUE    TRUE
+#define SRN_FALSE   FALSE
+
+/* All strings in Srain should be utf-8 sequence */
+#define SRN_ENCODING        "utf-8"
+#define SRN_FALLBACK_CHAR   "�"
 
 #endif /* __SRAIN_H */

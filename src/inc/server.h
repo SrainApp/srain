@@ -165,7 +165,6 @@ struct _ServerPrefs {
     char *host;
     int port;
     char *passwd;
-    char *encoding;
 
     /* User */
     char *nickname;

@@ -87,7 +87,7 @@ SrnRet server_ui_event_connect(SuiEvent event, GVariantDict *params){
         const char *host = NULL;
         int port = 0;
         const char *passwd = NULL;
-        const char *encoding = "UTF-8"; // TODO
+        const char *encoding = "utf-8"; // TODO
         gboolean tls = FALSE;
         gboolean tls_noverify = FALSE;
 
@@ -116,7 +116,7 @@ SrnRet server_ui_event_connect(SuiEvent event, GVariantDict *params){
             str_assign(&prefs->passwd, passwd);
         }
         if (!str_is_empty(encoding)){
-            str_assign(&prefs->encoding, encoding);
+            str_assign(&prefs->irc->encoding, encoding);
         }
         prefs->irc->tls = tls;
         prefs->irc->tls_noverify = tls_noverify;

@@ -33,6 +33,7 @@ struct _SircPrefs {
     bool tls_noverify;
     // bool ipv6;
     // bool sasl;
+    char *encoding;
 };
 
 SircPrefs *sirc_prefs_new();

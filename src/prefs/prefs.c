@@ -326,7 +326,6 @@ static SrnRet read_server_prefs_from_server(config_setting_t *server,
     config_setting_lookup_string_ex(server, "host", &prefs->host);
     config_setting_lookup_int(server, "port", &prefs->port);
     config_setting_lookup_string_ex(server, "passwd", &prefs->passwd);
-    config_setting_lookup_string_ex(server, "encoding", &prefs->encoding);
 
     /* Read server.user */
     config_setting_t *user;
@@ -407,20 +406,15 @@ static SrnRet read_server_prefs_from_cfg(config_t *cfg, ServerPrefs *prefs){
 }
 
 static SrnRet read_sirc_prefs_from_irc(config_setting_t *irc, SircPrefs *prefs){
-    int ret;
-
     config_setting_lookup_bool_ex(irc, "tls", &prefs->tls);
-    ret = config_setting_lookup_bool_ex(irc, "tls_noverify", &prefs->tls_noverify);
+    if (config_setting_lookup_bool_ex(irc, "tls_noverify", &prefs->tls_noverify) != CONFIG_TRUE){
+        // Backward compatible
+        config_setting_lookup_bool_ex(irc, "tls_not_verify", &prefs->tls_noverify);
+    }
+    config_setting_lookup_string_ex(irc, "encoding", &prefs->encoding);
+
     if (prefs->tls_noverify) {
         prefs->tls = TRUE;
-    }
-
-    // Backward compatible
-    if (ret != CONFIG_TRUE) {
-        config_setting_lookup_bool_ex(irc, "tls_not_verify", &prefs->tls_noverify);
-        if (prefs->tls_noverify) {
-            prefs->tls = TRUE;
-        }
     }
 
     return SRN_OK;

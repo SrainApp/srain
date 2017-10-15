@@ -391,7 +391,7 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
             str_assign(&prefs->realname, real);
         }
         if (command_get_opt(cmd, "-encode", &encoding)){
-            str_assign(&prefs->encoding, encoding);
+            str_assign(&prefs->irc->encoding, encoding);
         }
         if (command_get_opt(cmd, "-tls", NULL)){
             prefs->irc->tls = true;
@@ -527,7 +527,7 @@ static SrnRet on_command_connect(Command *cmd, void *user_data){
         str_assign(&prefs->realname, real);
     }
     if (command_get_opt(cmd, "-encode", &encoding)){
-        str_assign(&prefs->encoding, encoding);
+        str_assign(&prefs->irc->encoding, encoding);
     }
 
     prefs->irc->tls = command_get_opt(cmd, "-tls", NULL);

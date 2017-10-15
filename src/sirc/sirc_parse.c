@@ -33,20 +33,55 @@
 
 #include "srain.h"
 #include "log.h"
+#include "utils.h"
+
+SircMessage *sirc_message_new(){
+    return g_malloc0(sizeof(SircMessage));
+}
+
+void sirc_message_free(SircMessage *imsg){
+    str_assign(&imsg->prefix, NULL);
+    str_assign(&imsg->nick, NULL);
+    str_assign(&imsg->user, NULL);
+    str_assign(&imsg->host, NULL);
+    str_assign(&imsg->cmd, NULL);
+    str_assign(&imsg->msg, NULL);
+
+    for (int i = 0; i < imsg->nparam; i++){
+        str_assign(&imsg->params[i], NULL);
+    }
+
+    g_free(imsg);
+}
+
+// FIXME: how to use fallback?
+void sirc_message_transcoding(SircMessage *imsg,
+        const char *to, const char *from, const char *fallback){
+    str_transcoding(&imsg->prefix, to, from, fallback);
+    str_transcoding(&imsg->nick, to, from, fallback);
+    str_transcoding(&imsg->user, to, from, fallback);
+    str_transcoding(&imsg->host, to, from, fallback);
+    str_transcoding(&imsg->cmd, to, from, fallback);
+    str_transcoding(&imsg->msg, to, from, fallback);
+
+    for (int i = 0; i < imsg->nparam; i++){
+        str_transcoding(&imsg->params[i], to, from, fallback);
+    }
+}
 
 /**
  * @brief Parsing IRC raw data
  *
  * @param line A buffer contains ONE IRC raw message (without the trailing "\r\n")
- * @param imsg A pointer points to a pre-allocated SircIrcMessage strcture,
- *             used to store parsed result
  *
- * @return SRN_OK if no error occurred.
+ * @return A SircMessage structure
  */
-int sirc_parse(char *line, SircMessage *imsg){
-    memset(imsg, 0, sizeof(SircMessage));
+SircMessage* sirc_parse(char *line){
+    SircMessage *imsg;
 
     DBG_FR("raw: %s", line);
+
+    imsg = sirc_message_new();
 
     /* This is a IRC message
      * IRS protocol message format?
@@ -68,25 +103,25 @@ int sirc_parse(char *line, SircMessage *imsg){
     params_ptr = strtok(NULL, "");
 
     if (!command_ptr || !params_ptr) goto bad;
-    imsg->cmd = command_ptr;
+    imsg->cmd = g_strdup(command_ptr);
     DBG_FR("command: %s", imsg->cmd);
 
     if (prefix_ptr){
-        imsg->prefix = prefix_ptr;
+        imsg->prefix = g_strdup(prefix_ptr);
         // <prefix> ::= <servername> | <nick> [ '!' <user> ] [ '@' <host> ]
         nick_ptr = strtok(prefix_ptr, "!");
         user_ptr = strtok(NULL, "@");
         host_ptr = strtok(NULL, "");
         if (nick_ptr && user_ptr && host_ptr){
-            imsg->nick = nick_ptr;
-            imsg->user = user_ptr;
-            imsg->host = host_ptr;
+            imsg->nick = g_strdup(nick_ptr);
+            imsg->user = g_strdup(user_ptr);
+            imsg->host = g_strdup(host_ptr);
             DBG_FR("nick: %s, user: %s, host: %s", imsg->nick, imsg->user, imsg->host);
         } else {
             DBG_FR("servername: %s", imsg->prefix);
         }
     } else {
-        imsg->prefix = "";
+        imsg->prefix = strdup("");
     }
 
     // <params> ::= <SPACE> [ ':' <trailing> | <middle> <params> ]
@@ -94,21 +129,21 @@ int sirc_parse(char *line, SircMessage *imsg){
     if (params_ptr[0] == ':'){
         /* params have only one element, it is a trailing */
 
-        imsg->msg = params_ptr + 1;
+        imsg->msg = g_strdup(params_ptr + 1);
         imsg->nparam = 0;
     } else {
         trailing_ptr = strstr(params_ptr, " :");
         if (trailing_ptr){
             /* trailing exists in params */
             *trailing_ptr = '\0';   // Prevent influenced from split params
-            imsg->msg = trailing_ptr + 2;
+            imsg->msg = g_strdup(trailing_ptr + 2);
         }
 
         /* Split params which don't contain trailing */
         DBG_F("params: ");
         params_ptr = strtok(params_ptr, " ");
         do {
-            imsg->params[imsg->nparam++] = params_ptr;
+            imsg->params[imsg->nparam++] = g_strdup(params_ptr);
             DBG("%s(%d) ", imsg->params[imsg->nparam-1], imsg->nparam);
             if (imsg->nparam > SIRC_PARAM_COUNT - 1){
                 ERR_FR("Too many params: %s", line);
@@ -120,8 +155,10 @@ int sirc_parse(char *line, SircMessage *imsg){
 
     DBG_FR("message: %s", imsg->msg);
 
-    return SRN_OK;
+    return imsg;
 bad:
     ERR_FR("Unrecognized message: %s", line);
-    return SRN_ERR;
+    sirc_message_free(imsg);
+
+    return NULL;
 }

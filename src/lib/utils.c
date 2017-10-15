@@ -28,6 +28,7 @@
 #include <string.h>
 
 #include "srain.h"
+#include "log.h"
 
 /* Datetime utilities */
 
@@ -83,4 +84,20 @@ bool str_is_empty(const char *str){
         }
     }
     return TRUE;
+}
+
+void str_transcoding(char **str, const char *to, const char *from, const char *fallback){
+    char *tmp;
+    GError *err;
+
+    if (!*str) return;
+
+    err = NULL;
+    tmp = g_convert_with_fallback(*str, -1, to, from, fallback, NULL, NULL, &err);
+    if (tmp){
+        str_assign(str, tmp);
+    }
+    if (err) {
+        WARN_FR("Failed to convert line from %s to %s: %s", from, to, err->message);
+    }
 }

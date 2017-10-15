@@ -152,7 +152,7 @@ static void on_recv_ready(GObject *obj, GAsyncResult *res, gpointer user_data){
     GInputStream *in;
     GError *err;
     SircSession *sirc;
-    SircMessage imsg;
+    SircMessage *imsg;
 
     sirc = user_data;
 
@@ -185,29 +185,42 @@ static void on_recv_ready(GObject *obj, GAsyncResult *res, gpointer user_data){
     sirc->bufptr++;
     if (sirc->bufptr > sizeof(sirc->buf)){
         WARN_FR("Length of the line exceeds the buffer");
-        g_return_if_fail(FALSE);
+        goto FIN;
     }
 
     /* Read a line */
-    if (sirc->bufptr >= 2
+    if (!(sirc->bufptr >= 2
             && sirc->buf[sirc->bufptr-2] == '\r'
-            && sirc->buf[sirc->bufptr-1] == '\n'
-            ){
-        sirc->buf[sirc->bufptr-2] = '\0';
-        sirc->buf[sirc->bufptr-1] = '\0';
-        sirc->bufptr -= 2;
-        sirc->buf[sirc->bufptr] = '\0';
-
-        DBG_FR("Line: %s", sirc->buf);
-
-        if (sirc_parse(sirc->buf, &imsg) == SRN_OK){
-            sirc_event_hdr(sirc, &imsg);
-        }
-
-        memset(sirc->buf, 0, sizeof(sirc->buf));
-        sirc->bufptr = 0;
+            && sirc->buf[sirc->bufptr-1] == '\n')){
+        goto FIN;
     }
 
+    sirc->buf[sirc->bufptr-2] = '\0';
+    sirc->buf[sirc->bufptr-1] = '\0';
+    sirc->bufptr -= 2;
+    sirc->buf[sirc->bufptr] = '\0';
+
+    DBG_FR("Line: %s", sirc->buf);
+
+    imsg = sirc_parse(sirc->buf);
+    if (!imsg){
+        ERR_FR("Failed to parse line: %s", sirc->buf);
+        memset(sirc->buf, 0, sizeof(sirc->buf));
+        sirc->bufptr = 0;
+        goto FIN;
+    }
+    memset(sirc->buf, 0, sizeof(sirc->buf));
+    sirc->bufptr = 0;
+
+    /* Transcoding */
+    sirc_message_transcoding(imsg,
+            SRN_ENCODING, sirc->prefs->encoding, SRN_FALLBACK_CHAR);
+    /* Handle event */
+    sirc_event_hdr(sirc, imsg);
+
+    sirc_message_free(imsg);
+
+FIN:
     sirc_recv(sirc);
 }
 

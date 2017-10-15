@@ -20,6 +20,7 @@
 
 #include "sirc/sirc.h"
 #include "i18n.h"
+#include "utils.h"
 
 SircPrefs *sirc_prefs_new(){
     SircPrefs *prefs;
@@ -30,9 +31,32 @@ SircPrefs *sirc_prefs_new(){
 }
 
 SrnRet sirc_prefs_check(SircPrefs *prefs){
+    // const char *fmt = _("Missing field in SircPrefs: %s");
+
     if (!prefs){
         return RET_ERR(_("Invalid ServerPrefs instance"));
     }
+
+    if (str_is_empty(prefs->encoding)) {
+        str_assign(&prefs->encoding, "UTF-8");
+    }
+
+    /* Check encoding */
+    {
+        char *test;
+        GError *err = NULL;
+
+        test = g_convert("", -1,
+                SRN_ENCODING, prefs->encoding,
+                NULL, NULL, &err);
+        if (err){
+            return RET_ERR(_("Invalid encoding in SircPrefs: %s"),
+                    err->message);
+        } else {
+            g_free(test);
+        }
+    }
+
     return SRN_OK;
 }
 
@@ -45,8 +69,8 @@ char* sirc_prefs_dump(SircPrefs *prefs){
 
     str = g_string_new("");
     g_string_append_printf(str,
-            _("TLS: %s, TLS verify certificate: %s"),
-            prefs->tls ? t : f, prefs->tls_noverify ? f : t);
+            _("TLS: %s, TLS verify certificate: %s, Encoding: %s"),
+            prefs->tls ? t : f, prefs->tls_noverify ? f : t, prefs->encoding);
 
     char *dump = str->str;
     g_string_free(str, FALSE);
@@ -56,6 +80,8 @@ char* sirc_prefs_dump(SircPrefs *prefs){
 
 void sirc_prefs_free(SircPrefs *prefs){
     g_return_if_fail(prefs);
+
+    g_free(prefs->encoding);
 
     g_free(prefs);
 }

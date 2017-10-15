@@ -187,10 +187,6 @@ SrnRet server_prefs_check(ServerPrefs *prefs){
         // Password can be NULL
     }
 
-    if (str_is_empty(prefs->encoding)) {
-        str_assign(&prefs->encoding, "UTF-8");
-    }
-
     if (str_is_empty(prefs->nickname)) {
         return RET_ERR(fmt, "nickname");
     }
@@ -251,11 +247,6 @@ void server_prefs_free(ServerPrefs *prefs){
     if (prefs->passwd){
         g_free(prefs->passwd);
         prefs->passwd = NULL;
-    }
-
-    if (prefs->encoding){
-        g_free(prefs->encoding);
-        prefs->encoding = NULL;
     }
 
     if (prefs->nickname){
@@ -323,12 +314,12 @@ char* server_prefs_dump(ServerPrefs *prefs){
     str = g_string_new("");
     g_string_append_printf(str,
             _("*** Server name: %s, Instance: %p\n"
-                "\tHost: %s, Port: %d, Password: %s, Encoding: %s\n"
+                "\tHost: %s, Port: %d, Password: %s\n"
                 "\tNickname: %s, Username: %s, Realname: %s\n"
                 "\tPart: %s, Kick: %s, Away: %s, Quit: %s\n"
                 "\tIRC configuration: %s"),
             prefs->name, prefs->srv,
-            prefs->host, prefs->port, passwd, prefs->encoding,
+            prefs->host, prefs->port, passwd,
             prefs->nickname, prefs->username, prefs->realname,
             prefs->part_message, prefs->kick_message, prefs->away_message, prefs->quit_message,
             irc_dump);
