@@ -4,9 +4,9 @@ Srain
 
 Modern, beautiful IRC client written in GTK+ 3.
 
-`Home page`_ | `Documentation`_ | `Download`_ | `Source code`_
+`Home`_ | `Documentation`_ | `Download`_ | `Source code`_
 
-.. _Home page: https://srain.im
+.. _Home: https://srain.im
 .. _Documentation: https://doc.srain.im
 .. _Download: https://github.com/SilverRainZ/srain/releases
 .. _Source code: https://github.com/SilverRainZ/srain
@@ -15,31 +15,29 @@ Features
 ========
 
 - Fully open source
-- Beautiful and friendly interface
-- Relay bot message transform
-- Directly view image from URL
-- Supports python plugin, which implemented:
+- RFC {1459,2812} compatible
+- Act like modern IM clients
 
-  - Show avatar according to user's real name
-  - Upload image to pastebin
+  - Convenient connection panel
+  - Interactive channel search
+  - Message forward
+  - Preview image from URL
+  - Upload images directly
 
+- Act like traditional IRC clients
 
-Screenshots
-===========
+  - Anything can be done via commands
+  - Configurable and extensible
 
-.. image:: http://img.vim-cn.com/7b/c29632228006727102eb7f79efec9493aef807.png
-
-Srain with avatar plugin and enable the relay transform function:
-
-.. image:: http://img.vim-cn.com/7f/5211f94b8bcfabf16a852907bc76001ee321be.png
+    - Fine-grained Configuration
+    - Python plugins
 
 Need Help?
 ==========
 
-Feel free to contact me if you have any question about srain.
+Feel free to contact me if you have any question about Srain.
 
-- **IRC Channel**: `#srain <irc://irc.freenode.net/srain>`_ at freenode
-- E-mail: srain at srain dot im
+- IRC Channel: `#srain <ircs://chat.freenode.org:6697/srain>`_ @ freenode
 - Github: file an issue `Here <https://github.com/SilverRainZ/srain/issues>`_
 
 License
