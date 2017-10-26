@@ -83,6 +83,7 @@ ServerPrefs* server_prefs_new(const char *name){
     prefs = g_malloc0(sizeof(ServerPrefs));
     irc_prefs = sirc_prefs_new();
 
+    prefs->predefined = FALSE;
     prefs->name = g_strdup(name);
     prefs->irc = irc_prefs;
     prefs->srv = NULL;
@@ -231,58 +232,23 @@ SrnRet server_prefs_check(ServerPrefs *prefs){
 }
 
 void server_prefs_free(ServerPrefs *prefs){
+    if (prefs->predefined){
+        return;
+    }
+
     /* Remove from list first */
     server_prefs_list_rm(prefs);
 
-    if (prefs->name){
-        g_free(prefs->name);
-        prefs->name = NULL;
-    }
-
-    if (prefs->host){
-        g_free(prefs->host);
-        prefs->host = NULL;
-    }
-
-    if (prefs->passwd){
-        g_free(prefs->passwd);
-        prefs->passwd = NULL;
-    }
-
-    if (prefs->nickname){
-        g_free(prefs->nickname);
-        prefs->nickname = NULL;
-    }
-
-    if (prefs->username){
-        g_free(prefs->username);
-        prefs->username = NULL;
-    }
-
-    if (prefs->realname){
-        g_free(prefs->realname);
-        prefs->realname = NULL;
-    }
-
-    if (prefs->part_message){
-        g_free(prefs->part_message);
-        prefs->part_message = NULL;
-    }
-
-    if (prefs->kick_message){
-        g_free(prefs->kick_message);
-        prefs->kick_message = NULL;
-    }
-
-    if (prefs->away_message){
-        g_free(prefs->away_message);
-        prefs->away_message = NULL;
-    }
-
-    if (prefs->quit_message){
-        g_free(prefs->quit_message);
-        prefs->quit_message = NULL;
-    }
+    str_assign(&prefs->name, NULL);
+    str_assign(&prefs->host, NULL);
+    str_assign(&prefs->passwd, NULL);
+    str_assign(&prefs->nickname, NULL);
+    str_assign(&prefs->username, NULL);
+    str_assign(&prefs->realname, NULL);
+    str_assign(&prefs->part_message, NULL);
+    str_assign(&prefs->kick_message, NULL);
+    str_assign(&prefs->away_message, NULL);
+    str_assign(&prefs->quit_message, NULL);
 
     if (prefs->irc){
         sirc_prefs_free(prefs->irc);

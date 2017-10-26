@@ -164,7 +164,9 @@ SrnRet server_ui_event_server_list(SuiEvent event, GVariantDict *params){
     lst = server_prefs_list;
     while (lst){
         ServerPrefs *prefs = lst->data;
-        sui_server_list_add(prefs->name);
+        if (prefs->predefined){
+            sui_server_list_add(prefs->name);
+        }
         lst = g_slist_next(lst);
     }
 

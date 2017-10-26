@@ -161,6 +161,10 @@ struct _Server {
 
 struct _ServerPrefs {
     /* For specificed server */
+    bool predefined;  /* A ServerPrefs is predefined when it is loaded from
+                         configuration file, a predefined ServerPrefs will
+                         appeared in predefined server list and *CAN NOT* be
+                         freed by ``server_prefs_free()``. */
     char *name;
     char *host;
     int port;

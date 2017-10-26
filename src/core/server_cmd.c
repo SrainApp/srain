@@ -467,15 +467,15 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
         }
 
         prefs = server_prefs_get_prefs(name);
-        if (prefs){
-            server_prefs_free(prefs);
-        } else {
+        if (!prefs){
             return RET_ERR(_("No such server: %s"), name);
+        } else if (prefs->predefined){
+            return RET_ERR(_("Can not remove a predefined server: %s"), name);
+        } else {
+            server_prefs_free(prefs);
         }
 
-        /* Just return a SRN_OK, server is freed, if you return RET_OK with a
-         * message, it may cause segfault. */
-        return SRN_OK;
+        return RET_OK(_("Server \"%s\" is removed"), name);
     }
 
     return RET_ERR(_("Unknown sub command: %s"), subcmd);

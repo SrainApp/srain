@@ -494,6 +494,7 @@ static SrnRet read_server_prefs_list_from_cfg(config_t *cfg){
             }
 
             prefs = server_prefs_new(name);
+            prefs->predefined = true;
             if (!prefs){
                 return RET_ERR(_("Server already exist: %s"), name);
             }
