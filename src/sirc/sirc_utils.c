@@ -29,7 +29,7 @@ bool sirc_nick_cmp(const char *nick1, const char *nick2){
 }
 
 bool sirc_prefix_is_server(const char *prefix){
-    return NULL;
+    return FALSE;
 }
 
 /* TODO */

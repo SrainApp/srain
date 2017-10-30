@@ -19,7 +19,6 @@
 #ifndef __SERVER_H
 #define __SERVER_H
 
-#include <stdbool.h>
 #include <glib.h>
 
 #include "sirc/sirc.h"

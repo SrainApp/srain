@@ -26,6 +26,7 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <strings.h>
 #include <glib.h>
@@ -394,7 +395,7 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
             str_assign(&prefs->irc->encoding, encoding);
         }
         if (command_get_opt(cmd, "-tls", NULL)){
-            prefs->irc->tls = true;
+            prefs->irc->tls = TRUE;
         }
         if (command_get_opt(cmd, "-tls-noverify", NULL)){
             prefs->irc->tls = TRUE;

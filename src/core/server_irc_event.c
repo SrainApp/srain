@@ -25,9 +25,10 @@
  */
 
 #include <stdio.h>
-#include <glib.h>
+#include <stdlib.h>
 #include <string.h>
 #include <strings.h>
+#include <glib.h>
 
 #include "server.h"
 #include "server_irc_event.h"

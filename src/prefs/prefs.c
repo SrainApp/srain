@@ -494,7 +494,7 @@ static SrnRet read_server_prefs_list_from_cfg(config_t *cfg){
             }
 
             prefs = server_prefs_new(name);
-            prefs->predefined = true;
+            prefs->predefined = TRUE;
             if (!prefs){
                 return RET_ERR(_("Server already exist: %s"), name);
             }
@@ -559,7 +559,8 @@ static SrnRet read_log_prefs_from_cfg(config_t *cfg, LogPrefs *prefs){
     return SRN_OK;
 }
 
-/* The "bool" in libconfig is actually an integer, transform it to fit bool in "stdbool.h". */
+/* The "bool" in libconfig is actually an integer, transform it to fit
+ * bool(alias of gboolean) in "srain.h". */
 static int config_setting_lookup_bool_ex(const config_setting_t *config,
         const char *name, bool *value){
     int intval;

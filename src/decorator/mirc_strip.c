@@ -24,6 +24,7 @@
  * @date 2017-05-06
  */
 
+#include <stdlib.h>
 #include <string.h>
 #include <glib.h>
 
@@ -41,14 +42,12 @@ Decorator mirc_strip_decroator = {
 };
 
 static char *mirc_stirp(Message *msg, int index, const char *frag){
-    int j;
     int len;
     char *dfrag;
     GString *str;
 
     str = g_string_new(NULL);
 
-    j = 0;
     len = strlen(frag);
 
     for (int i = 0; i < len; i++){

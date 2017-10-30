@@ -57,7 +57,7 @@ G_DEFINE_TYPE(SrainImage, srain_image, GTK_TYPE_BOX);
 
 static void srain_image_finalize(GObject *object){
     if (SRAIN_IMAGE(object)->file)
-        free(SRAIN_IMAGE(object)->file);
+        g_free(SRAIN_IMAGE(object)->file);
 
     G_OBJECT_CLASS(srain_image_parent_class)->finalize(object);
 }
@@ -195,7 +195,7 @@ static gboolean set_image_idle(SrainImage *simg){
     /* Check whether object alve now */
     g_return_val_if_fail(SRAIN_IS_IMAGE(simg), FALSE);
 
-    free(simg->url);
+    g_free(simg->url);
     simg->url = NULL;
 
     gtk_spinner_stop(simg->spinner);
@@ -213,8 +213,8 @@ static void download_image(SrainImage *simg){
     str = download(simg->url);
 
     if (str){
-        if (simg->file) free(simg->file);
-        simg->file = strdup(str->str);
+        if (simg->file) g_free(simg->file);
+        simg->file = g_strdup(str->str);
         g_string_free(str, TRUE);
 
         gdk_threads_add_idle((GSourceFunc)set_image_idle, simg);
@@ -249,7 +249,7 @@ void srain_image_set_from_file(SrainImage *simg, char *file,
     simg->size = size;
     simg->flag = flag;
 
-    if (simg->file) free(simg->file);
+    if (simg->file) g_free(simg->file);
     simg->file = strdup(file);
 
     srain_image_set_from_self(simg);
@@ -268,7 +268,7 @@ void srain_image_set_from_url_async(SrainImage *simg, const char *url,
     simg->size = size;
     simg->flag = flag;
 
-    if (simg->url) free(simg->url);
+    if (simg->url) g_free(simg->url);
     simg->url = strdup(url);
 
     if (flag & SRAIN_IMAGE_AUTOLOAD){

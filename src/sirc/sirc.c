@@ -33,7 +33,6 @@
 #include "sirc/sirc.h"
 #include "sirc_parse.h"
 #include "sirc_event_hdr.h"
-#include "io_stream.h"
 
 #include "server.h"
 

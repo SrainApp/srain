@@ -352,8 +352,8 @@ static const char *type_to_icon(UserType type){
 static int user_list_store_sort_func(GtkTreeModel *model,
         GtkTreeIter *iter1, GtkTreeIter *iter2, gpointer user_data){
     int res;
-    const char *name1;
-    const char *name2;
+    char *name1;
+    char *name2;
     UserType type1;
     UserType type2;
 

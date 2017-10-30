@@ -91,7 +91,7 @@ void filter_init(){
  * @return FALSE if this message should be ignored
  */
 bool filter_message(const Message *msg, FilterFlag flag, void *user_data){
-    int ret;
+    bool ret = TRUE;
 
     for (int i = 0; i < MAX_FILTER; i++){
         FilterContext *ctx;
