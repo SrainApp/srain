@@ -568,6 +568,7 @@ static SrnRet on_command_connect(Command *cmd, void *user_data){
 
     ret = SRN_OK;
 
+    return ret;
 FIN:
     if (srv){
         server_free(srv);
