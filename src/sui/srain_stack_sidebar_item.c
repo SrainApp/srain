@@ -69,35 +69,16 @@ static void srain_stack_sidebar_item_class_init(SrainStackSidebarItemClass *clas
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainStackSidebarItem, count_label);
 }
 
-SrainStackSidebarItem *srain_stack_sidebar_item_new(const char *server_name,
-        const char *chat_name){
+SrainStackSidebarItem *srain_stack_sidebar_item_new(const char *name,
+        const char *remark, const char *icon){
     SrainStackSidebarItem *item;
-
-    g_return_val_if_fail(chat_name, NULL);
-    g_return_val_if_fail(server_name, NULL);
 
     item = g_object_new(SRAIN_TYPE_STACK_SIDEBAR_ITEM, NULL);
 
     item->update_time = get_time_since_first_call_ms();
-
-    gtk_label_set_text(item->chat_label, chat_name);
-    gtk_label_set_text(item->server_label, server_name);
-
-    /* FIXME
-    switch (type){
-        case CHAT_SERVER:
-            gtk_image_set_from_icon_name(item->image, "srain-server", GTK_ICON_SIZE_BUTTON);
-            break;
-        case CHAT_CHANNEL:
-            gtk_image_set_from_icon_name(item->image, "srain-chan", GTK_ICON_SIZE_BUTTON);
-            break;
-        case CHAT_PRIVATE:
-            gtk_image_set_from_icon_name(item->image, "srain-person", GTK_ICON_SIZE_BUTTON);
-            break;
-        default:
-            break;
-    }
-    */
+    gtk_label_set_text(item->chat_label, name);
+    gtk_label_set_text(item->server_label, remark);
+    gtk_image_set_from_icon_name(item->image, icon, GTK_ICON_SIZE_BUTTON);
 
     return item;
 }

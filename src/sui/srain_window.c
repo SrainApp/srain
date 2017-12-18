@@ -35,6 +35,7 @@
 #include "srain_app.h"
 #include "srain_window.h"
 #include "srain_buffer.h"
+#include "srain_server_buffer.h"
 #include "srain_connect_popover.h"
 #include "srain_join_popover.h"
 #include "srain_stack_sidebar.h"
@@ -171,7 +172,6 @@ static void srain_window_init(SrainWindow *self){
             G_CALLBACK(show_about_dialog), self);
 
 
-    /* :-| OK 为什么我没看到 is-active 属性 和 notify 的用法 */
     g_signal_connect(self, "notify::is-active",
             G_CALLBACK(monitor_active_window), NULL);
 
@@ -221,27 +221,19 @@ SrainWindow* srain_window_new(SrainApp *app){
     return g_object_new(SRAIN_TYPE_WINDOW, "application", app, NULL);
 }
 
-SrainBuffer* srain_window_add_buffer(SrainWindow *win, SuiSession *sui,
-        const char *name, const char *remark){
-    SrainBuffer *buffer;
+void srain_window_add_buffer(SrainWindow *win, SrainBuffer *buffer){
+    GString *gstr;
 
-    if (srain_window_get_buffer(win, name, remark)){
-        ERR_FR("SrainBuffer name: %s, remark: %s already exist",
-                name, remark);
-        return NULL;
-    }
-
-    buffer = srain_buffer_new(sui, name, remark);
-
-    GString *gstr = g_string_new("");
-    g_string_printf(gstr, "%s %s", remark, name);
+    gstr = g_string_new("");
+    g_string_printf(gstr, "%s %s",
+            srain_buffer_get_remark(buffer),
+            srain_buffer_get_name(buffer));
     gtk_stack_add_named(win->stack, GTK_WIDGET(buffer), gstr->str);
     g_string_free(gstr, TRUE);
 
     theme_apply(GTK_WIDGET(win));
 
     gtk_stack_set_visible_child(win->stack, GTK_WIDGET(buffer));
-    return buffer;
 }
 
 void srain_window_rm_buffer(SrainWindow *win, SrainBuffer *buffer){
@@ -262,7 +254,7 @@ SrainBuffer* srain_window_get_cur_buffer(SrainWindow *win){
 
 SrainBuffer* srain_window_get_buffer(SrainWindow *win,
         const char *name, const char *remark){
-    SrainBuffer *buffer = NULL;
+    SrainBuffer *buffer;
 
     GString *fullname = g_string_new("");
     g_string_printf(fullname, "%s %s", remark, name);

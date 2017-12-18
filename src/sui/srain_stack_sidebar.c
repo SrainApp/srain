@@ -32,11 +32,14 @@
 
 #include <gtk/gtk.h>
 
-#include "srain_stack_sidebar.h"
-#include "srain_stack_sidebar_item.h"
-#include "srain_buffer.h"
 #include "sui_common.h"
 #include "sui_event_hdr.h"
+#include "srain_buffer.h"
+#include "srain_server_buffer.h"
+#include "srain_channel_buffer.h"
+#include "srain_private_buffer.h"
+#include "srain_stack_sidebar.h"
+#include "srain_stack_sidebar_item.h"
 
 #include "log.h"
 
@@ -146,17 +149,30 @@ srain_stack_sidebar_init(SrainStackSidebar *self){
 
 static void
 add_child(GtkWidget *child, SrainStackSidebar *sidebar){
-    const char *buffer_name;
-    const char *server_name;
+    const char *icon;
     GtkListBoxRow *row;
+    SrainBuffer *buffer;
     SrainStackSidebarItem *item;
 
     if (g_hash_table_lookup(sidebar->rows, child))
         return;
 
-    buffer_name = srain_buffer_get_name(SRAIN_BUFFER(child));
-    server_name = srain_buffer_get_remark(SRAIN_BUFFER(child));
-    item = srain_stack_sidebar_item_new(server_name, buffer_name);
+    buffer = SRAIN_BUFFER(child);
+    if SRAIN_IS_SERVER_BUFFER(buffer) {
+        icon = "srain-server";
+    } else if SRAIN_IS_CHANNEL_BUFFER(buffer) {
+        icon = "srain-chan";
+    } else if SRAIN_IS_PRIVATE_BUFFER(buffer) {
+        icon = "srain-person";
+    } else {
+        ERR_FR("Unknown type of SrainBuffer");
+        icon = "";
+    }
+
+    item = srain_stack_sidebar_item_new(
+            srain_buffer_get_name(buffer),
+            srain_buffer_get_remark(buffer),
+            icon);
 
     // gtk_widget_set_halign(item, GTK_ALIGN_START);
     // gtk_widget_set_valign(item, GTK_ALIGN_CENTER);

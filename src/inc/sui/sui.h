@@ -64,7 +64,9 @@ void sui_proc_pending_event();
 /* SuiSession */
 SuiSession *sui_new_session(SuiEvents *events, SuiPrefs *prefs, SuiSessionFlag flag);
 void sui_free_session(SuiSession *sui);
-int sui_start_session(SuiSession *sui, const char *name, const char *remark);
+SrnRet sui_server_session(SuiSession *sui, const char *srv);
+SrnRet sui_channel_session(SuiSession *sui, SuiSession *sui_srv, const char *chan);
+SrnRet sui_private_session(SuiSession *sui, SuiSession *sui_srv, const char *nick);
 void sui_end_session(SuiSession *sui);
 
 SuiSessionFlag sui_get_flag(SuiSession *sui);
@@ -94,9 +96,9 @@ void sui_add_completion(SuiSession *sui, const char *word);
 void sui_rm_completion(SuiSession *sui, const char *word);
 
 /* User */
-int sui_add_user(SuiSession *sui, const char *nick, UserType type);
-int sui_rm_user(SuiSession *sui, const char *nick);
-int sui_ren_user(SuiSession *sui, const char *old_nick, const char *new_nick, UserType type);
+SrnRet sui_add_user(SuiSession *sui, const char *nick, UserType type);
+SrnRet sui_rm_user(SuiSession *sui, const char *nick);
+SrnRet sui_ren_user(SuiSession *sui, const char *old_nick, const char *new_nick, UserType type);
 
 /* Misc */
 void sui_set_topic(SuiSession *sui, const char *topic);

@@ -33,6 +33,8 @@
 #include "srain_window.h"
 #include "srain_buffer.h"
 #include "srain_chat_buffer.h"
+#include "srain_channel_buffer.h"
+#include "srain_private_buffer.h"
 #include "theme.h"
 #include "snotify.h"
 
@@ -122,38 +124,66 @@ void sui_free_session(SuiSession *sui){
     g_free(sui);
 }
 
-int sui_start_session(SuiSession *sui, const char *name, const char *remark){
-    SuiSessionFlag flag;
+SrnRet sui_server_session(SuiSession *sui, const char *srv){
+    SrainServerBuffer *buffer;
 
     g_return_val_if_fail(sui, SRN_ERR);
-    g_return_val_if_fail(name, SRN_ERR);
-    g_return_val_if_fail(remark, SRN_ERR);
+    g_return_val_if_fail(srv, SRN_ERR);
 
-    flag = sui->flag;
-    if (flag & SUI_SESSION_SERVER) {
-        // type = CHAT_SERVER;
-    }
-    else if (flag & SUI_SESSION_CHANNEL) {
-        // type = CHAT_CHANNEL;
-    }
-    else if (flag & SUI_SESSION_DIALOG) {
-        // type = CHAT_PRIVATE;
-    } else {
-        ERR_FR("Chat type not found in SuiSessionFlag 0x%x", flag);
-        return SRN_ERR;
+    buffer = srain_server_buffer_new(sui, srv);
+    if (!buffer) {
+        return RET_ERR(_("Failed to create server buffer"));
     }
 
-    sui->buffer = srain_window_add_buffer(srain_win, sui, name, remark);
-
-    if (!sui->buffer){
-        return SRN_ERR;
-    }
-
+    sui->buffer = SRAIN_BUFFER(buffer);
+    srain_window_add_buffer(srain_win, sui->buffer);
     srain_buffer_show_topic(sui->buffer, sui->prefs->show_topic);
-    if (SRAIN_IS_CHAT_BUFFER(sui->buffer)){
-        srain_chat_buffer_show_user_list(SRAIN_CHAT_BUFFER(sui->buffer),
-                sui->prefs->show_user_list);
+
+    return SRN_OK;
+}
+
+SrnRet sui_channel_session(SuiSession *sui, SuiSession *sui_srv, const char *chan){
+    SrainChannelBuffer *buffer;
+
+    g_return_val_if_fail(sui, SRN_ERR);
+    g_return_val_if_fail(sui_srv, SRN_ERR);
+    g_return_val_if_fail(SRAIN_IS_SERVER_BUFFER(sui_srv->buffer), SRN_ERR);
+    g_return_val_if_fail(chan, SRN_ERR);
+
+    buffer = srain_channel_buffer_new(
+            sui, SRAIN_SERVER_BUFFER(sui_srv->buffer), chan);
+    if (!buffer) {
+        return RET_ERR(_("Failed to create channel buffer"));
     }
+
+    sui->buffer = SRAIN_BUFFER(buffer);
+    srain_window_add_buffer(srain_win, SRAIN_BUFFER(sui->buffer));
+    srain_buffer_show_topic(SRAIN_BUFFER(sui->buffer), sui->prefs->show_topic);
+    srain_chat_buffer_show_user_list(
+            SRAIN_CHAT_BUFFER(sui->buffer), sui->prefs->show_user_list);
+
+    return SRN_OK;
+}
+
+SrnRet sui_private_session(SuiSession *sui, SuiSession *sui_srv, const char *nick){
+    SrainPrivateBuffer *buffer;
+
+    g_return_val_if_fail(sui, SRN_ERR);
+    g_return_val_if_fail(sui_srv, SRN_ERR);
+    g_return_val_if_fail(SRAIN_IS_SERVER_BUFFER(sui_srv->buffer), SRN_ERR);
+    g_return_val_if_fail(nick, SRN_ERR);
+
+    buffer = srain_private_buffer_new(
+            sui, SRAIN_SERVER_BUFFER(sui_srv->buffer), nick);
+    if (!buffer) {
+        return RET_ERR(_("Failed to create private buffer"));
+    }
+
+    sui->buffer = SRAIN_BUFFER(buffer);
+    srain_window_add_buffer(srain_win, SRAIN_BUFFER(sui->buffer));
+    srain_buffer_show_topic(SRAIN_BUFFER(sui->buffer), sui->prefs->show_topic);
+    srain_chat_buffer_show_user_list(
+            SRAIN_CHAT_BUFFER(sui->buffer), sui->prefs->show_user_list);
 
     return SRN_OK;
 }
@@ -216,10 +246,10 @@ SuiMessage *sui_add_sys_msg(SuiSession *sui, const char *msg, SysMsgType type){
     SrainMsgList *list;
 
     g_return_val_if_fail(sui, NULL);
+    g_return_val_if_fail(SRAIN_IS_BUFFER(sui->buffer), NULL);
     g_return_val_if_fail(msg, NULL);
 
     buffer = sui->buffer;
-    g_return_val_if_fail(SRAIN_IS_BUFFER(buffer), NULL);
 
     list = srain_buffer_get_msg_list(buffer);
     smsg = (SuiMessage *)srain_sys_msg_new(msg, type);
@@ -238,13 +268,11 @@ SuiMessage *sui_add_sent_msg(SuiSession *sui, const char *msg){
     SrainMsgList *list;
     SuiMessage *smsg;
 
+    g_return_val_if_fail(sui, NULL);
+    g_return_val_if_fail(SRAIN_IS_BUFFER(sui->buffer), NULL);
     g_return_val_if_fail(msg, NULL);
 
-    g_return_val_if_fail(sui, NULL);
     buffer = sui->buffer;
-
-    g_return_val_if_fail(SRAIN_IS_BUFFER(buffer), NULL);
-
     list = srain_buffer_get_msg_list(buffer);
     smsg = (SuiMessage *)srain_send_msg_new(msg);
     sui_message_set_ctx(smsg, sui);
@@ -263,13 +291,12 @@ SuiMessage *sui_add_recv_msg(SuiSession *sui, const char *nick, const char *id,
     SuiMessage *smsg;
 
     g_return_val_if_fail(sui, NULL);
+    g_return_val_if_fail(SRAIN_IS_BUFFER(sui->buffer), NULL);
     g_return_val_if_fail(nick, NULL);
     g_return_val_if_fail(msg, NULL);
     if (!id) id = "";
 
     buffer = sui->buffer;
-    g_return_val_if_fail(SRAIN_IS_BUFFER(buffer), NULL);
-
     list = srain_buffer_get_msg_list(buffer);
     smsg = (SuiMessage *)srain_recv_msg_new(nick, id, msg);
     sui_message_set_ctx(smsg, sui);
@@ -285,104 +312,90 @@ SuiMessage *sui_add_recv_msg(SuiSession *sui, const char *nick, const char *id,
     return smsg;
 }
 
-int sui_add_user(SuiSession *sui, const char *nick, UserType type){
+SrnRet sui_add_user(SuiSession *sui, const char *nick, UserType type){
     SrnRet ret;
-    SrainBuffer *buffer;
+    SrainChatBuffer *buffer;
     SrainUserList *list;
     SrainEntryCompletion *comp;
 
-    g_return_val_if_fail(nick, SRN_ERR);
-
     g_return_val_if_fail(sui, SRN_ERR);
-    buffer = sui->buffer;
+    g_return_val_if_fail(nick, SRN_ERR);
+    g_return_val_if_fail(SRAIN_IS_CHAT_BUFFER(sui->buffer), SRN_ERR);
 
-    g_return_val_if_fail(SRAIN_IS_BUFFER(buffer), SRN_ERR);
-
-    return SRN_OK;
-    /*
-    list = srain_buffer_get_user_list(buffer);
+    buffer = SRAIN_CHAT_BUFFER(sui->buffer);
+    list = srain_chat_buffer_get_user_list(buffer);
 
     ret = srain_user_list_add(list, nick, type);
     if (RET_IS_OK(ret)){
-        comp = srain_buffer_get_entry_completion(buffer);
+        comp = srain_buffer_get_entry_completion(SRAIN_BUFFER(buffer));
         srain_entry_completion_add_keyword(comp, nick, KEYWORD_NORMAL);
     };
 
     return ret;
-    */
 }
 
-int sui_rm_user(SuiSession *sui, const char *nick){
+SrnRet sui_rm_user(SuiSession *sui, const char *nick){
     SrnRet ret;
-    SrainBuffer *buffer;
+    SrainChatBuffer *buffer;
     SrainUserList *list;
     SrainEntryCompletion *comp;
 
-    g_return_val_if_fail(nick, SRN_ERR);
-
     g_return_val_if_fail(sui, SRN_ERR);
-    buffer = sui->buffer;
+    g_return_val_if_fail(nick, SRN_ERR);
+    g_return_val_if_fail(SRAIN_IS_CHAT_BUFFER(sui->buffer), SRN_ERR);
 
-    g_return_val_if_fail(SRAIN_IS_BUFFER(buffer), SRN_ERR);
-
-    return SRN_OK;
-    /*
-    list = srain_buffer_get_user_list(buffer);
+    buffer = SRAIN_CHAT_BUFFER(sui->buffer);
+    list = srain_chat_buffer_get_user_list(buffer);
 
     ret = srain_user_list_rm(list, nick);
     if (RET_IS_OK(ret)){
-        comp = srain_buffer_get_entry_completion(buffer);
+        comp = srain_buffer_get_entry_completion(SRAIN_BUFFER(buffer));
         srain_entry_completion_rm_keyword(comp, nick);
     }
 
     return ret;
-    */
 }
 
-int sui_ren_user(SuiSession *sui, const char *old_nick, const char *new_nick,
+SrnRet sui_ren_user(SuiSession *sui, const char *old_nick, const char *new_nick,
         UserType type){
     SrnRet ret;
-    SrainBuffer *buffer;
+    SrainChatBuffer *buffer;
     SrainUserList *list;
     SrainEntryCompletion *comp;
 
+    g_return_val_if_fail(sui, SRN_ERR);
     g_return_val_if_fail(old_nick, SRN_ERR);
     g_return_val_if_fail(new_nick, SRN_ERR);
-
-    g_return_val_if_fail(sui, SRN_ERR);
-    buffer = sui->buffer;
-
-    g_return_val_if_fail(SRAIN_IS_BUFFER(buffer), SRN_ERR);
-
-    /* Your nick changed */
-    if (strcmp(old_nick, srain_buffer_get_nick(buffer)) == 0){
-        srain_buffer_set_nick(buffer, new_nick);
+    if (!SRAIN_IS_CHAT_BUFFER(sui->buffer)){
+        return SRN_ERR;
     }
 
-    return SRN_OK;
+    buffer = SRAIN_CHAT_BUFFER(sui->buffer);
+    list = srain_chat_buffer_get_user_list(buffer);
 
-    /*
-    list = srain_buffer_get_user_list(buffer);
+    /* Your nick changed */
+    if (strcmp(old_nick, srain_buffer_get_nick(SRAIN_BUFFER(buffer))) == 0){
+        srain_buffer_set_nick(SRAIN_BUFFER(buffer), new_nick);
+    }
 
     ret = srain_user_list_rename(list, old_nick, new_nick, type);
     if (RET_IS_OK(ret)){
-        comp = srain_buffer_get_entry_completion(buffer);
+        comp = srain_buffer_get_entry_completion(SRAIN_BUFFER(buffer));
         srain_entry_completion_add_keyword(comp, old_nick, KEYWORD_NORMAL);
         srain_entry_completion_rm_keyword(comp, new_nick);
     }
 
     return ret;
-    */
 }
 
 void sui_set_topic(SuiSession *sui, const char *topic){
     SrainBuffer *buffer;
 
     g_return_if_fail(sui);
+    g_return_if_fail(SRAIN_IS_BUFFER(sui->buffer));
     g_return_if_fail(topic);
-    buffer = sui->buffer;
 
-    g_return_if_fail(SRAIN_IS_BUFFER(buffer));
+    buffer = sui->buffer;
 
     srain_buffer_set_topic(buffer, topic);
 }
@@ -391,12 +404,12 @@ void sui_set_topic_setter(SuiSession *sui, const char *setter){
     SrainBuffer *buffer;
 
     g_return_if_fail(sui);
+    g_return_if_fail(SRAIN_IS_BUFFER(sui->buffer));
     g_return_if_fail(setter);
+
     buffer = sui->buffer;
 
-    g_return_if_fail(SRAIN_IS_BUFFER(buffer));
-
-    // srain_buffer_set_topic_setter(buffer, setter);
+    srain_buffer_set_topic_setter(buffer, setter);
 }
 
 void sui_message_set_ctx(SuiMessage *smsg, void *ctx){
@@ -415,11 +428,11 @@ void sui_message_append_message(SuiSession *sui, SuiMessage *smsg, const char *m
     SrainBuffer *buffer;
 
     g_return_if_fail(sui);
+    g_return_if_fail(SRAIN_IS_BUFFER(sui->buffer));
     g_return_if_fail(smsg);
     g_return_if_fail(msg);
 
     buffer = sui->buffer;
-    g_return_if_fail(SRAIN_IS_BUFFER(buffer));
 
     srain_msg_append_msg(smsg, msg);
 
@@ -516,11 +529,10 @@ void sui_add_completion(SuiSession *sui, const char *keyword){
     SrainEntryCompletion *comp;
 
     g_return_if_fail(sui);
+    g_return_if_fail(SRAIN_IS_BUFFER(sui->buffer));
     g_return_if_fail(keyword);
 
     buffer = sui->buffer;
-    g_return_if_fail(SRAIN_IS_BUFFER(buffer));
-
     comp = srain_buffer_get_entry_completion(buffer);
 
     srain_entry_completion_add_keyword(comp, keyword, KEYWORD_NORMAL);
@@ -531,11 +543,10 @@ void sui_rm_completion(SuiSession *sui, const char *keyword){
     SrainEntryCompletion *comp;
 
     g_return_if_fail(sui);
+    g_return_if_fail(SRAIN_IS_BUFFER(sui->buffer));
     g_return_if_fail(keyword);
 
     buffer = sui->buffer;
-    g_return_if_fail(SRAIN_IS_BUFFER(buffer));
-
     comp = srain_buffer_get_entry_completion(buffer);
 
     srain_entry_completion_rm_keyword(comp, keyword);
