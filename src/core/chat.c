@@ -38,14 +38,12 @@ static void add_message(Chat *chat, Message *msg);
 static bool whether_merge_last_message(Chat *chat, Message *msg);
 
 Chat *chat_new(Server *srv, const char *name){
-    bool ischan;
     SrnRet ret;
     Chat *chat;
     SuiSessionFlag flag;
 
     g_return_val_if_fail(name, NULL);
 
-    ischan = sirc_is_chan(name);
     chat = g_malloc0(sizeof(Chat));
 
     chat->joined = FALSE;
@@ -63,22 +61,22 @@ Chat *chat_new(Server *srv, const char *name){
         ERR_FR("Read sui prefs failed: %s", RET_MSG(ret));
     }
 
-    flag = ischan ? SUI_SESSION_CHANNEL : SUI_SESSION_DIALOG;
-    if (strcmp(META_SERVER, name) == 0){
-        flag = SUI_SESSION_SERVER;
-    }
-
+    flag = 0;
     chat->ui = sui_new_session(&ui_events, chat->ui_prefs, flag);
-
     if (!chat->ui){
         goto cleanup;
     }
-
     sui_set_ctx(chat->ui, chat);
-    sui_start_session(chat->ui, name, srv->prefs->name);
 
-    /* For a dialog, its user_list must have yourself and the dialogue target */
-    if (flag == SUI_SESSION_DIALOG){
+    if (strcmp(META_SERVER, name) == 0){
+        sui_server_session(chat->ui, srv->prefs->name);
+        // Server
+    } else if (sirc_is_chan(name)){
+        // Channel
+        sui_channel_session(chat->ui, srv->chat->ui, name);
+    } else {
+        // Private, its user_list must have yourself and the dialogue target
+        sui_private_session(chat->ui, srv->chat->ui, name);
         chat_add_user(chat, srv->user->nick, USER_CHIGUA);
         chat_add_user(chat, name, USER_CHIGUA);
     }
