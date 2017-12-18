@@ -84,6 +84,7 @@ const char* srain_buffer_get_remark(SrainBuffer *buffer);
 void srain_buffer_set_nick(SrainBuffer *buffer, const char *nick);
 const char* srain_buffer_get_nick(SrainBuffer *buffer);
 void srain_buffer_set_topic(SrainBuffer *buffer, const char *topic);
+void srain_buffer_set_topic_setter(SrainBuffer *buffer, const char *setter);
 
 GtkMenu* srain_buffer_get_menu(SrainBuffer *buffer);
 SrainMsgList* srain_buffer_get_msg_list(SrainBuffer *buffer);

@@ -84,7 +84,7 @@ SrainChannelBuffer* srain_channel_buffer_new(SuiSession *sui,
         SrainServerBuffer *srv, const char *chan){
     SrainChannelBuffer *self;
 
-    self = g_object_new(SRAIN_TYPE_CHAT_BUFFER,
+    self = g_object_new(SRAIN_TYPE_CHANNEL_BUFFER,
             "session", sui,
             "server", srv,
             "name",   chan,

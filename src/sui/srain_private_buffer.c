@@ -85,7 +85,7 @@ SrainPrivateBuffer* srain_private_buffer_new(SuiSession *sui,
         SrainServerBuffer *srv, const char *nick){
     SrainPrivateBuffer *self;
 
-    self = g_object_new(SRAIN_TYPE_CHAT_BUFFER,
+    self = g_object_new(SRAIN_TYPE_PRIVATE_BUFFER,
             "session", sui,
             "server", srv,
             "name",   nick,

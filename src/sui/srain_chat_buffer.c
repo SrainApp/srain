@@ -26,6 +26,7 @@
 
 #include <gtk/gtk.h>
 #include "srain_buffer.h"
+#include "srain_server_buffer.h"
 #include "srain_chat_buffer.h"
 
 #include "log.h"
@@ -37,9 +38,9 @@ static void user_list_menu_item_on_toggled(GtkWidget* widget, gpointer user_data
  *****************************************************************************/
 enum
 {
-  // 0 for PROP_NOME
-  PROP_SERVER = 1,
-  N_PROPERTIES
+    // 0 for PROP_NOME
+    PROP_SERVER = 1,
+    N_PROPERTIES
 };
 
 static GParamSpec *obj_properties[N_PROPERTIES] = { NULL, };
@@ -48,47 +49,47 @@ G_DEFINE_TYPE(SrainChatBuffer, srain_chat_buffer, SRAIN_TYPE_BUFFER);
 
 static void srain_chat_buffer_set_property(GObject *object, guint property_id,
         const GValue *value, GParamSpec *pspec){
-  SrainChatBuffer *self = SRAIN_CHAT_BUFFER(object);
+    SrainChatBuffer *self = SRAIN_CHAT_BUFFER(object);
 
-  switch (property_id){
-    case PROP_SERVER:
-      self->server_buffer = SRAIN_SERVER_BUFFER(g_value_get_pointer(value));
-      break;
-    default:
-      /* We don't have any other property... */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
-      break;
+    switch (property_id){
+        case PROP_SERVER:
+            self->server_buffer = SRAIN_SERVER_BUFFER(g_value_get_pointer(value));
+            break;
+        default:
+            /* We don't have any other property... */
+            G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+            break;
     }
 }
 
 static void srain_chat_buffer_get_property(GObject *object, guint property_id,
         GValue *value, GParamSpec *pspec){
-  SrainChatBuffer *self = SRAIN_CHAT_BUFFER(object);
+    SrainChatBuffer *self = SRAIN_CHAT_BUFFER(object);
 
-  switch (property_id){
-    case PROP_SERVER:
-      g_value_set_pointer(value,
-              srain_chat_buffer_get_server_buffer(self));
-      break;
-    default:
-      /* We don't have any other property... */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
-      break;
+    switch (property_id){
+        case PROP_SERVER:
+            g_value_set_pointer(value,
+                    srain_chat_buffer_get_server_buffer(self));
+            break;
+        default:
+            /* We don't have any other property... */
+            G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+            break;
     }
 }
 
-static GObject *srain_chat_buffer_constructor(GType type,
-        guint n_construct_properties, GObjectConstructParam *construct_params){
-    GObject *object;
-    SrainBuffer *buffer;
+static void srain_chat_buffer_constructed(GObject *object){
+    SrainServerBuffer *srv;
 
-    object = G_OBJECT_CLASS(srain_chat_buffer_parent_class)->
-        constructor(type, n_construct_properties, construct_params);
+    /* Overwrite parent properties */
+    g_object_get(object,
+            "server", &srv,
+            NULL);
+    g_object_set(object,
+            "remark", srain_buffer_get_remark(SRAIN_BUFFER(srv)),
+            NULL);
 
-    g_object_get(object, "server", &buffer, NULL);
-    g_object_set(object, "remark", srain_buffer_get_remark(buffer), NULL);
-
-    return object;
+    G_OBJECT_CLASS(srain_chat_buffer_parent_class)->constructed(object);
 }
 
 static void srain_chat_buffer_init(SrainChatBuffer *self){
@@ -123,7 +124,7 @@ static void srain_chat_buffer_class_init(SrainChatBufferClass *class){
     GObjectClass *object_class = G_OBJECT_CLASS(class);
 
     /* Overwrite callbacks */
-    object_class->constructor = srain_chat_buffer_constructor;
+    object_class->constructed = srain_chat_buffer_constructed;
     object_class->finalize = srain_chat_buffer_finalize;
     object_class->set_property = srain_chat_buffer_set_property;
     object_class->get_property = srain_chat_buffer_get_property;
@@ -133,7 +134,7 @@ static void srain_chat_buffer_class_init(SrainChatBufferClass *class){
         g_param_spec_pointer("server",
                 "Server",
                 "Server buffer of buffer",
-                G_PARAM_READWRITE);
+                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
     g_object_class_install_properties(object_class,
             N_PROPERTIES,

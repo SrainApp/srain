@@ -115,10 +115,6 @@ static void srain_buffer_init(SrainBuffer *self){
 
     gtk_widget_init_template(GTK_WIDGET(self));
 
-    gtk_widget_set_name(GTK_WIDGET(self), self->name);
-    gtk_label_set_text(self->name_label, self->name);
-    gtk_label_set_text(self->remark_label, self->remark);
-
     /* Init menus */
     builder = gtk_builder_new_from_resource("/org/gtk/srain/buffer_menu.glade");
     self->topic_menu_item =
@@ -172,21 +168,21 @@ static void srain_buffer_class_init(SrainBufferClass *class){
         g_param_spec_pointer("session",
                 "Session",
                 "Session of the buffer.",
-                G_PARAM_READWRITE);
+                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
     obj_properties[PROP_NAME] =
         g_param_spec_string("name",
                 "Name",
                 "Name of the buffer.",
                 NULL  /* default value */,
-                G_PARAM_READWRITE);
+                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
     obj_properties[PROP_REMARK] =
         g_param_spec_string("remark",
                 "Remark",
                 "Remark of the buffer.",
                 NULL  /* default value */,
-                G_PARAM_READWRITE);
+                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
     g_object_class_install_properties(object_class,
             N_PROPERTIES,
@@ -252,6 +248,8 @@ void srain_buffer_fcous_entry(SrainBuffer *buffer){
 void srain_buffer_set_name(SrainBuffer *buffer, const char *name){
     str_assign(&buffer->name, name);
     gtk_label_set_text(buffer->name_label, name);
+    gtk_widget_set_name(GTK_WIDGET(buffer), buffer->name);
+
 }
 
 const char* srain_buffer_get_name(SrainBuffer *buffer){
