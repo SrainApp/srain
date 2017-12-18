@@ -21,7 +21,7 @@
 
 #include <gtk/gtk.h>
 #include "srain_app.h"
-#include "srain_chat.h"
+#include "srain_buffer.h"
 #include "srain_connect_popover.h"
 #include "srain_join_popover.h"
 
@@ -35,13 +35,13 @@ typedef struct _SrainWindowClass SrainWindowClass;
 GType srain_window_get_type(void);
 SrainWindow *srain_window_new(SrainApp *app);
 
-SrainChat* srain_window_add_chat(SrainWindow *win, SuiSession *sui, const char *name, const char *remark, ChatType type);
-void srain_window_rm_chat(SrainWindow *win, SrainChat *chat);
-SrainChat *srain_window_get_cur_chat(SrainWindow *win);
-SrainChat *srain_window_get_chat(SrainWindow *win, const char *name, const char *remark);
-GList* srain_window_get_chats_by_remark(SrainWindow *win, const char *remark);
+SrainBuffer* srain_window_add_buffer(SrainWindow *win, SuiSession *sui, const char *name, const char *remark);
+void srain_window_rm_buffer(SrainWindow *win, SrainBuffer *buffer);
+SrainBuffer *srain_window_get_cur_buffer(SrainWindow *win);
+SrainBuffer *srain_window_get_buffer(SrainWindow *win, const char *name, const char *remark);
+GList* srain_window_get_buffers_by_remark(SrainWindow *win, const char *remark);
 void srain_window_spinner_toggle(SrainWindow *win, gboolean is_busy);
-void srain_window_stack_sidebar_update(SrainWindow *win, SrainChat *chat, const char *nick, const char *msg);
+void srain_window_stack_sidebar_update(SrainWindow *win, SrainBuffer *buffer, const char *nick, const char *msg);
 int srain_window_is_active(SrainWindow *win);
 void srain_window_tray_icon_stress(SrainWindow *win, int stress);
 SrainConnectPopover *srain_window_get_connect_popover(SrainWindow *win);

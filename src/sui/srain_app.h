@@ -20,7 +20,6 @@
 #define __SRAIN_APP_H
 
 #include <gtk/gtk.h>
-#include "srain_chat.h"
 
 #define SRAIN_TYPE_APP (srain_app_get_type())
 #define SRAIN_APP(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SRAIN_TYPE_APP, SrainApp))

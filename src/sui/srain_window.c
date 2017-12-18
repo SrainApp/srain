@@ -34,7 +34,7 @@
 #include "theme.h"
 #include "srain_app.h"
 #include "srain_window.h"
-#include "srain_chat.h"
+#include "srain_buffer.h"
 #include "srain_connect_popover.h"
 #include "srain_join_popover.h"
 #include "srain_stack_sidebar.h"
@@ -221,81 +221,81 @@ SrainWindow* srain_window_new(SrainApp *app){
     return g_object_new(SRAIN_TYPE_WINDOW, "application", app, NULL);
 }
 
-SrainChat* srain_window_add_chat(SrainWindow *win, SuiSession *sui,
-        const char *name, const char *remark, ChatType type){
-    SrainChat *chat;
+SrainBuffer* srain_window_add_buffer(SrainWindow *win, SuiSession *sui,
+        const char *name, const char *remark){
+    SrainBuffer *buffer;
 
-    if (srain_window_get_chat(win, name, remark)){
-        ERR_FR("SrainChat name: %s, remark: %s already exist",
+    if (srain_window_get_buffer(win, name, remark)){
+        ERR_FR("SrainBuffer name: %s, remark: %s already exist",
                 name, remark);
         return NULL;
     }
 
-    chat = srain_chat_new(sui, name, remark, type);
+    buffer = srain_buffer_new(sui, name, remark);
 
     GString *gstr = g_string_new("");
     g_string_printf(gstr, "%s %s", remark, name);
-    gtk_stack_add_named(win->stack, GTK_WIDGET(chat), gstr->str);
+    gtk_stack_add_named(win->stack, GTK_WIDGET(buffer), gstr->str);
     g_string_free(gstr, TRUE);
 
     theme_apply(GTK_WIDGET(win));
 
-    gtk_stack_set_visible_child(win->stack, GTK_WIDGET(chat));
-    return chat;
+    gtk_stack_set_visible_child(win->stack, GTK_WIDGET(buffer));
+    return buffer;
 }
 
-void srain_window_rm_chat(SrainWindow *win, SrainChat *chat){
-    srain_user_list_clear(srain_chat_get_user_list(chat));
-    gtk_container_remove(GTK_CONTAINER(win->stack), GTK_WIDGET(chat));
+void srain_window_rm_buffer(SrainWindow *win, SrainBuffer *buffer){
+    // srain_user_list_clear(srain_buffer_get_user_list(buffer));
+    gtk_container_remove(GTK_CONTAINER(win->stack), GTK_WIDGET(buffer));
 }
 
-SrainChat* srain_window_get_cur_chat(SrainWindow *win){
-    SrainChat *chat = NULL;
+SrainBuffer* srain_window_get_cur_buffer(SrainWindow *win){
+    SrainBuffer *buffer = NULL;
 
-    chat = SRAIN_CHAT(gtk_stack_get_visible_child(win->stack));
+    buffer = SRAIN_BUFFER(gtk_stack_get_visible_child(win->stack));
 
     // TODO:
-    //  if (chat == NULL) ERR_FR("no visible chat");
+    //  if (buffer == NULL) ERR_FR("no visible buffer");
 
-    return chat;
+    return buffer;
 }
 
-SrainChat* srain_window_get_chat(SrainWindow *win,
+SrainBuffer* srain_window_get_buffer(SrainWindow *win,
         const char *name, const char *remark){
-    SrainChat *chat = NULL;
+    SrainBuffer *buffer = NULL;
 
     GString *fullname = g_string_new("");
     g_string_printf(fullname, "%s %s", remark, name);
-    chat = SRAIN_CHAT(gtk_stack_get_child_by_name(win->stack, fullname->str));
+    buffer = SRAIN_BUFFER(gtk_stack_get_child_by_name(win->stack, fullname->str));
     g_string_free(fullname, TRUE);
 
-    return chat;
+    return buffer;
 }
 
 /**
- * @brief Find out all SrainChats with the server_name given as argument
+ * @brief Find out all SrainBuffers with the server_name given as argument
  *
  * @param win
  * @param server_name
  *
  * @return a GList, may be NULL, should be freed by caller
  */
-GList* srain_window_get_chats_by_remark(SrainWindow *win, const char *remark){
-    GList *all_chats;
-    GList *chats = NULL;
-    SrainChat *chat = NULL;
+GList* srain_window_get_buffers_by_remark(SrainWindow *win, const char *remark){
+    GList *all_buffers;
+    GList *buffers = NULL;
+    SrainBuffer *buffer = NULL;
 
-    all_chats = gtk_container_get_children(GTK_CONTAINER(win->stack));
-    while (all_chats){
-        chat = SRAIN_CHAT(all_chats->data);
+    all_buffers = gtk_container_get_children(GTK_CONTAINER(win->stack));
+    while (all_buffers){
+        buffer = SRAIN_BUFFER(all_buffers->data);
 
-        if (strcmp(remark, srain_chat_get_remark(chat)) == 0){
-            chats = g_list_append(chats, chat);
+        if (strcmp(remark, srain_buffer_get_remark(buffer)) == 0){
+            buffers = g_list_append(buffers, buffer);
         }
-        all_chats = g_list_next(all_chats);
+        all_buffers = g_list_next(all_buffers);
     }
 
-    return chats;
+    return buffers;
 }
 
 void srain_window_spinner_toggle(SrainWindow *win, gboolean is_busy){
@@ -304,12 +304,12 @@ void srain_window_spinner_toggle(SrainWindow *win, gboolean is_busy){
         : gtk_spinner_stop(win->spinner);
 }
 
-void srain_window_stack_sidebar_update(SrainWindow *win, SrainChat *chat,
+void srain_window_stack_sidebar_update(SrainWindow *win, SrainBuffer *buffer,
         const char *nick, const char *msg){
-    if (SRAIN_CHAT(gtk_stack_get_visible_child(win->stack)) != chat){
-        srain_stack_sidebar_update(win->sidebar, chat, nick, msg, 0);
+    if (SRAIN_BUFFER(gtk_stack_get_visible_child(win->stack)) != buffer){
+        srain_stack_sidebar_update(win->sidebar, buffer, nick, msg, 0);
     } else {
-        srain_stack_sidebar_update(win->sidebar, chat, nick, msg, 1);
+        srain_stack_sidebar_update(win->sidebar, buffer, nick, msg, 1);
     }
 }
 

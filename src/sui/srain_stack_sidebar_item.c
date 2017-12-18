@@ -70,7 +70,7 @@ static void srain_stack_sidebar_item_class_init(SrainStackSidebarItemClass *clas
 }
 
 SrainStackSidebarItem *srain_stack_sidebar_item_new(const char *server_name,
-        const char *chat_name, ChatType type){
+        const char *chat_name){
     SrainStackSidebarItem *item;
 
     g_return_val_if_fail(chat_name, NULL);
@@ -83,6 +83,7 @@ SrainStackSidebarItem *srain_stack_sidebar_item_new(const char *server_name,
     gtk_label_set_text(item->chat_label, chat_name);
     gtk_label_set_text(item->server_label, server_name);
 
+    /* FIXME
     switch (type){
         case CHAT_SERVER:
             gtk_image_set_from_icon_name(item->image, "srain-server", GTK_ICON_SIZE_BUTTON);
@@ -96,6 +97,7 @@ SrainStackSidebarItem *srain_stack_sidebar_item_new(const char *server_name,
         default:
             break;
     }
+    */
 
     return item;
 }

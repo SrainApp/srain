@@ -322,10 +322,10 @@ static void join_button_on_click(gpointer user_data){
     g_autofree char *_chan = NULL;
     SrnRet ret;
     SrainJoinPopover *popover;
-    SrainChat *chat;
+    SrainBuffer *buffer;
 
-    chat = srain_window_get_cur_chat(srain_win);
-    if (!SRAIN_IS_CHAT(chat)){
+    buffer = srain_window_get_cur_buffer(srain_win);
+    if (!SRAIN_IS_BUFFER(buffer)){
        sui_message_box(_("Error"),
                _("Please connect to server before joining any channel"));
        return;
@@ -363,7 +363,7 @@ static void join_button_on_click(gpointer user_data){
     g_variant_dict_insert(params, "channel", SUI_EVENT_PARAM_STRING, chan);
     g_variant_dict_insert(params, "password", SUI_EVENT_PARAM_STRING, passwd);
 
-    ret = sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_JOIN, params);
+    ret = sui_event_hdr(srain_buffer_get_session(buffer), SUI_EVENT_JOIN, params);
     g_variant_dict_unref(params);
 
     if (RET_IS_OK(ret)){
@@ -404,15 +404,15 @@ static void match_combo_box_on_changed(GtkComboBox *combobox,
 
 static void refresh_button_on_clicked(gpointer user_data){
     SrnRet ret;
-    SrainChat *chat;
+    SrainBuffer *buffer;
 
-    chat = srain_window_get_cur_chat(srain_win);
-    if (!SRAIN_IS_CHAT(chat)){
+    buffer = srain_window_get_cur_buffer(srain_win);
+    if (!SRAIN_IS_BUFFER(buffer)){
        sui_message_box(_("Error"), _("Please connect to server before searching any channel"));
        return;
     }
 
-    ret = sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_CHAN_LIST, NULL);
+    ret = sui_event_hdr(srain_buffer_get_session(buffer), SUI_EVENT_CHAN_LIST, NULL);
     if (!RET_IS_OK(ret)){
         sui_message_box(_("Error"), RET_MSG(ret));
     }
