@@ -34,6 +34,8 @@
 #include "nick_menu.h"
 #include "srain_window.h"
 #include "srain_buffer.h"
+#include "srain_chat_buffer.h"
+#include "srain_server_buffer.h"
 #include "srain_msg.h"
 
 #include "plugin.h"
@@ -137,9 +139,13 @@ static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_da
 
 static void msg_label_on_popup(GtkLabel *label, GtkMenu *menu,
         gpointer user_data){
+    int n;
+    GSList *lst;
     GtkMenuItem *copy_menu_item;
     GtkMenuItem *forward_menu_item;
+    GtkMenu *forward_submenu;
     SrainRecvMsg *smsg;
+    SrainBuffer *buffer;
 
     smsg = SRAIN_RECV_MSG(user_data);
 
@@ -156,33 +162,36 @@ static void msg_label_on_popup(GtkLabel *label, GtkMenu *menu,
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), GTK_WIDGET(forward_menu_item));
 
     /* Create submenu of forward_menu_item */
-    GList *buffers;
-    GtkMenuItem *item;
-    GtkMenu *forward_submenu = GTK_MENU(gtk_menu_new());
-    SrainBuffer *buffer;
-
     buffer = srain_window_get_cur_buffer(srain_win);
+    if (SRAIN_IS_CHAT_BUFFER(buffer)){
+        buffer = SRAIN_BUFFER(srain_chat_buffer_get_server_buffer(
+                    SRAIN_CHAT_BUFFER(buffer)));
+    }
+    g_return_if_fail(SRAIN_IS_SERVER_BUFFER(buffer));
 
-    buffers = srain_window_get_buffers_by_remark(srain_win,
-            srain_buffer_get_remark(buffer));
-    if (!buffers) return;
-    /* Skip META_SERVER */
-    buffers = g_list_next(buffers);
+    n = 0;
+    forward_submenu = GTK_MENU(gtk_menu_new());
+    lst = srain_server_buffer_get_buffer_list(SRAIN_SERVER_BUFFER(buffer));
+    while (lst){
+        GtkMenuItem *item;
 
-    gtk_menu_item_set_submenu(forward_menu_item, GTK_WIDGET(forward_submenu));
-
-    while (buffers){
         item = GTK_MENU_ITEM(gtk_menu_item_new_with_label(
-                    srain_buffer_get_name(buffers->data)));
+                    srain_buffer_get_name(SRAIN_BUFFER(lst->data))));
         gtk_widget_show(GTK_WIDGET(item));
         g_signal_connect(item, "activate",
                 G_CALLBACK(froward_submenu_item_on_activate), smsg);
         gtk_menu_shell_append(GTK_MENU_SHELL(forward_submenu), GTK_WIDGET(item));
 
-        buffers = g_list_next(buffers);
+        n++;
+        lst = g_slist_next(lst);
     }
 
-    g_list_free(buffers);
+    if (n > 0) {
+        gtk_menu_item_set_submenu(forward_menu_item, GTK_WIDGET(forward_submenu));
+    } else {
+        g_object_ref_sink(forward_submenu); // remove the floating reference
+        g_object_unref(forward_submenu);
+    }
 }
 
 static gboolean nick_button_on_popup(GtkWidget *widget,

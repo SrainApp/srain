@@ -264,32 +264,6 @@ SrainBuffer* srain_window_get_buffer(SrainWindow *win,
     return buffer;
 }
 
-/**
- * @brief Find out all SrainBuffers with the server_name given as argument
- *
- * @param win
- * @param server_name
- *
- * @return a GList, may be NULL, should be freed by caller
- */
-GList* srain_window_get_buffers_by_remark(SrainWindow *win, const char *remark){
-    GList *all_buffers;
-    GList *buffers = NULL;
-    SrainBuffer *buffer = NULL;
-
-    all_buffers = gtk_container_get_children(GTK_CONTAINER(win->stack));
-    while (all_buffers){
-        buffer = SRAIN_BUFFER(all_buffers->data);
-
-        if (strcmp(remark, srain_buffer_get_remark(buffer)) == 0){
-            buffers = g_list_append(buffers, buffer);
-        }
-        all_buffers = g_list_next(all_buffers);
-    }
-
-    return buffers;
-}
-
 void srain_window_spinner_toggle(SrainWindow *win, gboolean is_busy){
    is_busy
         ? gtk_spinner_start(win->spinner)

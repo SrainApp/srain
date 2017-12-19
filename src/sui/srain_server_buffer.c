@@ -117,7 +117,7 @@ void srain_server_buffer_add_buffer(SrainServerBuffer *self, SrainBuffer *buffer
 
     lst = self->buffer_list;
     while (lst){
-        g_return_if_fail(lst->data == buffer);
+        g_return_if_fail(lst->data != buffer);
         lst = g_slist_next(lst);
     }
 

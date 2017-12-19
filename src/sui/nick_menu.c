@@ -23,6 +23,9 @@
 #include "srain_app.h"
 #include "srain_window.h"
 #include "srain_buffer.h"
+#include "srain_server_buffer.h"
+#include "srain_chat_buffer.h"
+#include "srain_channel_buffer.h"
 
 #include "log.h"
 
@@ -60,15 +63,16 @@ static void nick_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
 }
 
 void nick_menu_popup(GdkEventButton *event, const char *nick){
-    GList *buffers;
+    int n;
+    GSList *lst;
     GtkBuilder *builder;
     GtkMenu *nick_menu;
-    GtkMenuItem *item;
     GtkMenuItem *whois_menu_item;
     GtkMenuItem *ignore_menu_item;
     GtkMenuItem *kick_menu_item;
     GtkMenuItem *buffer_menu_item;
     GtkMenuItem *invite_menu_item;
+    GtkMenu *invite_submenu;
     SrainBuffer *buffer;
 
     builder = gtk_builder_new_from_resource ("/org/gtk/srain/nick_menu.glade");
@@ -89,33 +93,46 @@ void nick_menu_popup(GdkEventButton *event, const char *nick){
     g_signal_connect(buffer_menu_item, "activate",
             G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
 
-    /******************************************/
-    buffer = srain_window_get_cur_buffer(srain_win);
-    buffers = srain_window_get_buffers_by_remark(srain_win,
-            srain_buffer_get_remark(buffer));
-
-    /* Skip META_SERVER */
-    buffers = g_list_next(buffers);
-
     /* Create subitem of invite_menu_item */
-    GtkMenu *invite_submenu = GTK_MENU(gtk_menu_new());
-    gtk_menu_item_set_submenu(invite_menu_item, GTK_WIDGET(invite_submenu));
+    buffer = srain_window_get_cur_buffer(srain_win);
+    if (SRAIN_IS_CHAT_BUFFER(buffer)){
+        buffer = SRAIN_BUFFER(srain_chat_buffer_get_server_buffer(
+                    SRAIN_CHAT_BUFFER(buffer)));
+    }
+    if (!SRAIN_IS_SERVER_BUFFER(buffer)){
+        goto FIN;
+    }
 
-    while (buffers){
-        item  = GTK_MENU_ITEM(gtk_menu_item_new_with_label(
-                    srain_buffer_get_name(buffers->data)));
+    n = 0;
+    invite_submenu = GTK_MENU(gtk_menu_new());
+    lst = srain_server_buffer_get_buffer_list(SRAIN_SERVER_BUFFER(buffer));
+    while (lst){
+        GtkMenuItem *item;
+
+        if (!SRAIN_IS_CHANNEL_BUFFER(lst->data)){
+            lst = g_slist_next(lst);
+            continue;
+        }
+        item = GTK_MENU_ITEM(gtk_menu_item_new_with_label(
+                    srain_buffer_get_name(lst->data)));
         gtk_widget_show(GTK_WIDGET(item));
         gtk_widget_set_name(GTK_WIDGET(item), "invite_submenu_item");
         g_signal_connect(item, "activate",
                 G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
         gtk_menu_shell_append(GTK_MENU_SHELL(invite_submenu), GTK_WIDGET(item));
 
-        buffers = g_list_next(buffers);
+        n++;
+        lst = g_slist_next(lst);
     }
-    g_list_free(buffers);
 
+    if (n > 0) {
+        gtk_menu_item_set_submenu(invite_menu_item, GTK_WIDGET(invite_submenu));
+    } else {
+        g_object_ref_sink(invite_submenu); // remove the floating reference
+        g_object_unref(invite_submenu);
+    }
+FIN:
     gtk_menu_popup(nick_menu, NULL, NULL, NULL, NULL,
             event->button, event->time);
-
     g_object_unref(builder);
 }

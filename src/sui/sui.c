@@ -32,6 +32,7 @@
 #include "srain_app.h"
 #include "srain_window.h"
 #include "srain_buffer.h"
+#include "srain_server_buffer.h"
 #include "srain_chat_buffer.h"
 #include "srain_channel_buffer.h"
 #include "srain_private_buffer.h"
@@ -119,7 +120,7 @@ void sui_free_session(SuiSession *sui){
     g_return_if_fail(sui);
 
     if (sui->buffer){
-        srain_window_rm_buffer(srain_win, sui->buffer);
+        sui_end_session(sui);
     }
     g_free(sui);
 }
@@ -142,22 +143,24 @@ SrnRet sui_server_session(SuiSession *sui, const char *srv){
     return SRN_OK;
 }
 
-SrnRet sui_channel_session(SuiSession *sui, SuiSession *sui_srv, const char *chan){
+SrnRet sui_channel_session(SuiSession *sui, SuiSession *srv_sui, const char *chan){
     SrainChannelBuffer *buffer;
 
     g_return_val_if_fail(sui, SRN_ERR);
-    g_return_val_if_fail(sui_srv, SRN_ERR);
-    g_return_val_if_fail(SRAIN_IS_SERVER_BUFFER(sui_srv->buffer), SRN_ERR);
+    g_return_val_if_fail(srv_sui, SRN_ERR);
+    g_return_val_if_fail(SRAIN_IS_SERVER_BUFFER(srv_sui->buffer), SRN_ERR);
     g_return_val_if_fail(chan, SRN_ERR);
 
     buffer = srain_channel_buffer_new(
-            sui, SRAIN_SERVER_BUFFER(sui_srv->buffer), chan);
+            sui, SRAIN_SERVER_BUFFER(srv_sui->buffer), chan);
     if (!buffer) {
         return RET_ERR(_("Failed to create channel buffer"));
     }
 
     sui->buffer = SRAIN_BUFFER(buffer);
     srain_window_add_buffer(srain_win, SRAIN_BUFFER(sui->buffer));
+    srain_server_buffer_add_buffer(
+            SRAIN_SERVER_BUFFER(srv_sui->buffer), SRAIN_BUFFER(buffer));
     srain_buffer_show_topic(SRAIN_BUFFER(sui->buffer), sui->prefs->show_topic);
     srain_chat_buffer_show_user_list(
             SRAIN_CHAT_BUFFER(sui->buffer), sui->prefs->show_user_list);
@@ -165,22 +168,24 @@ SrnRet sui_channel_session(SuiSession *sui, SuiSession *sui_srv, const char *cha
     return SRN_OK;
 }
 
-SrnRet sui_private_session(SuiSession *sui, SuiSession *sui_srv, const char *nick){
+SrnRet sui_private_session(SuiSession *sui, SuiSession *srv_sui, const char *nick){
     SrainPrivateBuffer *buffer;
 
     g_return_val_if_fail(sui, SRN_ERR);
-    g_return_val_if_fail(sui_srv, SRN_ERR);
-    g_return_val_if_fail(SRAIN_IS_SERVER_BUFFER(sui_srv->buffer), SRN_ERR);
+    g_return_val_if_fail(srv_sui, SRN_ERR);
+    g_return_val_if_fail(SRAIN_IS_SERVER_BUFFER(srv_sui->buffer), SRN_ERR);
     g_return_val_if_fail(nick, SRN_ERR);
 
     buffer = srain_private_buffer_new(
-            sui, SRAIN_SERVER_BUFFER(sui_srv->buffer), nick);
+            sui, SRAIN_SERVER_BUFFER(srv_sui->buffer), nick);
     if (!buffer) {
         return RET_ERR(_("Failed to create private buffer"));
     }
 
     sui->buffer = SRAIN_BUFFER(buffer);
     srain_window_add_buffer(srain_win, SRAIN_BUFFER(sui->buffer));
+    srain_server_buffer_add_buffer(
+            SRAIN_SERVER_BUFFER(srv_sui->buffer), SRAIN_BUFFER(buffer));
     srain_buffer_show_topic(SRAIN_BUFFER(sui->buffer), sui->prefs->show_topic);
     srain_chat_buffer_show_user_list(
             SRAIN_CHAT_BUFFER(sui->buffer), sui->prefs->show_user_list);
@@ -190,8 +195,19 @@ SrnRet sui_private_session(SuiSession *sui, SuiSession *sui_srv, const char *nic
 
 void sui_end_session(SuiSession *sui){
     g_return_if_fail(sui);
+    g_return_if_fail(SRAIN_IS_BUFFER(sui->buffer));
+
+    if (SRAIN_IS_CHAT_BUFFER(sui->buffer)) {
+        SrainChatBuffer *chat_buf;
+        SrainServerBuffer *srv_buf;
+
+        chat_buf = SRAIN_CHAT_BUFFER(sui->buffer);
+        srv_buf = SRAIN_SERVER_BUFFER(srain_chat_buffer_get_server_buffer(chat_buf));
+        srain_server_buffer_rm_buffer(srv_buf, SRAIN_BUFFER(chat_buf));
+    }
 
     srain_window_rm_buffer(srain_win, sui->buffer);
+    // FIXME: unref?
     sui->buffer = NULL;
 }
 
