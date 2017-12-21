@@ -12,12 +12,12 @@ fi
 sed -i "s/^PACKAGE_VERSION = ${OLDVER}/PACKAGE_VERSION = ${NEWVER}/" "Makefile.in"
 
 # Version in source code preface comment
-for c in $(find ./src -name '*.c'); do
-    sed -i "s/^ \* @version ${OLDVER}/ * @version ${NEWVER}/" ${c}
-done
-for css in $(find ./data/themes -name '*.css'); do
-    sed -i "s/^ \* @version ${OLDVER}/ * @version ${NEWVER}/" ${css}
-done
+# for c in $(find ./src -name '*.c'); do
+#     sed -i "s/^ \* @version ${OLDVER}/ * @version ${NEWVER}/" ${c}
+# done
+# for css in $(find ./data/themes -name '*.css'); do
+#     sed -i "s/^ \* @version ${OLDVER}/ * @version ${NEWVER}/" ${css}
+# done
 
 # Version in configuration file
 sed -i "s/version = \"${OLDVER}\"/version = \"${NEWVER}\"/" "data/builtin.cfg"
