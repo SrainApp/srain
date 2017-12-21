@@ -167,7 +167,7 @@ SrainServerBuffer* srain_server_buffer_new(SuiSession *sui, const char *server){
 
     self = g_object_new(SRAIN_TYPE_SERVER_BUFFER,
             "session", sui,
-            "name", _("Server"),
+            "name", META_SERVER,
             "remark", server,
             NULL);
 
