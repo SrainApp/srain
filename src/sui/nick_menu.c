@@ -49,7 +49,7 @@ static void nick_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
     else if (strcmp(gtk_widget_get_name(widget), "kick_menu_item") == 0){
         sui_event_hdr(srain_buffer_get_session(buffer), SUI_EVENT_KICK, params);
     }
-    else if (strcmp(gtk_widget_get_name(widget), "buffer_menu_item") == 0){
+    else if (strcmp(gtk_widget_get_name(widget), "chat_menu_item") == 0){
         sui_event_hdr(srain_buffer_get_session(buffer), SUI_EVENT_QUERY, params);
     }
     else if (strcmp(gtk_widget_get_name(widget), "invite_submenu_item") == 0){
@@ -70,10 +70,12 @@ void nick_menu_popup(GdkEventButton *event, const char *nick){
     GtkMenuItem *whois_menu_item;
     GtkMenuItem *ignore_menu_item;
     GtkMenuItem *kick_menu_item;
-    GtkMenuItem *buffer_menu_item;
+    GtkMenuItem *chat_menu_item;
     GtkMenuItem *invite_menu_item;
     GtkMenu *invite_submenu;
     SrainBuffer *buffer;
+
+    LOG_FR("%s", nick);
 
     builder = gtk_builder_new_from_resource ("/org/gtk/srain/nick_menu.glade");
 
@@ -81,7 +83,7 @@ void nick_menu_popup(GdkEventButton *event, const char *nick){
     whois_menu_item = (GtkMenuItem *)gtk_builder_get_object(builder, "whois_menu_item");
     ignore_menu_item = (GtkMenuItem *)gtk_builder_get_object(builder, "ignore_menu_item");
     kick_menu_item = (GtkMenuItem *)gtk_builder_get_object(builder, "kick_menu_item");
-    buffer_menu_item = (GtkMenuItem *)gtk_builder_get_object(builder, "buffer_menu_item");
+    chat_menu_item = (GtkMenuItem *)gtk_builder_get_object(builder, "chat_menu_item");
     invite_menu_item = (GtkMenuItem *)gtk_builder_get_object(builder, "invite_menu_item");
 
     g_signal_connect(whois_menu_item, "activate",
@@ -90,7 +92,7 @@ void nick_menu_popup(GdkEventButton *event, const char *nick){
             G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
     g_signal_connect(kick_menu_item, "activate",
             G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
-    g_signal_connect(buffer_menu_item, "activate",
+    g_signal_connect(chat_menu_item, "activate",
             G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
 
     /* Create subitem of invite_menu_item */
