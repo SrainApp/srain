@@ -32,11 +32,14 @@
 
 #include <gtk/gtk.h>
 
-#include "srain_stack_sidebar.h"
-#include "srain_stack_sidebar_item.h"
-#include "srain_chat.h"
 #include "sui_common.h"
 #include "sui_event_hdr.h"
+#include "srain_buffer.h"
+#include "srain_server_buffer.h"
+#include "srain_channel_buffer.h"
+#include "srain_private_buffer.h"
+#include "srain_stack_sidebar.h"
+#include "srain_stack_sidebar_item.h"
 
 #include "log.h"
 
@@ -69,14 +72,14 @@ listbox_on_row_selected(GtkListBox *box, GtkListBoxRow *row, gpointer user_data)
     gtk_stack_set_visible_child(sidebar->stack, child);
 
     srain_stack_sidebar_item_count_clear(item);
-    srain_chat_fcous_entry(SRAIN_CHAT(child));
+    srain_buffer_fcous_entry(SRAIN_BUFFER(child));
 }
 
 static gboolean
 list_box_on_popup(GtkWidget *widget, GdkEventButton *event, gpointer user_data){
     GtkListBox *list_box;
     GtkListBoxRow *row;
-    SrainChat *child;
+    SrainBuffer *child;
     SrainStackSidebarItem *item;
 
     list_box = GTK_LIST_BOX(widget);
@@ -88,7 +91,7 @@ list_box_on_popup(GtkWidget *widget, GdkEventButton *event, gpointer user_data){
         item = SRAIN_STACK_SIDEBAR_ITEM(gtk_bin_get_child(GTK_BIN(row)));
         child = g_object_get_data(G_OBJECT(item), "stack-child");
 
-        gtk_menu_popup(srain_chat_get_menu(child), NULL, NULL, NULL, NULL,
+        gtk_menu_popup(srain_buffer_get_menu(child), NULL, NULL, NULL, NULL,
                 event->button, event->time);
 
         return TRUE;
@@ -146,19 +149,30 @@ srain_stack_sidebar_init(SrainStackSidebar *self){
 
 static void
 add_child(GtkWidget *child, SrainStackSidebar *sidebar){
-    const char *chat_name;
-    const char *server_name;
-    ChatType type;
+    const char *icon;
     GtkListBoxRow *row;
+    SrainBuffer *buffer;
     SrainStackSidebarItem *item;
 
     if (g_hash_table_lookup(sidebar->rows, child))
         return;
 
-    chat_name = srain_chat_get_name(SRAIN_CHAT(child));
-    server_name = srain_chat_get_remark(SRAIN_CHAT(child));
-    type = srain_chat_get_chat_type(SRAIN_CHAT(child));
-    item = srain_stack_sidebar_item_new(server_name, chat_name, type);
+    buffer = SRAIN_BUFFER(child);
+    if SRAIN_IS_SERVER_BUFFER(buffer) {
+        icon = "srain-server";
+    } else if SRAIN_IS_CHANNEL_BUFFER(buffer) {
+        icon = "srain-chan";
+    } else if SRAIN_IS_PRIVATE_BUFFER(buffer) {
+        icon = "srain-person";
+    } else {
+        ERR_FR("Unknown type of SrainBuffer");
+        icon = "";
+    }
+
+    item = srain_stack_sidebar_item_new(
+            srain_buffer_get_name(buffer),
+            srain_buffer_get_remark(buffer),
+            icon);
 
     // gtk_widget_set_halign(item, GTK_ALIGN_START);
     // gtk_widget_set_valign(item, GTK_ALIGN_CENTER);
@@ -203,18 +217,18 @@ static void
 on_child_changed(GtkWidget *widget, GParamSpec *pspec, SrainStackSidebar *sidebar){
     GtkWidget *child;
     GtkWidget *row;
-    SrainChat *chat;
+    SrainBuffer *buffer;
 
     child = gtk_stack_get_visible_child(GTK_STACK(widget));
-    g_return_if_fail(SRAIN_IS_CHAT(child));
-    chat = SRAIN_CHAT(child);
+    g_return_if_fail(SRAIN_IS_BUFFER(child));
+    buffer = SRAIN_BUFFER(child);
 
     row = g_hash_table_lookup(sidebar->rows, child);
     if (row != NULL) {
         gtk_list_box_select_row(sidebar->list, GTK_LIST_BOX_ROW(row));
     }
 
-    sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_CUTOVER, NULL);
+    sui_event_hdr(srain_buffer_get_session(buffer), SUI_EVENT_CUTOVER, NULL);
 }
 
 static void
@@ -295,12 +309,12 @@ srain_stack_sidebar_get_stack(SrainStackSidebar *sidebar){
 }
 
 void
-srain_stack_sidebar_update(SrainStackSidebar *sidebar, SrainChat *chat,
+srain_stack_sidebar_update(SrainStackSidebar *sidebar, SrainBuffer *buffer,
         const char *nick, const char *msg, int is_visible){
     GtkListBoxRow *row;
     SrainStackSidebarItem *item;
 
-    row = g_hash_table_lookup(sidebar->rows, chat);
+    row = g_hash_table_lookup(sidebar->rows, buffer);
     if (!row) return;
 
     item = SRAIN_STACK_SIDEBAR_ITEM(gtk_bin_get_child(GTK_BIN(row)));

@@ -33,7 +33,9 @@
 #include "sui_event_hdr.h"
 #include "nick_menu.h"
 #include "srain_window.h"
-#include "srain_chat.h"
+#include "srain_buffer.h"
+#include "srain_chat_buffer.h"
+#include "srain_server_buffer.h"
 #include "srain_msg.h"
 
 #include "plugin.h"
@@ -102,14 +104,14 @@ static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_da
     char *sel_msg;
     char *line;
     const char *remark;
-    SrainChat *chat;
+    SrainBuffer *buffer;
     SrainRecvMsg *smsg;
 
     smsg = SRAIN_RECV_MSG(user_data);
     if ((sel_msg = label_get_selection(smsg->msg_label)) == NULL) return;
 
-    remark = srain_chat_get_remark(srain_window_get_cur_chat(srain_win));
-    chat = srain_window_get_chat(srain_win,
+    remark = srain_buffer_get_remark(srain_window_get_cur_buffer(srain_win));
+    buffer = srain_window_get_buffer(srain_win,
             gtk_menu_item_get_label(GTK_MENU_ITEM(widget)),
             remark);
 
@@ -120,13 +122,13 @@ static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_da
 
         fwd = g_strdup_printf(_("%s <fwd %s@%s>"), line,
                 gtk_label_get_text(smsg->nick_label),
-                srain_chat_get_name(srain_window_get_cur_chat(srain_win)));
+                srain_buffer_get_name(srain_window_get_cur_buffer(srain_win)));
         line = strtok(NULL, "\n");
 
         params = g_variant_dict_new(NULL);
         g_variant_dict_insert(params, "message", SUI_EVENT_PARAM_STRING, fwd);
 
-        sui_event_hdr(srain_chat_get_session(chat), SUI_EVENT_SEND, params);
+        sui_event_hdr(srain_buffer_get_session(buffer), SUI_EVENT_SEND, params);
 
         g_variant_dict_unref(params);
         g_free(fwd);
@@ -137,9 +139,13 @@ static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_da
 
 static void msg_label_on_popup(GtkLabel *label, GtkMenu *menu,
         gpointer user_data){
+    int n;
+    GSList *lst;
     GtkMenuItem *copy_menu_item;
     GtkMenuItem *forward_menu_item;
+    GtkMenu *forward_submenu;
     SrainRecvMsg *smsg;
+    SrainServerBuffer *buffer;
 
     smsg = SRAIN_RECV_MSG(user_data);
 
@@ -156,33 +162,32 @@ static void msg_label_on_popup(GtkLabel *label, GtkMenu *menu,
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), GTK_WIDGET(forward_menu_item));
 
     /* Create submenu of forward_menu_item */
-    GList *chats;
-    GtkMenuItem *item;
-    GtkMenu *forward_submenu = GTK_MENU(gtk_menu_new());
-    SrainChat *chat;
+    buffer = srain_window_get_cur_server_buffer(srain_win);
+    g_return_if_fail(SRAIN_IS_SERVER_BUFFER(buffer));
 
-    chat = srain_window_get_cur_chat(srain_win);
+    n = 0;
+    forward_submenu = GTK_MENU(gtk_menu_new());
+    lst = srain_server_buffer_get_buffer_list(buffer);
+    while (lst){
+        GtkMenuItem *item;
 
-    chats = srain_window_get_chats_by_remark(srain_win,
-            srain_chat_get_remark(chat));
-    if (!chats) return;
-    /* Skip META_SERVER */
-    chats = g_list_next(chats);
-
-    gtk_menu_item_set_submenu(forward_menu_item, GTK_WIDGET(forward_submenu));
-
-    while (chats){
         item = GTK_MENU_ITEM(gtk_menu_item_new_with_label(
-                    srain_chat_get_name(chats->data)));
+                    srain_buffer_get_name(SRAIN_BUFFER(lst->data))));
         gtk_widget_show(GTK_WIDGET(item));
         g_signal_connect(item, "activate",
                 G_CALLBACK(froward_submenu_item_on_activate), smsg);
         gtk_menu_shell_append(GTK_MENU_SHELL(forward_submenu), GTK_WIDGET(item));
 
-        chats = g_list_next(chats);
+        n++;
+        lst = g_slist_next(lst);
     }
 
-    g_list_free(chats);
+    if (n > 0) {
+        gtk_menu_item_set_submenu(forward_menu_item, GTK_WIDGET(forward_submenu));
+    } else {
+        g_object_ref_sink(forward_submenu); // remove the floating reference
+        g_object_unref(forward_submenu);
+    }
 }
 
 static gboolean nick_button_on_popup(GtkWidget *widget,
@@ -206,7 +211,7 @@ static void nick_button_on_click(GtkWidget *widget, gpointer *user_data){
     str = g_string_new(gtk_label_get_text(nick_label));
     str = g_string_append(str, ": ");
 
-    srain_chat_insert_text(srain_window_get_cur_chat(srain_win), str->str, 0);
+    srain_buffer_insert_text(srain_window_get_cur_buffer(srain_win), str->str, 0);
     g_string_free(str, TRUE);
 }
 

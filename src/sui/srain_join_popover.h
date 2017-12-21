@@ -20,6 +20,7 @@
 #define __SRAIN_JOIN_POPOVER_H
 
 #include <gtk/gtk.h>
+#include "srain_server_buffer.h"
 
 #define SRAIN_TYPE_JOIN_POPOVER (srain_join_popover_get_type())
 #define SRAIN_JOIN_POPOVER(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SRAIN_TYPE_JOIN_POPOVER, SrainJoinPopover))
@@ -33,6 +34,10 @@ typedef struct _SrainJoinPopoverClass SrainJoinPopoverClass;
 
 GType srain_join_popover_get_type(void);
 SrainJoinPopover* srain_join_popover_new(GtkWidget *relative);
+
+void srain_join_popover_prepare_model(SrainJoinPopover *popover, SrainServerBuffer *buf);
+void srain_join_popover_set_model(SrainJoinPopover *popover, SrainServerBuffer *buf);
+
 void srain_join_popover_start_chan(SrainJoinPopover *dialog);
 void srain_join_popover_add_chan(SrainJoinPopover *dialog, const char *chan,
         int users, const char *topic);

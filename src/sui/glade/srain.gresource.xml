@@ -2,7 +2,8 @@
 <gresources>
     <gresource prefix="/org/gtk/srain">
       <file preprocess="xml-stripblanks">window.glade</file>
-      <file preprocess="xml-stripblanks">chat.glade</file>
+      <file preprocess="xml-stripblanks">buffer.glade</file>
+      <file preprocess="xml-stripblanks">buffer_menu.glade</file>
       <file preprocess="xml-stripblanks">sys_msg.glade</file>
       <file preprocess="xml-stripblanks">send_msg.glade</file>
       <file preprocess="xml-stripblanks">recv_msg.glade</file>

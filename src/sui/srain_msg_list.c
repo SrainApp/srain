@@ -145,7 +145,7 @@ static gboolean scroll_to_bottom_idle(SrainMsgList *list){
  *
  * If force != 1,
  * and the top-level window is visible,
- * and `list` is belonged to the current SrainChat,
+ * and `list` is belonged to the current SrainBuffer,
  * and the value of scrolled window's adjustment (scrollbar):
  *      value + page size > max value (upper - page size),
  * scroll the list to the bottom.
@@ -157,7 +157,7 @@ static void smart_scroll(SrainMsgList *list, int force){
     double page_size;
     GtkAdjustment *adj;
     SrainWindow *win;
-    SrainChat *chat;
+    SrainBuffer *buffer;
 
     win = SRAIN_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(list)));
     if (!SRAIN_IS_WINDOW(win)){
@@ -165,9 +165,9 @@ static void smart_scroll(SrainMsgList *list, int force){
         return;
     }
 
-    chat = srain_window_get_cur_chat(win);
-    if (!SRAIN_IS_CHAT(chat)){
-        ERR_FR("Current chat is no a SrainChat");
+    buffer = srain_window_get_cur_buffer(win);
+    if (!SRAIN_IS_BUFFER(buffer)){
+        ERR_FR("Current buffer is no a SrainBuffer");
         return;
     }
 
@@ -177,7 +177,7 @@ static void smart_scroll(SrainMsgList *list, int force){
     }
 
     if (gtk_widget_get_visible(GTK_WIDGET(win))
-            && srain_chat_get_msg_list(chat) == list){
+            && srain_buffer_get_msg_list(buffer) == list){
 
         adj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(list));
         val = gtk_adjustment_get_value(adj);
