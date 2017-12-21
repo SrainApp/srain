@@ -31,7 +31,8 @@ Change Log
   - Fixed crashing while connecting from connect popover
   - Fixed use after free while removing user
   - Improved the performance and extensibility of user list
-  - Improved compatibility with older versions of GTK(< 3.22)
+  - Improved compatibility with older versions of GTK(> 3.16)
+  - Refactor the code of chat panel, helpful for the next development
 
 2017-09-12 Version 0.06.2
 =========================
