@@ -145,7 +145,7 @@ static void msg_label_on_popup(GtkLabel *label, GtkMenu *menu,
     GtkMenuItem *forward_menu_item;
     GtkMenu *forward_submenu;
     SrainRecvMsg *smsg;
-    SrainBuffer *buffer;
+    SrainServerBuffer *buffer;
 
     smsg = SRAIN_RECV_MSG(user_data);
 
@@ -162,16 +162,12 @@ static void msg_label_on_popup(GtkLabel *label, GtkMenu *menu,
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), GTK_WIDGET(forward_menu_item));
 
     /* Create submenu of forward_menu_item */
-    buffer = srain_window_get_cur_buffer(srain_win);
-    if (SRAIN_IS_CHAT_BUFFER(buffer)){
-        buffer = SRAIN_BUFFER(srain_chat_buffer_get_server_buffer(
-                    SRAIN_CHAT_BUFFER(buffer)));
-    }
+    buffer = srain_window_get_cur_server_buffer(srain_win);
     g_return_if_fail(SRAIN_IS_SERVER_BUFFER(buffer));
 
     n = 0;
     forward_submenu = GTK_MENU(gtk_menu_new());
-    lst = srain_server_buffer_get_buffer_list(SRAIN_SERVER_BUFFER(buffer));
+    lst = srain_server_buffer_get_buffer_list(buffer);
     while (lst){
         GtkMenuItem *item;
 

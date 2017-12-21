@@ -262,32 +262,23 @@ static void match_combo_box_set_model(SrainJoinPopover *popover){
 
 static void popover_on_visible(GObject *object, GParamSpec *pspec, gpointer data){
     SrainWindow *win;
-    SrainBuffer *buf;
+    SrainServerBuffer *buf;
     SrainJoinPopover *popover;
 
     win = srain_win;
     popover = SRAIN_JOIN_POPOVER(object);
-    buf = srain_window_get_cur_buffer(win);
+    buf = srain_window_get_cur_server_buffer(win);
 
     if (!gtk_widget_is_visible(GTK_WIDGET(popover))){
         return;
     }
-    if (!SRAIN_IS_BUFFER(buf)){
-        return;
+    if (SRAIN_IS_SERVER_BUFFER(buf)){
+        srain_join_popover_set_model(popover, buf);
+        update_status(popover, srain_server_buffer_is_adding_channel(buf));
+    } else {
+        gtk_tree_view_set_model(popover->chan_tree_view, NULL);
+        update_status(popover, FALSE);
     }
-    if (SRAIN_IS_CHAT_BUFFER(buf)){
-        buf = SRAIN_BUFFER(
-                srain_chat_buffer_get_server_buffer(
-                    SRAIN_CHAT_BUFFER(buf)));
-    }
-    if (!SRAIN_IS_SERVER_BUFFER(buf)){
-        return;
-    }
-
-    srain_join_popover_set_model(popover, SRAIN_SERVER_BUFFER(buf));
-    update_status(
-            popover,
-            srain_server_buffer_is_adding_channel(SRAIN_SERVER_BUFFER(buf)));
 }
 
 static void join_button_on_click(gpointer user_data){
@@ -525,17 +516,27 @@ static void update_status(SrainJoinPopover *popover, bool adding){
         gtk_spinner_start(popover->status_spinner);
         gtk_label_set_text(popover->status_label, _("Loading channels..."));
     } else {
+        int cur;
+        int max;
         char *status;
-        GtkTreeModel *model;
-        GtkTreeModelFilter *filter;
 
         gtk_spinner_stop(popover->status_spinner);
 
-        filter = GTK_TREE_MODEL_FILTER(gtk_tree_view_get_model(popover->chan_tree_view));
-        model = gtk_tree_model_filter_get_model(filter);
-        status  = g_strdup_printf(_("Showing %d of %d channnels"),
-                gtk_tree_model_iter_n_children(GTK_TREE_MODEL(filter), NULL),
-                gtk_tree_model_iter_n_children(model, NULL));
+        if (gtk_tree_view_get_model(popover->chan_tree_view)) {
+            GtkTreeModel *model;
+            GtkTreeModelFilter *filter;
+
+            filter = GTK_TREE_MODEL_FILTER(
+                    gtk_tree_view_get_model(popover->chan_tree_view));
+            model = gtk_tree_model_filter_get_model(filter);
+            cur = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(filter), NULL);
+            max = gtk_tree_model_iter_n_children(model, NULL);
+        } else {
+            cur = 0;
+            max = 0;
+        }
+
+        status  = g_strdup_printf(_("Showing %d of %d channnels"), cur, max);
         gtk_label_set_text(popover->status_label, status);
         g_free(status);
     }

@@ -36,6 +36,7 @@
 #include "srain_window.h"
 #include "srain_buffer.h"
 #include "srain_server_buffer.h"
+#include "srain_chat_buffer.h"
 #include "srain_connect_popover.h"
 #include "srain_join_popover.h"
 #include "srain_stack_sidebar.h"
@@ -242,14 +243,28 @@ void srain_window_rm_buffer(SrainWindow *win, SrainBuffer *buffer){
 }
 
 SrainBuffer* srain_window_get_cur_buffer(SrainWindow *win){
-    SrainBuffer *buffer = NULL;
+    SrainBuffer *buffer;
 
     buffer = SRAIN_BUFFER(gtk_stack_get_visible_child(win->stack));
 
-    // TODO:
-    //  if (buffer == NULL) ERR_FR("no visible buffer");
-
     return buffer;
+}
+
+SrainServerBuffer* srain_window_get_cur_server_buffer(SrainWindow *win){
+    SrainBuffer *buffer;
+
+    buffer = srain_window_get_cur_buffer(win);
+    if (!SRAIN_IS_BUFFER(buffer)){
+        return NULL;
+    }
+    if (SRAIN_IS_SERVER_BUFFER(buffer)){
+        return SRAIN_SERVER_BUFFER(buffer);
+    }
+    if (SRAIN_IS_CHAT_BUFFER(buffer)){
+        return srain_chat_buffer_get_server_buffer(SRAIN_CHAT_BUFFER(buffer));
+    }
+
+    return NULL;
 }
 
 SrainBuffer* srain_window_get_buffer(SrainWindow *win,

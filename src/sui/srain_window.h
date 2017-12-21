@@ -22,6 +22,7 @@
 #include <gtk/gtk.h>
 #include "srain_app.h"
 #include "srain_buffer.h"
+#include "srain_server_buffer.h"
 #include "srain_connect_popover.h"
 #include "srain_join_popover.h"
 
@@ -37,8 +38,9 @@ SrainWindow *srain_window_new(SrainApp *app);
 
 void srain_window_add_buffer(SrainWindow *win, SrainBuffer *buffer);
 void srain_window_rm_buffer(SrainWindow *win, SrainBuffer *buffer);
-SrainBuffer *srain_window_get_cur_buffer(SrainWindow *win);
 SrainBuffer *srain_window_get_buffer(SrainWindow *win, const char *name, const char *remark);
+SrainBuffer *srain_window_get_cur_buffer(SrainWindow *win);
+SrainServerBuffer* srain_window_get_cur_server_buffer(SrainWindow *win);
 
 void srain_window_spinner_toggle(SrainWindow *win, gboolean is_busy);
 void srain_window_stack_sidebar_update(SrainWindow *win, SrainBuffer *buffer, const char *nick, const char *msg);
