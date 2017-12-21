@@ -35,11 +35,14 @@
 struct _SrainServerBuffer {
     SrainBuffer parent;
 
+    bool adding_chan;
+
     GtkMenuItem *disconn_menu_item;
     GtkMenuItem *quit_menu_item;
 
     GSList *buffer_list;
     GtkListStore *chan_list_store;
+    GtkTreeModelFilter *chan_tree_model_filter; // FilterTreeModel of chan_list_store
 };
 
 struct _SrainServerBufferClass {
@@ -48,17 +51,67 @@ struct _SrainServerBufferClass {
 
 static void disconn_menu_item_on_activate(GtkWidget* widget, gpointer user_data);
 static void quit_menu_item_on_activate(GtkWidget* widget, gpointer user_data);
+static void srain_server_buffer_set_adding_channel(SrainServerBuffer *self, bool adding_chan);
+static bool srain_server_buffer_get_adding_channel(SrainServerBuffer *self);
 
 /*****************************************************************************
  * GObject functions
  *****************************************************************************/
 
+enum
+{
+  // 0 for PROP_NOME
+  PROP_ADDING_CHANNEL = 1,
+  N_PROPERTIES
+};
+
+static GParamSpec *obj_properties[N_PROPERTIES] = { NULL, };
+
 G_DEFINE_TYPE(SrainServerBuffer, srain_server_buffer, SRAIN_TYPE_BUFFER);
+
+static void srain_server_buffer_set_property(GObject *object, guint property_id,
+        const GValue *value, GParamSpec *pspec){
+  SrainServerBuffer *self = SRAIN_SERVER_BUFFER(object);
+
+  switch (property_id){
+    case PROP_ADDING_CHANNEL:
+      srain_server_buffer_set_adding_channel(self, g_value_get_boolean(value));
+      break;
+    default:
+      /* We don't have any other property... */
+      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      break;
+    }
+}
+
+static void srain_server_buffer_get_property(GObject *object, guint property_id,
+        GValue *value, GParamSpec *pspec){
+  SrainServerBuffer *self = SRAIN_SERVER_BUFFER(object);
+
+  switch (property_id){
+    case PROP_ADDING_CHANNEL:
+      g_value_set_boolean(value, srain_server_buffer_get_adding_channel(self));
+      break;
+    default:
+      /* We don't have any other property... */
+      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      break;
+    }
+}
 
 static void srain_server_buffer_init(SrainServerBuffer *self){
     GtkBuilder *builder;
 
+    self->adding_chan = FALSE;
     self->buffer_list = NULL;
+
+    /* Init data model */
+    self->chan_list_store = gtk_list_store_new(3,
+            G_TYPE_STRING,
+            G_TYPE_INT,
+            G_TYPE_STRING);
+    self->chan_tree_model_filter = GTK_TREE_MODEL_FILTER(
+            gtk_tree_model_filter_new(GTK_TREE_MODEL(self->chan_list_store), NULL));
 
     /* Init menus */
     builder = gtk_builder_new_from_resource("/org/gtk/srain/buffer_menu.glade");
@@ -84,6 +137,8 @@ static void srain_server_buffer_finalize(GObject *object){
     SrainServerBuffer *self = SRAIN_SERVER_BUFFER(object);
 
     g_slist_free(self->buffer_list);
+    g_object_unref(self->chan_list_store);
+    // FIXME
 
     G_OBJECT_CLASS(srain_server_buffer_parent_class)->finalize(object);
 }
@@ -92,6 +147,15 @@ static void srain_server_buffer_class_init(SrainServerBufferClass *class){
     GObjectClass *object_class = G_OBJECT_CLASS(class);
 
     object_class->finalize = srain_server_buffer_finalize;
+    object_class->set_property = srain_server_buffer_set_property;
+    object_class->get_property = srain_server_buffer_get_property;
+
+    obj_properties[PROP_ADDING_CHANNEL] =
+        g_param_spec_boolean("adding-channel",
+                "Adding channel",
+                "A flag represents that whether this buffer is adding channel.",
+                FALSE,
+                G_PARAM_READWRITE);
 }
 
 /*****************************************************************************
@@ -145,6 +209,40 @@ GSList* srain_server_buffer_get_buffer_list(SrainServerBuffer *self){
     return self->buffer_list;
 }
 
+GtkTreeModelFilter* srain_server_buffer_get_channel_model(
+        SrainServerBuffer *self){
+    return self->chan_tree_model_filter;
+}
+
+void srain_server_buffer_start_add_channel(SrainServerBuffer *self){
+    gtk_list_store_clear(self->chan_list_store);
+    srain_server_buffer_set_adding_channel(self, TRUE);
+}
+
+void srain_server_buffer_add_channel(SrainServerBuffer *self,
+        const char *chan, int users, const char *topic){
+    GtkTreeIter iter;
+    GtkListStore *store;
+
+    g_return_if_fail(self->adding_chan);
+
+    store = self->chan_list_store;
+    gtk_list_store_append(store, &iter);
+    gtk_list_store_set(store, &iter,
+            CHANNEL_LIST_STORE_COL_CHANNEL, chan,
+            CHANNEL_LIST_STORE_COL_USERS, users,
+            CHANNEL_LIST_STORE_COL_TOPIC, topic,
+            -1);
+}
+
+void srain_server_buffer_end_add_channel(SrainServerBuffer *self){
+    srain_server_buffer_set_adding_channel(self, FALSE);
+}
+
+bool srain_server_buffer_is_adding_channel(SrainServerBuffer *self){
+    return srain_server_buffer_get_adding_channel(self);
+}
+
 /*****************************************************************************
  * Static functions
  *****************************************************************************/
@@ -166,4 +264,20 @@ static void quit_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
     // TODO: QUIT event
     sui_event_hdr(srain_buffer_get_session(SRAIN_BUFFER(self)),
                 SUI_EVENT_DISCONNECT, NULL);
+}
+
+static void srain_server_buffer_set_adding_channel(SrainServerBuffer *self,
+        bool adding_chan){
+    g_object_freeze_notify(G_OBJECT(self));
+
+    self->adding_chan = adding_chan;
+
+    g_object_notify_by_pspec(G_OBJECT(self),
+            obj_properties[PROP_ADDING_CHANNEL]);
+
+    g_object_thaw_notify(G_OBJECT(self));
+}
+
+static bool srain_server_buffer_get_adding_channel(SrainServerBuffer *self){
+    return self->adding_chan;
 }

@@ -127,6 +127,7 @@ void sui_free_session(SuiSession *sui){
 
 SrnRet sui_server_session(SuiSession *sui, const char *srv){
     SrainServerBuffer *buffer;
+    SrainJoinPopover *popover;
 
     g_return_val_if_fail(sui, SRN_ERR);
     g_return_val_if_fail(srv, SRN_ERR);
@@ -135,10 +136,13 @@ SrnRet sui_server_session(SuiSession *sui, const char *srv){
     if (!buffer) {
         return RET_ERR(_("Failed to create server buffer"));
     }
-
     sui->buffer = SRAIN_BUFFER(buffer);
+
     srain_window_add_buffer(srain_win, sui->buffer);
     srain_buffer_show_topic(sui->buffer, sui->prefs->show_topic);
+
+    popover = srain_window_get_join_popover(srain_win);
+    srain_join_popover_prepare_model(popover, buffer);
 
     return SRN_OK;
 }
@@ -599,34 +603,29 @@ void sui_message_box(const char *title, const char *msg){
 }
 
 void sui_chan_list_start(SuiSession *sui){
-    SrainJoinPopover *popover;
-
     g_return_if_fail(sui);
+    g_return_if_fail(SRAIN_IS_SERVER_BUFFER(sui->buffer));
 
-    popover = srain_window_get_join_popover(srain_win);
-    srain_join_popover_start_chan(popover);
+    srain_server_buffer_start_add_channel(SRAIN_SERVER_BUFFER(sui->buffer));
 }
 
 void sui_chan_list_add(SuiSession *sui, const char *chan, int users,
         const char *topic){
-    SrainJoinPopover *popover;
-
     g_return_if_fail(sui);
+    g_return_if_fail(SRAIN_IS_SERVER_BUFFER(sui->buffer));
     g_return_if_fail(chan);
     g_return_if_fail(topic);
 
-    popover = srain_window_get_join_popover(srain_win);
-    srain_join_popover_add_chan(popover, chan, users, topic);
+    srain_server_buffer_add_channel(SRAIN_SERVER_BUFFER(sui->buffer),
+            chan, users, topic);
     sui_proc_pending_event();
 }
 
 void sui_chan_list_end(SuiSession *sui){
-    SrainJoinPopover *popover;
-
     g_return_if_fail(sui);
+    g_return_if_fail(SRAIN_IS_SERVER_BUFFER(sui->buffer));
 
-    popover = srain_window_get_join_popover(srain_win);
-    srain_join_popover_end_chan(popover);
+    srain_server_buffer_end_add_channel(SRAIN_SERVER_BUFFER(sui->buffer));
 }
 
 void sui_server_list_add(const char *server){

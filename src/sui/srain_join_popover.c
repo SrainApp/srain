@@ -30,6 +30,9 @@
 #include "sui_event_hdr.h"
 #include "srain_window.h"
 #include "srain_join_popover.h"
+#include "srain_buffer.h"
+#include "srain_server_buffer.h"
+#include "srain_chat_buffer.h"
 
 #include "srain.h"
 #include "i18n.h"
@@ -46,15 +49,10 @@
 #define MATCH_LIST_STORE_COL_INDEX      0
 #define MATCH_LIST_STORE_COL_COMMENT    1
 
-#define CHAN_LIST_STORE_COL_CHANNEL     0
-#define CHAN_LIST_STORE_COL_USERS       1
-#define CHAN_LIST_STORE_COL_TOPIC       2
-
 struct _SrainJoinPopover {
     GtkPopover parent;
 
     int match;
-    bool adding;
 
     GtkStack *stack;
 
@@ -84,8 +82,6 @@ struct _SrainJoinPopover {
 
     /* Data model */
     GtkListStore *match_list_store;
-    GtkListStore *chan_list_store;
-    GtkTreeModel *chan_tree_model_filter; // FilterTreeModel of chan_list_store
 };
 
 struct _SrainJoinPopoverClass {
@@ -94,10 +90,7 @@ struct _SrainJoinPopoverClass {
 
 G_DEFINE_TYPE(SrainJoinPopover, srain_join_popover, GTK_TYPE_POPOVER);
 
-static void srain_join_popover_init(SrainJoinPopover *self);
-static void srain_join_popover_class_init(SrainJoinPopoverClass *class);
 static void match_combo_box_set_model(SrainJoinPopover *popover);
-static void chan_tree_view_set_model(SrainJoinPopover *popover);
 
 static void popover_on_visible(GObject *object, GParamSpec *pspec, gpointer data);
 static void cancel_button_on_click(gpointer user_data);
@@ -111,63 +104,116 @@ gboolean chan_tree_visible_func(GtkTreeModel *model, GtkTreeIter *iter,
         gpointer user_data);
 static void chan_tree_model_filter_refilter(gpointer user_data);
 
+static void on_adding_channel (GtkWidget *widget, GParamSpec *pspec, gpointer user_data);
+static void update_status(SrainJoinPopover *popover, bool adding);
+
+/*****************************************************************************
+ * GLib functions
+ *****************************************************************************/
+
+static void srain_join_popover_init(SrainJoinPopover *popover){
+    gtk_widget_init_template(GTK_WIDGET(popover));
+
+#if GTK_CHECK_VERSION(3, 18, 0)
+    gtk_stack_set_interpolate_size(popover->stack, TRUE);
+#endif
+
+    popover->match = MATCH_CHANNEL;
+    match_combo_box_set_model(popover);
+
+    g_signal_connect(popover, "notify::visible",
+            G_CALLBACK(popover_on_visible), NULL);
+
+    g_signal_connect_swapped(popover->chan_entry, "activate",
+            G_CALLBACK(join_button_on_click), popover);
+    g_signal_connect_swapped(popover->passwd_entry, "activate",
+            G_CALLBACK(join_button_on_click), popover);
+
+    g_signal_connect_swapped(popover->search_entry, "activate",
+            G_CALLBACK(join_button_on_click), popover);
+    g_signal_connect_swapped(popover->refresh_button, "clicked",
+            G_CALLBACK(refresh_button_on_clicked), popover);
+    g_signal_connect(popover->match_combo_box, "changed",
+            G_CALLBACK(match_combo_box_on_changed), popover);
+    g_signal_connect(popover->chan_tree_view, "row-activated",
+            G_CALLBACK(chan_tree_view_on_row_activate), popover);
+
+    /* Filter condition changed */
+    g_signal_connect_swapped(popover->search_entry, "changed",
+            G_CALLBACK(chan_tree_model_filter_refilter), popover);
+    g_signal_connect_swapped(popover->match_combo_box, "changed",
+            G_CALLBACK(chan_tree_model_filter_refilter), popover);
+    g_signal_connect_swapped(popover->min_users_spin_button, "changed",
+            G_CALLBACK(chan_tree_model_filter_refilter), popover);
+    g_signal_connect_swapped(popover->max_users_spin_button, "changed",
+            G_CALLBACK(chan_tree_model_filter_refilter), popover);
+    g_signal_connect_swapped(popover->max_users_spin_button, "changed",
+            G_CALLBACK(chan_tree_model_filter_refilter), popover);
+
+    g_signal_connect_swapped(popover->cancel_button, "clicked",
+            G_CALLBACK(cancel_button_on_click), popover);
+    g_signal_connect_swapped(popover->join_button, "clicked",
+            G_CALLBACK(join_button_on_click), popover);
+}
+
+static void srain_join_popover_class_init(SrainJoinPopoverClass *class){
+    GtkWidgetClass *widget_class;
+
+    widget_class = GTK_WIDGET_CLASS(class);
+    gtk_widget_class_set_template_from_resource(widget_class,
+            "/org/gtk/srain/join_popover.glade");
+
+    gtk_widget_class_bind_template_child(widget_class, SrainJoinPopover, stack);
+
+    gtk_widget_class_bind_template_child(widget_class, SrainJoinPopover, chan_entry);
+    gtk_widget_class_bind_template_child(widget_class, SrainJoinPopover, passwd_entry );
+
+    gtk_widget_class_bind_template_child(widget_class, SrainJoinPopover, search_entry);
+    gtk_widget_class_bind_template_child(widget_class, SrainJoinPopover, refresh_button);
+    gtk_widget_class_bind_template_child(widget_class, SrainJoinPopover, match_combo_box);
+    gtk_widget_class_bind_template_child(widget_class, SrainJoinPopover, min_users_spin_button);
+    gtk_widget_class_bind_template_child(widget_class, SrainJoinPopover, max_users_spin_button);
+
+    gtk_widget_class_bind_template_child(widget_class, SrainJoinPopover, chan_tree_view);
+    gtk_widget_class_bind_template_child(widget_class, SrainJoinPopover, chan_tree_view_column);
+    gtk_widget_class_bind_template_child(widget_class, SrainJoinPopover, users_tree_view_column);
+    gtk_widget_class_bind_template_child(widget_class, SrainJoinPopover, topic_tree_view_column);
+
+    gtk_widget_class_bind_template_child(widget_class, SrainJoinPopover, status_label);
+    gtk_widget_class_bind_template_child(widget_class, SrainJoinPopover, status_spinner);
+
+    gtk_widget_class_bind_template_child(widget_class, SrainJoinPopover, cancel_button);
+    gtk_widget_class_bind_template_child(widget_class, SrainJoinPopover, join_button);
+}
+
 SrainJoinPopover* srain_join_popover_new(GtkWidget *relative){
     SrainJoinPopover *popover;
 
     popover = g_object_new(SRAIN_TYPE_JOIN_POPOVER, NULL);
-
     gtk_popover_set_relative_to(GTK_POPOVER(popover), relative);
 
     return popover;
 }
 
-void srain_join_popover_start_chan(SrainJoinPopover *popover){
-    popover->adding = TRUE;
-    gtk_list_store_clear(popover->chan_list_store);
-    gtk_spinner_start(popover->status_spinner);
+/*****************************************************************************
+ * Exported functions
+ *****************************************************************************/
+
+void srain_join_popover_prepare_model(SrainJoinPopover *popover,
+        SrainServerBuffer *buf){
+    g_signal_connect(buf, "notify::adding-channel",
+            G_CALLBACK(on_adding_channel), popover);
+
+    // Can only be called once for a given filter model
+    gtk_tree_model_filter_set_visible_func(
+            srain_server_buffer_get_channel_model(buf),
+            chan_tree_visible_func, popover, NULL);
 }
 
-void srain_join_popover_add_chan(SrainJoinPopover *popover,
-        const char *chan, int users, const char *topic){
-    char *status;
-    GtkTreeIter iter;
-    GtkListStore *store;
-
-    store = popover->chan_list_store;
-
-    /* Adding new channel is not allowed while adding = FALSE */
-    if (!popover->adding) {
-        return;
-    }
-
-    gtk_list_store_append(store, &iter);
-    gtk_list_store_set(store, &iter,
-            CHAN_LIST_STORE_COL_CHANNEL, chan,
-            CHAN_LIST_STORE_COL_USERS, users,
-            CHAN_LIST_STORE_COL_TOPIC, topic,
-            -1);
-
-    /* Update status */
-    status = g_strdup_printf(_("Loading %d channnels..."),
-             gtk_tree_model_iter_n_children(
-                 GTK_TREE_MODEL(store), NULL));
-    gtk_label_set_text(popover->status_label, status);
-    g_free(status);
-}
-
-void srain_join_popover_end_chan(SrainJoinPopover *popover){
-    char *status;
-
-    popover->adding = FALSE;
-    gtk_spinner_stop(popover->status_spinner);
-
-    status  = g_strdup_printf(_("Showing %d of %d channnels"),
-            gtk_tree_model_iter_n_children(
-                GTK_TREE_MODEL(popover->chan_tree_model_filter), NULL),
-            gtk_tree_model_iter_n_children(
-                GTK_TREE_MODEL(popover->chan_list_store), NULL));
-    gtk_label_set_text(popover->status_label, status);
-    g_free(status);
+void srain_join_popover_set_model(SrainJoinPopover *popover,
+        SrainServerBuffer *buf){
+    gtk_tree_view_set_model(popover->chan_tree_view,
+            GTK_TREE_MODEL(srain_server_buffer_get_channel_model(buf)));
 }
 
 void srain_join_popover_clear(SrainJoinPopover *popover){
@@ -180,83 +226,10 @@ void srain_join_popover_clear(SrainJoinPopover *popover){
     gtk_spin_button_set_value(popover->min_users_spin_button, -1);
     gtk_spin_button_set_value(popover->max_users_spin_button, -1);
 }
+
 /*****************************************************************************
  * Static functions
  *****************************************************************************/
-
-static void srain_join_popover_init(SrainJoinPopover *self){
-    gtk_widget_init_template(GTK_WIDGET(self));
-
-#if GTK_CHECK_VERSION(3, 18, 0)
-    gtk_stack_set_interpolate_size(self->stack, TRUE);
-#endif
-
-    self->adding = FALSE;
-    self->match = MATCH_CHANNEL;
-    match_combo_box_set_model(self);
-    chan_tree_view_set_model(self);
-
-    g_signal_connect(self, "notify::visible",
-            G_CALLBACK(popover_on_visible), NULL);
-
-    g_signal_connect_swapped(self->chan_entry, "activate",
-            G_CALLBACK(join_button_on_click), self);
-    g_signal_connect_swapped(self->passwd_entry, "activate",
-            G_CALLBACK(join_button_on_click), self);
-
-    g_signal_connect_swapped(self->search_entry, "activate",
-            G_CALLBACK(join_button_on_click), self);
-    g_signal_connect_swapped(self->refresh_button, "clicked",
-            G_CALLBACK(refresh_button_on_clicked), self);
-    g_signal_connect(self->match_combo_box, "changed",
-            G_CALLBACK(match_combo_box_on_changed), self);
-    g_signal_connect(self->chan_tree_view, "row-activated",
-            G_CALLBACK(chan_tree_view_on_row_activate), self);
-
-    /* Filter condition changed */
-    g_signal_connect_swapped(self->search_entry, "changed",
-            G_CALLBACK(chan_tree_model_filter_refilter), self);
-    g_signal_connect_swapped(self->match_combo_box, "changed",
-            G_CALLBACK(chan_tree_model_filter_refilter), self);
-    g_signal_connect_swapped(self->min_users_spin_button, "changed",
-            G_CALLBACK(chan_tree_model_filter_refilter), self);
-    g_signal_connect_swapped(self->max_users_spin_button, "changed",
-            G_CALLBACK(chan_tree_model_filter_refilter), self);
-    g_signal_connect_swapped(self->max_users_spin_button, "changed",
-            G_CALLBACK(chan_tree_model_filter_refilter), self);
-
-    g_signal_connect_swapped(self->cancel_button, "clicked",
-            G_CALLBACK(cancel_button_on_click), self);
-    g_signal_connect_swapped(self->join_button, "clicked",
-            G_CALLBACK(join_button_on_click), self);
-}
-
-static void srain_join_popover_class_init(SrainJoinPopoverClass *class){
-    gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
-            "/org/gtk/srain/join_popover.glade");
-
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinPopover, stack);
-
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinPopover, chan_entry);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinPopover, passwd_entry );
-
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinPopover, search_entry);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinPopover, refresh_button);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinPopover, match_combo_box);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinPopover, min_users_spin_button);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinPopover, max_users_spin_button);
-
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinPopover, chan_tree_view);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinPopover, chan_tree_view_column);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinPopover, users_tree_view_column);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinPopover, topic_tree_view_column);
-
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinPopover, status_label);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinPopover, status_spinner);
-
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinPopover, cancel_button);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainJoinPopover, join_button);
-}
 
 static void match_combo_box_set_model(SrainJoinPopover *popover){
     GtkListStore *store;
@@ -287,31 +260,34 @@ static void match_combo_box_set_model(SrainJoinPopover *popover){
     gtk_combo_box_set_model(combobox, GTK_TREE_MODEL(store));
 }
 
-static void chan_tree_view_set_model(SrainJoinPopover *popover){
-    GtkListStore *store;
-    GtkTreeModel *filter;
-    GtkTreeView *view;
-
-    /* 3 columns: channel name, users, topic */
-    popover->chan_list_store = gtk_list_store_new(3,
-            G_TYPE_STRING,
-            G_TYPE_INT,
-            G_TYPE_STRING);
-    store = popover->chan_list_store;
-    view = popover->chan_tree_view;
-
-    popover->chan_tree_model_filter = gtk_tree_model_filter_new(
-            GTK_TREE_MODEL(store), NULL);
-    filter = popover->chan_tree_model_filter;
-
-    gtk_tree_model_filter_set_visible_func(GTK_TREE_MODEL_FILTER(filter),
-            chan_tree_visible_func, popover, NULL);
-
-    gtk_tree_view_set_model(view, filter);
-}
-
 static void popover_on_visible(GObject *object, GParamSpec *pspec, gpointer data){
-    /* Nothing to do... */
+    SrainWindow *win;
+    SrainBuffer *buf;
+    SrainJoinPopover *popover;
+
+    win = srain_win;
+    popover = SRAIN_JOIN_POPOVER(object);
+    buf = srain_window_get_cur_buffer(win);
+
+    if (!gtk_widget_is_visible(GTK_WIDGET(popover))){
+        return;
+    }
+    if (!SRAIN_IS_BUFFER(buf)){
+        return;
+    }
+    if (SRAIN_IS_CHAT_BUFFER(buf)){
+        buf = SRAIN_BUFFER(
+                srain_chat_buffer_get_server_buffer(
+                    SRAIN_CHAT_BUFFER(buf)));
+    }
+    if (!SRAIN_IS_SERVER_BUFFER(buf)){
+        return;
+    }
+
+    srain_join_popover_set_model(popover, SRAIN_SERVER_BUFFER(buf));
+    update_status(
+            popover,
+            srain_server_buffer_is_adding_channel(SRAIN_SERVER_BUFFER(buf)));
 }
 
 static void join_button_on_click(gpointer user_data){
@@ -346,7 +322,7 @@ static void join_button_on_click(gpointer user_data){
         if (gtk_tree_selection_get_selected(selection, &model, &iter)){
             /* If row in chan_tree_view has selected, use it as channel name */
             gtk_tree_model_get(model, &iter,
-                    CHAN_LIST_STORE_COL_CHANNEL, &_chan,
+                    CHANNEL_LIST_STORE_COL_CHANNEL, &_chan,
                     -1);
             chan = _chan;
         } else {
@@ -434,7 +410,7 @@ static void chan_tree_view_on_row_activate(GtkTreeView *view,
     }
 
     gtk_tree_model_get(model, &iter,
-            CHAN_LIST_STORE_COL_CHANNEL, &chan,
+            CHANNEL_LIST_STORE_COL_CHANNEL, &chan,
             -1);
     g_return_if_fail(chan);
 
@@ -447,23 +423,23 @@ static void chan_tree_view_on_row_activate(GtkTreeView *view,
 }
 
 static void chan_tree_model_filter_refilter(gpointer user_data){
+    char *status;
+    GtkTreeModel *model;
+    GtkTreeModelFilter *filter;
     SrainJoinPopover *popover;
 
     popover = user_data;
+    filter = GTK_TREE_MODEL_FILTER(gtk_tree_view_get_model(popover->chan_tree_view));
+    model = gtk_tree_model_filter_get_model(filter);
 
-    gtk_tree_model_filter_refilter(
-           GTK_TREE_MODEL_FILTER(popover->chan_tree_model_filter));
+    gtk_tree_model_filter_refilter(GTK_TREE_MODEL_FILTER(filter));
 
     /* Update status while all channels have loaded */
-    if (!popover->adding) {
-        char *status  = g_strdup_printf(_("Showing %d of %d channnels"),
-                gtk_tree_model_iter_n_children(
-                    GTK_TREE_MODEL(popover->chan_tree_model_filter), NULL),
-                gtk_tree_model_iter_n_children(
-                    GTK_TREE_MODEL(popover->chan_list_store), NULL));
-        gtk_label_set_text(popover->status_label, status);
-        g_free(status);
-    }
+    status = g_strdup_printf(_("Showing %d of %d channnels"),
+                gtk_tree_model_iter_n_children(GTK_TREE_MODEL(filter), NULL),
+                gtk_tree_model_iter_n_children(model, NULL));
+    gtk_label_set_text(popover->status_label, status);
+    g_free(status);
 }
 
 gboolean chan_tree_visible_func(GtkTreeModel *model, GtkTreeIter *iter,
@@ -480,9 +456,9 @@ gboolean chan_tree_visible_func(GtkTreeModel *model, GtkTreeIter *iter,
     visable = FALSE;
     popover = user_data;
     gtk_tree_model_get(model, iter,
-            CHAN_LIST_STORE_COL_CHANNEL, &chan,
-            CHAN_LIST_STORE_COL_USERS, &users,
-            CHAN_LIST_STORE_COL_TOPIC, &topic,
+            CHANNEL_LIST_STORE_COL_CHANNEL, &chan,
+            CHANNEL_LIST_STORE_COL_USERS, &users,
+            CHANNEL_LIST_STORE_COL_TOPIC, &topic,
             -1);
 
     DBG_FR("cha: %s, users: %d, topic: %s", chan, users, topic);
@@ -525,4 +501,42 @@ FIN:
     DBG_FR("visable: %d", visable);
 
     return visable;
+}
+
+static void on_adding_channel(GtkWidget *widget, GParamSpec *pspec,
+        gpointer user_data){
+    SrainJoinPopover *popover;
+    SrainServerBuffer *buf;
+
+    popover = user_data;
+    buf = SRAIN_SERVER_BUFFER(widget);
+
+    // This buffer is not the one which showing on join popover
+    if (gtk_tree_view_get_model(popover->chan_tree_view) !=
+            GTK_TREE_MODEL(srain_server_buffer_get_channel_model(buf))){
+        return;
+    }
+
+    update_status(popover, srain_server_buffer_is_adding_channel(buf));
+}
+
+static void update_status(SrainJoinPopover *popover, bool adding){
+    if (adding) {
+        gtk_spinner_start(popover->status_spinner);
+        gtk_label_set_text(popover->status_label, _("Loading channels..."));
+    } else {
+        char *status;
+        GtkTreeModel *model;
+        GtkTreeModelFilter *filter;
+
+        gtk_spinner_stop(popover->status_spinner);
+
+        filter = GTK_TREE_MODEL_FILTER(gtk_tree_view_get_model(popover->chan_tree_view));
+        model = gtk_tree_model_filter_get_model(filter);
+        status  = g_strdup_printf(_("Showing %d of %d channnels"),
+                gtk_tree_model_iter_n_children(GTK_TREE_MODEL(filter), NULL),
+                gtk_tree_model_iter_n_children(model, NULL));
+        gtk_label_set_text(popover->status_label, status);
+        g_free(status);
+    }
 }
