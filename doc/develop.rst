@@ -42,3 +42,18 @@ Codeing Style
   - Added: 新增的功能或者依赖
   - Removed: 移除的功能或者依赖
   - Imporved: 性能或功能或易用性上的改善以及 bug 修复
+
+* 发布前须知
+
+  - 集成测试 (TODO)
+  - 更新翻译
+  - 更新文档
+  - 更新 change log
+  - 更新项目中的版本号
+  - 确认文档中的提供的安装脚本可用
+  - 对最新的 commit 打 tag
+  - 通知各个发行版的打包维护者
+
+    - Arch Linux: @SilverRainZ
+    - Gentoo: @xeirrr
+    - ...

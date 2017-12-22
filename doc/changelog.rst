@@ -7,8 +7,8 @@ Change Log
     :depth: 1
     :backlinks: none
 
-2017-10-xx Version 0.06.3[Draft]
-================================
+2017-12-22 Version 0.06.3
+=========================
 
 - Changed:
 
