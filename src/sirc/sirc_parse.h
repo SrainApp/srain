@@ -19,7 +19,7 @@
 #ifndef __SIRC_PARSE_H
 #define __SIRC_PARSE_H
 
-#define SIRC_PARAM_COUNT    64      // unconfirm
+#define SIRC_PARAM_COUNT    64      // RFC 2812 limits it to 14
 
 typedef struct {
     char *prefix; // servername or nick!user@host
@@ -27,8 +27,7 @@ typedef struct {
 
     char *cmd;
     int nparam;
-    char *params[SIRC_PARAM_COUNT];  // middle
-    char *msg;  // trailing
+    char *params[SIRC_PARAM_COUNT];  // middle and trailing
 } SircMessage;
 
 SircMessage *sirc_message_new();

@@ -363,7 +363,10 @@ static void on_disconnect_ready(GObject *obj, GAsyncResult *result, gpointer use
 }
 
 static void on_disconnect(SircSession *sirc, const char *reason){
-    sirc->events->disconnect(sirc, "DISCONNECT", "", NULL, 0, reason);
+    if (reason){
+        const char *params[] = { reason };
+        sirc->events->disconnect(sirc, "DISCONNECT", "", params, 1);
+    }
 }
 
 static void on_connect_finish(SircSession *sirc){

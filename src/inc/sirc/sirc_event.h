@@ -25,10 +25,10 @@
 typedef void (*SircSimpleEventCallback) (SircSession *sirc, const char *event);
 
 typedef void (*SircEventCallback) (SircSession *sirc, const char *event,
-        const char *origin, const char *params[], int count, const char *msg);
+        const char *origin, const char *params[], int count);
 
 typedef void (*SircNumericEventCallback) (SircSession *sirc, int event,
-        const char *origin, const char *params[], int count, const char *msg);
+        const char *origin, const char *params[], int count);
 
 typedef struct {
     SircSimpleEventCallback     connect;

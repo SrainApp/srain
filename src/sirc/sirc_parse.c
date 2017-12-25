@@ -45,7 +45,6 @@ void sirc_message_free(SircMessage *imsg){
     str_assign(&imsg->user, NULL);
     str_assign(&imsg->host, NULL);
     str_assign(&imsg->cmd, NULL);
-    str_assign(&imsg->msg, NULL);
 
     for (int i = 0; i < imsg->nparam; i++){
         str_assign(&imsg->params[i], NULL);
@@ -62,7 +61,6 @@ void sirc_message_transcoding(SircMessage *imsg,
     str_transcoding(&imsg->user, to, from, fallback);
     str_transcoding(&imsg->host, to, from, fallback);
     str_transcoding(&imsg->cmd, to, from, fallback);
-    str_transcoding(&imsg->msg, to, from, fallback);
 
     for (int i = 0; i < imsg->nparam; i++){
         str_transcoding(&imsg->params[i], to, from, fallback);
@@ -125,35 +123,44 @@ SircMessage* sirc_parse(char *line){
     }
 
     // <params> ::= <SPACE> [ ':' <trailing> | <middle> <params> ]
+    /* NOTE: After extracting the parameter list, all parameters are equal
+     *       whether matched by <middle> or <trailing>. <trailing> is just a
+     *       syntactic trick to allow SPACE within the parameter. (RFC 2812)
+     */
 
     if (params_ptr[0] == ':'){
         /* params have only one element, it is a trailing */
-
-        imsg->msg = g_strdup(params_ptr + 1);
-        imsg->nparam = 0;
+        trailing_ptr = params_ptr + 1;
     } else {
         trailing_ptr = strstr(params_ptr, " :");
         if (trailing_ptr){
             /* trailing exists in params */
             *trailing_ptr = '\0';   // Prevent influenced from split params
-            imsg->msg = g_strdup(trailing_ptr + 2);
+            trailing_ptr = trailing_ptr + 2;
         }
 
         /* Split params which don't contain trailing */
         DBG_F("params: ");
         params_ptr = strtok(params_ptr, " ");
         do {
-            imsg->params[imsg->nparam++] = g_strdup(params_ptr);
-            DBG("%s(%d) ", imsg->params[imsg->nparam-1], imsg->nparam);
-            if (imsg->nparam > SIRC_PARAM_COUNT - 1){
+            if (imsg->nparam >= SIRC_PARAM_COUNT){
                 ERR_FR("Too many params: %s", line);
                 goto bad;
             }
+            imsg->params[imsg->nparam++] = g_strdup(params_ptr);
+            DBG("%s(%d) ", imsg->params[imsg->nparam-1], imsg->nparam);
         } while ((params_ptr = strtok(NULL, " ")) != NULL);
         DBG("\n");
     }
 
-    DBG_FR("message: %s", imsg->msg);
+    if (trailing_ptr) {
+        if (imsg->nparam >= SIRC_PARAM_COUNT){
+            ERR_FR("Too many params: %s", line);
+            goto bad;
+        }
+        imsg->params[imsg->nparam++] = g_strdup(trailing_ptr);
+        DBG_FR("trailing: %s", imsg[imsg->nparam-1]);
+    }
 
     return imsg;
 bad:
