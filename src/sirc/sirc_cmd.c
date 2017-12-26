@@ -114,11 +114,8 @@ int sirc_cmd_topic(SircSession *sirc, const char *chan, const char *topic){
 }
 
 // sirc_cmd_action: For executing an action (.e.g /me is hungry)
-int sirc_cmd_action(SircSession *sirc, const char *chan, const char *msg){
-    g_return_val_if_fail(!str_is_empty(chan), SRN_ERR);
-    g_return_val_if_fail(!str_is_empty(msg), SRN_ERR);
-
-    return sirc_cmd_raw(sirc, "PRIVMSG %s :\001ACTION %s\001\r\n", chan, msg);
+int sirc_cmd_action(SircSession *sirc, const char *target, const char *msg){
+    return sirc_cmd_ctcp_req(sirc, target, "ACTION", msg);
 }
 
 // sirc_cmd_msg: For sending a chan message or a query
@@ -184,6 +181,35 @@ int sirc_cmd_list(SircSession *sirc, const char *chan, const char *target){
             return sirc_cmd_raw(sirc, "LIST\r\n");
     }
 }
+
+int sirc_cmd_ctcp_req(SircSession *sirc, const char *target, const char *cmd,
+        const char *msg){
+    g_return_val_if_fail(!str_is_empty(target), SRN_ERR);
+    g_return_val_if_fail(!str_is_empty(cmd), SRN_ERR);
+
+    /* CTCP queries are sent with PRIVMSG */
+    if (msg) {
+        return sirc_cmd_raw(sirc, "PRIVMSG %s :\001%s %s\001\r\n",
+                target, cmd, msg);
+    } else {
+        return sirc_cmd_raw(sirc, "PRIVMSG %s :\001%s\001\r\n", target, cmd);
+    }
+}
+
+int sirc_cmd_ctcp_rsp(SircSession *sirc, const char *target, const char *cmd,
+        const char *msg){
+    g_return_val_if_fail(!str_is_empty(target), SRN_ERR);
+    g_return_val_if_fail(!str_is_empty(cmd), SRN_ERR);
+
+    /* CTCP queries are sent with NOTICE */
+    if (msg) {
+        return sirc_cmd_raw(sirc, "NOTICE %s :\001%s %s\001\r\n",
+                target, cmd, msg);
+    } else {
+        return sirc_cmd_raw(sirc, "NOTICE %s :\001%s\001\r\n", target, cmd);
+    }
+}
+
 
 int sirc_cmd_raw(SircSession *sirc, const char *fmt, ...){
     char buf[SIRC_BUF_LEN];

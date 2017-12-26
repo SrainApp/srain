@@ -49,8 +49,7 @@ typedef struct {
     SircEventCallback           channel_notice;
     SircEventCallback           invite;
     SircEventCallback           ctcp_req;
-    SircEventCallback           ctcp_rep;
-    SircEventCallback           ctcp_action;
+    SircEventCallback           ctcp_rsp;
     SircEventCallback           ping;
     SircEventCallback           pong;
     SircEventCallback           error;

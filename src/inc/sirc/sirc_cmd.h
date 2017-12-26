@@ -32,15 +32,17 @@ int sirc_cmd_part(SircSession *sirc, const char *chan, const char *reason);
 int sirc_cmd_nick(SircSession *sirc, const char *nick);
 int sirc_cmd_quit(SircSession *sirc, const char *reason);
 int sirc_cmd_topic(SircSession *sirc, const char *chan, const char *topic);
-int sirc_cmd_action(SircSession *sirc, const char *who, const char *action);
-int sirc_cmd_msg(SircSession *sirc, const char *who, const char *msg);
-int sirc_cmd_whois(SircSession *sirc, const char *who);
+int sirc_cmd_action(SircSession *sirc, const char *target, const char *msg);
+int sirc_cmd_msg(SircSession *sirc, const char *target, const char *msg);
+int sirc_cmd_whois(SircSession *sirc, const char *nick);
 int sirc_cmd_names(SircSession *sirc, const char *chan);
 int sirc_cmd_invite(SircSession *sirc, const char *nick, const char *chan);
 int sirc_cmd_kick(SircSession *sirc, const char *nick, const char *chan, const char *reason);
 int sirc_cmd_mode(SircSession *sirc, const char *target, const char *mode);
 int sirc_cmd_pass(SircSession *sirc, const char *pass);
 int sirc_cmd_list(SircSession *sirc, const char *chan, const char *target);
+int sirc_cmd_ctcp_req(SircSession *sirc, const char *target, const char *cmd, const char *msg);
+int sirc_cmd_ctcp_rsp(SircSession *sirc, const char *target, const char *cmd, const char *msg);
 int sirc_cmd_raw(SircSession *sirc, const char *fmt, ...);
 
 #endif /* __IRC_CMD_H */

@@ -27,6 +27,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <glib.h>
 
 #include "sirc_event_hdr.h"
 
@@ -140,8 +141,19 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
              events->kick(sirc, event, origin, params, imsg->nparam);
          }
          else if (strcmp(event, "NOTICE") == 0){
-             g_return_if_fail(imsg->nparam >= 1);
-             if (sirc_is_chan(params[0])){
+             g_return_if_fail(imsg->nparam >= 2);
+
+             const char *target = params[0];
+             const char *msg = params[1];
+
+             int len = strlen(msg);
+             /* Check for CTCP request (starts and ends with 0x01) */
+             if (len >= 2 && msg[0] == '\x01' && msg[len-1] == '\x01') {
+                 sirc_ctcp_event_hdr(sirc, imsg);
+                 return;
+             }
+
+             if (sirc_is_chan(target)){
                  /* Channel notice changed */
                  g_return_if_fail(events->channel_notice);
                  events->channel_notice(sirc, event, origin, params, imsg->nparam);
@@ -182,15 +194,21 @@ static void sirc_ctcp_event_hdr(SircSession *sirc, SircMessage *imsg) {
     char *ptr;
     char *tmp;
     char *ctcp_msg;
+    const char *event;
+    const char *ctcp_event;
     const char *origin;
     const char **params;
     SircEvents *events;
 
     events = sirc_get_events(sirc);
+    g_return_if_fail(events->ctcp_req);
+    g_return_if_fail(events->ctcp_rsp);
+    g_return_if_fail(imsg->nparam >= 1);
+
+    event = imsg->cmd;
     tmp = imsg->params[imsg->nparam - 1];
     ptr = ctcp_msg = g_strdup(tmp);
     len = strlen(ctcp_msg);
-
     /* Cast to immutable string */
     origin = imsg->nick ? imsg->nick : imsg->prefix;
     params = (const char **)imsg->params;
@@ -198,17 +216,30 @@ static void sirc_ctcp_event_hdr(SircSession *sirc, SircMessage *imsg) {
     ptr++; // Skip first 0x01
     ctcp_msg[len-1] = '\0'; // Remove the trailing 0x01
 
-    if (strncmp(ptr, "ACTION ", sizeof("ACTION ") - 1) == 0){
-        ptr += sizeof("ACTION ") - 1;
-        imsg->params[imsg->nparam - 1] = ptr;
-        events->ctcp_action(sirc, "CTCP_ACTION", origin, params, imsg->nparam);
-    }
-    else if (strncmp(ptr, "DCC ", sizeof("DCC ") - 1) == 0){
-        // TODO: impl DCC
+    ctcp_event = strtok(ptr, " ");
+    ptr = strtok(NULL, ""); // Skip command
+
+    DBG_FR("sirc: %p, event: CTCP %s, origin: %s", sirc, ctcp_event, origin);
+
+    if (strcmp(event, "PRIVMSG") == 0) {
+        if (!ptr) {
+            events->ctcp_req(sirc, ctcp_event, origin, params, imsg->nparam - 1);
+        } else {
+            imsg->params[imsg->nparam - 1] = ptr;
+            events->ctcp_req(sirc, ctcp_event, origin, params, imsg->nparam);
+            imsg->params[imsg->nparam - 1] = tmp; // Recover parameter
+        }
+    } else if (strcmp(event, "NOTICE") == 0) {
+        if (!ptr) {
+            events->ctcp_rsp(sirc, ctcp_event, origin, params, imsg->nparam - 1);
+        } else {
+            imsg->params[imsg->nparam - 1] = ptr;
+            events->ctcp_rsp(sirc, ctcp_event, origin, params, imsg->nparam);
+            imsg->params[imsg->nparam - 1] = tmp; // Recover parameter
+        }
     } else {
-        // TODO: Any other CTCP event?
+        g_warn_if_reached();
     }
 
-    imsg->params[imsg->nparam - 1] = tmp; // Recover parameter
     g_free(ctcp_msg);
 }
