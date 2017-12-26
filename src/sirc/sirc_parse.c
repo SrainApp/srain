@@ -159,7 +159,7 @@ SircMessage* sirc_parse(char *line){
             goto bad;
         }
         imsg->params[imsg->nparam++] = g_strdup(trailing_ptr);
-        DBG_FR("trailing: %s", imsg[imsg->nparam-1]);
+        DBG_FR("trailing: %s", imsg->params[imsg->nparam-1]);
     }
 
     return imsg;

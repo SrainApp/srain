@@ -88,7 +88,7 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
 
              int len = strlen(msg);
              /* Check for CTCP request (starts and ends with 0x01) */
-             if (len >= 2 && msg[0] == '\x01' && msg[1] == '\x01') {
+             if (len >= 2 && msg[0] == '\x01' && msg[len-1] == '\x01') {
                  sirc_ctcp_event_hdr(sirc, imsg);
                  return;
              }
