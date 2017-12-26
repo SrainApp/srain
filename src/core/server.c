@@ -84,7 +84,8 @@ void server_init_and_run(int argc, char *argv[]){
     irc_events.notice = server_irc_event_notice;
     irc_events.channel_notice = server_irc_event_channel_notice;
     irc_events.invite = server_irc_event_invite;
-    irc_events.ctcp_action = server_irc_event_ctcp_action;
+    irc_events.ctcp_req = server_irc_event_ctcp_req;
+    irc_events.ctcp_rsp = server_irc_event_ctcp_rsp;
     irc_events.ping = server_irc_event_ping;
     irc_events.pong = server_irc_event_pong;
     irc_events.error = server_irc_event_error;

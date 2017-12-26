@@ -74,7 +74,7 @@ static SrnRet on_command_whois(Command *cmd, void *user_data);
 static SrnRet on_command_invite(Command *cmd, void *user_data);
 static SrnRet on_command_kick(Command *cmd, void *user_data);
 static SrnRet on_command_mode(Command *cmd, void *user_data);
-static SrnRet on_command_list(Command *cmd, void *user_data);
+static SrnRet on_command_ctcp(Command *cmd, void *user_data);
 
 CommandBind cmd_binds[] = {
     {
@@ -272,11 +272,11 @@ CommandBind cmd_binds[] = {
         .cb = on_command_mode,
     },
     {
-        .name = "/list",
-        .argc = 1, // <channel>
+        .name = "/ctcp",
+        .argc = 3, // <nick> <command> <msg>
         .opt = { COMMAND_EMPTY_OPT },
-        .flag = 0,
-        .cb = on_command_list,
+        .flag = COMMAND_FLAG_OMIT_ARG,
+        .cb = on_command_ctcp,
     },
     COMMAND_EMPTY,
 };
@@ -943,8 +943,34 @@ static SrnRet on_command_mode(Command *cmd, void *user_data){
     return sirc_cmd_mode(srv->irc, target, mode);
 }
 
-static SrnRet on_command_list(Command *cmd, void *user_data){
-    return SRN_OK;
+static SrnRet on_command_ctcp(Command *cmd, void *user_data){
+    char timestr[64];
+    const char *nick;
+    const char *ctcp_cmd;
+    const char *msg;
+
+    Server *srv;
+
+    srv = scctx_get_server(user_data);
+    g_return_val_if_fail(srv, SRN_ERR);
+
+    nick = command_get_arg(cmd, 0);
+    ctcp_cmd = command_get_arg(cmd, 1);
+    msg = command_get_arg(cmd, 2);
+    g_return_val_if_fail(nick, SRN_ERR);
+    g_return_val_if_fail(ctcp_cmd, SRN_ERR);
+
+    LOG_FR("cmd: [%s], msg: [%s]", ctcp_cmd, msg);
+
+    if (strcmp(ctcp_cmd, "PING") == 0 && !msg) { // CTCP ping with out parameter
+        unsigned long time;
+
+        time = get_time_since_first_call_ms();
+        snprintf(timestr, sizeof(timestr), "%lu", time);
+        msg = (const char *)timestr;
+    }
+
+    return sirc_cmd_ctcp_req(srv->irc, nick, ctcp_cmd, msg);
 }
 
 /*******************************************************************************

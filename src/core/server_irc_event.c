@@ -653,7 +653,71 @@ void server_irc_event_invite(SircSession *sirc, const char *event,
     // TODO: Info bar
 }
 
-void server_irc_event_ctcp_action(SircSession *sirc, const char *event,
+void server_irc_event_ctcp_req(SircSession *sirc, const char *event,
+        const char *origin, const char **params, int count){
+    Server *srv;
+    Chat *chat;
+
+    srv = sirc_get_ctx(sirc);
+    g_return_if_fail(server_is_valid(srv));
+    g_return_if_fail(count >= 1);
+
+    const char *target = params[0];
+    const char *msg = count == 2 ? params[1] : NULL;
+
+    /* CTCP response, according to https://modern.ircdocs.horse/ctcp.html */
+    if (strcmp(event, "ACTION") == 0) {
+        // Nothing to do with ACTION message
+    } else if (strcmp(event, "CLIENTINFO") == 0) {
+        sirc_cmd_ctcp_rsp(srv->irc, origin, event, "CLIENTINFO");
+    } else if (strcmp(event, "DCC") == 0) {
+        // TODO
+    } else if (strcmp(event, "FINGER") == 0) {
+        sirc_cmd_ctcp_rsp(srv->irc, origin, event,
+                PACKAGE_NAME " " PACKAGE_VERSION PACKAGE_BUILD);
+    } else if (strcmp(event, "PING") == 0) {
+        sirc_cmd_ctcp_rsp(srv->irc, origin, event, msg);
+    } else if (strcmp(event, "SOURCE") == 0) {
+        sirc_cmd_ctcp_rsp(srv->irc, origin, event, PACKAGE_WEBSITE);
+    } else if (strcmp(event, "TIME") == 0) {
+        GTimeVal val;
+        g_get_current_time(&val);
+        // ISO 8601 is recommend
+        char *time = g_time_val_to_iso8601(&val);
+        if (time){
+            sirc_cmd_ctcp_rsp(srv->irc, origin, event, time);
+            g_free(time);
+        }
+    } else if (strcmp(event, "VERSION") == 0) {
+        sirc_cmd_ctcp_rsp(srv->irc, origin, event,
+                PACKAGE_NAME " " PACKAGE_VERSION PACKAGE_BUILD);
+    } else if (strcmp(event, "USERINFO") == 0) {
+        sirc_cmd_ctcp_rsp(srv->irc, origin, event, srv->user->realname);
+    } else {
+        WARN_FR("Unknown CTCP message: %s", event);
+    }
+
+    if (sirc_is_chan(target)){
+        chat = server_get_chat(srv, target);
+    } else {
+        chat = server_get_chat_fallback(srv, origin);
+    }
+    g_return_if_fail(chat);
+
+    /* Show it on ui */
+    if (strcmp(event, "ACTION") == 0) {
+        chat_add_action_message(chat, origin, msg);
+    } else if (strcmp(event, "DCC") == 0) {
+        chat_add_error_message_fmt(chat, origin,
+                _("Unsupported CTCP %s request form %s"),
+                event, origin);
+    } else {
+        chat_add_misc_message_fmt(chat, origin,
+                _("CTCP %s request form %s"), event, origin);
+    }
+}
+
+void server_irc_event_ctcp_rsp(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
     Server *srv;
     Chat *chat;
@@ -670,10 +734,41 @@ void server_irc_event_ctcp_action(SircSession *sirc, const char *event,
     } else {
         chat = server_get_chat_fallback(srv, origin);
     }
-
     g_return_if_fail(chat);
 
-    chat_add_action_message(chat, origin, msg);
+    if (strcmp(event, "ACTION") == 0) {
+        // Is there any ACTION response?
+    } else if (strcmp(event, "CLIENTINFO") == 0
+            || strcmp(event, "FINGER") == 0
+            || strcmp(event, "SOURCE") == 0
+            || strcmp(event, "TIME") == 0
+            || strcmp(event, "VERSION") == 0
+            || strcmp(event, "USERINFO") == 0){
+        chat_add_misc_message_fmt(chat, origin,
+                _("CTCP %s response from %s: %s"), event, origin, msg);
+    } else if (strcmp(event, "DCC") == 0) {
+        // TODO
+        chat_add_error_message_fmt(chat, origin,
+                _("Unsupported CTCP %s response form %s"),
+                event, origin);
+    } else if (strcmp(event, "PING") == 0) {
+        unsigned long time;
+        unsigned long nowtime;
+
+        time = strtoul(msg, NULL, 10);
+        nowtime = get_time_since_first_call_ms();
+
+        if (time != 0 && nowtime >= time){
+            /* Update dalay and pong time */
+            chat_add_misc_message_fmt(chat, origin,
+                    _("Latency between %s: %lums"), origin, nowtime - time);
+        } else {
+        chat_add_misc_message_fmt(chat, origin,
+                _("CTCP %s response from %s: %s"), event, origin, msg);
+        }
+    } else {
+        WARN_FR("Unknown CTCP message: %s", event);
+    }
 }
 
 void server_irc_event_ping(SircSession *sirc, const char *event,
@@ -956,9 +1051,9 @@ void server_irc_event_numeric (SircSession *sirc, int event,
             }
         case SIRC_RFC_RPL_ENDOFWHOIS:
             {
-                g_return_if_fail(count >= 1);
+                g_return_if_fail(count >= 3);
 
-                const char *msg = params[0];
+                const char *msg = params[2];
 
                 chat_add_misc_message(srv->cur_chat, origin, msg);
                 break;
