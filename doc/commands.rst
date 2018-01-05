@@ -14,6 +14,10 @@ Context
 
 User can run commands by typing them in the input entry on UI.
 
+.. warning::
+
+    The rc file will be integrated into config file in the future.
+
 The rc(**r**\ un **c**\ ommand) file ``srainrc`` allows you save commands in
 file and run it at each time the Srain starts. The location of rc file is
 ``$XDG_CONFIG_HOME/srain``, usually it is ``~/.config/srain``. Every line in rc
@@ -355,15 +359,20 @@ Usage::
 
 Change ``target`` 's mode.
 
-/list
+/ctcp
 -----
 
 Usage::
 
-    /list
+    /ctcp <target> <command> [message]
 
-List all channels on the default server.
+Send a CTCP request to ``target``. The commonly used commands are:
+CLIENTINFO, FINGER, PING, SOURCE, TIME, VERSION, USERINFO. For the detail of
+each command, please refer to https://modern.ircdocs.horse/ctcp.html .
 
-.. warning::
+If you send a CTCP PING request without ``message``, you will get the latency
+between the ``target``.
 
-    This command is not implemented yet.
+.. note::
+
+    DCC is not yet supported.

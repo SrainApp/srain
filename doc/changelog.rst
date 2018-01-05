@@ -7,6 +7,20 @@ Change Log
     :depth: 1
     :backlinks: none
 
+2018-XX-XX Version 0.07[Draft]
+==============================
+
+- Added:
+
+  - CTCP support, including request & response CLIENTINFO, FINGER, PING,
+    SOURCE, TIME, VERSION, USERINFO messages. DCC message is **not** yet
+    supported
+
+- Improved:
+
+  - Fixed a logical error in IRC message parser: all parameters are equal
+    whether matched by ``<middle>`` or ``<trailing>``, thanks to @DanielOaks
+
 2017-12-22 Version 0.06.3
 =========================
 
