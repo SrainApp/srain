@@ -713,11 +713,11 @@ void server_irc_event_ctcp_req(SircSession *sirc, const char *event,
         chat_add_action_message(chat, origin, msg);
     } else if (strcmp(event, "DCC") == 0) {
         chat_add_error_message_fmt(chat, origin,
-                _("Unsupported CTCP %s request form %s"),
+                _("Received unsupported CTCP %s request form %s"),
                 event, origin);
     } else {
         chat_add_misc_message_fmt(chat, origin,
-                _("CTCP %s request form %s"), event, origin);
+                _("Received CTCP %s request form %s"), event, origin);
     }
 }
 
@@ -749,11 +749,11 @@ void server_irc_event_ctcp_rsp(SircSession *sirc, const char *event,
             || strcmp(event, "VERSION") == 0
             || strcmp(event, "USERINFO") == 0){
         chat_add_misc_message_fmt(chat, origin,
-                _("CTCP %s response from %s: %s"), event, origin, msg);
+                _("Received CTCP %s response from %s: %s"), event, origin, msg);
     } else if (strcmp(event, "DCC") == 0) {
         // TODO
         chat_add_error_message_fmt(chat, origin,
-                _("Unsupported CTCP %s response form %s"),
+                _("Received unsupported CTCP %s response form %s"),
                 event, origin);
     } else if (strcmp(event, "PING") == 0) {
         unsigned long time;
@@ -768,7 +768,7 @@ void server_irc_event_ctcp_rsp(SircSession *sirc, const char *event,
                     _("Latency between %s: %lums"), origin, nowtime - time);
         } else {
         chat_add_misc_message_fmt(chat, origin,
-                _("CTCP %s response from %s: %s"), event, origin, msg);
+                _("Received CTCP %s response from %s: %s"), event, origin, msg);
         }
     } else {
         WARN_FR("Unknown CTCP message: %s", event);
