@@ -84,7 +84,7 @@ SrnRet command_proc(CommandContext *ctx, const char *rawcmd, void *user_data){
         }
     }
 
-    return RET_ERR(_("Unknown command: %s"), rawcmd);
+    return RET_ERR(_("Unknown command: %1$s"), rawcmd);
 }
 
 /**
@@ -407,25 +407,25 @@ missing_arg:
     if (cmd->bind->flag & COMMAND_FLAG_OMIT_ARG){
         return SRN_OK;
     }
-    return RET_ERR(_("Missing argument, expect %d, actually %d"), cmd->bind->argc, narg);
+    return RET_ERR(_("Missing argument, expect %1$d, actually %2$d"), cmd->bind->argc, narg);
 
 unknown_opt:
-    return RET_ERR(_("Unknown option %s"), cmd->opt_key[nopt]);
+    return RET_ERR(_("Unknown option %1$s"), cmd->opt_key[nopt]);
 
 too_many_opt:
-    return RET_ERR(_("Too many options, options count limit to %d"), COMMAND_MAX_OPTS);
+    return RET_ERR(_("Too many options, options count limit to %1$d"), COMMAND_MAX_OPTS);
 
 missing_opt_val:
-    return RET_ERR(_("Missing vaule for option %s"), cmd->opt_key[nopt]);
+    return RET_ERR(_("Missing vaule for option %1$s"), cmd->opt_key[nopt]);
 
 unknown_subcmd:
-    return RET_ERR(_("Unknown sub command: %s"), ptr);
+    return RET_ERR(_("Unknown sub command: %1$s"), ptr);
 
 #if 0
 too_many_arg:
     /* Currently, we regard all remaining text as the last argument, so this
      * label is never used. */
-    return RET_ERR(_("Too many arguments, expect %d"), cmd->bind->argc);
+    return RET_ERR(_("Too many arguments, expect %1$d"), cmd->bind->argc);
 #endif
 }
 

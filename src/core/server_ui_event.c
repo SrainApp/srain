@@ -80,7 +80,7 @@ SrnRet server_ui_event_connect(SuiEvent event, GVariantDict *params){
         /* If params "name" is not specified, connecting to predefined server */
         prefs = server_prefs_get_prefs(name);
         if (prefs->srv){
-            return RET_ERR(_("Server \"%s\" already exists"), name);
+            return RET_ERR(_("Server \"%1$s\" already exists"), name);
         }
     } else {
         /* Else, it means that user is trying to connect to a custom server */
@@ -100,7 +100,7 @@ SrnRet server_ui_event_connect(SuiEvent event, GVariantDict *params){
         /* Create ServerPrefs */
         prefs = server_prefs_new_from_basename(host);
         if (!prefs) {
-            return RET_ERR(_("Failed to create server \"%s\""), host);
+            return RET_ERR(_("Failed to create server \"%1$s\""), host);
         }
         ret = prefs_read_server_prefs(prefs);
         if (!RET_IS_OK(ret)){
@@ -146,7 +146,7 @@ SrnRet server_ui_event_connect(SuiEvent event, GVariantDict *params){
     if (!srv) {
         SrnRet ret;
 
-        ret = RET_ERR(_("Failed to instantiate server \"%s\""), prefs->name);
+        ret = RET_ERR(_("Failed to instantiate server \"%1$s\""), prefs->name);
         if (str_is_empty(name)){
             server_prefs_free(prefs);
         }
@@ -229,7 +229,7 @@ SrnRet server_ui_event_send(SuiSession *sui, SuiEvent event, GVariantDict *param
             chat_add_sent_message(chat, msg);
         } else {
             chat_add_error_message_fmt(chat, chat->user->nick,
-                    _("Failed to send message: %s"), RET_MSG(ret));
+                    _("Failed to send message: %1$s"), RET_MSG(ret));
         }
     }
 

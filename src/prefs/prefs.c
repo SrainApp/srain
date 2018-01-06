@@ -76,23 +76,23 @@ SrnRet prefs_read(){
 
     path = get_system_config_file("builtin.cfg");
     if (!path){
-        return RET_ERR(_("System config file %s not found"), "builtin.cfg");
+        return RET_ERR(_("System config file %1$s not found"), "builtin.cfg");
     }
 
     ret = prefs_read_file(&builtin_cfg, path);
     if (!RET_IS_OK(ret)){
-        return RET_ERR(_("Error occurred while reading %s: %s"), path, RET_MSG(ret));
+        return RET_ERR(_("Error occurred while reading %1$s: %2$s"), path, RET_MSG(ret));
     }
 
     path = get_config_file("srain.cfg");
     if (!path){
         // It is not an error
-        return RET_OK(_("User config file %s not found"), "srain.cfg");
+        return RET_OK(_("User config file %1$s not found"), "srain.cfg");
     }
 
     ret = prefs_read_file(&user_cfg, path);
     if (!RET_IS_OK(ret)){
-        return RET_ERR(_("Error occurred while reading %s: %s"), path, RET_MSG(ret));
+        return RET_ERR(_("Error occurred while reading %1$s: %2$s"), path, RET_MSG(ret));
     }
 
     return SRN_OK;
@@ -103,11 +103,11 @@ SrnRet prefs_read_log_prefs(LogPrefs *prefs){
 
     ret = read_log_prefs_from_cfg(&builtin_cfg, prefs);
     if (!RET_IS_OK(ret)){
-        return RET_ERR(_("Error occurred while read log prefs in %s: %s"), "builtin.cfg", RET_MSG(ret));
+        return RET_ERR(_("Error occurred while read log prefs in %1$s: %2$s"), "builtin.cfg", RET_MSG(ret));
     }
     ret = read_log_prefs_from_cfg(&user_cfg, prefs);
     if (!RET_IS_OK(ret)){
-        return RET_ERR(_("Error occurred while read log prefs in %s: %s"), "srain.cfg", RET_MSG(ret));
+        return RET_ERR(_("Error occurred while read log prefs in %1$s: %2$s"), "srain.cfg", RET_MSG(ret));
     }
 
     return SRN_OK;
@@ -126,11 +126,11 @@ SrnRet prefs_read_server_prefs_list(){
 
     ret = read_server_prefs_list_from_cfg(&builtin_cfg);
     if (!RET_IS_OK(ret)){
-        return RET_ERR(_("Error occurred while read server prefs list in %s: %s"), "builtin.cfg", RET_MSG(ret));
+        return RET_ERR(_("Error occurred while read server prefs list in %1$s: %2$s"), "builtin.cfg", RET_MSG(ret));
     }
     ret = read_server_prefs_list_from_cfg(&user_cfg);
     if (!RET_IS_OK(ret)){
-        return RET_ERR(_("Error occurred while read server prefs list in %s: %s"), "srain.cfg", RET_MSG(ret));
+        return RET_ERR(_("Error occurred while read server prefs list in %1$s: %2$s"), "srain.cfg", RET_MSG(ret));
     }
 
     return SRN_OK;
@@ -141,11 +141,11 @@ SrnRet prefs_read_server_prefs(ServerPrefs *prefs){
 
     ret = read_server_prefs_from_cfg(&builtin_cfg, prefs);
     if (!RET_IS_OK(ret)){
-        return RET_ERR(_("Error occurred while read server prefs in %s: %s"), "builtin.cfg", RET_MSG(ret));
+        return RET_ERR(_("Error occurred while read server prefs in %1$s: %2$s"), "builtin.cfg", RET_MSG(ret));
     }
     read_server_prefs_from_cfg(&user_cfg, prefs);
     if (!RET_IS_OK(ret)){
-        return RET_ERR(_("Error occurred while read server prefs in %s: %s"), "srain.cfg", RET_MSG(ret));
+        return RET_ERR(_("Error occurred while read server prefs in %1$s: %2$s"), "srain.cfg", RET_MSG(ret));
     }
 
     return SRN_OK;
@@ -156,11 +156,11 @@ SrnRet prefs_read_sirc_prefs(SircPrefs *prefs, const char *srv_name){
 
     ret = read_sirc_prefs_from_cfg(&builtin_cfg, prefs, srv_name);
     if (!RET_IS_OK(ret)){
-        return RET_ERR(_("Error occurred while read irc prefs in %s: %s"), "builtin.cfg", RET_MSG(ret));
+        return RET_ERR(_("Error occurred while read irc prefs in %1$s: %2$s"), "builtin.cfg", RET_MSG(ret));
     }
     read_sirc_prefs_from_cfg(&user_cfg, prefs, srv_name);
     if (!RET_IS_OK(ret)){
-        return RET_ERR(_("Error occurred while read irc prefs in %s: %s"), "srain.cfg", RET_MSG(ret));
+        return RET_ERR(_("Error occurred while read irc prefs in %1$s: %2$s"), "srain.cfg", RET_MSG(ret));
     }
 
     return SRN_OK;
@@ -171,11 +171,11 @@ SrnRet prefs_read_sui_prefs(SuiPrefs *prefs, const char *srv_name,
     SrnRet ret;
     ret = read_sui_prefs_from_cfg(&builtin_cfg, prefs, srv_name, chat_name);
     if (!RET_IS_OK(ret)){
-        return RET_ERR(_("Error occurred while read ui prefs in %s: %s"), "builtin.cfg", RET_MSG(ret));
+        return RET_ERR(_("Error occurred while read ui prefs in %1$s: %2$s"), "builtin.cfg", RET_MSG(ret));
     }
     read_sui_prefs_from_cfg(&user_cfg, prefs, srv_name, chat_name);
     if (!RET_IS_OK(ret)){
-        return RET_ERR(_("Error occurred while read ui prefs in %s: %s"), "srain.cfg", RET_MSG(ret));
+        return RET_ERR(_("Error occurred while read ui prefs in %1$s: %2$s"), "srain.cfg", RET_MSG(ret));
     }
 
     return SRN_OK;
@@ -190,7 +190,7 @@ static SrnRet prefs_read_file(config_t *cfg, const char *file){
     g_free(dir);
 
     if (!config_read_file(cfg, file)){
-        return RET_ERR(_("At line %d: %s"),
+        return RET_ERR(_("At line %1$d: %2$s"),
                 config_error_line(cfg),
                 config_error_text(cfg));
     }
@@ -490,13 +490,13 @@ static SrnRet read_server_prefs_list_from_cfg(config_t *cfg){
             if (!server) break;
 
             if (config_setting_lookup_string(server, "name", &name) != CONFIG_TRUE) {
-                return RET_ERR(_("Server[%d] in server_list doesn't have a name"), i);
+                return RET_ERR(_("Server[%1$d] in server_list doesn't have a name"), i);
             }
 
             prefs = server_prefs_new(name);
             prefs->predefined = TRUE;
             if (!prefs){
-                return RET_ERR(_("Server already exist: %s"), name);
+                return RET_ERR(_("Server already exist: %1$s"), name);
             }
 
             ret = prefs_read_server_prefs(prefs);

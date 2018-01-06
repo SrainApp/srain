@@ -120,7 +120,7 @@ static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_da
         char *fwd;
         GVariantDict *params;
 
-        fwd = g_strdup_printf(_("%s <fwd %s@%s>"), line,
+        fwd = g_strdup_printf(_("%1$s <fwd %2$s@%3$s>"), line,
                 gtk_label_get_text(smsg->nick_label),
                 srain_buffer_get_name(srain_window_get_cur_buffer(srain_win)));
         line = strtok(NULL, "\n");

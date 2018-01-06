@@ -377,7 +377,7 @@ void chat_add_action_message(Chat *chat, const char *origin, const char *content
 
     {
         // TODO: "<b>" no used?
-        char *action_msg = g_strdup_printf(_("*** <b>%s</b> %s ***"),
+        char *action_msg = g_strdup_printf(_("*** <b>%1$s</b> %2$s ***"),
                 msg->dname, msg->dcontent);
 
         msg->ui = sui_add_sys_msg(chat->ui, action_msg, SYS_MSG_ACTION);

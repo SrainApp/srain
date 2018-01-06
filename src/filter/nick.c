@@ -52,7 +52,7 @@ int nick_filter_add_nick(Chat *chat, const char *nick){
     while(lst){
         if (sirc_nick_cmp(lst->data, nick)){
             chat_add_error_message_fmt(chat->srv->cur_chat, chat->user->nick,
-                    _("\"%s\" already exists in %s 's ignore list"),
+                    _("\"%1$s\" already exists in %2$s 's ignore list"),
                     nick, chat->name);
             return SRN_ERR;
         }
@@ -62,7 +62,7 @@ int nick_filter_add_nick(Chat *chat, const char *nick){
     chat->ignore_nick_list = g_slist_append(chat->ignore_nick_list, g_strdup(nick));
 
     chat_add_misc_message_fmt(chat->srv->cur_chat, chat->user->nick,
-            _("\"%s\" has added to %s 's ignore list"), nick, chat->name);
+            _("\"%1$s\" has added to %2$s 's ignore list"), nick, chat->name);
 
     return SRN_OK;
 }
@@ -79,7 +79,7 @@ int nick_filter_rm_nick(Chat *chat, const char *nick){
                 chat->ignore_nick_list = g_slist_delete_link(chat->ignore_nick_list, lst);
 
                 chat_add_misc_message_fmt(chat->srv->cur_chat, chat->user->nick,
-                        _("\"%s\" is removed from %s 's ignore list"),
+                        _("\"%1$s\" is removed from %2$s 's ignore list"),
                         nick, chat->name);
 
                 return SRN_OK;
@@ -89,7 +89,7 @@ int nick_filter_rm_nick(Chat *chat, const char *nick){
     }
 
     chat_add_error_message_fmt(chat->srv->cur_chat, chat->user->nick,
-            _("\"%s\" not found in %s 's ignore list"),
+            _("\"%1$s\" not found in %2$s 's ignore list"),
             nick, chat->name);
 
     return SRN_ERR;

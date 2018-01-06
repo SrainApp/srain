@@ -36,6 +36,9 @@ Codeing Style
   Script Doc...`` ，可用的提交类型(TYPE) 有： ``feat impl change fix improve
   cleanup refactor update release misc...``
 
+* I18N：所有需要在界面上展示的格式化字符串中的控制字符均使用 numbered argument，
+  即 ``%n$X`` 形式
+
 * Change log: 应分为四类
 
   - Changed: 设计或功能上的改动，可能会带来兼容问题的一定要说明

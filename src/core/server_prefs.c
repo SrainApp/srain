@@ -170,7 +170,7 @@ bool server_prefs_is_server_valid(Server *srv){
 }
 
 SrnRet server_prefs_check(ServerPrefs *prefs){
-    const char *fmt = _("Missing field in ServerPrefs: %s");
+    const char *fmt = _("Missing field in ServerPrefs: %1$s");
 
     if (!server_prefs_is_valid(prefs)){
         return RET_ERR(_("Invalid ServerPrefs instance"));
@@ -311,7 +311,7 @@ char* server_prefs_list_dump(){
 
         srv_prefs = lst->data;
         srv_dump = server_prefs_dump(srv_prefs);
-        g_string_append_printf(str, _("%s"), srv_dump);
+        str = g_string_append(str, srv_dump);
         g_free(srv_dump);
 
         lst = g_slist_next(lst);

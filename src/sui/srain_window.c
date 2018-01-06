@@ -92,7 +92,7 @@ static void show_about_dialog(gpointer user_data){
     GtkWidget *window = user_data;
     const gchar *authors[] = { PACKAGE_AUTHOR " <" PACKAGE_EMAIL ">", NULL };
     const gchar **documentors = authors;
-    const gchar *version = g_strdup_printf(_("%s%s\nRunning against GTK+ %d.%d.%d"),
+    const gchar *version = g_strdup_printf(_("%1$s%2$s\nRunning against GTK+ %3$d.%4$d.%5$d"),
             PACKAGE_VERSION,
             PACKAGE_BUILD,
             gtk_get_major_version(),

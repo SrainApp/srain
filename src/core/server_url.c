@@ -53,14 +53,14 @@ SrnRet server_url_open(const char *url){
 
     suri = soup_uri_new(url);
     if (!suri){
-        ret = RET_ERR(_("Failed to parse \"%s\" as a URL"), url);
+        ret = RET_ERR(_("Failed to parse \"%1$s\" as a URL"), url);
         goto fin;
     }
 
     scheme = soup_uri_get_scheme(suri);
     if (g_ascii_strcasecmp(scheme, "irc") != 0
             && g_ascii_strcasecmp(scheme, "ircs") != 0){
-        ret = RET_ERR(_("Unsupported protocol: %s"), scheme);
+        ret = RET_ERR(_("Unsupported protocol: %1$s"), scheme);
         goto fin;
     }
 
@@ -72,7 +72,7 @@ SrnRet server_url_open(const char *url){
     fragment = soup_uri_get_fragment(suri);
 
     if (str_is_empty(host)){
-        ret = RET_ERR(_("Host is empty in URL \"%s\""), url);
+        ret = RET_ERR(_("Host is empty in URL \"%1$s\""), url);
         goto fin;
     }
 
@@ -82,7 +82,7 @@ SrnRet server_url_open(const char *url){
         // If no such ServerPrefs, create one
         prefs = server_prefs_new(host);
         if (!prefs){
-            ret =  RET_ERR(_("Failed to create server \"%s\""), host);
+            ret =  RET_ERR(_("Failed to create server \"%1$s\""), host);
             goto fin;
         }
         new_prefs = TRUE;
@@ -117,7 +117,7 @@ SrnRet server_url_open(const char *url){
         // If no such Server, create one
         srv = server_new_from_prefs(prefs);
         if (!srv) {
-            ret =  RET_ERR(_("Failed to instantiate server \"%s\""), host);
+            ret =  RET_ERR(_("Failed to instantiate server \"%1$s\""), host);
             goto fin;
         }
     } else {
@@ -132,7 +132,7 @@ SrnRet server_url_open(const char *url){
 
     server_wait_until_registered(srv);
     if (!server_is_registered(srv)){
-        ret =  RET_ERR(_("Failed to register on server \"%s\""), prefs->name);
+        ret =  RET_ERR(_("Failed to register on server \"%1$s\""), prefs->name);
         goto fin;
     }
 

@@ -61,7 +61,7 @@ int regex_filter_add_pattern(Chat *chat, const char *name, const char *pattern){
             np = lst->data;
             if (strcasecmp(np->name, name) == 0){
                 chat_add_error_message_fmt(chat->srv->cur_chat, chat->user->nick,
-                        _("\"%s\" already exists in %s 's regex list"),
+                        _("\"%1$s\" already exists in %2$s 's regex list"),
                         np->name, chat->name);
                 return SRN_ERR;
             }
@@ -73,7 +73,7 @@ int regex_filter_add_pattern(Chat *chat, const char *name, const char *pattern){
     regex = g_regex_new(pattern, 0, 0, &err);
     if (!regex){
         chat_add_error_message_fmt(chat->srv->cur_chat, chat->user->nick,
-                _("Invail pattern: %s"), err->message);
+                _("Invail pattern: %1$s"), err->message);
         return SRN_ERR;
     }
 
@@ -86,7 +86,7 @@ int regex_filter_add_pattern(Chat *chat, const char *name, const char *pattern){
     chat->ignore_regex_list = g_slist_append(chat->ignore_regex_list, np);
 
     chat_add_misc_message_fmt(chat->srv->cur_chat, chat->user->nick,
-            _("\"%s\" has added to %s 's regex list"), np->name, chat->name);
+            _("\"%1$s\" has added to %2$s 's regex list"), np->name, chat->name);
 
     return SRN_OK;
 }
@@ -102,7 +102,7 @@ int regex_filter_rm_pattern(Chat *chat, const char *name){
             np = lst->data;
             if (strcasecmp(np->name, name) == 0){
                 chat_add_misc_message_fmt(chat->srv->cur_chat, chat->user->nick,
-                        _("\"%s\" is removed from %s 's ignore list"),
+                        _("\"%1$s\" is removed from %2$s 's ignore list"),
                         name, chat->name);
 
                 named_pattern_free(np);
@@ -115,7 +115,7 @@ int regex_filter_rm_pattern(Chat *chat, const char *name){
     }
 
     chat_add_error_message_fmt(chat->srv->cur_chat, chat->user->nick,
-            _("\"%s\" not found in %s 's ignore list"),
+            _("\"%1$s\" not found in %2$s 's ignore list"),
             name, chat->name);
 
     return SRN_ERR;

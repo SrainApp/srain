@@ -31,7 +31,7 @@ SircPrefs *sirc_prefs_new(){
 }
 
 SrnRet sirc_prefs_check(SircPrefs *prefs){
-    // const char *fmt = _("Missing field in SircPrefs: %s");
+    // const char *fmt = _("Missing field in SircPrefs: %1$s");
 
     if (!prefs){
         return RET_ERR(_("Invalid ServerPrefs instance"));
@@ -50,7 +50,7 @@ SrnRet sirc_prefs_check(SircPrefs *prefs){
                 SRN_ENCODING, prefs->encoding,
                 NULL, NULL, &err);
         if (err){
-            return RET_ERR(_("Invalid encoding in SircPrefs: %s"),
+            return RET_ERR(_("Invalid encoding in SircPrefs: %1$s"),
                     err->message);
         } else {
             g_free(test);
@@ -69,7 +69,7 @@ char* sirc_prefs_dump(SircPrefs *prefs){
 
     str = g_string_new("");
     g_string_append_printf(str,
-            _("TLS: %s, TLS verify certificate: %s, Encoding: %s"),
+            _("TLS: %1$s, TLS verify certificate: %2$s, Encoding: %3$s"),
             prefs->tls ? t : f, prefs->tls_noverify ? f : t, prefs->encoding);
 
     char *dump = str->str;

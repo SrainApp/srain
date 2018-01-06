@@ -355,12 +355,12 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
     if (g_ascii_strcasecmp(subcmd, "add") == 0){
         prefs = server_prefs_new(name);
         if (!prefs){
-            return RET_ERR(_("Server already exist: %s"), name);
+            return RET_ERR(_("Server already exist: %1$s"), name);
         }
     } else {
         prefs = server_prefs_get_prefs(name);
         if (!prefs){
-            return RET_ERR(_("No such server: %s"), name);
+            return RET_ERR(_("No such server: %1$s"), name);
         }
     }
 
@@ -407,9 +407,9 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
         }
 
         if (g_ascii_strcasecmp(subcmd, "add") == 0){
-            return RET_OK(_("Server \"%s\" is created"), name);
+            return RET_OK(_("Server \"%1$s\" is created"), name);
         } else {
-            return RET_OK(_("Server \"%s\" is motified"), name);
+            return RET_OK(_("Server \"%1$s\" is motified"), name);
         }
     }
 
@@ -422,7 +422,7 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
             }
             srv = server_new_from_prefs(prefs);
             if (!srv) {
-                return RET_ERR(_("Failed to instantiate server \"%s\""), prefs->name);
+                return RET_ERR(_("Failed to instantiate server \"%1$s\""), prefs->name);
             }
         }
 
@@ -436,7 +436,7 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
         server_wait_until_registered(def_srv);
         if (!server_is_registered(srv)){
             def_srv = NULL;
-            return RET_ERR(_("Failed to register on server \"%s\""), prefs->name);
+            return RET_ERR(_("Failed to register on server \"%1$s\""), prefs->name);
         }
 
         return SRN_OK;
@@ -469,17 +469,17 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
 
         prefs = server_prefs_get_prefs(name);
         if (!prefs){
-            return RET_ERR(_("No such server: %s"), name);
+            return RET_ERR(_("No such server: %1$s"), name);
         } else if (prefs->predefined){
-            return RET_ERR(_("Can not remove a predefined server: %s"), name);
+            return RET_ERR(_("Can not remove a predefined server: %1$s"), name);
         } else {
             server_prefs_free(prefs);
         }
 
-        return RET_OK(_("Server \"%s\" is removed"), name);
+        return RET_OK(_("Server \"%1$s\" is removed"), name);
     }
 
-    return RET_ERR(_("Unknown sub command: %s"), subcmd);
+    return RET_ERR(_("Unknown sub command: %1$s"), subcmd);
 }
 
 static SrnRet on_command_connect(Command *cmd, void *user_data){
@@ -499,7 +499,7 @@ static SrnRet on_command_connect(Command *cmd, void *user_data){
 
     prefs = server_prefs_new_from_basename(host);
     if (!prefs){
-        ret = RET_ERR(_("Failed to create server \"%s\""), host);
+        ret = RET_ERR(_("Failed to create server \"%1$s\""), host);
         goto FIN;
     }
 
@@ -552,7 +552,7 @@ static SrnRet on_command_connect(Command *cmd, void *user_data){
 
     srv = server_new_from_prefs(prefs);
     if (!srv) {
-        ret = RET_ERR(_("Failed to instantiate server \"%s\""), prefs->name);
+        ret = RET_ERR(_("Failed to instantiate server \"%1$s\""), prefs->name);
         goto FIN;
     }
 
@@ -562,7 +562,7 @@ static SrnRet on_command_connect(Command *cmd, void *user_data){
     server_wait_until_registered(def_srv);
     if (!server_is_registered(srv)){
         def_srv = NULL;
-        ret = RET_ERR(_("Failed to register on server \"%s\""), prefs->name);
+        ret = RET_ERR(_("Failed to register on server \"%1$s\""), prefs->name);
         goto FIN;
     }
 
@@ -817,7 +817,7 @@ static SrnRet on_command_msg(Command *cmd, void *user_data){
     g_return_val_if_fail(target, SRN_ERR);
 
     if (sirc_cmd_msg(srv->irc, target, msg) == SRN_OK){
-        return RET_OK(_("A message has been sent to \"%s\""), target);
+        return RET_OK(_("A message has been sent to \"%1$s\""), target);
     } else {
         return SRN_ERR;
     }
@@ -846,7 +846,7 @@ static SrnRet on_command_me(Command *cmd, void *user_data){
 
     if (!RET_IS_OK(ret)){
         chat_add_error_message_fmt(chat, chat->user->nick,
-                _("Failed to send action message: %s"), RET_MSG(ret));
+                _("Failed to send action message: %1$s"), RET_MSG(ret));
         return ret;
     }
 

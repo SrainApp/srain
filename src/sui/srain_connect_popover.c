@@ -189,7 +189,7 @@ static void popover_on_visible(GObject *object, GParamSpec *pspec, gpointer data
         ret = sui_event_hdr(NULL, SUI_EVENT_SERVER_LIST, NULL);
         if (!RET_IS_OK(ret)){
             char *msg;
-            msg = g_strdup_printf(_("Failed to get server list: %s"), RET_MSG(ret));
+            msg = g_strdup_printf(_("Failed to get server list: %1$s"), RET_MSG(ret));
             sui_message_box(_("Error"), msg);
             g_free(msg);
         }

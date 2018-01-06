@@ -61,7 +61,7 @@ SrnRet rc_read(){
     err = NULL;
     fins = g_file_read(file, NULL, &err);
     if (err) {
-        ret = RET_ERR(_("%s"), err->message);
+        ret = RET_ERR("%s", err->message);
         goto fin;
     }
 
@@ -72,7 +72,7 @@ SrnRet rc_read(){
         line = g_data_input_stream_read_line(dins, &len, NULL, &err);
 
         if (err) {
-            ret = RET_ERR(_("%s"), err->message);
+            ret = RET_ERR("%s", err->message);
             goto fin;
         }
         if (!line) {
@@ -85,7 +85,7 @@ SrnRet rc_read(){
 
         ret = server_cmd(NULL, line);
         if (!RET_IS_OK(ret)){
-            ret = RET_ERR(_("Command failed at line %d: %s"), nline, RET_MSG(ret));
+            ret = RET_ERR(_("Command failed at line %1$d: %2$s"), nline, RET_MSG(ret));
             g_free(line);
             goto fin;
         }
