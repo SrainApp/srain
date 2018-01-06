@@ -50,6 +50,7 @@ typedef struct {
     SircEventCallback           invite;
     SircEventCallback           ctcp_req;
     SircEventCallback           ctcp_rsp;
+    SircEventCallback           cap;
     SircEventCallback           ping;
     SircEventCallback           pong;
     SircEventCallback           error;

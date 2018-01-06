@@ -43,6 +43,10 @@ int sirc_cmd_pass(SircSession *sirc, const char *pass);
 int sirc_cmd_list(SircSession *sirc, const char *chan, const char *target);
 int sirc_cmd_ctcp_req(SircSession *sirc, const char *target, const char *cmd, const char *msg);
 int sirc_cmd_ctcp_rsp(SircSession *sirc, const char *target, const char *cmd, const char *msg);
+int sirc_cmd_cap_ls(SircSession *sirc, const char *version);
+int sirc_cmd_cap_list(SircSession *sirc);
+int sirc_cmd_cap_req(SircSession *sirc, const char *caps);
+int sirc_cmd_cap_end(SircSession *sirc);
 int sirc_cmd_raw(SircSession *sirc, const char *fmt, ...);
 
 #endif /* __IRC_CMD_H */

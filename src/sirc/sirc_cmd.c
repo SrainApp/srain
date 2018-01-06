@@ -210,6 +210,27 @@ int sirc_cmd_ctcp_rsp(SircSession *sirc, const char *target, const char *cmd,
     }
 }
 
+int sirc_cmd_cap_ls(SircSession *sirc, const char *version){
+    if (version){
+        return sirc_cmd_raw(sirc, "CAP LS %s\r\n", version);
+    } else {
+        return sirc_cmd_raw(sirc, "CAP LS\r\n");
+    }
+}
+
+int sirc_cmd_cap_list(SircSession *sirc){
+    return sirc_cmd_raw(sirc, "CAP LIST\r\n");
+}
+
+int sirc_cmd_cap_req(SircSession *sirc, const char *caps){
+    g_return_val_if_fail(caps, SRN_ERR);
+
+    return sirc_cmd_raw(sirc, "CAP REQ :%s\r\n", caps);
+}
+
+int sirc_cmd_cap_end(SircSession *sirc){
+    return sirc_cmd_raw(sirc, "CAP END\r\n");
+}
 
 int sirc_cmd_raw(SircSession *sirc, const char *fmt, ...){
     char buf[SIRC_BUF_LEN];
