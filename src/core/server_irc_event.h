@@ -71,6 +71,9 @@ void server_irc_event_ctcp_req(SircSession *sirc, const char *event,
 void server_irc_event_ctcp_rsp(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count);
 
+void server_irc_event_cap(SircSession *sirc, const char *event,
+        const char *origin, const char *params[], int count);
+
 void server_irc_event_ping(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count);
 

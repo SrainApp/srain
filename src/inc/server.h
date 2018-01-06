@@ -140,7 +140,9 @@ struct _Server {
     /* Status */
     ServerStatus stat;
     ServerDisconnReason disconn_reason; // The reason of disconnect
-    bool registered;                    // Whether the user has registered(Own a nickname)?
+    bool negotiated;    // Client capability negotiation has finished
+    bool registered;    // User has a nickname
+    bool logined;       // User has identified as a certain account TODO
 
     /* Keep alive */
     unsigned long last_pong;        // Last pong time, in ms

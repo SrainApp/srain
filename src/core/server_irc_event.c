@@ -111,6 +111,10 @@ void server_irc_event_connect(SircSession *sirc, const char *event){
         list = g_slist_next(list);
     }
 
+    /* Start client capability negotiation */
+    srv->negotiated = FALSE;
+    sirc_cmd_cap_ls(srv->irc, "302");
+
     if (!str_is_empty(srv->prefs->passwd)){
         /* Send connection password, you should send it command before sending
          * the NICK/USER combination. */
@@ -769,6 +773,178 @@ void server_irc_event_ctcp_rsp(SircSession *sirc, const char *event,
     } else {
         WARN_FR("Unknown CTCP message: %s", event);
     }
+}
+
+void server_irc_event_cap(SircSession *sirc, const char *event,
+        const char *origin, const char *params[], int count){
+    bool multiline;
+    const char *cap_event;
+    const char *rawcaps;
+    char **caps;
+    Server *srv;
+    SircCap *scap;
+
+    srv = sirc_get_ctx(sirc);
+    g_return_if_fail(server_is_valid(srv));
+    scap = sirc_get_cap(sirc);
+    g_return_if_fail(scap);
+    g_return_if_fail(count >= 3);
+
+    cap_event = params[1];
+    rawcaps = params[2];
+
+    /* Multi line replies */
+    multiline = ((g_ascii_strcasecmp(cap_event, "LS") == 0
+                || g_ascii_strcasecmp(cap_event, "LIST") == 0)
+            && g_ascii_strcasecmp(rawcaps, "*") == 0);
+    if (multiline){
+        g_return_if_fail(count == 4);
+        rawcaps = params[3];
+    }
+    caps = g_strsplit(rawcaps, " ", 0);
+
+    if (g_ascii_strcasecmp(cap_event, "LS") == 0){
+        GString *buf;
+
+        buf = g_string_new(NULL);
+        for (int i = 0; caps[i]; i++){
+            const char *name;
+            char *value;
+
+            name = caps[i];
+            value = strchr(caps[i], '='); // <name>[=<value>]
+            if (value) {
+                *value = '\0';
+                value++; // Skip '='
+            }
+            // TODO: process SASL value
+            if (sirc_cap_find(scap, name)){
+                g_string_append_printf(buf, "%s ", name);
+            }
+        }
+
+        chat_add_misc_message_fmt(srv->chat, origin,
+                _("Server capabilities: %s"), rawcaps);
+        if (buf->len > 0){
+            chat_add_misc_message_fmt(srv->chat, origin,
+                    _("Requesting capabilities: %s"), buf->str);
+            sirc_cmd_cap_req(sirc, buf->str);
+            /* If CAP LS response is spread into multilines, the negotiation
+             * status should be kept. Otherwise, end the negotiation. The
+             * actually actionof end negotiation happens at ACK or NAK event.
+             */
+            srv->negotiated = !multiline;
+        } else {
+            chat_add_misc_message_fmt(srv->chat, origin,
+                    _("No capability to be requested"));
+            srv->negotiated = TRUE;
+            sirc_cmd_cap_end(sirc); // End negotiation
+        }
+
+        g_string_free(buf, TRUE);
+    } else if (g_ascii_strcasecmp(cap_event, "NEW") == 0){
+        GString *buf;
+
+        buf = g_string_new(NULL);
+        for (int i = 0; caps[i]; i++){
+            const char *name;
+            char *value;
+
+            name = caps[i];
+            value = strchr(caps[i], '='); // <name>[=<value>]
+            if (value) {
+                *value = '\0';
+                value++; // Skip '='
+            }
+            // TODO: process SASL value
+            if (sirc_cap_find(scap, name)){
+                g_string_append_printf(buf, "%s ", name);
+            }
+        }
+
+        chat_add_misc_message_fmt(srv->chat, origin,
+                _("Server has new capabilities: %s"), rawcaps);
+        if (buf->len > 0){
+            chat_add_misc_message_fmt(srv->chat, origin,
+                    _("Requesting capabilities: %s"), buf->str);
+            sirc_cmd_cap_req(sirc, buf->str);
+        } else {
+            chat_add_misc_message_fmt(srv->chat, origin,
+                    _("No capability to be requested"));
+        }
+
+        g_string_free(buf, TRUE);
+    } else if (g_ascii_strcasecmp(cap_event, "LIST") == 0){
+        if (strlen(rawcaps) > 0){
+            chat_add_misc_message_fmt(srv->chat, origin,
+                    _("Acknowledged capabilities: %s"), rawcaps);
+        } else {
+            chat_add_misc_message_fmt(srv->chat, origin,
+                    _("No acknowledged capability"));
+        }
+    } else if (g_ascii_strcasecmp(cap_event, "ACK") == 0){
+        for (int i = 0; caps[i]; i++){
+            bool enable;
+            const char *name;
+
+            name = caps[i];
+            switch (name[0]) {
+                case '-': // Disable modifier
+                    enable = FALSE;
+                    name++;
+                    break;
+                case '~': // ACK modifier
+                case '=': // Sticky modifier
+                    // TODO: deprecated, skip for now
+                    name++;
+                    // Fallthrough
+                default:
+                    enable = TRUE;
+            }
+
+            if (!RET_IS_OK(sirc_cap_set(scap, name, enable))){
+                WARN_FR("Unknown capability: %s", name);
+            }
+        }
+
+        if (srv->negotiated){
+            sirc_cmd_cap_list(sirc);
+            sirc_cmd_cap_end(sirc); // End negotiation
+        }
+    } else if (g_ascii_strcasecmp(cap_event, "DEL") == 0){
+        for (int i = 0; caps[i]; i++){
+            bool enable;
+            const char *name;
+
+            name = caps[i];
+            switch (name[0]) {
+                case '-': // Disable modifier
+                case '~': // ACK modifier
+                case '=': // Sticky modifier
+                    // TODO: deprecated, skip for now
+                    name++;
+                    // Fallthrough
+                default:
+                    enable = FALSE;
+            }
+
+            if (!RET_IS_OK(sirc_cap_set(scap, name, enable))){
+                WARN_FR("Unknown capability: %s", name);
+            }
+        }
+
+        chat_add_misc_message_fmt(srv->chat, origin,
+                _("Server has deleted capabilities: %s"), rawcaps);
+    } else if (g_ascii_strcasecmp(cap_event, "NAK") == 0){
+        if (srv->negotiated){
+            sirc_cmd_cap_list(sirc);
+            sirc_cmd_cap_end(sirc); // End negotiation
+        }
+    } else {
+        g_warn_if_reached();
+    }
+
+    g_strfreev(caps);
 }
 
 void server_irc_event_ping(SircSession *sirc, const char *event,

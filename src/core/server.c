@@ -86,6 +86,7 @@ void server_init_and_run(int argc, char *argv[]){
     irc_events.invite = server_irc_event_invite;
     irc_events.ctcp_req = server_irc_event_ctcp_req;
     irc_events.ctcp_rsp = server_irc_event_ctcp_rsp;
+    irc_events.cap = server_irc_event_cap;
     irc_events.ping = server_irc_event_ping;
     irc_events.pong = server_irc_event_pong;
     irc_events.error = server_irc_event_error;
@@ -133,6 +134,7 @@ Server* server_new_from_prefs(ServerPrefs *prefs){
 
     srv->stat = SERVER_DISCONNECTED;
     srv->disconn_reason = SERVER_DISCONN_REASON_CLOSE;
+    srv->negotiated = FALSE;
     srv->registered = FALSE;
 
     srv->prefs = prefs;
