@@ -102,6 +102,8 @@ void decorator_init(){
  * multiple times for single Message instance.
  */
 SrnRet decorate_message(Message *msg, DecoratorFlag flag, void *user_data){
+    g_return_val_if_fail(msg, SRN_ERR);
+
     for (int i = 0; i < MAX_DECORATOR; i++){
         DecoratorContext *ctx;
 

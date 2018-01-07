@@ -93,6 +93,8 @@ void filter_init(){
 bool filter_message(const Message *msg, FilterFlag flag, void *user_data){
     bool ret = TRUE;
 
+    g_return_val_if_fail(msg, FALSE);
+
     for (int i = 0; i < MAX_FILTER; i++){
         FilterContext *ctx;
 
