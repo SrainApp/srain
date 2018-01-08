@@ -30,6 +30,7 @@ If you found any mistake, feel free to file issue or pull request.
     misc
     faq
     changelog
+    support
     resources
 
 
