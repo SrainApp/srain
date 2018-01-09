@@ -29,10 +29,6 @@ typedef struct _SircCap SircCap;
 typedef struct _SircCapSupport SircCapSupport;
 
 struct _SircCap {
-    /* Mulitline replies flag */
-    bool ls_end;
-    bool list_end;
-
     /* Capabilities */
     // Version 3.1
     bool identify_msg;
@@ -51,21 +47,18 @@ struct _SircCap {
     // Vendor-Specific
     bool znc_server_time_iso;
     bool znc_server_time;
-
-    SircSession *irc;
-    SircCapSupport *supported;
 };
 
 struct _SircCapSupport {
     const char *name;
-    bool *enabled;
-    const ptrdiff_t offset;
+    ptrdiff_t offset;
+    bool (*is_support)(const char *);
 };
 
-SircCap* sirc_cap_new(SircSession *sirc);
+SircCap* sirc_cap_new();
 void sirc_cap_free(SircCap *scap);
-SrnRet sirc_cap_set(SircCap *scap, const char *name, bool enable);
-bool sirc_cap_find(SircCap *scap, const char *name);
+SrnRet sirc_cap_enable(SircCap *scap, const char *name, bool enable);
+bool sirc_cap_is_support(SircCap *scap, const char *name, const char *value);
 char* sirc_cap_dump(SircCap *scap);
 
 #endif /* __SIRC_CAP_H */

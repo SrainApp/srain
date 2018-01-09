@@ -36,6 +36,9 @@
 #include "log.h"
 #include "i18n.h"
 
+static bool sasl_is_support(const char *value);
+
+/* Global cap support table */
 static SircCapSupport supported_caps[] = {
     // {
     //     .name = "identify-msg",
@@ -59,11 +62,12 @@ static SircCapSupport supported_caps[] = {
     //     .name = "extended-join",
     //     .offset = offsetof(SircCap, extended_join),
     // },
-    // {
-    //     // Handled manually
-    //     .name = "sasl",
-    //     .offset = offsetof(SircCap, sasl),
-    // },
+    {
+        // Handled manually
+        .name = "sasl",
+        .offset = offsetof(SircCap, sasl),
+        .is_support = sasl_is_support,
+    },
 
     // /* IRCv3.2 */
     // {
@@ -74,11 +78,11 @@ static SircCapSupport supported_caps[] = {
     //     .name = "userhost-in-names",
     //     .offset = offsetof(SircCap, userhost_in_names),
     // },
-    // {
-    //     // Auto offset on IRCv3.2 and aboved
-    //     .name = "cap-notify",
-    //     .offset = offsetof(SircCap, cap_notify),
-    // },
+    {
+        // Auto enabled on IRCv3.2 and aboved
+        .name = "cap-notify",
+        .offset = offsetof(SircCap, cap_notify),
+    },
     // {
     //     .name = "chghost",
     //     .offset = offsetof(SircCap, chghost),
@@ -99,21 +103,10 @@ static SircCapSupport supported_caps[] = {
     },
 };
 
-SircCap* sirc_cap_new(SircSession *sirc){
+SircCap* sirc_cap_new(){
     SircCap *scap;
 
     scap = g_malloc0(sizeof(SircCap));
-    scap->supported = g_memdup(supported_caps, sizeof(supported_caps));
-
-    /* Rebase pointers */
-    for (int i = 0; scap->supported[i].name; i++) {
-        scap->supported[i].enabled =
-            (void *)scap + scap->supported[i].offset;
-    }
-
-    scap->irc = sirc;
-    scap->ls_end = TRUE;
-    scap->list_end = TRUE;
 
     return scap;
 }
@@ -121,28 +114,29 @@ SircCap* sirc_cap_new(SircSession *sirc){
 void sirc_cap_free(SircCap *scap){
     g_return_if_fail(scap);
 
-    g_free(scap->supported);
     g_free(scap);
 }
 
-SrnRet sirc_cap_set(SircCap *scap, const char *name, bool enable){
+SrnRet sirc_cap_enable(SircCap *scap, const char *name, bool enable){
     g_return_val_if_fail(scap, SRN_ERR);
 
-    for (int i = 0; scap->supported[i].name; i++){
-        if (g_ascii_strcasecmp(name, scap->supported[i].name) == 0){
-            *(scap->supported[i].enabled) = enable;
+    for (int i = 0; supported_caps[i].name; i++){
+        if (g_ascii_strcasecmp(name, supported_caps[i].name) == 0){
+            bool *cap = (void *)scap + supported_caps[i].offset;
+            *cap = enable;
             return SRN_OK;
         }
     }
     return SRN_ERR;
 }
 
-bool sirc_cap_find(SircCap *scap, const char *name){
+bool sirc_cap_is_support(SircCap *scap, const char *name, const char *value){
     g_return_val_if_fail(scap, FALSE);
 
-    for (int i = 0; scap->supported[i].name; i++){
-        if (g_ascii_strcasecmp(name, scap->supported[i].name) == 0){
-            return TRUE;
+    for (int i = 0; supported_caps[i].name; i++){
+        if (g_ascii_strcasecmp(name, supported_caps[i].name) == 0){
+            return !supported_caps[i].is_support
+                || supported_caps[i].is_support(value);
         }
     }
     return FALSE;
@@ -155,9 +149,10 @@ char* sirc_cap_dump(SircCap *scap){
     g_return_val_if_fail(scap, NULL);
 
     str = g_string_new(_("Enabled capabilities:"));
-    for (int i = 0; scap->supported[i].name; i++){
-        if (*(scap->supported[i].enabled)){
-            g_string_append_printf(str, " %s", scap->supported[i].name);
+    for (int i = 0; supported_caps[i].name; i++){
+        bool *cap = (void *)scap + supported_caps[i].offset;
+        if (*cap){
+            g_string_append_printf(str, " %s", supported_caps[i].name);
         }
     }
 
@@ -165,4 +160,27 @@ char* sirc_cap_dump(SircCap *scap){
     g_string_free(str, FALSE);
 
     return res;
+}
+
+static bool sasl_is_support(const char *value){
+    bool supported;
+    char **mechs;
+    const char *supported_mechs[] = { "PLAIN", NULL};
+
+    if (!value) return TRUE;
+
+    supported = FALSE;
+    mechs = g_strsplit(value, ",", 0);
+    for (int i = 0; mechs[i]; i++){
+        for (int j = 0; supported_mechs[j]; j++){
+            if (g_ascii_strcasecmp(mechs[i], supported_mechs[j]) == 0){
+                DBG_FR("%s is supported", mechs[i]);
+                supported = TRUE;
+                break;
+            }
+        }
+    }
+    g_strfreev(mechs);
+
+    return supported;
 }
