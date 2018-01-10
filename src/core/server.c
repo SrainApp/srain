@@ -31,6 +31,7 @@
 
 #include "server.h"
 #include "server_cmd.h"
+#include "server_cap.h"
 #include "server_irc_event.h"
 #include "server_ui_event.h"
 
@@ -138,6 +139,7 @@ Server* server_new_from_prefs(ServerPrefs *prefs){
     srv->registered = FALSE;
 
     srv->prefs = prefs;
+    srv->cap = server_cap_new();
 
     srv->chat = chat_new(srv, META_SERVER);
     if (!srv->chat) goto bad;
@@ -179,6 +181,10 @@ void server_free(Server *srv){
     g_return_if_fail(server_is_valid(srv));
 
     /* srv->prefs is hold by server_prefs_list, don't free it. */
+    if (srv->cap) {
+        server_cap_free(srv->cap);
+        srv->cap = NULL;
+    }
 
     if (srv->user != NULL){
         user_free(srv->user);

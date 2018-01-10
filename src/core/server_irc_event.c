@@ -782,12 +782,9 @@ void server_irc_event_cap(SircSession *sirc, const char *event,
     const char *rawcaps;
     char **caps;
     Server *srv;
-    SircCap *scap;
 
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(server_is_valid(srv));
-    scap = sirc_get_cap(sirc);
-    g_return_if_fail(scap);
     g_return_if_fail(count >= 3);
 
     cap_event = params[1];
@@ -817,7 +814,7 @@ void server_irc_event_cap(SircSession *sirc, const char *event,
                 *value = '\0';
                 value++; // Skip '='
             }
-            if (sirc_cap_is_support(scap, name, value)){
+            if (server_cap_is_support(srv->cap, name, value)){
                 g_string_append_printf(buf, "%s ", name);
             }
         }
@@ -855,7 +852,7 @@ void server_irc_event_cap(SircSession *sirc, const char *event,
                 *value = '\0';
                 value++; // Skip '='
             }
-            if (sirc_cap_is_support(scap, name, value)){
+            if (server_cap_is_support(srv->cap, name, value)){
                 g_string_append_printf(buf, "%s ", name);
             }
         }
@@ -901,7 +898,7 @@ void server_irc_event_cap(SircSession *sirc, const char *event,
             }
 
             if (!str_is_empty(name) &&
-                    !RET_IS_OK(sirc_cap_enable(scap, name, enable))){
+                    !RET_IS_OK(server_cap_enable(srv->cap, name, enable))){
                 WARN_FR("Unknown capability: [%s]", name);
             }
         }
@@ -927,7 +924,7 @@ void server_irc_event_cap(SircSession *sirc, const char *event,
                     enable = FALSE;
             }
 
-            if (!RET_IS_OK(sirc_cap_enable(scap, name, enable))){
+            if (!RET_IS_OK(server_cap_enable(srv->cap, name, enable))){
                 WARN_FR("Unknown capability: %s", name);
             }
         }

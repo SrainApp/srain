@@ -16,19 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SIRC_CAP_H
-#define __SIRC_CAP_H
+#ifndef __SERVER_CAP_H
+#define __SERVER_CAP_H
 
-#ifndef __IN_SIRC_H
-	#error This file should not be included directly, include just sirc.h
-#endif
-
+#include "srain.h"
 #include "ret.h"
 
-typedef struct _SircCap SircCap;
-typedef struct _SircCapSupport SircCapSupport;
+typedef struct _ServerCap ServerCap;
 
-struct _SircCap {
+struct _ServerCap {
     /* Capabilities */
     // Version 3.1
     bool identify_msg;
@@ -49,16 +45,10 @@ struct _SircCap {
     bool znc_server_time;
 };
 
-struct _SircCapSupport {
-    const char *name;
-    ptrdiff_t offset;
-    bool (*is_support)(const char *);
-};
+ServerCap* server_cap_new();
+void server_cap_free(ServerCap *scap);
+SrnRet server_cap_enable(ServerCap *scap, const char *name, bool enable);
+bool server_cap_is_support(ServerCap *scap, const char *name, const char *value);
+char* server_cap_dump(ServerCap *scap);
 
-SircCap* sirc_cap_new();
-void sirc_cap_free(SircCap *scap);
-SrnRet sirc_cap_enable(SircCap *scap, const char *name, bool enable);
-bool sirc_cap_is_support(SircCap *scap, const char *name, const char *value);
-char* sirc_cap_dump(SircCap *scap);
-
-#endif /* __SIRC_CAP_H */
+#endif /* __SERVER_CAP_H */

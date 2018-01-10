@@ -17,7 +17,7 @@
  */
 
 /**
- * @file sirc_cap.c
+ * @file server_cap.c
  * @brief IRC client capability negotiation support, version 3.2
  * @author Shengyu Zhang <srain@srain.im>
  * @version 0.06.3
@@ -32,70 +32,78 @@
 #include <string.h>
 #include <glib.h>
 
-#include "sirc/sirc.h"
+#include "server_cap.h"
+
+#include "srain.h"
 #include "log.h"
 #include "i18n.h"
+
+typedef struct _ServerCapSupport ServerCapSupport;
+struct _ServerCapSupport {
+    const char *name;
+    ptrdiff_t offset;
+    bool (*is_support)(const char *);
+};
 
 static bool sasl_is_support(const char *value);
 
 /* Global cap support table */
-static SircCapSupport supported_caps[] = {
+static ServerCapSupport supported_caps[] = {
     // {
     //     .name = "identify-msg",
-    //     .offset = offsetof(SircCap, identify_msg),
+    //     .offset = offsetof(ServerCap, identify_msg),
     // },
 
     // /* IRCv3.1 */
     // {
     //     .name = "multi-prefix",
-    //     .offset = offsetof(SircCap, mulit_prefix),
+    //     .offset = offsetof(ServerCap, mulit_prefix),
     // },
     // {
     //     .name = "away-notify",
-    //     .offset = offsetof(SircCap, away_notify),
+    //     .offset = offsetof(ServerCap, away_notify),
     // },
     // {
     //     .name = "account-notify",
-    //     .offset = offsetof(SircCap, account_notify),
+    //     .offset = offsetof(ServerCap, account_notify),
     // },
     // {
     //     .name = "extended-join",
-    //     .offset = offsetof(SircCap, extended_join),
+    //     .offset = offsetof(ServerCap, extended_join),
     // },
     {
-        // Handled manually
         .name = "sasl",
-        .offset = offsetof(SircCap, sasl),
+        .offset = offsetof(ServerCap, sasl),
         .is_support = sasl_is_support,
     },
 
     // /* IRCv3.2 */
     // {
     //     .name = "server-time",
-    //     .offset = offsetof(SircCap, server_time),
+    //     .offset = offsetof(ServerCap, server_time),
     // },
     // {
     //     .name = "userhost-in-names",
-    //     .offset = offsetof(SircCap, userhost_in_names),
+    //     .offset = offsetof(ServerCap, userhost_in_names),
     // },
     {
         // Auto enabled on IRCv3.2 and aboved
         .name = "cap-notify",
-        .offset = offsetof(SircCap, cap_notify),
+        .offset = offsetof(ServerCap, cap_notify),
     },
     // {
     //     .name = "chghost",
-    //     .offset = offsetof(SircCap, chghost),
+    //     .offset = offsetof(ServerCap, chghost),
     // },
 
     // /* ZNC */
     // {
     //     .name = "znc.in/server-time-iso",
-    //     .offset = offsetof(SircCap, znc_server_time_iso),
+    //     .offset = offsetof(ServerCap, znc_server_time_iso),
     // },
     // {
     //     .name = "znc.in/server-time",
-    //     .offset = offsetof(SircCap, znc_server_time),
+    //     .offset = offsetof(ServerCap, znc_server_time),
     // },
     {
         // END
@@ -103,21 +111,21 @@ static SircCapSupport supported_caps[] = {
     },
 };
 
-SircCap* sirc_cap_new(){
-    SircCap *scap;
+ServerCap* server_cap_new(){
+    ServerCap *scap;
 
-    scap = g_malloc0(sizeof(SircCap));
+    scap = g_malloc0(sizeof(ServerCap));
 
     return scap;
 }
 
-void sirc_cap_free(SircCap *scap){
+void server_cap_free(ServerCap *scap){
     g_return_if_fail(scap);
 
     g_free(scap);
 }
 
-SrnRet sirc_cap_enable(SircCap *scap, const char *name, bool enable){
+SrnRet server_cap_enable(ServerCap *scap, const char *name, bool enable){
     g_return_val_if_fail(scap, SRN_ERR);
 
     for (int i = 0; supported_caps[i].name; i++){
@@ -130,7 +138,7 @@ SrnRet sirc_cap_enable(SircCap *scap, const char *name, bool enable){
     return SRN_ERR;
 }
 
-bool sirc_cap_is_support(SircCap *scap, const char *name, const char *value){
+bool server_cap_is_support(ServerCap *scap, const char *name, const char *value){
     g_return_val_if_fail(scap, FALSE);
 
     for (int i = 0; supported_caps[i].name; i++){
@@ -142,7 +150,7 @@ bool sirc_cap_is_support(SircCap *scap, const char *name, const char *value){
     return FALSE;
 }
 
-char* sirc_cap_dump(SircCap *scap){
+char* server_cap_dump(ServerCap *scap){
     char *res;
     GString *str;
 

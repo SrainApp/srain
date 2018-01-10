@@ -23,6 +23,7 @@
 
 #include "sirc/sirc.h"
 #include "sui/sui.h"
+#include "server_cap.h"
 #include "ret.h"
 
 /* In millseconds */
@@ -150,6 +151,7 @@ struct _Server {
     unsigned long reconn_interval;  // Interval of next reconnect, in ms
     int ping_timer;
 
+    ServerCap   *cap;   // Server capabilities
     ServerPrefs *prefs; // All required static informations
     User *user;         // Used to store your nick, username, realname
     Chat *chat;         // Hold all messages that do not belong to any other Chat

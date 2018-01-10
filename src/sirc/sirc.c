@@ -48,7 +48,6 @@ struct _SircSession {
 
     SircEvents *events; // Event callbacks
     SircPrefs *prefs;
-    SircCap *cap;
     void *ctx;
 };
 
@@ -71,7 +70,6 @@ SircSession* sirc_new_session(SircEvents *events, SircPrefs *prefs){
 
     sirc->events = events;
     sirc->prefs = prefs;
-    sirc->cap = sirc_cap_new(sirc);
     /* sirc->bufptr = 0; // via g_malloc0() */
     /* sirc->stream = NULL; // via g_malloc0() */
     sirc->client = g_socket_client_new();
@@ -91,8 +89,6 @@ SircSession* sirc_new_session(SircEvents *events, SircPrefs *prefs){
 void sirc_free_session(SircSession *sirc){
     g_return_if_fail(sirc);
 
-    sirc_cap_free(sirc->cap);
-
     if (sirc->client){
         g_object_unref(sirc->client);
         sirc->client = NULL;
@@ -111,12 +107,6 @@ SircEvents *sirc_get_events(SircSession *sirc){
     g_return_val_if_fail(sirc, NULL);
 
     return sirc->events;
-}
-
-SircCap *sirc_get_cap(SircSession *sirc){
-    g_return_val_if_fail(sirc, NULL);
-
-    return sirc->cap;
 }
 
 void sirc_set_ctx(SircSession *sirc, void *ctx){

@@ -39,7 +39,6 @@ typedef struct _SircSession SircSession;
 #include "sirc_numeric.h"
 #include "sirc_utils.h"
 #include "sirc_prefs.h"
-#include "sirc_cap.h"
 #undef __IN_SIRC_H
 
 SircSession* sirc_new_session(SircEvents *events, SircPrefs *prefs);
@@ -49,7 +48,6 @@ void sirc_disconnect(SircSession *sirc);
 int sirc_get_fd(SircSession *sirc);
 GIOStream* sirc_get_stream(SircSession *sirc);
 SircEvents* sirc_get_events(SircSession *sirc);
-SircCap *sirc_get_cap(SircSession *sirc);
 void* sirc_get_ctx(SircSession *sirc);
 void sirc_set_ctx(SircSession *sirc, void *ctx);
 
