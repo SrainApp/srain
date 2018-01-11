@@ -331,9 +331,18 @@ static SrnRet read_server_prefs_from_server(config_setting_t *server,
     config_setting_t *user;
     user = config_setting_lookup(server, "user");
     if (user){
+        char *login_method = NULL;
+
+        config_setting_lookup_string_ex(user, "login_method", &login_method);
+        if (login_method) {
+            prefs->login_method = login_method_from_string(login_method);
+            g_free(login_method);
+        }
+
         config_setting_lookup_string_ex(user, "nickname", &prefs->nickname);
         config_setting_lookup_string_ex(user, "username", &prefs->username);
         config_setting_lookup_string_ex(user, "realname", &prefs->realname);
+        config_setting_lookup_string_ex(user, "passwd", &prefs->user_passwd);
     }
 
     /* Read server.default_messages */

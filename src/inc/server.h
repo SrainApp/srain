@@ -52,6 +52,7 @@ typedef struct _Chat Chat;
 typedef enum   _ServerStatus ServerStatus;
 typedef enum   _ServerDisconnReason ServerDisconnReason;
 typedef struct _Server Server;
+typedef enum   _LoginMethod LoginMethod;
 typedef struct _ServerPrefs ServerPrefs;
 
 /*enum _UserType {
@@ -162,6 +163,15 @@ struct _Server {
     SircSession *irc;
 };
 
+enum _LoginMethod {
+    LOGIN_NONE,
+    LOGIN_PASS,
+    LOGIN_NICKSERV,
+    LOGIN_MSG_NICKSERV,
+    LOGIN_SASL_PLAIN,
+    LOGIN_UNKNOWN,
+};
+
 struct _ServerPrefs {
     /* For specificed server */
     bool predefined;  /* A ServerPrefs is predefined when it is loaded from
@@ -177,6 +187,8 @@ struct _ServerPrefs {
     char *nickname;
     char *username;
     char *realname;
+    char *user_passwd;
+    LoginMethod login_method;
 
     /* Default message */
     char *part_message;
@@ -243,6 +255,8 @@ SrnRet server_prefs_check(ServerPrefs *prefs);
 char* server_prefs_dump(ServerPrefs *prefs);
 void server_prefs_free(ServerPrefs *prefs);
 char* server_prefs_list_dump();
+char* login_method_to_string(LoginMethod login);
+LoginMethod login_method_from_string(const char *str);
 
 SrnRet server_url_open(const char *url);
 

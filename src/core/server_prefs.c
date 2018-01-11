@@ -171,6 +171,7 @@ bool server_prefs_is_server_valid(Server *srv){
 
 SrnRet server_prefs_check(ServerPrefs *prefs){
     const char *fmt = _("Missing field in ServerPrefs: %1$s");
+    const char *invalid = _("Invalid value in ServerPrefs: %1$s");
 
     if (!server_prefs_is_valid(prefs)){
         return RET_ERR(_("Invalid ServerPrefs instance"));
@@ -198,6 +199,15 @@ SrnRet server_prefs_check(ServerPrefs *prefs){
 
     if (str_is_empty(prefs->realname)) {
         str_assign(&prefs->realname, prefs->nickname);
+    }
+
+    if (prefs->login_method < LOGIN_NONE
+            || prefs->login_method >= LOGIN_UNKNOWN) {
+        return RET_ERR(invalid, "login_method");
+    }
+
+    if (str_is_empty(prefs->user_passwd)) {
+        // User Password can be NULL
     }
 
     if (str_is_empty(prefs->part_message)) {
@@ -245,6 +255,7 @@ void server_prefs_free(ServerPrefs *prefs){
     str_assign(&prefs->nickname, NULL);
     str_assign(&prefs->username, NULL);
     str_assign(&prefs->realname, NULL);
+    str_assign(&prefs->user_passwd, NULL);
     str_assign(&prefs->part_message, NULL);
     str_assign(&prefs->kick_message, NULL);
     str_assign(&prefs->away_message, NULL);
@@ -263,6 +274,8 @@ void server_prefs_free(ServerPrefs *prefs){
 
 char* server_prefs_dump(ServerPrefs *prefs){
     char *passwd;
+    char *user_passwd;
+    char *login_method;
     char *dump;
     char *irc_dump;
     GString *str;
@@ -272,9 +285,16 @@ char* server_prefs_dump(ServerPrefs *prefs){
     if (!str_is_empty(prefs->passwd)){
         passwd = "********";
     } else {
-        passwd = NULL;
+        passwd = _("None");
     }
 
+    if (!str_is_empty(prefs->user_passwd)){
+        user_passwd = "********";
+    } else {
+        user_passwd = _("None");
+    }
+
+    login_method = login_method_to_string(prefs->login_method);
     irc_dump = sirc_prefs_dump(prefs->irc);
 
     str = g_string_new("");
@@ -282,14 +302,17 @@ char* server_prefs_dump(ServerPrefs *prefs){
             _("*** Server name: %s, Instance: %p\n"
                 "\tHost: %s, Port: %d, Password: %s\n"
                 "\tNickname: %s, Username: %s, Realname: %s\n"
+                "\tLogin method: %s, User password: %s\n"
                 "\tPart: %s, Kick: %s, Away: %s, Quit: %s\n"
                 "\tIRC configuration: %s"),
             prefs->name, prefs->srv,
             prefs->host, prefs->port, passwd,
             prefs->nickname, prefs->username, prefs->realname,
+            login_method, user_passwd,
             prefs->part_message, prefs->kick_message, prefs->away_message, prefs->quit_message,
             irc_dump);
 
+    g_free(login_method);
     g_free(irc_dump);
     dump = str->str;
     g_string_free(str, FALSE);
@@ -322,4 +345,51 @@ char* server_prefs_list_dump(){
     g_string_free(str, FALSE);
 
     return dump;
+}
+
+char* login_method_to_string(LoginMethod lm){
+    const char *str;
+
+    switch (lm) {
+        case LOGIN_NONE:
+            str = "none";
+            break;
+        case LOGIN_PASS:
+            str = "pass";
+            break;
+        case LOGIN_NICKSERV:
+            str = "nickserv";
+            break;
+        case LOGIN_MSG_NICKSERV:
+            str = "msg_nickserv";
+            break;
+        case LOGIN_SASL_PLAIN:
+            str = "sasl_plain";
+            break;
+        case LOGIN_UNKNOWN:
+        default:
+            str = "unknown";
+    }
+
+    return g_strdup(str);
+}
+
+LoginMethod login_method_from_string(const char *str){
+    LoginMethod login;
+
+    if (str == NULL || g_ascii_strcasecmp(str, "none") == 0){
+        login = LOGIN_NONE;
+    } else if (g_ascii_strcasecmp(str, "pass") == 0){
+        login = LOGIN_PASS;
+    } else if (g_ascii_strcasecmp(str, "nickserv") == 0){
+        login = LOGIN_NICKSERV;
+    } else if (g_ascii_strcasecmp(str, "msg_nickserv") == 0){
+        login = LOGIN_MSG_NICKSERV;
+    } else if (g_ascii_strcasecmp(str, "sasl_plain") == 0){
+        login = LOGIN_SASL_PLAIN;
+    } else {
+        login = LOGIN_UNKNOWN;
+    }
+
+    return login;
 }
