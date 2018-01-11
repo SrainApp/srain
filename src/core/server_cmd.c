@@ -336,11 +336,10 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
 
     if (g_ascii_strcasecmp(subcmd, "list") == 0){
         char *dump = server_prefs_list_dump();
-        char static_dump[1024];
-        g_strlcpy(static_dump, dump, sizeof(static_dump));
+        ret = RET_OK("%s", dump);
         g_free(dump);
 
-        return RET_OK("%s", static_dump);
+        return ret;
     }
 
     name = command_get_arg(cmd, 0);
