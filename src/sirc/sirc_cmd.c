@@ -232,6 +232,12 @@ int sirc_cmd_cap_end(SircSession *sirc){
     return sirc_cmd_raw(sirc, "CAP END\r\n");
 }
 
+int sirc_cmd_authenticate(SircSession *sirc, const char *msg){
+    g_return_val_if_fail(msg, SRN_ERR);
+
+    return sirc_cmd_raw(sirc, "AUTHENTICATE %s\r\n", msg);
+}
+
 int sirc_cmd_raw(SircSession *sirc, const char *fmt, ...){
     char buf[SIRC_BUF_LEN];
     int len = 0;

@@ -47,6 +47,7 @@ int sirc_cmd_cap_ls(SircSession *sirc, const char *version);
 int sirc_cmd_cap_list(SircSession *sirc);
 int sirc_cmd_cap_req(SircSession *sirc, const char *caps);
 int sirc_cmd_cap_end(SircSession *sirc);
+int sirc_cmd_authenticate(SircSession *sirc, const char *msg);
 int sirc_cmd_raw(SircSession *sirc, const char *fmt, ...);
 
 #endif /* __IRC_CMD_H */

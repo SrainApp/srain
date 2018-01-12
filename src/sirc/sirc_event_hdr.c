@@ -171,6 +171,10 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
              g_return_if_fail(events->cap);
              events->cap(sirc, event, origin, params, imsg->nparam);
          }
+         else if (strcmp(event, "AUTHENTICATE") == 0){
+             g_return_if_fail(events->authenticate);
+             events->authenticate(sirc, event, origin, params, imsg->nparam);
+         }
          else if (strcmp(event, "PING") == 0){
              g_return_if_fail(events->ping);
              events->ping(sirc, event, origin, params, imsg->nparam);
