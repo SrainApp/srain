@@ -54,6 +54,9 @@ typedef enum   _ServerDisconnReason ServerDisconnReason;
 typedef struct _Server Server;
 typedef enum   _LoginMethod LoginMethod;
 typedef struct _ServerPrefs ServerPrefs;
+typedef struct _EnabledCap EnabledCap;
+typedef struct _ServerCap ServerCap;
+
 
 /*enum _UserType {
     USER_CHIGUA,    // No prefix
@@ -144,7 +147,7 @@ struct _Server {
     ServerDisconnReason disconn_reason; // The reason of disconnect
     bool negotiated;    // Client capability negotiation has finished
     bool registered;    // User has a nickname
-    bool logined;       // User has identified as a certain account TODO
+    bool logined;       // User has identified as a certain account
 
     /* Keep alive */
     unsigned long last_pong;        // Last pong time, in ms
@@ -199,6 +202,34 @@ struct _ServerPrefs {
     SircPrefs *irc;
 
     // ...
+    Server *srv;
+};
+
+struct _EnabledCap {
+    // Version 3.1
+    bool identify_msg;
+    bool mulit_prefix;
+    bool away_notify;
+    bool account_notify;
+    bool extended_join;
+    bool sasl;
+
+    // Version 3.2
+    bool server_time;
+    bool userhost_in_names;
+    bool cap_notify;
+    bool chghost;
+
+    // Vendor-Specific
+    bool znc_server_time_iso;
+    bool znc_server_time;
+};
+
+struct _ServerCap {
+    /* Capabilities */
+    EnabledCap client_enabled;
+    EnabledCap server_enabled;
+
     Server *srv;
 };
 
@@ -257,6 +288,14 @@ void server_prefs_free(ServerPrefs *prefs);
 char* server_prefs_list_dump();
 char* login_method_to_string(LoginMethod login);
 LoginMethod login_method_from_string(const char *str);
+
+ServerCap* server_cap_new();
+void server_cap_free(ServerCap *scap);
+SrnRet server_cap_server_enable(ServerCap *scap, const char *name, bool enable);
+SrnRet server_cap_client_enable(ServerCap *scap, const char *name, bool enable);
+bool server_cap_all_enabled(ServerCap *scap);
+bool server_cap_is_support(ServerCap *scap, const char *name, const char *value);
+char* server_cap_dump(ServerCap *scap);
 
 SrnRet server_url_open(const char *url);
 

@@ -32,6 +32,7 @@
 #include <string.h>
 #include <glib.h>
 
+#include "server.h"
 #include "server_cap.h"
 
 #include "srain.h"
@@ -43,67 +44,70 @@ struct _ServerCapSupport {
     const char *name;
     ptrdiff_t offset;
     bool (*is_support)(const char *);
+    void (*on_enable)(ServerCap *, const char *);
 };
 
 static bool sasl_is_support(const char *value);
+static void sasl_on_enable(ServerCap *scap, const char *name);
 
 /* Global cap support table */
 static ServerCapSupport supported_caps[] = {
     // {
     //     .name = "identify-msg",
-    //     .offset = offsetof(ServerCap, identify_msg),
+    //     .offset = offsetof(EnabledCap, identify_msg),
     // },
 
     // /* IRCv3.1 */
     // {
     //     .name = "multi-prefix",
-    //     .offset = offsetof(ServerCap, mulit_prefix),
+    //     .offset = offsetof(EnabledCap, mulit_prefix),
     // },
     // {
     //     .name = "away-notify",
-    //     .offset = offsetof(ServerCap, away_notify),
+    //     .offset = offsetof(EnabledCap, away_notify),
     // },
     // {
     //     .name = "account-notify",
-    //     .offset = offsetof(ServerCap, account_notify),
+    //     .offset = offsetof(EnabledCap, account_notify),
     // },
     // {
     //     .name = "extended-join",
-    //     .offset = offsetof(ServerCap, extended_join),
+    //     .offset = offsetof(EnabledCap, extended_join),
     // },
     {
         .name = "sasl",
-        .offset = offsetof(ServerCap, sasl),
+        .offset = offsetof(EnabledCap, sasl),
         .is_support = sasl_is_support,
+        .on_enable = sasl_on_enable,
     },
 
     // /* IRCv3.2 */
     // {
     //     .name = "server-time",
-    //     .offset = offsetof(ServerCap, server_time),
+    //     .offset = offsetof(EnabledCap, server_time),
     // },
     // {
     //     .name = "userhost-in-names",
-    //     .offset = offsetof(ServerCap, userhost_in_names),
+    //     .offset = offsetof(EnabledCap, userhost_in_names),
     // },
     {
         // Auto enabled on IRCv3.2 and aboved
         .name = "cap-notify",
-        .offset = offsetof(ServerCap, cap_notify),
+        .offset = offsetof(EnabledCap, cap_notify),
     },
     // {
     //     .name = "chghost",
-    //     .offset = offsetof(ServerCap, chghost),
+    //     .offset = offsetof(EnabledCap, chghost),
     // },
 
     // /* ZNC */
     // {
     //     .name = "znc.in/server-time-iso",
-    //     .offset = offsetof(ServerCap, znc_server_time_iso),
+    //     .offset = offsetof(EnabledCap, znc_server_time_iso),
     // },
     // {
     //     .name = "znc.in/server-time",
-    //     .offset = offsetof(ServerCap, znc_server_time),
+    //     .offset = offsetof(EnabledCap, znc_server_time),
     // },
     {
         // END
@@ -125,17 +129,61 @@ void server_cap_free(ServerCap *scap){
     g_free(scap);
 }
 
-SrnRet server_cap_enable(ServerCap *scap, const char *name, bool enable){
+SrnRet server_cap_server_enable(ServerCap *scap, const char *name, bool enable){
+    bool *cap;
+
+    g_return_val_if_fail(scap, SRN_ERR);
+
+    cap = NULL;
+    for (int i = 0; supported_caps[i].name; i++){
+        if (g_ascii_strcasecmp(name, supported_caps[i].name) == 0){
+            cap = (void *)&scap->server_enabled + supported_caps[i].offset;
+            *cap = enable;
+            break;
+        }
+    }
+
+    return cap ? SRN_OK : SRN_ERR;
+}
+
+SrnRet server_cap_client_enable(ServerCap *scap, const char *name, bool enable){
     g_return_val_if_fail(scap, SRN_ERR);
 
     for (int i = 0; supported_caps[i].name; i++){
         if (g_ascii_strcasecmp(name, supported_caps[i].name) == 0){
-            bool *cap = (void *)scap + supported_caps[i].offset;
+            bool *cap;
+
+            cap = (void *)&scap->client_enabled + supported_caps[i].offset;
             *cap = enable;
+            if (supported_caps[i].on_enable){
+                supported_caps[i].on_enable(scap, name);
+            }
+            LOG_FR("%s enable: %d", supported_caps[i].name, enable);
+
             return SRN_OK;
         }
     }
+
     return SRN_ERR;
+}
+
+bool server_cap_all_enabled(ServerCap *scap){
+    g_return_val_if_fail(scap, FALSE);
+
+    for (int i = 0; supported_caps[i].name; i++){
+        bool *server_cap;
+        bool *client_cap;
+
+        server_cap = (void *)&scap->server_enabled + supported_caps[i].offset;
+        client_cap = (void *)&scap->client_enabled + supported_caps[i].offset;
+        if (*server_cap != *client_cap){
+            LOG_FR("%s not enabled, server: %d, client: %e",
+                    supported_caps[i].name, *server_cap, *client_cap);
+            return FALSE;
+        }
+    }
+
+    return TRUE;
 }
 
 bool server_cap_is_support(ServerCap *scap, const char *name, const char *value){
@@ -143,10 +191,16 @@ bool server_cap_is_support(ServerCap *scap, const char *name, const char *value)
 
     for (int i = 0; supported_caps[i].name; i++){
         if (g_ascii_strcasecmp(name, supported_caps[i].name) == 0){
-            return !supported_caps[i].is_support
+            bool support;
+
+            support = !supported_caps[i].is_support
                 || supported_caps[i].is_support(value);
+            LOG_FR("%s support: %d", supported_caps[i].name, support);
+
+            return support;
         }
     }
+
     return FALSE;
 }
 
@@ -191,4 +245,32 @@ static bool sasl_is_support(const char *value){
     g_strfreev(mechs);
 
     return supported;
+}
+
+static void sasl_on_enable(ServerCap *scap, const char *name){
+    Server *srv;
+
+    srv = scap->srv;
+    g_return_if_fail(srv);
+
+    switch (srv->prefs->login_method){
+        case LOGIN_SASL_PLAIN:
+            break;
+        default:
+            return;
+    }
+    if (!srv->cap->client_enabled.sasl){
+        return;
+    }
+    if (srv->logined){
+        return; // TODO: reauth?
+    }
+
+    switch (srv->prefs->login_method){
+        case LOGIN_SASL_PLAIN:
+            sirc_cmd_authenticate(srv->irc, "PLAIN");
+            break;
+        default:
+            g_warn_if_reached();
+    }
 }

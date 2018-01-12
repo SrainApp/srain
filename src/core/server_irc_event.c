@@ -98,8 +98,12 @@ void server_irc_event_connect(SircSession *sirc, const char *event){
     g_return_if_fail(server_is_valid(srv));
     g_return_if_fail(srv->stat == SERVER_CONNECTING);
 
-    /* Update state */
+    /* Default state */
     srv->stat = SERVER_CONNECTED;
+    srv->disconn_reason = SERVER_DISCONN_REASON_CLOSE;
+    srv->registered = FALSE;
+    srv->logined = FALSE;
+    srv->negotiated = FALSE;
 
     chat_add_misc_message_fmt(srv->chat, "", _("Connected to %1$s(%2$s:%3$d)"),
             srv->prefs->name, srv->prefs->host, srv->prefs->port);
@@ -112,7 +116,6 @@ void server_irc_event_connect(SircSession *sirc, const char *event){
     }
 
     /* Start client capability negotiation */
-    srv->negotiated = FALSE;
     sirc_cmd_cap_ls(srv->irc, "302");
 
     if (!str_is_empty(srv->prefs->passwd)){
@@ -778,6 +781,7 @@ void server_irc_event_ctcp_rsp(SircSession *sirc, const char *event,
 void server_irc_event_cap(SircSession *sirc, const char *event,
         const char *origin, const char *params[], int count){
     bool multiline;
+    bool cap_end;
     const char *cap_event;
     const char *rawcaps;
     char **caps;
@@ -787,6 +791,7 @@ void server_irc_event_cap(SircSession *sirc, const char *event,
     g_return_if_fail(server_is_valid(srv));
     g_return_if_fail(count >= 3);
 
+    cap_end = FALSE;
     cap_event = params[1];
     rawcaps = params[2];
 
@@ -800,6 +805,7 @@ void server_irc_event_cap(SircSession *sirc, const char *event,
     }
     caps = g_strsplit(rawcaps, " ", 0);
 
+    /* Process CAP event */
     if (g_ascii_strcasecmp(cap_event, "LS") == 0){
         GString *buf;
 
@@ -814,7 +820,8 @@ void server_irc_event_cap(SircSession *sirc, const char *event,
                 *value = '\0';
                 value++; // Skip '='
             }
-            if (server_cap_is_support(srv->cap, name, value)){
+            if (server_cap_is_support(srv->cap, name, value)
+                    && RET_IS_OK(server_cap_server_enable(srv->cap, name, TRUE))){
                 g_string_append_printf(buf, "%s ", name);
             }
         }
@@ -825,16 +832,10 @@ void server_irc_event_cap(SircSession *sirc, const char *event,
             chat_add_misc_message_fmt(srv->chat, origin,
                     _("Requesting capabilities: %1$s"), buf->str);
             sirc_cmd_cap_req(sirc, buf->str);
-            /* If CAP LS response is spread into multilines, the negotiation
-             * status should be kept. Otherwise, end the negotiation. The
-             * actually actionof end negotiation happens at ACK or NAK event.
-             */
-            srv->negotiated = !multiline;
         } else {
             chat_add_misc_message_fmt(srv->chat, origin,
                     _("No capability to be requested"));
-            srv->negotiated = TRUE;
-            sirc_cmd_cap_end(sirc); // End negotiation
+            cap_end = TRUE; // It's time to end the negotiation
         }
 
         g_string_free(buf, TRUE);
@@ -852,7 +853,8 @@ void server_irc_event_cap(SircSession *sirc, const char *event,
                 *value = '\0';
                 value++; // Skip '='
             }
-            if (server_cap_is_support(srv->cap, name, value)){
+            if (server_cap_is_support(srv->cap, name, value)
+                    && RET_IS_OK(server_cap_server_enable(srv->cap, name, TRUE))){
                 g_string_append_printf(buf, "%s ", name);
             }
         }
@@ -861,11 +863,11 @@ void server_irc_event_cap(SircSession *sirc, const char *event,
                 _("Server has new capabilities: %1$s"), rawcaps);
         if (buf->len > 0){
             chat_add_misc_message_fmt(srv->chat, origin,
-                    _("Requesting capabilities: %1$s"), buf->str);
+                    _("Requesting new capabilities: %1$s"), buf->str);
             sirc_cmd_cap_req(sirc, buf->str);
         } else {
             chat_add_misc_message_fmt(srv->chat, origin,
-                    _("No capability to be requested"));
+                    _("No new capability to be requested"));
         }
 
         g_string_free(buf, TRUE);
@@ -898,15 +900,15 @@ void server_irc_event_cap(SircSession *sirc, const char *event,
             }
 
             if (!str_is_empty(name) &&
-                    !RET_IS_OK(server_cap_enable(srv->cap, name, enable))){
+                    !RET_IS_OK(server_cap_client_enable(srv->cap, name, enable))){
                 WARN_FR("Unknown capability: [%s]", name);
+            }
+
+            if (server_cap_all_enabled(srv->cap)){
+                cap_end = TRUE;
             }
         }
 
-        if (srv->negotiated){
-            sirc_cmd_cap_list(sirc);
-            sirc_cmd_cap_end(sirc); // End negotiation
-        }
     } else if (g_ascii_strcasecmp(cap_event, "DEL") == 0){
         for (int i = 0; caps[i]; i++){
             bool enable;
@@ -924,7 +926,7 @@ void server_irc_event_cap(SircSession *sirc, const char *event,
                     enable = FALSE;
             }
 
-            if (!RET_IS_OK(server_cap_enable(srv->cap, name, enable))){
+            if (!RET_IS_OK(server_cap_client_enable(srv->cap, name, enable))){
                 WARN_FR("Unknown capability: %s", name);
             }
         }
@@ -932,15 +934,53 @@ void server_irc_event_cap(SircSession *sirc, const char *event,
         chat_add_misc_message_fmt(srv->chat, origin,
                 _("Server has deleted capabilities: %1$s"), rawcaps);
     } else if (g_ascii_strcasecmp(cap_event, "NAK") == 0){
-        if (srv->negotiated){
-            sirc_cmd_cap_list(sirc);
-            sirc_cmd_cap_end(sirc); // End negotiation
-        }
+        cap_end = TRUE;
     } else {
         g_warn_if_reached();
     }
 
+    /* Whether to end the negotiation? */
+    if (!srv->negotiated && cap_end){
+        sirc_cmd_cap_list(sirc);
+
+        if (srv->prefs->login_method == LOGIN_SASL_PLAIN){
+            if (srv->cap->client_enabled.sasl){
+                // Negotiation should end after sasl authentication end
+            } else {
+                chat_add_error_message_fmt(srv->chat, origin,
+                        _("SASL authentication is not supported on this server, skipped"));
+            }
+        } else {
+            sirc_cmd_cap_end(sirc); // End negotiation
+            srv->negotiated = TRUE;
+        }
+    }
+
     g_strfreev(caps);
+}
+
+void server_irc_event_authenticate(SircSession *sirc, const char *event,
+        const char *origin, const char **params, int count){
+    char *base64;
+    GString *str;
+    Server *srv;
+
+    srv = sirc_get_ctx(sirc);
+    g_return_if_fail(server_is_valid(srv));
+
+    /* ref: https://ircv3.net/specs/extensions/sasl-3.1.html */
+    str = g_string_new(NULL);
+    str = g_string_append(str, srv->prefs->username);
+    str = g_string_append_unichar(str, g_utf8_get_char("\0")); // Unicode null char
+    str = g_string_append(str, srv->prefs->username);
+    str = g_string_append_unichar(str, g_utf8_get_char("\0")); // Unicode null char
+    str = g_string_append(str, srv->prefs->user_passwd);
+
+    base64 = g_base64_encode((const guchar *)str->str, str->len);
+    sirc_cmd_authenticate(sirc, base64);
+
+    g_free(base64);
+    g_string_free(str, TRUE);
 }
 
 void server_irc_event_ping(SircSession *sirc, const char *event,
@@ -1311,6 +1351,85 @@ void server_irc_event_numeric (SircSession *sirc, int event,
                 sui_chan_list_end(srv->chat->ui);
                 break;
             }
+            /************************ SASL message ************************/
+        case SIRC_RFC_RPL_LOGGEDIN:
+            {
+                g_return_if_fail(count >= 4);
+
+                const char *msg = params[3];
+
+                srv->logined = TRUE;
+                sirc_cmd_cap_end(sirc); // End negotiation
+                chat_add_recv_message(srv->chat, origin, msg);
+                break;
+            }
+        case SIRC_RFC_RPL_SASLSUCCESS:
+            {
+                g_return_if_fail(count >= 2);
+
+                const char *msg = params[1];
+
+                chat_add_recv_message(srv->chat, origin, msg);
+                break;
+            }
+        case SIRC_RFC_RPL_LOGGEDOUT:
+            {
+                g_return_if_fail(count >= 3);
+
+                const char *msg = params[2];
+
+                srv->logined = FALSE;
+                chat_add_recv_message(srv->chat, origin, msg);
+                break;
+            }
+        case SIRC_RFC_ERR_NICKLOCKED:
+        case SIRC_RFC_ERR_SASLFAIL:
+        case SIRC_RFC_ERR_SASLTOOLONG:
+            {
+                g_return_if_fail(count >= 2);
+
+                const char *msg = params[1];
+
+                sirc_cmd_authenticate(sirc, "*"); // Abort the authentication
+                sirc_cmd_cap_end(sirc); // End negotiation
+                chat_add_error_message_fmt(srv->chat, origin,
+                        _("ERROR[%1$3d] %2$s"), event, msg);
+                break;
+            }
+        case SIRC_RFC_ERR_SASLABORTED:
+            {
+                g_return_if_fail(count >= 2);
+
+                const char *msg = params[1];
+
+                chat_add_error_message_fmt(srv->chat, origin,
+                        _("ERROR[%1$3d] %2$s"), event, msg);
+                break;
+            }
+        case SIRC_RFC_ERR_SASLALREADY:
+            {
+                g_return_if_fail(count >= 2);
+
+                const char *msg = params[1];
+
+                chat_add_error_message_fmt(srv->chat, origin,
+                        _("ERROR[%1$3d] %2$s"), event, msg);
+                break;
+            }
+        case SIRC_RFC_RPL_SASLMECHS:
+            {
+                g_return_if_fail(count >= 3);
+
+                const char *mechs = params[1];
+                const char *msg = params[2];
+
+                sirc_cmd_authenticate(sirc, "*"); // Abort the authentication
+                sirc_cmd_cap_end(sirc); // End negotiation
+                chat_add_error_message_fmt(srv->chat, origin,
+                        _("ERROR[%1$3d] %2$s%3$s"), event, mechs, msg);
+                break;
+            }
+            break;
             /************************ MISC message ************************/
         case SIRC_RFC_RPL_CHANNEL_URL:
             {
