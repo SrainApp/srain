@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Srain 0.06.2\n"
+"Project-Id-Version: Srain 0.06.3\n"
 "Report-Msgid-Bugs-To: srain@srain.im\n"
-"POT-Creation-Date: 2018-01-06 20:02+0800\n"
+"POT-Creation-Date: 2018-01-13 14:04+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -71,12 +71,12 @@ msgstr ""
 msgid "\"%1$s\" not found in %2$s 's relaybot list"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:1225
+#: ../src/core/server_irc_event.c:1278
 #, c-format
 msgid "%1$s %2$s"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:1214
+#: ../src/core/server_irc_event.c:1267
 #, c-format
 msgid "%1$s %2$s %3$s"
 msgstr ""
@@ -86,74 +86,74 @@ msgstr ""
 msgid "%1$s <fwd %2$s@%3$s>"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:566
+#: ../src/core/server_irc_event.c:569
 #, c-format
 msgid "%1$s are kicked by %2$s"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:563
+#: ../src/core/server_irc_event.c:566
 #, c-format
 msgid "%1$s are kicked by %2$s: %3$s"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:529
+#: ../src/core/server_irc_event.c:532
 #, c-format
 msgid ""
 "%1$s changed topic to:\n"
 "\t%2$s"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:526
+#: ../src/core/server_irc_event.c:529
 #, c-format
 msgid "%1$s cleared topic"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:373
+#: ../src/core/server_irc_event.c:376
 #, c-format
 msgid "%1$s has joined"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:396
+#: ../src/core/server_irc_event.c:399
 #, c-format
 msgid "%1$s has left"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:394
+#: ../src/core/server_irc_event.c:397
 #, c-format
 msgid "%1$s has left: %2$s"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:323
+#: ../src/core/server_irc_event.c:326
 #, c-format
 msgid "%1$s has quit"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:321
+#: ../src/core/server_irc_event.c:324
 #, c-format
 msgid "%1$s has quit: %2$s"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:655
+#: ../src/core/server_irc_event.c:658
 #, c-format
 msgid "%1$s invites you into %2$s"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:1192
+#: ../src/core/server_irc_event.c:1245
 #, c-format
 msgid "%1$s is attached to %2$s at \"%3$s\""
 msgstr ""
 
-#: ../src/core/server_irc_event.c:1204
+#: ../src/core/server_irc_event.c:1257
 #, c-format
 msgid "%1$s is idle for %2$s seconds since %3$s"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:1183
+#: ../src/core/server_irc_event.c:1236
 #, c-format
 msgid "%1$s is member of %2$s"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:292 ../src/core/server_irc_event.c:300
+#: ../src/core/server_irc_event.c:295 ../src/core/server_irc_event.c:303
 #, c-format
 msgid "%1$s is now known as %2$s"
 msgstr ""
@@ -165,12 +165,12 @@ msgid ""
 "Running against GTK+ %3$d.%4$d.%5$d"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:1283
+#: ../src/core/server_irc_event.c:1332
 #, c-format
 msgid "%1$s: %2$s"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:1154 ../src/core/server_irc_event.c:1203
+#: ../src/core/server_irc_event.c:1207 ../src/core/server_irc_event.c:1256
 #: ../src/sui/srain_msg.c:254
 msgid "%Y-%m-%d %T"
 msgstr ""
@@ -184,17 +184,18 @@ msgstr ""
 msgid "*** <b>%1$s</b> %2$s ***"
 msgstr ""
 
-#: ../src/core/server_prefs.c:282
+#: ../src/core/server_prefs.c:307
 #, c-format
 msgid ""
 "*** Server name: %s, Instance: %p\n"
 "\tHost: %s, Port: %d, Password: %s\n"
 "\tNickname: %s, Username: %s, Realname: %s\n"
+"\tLogin method: %s, User password: %s\n"
 "\tPart: %s, Kick: %s, Away: %s, Quit: %s\n"
 "\tIRC configuration: %s"
 msgstr ""
 
-#: ../src/core/server_cmd.c:820
+#: ../src/core/server_cmd.c:819
 #, c-format
 msgid "A message has been sent to \"%1$s\""
 msgstr ""
@@ -207,7 +208,7 @@ msgstr ""
 msgid "About Srain"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:880
+#: ../src/core/server_irc_event.c:877
 #, c-format
 msgid "Acknowledged capabilities: %1$s"
 msgstr ""
@@ -225,29 +226,29 @@ msgstr ""
 msgid "At line %1$d: %2$s"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:1155
+#: ../src/core/server_irc_event.c:1208
 #, c-format
 msgid "By %1$s at %2$s"
 msgstr ""
 
-#: ../src/core/server_cmd.c:430
+#: ../src/core/server_cmd.c:429
 msgid "Can not connect to a connected server"
 msgstr ""
 
-#: ../src/core/server_cmd.c:449 ../src/core/server_cmd.c:453
+#: ../src/core/server_cmd.c:448 ../src/core/server_cmd.c:452
 msgid "Can not disconnect from a unconnected server"
 msgstr ""
 
-#: ../src/core/server_cmd.c:474
+#: ../src/core/server_cmd.c:473
 #, c-format
 msgid "Can not remove a predefined server: %1$s"
 msgstr ""
 
-#: ../src/core/server_cmd.c:465
+#: ../src/core/server_cmd.c:464
 msgid "Can not remove a server which is still connected"
 msgstr ""
 
-#: ../src/core/server_ui_event.c:222 ../src/core/server_cmd.c:840
+#: ../src/core/server_ui_event.c:222 ../src/core/server_cmd.c:839
 msgid "Can not send message to a server"
 msgstr ""
 
@@ -273,7 +274,7 @@ msgstr ""
 msgid "Connect"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:104 ../src/core/server_irc_event.c:109
+#: ../src/core/server_irc_event.c:108 ../src/core/server_irc_event.c:113
 #, c-format
 msgid "Connected to %1$s(%2$s:%3$d)"
 msgstr ""
@@ -286,12 +287,12 @@ msgstr ""
 msgid "Custom Server"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:195 ../src/core/server_irc_event.c:224
+#: ../src/core/server_irc_event.c:198 ../src/core/server_irc_event.c:227
 #, c-format
 msgid "Disconnected from %1$s(%2$s:%3$d)"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:192 ../src/core/server_irc_event.c:212
+#: ../src/core/server_irc_event.c:195 ../src/core/server_irc_event.c:215
 #, c-format
 msgid "Disconnected from %1$s(%2$s:%3$d): %4$s"
 msgstr ""
@@ -300,22 +301,17 @@ msgstr ""
 msgid "Do not verify certificate"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:996
+#: ../src/core/server_irc_event.c:1053
 #, c-format
 msgid "ERROR: %1$s"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:1348
+#: ../src/core/server_irc_event.c:1470
 #, c-format
 msgid "ERROR[%1$3d] %2$s"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:1046
-#, c-format
-msgid "ERROR[%1$3d] %2$s %3$s"
-msgstr ""
-
-#: ../src/sirc/sirc_cap.c:157
+#: ../src/core/server_cap.c:213
 msgid "Enabled capabilities:"
 msgstr ""
 
@@ -367,7 +363,7 @@ msgid "Failed to create private buffer"
 msgstr ""
 
 #: ../src/core/server_url.c:85 ../src/core/server_ui_event.c:103
-#: ../src/core/server_cmd.c:502
+#: ../src/core/server_cmd.c:501
 #, c-format
 msgid "Failed to create server \"%1$s\""
 msgstr ""
@@ -382,7 +378,7 @@ msgid "Failed to get server list: %1$s"
 msgstr ""
 
 #: ../src/core/server_url.c:120 ../src/core/server_ui_event.c:149
-#: ../src/core/server_cmd.c:425 ../src/core/server_cmd.c:555
+#: ../src/core/server_cmd.c:424 ../src/core/server_cmd.c:554
 #, c-format
 msgid "Failed to instantiate server \"%1$s\""
 msgstr ""
@@ -397,13 +393,13 @@ msgstr ""
 msgid "Failed to parse \"%1$s\" as a URL"
 msgstr ""
 
-#: ../src/core/server_url.c:135 ../src/core/server_cmd.c:439
-#: ../src/core/server_cmd.c:565
+#: ../src/core/server_url.c:135 ../src/core/server_cmd.c:438
+#: ../src/core/server_cmd.c:564
 #, c-format
 msgid "Failed to register on server \"%1$s\""
 msgstr ""
 
-#: ../src/core/server_cmd.c:849
+#: ../src/core/server_cmd.c:848
 #, c-format
 msgid "Failed to send action message: %1$s"
 msgstr ""
@@ -435,7 +431,7 @@ msgstr ""
 msgid "Invail pattern: %1$s"
 msgstr ""
 
-#: ../src/core/server_prefs.c:176 ../src/sirc/sirc_prefs.c:37
+#: ../src/core/server_prefs.c:177 ../src/sirc/sirc_prefs.c:37
 msgid "Invalid ServerPrefs instance"
 msgstr ""
 
@@ -456,11 +452,16 @@ msgstr ""
 msgid "Invalid error id, maybe this error is removed because out of date"
 msgstr ""
 
+#: ../src/core/server_prefs.c:174
+#, c-format
+msgid "Invalid value in ServerPrefs: %1$s"
+msgstr ""
+
 #: ../src/sui/glade/nick_menu.glade:50
 msgid "Invite to..."
 msgstr ""
 
-#: ../src/core/server_irc_event.c:219
+#: ../src/core/server_irc_event.c:222
 #, c-format
 msgid ""
 "It seems that you connect to a TLS port(%1$d) without enable TLS connection, "
@@ -475,7 +476,7 @@ msgstr ""
 msgid "Join Channel"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:768
+#: ../src/core/server_irc_event.c:771
 #, c-format
 msgid "Latency between %1$s: %2$lums"
 msgstr ""
@@ -486,6 +487,11 @@ msgstr ""
 
 #: ../src/sui/srain_join_popover.c:517
 msgid "Loading channels..."
+msgstr ""
+
+#: ../src/core/server_irc_event.c:994
+#, c-format
+msgid "Logging in with %1$s as %2$s..."
 msgstr ""
 
 #: ../src/sui/srain_join_popover.c:249
@@ -500,7 +506,7 @@ msgstr ""
 msgid "Min users"
 msgstr ""
 
-#: ../src/core/server_cmd.c:352
+#: ../src/core/server_cmd.c:351
 msgid "Missing argument <name>"
 msgstr ""
 
@@ -528,29 +534,37 @@ msgstr ""
 msgid "Nick name:"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:883
+#: ../src/core/server_irc_event.c:880
 msgid "No acknowledged capability"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:839 ../src/core/server_irc_event.c:873
+#: ../src/core/server_irc_event.c:837
 msgid "No capability to be requested"
+msgstr ""
+
+#: ../src/core/server_irc_event.c:870
+msgid "No new capability to be requested"
 msgstr ""
 
 #: ../src/sui/srain_connect_popover.c:229
 msgid "No server is selected"
 msgstr ""
 
-#: ../src/core/server_cmd.c:363 ../src/core/server_cmd.c:472
+#: ../src/core/server_cmd.c:362 ../src/core/server_cmd.c:471
 #, c-format
 msgid "No such server: %1$s"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:1123
+#: ../src/core/server_irc_event.c:1176
 msgid "No topic is set"
 msgstr ""
 
 #: ../src/prefs/prefs.c:200
 msgid "No version found"
+msgstr ""
+
+#: ../src/core/server_prefs.c:293 ../src/core/server_prefs.c:299
+msgid "None"
 msgstr ""
 
 #: ../src/sui/sui_common.c:107
@@ -577,7 +591,7 @@ msgstr ""
 msgid "Password:"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:165
+#: ../src/core/server_irc_event.c:168
 msgid "Ping time out"
 msgstr ""
 
@@ -593,8 +607,8 @@ msgstr ""
 msgid "Predefined Server"
 msgstr ""
 
-#: ../src/core/server.c:103 ../src/core/server.c:108 ../src/core/server.c:113
-#: ../src/core/server.c:118
+#: ../src/core/server.c:105 ../src/core/server.c:110 ../src/core/server.c:115
+#: ../src/core/server.c:120
 msgid "Prefs read error"
 msgstr ""
 
@@ -610,29 +624,38 @@ msgstr ""
 msgid "Real name:"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:720
+#: ../src/core/server_irc_event.c:723
 #, c-format
 msgid "Received CTCP %1$s request form %2$s"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:752 ../src/core/server_irc_event.c:771
+#: ../src/core/server_irc_event.c:755 ../src/core/server_irc_event.c:774
 #, c-format
 msgid "Received CTCP %1$s response from %2$s: %3$s"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:716
+#: ../src/core/server_irc_event.c:719
 #, c-format
 msgid "Received unsupported CTCP %1$s request form %2$s"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:756
+#: ../src/core/server_irc_event.c:759
 #, c-format
 msgid "Received unsupported CTCP %1$s response form %2$s"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:830 ../src/core/server_irc_event.c:869
+#: ../src/core/server_irc_event.c:833
 #, c-format
 msgid "Requesting capabilities: %1$s"
+msgstr ""
+
+#: ../src/core/server_irc_event.c:866
+#, c-format
+msgid "Requesting new capabilities: %1$s"
+msgstr ""
+
+#: ../src/core/server_irc_event.c:950
+msgid "SASL authentication is not supported on this server, login skipped"
 msgstr ""
 
 #: ../src/sui/glade/join_popover.glade:351
@@ -644,37 +667,37 @@ msgstr ""
 msgid "Server \"%1$s\" already exists"
 msgstr ""
 
-#: ../src/core/server_cmd.c:410
+#: ../src/core/server_cmd.c:409
 #, c-format
 msgid "Server \"%1$s\" is created"
 msgstr ""
 
-#: ../src/core/server_cmd.c:412
+#: ../src/core/server_cmd.c:411
 #, c-format
 msgid "Server \"%1$s\" is motified"
 msgstr ""
 
-#: ../src/core/server_cmd.c:479
+#: ../src/core/server_cmd.c:478
 #, c-format
 msgid "Server \"%1$s\" is removed"
 msgstr ""
 
-#: ../src/prefs/prefs.c:499 ../src/core/server_cmd.c:358
+#: ../src/prefs/prefs.c:508 ../src/core/server_cmd.c:357
 #, c-format
 msgid "Server already exist: %1$s"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:827
+#: ../src/core/server_irc_event.c:830
 #, c-format
 msgid "Server capabilities: %1$s"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:937
+#: ../src/core/server_irc_event.c:934
 #, c-format
 msgid "Server has deleted capabilities: %1$s"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:866
+#: ../src/core/server_irc_event.c:863
 #, c-format
 msgid "Server has new capabilities: %1$s"
 msgstr ""
@@ -683,7 +706,7 @@ msgstr ""
 msgid "Server:"
 msgstr ""
 
-#: ../src/prefs/prefs.c:493
+#: ../src/prefs/prefs.c:502
 #, c-format
 msgid "Server[%1$d] in server_list doesn't have a name"
 msgstr ""
@@ -727,7 +750,7 @@ msgstr ""
 msgid "TLS: %1$s, TLS verify certificate: %2$s, Encoding: %3$s"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:1139
+#: ../src/core/server_irc_event.c:1192
 #, c-format
 msgid ""
 "The topic of this channel is:\n"
@@ -752,17 +775,17 @@ msgstr ""
 msgid "True"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:1059
+#: ../src/core/server_irc_event.c:1112
 #, c-format
 msgid "Trying nickname: \"%1$s\"..."
 msgstr ""
 
-#: ../src/core/server_irc_event.c:200 ../src/core/server_irc_event.c:230
+#: ../src/core/server_irc_event.c:203 ../src/core/server_irc_event.c:233
 #, c-format
 msgid "Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."
 msgstr ""
 
-#: ../src/core/server_irc_event.c:1331
+#: ../src/core/server_irc_event.c:1420
 #, c-format
 msgid "URL of %1$s is: %2$s"
 msgstr ""
@@ -781,7 +804,7 @@ msgstr ""
 msgid "Unknown option %1$s"
 msgstr ""
 
-#: ../src/core/server_cmd.c:482 ../src/lib/command.c:422
+#: ../src/lib/command.c:422 ../src/core/server_cmd.c:481
 #, c-format
 msgid "Unknown sub command: %1$s"
 msgstr ""
@@ -823,17 +846,17 @@ msgstr ""
 msgid "You"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:557
+#: ../src/core/server_irc_event.c:560
 #, c-format
 msgid "You are kicked by %1$s"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:554
+#: ../src/core/server_irc_event.c:557
 #, c-format
 msgid "You are kicked by %1$s: %2$s"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:371
+#: ../src/core/server_irc_event.c:374
 #, c-format
 msgid "You has joined"
 msgstr ""
@@ -874,7 +897,7 @@ msgstr ""
 msgid "_Whois"
 msgstr ""
 
-#: ../src/core/server_irc_event.c:434 ../src/core/server_irc_event.c:500
+#: ../src/core/server_irc_event.c:437 ../src/core/server_irc_event.c:503
 #, c-format
 msgid "mode %1$s %2$s by %3$s"
 msgstr ""
