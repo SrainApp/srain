@@ -147,7 +147,7 @@ struct _Server {
     ServerDisconnReason disconn_reason; // The reason of disconnect
     bool negotiated;    // Client capability negotiation has finished
     bool registered;    // User has a nickname
-    bool logined;       // User has identified as a certain account
+    bool loggedin;      // User has identified as a certain account
 
     /* Keep alive */
     unsigned long last_pong;        // Last pong time, in ms
@@ -155,7 +155,7 @@ struct _Server {
     unsigned long reconn_interval;  // Interval of next reconnect, in ms
     int ping_timer;
 
-    ServerCap   *cap;   // Server capabilities
+    ServerCap *cap;     // Server capabilities
     ServerPrefs *prefs; // All required static informations
     User *user;         // Used to store your nick, username, realname
     Chat *chat;         // Hold all messages that do not belong to any other Chat

@@ -262,7 +262,7 @@ static void sasl_on_enable(ServerCap *scap, const char *name){
     if (!srv->cap->client_enabled.sasl){
         return;
     }
-    if (srv->logined){
+    if (srv->loggedin){
         return; // TODO: reauth?
     }
 

@@ -102,7 +102,7 @@ void server_irc_event_connect(SircSession *sirc, const char *event){
     srv->stat = SERVER_CONNECTED;
     srv->disconn_reason = SERVER_DISCONN_REASON_CLOSE;
     srv->registered = FALSE;
-    srv->logined = FALSE;
+    srv->loggedin = FALSE;
     srv->negotiated = FALSE;
 
     chat_add_misc_message_fmt(srv->chat, "", _("Connected to %1$s(%2$s:%3$d)"),
@@ -147,6 +147,8 @@ void server_irc_event_disconnect(SircSession *sirc, const char *event,
     /* Update state */
     srv->stat = SERVER_DISCONNECTED;
     srv->registered = FALSE;
+    srv->loggedin = FALSE;
+    srv->negotiated = FALSE;
 
     /* Stop peroid ping */
     if (srv->ping_timer){
@@ -899,9 +901,8 @@ void server_irc_event_cap(SircSession *sirc, const char *event,
                     enable = TRUE;
             }
 
-            if (!str_is_empty(name) &&
-                    !RET_IS_OK(server_cap_client_enable(srv->cap, name, enable))){
-                WARN_FR("Unknown capability: [%s]", name);
+            if (!RET_IS_OK(server_cap_client_enable(srv->cap, name, enable))){
+                WARN_FR("Unknown capability: %s", name);
             }
 
             if (server_cap_all_enabled(srv->cap)){
@@ -948,7 +949,9 @@ void server_irc_event_cap(SircSession *sirc, const char *event,
                 // Negotiation should end after sasl authentication end
             } else {
                 chat_add_error_message_fmt(srv->chat, origin,
-                        _("SASL authentication is not supported on this server, skipped"));
+                        _("SASL authentication is not supported on this server, login skipped"));
+                sirc_cmd_cap_end(sirc); // End negotiation
+                srv->negotiated = TRUE;
             }
         } else {
             sirc_cmd_cap_end(sirc); // End negotiation
@@ -961,26 +964,46 @@ void server_irc_event_cap(SircSession *sirc, const char *event,
 
 void server_irc_event_authenticate(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
-    char *base64;
-    GString *str;
     Server *srv;
 
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(server_is_valid(srv));
 
-    /* ref: https://ircv3.net/specs/extensions/sasl-3.1.html */
-    str = g_string_new(NULL);
-    str = g_string_append(str, srv->prefs->username);
-    str = g_string_append_unichar(str, g_utf8_get_char("\0")); // Unicode null char
-    str = g_string_append(str, srv->prefs->username);
-    str = g_string_append_unichar(str, g_utf8_get_char("\0")); // Unicode null char
-    str = g_string_append(str, srv->prefs->user_passwd);
+    switch (srv->prefs->login_method){
+        case LOGIN_SASL_PLAIN:
+            {
+                char *base64;
+                char *login_method;
+                GString *str;
 
-    base64 = g_base64_encode((const guchar *)str->str, str->len);
-    sirc_cmd_authenticate(sirc, base64);
+                g_return_if_fail(!str_is_empty(srv->prefs->username));
+                g_return_if_fail(!str_is_empty(srv->prefs->user_passwd));
 
-    g_free(base64);
-    g_string_free(str, TRUE);
+                /* ref: https://ircv3.net/specs/extensions/sasl-3.1.html */
+                str = g_string_new(NULL);
+                str = g_string_append(str, srv->prefs->username);
+                str = g_string_append_unichar(str, g_utf8_get_char("\0")); // Unicode null char
+                str = g_string_append(str, srv->prefs->username);
+                str = g_string_append_unichar(str, g_utf8_get_char("\0")); // Unicode null char
+                str = g_string_append(str, srv->prefs->user_passwd);
+
+                // TODO: 400 bytes limit
+                base64 = g_base64_encode((const guchar *)str->str, str->len);
+                sirc_cmd_authenticate(sirc, base64);
+
+                login_method = login_method_to_string(srv->prefs->login_method);
+                chat_add_misc_message_fmt(srv->chat, origin,
+                        _("Logging in with %1$s as %2$s..."),
+                        login_method, srv->prefs->username);
+
+                g_free(login_method);
+                g_free(base64);
+                g_string_free(str, TRUE);
+                break;
+            }
+        default:
+            g_warn_if_reached();
+    }
 }
 
 void server_irc_event_ping(SircSession *sirc, const char *event,
@@ -1344,7 +1367,7 @@ void server_irc_event_numeric (SircSession *sirc, int event,
 
                 const char *msg = params[3];
 
-                srv->logined = TRUE;
+                srv->loggedin = TRUE;
                 sirc_cmd_cap_end(sirc); // End negotiation
                 chat_add_recv_message(srv->chat, origin, msg);
                 break;
@@ -1364,7 +1387,7 @@ void server_irc_event_numeric (SircSession *sirc, int event,
 
                 const char *msg = params[2];
 
-                srv->logined = FALSE;
+                srv->loggedin = FALSE;
                 chat_add_recv_message(srv->chat, origin, msg);
                 break;
             }
