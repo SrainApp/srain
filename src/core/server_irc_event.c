@@ -1076,10 +1076,6 @@ void server_irc_event_numeric (SircSession *sirc, int event,
                 g_return_if_fail(count >= 3);
 
                 const char *nick = params[1];
-                const char *msg = params[2];
-
-                chat_add_error_message_fmt(srv->cur_chat, origin,
-                        _("ERROR[%1$3d] %2$s %3$s"), event, nick, msg);
 
                 /* If you don't have a nickname (unregistered) yet, try a nick
                  * with a trailing underline('_') */
@@ -1096,7 +1092,7 @@ void server_irc_event_numeric (SircSession *sirc, int event,
 
                     g_free(new_nick);
                 }
-                break;
+                goto ERRMSG;
             }
 
             /************************ NAMES message ************************/
@@ -1289,8 +1285,6 @@ void server_irc_event_numeric (SircSession *sirc, int event,
             /************************ BANLIST message ************************/
         case SIRC_RFC_RPL_BANLIST:
             {
-                srv = sirc_get_ctx(sirc);
-                g_return_if_fail(server_is_valid(srv));
                 g_return_if_fail(count >= 3);
 
                 const char *chan = params[1];
@@ -1306,8 +1300,6 @@ void server_irc_event_numeric (SircSession *sirc, int event,
             }
         case SIRC_RFC_RPL_ENDOFBANLIST:
             {
-                srv = sirc_get_ctx(sirc);
-                g_return_if_fail(server_is_valid(srv));
                 g_return_if_fail(count >= 3);
 
                 const char *chan = params[1];
@@ -1322,8 +1314,6 @@ void server_irc_event_numeric (SircSession *sirc, int event,
             /************************ LIST message ************************/
         case SIRC_RFC_RPL_LISTSTART:
             {
-                srv = sirc_get_ctx(sirc);
-                g_return_if_fail(server_is_valid(srv));
                 g_return_if_fail(count >= 1);
 
                 sui_chan_list_start(srv->chat->ui);
@@ -1331,8 +1321,6 @@ void server_irc_event_numeric (SircSession *sirc, int event,
             }
         case SIRC_RFC_RPL_LIST:
             {
-                srv = sirc_get_ctx(sirc);
-                g_return_if_fail(server_is_valid(srv));
                 g_return_if_fail(count >= 4);
 
                 const char *chan = params[1];
@@ -1344,8 +1332,6 @@ void server_irc_event_numeric (SircSession *sirc, int event,
             }
         case SIRC_RFC_RPL_LISTEND:
             {
-                srv = sirc_get_ctx(sirc);
-                g_return_if_fail(server_is_valid(srv));
                 g_return_if_fail(count >= 1);
 
                 sui_chan_list_end(srv->chat->ui);
@@ -1385,56 +1371,23 @@ void server_irc_event_numeric (SircSession *sirc, int event,
         case SIRC_RFC_ERR_NICKLOCKED:
         case SIRC_RFC_ERR_SASLFAIL:
         case SIRC_RFC_ERR_SASLTOOLONG:
+        case SIRC_RFC_RPL_SASLMECHS:
             {
-                g_return_if_fail(count >= 2);
-
-                const char *msg = params[1];
-
                 sirc_cmd_authenticate(sirc, "*"); // Abort the authentication
-                sirc_cmd_cap_end(sirc); // End negotiation
-                chat_add_error_message_fmt(srv->chat, origin,
-                        _("ERROR[%1$3d] %2$s"), event, msg);
-                break;
+                goto ERRMSG;
             }
         case SIRC_RFC_ERR_SASLABORTED:
             {
-                g_return_if_fail(count >= 2);
-
-                const char *msg = params[1];
-
-                chat_add_error_message_fmt(srv->chat, origin,
-                        _("ERROR[%1$3d] %2$s"), event, msg);
-                break;
+                sirc_cmd_cap_end(sirc); // End negotiation
+                goto ERRMSG;
             }
         case SIRC_RFC_ERR_SASLALREADY:
             {
-                g_return_if_fail(count >= 2);
-
-                const char *msg = params[1];
-
-                chat_add_error_message_fmt(srv->chat, origin,
-                        _("ERROR[%1$3d] %2$s"), event, msg);
-                break;
+                goto ERRMSG;
             }
-        case SIRC_RFC_RPL_SASLMECHS:
-            {
-                g_return_if_fail(count >= 3);
-
-                const char *mechs = params[1];
-                const char *msg = params[2];
-
-                sirc_cmd_authenticate(sirc, "*"); // Abort the authentication
-                sirc_cmd_cap_end(sirc); // End negotiation
-                chat_add_error_message_fmt(srv->chat, origin,
-                        _("ERROR[%1$3d] %2$s%3$s"), event, mechs, msg);
-                break;
-            }
-            break;
             /************************ MISC message ************************/
         case SIRC_RFC_RPL_CHANNEL_URL:
             {
-                srv = sirc_get_ctx(sirc);
-                g_return_if_fail(server_is_valid(srv));
                 g_return_if_fail(count >= 3);
 
                 const char *chan = params[1];
@@ -1451,26 +1404,53 @@ void server_irc_event_numeric (SircSession *sirc, int event,
             {
                 // Error message
                 if (event >= 400 && event < 600){
+                    goto ERRMSG;
+                }
+
+                // Unknown message
+                {
+                    GString *buf;
+
+                    buf = g_string_new(NULL);
+                    for (int i = 0; i < count; i++){
+                        buf = g_string_append(buf, params[count-1]); // reason
+                        if (i != count - 1){
+                            buf = g_string_append(buf, ", ");
+                        }
+                    }
+
+                    WARN_FR("Unspported message, You can report it at " PACKAGE_WEBSITE);
+                    WARN_FR("server: %s, event: %d, origin: %s, count: %u, params: [%s]",
+                            srv->prefs->name, event, origin, count, buf->str);
+
+                    g_string_free(buf, TRUE);
+                }
+                return;
+ERRMSG:
+                /* Add error message to UI, usually the params of error message
+                 * is ["<nick>", ... "<reason>"] */
+                {
                     GString *buf;
 
                     buf = g_string_new(NULL);
 
-                    for (int i = 1; i < count; i++){
-                        g_string_append_printf(buf, "%s ", params[i]);
+                    for (int i = 1; i < count - 1; i++){ // skip nick
+                        buf = g_string_append(buf, params[i]);
+                        buf = g_string_append_c(buf, ' ');
+                        if (i == count - 2){
+                            buf = g_string_append_c(buf, ':');
+                        }
+                    }
+                    if (count >= 2){
+                        buf = g_string_append(buf, params[count-1]); // reason
                     }
 
                     chat_add_error_message_fmt(srv->cur_chat, origin,
                             _("ERROR[%1$3d] %2$s"), event, buf->str);
 
                     g_string_free(buf, TRUE);
-
-                    return;
                 }
-
-                WARN_FR("Unspported message, You can report it at " PACKAGE_WEBSITE);
-                WARN_FR("server: %s, event: %d, origin: %s, count: %u, params: [",
-                        srv->prefs->name, event, origin, count);
-                for (int i = 0; i < count; i++) LOG("'%s', ", params[i]); LOG("]\n");
+                return;
             }
     }
 }
