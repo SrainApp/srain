@@ -170,7 +170,7 @@ bool server_prefs_is_server_valid(Server *srv){
 }
 
 SrnRet server_prefs_check(ServerPrefs *prefs){
-    const char *fmt = _("Missing field in ServerPrefs: %1$s");
+    const char *missing = _("Missing field in ServerPrefs: %1$s");
     const char *invalid = _("Invalid value in ServerPrefs: %1$s");
 
     if (!server_prefs_is_valid(prefs)){
@@ -178,19 +178,15 @@ SrnRet server_prefs_check(ServerPrefs *prefs){
     }
 
     if (str_is_empty(prefs->name)) {
-        return RET_ERR(fmt, "name");
+        return RET_ERR(missing, "name");
     }
 
     if (str_is_empty(prefs->host)) {
-        return RET_ERR(fmt, "host");
-    }
-
-    if (str_is_empty(prefs->passwd)) {
-        // Password can be NULL
+        return RET_ERR(missing, "host");
     }
 
     if (str_is_empty(prefs->nickname)) {
-        return RET_ERR(fmt, "nickname");
+        return RET_ERR(missing, "nickname");
     }
 
     if (str_is_empty(prefs->username)) {
@@ -201,13 +197,22 @@ SrnRet server_prefs_check(ServerPrefs *prefs){
         str_assign(&prefs->realname, prefs->nickname);
     }
 
-    if (prefs->login_method < LOGIN_NONE
-            || prefs->login_method >= LOGIN_UNKNOWN) {
-        return RET_ERR(invalid, "login_method");
-    }
-
-    if (str_is_empty(prefs->user_passwd)) {
-        // User Password can be NULL
+    switch (prefs->login_method) {
+        case LOGIN_PASS:
+            if (str_is_empty(prefs->passwd)) {
+                return RET_ERR(missing, "passwd");
+            }
+            break;
+        case LOGIN_NICKSERV:
+        case LOGIN_MSG_NICKSERV:
+        case LOGIN_SASL_PLAIN:
+            if (str_is_empty(prefs->user_passwd)) {
+                return RET_ERR(missing, "user.passwd");
+            }
+            break;
+        case LOGIN_UNKNOWN:
+        default:
+            return RET_ERR(invalid, "login_method");
     }
 
     if (str_is_empty(prefs->part_message)) {
@@ -227,7 +232,7 @@ SrnRet server_prefs_check(ServerPrefs *prefs){
     }
 
     if (!prefs->irc) {
-        return RET_ERR(fmt, "irc");
+        return RET_ERR(missing, "irc");
     }
 
     if (prefs->port == 0) {
