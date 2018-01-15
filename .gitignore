@@ -5,6 +5,7 @@ build/
 *.pyc
 *.*~
 resources.c
+compile_commands.json
 
 # Object files
 *.o
