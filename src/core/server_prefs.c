@@ -198,6 +198,8 @@ SrnRet server_prefs_check(ServerPrefs *prefs){
     }
 
     switch (prefs->login_method) {
+        case LOGIN_NONE:
+            break;
         case LOGIN_PASS:
             if (str_is_empty(prefs->passwd)) {
                 return RET_ERR(missing, "passwd");
