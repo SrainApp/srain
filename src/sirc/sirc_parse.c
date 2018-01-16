@@ -119,7 +119,7 @@ SircMessage* sirc_parse(char *line){
             DBG_FR("servername: %s", imsg->prefix);
         }
     } else {
-        imsg->prefix = strdup("");
+        imsg->prefix = g_strdup("");
     }
 
     // <params> ::= <SPACE> [ ':' <trailing> | <middle> <params> ]

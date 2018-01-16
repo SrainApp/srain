@@ -165,7 +165,7 @@ char *create_log_file(const char *srv_name, const char *fname){
         /* Create if dir non-exist */
         dir = g_build_filename(g_get_user_data_dir(),
                 PACKAGE, "logs", srv_name, NULL);
-        res = mkdir(dir, 0700);
+        res = g_mkdir_with_parents(dir, 0700);
         if (res == -1) {
             if (errno != EEXIST){
                 ERR_FR("Failed to create directory '%s', errno %d", dir, errno);
@@ -200,7 +200,7 @@ int create_user_file(){
     char *logs_dir;
 
     congif_dir = g_build_filename(g_get_user_config_dir(), "srain", NULL);
-    res = mkdir(congif_dir, 0700);
+    res = g_mkdir_with_parents(congif_dir, 0700);
     if (res == -1) {
         if (errno != EEXIST){
             ERR_FR("Failed to create directory '%s', errno %d", congif_dir, errno);
@@ -223,7 +223,7 @@ int create_user_file(){
     rc_file = NULL;
 
     cache_dir = g_build_filename(g_get_user_cache_dir(), "srain", NULL);
-    res = mkdir(cache_dir, 0700);
+    res = g_mkdir_with_parents(cache_dir, 0700);
     if (res == -1) {
         if (errno != EEXIST){
             ERR_FR("Failed to create directory '%s', errno %d", cache_dir, errno);
@@ -234,7 +234,7 @@ int create_user_file(){
     cache_dir = NULL;
 
     cache_dir = g_build_filename(g_get_user_cache_dir(), "srain", "avatars", NULL);
-    res = mkdir(cache_dir, 0700);
+    res = g_mkdir_with_parents(cache_dir, 0700);
     if (res == -1) {
         if (errno != EEXIST){
             ERR_FR("Failed to create directory '%s', errno %d", cache_dir, errno);
@@ -245,7 +245,7 @@ int create_user_file(){
     cache_dir = NULL;
 
     data_dir = g_build_filename(g_get_user_data_dir(), "srain", NULL);
-    res = mkdir(data_dir, 0700);
+    res = g_mkdir_with_parents(data_dir, 0700);
     if (res == -1) {
         if (errno != EEXIST){
             ERR_FR("Failed to create directory '%s', errno %d", data_dir, errno);
@@ -256,7 +256,7 @@ int create_user_file(){
     data_dir = NULL;
 
     logs_dir = g_build_filename(g_get_user_data_dir(), "srain", "logs", NULL);
-    res = mkdir(logs_dir, 0700);
+    res = g_mkdir_with_parents(logs_dir, 0700);
     if (res == -1) {
         if (errno != EEXIST){
             ERR_FR("Failed to create directory '%s', errno %d", logs_dir, errno);

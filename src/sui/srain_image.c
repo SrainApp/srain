@@ -33,6 +33,7 @@
 
 #include "download.h"
 #include "log.h"
+#include "utils.h"
 
 struct _SrainImage {
     GtkBox parent;
@@ -56,8 +57,11 @@ struct _SrainImageClass {
 G_DEFINE_TYPE(SrainImage, srain_image, GTK_TYPE_BOX);
 
 static void srain_image_finalize(GObject *object){
-    if (SRAIN_IMAGE(object)->file)
-        g_free(SRAIN_IMAGE(object)->file);
+    SrainImage *simg;
+
+    simg = SRAIN_IMAGE(object);
+    str_assign(&simg->file, NULL);
+    str_assign(&simg->url, NULL);
 
     G_OBJECT_CLASS(srain_image_parent_class)->finalize(object);
 }
@@ -195,8 +199,7 @@ static gboolean set_image_idle(SrainImage *simg){
     /* Check whether object alve now */
     g_return_val_if_fail(SRAIN_IS_IMAGE(simg), FALSE);
 
-    g_free(simg->url);
-    simg->url = NULL;
+    str_assign(&simg->url, NULL);
 
     gtk_spinner_stop(simg->spinner);
     gtk_widget_set_visible(GTK_WIDGET(simg->spinner), FALSE);
@@ -213,8 +216,7 @@ static void download_image(SrainImage *simg){
     str = download(simg->url);
 
     if (str){
-        if (simg->file) g_free(simg->file);
-        simg->file = g_strdup(str->str);
+        str_assign(&simg->file, NULL);
         g_string_free(str, TRUE);
 
         gdk_threads_add_idle((GSourceFunc)set_image_idle, simg);
@@ -249,8 +251,7 @@ void srain_image_set_from_file(SrainImage *simg, char *file,
     simg->size = size;
     simg->flag = flag;
 
-    if (simg->file) g_free(simg->file);
-    simg->file = strdup(file);
+    str_assign(&simg->file, file);
 
     srain_image_set_from_self(simg);
 }
@@ -268,8 +269,7 @@ void srain_image_set_from_url_async(SrainImage *simg, const char *url,
     simg->size = size;
     simg->flag = flag;
 
-    if (simg->url) g_free(simg->url);
-    simg->url = strdup(url);
+    str_assign(&simg->url, url);
 
     if (flag & SRAIN_IMAGE_AUTOLOAD){
         set_image_from_url_async(simg);

@@ -198,7 +198,7 @@ int srain_entry_completion_add_keyword(SrainEntryCompletion *comp,
                 return -1;
             }
         }
-        g_queue_push_head(comp->queue, strdup(keyword));
+        g_queue_push_head(comp->queue, g_strdup(keyword));
     }
     else if (type == KEYWORD_NORMAL){
         GtkTreeIter iter;

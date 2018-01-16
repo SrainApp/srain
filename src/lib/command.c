@@ -432,23 +432,23 @@ too_many_arg:
 /* inner test case */
 void get_quote_arg_test() {
     char *start, *end;
-    assert(get_quote_arg(strdup("'test'"), &start, &end) == SRN_OK);
+    assert(get_quote_arg(g_strdup("'test'"), &start, &end) == SRN_OK);
     assert(strcmp(start, "test") == 0);
     assert(end == NULL);
 
-    assert(get_quote_arg(strdup("'test''123'"), &start, &end) == SRN_OK);
+    assert(get_quote_arg(g_strdup("'test''123'"), &start, &end) == SRN_OK);
     assert(strcmp(start, "test") == 0);
     assert(strcmp(end, "'123'") == 0);
 
-    assert(get_quote_arg(strdup("test   123 4"), &start, &end) == SRN_OK);
+    assert(get_quote_arg(g_strdup("test   123 4"), &start, &end) == SRN_OK);
     assert(strcmp(start, "test") == 0);
     assert(strcmp(end, "123 4") == 0);
 
-    assert(get_quote_arg(strdup("'test"), &start, &end) == SRN_ERR);
+    assert(get_quote_arg(g_strdup("'test"), &start, &end) == SRN_ERR);
 
-    assert(get_quote_arg(strdup("'test\\'"), &start, &end) == SRN_ERR);
+    assert(get_quote_arg(g_strdup("'test\\'"), &start, &end) == SRN_ERR);
 
-    assert(get_quote_arg(strdup("'test\\\\'"), &start, &end) == SRN_OK);
+    assert(get_quote_arg(g_strdup("'test\\\\'"), &start, &end) == SRN_OK);
     assert(strcmp(start, "test\\") == 0);
     assert(end == NULL);
 }

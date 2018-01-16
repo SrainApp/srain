@@ -64,7 +64,7 @@ static char* label_get_selection(GtkLabel *label){
     if (gtk_label_get_selection_bounds(label, &start, &end)){
         sel_msg = g_utf8_substring(msg, start, end);
     } else {
-        sel_msg = strdup(msg);
+        sel_msg = g_strdup(msg);
     }
 
     return sel_msg;
