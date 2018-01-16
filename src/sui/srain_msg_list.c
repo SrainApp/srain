@@ -114,27 +114,21 @@ static void scrolled_window_on_edge_reached(GtkScrolledWindow *swin,
 }
 
 /**
- * @brief scroll_to_bottom_idle
+ * @brief scroll_to_bottom
  *
  * @param list
  *
- * @return Always return FALSE
- *
- * This function must be called as a idle.
+ * @return A
  *
  */
-static gboolean scroll_to_bottom_idle(SrainMsgList *list){
+static void scroll_to_bottom(SrainMsgList *list){
     GtkAdjustment *adj;
 
-    /* if this instance has been freed */
-    g_return_val_if_fail(SRAIN_IS_MSG_LIST(list), FALSE);
+    while (gtk_events_pending()) gtk_main_iteration();
 
     adj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(list));
     gtk_adjustment_set_value(adj, gtk_adjustment_get_upper(adj) -
             gtk_adjustment_get_page_size(adj));
-    gtk_scrolled_window_set_vadjustment(GTK_SCROLLED_WINDOW(list), adj);
-
-    return FALSE;
 }
 
 /**
@@ -160,19 +154,14 @@ static void smart_scroll(SrainMsgList *list, int force){
     SrainBuffer *buffer;
 
     win = SRAIN_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(list)));
-    if (!SRAIN_IS_WINDOW(win)){
-        ERR_FR("Top level widget is not SrainWindow");
-        return;
-    }
-
+    g_return_if_fail(SRAIN_IS_WINDOW(win));
     buffer = srain_window_get_cur_buffer(win);
-    if (!SRAIN_IS_BUFFER(buffer)){
-        ERR_FR("Current buffer is no a SrainBuffer");
-        return;
-    }
+    g_return_if_fail(SRAIN_IS_BUFFER(buffer));
+
+    while (gtk_events_pending()) gtk_main_iteration();
 
     if (force){
-        gdk_threads_add_idle((GSourceFunc)scroll_to_bottom_idle, list);
+        scroll_to_bottom(list);
         return;
     }
 
@@ -185,7 +174,7 @@ static void smart_scroll(SrainMsgList *list, int force){
         max_val = gtk_adjustment_get_upper(adj) - page_size;
 
         if (val + page_size > max_val){
-            gdk_threads_add_idle((GSourceFunc)scroll_to_bottom_idle, list);
+            scroll_to_bottom(list);
         }
     }
 }
@@ -195,7 +184,6 @@ void srain_msg_list_scroll_up(SrainMsgList *list, double step){
 
     adj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(list));
     gtk_adjustment_set_value(adj, gtk_adjustment_get_value(adj) - step);
-    gtk_scrolled_window_set_vadjustment(GTK_SCROLLED_WINDOW(list), adj);
 
     while (gtk_events_pending()) gtk_main_iteration();
 }
@@ -205,7 +193,6 @@ void srain_msg_list_scroll_down(SrainMsgList *list, double step){
 
     adj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(list));
     gtk_adjustment_set_value(adj, gtk_adjustment_get_value(adj) + step);
-    gtk_scrolled_window_set_vadjustment(GTK_SCROLLED_WINDOW(list), adj);
 
     while (gtk_events_pending()) gtk_main_iteration();
 }
