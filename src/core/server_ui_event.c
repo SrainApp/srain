@@ -224,10 +224,10 @@ SrnRet server_ui_event_send(SuiSession *sui, SuiEvent event, GVariantDict *param
             return ret;
         }
 
+        chat_add_sent_message(chat, msg); // Show on UI first
+
         ret = sirc_cmd_msg(chat->srv->irc, chat->name, msg);
-        if (RET_IS_OK(ret)){
-            chat_add_sent_message(chat, msg);
-        } else {
+        if (!RET_IS_OK(ret)){
             chat_add_error_message_fmt(chat, chat->user->nick,
                     _("Failed to send message: %1$s"), RET_MSG(ret));
         }
