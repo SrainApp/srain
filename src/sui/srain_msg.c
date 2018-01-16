@@ -223,6 +223,7 @@ void srain_msg_append_image(SrainMsg *smsg, const char *url, SrainImageFlag flag
     gtk_container_add(GTK_CONTAINER(smsg->padding_box), GTK_WIDGET(simg));
     gtk_container_set_border_width(GTK_CONTAINER(simg), 6);
     gtk_widget_show(GTK_WIDGET(simg));
+    gtk_widget_queue_draw(GTK_WIDGET(smsg));
 }
 
 void srain_msg_set_msg(SrainMsg *smsg, const char *msg) {
@@ -240,6 +241,7 @@ int srain_msg_append_msg(SrainMsg *smsg, const char *msg) {
     g_string_prepend(new_markup, old_markup);
 
     gtk_label_set_markup(smsg->msg_label, new_markup->str);
+    gtk_widget_queue_draw(GTK_WIDGET(smsg));
 
     g_string_free(new_markup, TRUE);
 
@@ -255,6 +257,7 @@ void srain_msg_set_time(SrainMsg *smsg, time_t time) {
 
     gtk_label_set_text(smsg->time_label, timestr);
     gtk_widget_set_tooltip_text(GTK_WIDGET(smsg->time_label), tooltip);
+    gtk_widget_queue_draw(GTK_WIDGET(smsg));
 }
 
 
