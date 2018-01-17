@@ -65,7 +65,7 @@ static gboolean irc_period_ping(gpointer user_data){
     if (time - srv->last_pong > SERVER_PING_TIMEOUT){
         WARN_FR("Server %s ping timeout, %lums", srv->prefs->name, time - srv->last_pong);
 
-        /* Disconnect */
+        srv->ping_timer = 0;
         srv->disconn_reason = SERVER_DISCONN_REASON_TIMEOUT;
         server_disconnect(srv);
 
@@ -342,6 +342,7 @@ void server_irc_event_quit(SircSession *sirc, const char *event,
     /* You quit */
     if (sirc_nick_cmp(origin, srv->user->nick)){
         srv->disconn_reason = SERVER_DISCONN_REASON_QUIT;
+        server_disconnect(srv);
     }
 }
 
