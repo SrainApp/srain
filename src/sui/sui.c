@@ -201,7 +201,15 @@ void sui_end_session(SuiSession *sui){
     g_return_if_fail(sui);
     g_return_if_fail(SRAIN_IS_BUFFER(sui->buffer));
 
-    if (SRAIN_IS_CHAT_BUFFER(sui->buffer)) {
+    if (SRAIN_IS_SERVER_BUFFER(sui->buffer)) {
+        GSList *buffer_list;
+        SrainServerBuffer *srv_buf;
+
+        srv_buf = SRAIN_SERVER_BUFFER(sui->buffer);
+        buffer_list = srain_server_buffer_get_buffer_list(srv_buf);
+        /* A server buffer with non-empty buffer list can not be freed */
+        g_return_if_fail(!buffer_list || g_slist_length(buffer_list) == 0);
+    } else if (SRAIN_IS_CHAT_BUFFER(sui->buffer)) {
         SrainChatBuffer *chat_buf;
         SrainServerBuffer *srv_buf;
 

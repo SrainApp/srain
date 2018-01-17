@@ -220,6 +220,10 @@ on_child_changed(GtkWidget *widget, GParamSpec *pspec, SrainStackSidebar *sideba
     SrainBuffer *buffer;
 
     child = gtk_stack_get_visible_child(GTK_STACK(widget));
+    if (!child) {
+        return;
+    }
+
     g_return_if_fail(SRAIN_IS_BUFFER(child));
     buffer = SRAIN_BUFFER(child);
 
