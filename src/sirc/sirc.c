@@ -45,6 +45,7 @@ struct _SircSession {
     char buf[SIRC_BUF_LEN];
     GSocketClient *client;
     GIOStream *stream;
+    GCancellable *cancel;
 
     SircEvents *events; // Event callbacks
     SircPrefs *prefs;
@@ -74,6 +75,7 @@ SircSession* sirc_new_session(SircEvents *events, SircPrefs *prefs){
     /* sirc->stream = NULL; // via g_malloc0() */
     sirc->client = g_socket_client_new();
     // g_socket_client_set_timeout(sirc->client, SERVER_PING_INTERVAL);
+    sirc->cancel = g_cancellable_new();
 
     return sirc;
 }
@@ -89,10 +91,8 @@ SircSession* sirc_new_session(SircEvents *events, SircPrefs *prefs){
 void sirc_free_session(SircSession *sirc){
     g_return_if_fail(sirc);
 
-    if (sirc->client){
-        g_object_unref(sirc->client);
-        sirc->client = NULL;
-    }
+    g_object_unref(sirc->client);
+    g_object_unref(sirc->cancel);
 
     g_free(sirc);
 }
@@ -126,8 +126,16 @@ void sirc_connect(SircSession *sirc, const char *host, int port){
     g_return_if_fail(host);
     g_return_if_fail(port > 0);
 
+    g_cancellable_reset(sirc->cancel);
     g_socket_client_connect_to_host_async (sirc->client, host,
-            port, NULL, on_connect_ready, sirc);
+            port, sirc->cancel, on_connect_ready, sirc);
+}
+
+void sirc_cancel_connect(SircSession *sirc){
+    g_return_if_fail(sirc);
+    g_return_if_fail(!g_cancellable_is_cancelled(sirc->cancel));
+
+    g_cancellable_cancel(sirc->cancel);
 }
 
 void sirc_disconnect(SircSession *sirc){
@@ -143,7 +151,7 @@ static void sirc_recv(SircSession *sirc){
 
     in = g_io_stream_get_input_stream(sirc->stream);
     g_input_stream_read_async(in, &sirc->buf[sirc->bufptr], 1, G_PRIORITY_DEFAULT,
-            NULL, on_recv_ready, sirc);
+            sirc->cancel, on_recv_ready, sirc);
 }
 
 static void on_recv_ready(GObject *obj, GAsyncResult *res, gpointer user_data){
@@ -172,8 +180,13 @@ static void on_recv_ready(GObject *obj, GAsyncResult *res, gpointer user_data){
     in = G_INPUT_STREAM(obj);
     size = g_input_stream_read_finish(in, res, &err);;
     if (err != NULL){
-        on_disconnect(sirc, err->message);
-        return;
+        if (g_error_matches(err, G_IO_ERROR, G_IO_ERROR_CANCELLED)){
+            /* Connection cancelled */
+            on_disconnect(sirc, NULL);
+        } else {
+            on_disconnect(sirc, err->message);
+            return;
+        }
     }
     if (size == 0){
         /* Connection closed */
@@ -286,8 +299,12 @@ static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data
     err = NULL;
     conn = g_socket_client_connect_finish(client, res, &err);
 
-    if (!conn){
+    if (err != NULL){
         ERR_FR("Connect failed: %d, %s", err->code, err->message);
+
+        if (conn){
+            g_object_unref(conn);
+        }
         on_disconnect(sirc, err->message);
 
         return;
@@ -328,7 +345,7 @@ static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data
                  G_CALLBACK(on_accept_certificate), NULL);
 
          g_tls_connection_handshake_async(G_TLS_CONNECTION(tls_conn),
-                     G_PRIORITY_DEFAULT, NULL, on_handshake_ready, sirc);
+                     G_PRIORITY_DEFAULT, sirc->cancel, on_handshake_ready, sirc);
      }
 
     sirc->stream = G_IO_STREAM(conn);
@@ -354,12 +371,7 @@ static void on_disconnect_ready(GObject *obj, GAsyncResult *result, gpointer use
     g_io_stream_close_finish(stream, result, &err);
     g_object_unref(stream);
     sirc->stream = NULL;
-
-    if (err){
-        on_disconnect(sirc, err->message);
-    } else {
-        on_disconnect(sirc, NULL);
-    }
+    // The "DISCONNECT" event will be triggered in on_recv_ready()
 }
 
 static void on_disconnect(SircSession *sirc, const char *reason){
