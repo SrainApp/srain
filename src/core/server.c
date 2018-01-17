@@ -183,6 +183,7 @@ void server_free(Server *srv){
     g_return_if_fail(server_is_valid(srv));
 
     /* srv->prefs is hold by server_prefs_list, don't free it. */
+
     if (srv->cap) {
         server_cap_free(srv->cap);
         srv->cap = NULL;
@@ -191,11 +192,6 @@ void server_free(Server *srv){
     if (srv->user != NULL){
         user_free(srv->user);
         srv->user = NULL;
-    }
-
-    if (srv->chat != NULL){
-        chat_free(srv->chat);
-        srv->chat = NULL;
     }
 
     if (srv->irc != NULL){
@@ -216,6 +212,12 @@ void server_free(Server *srv){
         }
         g_slist_free(srv->chat_list);
         srv->chat_list = NULL;
+    }
+
+    /* Server's chat should be freed after all chat in chat list are freed */
+    if (srv->chat != NULL){
+        chat_free(srv->chat);
+        srv->chat = NULL;
     }
 
     srv->prefs->srv = NULL; // Unlink server from its prefs
@@ -251,15 +253,21 @@ int server_connect(Server *srv){
 
 void server_disconnect(Server *srv){
     g_return_if_fail(server_is_valid(srv));
-    g_return_if_fail(srv->stat == SERVER_CONNECTED);
 
-    srv->stat = SERVER_DISCONNECTING;
-    /* Overwrite default disconnect reason */
-    if (srv->disconn_reason == SERVER_DISCONN_REASON_CLOSE){
-        srv->disconn_reason = SERVER_DISCONN_REASON_USER_CLOSE;
+    switch (srv->stat) {
+        case SERVER_CONNECTING:
+            sirc_cancel_connect(srv->irc);
+            break;
+        case SERVER_CONNECTED:
+        case SERVER_DISCONNECTING:
+            sirc_cancel_connect(srv->irc);
+            sirc_disconnect(srv->irc);
+            break;
+        default:
+            g_return_if_reached();
     }
 
-    sirc_disconnect(srv->irc);
+    srv->stat = SERVER_DISCONNECTING;
 }
 
 /**
