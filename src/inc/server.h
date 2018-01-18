@@ -241,7 +241,7 @@ Server *server_get_by_name(const char *name);
 void server_free(Server *srv);
 bool server_is_valid(Server *srv);
 int server_connect(Server *srv);
-void server_disconnect(Server *srv);
+void server_disconnect(Server *srv, ServerDisconnReason disconn_reason);
 bool server_is_registered(Server *srv);
 void server_wait_until_registered(Server *srv);
 int server_add_chat(Server *srv, const char *name);

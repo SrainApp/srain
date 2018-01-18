@@ -51,6 +51,7 @@ SircEvents irc_events;
 void server_init_and_run(int argc, char *argv[]){
     /* UI event */
     ui_events.disconnect = server_ui_event_disconnect;
+    ui_events.quit = server_ui_event_quit;
     ui_events.send = server_ui_event_send;
     ui_events.join = server_ui_event_join;
     ui_events.part = server_ui_event_part;
@@ -251,23 +252,26 @@ int server_connect(Server *srv){
     return SRN_OK;
 }
 
-void server_disconnect(Server *srv){
+void server_disconnect(Server *srv, ServerDisconnReason disconn_reason){
     g_return_if_fail(server_is_valid(srv));
+    g_return_if_fail(srv->stat != SERVER_DISCONNECTED);
 
-    switch (srv->stat) {
-        case SERVER_CONNECTING:
-            sirc_cancel_connect(srv->irc);
-            break;
-        case SERVER_CONNECTED:
-        case SERVER_DISCONNECTING:
+    switch (disconn_reason) {
+        case SERVER_DISCONN_REASON_USER_CLOSE:
             sirc_cancel_connect(srv->irc);
             sirc_disconnect(srv->irc);
             break;
+        case SERVER_DISCONN_REASON_QUIT:
+        case SERVER_DISCONN_REASON_TIMEOUT:
+            sirc_disconnect(srv->irc);
+            break;
+        case SERVER_DISCONN_REASON_CLOSE:
         default:
             g_return_if_reached();
     }
 
     srv->stat = SERVER_DISCONNECTING;
+    srv->disconn_reason = disconn_reason;
 }
 
 /**

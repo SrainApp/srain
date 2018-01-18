@@ -66,8 +66,7 @@ static gboolean irc_period_ping(gpointer user_data){
         WARN_FR("Server %s ping timeout, %lums", srv->prefs->name, time - srv->last_pong);
 
         srv->ping_timer = 0;
-        srv->disconn_reason = SERVER_DISCONN_REASON_TIMEOUT;
-        server_disconnect(srv);
+        server_disconnect(srv, SERVER_DISCONN_REASON_TIMEOUT);
 
         return G_SOURCE_REMOVE;
     }
@@ -100,7 +99,6 @@ void server_irc_event_connect(SircSession *sirc, const char *event){
 
     /* Default state */
     srv->stat = SERVER_CONNECTED;
-    srv->disconn_reason = SERVER_DISCONN_REASON_CLOSE;
     srv->registered = FALSE;
     srv->loggedin = FALSE;
     srv->negotiated = FALSE;
@@ -137,9 +135,7 @@ void server_irc_event_disconnect(SircSession *sirc, const char *event,
 
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(server_is_valid(srv));
-    g_return_if_fail(srv->stat == SERVER_CONNECTING
-            || srv->stat == SERVER_CONNECTED
-            || srv->stat == SERVER_DISCONNECTING);
+    g_return_if_fail(srv->stat != SERVER_DISCONNECTED);
 
 
     const char *msg = count >= 1 ? params[0] : NULL;
@@ -152,10 +148,9 @@ void server_irc_event_disconnect(SircSession *sirc, const char *event,
 
     /* Stop peroid ping */
     if (srv->ping_timer){
-        g_source_remove(srv->ping_timer);
-
         DBG_FR("Ping timer %d removed", srv->ping_timer);
 
+        g_source_remove(srv->ping_timer);
         srv->ping_timer = 0;
     }
 
@@ -341,8 +336,7 @@ void server_irc_event_quit(SircSession *sirc, const char *event,
 
     /* You quit */
     if (sirc_nick_cmp(origin, srv->user->nick)){
-        srv->disconn_reason = SERVER_DISCONN_REASON_QUIT;
-        server_disconnect(srv);
+        server_disconnect(srv, SERVER_DISCONN_REASON_QUIT);
     }
 }
 

@@ -448,11 +448,11 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
             return RET_ERR(_("Can not disconnect from a unconnected server"));
         }
 
-        if (srv->stat != SERVER_CONNECTED){
+        if (srv->stat == SERVER_DISCONNECTED){
             return RET_ERR(_("Can not disconnect from a unconnected server"));
         }
 
-        server_disconnect(srv);
+        server_disconnect(srv, SERVER_DISCONN_REASON_USER_CLOSE);
 
         return SRN_OK;
     }
@@ -460,7 +460,7 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
     if (g_ascii_strcasecmp(subcmd, "rm") == 0){
         srv = server_get_by_name(name);
         if (srv) {
-            if (srv->stat == SERVER_CONNECTED) {
+            if (srv->stat != SERVER_DISCONNECTED) {
                 return RET_ERR(_("Can not remove a server which is still connected"));
             }
             server_free(srv);

@@ -174,19 +174,35 @@ SrnRet server_ui_event_server_list(SuiEvent event, GVariantDict *params){
 }
 
 SrnRet server_ui_event_disconnect(SuiSession *sui, SuiEvent event, GVariantDict *params){
-    SrnRet ret;
     Server *srv;
 
     srv = ctx_get_server(sui);
     g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
 
-    ret = sirc_cmd_quit(srv->irc, "QUIT");
-    if (!RET_IS_OK(ret)){
-        server_free(srv); // FIXME
+    server_disconnect(srv, SERVER_DISCONN_REASON_USER_CLOSE);
+
+    return SRN_OK;
+}
+
+SrnRet server_ui_event_quit(SuiSession *sui, SuiEvent event, GVariantDict *params){
+    Server *srv;
+    Chat *chat;
+
+    srv = ctx_get_server(sui);
+    chat = ctx_get_chat(sui);
+    g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
+
+    if (server_is_registered(srv)) {
+        return sirc_cmd_quit(srv->irc, "QUIT");
+    } else if (srv->stat == SERVER_DISCONNECTED){
+        // FIXME: it looks dangrous
+        server_free(srv);
+        return SRN_OK;
+    } else {
+        chat_add_error_message(chat, chat->user->nick,
+                _("Can not quit from server in this state, please disconnect from server, then try again"));
         return SRN_ERR;
     }
-
-    return ret;
 }
 
 SrnRet server_ui_event_send(SuiSession *sui, SuiEvent event, GVariantDict *params){
