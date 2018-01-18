@@ -180,13 +180,8 @@ static void on_recv_ready(GObject *obj, GAsyncResult *res, gpointer user_data){
     in = G_INPUT_STREAM(obj);
     size = g_input_stream_read_finish(in, res, &err);;
     if (err != NULL){
-        if (g_error_matches(err, G_IO_ERROR, G_IO_ERROR_CANCELLED)){
-            /* Connection cancelled */
-            on_disconnect(sirc, NULL);
-        } else {
-            on_disconnect(sirc, err->message);
-            return;
-        }
+        on_disconnect(sirc, err->message);
+        return;
     }
     if (size == 0){
         /* Connection closed */
