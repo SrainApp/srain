@@ -23,6 +23,9 @@
 
 void server_irc_event_connect(SircSession *sirc, const char *event);
 
+void server_irc_event_connect_fail(SircSession *sirc, const char *event,
+        const char *origin, const char **params, int count);
+
 void server_irc_event_disconnect(SircSession *sirc, const char *event,
         const char *origin, const char *params[], int count);
 

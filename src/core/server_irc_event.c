@@ -81,8 +81,10 @@ static gboolean irc_reconnect(gpointer user_data){
 
     srv = user_data;
     g_return_val_if_fail(server_is_valid(srv), G_SOURCE_REMOVE);
+    g_return_val_if_fail(srv->stat == SERVER_RECONNECTING, G_SOURCE_REMOVE);
 
     srv->reconn_interval += SERVER_RECONN_STEP;
+    srv->stat = SERVER_DISCONNECTED;
     server_connect(srv);
 
     return G_SOURCE_REMOVE;
@@ -126,22 +128,73 @@ void server_irc_event_connect(SircSession *sirc, const char *event){
             srv->user->realname);
 }
 
+void server_irc_event_connect_fail(SircSession *sirc, const char *event,
+        const char *origin, const char **params, int count){
+    bool reconnect = FALSE;
+    Server *srv;
+
+    srv = sirc_get_ctx(sirc);
+    g_return_if_fail(server_is_valid(srv));
+    g_return_if_fail(srv->stat == SERVER_CONNECTING);
+
+    const char *msg = count >= 1 ? params[0] : RET_MSG(SRN_ERR);
+
+    switch (srv->disconn_reason){
+        case SERVER_DISCONN_REASON_USER_CLOSE:
+            // Nothing to do
+            break;
+        case SERVER_DISCONN_REASON_CLOSE:
+            reconnect = TRUE;
+            break;
+        default:
+            g_return_if_reached();
+    }
+
+    // Reset default disconnect reason
+    srv->disconn_reason = SERVER_DISCONN_REASON_CLOSE;
+
+    if (reconnect) {
+        srv->stat = SERVER_RECONNECTING;
+        // Add reconnect timer
+        g_timeout_add(srv->reconn_interval, irc_reconnect, srv);
+    } else {
+        srv->stat = SERVER_DISCONNECTED;
+    }
+
+    chat_add_error_message_fmt(srv->chat, "", _("Failed to connect to %1$s(%2$s:%3$d): %4$s"),
+            srv->prefs->name, srv->prefs->host, srv->prefs->port, msg);
+    /* If user trying connect to a TLS port via non-TLS connection, it will
+     * be reset, give user some hints. */
+    if (!srv->prefs->irc->tls && srv->prefs->port == 6697) {
+        chat_add_error_message_fmt(srv->chat, "",
+                _("It seems that you connect to a TLS port(%1$d) without enable TLS connection, try to enable it and reconnect"),
+                srv->prefs->port);
+    }
+
+    if (reconnect){
+        chat_add_misc_message_fmt(srv->chat, "",
+                _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
+                srv->prefs->name,
+                srv->prefs->host,
+                srv->prefs->port,
+                (srv->reconn_interval * 1.0) / 1000);
+    }
+}
+
 void server_irc_event_disconnect(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
     bool reconnect = FALSE;
     GSList *list;
     Server *srv;
-    Chat *chat;
 
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(server_is_valid(srv));
-    g_return_if_fail(srv->stat != SERVER_DISCONNECTED);
+    g_return_if_fail(srv->stat == SERVER_CONNECTED);
 
 
-    const char *msg = count >= 1 ? params[0] : NULL;
+    const char *msg = count >= 1 ? params[0] : RET_MSG(SRN_ERR);
 
     /* Update state */
-    srv->stat = SERVER_DISCONNECTED;
     srv->registered = FALSE;
     srv->loggedin = FALSE;
     srv->negotiated = FALSE;
@@ -172,29 +225,29 @@ void server_irc_event_disconnect(SircSession *sirc, const char *event,
             ERR_FR("Unknown disconnect reason: %d", srv->disconn_reason);
     }
 
-    /* Reset default disconnect reason */
+    // Reset default disconnect reason
     srv->disconn_reason = SERVER_DISCONN_REASON_CLOSE;
 
-    // Add reconnect timer
     if (reconnect) {
+        srv->stat = SERVER_RECONNECTING;
+        // Add reconnect timer
         g_timeout_add(srv->reconn_interval, irc_reconnect, srv);
+    } else {
+        srv->stat = SERVER_DISCONNECTED;
     }
 
     /* Mark all channels as unjoined */
     list = srv->chat_list;
     while (list){
+        Chat *chat;
+
         chat = list->data;
         if (sirc_is_chan(chat->name)){
             chat->joined = FALSE;
         }
-        if (msg){
-            /* Only report error message to server chat */
-            chat_add_misc_message_fmt(chat, "", _("Disconnected from %1$s(%2$s:%3$d): %4$s"),
-                    srv->prefs->name, srv->prefs->host, srv->prefs->port, msg);
-        } else {
-            chat_add_misc_message_fmt(chat, "", _("Disconnected from %1$s(%2$s:%3$d)"),
-                    srv->prefs->name, srv->prefs->host, srv->prefs->port);
-        }
+        // Only report error message to server chat
+        chat_add_misc_message_fmt(chat, "", _("Disconnected from %1$s(%2$s:%3$d): %4$s"),
+                srv->prefs->name, srv->prefs->host, srv->prefs->port, msg);
         if (reconnect){
             chat_add_misc_message_fmt(chat, "",
                     _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
@@ -207,24 +260,8 @@ void server_irc_event_disconnect(SircSession *sirc, const char *event,
         list = g_slist_next(list);
     }
 
-    if (msg){
-        /* Disconnected because of some error */
-        chat_add_error_message_fmt(srv->chat, "", _("Disconnected from %1$s(%2$s:%3$d): %4$s"),
-                srv->prefs->name, srv->prefs->host, srv->prefs->port, msg);
-
-        /* If user trying connect to a TLS port via non-TLS connection, it will
-         * be reset, give user some hints. */
-        if (!srv->prefs->irc->tls && srv->prefs->port == 6697) {
-            chat_add_error_message_fmt(srv->chat, "",
-                    _("It seems that you connect to a TLS port(%1$d) without enable TLS connection, try to enable it and reconnect"),
-                    srv->prefs->port);
-        }
-    } else {
-        /* Peacefully disconnected */
-        chat_add_misc_message_fmt(srv->chat, "", _("Disconnected from %1$s(%2$s:%3$d)"),
-                srv->prefs->name, srv->prefs->host, srv->prefs->port);
-    }
-
+    chat_add_error_message_fmt(srv->chat, "", _("Disconnected from %1$s(%2$s:%3$d): %4$s"),
+            srv->prefs->name, srv->prefs->host, srv->prefs->port, msg);
     if (reconnect){
         chat_add_misc_message_fmt(srv->chat, "",
                 _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),

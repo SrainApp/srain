@@ -132,6 +132,7 @@ enum _ServerStatus {
     SERVER_CONNECTED,
     SERVER_DISCONNECTING,
     SERVER_DISCONNECTED,
+    SERVER_RECONNECTING,
 };
 
 enum _ServerDisconnReason {

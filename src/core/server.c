@@ -71,6 +71,7 @@ void server_init_and_run(int argc, char *argv[]){
 
     /* IRC event */
     irc_events.connect = server_irc_event_connect;
+    irc_events.connect_fail = server_irc_event_connect_fail;
     irc_events.disconnect = server_irc_event_disconnect;
     irc_events.welcome = server_irc_event_welcome;
     irc_events.nick = server_irc_event_nick;
@@ -265,7 +266,6 @@ void server_disconnect(Server *srv, ServerDisconnReason disconn_reason){
         case SERVER_DISCONN_REASON_TIMEOUT:
             sirc_disconnect(srv->irc);
             break;
-        case SERVER_DISCONN_REASON_CLOSE:
         default:
             g_return_if_reached();
     }
