@@ -126,7 +126,7 @@ SrnRet server_url_open(const char *url){
 
     DBG_FR("Server instance: %p", srv);
 
-    if (srv->stat == SERVER_DISCONNECTED){
+    if (srv->state == SERVER_STATE_DISCONNECTED){
         server_connect(srv);
     }
 

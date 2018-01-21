@@ -425,12 +425,11 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
             }
         }
 
-        if (srv->stat != SERVER_DISCONNECTED) {
-            return RET_ERR(_("Can not connect to a connected server"));
-        }
-
         def_srv = srv;
-        server_connect(def_srv);
+        ret = server_connect(def_srv);
+        if (!RET_IS_OK(ret)) {
+            return ret;
+        }
 
         server_wait_until_registered(def_srv);
         if (!server_is_registered(srv)){
@@ -442,28 +441,27 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
     }
 
     if (g_ascii_strcasecmp(subcmd, "disconnect") == 0){
+        ServerState prev_state;
+
         srv = server_get_by_name(name);
         if (!srv) {
             // FIXME: better errmsg?
             return RET_ERR(_("Can not disconnect from a unconnected server"));
         }
 
-        if (srv->stat == SERVER_DISCONNECTED){
-            return RET_ERR(_("Can not disconnect from a unconnected server"));
+        prev_state = srv->state;
+        ret = server_disconnect(srv);
+        if (RET_IS_OK(ret) && prev_state == SERVER_STATE_RECONNECTING){
+            ret = RET_OK(_("Reconnection stopped"));
         }
 
-        server_disconnect(srv, SERVER_DISCONN_REASON_USER_CLOSE);
-
-        return SRN_OK;
+        return ret;
     }
 
     if (g_ascii_strcasecmp(subcmd, "rm") == 0){
         srv = server_get_by_name(name);
         if (srv) {
-            if (srv->stat != SERVER_DISCONNECTED) {
-                return RET_ERR(_("Can not remove a server which is still connected"));
-            }
-            server_free(srv);
+            return server_state_transfrom(srv, SERVER_ACTION_QUIT);
         }
 
         prefs = server_prefs_get_prefs(name);
@@ -556,7 +554,10 @@ static SrnRet on_command_connect(Command *cmd, void *user_data){
     }
 
     def_srv = srv;
-    server_connect(def_srv);
+    ret = server_connect(def_srv);
+    if (!RET_IS_OK(ret)){
+        goto FIN;
+    }
 
     server_wait_until_registered(def_srv);
     if (!server_is_registered(srv)){
@@ -836,17 +837,12 @@ static SrnRet on_command_me(Command *cmd, void *user_data){
     g_return_val_if_fail(msg, SRN_ERR);
 
     if (chat == chat->srv->chat) {
-        ret = RET_ERR(_("Can not send message to a server"));
-        chat_add_error_message(chat, chat->user->nick, RET_MSG(ret));
-        return ret;
+        return RET_ERR(_("Can not send message to a server"));
     }
 
     ret = sirc_cmd_action(chat->srv->irc, chat->name, msg);
-
     if (!RET_IS_OK(ret)){
-        chat_add_error_message_fmt(chat, chat->user->nick,
-                _("Failed to send action message: %1$s"), RET_MSG(ret));
-        return ret;
+        return RET_ERR(_("Failed to send action message: %1$s"), RET_MSG(ret));
     }
 
     chat_add_action_message(chat, chat->user->nick, msg);
