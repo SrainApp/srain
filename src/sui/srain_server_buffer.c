@@ -253,7 +253,7 @@ static void disconn_menu_item_on_activate(GtkWidget* widget, gpointer user_data)
     self = user_data;
 
     sui_event_hdr(srain_buffer_get_session(SRAIN_BUFFER(self)),
-                SUI_EVENT_DISCONNECT, NULL);
+            SUI_EVENT_DISCONNECT, NULL);
 }
 
 static void quit_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
@@ -261,9 +261,8 @@ static void quit_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
 
     self = user_data;
 
-    // TODO: QUIT event
     sui_event_hdr(srain_buffer_get_session(SRAIN_BUFFER(self)),
-                SUI_EVENT_DISCONNECT, NULL);
+            SUI_EVENT_QUIT, NULL);
 }
 
 static void srain_server_buffer_set_adding_channel(SrainServerBuffer *self,

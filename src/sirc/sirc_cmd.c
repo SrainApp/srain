@@ -254,6 +254,7 @@ int sirc_cmd_raw(SircSession *sirc, const char *fmt, ...){
         len = vsnprintf(buf, sizeof(buf), fmt, args);
         va_end(args);
     }
+    DBG_FR("Send raw: %s", buf);
 
     if (len > 512){
         WARN_FR("Raw command too long");
@@ -261,9 +262,6 @@ int sirc_cmd_raw(SircSession *sirc, const char *fmt, ...){
     }
 
     // TODO send it totally
-
-    DBG_FR("Sent: %s", buf);
-
     return (io_stream_write(stream, buf, len) < 0) ?
         SRN_ERR : SRN_OK;
 }

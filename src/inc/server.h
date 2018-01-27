@@ -49,8 +49,8 @@ typedef struct _Message Message;
 // typedef struct _UserType UserType;
 typedef struct _User User;
 typedef struct _Chat Chat;
-typedef enum   _ServerStatus ServerStatus;
-typedef enum   _ServerDisconnReason ServerDisconnReason;
+typedef enum   _ServerState ServerState;
+typedef enum   _ServerAction ServerAction;
 typedef struct _Server Server;
 typedef enum   _LoginMethod LoginMethod;
 typedef struct _ServerPrefs ServerPrefs;
@@ -127,24 +127,29 @@ struct _Chat {
     SuiPrefs *ui_prefs;
 };
 
-enum _ServerStatus {
-    SERVER_CONNECTING,
-    SERVER_CONNECTED,
-    SERVER_DISCONNECTING,
-    SERVER_DISCONNECTED,
+enum _ServerState {
+    SERVER_STATE_DISCONNECTED,
+    SERVER_STATE_CONNECTING,
+    SERVER_STATE_CONNECTED,
+    SERVER_STATE_DISCONNECTING,
+    SERVER_STATE_QUITING,
+    SERVER_STATE_RECONNECTING,
 };
 
-enum _ServerDisconnReason {
-    SERVER_DISCONN_REASON_CLOSE,        // Connection closed by remote server
-    SERVER_DISCONN_REASON_USER_CLOSE,   // Connection closed by user
-    SERVER_DISCONN_REASON_QUIT,         // User sent a QUIT message
-    SERVER_DISCONN_REASON_TIMEOUT,      // Connection closed because of ping timeout
+enum _ServerAction {
+    SERVER_ACTION_CONNECT,
+    SERVER_ACTION_CONNECT_FAIL,
+    SERVER_ACTION_CONNECT_FINISH,
+    SERVER_ACTION_DISCONNECT,
+    SERVER_ACTION_QUIT,
+    SERVER_ACTION_RECONNECT,
+    SERVER_ACTION_DISCONNECT_FINISH,
 };
 
 struct _Server {
     /* Status */
-    ServerStatus stat;
-    ServerDisconnReason disconn_reason; // The reason of disconnect
+    ServerState state;
+    ServerAction last_action;
     bool negotiated;    // Client capability negotiation has finished
     bool registered;    // User has a nickname
     bool loggedin;      // User has identified as a certain account
@@ -154,6 +159,7 @@ struct _Server {
     unsigned long delay;            // Delay in ms
     unsigned long reconn_interval;  // Interval of next reconnect, in ms
     int ping_timer;
+    int reconn_timer;
 
     ServerCap *cap;     // Server capabilities
     ServerPrefs *prefs; // All required static informations
@@ -240,8 +246,9 @@ Server* server_new_from_prefs(ServerPrefs *prefs);
 Server *server_get_by_name(const char *name);
 void server_free(Server *srv);
 bool server_is_valid(Server *srv);
-int server_connect(Server *srv);
-void server_disconnect(Server *srv);
+SrnRet server_connect(Server *srv);
+SrnRet server_disconnect(Server *srv);
+SrnRet server_state_transfrom(Server *srv, ServerAction act);
 bool server_is_registered(Server *srv);
 void server_wait_until_registered(Server *srv);
 int server_add_chat(Server *srv, const char *name);

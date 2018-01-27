@@ -176,14 +176,47 @@ SrnRet server_ui_event_server_list(SuiEvent event, GVariantDict *params){
 SrnRet server_ui_event_disconnect(SuiSession *sui, SuiEvent event, GVariantDict *params){
     SrnRet ret;
     Server *srv;
+    ServerState prev_state;
+    Chat *chat;
 
     srv = ctx_get_server(sui);
+    chat = ctx_get_chat(sui);
     g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
 
-    ret = sirc_cmd_quit(srv->irc, "QUIT");
+    prev_state = srv->state;
+    ret = server_disconnect(srv);
     if (!RET_IS_OK(ret)){
-        server_free(srv); // FIXME
-        return SRN_ERR;
+        chat_add_error_message(chat, chat->user->nick, RET_MSG(ret));
+    }
+
+    if (prev_state == SERVER_STATE_RECONNECTING){
+        chat_add_misc_message(chat, chat->user->nick, _("Reconnection stopped"));
+    }
+
+    return SRN_OK;
+}
+
+SrnRet server_ui_event_quit(SuiSession *sui, SuiEvent event, GVariantDict *params){
+    SrnRet ret;
+    Server *srv;
+    Chat *chat;
+
+    srv = ctx_get_server(sui);
+    chat = ctx_get_chat(sui);
+    g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
+
+    if (server_is_registered(srv)) {
+        ret = sirc_cmd_quit(srv->irc, "QUIT");
+    } else {
+        ret = server_state_transfrom(srv, SERVER_ACTION_QUIT);
+        if (!server_is_valid(srv)){
+            return SRN_OK;
+        }
+    }
+
+    if (!RET_IS_OK(ret)){
+        chat_add_error_message(chat, chat->user->nick,
+                _("Failed to quit from server, try again please"));
     }
 
     return ret;

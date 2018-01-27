@@ -37,6 +37,7 @@ typedef enum {
     SUI_EVENT_ACTIVATE,
     SUI_EVENT_CONNECT,
     SUI_EVENT_DISCONNECT,
+    SUI_EVENT_QUIT,
     SUI_EVENT_SEND,
     SUI_EVENT_JOIN,
     SUI_EVENT_PART,
@@ -58,6 +59,7 @@ typedef int (*SuiEventCallback) (SuiSession *sui, SuiEvent event, GVariantDict *
 
 typedef struct {
     SuiEventCallback disconnect;
+    SuiEventCallback quit;
     SuiEventCallback send;
     SuiEventCallback join;
     SuiEventCallback part;

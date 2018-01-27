@@ -47,60 +47,21 @@
 #include "decorator.h"
 #include "utils.h"
 
-static gboolean irc_period_ping(gpointer user_data){
-    char timestr[64];
-    unsigned long time;
-    Server *srv;
-
-    srv = user_data;
-    g_return_val_if_fail(server_is_valid(srv), G_SOURCE_REMOVE);
-
-    time = get_time_since_first_call_ms();
-    snprintf(timestr, sizeof(timestr), "%lu", time);
-
-    DBG_FR("%lu ms since last pong, time out: %d ms",
-            time - srv->last_pong, SERVER_PING_TIMEOUT);
-
-    /* Check whether ping time out */
-    if (time - srv->last_pong > SERVER_PING_TIMEOUT){
-        WARN_FR("Server %s ping timeout, %lums", srv->prefs->name, time - srv->last_pong);
-
-        srv->ping_timer = 0;
-        srv->disconn_reason = SERVER_DISCONN_REASON_TIMEOUT;
-        server_disconnect(srv);
-
-        return G_SOURCE_REMOVE;
-    }
-
-    sirc_cmd_ping(srv->irc, timestr);
-
-    return G_SOURCE_CONTINUE;
-}
-
-static gboolean irc_reconnect(gpointer user_data){
-    Server *srv;
-
-    srv = user_data;
-    g_return_val_if_fail(server_is_valid(srv), G_SOURCE_REMOVE);
-
-    srv->reconn_interval += SERVER_RECONN_STEP;
-    server_connect(srv);
-
-    return G_SOURCE_REMOVE;
-}
+static gboolean irc_period_ping(gpointer user_data);
 
 void server_irc_event_connect(SircSession *sirc, const char *event){
+    SrnRet state_ret;
     GSList *list;
     Server *srv;
     Chat *chat;
 
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(server_is_valid(srv));
-    g_return_if_fail(srv->stat == SERVER_CONNECTING);
+
+    state_ret = server_state_transfrom(srv, SERVER_ACTION_CONNECT_FINISH);
+    g_return_if_fail(RET_IS_OK(state_ret));
 
     /* Default state */
-    srv->stat = SERVER_CONNECTED;
-    srv->disconn_reason = SERVER_DISCONN_REASON_CLOSE;
     srv->registered = FALSE;
     srv->loggedin = FALSE;
     srv->negotiated = FALSE;
@@ -128,79 +89,35 @@ void server_irc_event_connect(SircSession *sirc, const char *event){
             srv->user->realname);
 }
 
-void server_irc_event_disconnect(SircSession *sirc, const char *event,
+void server_irc_event_connect_fail(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
-    bool reconnect = FALSE;
     GSList *list;
+    SrnRet state_ret;
     Server *srv;
-    Chat *chat;
 
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(server_is_valid(srv));
-    g_return_if_fail(srv->stat == SERVER_CONNECTING
-            || srv->stat == SERVER_CONNECTED
-            || srv->stat == SERVER_DISCONNECTING);
 
-
-    const char *msg = count >= 1 ? params[0] : NULL;
-
-    /* Update state */
-    srv->stat = SERVER_DISCONNECTED;
-    srv->registered = FALSE;
-    srv->loggedin = FALSE;
-    srv->negotiated = FALSE;
-
-    /* Stop peroid ping */
-    if (srv->ping_timer){
-        g_source_remove(srv->ping_timer);
-
-        DBG_FR("Ping timer %d removed", srv->ping_timer);
-
-        srv->ping_timer = 0;
+    state_ret = server_state_transfrom(srv, SERVER_ACTION_CONNECT_FAIL);
+    if (!server_is_valid(srv)) {
+        /* SERVE_STATE_CONNECTING + SERVER_ACTION_QUIT will trigger a
+         * CONNECT_FAIL event and the server will be freed after apply the
+         * SERVER_ACTION_CONNECT_FAIL action.
+         */
+        return;
     }
+    g_return_if_fail(RET_IS_OK(state_ret));
 
-    switch (srv->disconn_reason){
-        case SERVER_DISCONN_REASON_USER_CLOSE:
-            // Nothing to do
-            break;
-        case SERVER_DISCONN_REASON_QUIT:
-            server_free(srv);
-            return;
-        case SERVER_DISCONN_REASON_TIMEOUT:
-            msg = _("Ping time out");
-            reconnect = TRUE;
-            break;
-        case SERVER_DISCONN_REASON_CLOSE:
-            reconnect = TRUE;
-            break;
-        default:
-            ERR_FR("Unknown disconnect reason: %d", srv->disconn_reason);
-    }
+    const char *msg = count >= 1 ? params[0] : RET_MSG(SRN_ERR);
 
-    /* Reset default disconnect reason */
-    srv->disconn_reason = SERVER_DISCONN_REASON_CLOSE;
-
-    // Add reconnect timer
-    if (reconnect) {
-        g_timeout_add(srv->reconn_interval, irc_reconnect, srv);
-    }
-
-    /* Mark all channels as unjoined */
     list = srv->chat_list;
     while (list){
+        Chat *chat;
+
         chat = list->data;
-        if (sirc_is_chan(chat->name)){
-            chat->joined = FALSE;
-        }
-        if (msg){
-            /* Only report error message to server chat */
-            chat_add_misc_message_fmt(chat, "", _("Disconnected from %1$s(%2$s:%3$d): %4$s"),
-                    srv->prefs->name, srv->prefs->host, srv->prefs->port, msg);
-        } else {
-            chat_add_misc_message_fmt(chat, "", _("Disconnected from %1$s(%2$s:%3$d)"),
-                    srv->prefs->name, srv->prefs->host, srv->prefs->port);
-        }
-        if (reconnect){
+        chat_add_misc_message_fmt(chat, "", _("Failed to connect to %1$s(%2$s:%3$d): %4$s"),
+                srv->prefs->name, srv->prefs->host, srv->prefs->port, msg);
+        if (srv->state == SERVER_STATE_RECONNECTING){
             chat_add_misc_message_fmt(chat, "",
                     _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
                     srv->prefs->name,
@@ -212,25 +129,89 @@ void server_irc_event_disconnect(SircSession *sirc, const char *event,
         list = g_slist_next(list);
     }
 
-    if (msg){
-        /* Disconnected because of some error */
-        chat_add_error_message_fmt(srv->chat, "", _("Disconnected from %1$s(%2$s:%3$d): %4$s"),
-                srv->prefs->name, srv->prefs->host, srv->prefs->port, msg);
+    chat_add_error_message_fmt(srv->chat, "", _("Failed to connect to %1$s(%2$s:%3$d): %4$s"),
+            srv->prefs->name, srv->prefs->host, srv->prefs->port, msg);
+    /* If user trying connect to a TLS port via non-TLS connection, it will
+     * be reset, give user some hints. */
+    if (!srv->prefs->irc->tls && srv->prefs->port == 6697) {
+        chat_add_error_message_fmt(srv->chat, "",
+                _("It seems that you connect to a TLS port(%1$d) without enable TLS connection, try to enable it and reconnect"),
+                srv->prefs->port);
+    }
+    if (srv->state == SERVER_STATE_RECONNECTING){
+        chat_add_misc_message_fmt(srv->chat, "",
+                _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
+                srv->prefs->name,
+                srv->prefs->host,
+                srv->prefs->port,
+                (srv->reconn_interval * 1.0) / 1000);
+    }
+}
 
-        /* If user trying connect to a TLS port via non-TLS connection, it will
-         * be reset, give user some hints. */
-        if (!srv->prefs->irc->tls && srv->prefs->port == 6697) {
-            chat_add_error_message_fmt(srv->chat, "",
-                    _("It seems that you connect to a TLS port(%1$d) without enable TLS connection, try to enable it and reconnect"),
-                    srv->prefs->port);
-        }
-    } else {
-        /* Peacefully disconnected */
-        chat_add_misc_message_fmt(srv->chat, "", _("Disconnected from %1$s(%2$s:%3$d)"),
-                srv->prefs->name, srv->prefs->host, srv->prefs->port);
+void server_irc_event_disconnect(SircSession *sirc, const char *event,
+        const char *origin, const char **params, int count){
+    bool is_timeout;
+    SrnRet state_ret;
+    GSList *list;
+    Server *srv;
+
+    g_return_if_fail(count == 1);
+    srv = sirc_get_ctx(sirc);
+    g_return_if_fail(server_is_valid(srv));
+
+    /* Stop period ping */
+    if (srv->ping_timer){
+        DBG_FR("Ping timer %d removed", srv->ping_timer);
+
+        g_source_remove(srv->ping_timer);
+        srv->ping_timer = 0;
     }
 
-    if (reconnect){
+    is_timeout = srv->last_action == SERVER_ACTION_RECONNECT;
+    state_ret = server_state_transfrom(srv, SERVER_ACTION_DISCONNECT_FINISH);
+    if (!server_is_valid(srv)) {
+        /* SERVER_ACTION_QUIT will often trigger a DISCONNECT event and the
+         * server will be freed after apply the SERVER_ACTION_DISCONNECT_FINISH
+         * action.
+         */
+        return;
+    }
+    g_return_if_fail(RET_IS_OK(state_ret));
+
+    const char *msg = is_timeout ?  _("Ping time out") : params[0];
+
+    /* Update state */
+    srv->registered = FALSE;
+    srv->loggedin = FALSE;
+    srv->negotiated = FALSE;
+
+    /* Mark all channels as unjoined */
+    list = srv->chat_list;
+    while (list){
+        Chat *chat;
+
+        chat = list->data;
+        if (sirc_is_chan(chat->name)){
+            chat->joined = FALSE;
+        }
+        // Only report error message to server chat
+        chat_add_misc_message_fmt(chat, "", _("Disconnected from %1$s(%2$s:%3$d): %4$s"),
+                srv->prefs->name, srv->prefs->host, srv->prefs->port, msg);
+        if (srv->state == SERVER_STATE_RECONNECTING){
+            chat_add_misc_message_fmt(chat, "",
+                    _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
+                    srv->prefs->name,
+                    srv->prefs->host,
+                    srv->prefs->port,
+                    (srv->reconn_interval * 1.0) / 1000);
+        }
+
+        list = g_slist_next(list);
+    }
+
+    chat_add_error_message_fmt(srv->chat, "", _("Disconnected from %1$s(%2$s:%3$d): %4$s"),
+            srv->prefs->name, srv->prefs->host, srv->prefs->port, msg);
+        if (srv->state == SERVER_STATE_RECONNECTING){
         chat_add_misc_message_fmt(srv->chat, "",
                 _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
                 srv->prefs->name,
@@ -258,9 +239,6 @@ void server_irc_event_welcome(SircSession *sirc, int event,
     srv->last_pong = get_time_since_first_call_ms();
     srv->ping_timer = g_timeout_add(SERVER_PING_INTERVAL, irc_period_ping, srv);
     DBG_FR("Ping timer %d created", srv->ping_timer);
-
-    /* Resest reconnect interval */
-    srv->reconn_interval = SERVER_RECONN_INTERVAL;
 
     user_rename(srv->user, nick);
 
@@ -341,8 +319,7 @@ void server_irc_event_quit(SircSession *sirc, const char *event,
 
     /* You quit */
     if (sirc_nick_cmp(origin, srv->user->nick)){
-        srv->disconn_reason = SERVER_DISCONN_REASON_QUIT;
-        server_disconnect(srv);
+        server_state_transfrom(srv, SERVER_ACTION_QUIT);
     }
 }
 
@@ -1477,4 +1454,31 @@ ERRMSG:
                 return;
             }
     }
+}
+
+static gboolean irc_period_ping(gpointer user_data){
+    char timestr[64];
+    unsigned long time;
+    Server *srv;
+
+    srv = user_data;
+    time = get_time_since_first_call_ms();
+    snprintf(timestr, sizeof(timestr), "%lu", time);
+
+    DBG_FR("Server %s, %lu ms since last pong, time out: %d ms",
+            srv->prefs->name, time - srv->last_pong, SERVER_PING_TIMEOUT);
+
+    /* Check whether ping time out */
+    if (time - srv->last_pong > SERVER_PING_TIMEOUT){
+        WARN_FR("Server %s ping time out, %lums", srv->prefs->name, time - srv->last_pong);
+
+        srv->ping_timer = 0;
+        server_state_transfrom(srv, SERVER_ACTION_RECONNECT);
+
+        return G_SOURCE_REMOVE;
+    }
+
+    sirc_cmd_ping(srv->irc, timestr);
+
+    return G_SOURCE_CONTINUE;
 }

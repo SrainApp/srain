@@ -51,6 +51,7 @@ SircEvents irc_events;
 void server_init_and_run(int argc, char *argv[]){
     /* UI event */
     ui_events.disconnect = server_ui_event_disconnect;
+    ui_events.quit = server_ui_event_quit;
     ui_events.send = server_ui_event_send;
     ui_events.join = server_ui_event_join;
     ui_events.part = server_ui_event_part;
@@ -70,6 +71,7 @@ void server_init_and_run(int argc, char *argv[]){
 
     /* IRC event */
     irc_events.connect = server_irc_event_connect;
+    irc_events.connect_fail = server_irc_event_connect_fail;
     irc_events.disconnect = server_irc_event_disconnect;
     irc_events.welcome = server_irc_event_welcome;
     irc_events.nick = server_irc_event_nick;
@@ -134,8 +136,8 @@ Server* server_new_from_prefs(ServerPrefs *prefs){
 
     srv = g_malloc0(sizeof(Server));
 
-    srv->stat = SERVER_DISCONNECTED;
-    srv->disconn_reason = SERVER_DISCONN_REASON_CLOSE;
+    srv->state = SERVER_STATE_DISCONNECTED;
+    srv->last_action = SERVER_ACTION_DISCONNECT; // It should be OK
     srv->negotiated = FALSE;
     srv->registered = FALSE;
 
@@ -162,6 +164,7 @@ Server* server_new_from_prefs(ServerPrefs *prefs){
     /* srv->last_pong = 0; */ // by g_malloc0()
     /* srv->delay = 0; */ // by g_malloc0()
     /* srv->ping_timer = 0; */ // by g_malloc0()
+    /* srv->reconn_timer = 0; */ // by g_malloc0()
 
     srv->cur_chat = srv->chat;
 
@@ -179,21 +182,26 @@ bad:
     return NULL;
 }
 
+/**
+ * @brief server_free Free a disconnected server, NEVER use this function
+ *      directly on server which has been initialized
+ *
+ * @param srv
+ */
 void server_free(Server *srv){
     g_return_if_fail(server_is_valid(srv));
+    g_return_if_fail(srv->state == SERVER_STATE_DISCONNECTED);
 
-    /* srv->prefs is hold by server_prefs_list, don't free it. */
-
+    // srv->prefs is held by server_prefs_list, just unlink it
+    srv->prefs->srv = NULL;
     if (srv->cap) {
         server_cap_free(srv->cap);
         srv->cap = NULL;
     }
-
     if (srv->user != NULL){
         user_free(srv->user);
         srv->user = NULL;
     }
-
     if (srv->irc != NULL){
         sirc_free_session(srv->irc);
         srv->irc= NULL;
@@ -220,8 +228,6 @@ void server_free(Server *srv){
         srv->chat = NULL;
     }
 
-    srv->prefs->srv = NULL; // Unlink server from its prefs
-
     g_free(srv);
 }
 
@@ -240,34 +246,26 @@ Server *server_get_by_name(const char *name){
     return NULL;
 }
 
-int server_connect(Server *srv){
-    g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
-    g_return_val_if_fail(srv->stat == SERVER_DISCONNECTED, SRN_ERR);
-
-    srv->stat = SERVER_CONNECTING;
-
-    sirc_connect(srv->irc, srv->prefs->host, srv->prefs->port);
-
-    return SRN_OK;
+/**
+ * @brief server_connect Just an intuitive alias of a connect action
+ *
+ * @param srv
+ *
+ * @return
+ */
+SrnRet server_connect(Server *srv){
+    return server_state_transfrom(srv, SERVER_ACTION_CONNECT);
 }
 
-void server_disconnect(Server *srv){
-    g_return_if_fail(server_is_valid(srv));
-
-    switch (srv->stat) {
-        case SERVER_CONNECTING:
-            sirc_cancel_connect(srv->irc);
-            break;
-        case SERVER_CONNECTED:
-        case SERVER_DISCONNECTING:
-            sirc_cancel_connect(srv->irc);
-            sirc_disconnect(srv->irc);
-            break;
-        default:
-            g_return_if_reached();
-    }
-
-    srv->stat = SERVER_DISCONNECTING;
+/**
+ * @brief server_disconnect Just an intuitive alias of a disconnect action
+ *
+ * @param srv
+ *
+ * @return
+ */
+SrnRet server_disconnect(Server *srv){
+    return server_state_transfrom(srv, SERVER_ACTION_DISCONNECT);
 }
 
 /**
@@ -280,16 +278,16 @@ void server_disconnect(Server *srv){
 bool server_is_registered(Server *srv){
     g_return_val_if_fail(server_is_valid(srv), FALSE);
 
-    return srv->stat == SERVER_CONNECTED && srv->registered == TRUE;
+    return srv->state == SERVER_STATE_CONNECTED && srv->registered == TRUE;
 }
 
 void server_wait_until_registered(Server *srv){
     g_return_if_fail(server_is_valid(srv));
 
     /* Waiting for connection established */
-    while (srv->stat == SERVER_CONNECTING) sui_proc_pending_event();
+    while (srv->state == SERVER_STATE_CONNECTING) sui_proc_pending_event();
     /* Waiting until server registered */
-    while (srv->stat == SERVER_CONNECTED && srv->registered == FALSE)
+    while (srv->state == SERVER_STATE_CONNECTED && srv->registered == FALSE)
         sui_proc_pending_event();
 }
 
