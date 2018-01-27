@@ -63,7 +63,7 @@ listbox_on_row_selected(GtkListBox *box, GtkListBoxRow *row, gpointer user_data)
     SrainStackSidebarItem *item;
     GtkWidget *child;
 
-    sidebar = SRAIN_STACK_SIDEBAR(user_data); 
+    sidebar = SRAIN_STACK_SIDEBAR(user_data);
 
     if (!row) return;
 
@@ -165,7 +165,7 @@ add_child(GtkWidget *child, SrainStackSidebar *sidebar){
     } else if SRAIN_IS_PRIVATE_BUFFER(buffer) {
         icon = "srain-person";
     } else {
-        ERR_FR("Unknown type of SrainBuffer");
+        g_warn_if_reached();
         icon = "";
     }
 
@@ -262,6 +262,15 @@ connect_stack_signals(SrainStackSidebar *sidebar){
 }
 
 static void
+srain_stack_sidebar_dispose(GObject *object){
+  SrainStackSidebar *sidebar = SRAIN_STACK_SIDEBAR(object);
+
+  srain_stack_sidebar_set_stack(sidebar, NULL);
+
+  G_OBJECT_CLASS(srain_stack_sidebar_parent_class)->dispose(object);
+}
+
+static void
 srain_stack_sidebar_finalize(GObject *object){
     SrainStackSidebar *sidebar = SRAIN_STACK_SIDEBAR(object);
 
@@ -274,6 +283,7 @@ static void
 srain_stack_sidebar_class_init(SrainStackSidebarClass *klass){
     GObjectClass *object_class = G_OBJECT_CLASS(klass);
 
+    object_class->dispose = srain_stack_sidebar_dispose;
     object_class->finalize = srain_stack_sidebar_finalize;
 }
 
