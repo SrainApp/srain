@@ -66,6 +66,26 @@ SrnRet server_ui_event_activate(SuiEvent event, GVariantDict *params){
     return rc_read();
 }
 
+SrnRet server_ui_event_shutdown(SuiEvent event, GVariantDict *params){
+    extern GSList *server_prefs_list;
+    GSList *lst;
+
+    lst = server_prefs_list;
+    while (lst){
+        ServerPrefs *prefs = lst->data;
+        if (prefs->srv && prefs->srv->state == SERVER_STATE_CONNECTED){
+            sirc_cmd_quit(prefs->srv->irc, prefs->quit_message);
+            /* FIXME: we need a global App object in core module,
+             * force free server for now */
+            server_state_transfrom(prefs->srv, SERVER_ACTION_QUIT);
+            server_state_transfrom(prefs->srv, SERVER_ACTION_DISCONNECT_FINISH);
+        }
+        lst = g_slist_next(lst);
+    }
+
+    return SRN_OK;
+}
+
 SrnRet server_ui_event_connect(SuiEvent event, GVariantDict *params){
     const char *name = NULL;
     const char *nick = NULL;
@@ -206,7 +226,7 @@ SrnRet server_ui_event_quit(SuiSession *sui, SuiEvent event, GVariantDict *param
     g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
 
     if (server_is_registered(srv)) {
-        ret = sirc_cmd_quit(srv->irc, "QUIT");
+        ret = sirc_cmd_quit(srv->irc, srv->prefs->quit_message);
     } else {
         ret = server_state_transfrom(srv, SERVER_ACTION_QUIT);
         if (!server_is_valid(srv)){
