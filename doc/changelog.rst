@@ -15,11 +15,25 @@ Change Log
   - CTCP support, including request & response CLIENTINFO, FINGER, PING,
     SOURCE, TIME, VERSION, USERINFO messages. DCC message is **not** yet
     supported
+  - Login method support, you can specify it by configuration file option
+    ``server.login_method``:
+
+      - ``sasl_plain``: SASL PLAIN authentication support
+
+  - Added documentation :doc:`support` used to show Srain's features,
+    inspried by https://ircv3.net/software/clients.html
 
 - Improved:
 
   - Fixed a logical error in IRC message parser: all parameters are equal
     whether matched by ``<middle>`` or ``<trailing>``, thanks to @DanielOaks
+  - Improved connection state control, you can smoothly disconnect/quit from
+    server even it is unresponsive
+  - Fixed truncated message output by :ref:`commands-server` ``list``
+    subcommand
+  - Fixed crash at ``g_type_check_instance()`` under GLib 2.54.3+
+  - Fixed: Do not free a SrianServerBuffer which has non-empty buffer
+  - Ensure the QUIT message can be sent before application shutdown
 
 2017-12-22 Version 0.06.3
 =========================

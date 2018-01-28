@@ -50,7 +50,7 @@ Feature             Support
 =================== =======
 CAP v3.1            Yes
 CAP v3.2            Yes
-cap-notify          No
+cap-notify          Yes
 account-notify      No
 account-tag         No
 away-notify         No
@@ -61,8 +61,8 @@ extended-join       No
 invite-notify       No
 Monitor             No
 multi-prefix        No
-SASL v3.1           No
-SASL v3.2           No
+SASL v3.1           PLAIN
+SASL v3.2           PLAIN
 server-time         No
 starttls            No
 sts                 No
