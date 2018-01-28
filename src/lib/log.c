@@ -58,7 +58,7 @@ void log_init(){
     log_prefs = log_prefs_new();
 
    /* Inital preset for prefs moduele */
-    log_prefs->debug_targets = g_slist_append(log_prefs->debug_targets, g_strdup("*"));
+    log_prefs->debug_targets = g_slist_append(log_prefs->debug_targets, g_strdup(""));
 }
 
 SrnRet log_read_prefs(){
