@@ -35,6 +35,7 @@
 typedef enum {
     SUI_EVENT_OPEN = 0,
     SUI_EVENT_ACTIVATE,
+    SUI_EVENT_SHUTDOWN,
     SUI_EVENT_CONNECT,
     SUI_EVENT_DISCONNECT,
     SUI_EVENT_QUIT,
@@ -76,6 +77,7 @@ typedef struct {
 typedef struct {
     SuiAppEventCallback open;
     SuiAppEventCallback activate;
+    SuiAppEventCallback shutdown;
     SuiAppEventCallback connect;
     SuiAppEventCallback server_list;
 } SuiAppEvents;

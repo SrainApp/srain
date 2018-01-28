@@ -46,6 +46,9 @@ static SuiEventParamFormat formats[SUI_EVENT_UNKNOWN][SUI_EVENT_MAX_PARAM] = {
     [SUI_EVENT_ACTIVATE] = {
         { .key = NULL, .fmt = NULL, },
     },
+    [SUI_EVENT_SHUTDOWN] = {
+        { .key = NULL, .fmt = NULL, },
+    },
     [SUI_EVENT_CONNECT] = {
         { .key = "name", .fmt = SUI_EVENT_PARAM_STRING, },
         { .key = "host", .fmt = SUI_EVENT_PARAM_STRING, },
@@ -126,6 +129,10 @@ SrnRet sui_event_hdr(SuiSession *sui, SuiEvent event, GVariantDict *params){
         case SUI_EVENT_ACTIVATE:
             g_return_val_if_fail(app_events->activate, SRN_ERR);
             return app_events->activate(event, params);
+            break;
+        case SUI_EVENT_SHUTDOWN:
+            g_return_val_if_fail(app_events->shutdown, SRN_ERR);
+            return app_events->shutdown(event, params);
             break;
         case SUI_EVENT_CONNECT:
             g_return_val_if_fail(app_events->connect, SRN_ERR);

@@ -62,72 +62,18 @@ static GOptionEntry option_entries[] = {
         .arg = G_OPTION_ARG_STRING_ARRAY,
         .arg_data = NULL,
         .description = N_("Open one or more IRC URLs"),
-        .arg_description = N_("[URL...]")
+        .arg_description = N_("[URL…]")
     },
     {NULL}
 };
 
-static SrnRet create_window(GApplication *app){
-    if (srain_win){
-        gtk_window_present(GTK_WINDOW(srain_win));
-        return SRN_ERR;
-    };
-
-    srain_win = srain_window_new(SRAIN_APP(app));
-    gtk_window_present(GTK_WINDOW(srain_win));
-
-    return SRN_OK;
-}
-
-static void activate(GApplication *app){
-    SrnRet ret;
-
-    ret = create_window(app);
-    if (!RET_IS_OK(ret)){
-        return;
-    }
-
-    ret = sui_event_hdr(NULL, SUI_EVENT_ACTIVATE, NULL);
-    if (!RET_IS_OK(ret)){
-        sui_message_box(_("Error"), RET_MSG(ret));
-    }
-}
-
-static gint handle_local_options(GApplication *app, GVariantDict *options,
-        gpointer user_data){
-    if (g_variant_dict_lookup(options, "version", "b", NULL)){
-        g_print("%s %s%s\n", PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_BUILD);
-        return 0; // Exit
-    }
-
-    return -1; // Return -1 to let the default option processing continue.
-}
-
-static gint command_line(GApplication *app,
-        GApplicationCommandLine *cmdline, gpointer user_data){
-    char **urls;
-    GVariantDict *options;
-    GVariantDict* params;
-
-    options = g_application_command_line_get_options_dict(cmdline);
-    if (g_variant_dict_lookup(options, G_OPTION_REMAINING, "^as", &urls)){
-        /* If we have URLs to open, create window firstly. */
-        create_window(app);
-
-        params = g_variant_dict_new(NULL);
-        g_variant_dict_insert(params, "urls", SUI_EVENT_PARAM_STRINGS,
-                urls, g_strv_length(urls));
-
-        sui_event_hdr(NULL, SUI_EVENT_OPEN, params);
-
-        g_variant_dict_unref(params);
-        g_strfreev(urls);
-    }
-
-    g_application_activate(app);
-
-    return 0;
-}
+static SrnRet create_window(GApplication *app);
+static void on_activate(GApplication *app);
+static void on_shutdown(GApplication *app);
+static int on_handle_local_options(GApplication *app, GVariantDict *options,
+        gpointer user_data);
+static int on_command_line(GApplication *app,
+        GApplicationCommandLine *cmdline, gpointer user_data);
 
 static void srain_app_init(SrainApp *self){
     if (srain_app) return;
@@ -136,9 +82,10 @@ static void srain_app_init(SrainApp *self){
 
     g_application_add_main_option_entries(G_APPLICATION(self), option_entries);
 
-    g_signal_connect(self, "activate", G_CALLBACK(activate), NULL);
-    g_signal_connect(self, "command-line", G_CALLBACK(command_line), NULL);
-    g_signal_connect(self, "handle-local-options", G_CALLBACK(handle_local_options), NULL);
+    g_signal_connect(self, "activate", G_CALLBACK(on_activate), NULL);
+    g_signal_connect(self, "shutdown", G_CALLBACK(on_shutdown), NULL);
+    g_signal_connect(self, "command-line", G_CALLBACK(on_command_line), NULL);
+    g_signal_connect(self, "handle-local-options", G_CALLBACK(on_handle_local_options), NULL);
 
     return;
 }
@@ -162,11 +109,75 @@ void srain_app_quit(SrainApp *app){
     while (list){
         win = list->data;
         next = list->next;
-
         gtk_widget_destroy (GTK_WIDGET (win));
-
         list = next;
     }
     */
     g_application_quit(G_APPLICATION(app));
+}
+
+static SrnRet create_window(GApplication *app){
+    if (srain_win){
+        gtk_window_present(GTK_WINDOW(srain_win));
+        return SRN_ERR;
+    };
+
+    srain_win = srain_window_new(SRAIN_APP(app));
+    gtk_window_present(GTK_WINDOW(srain_win));
+
+    return SRN_OK;
+}
+
+static void on_activate(GApplication *app){
+    SrnRet ret;
+
+    ret = create_window(app);
+    if (!RET_IS_OK(ret)){
+        return;
+    }
+
+    ret = sui_event_hdr(NULL, SUI_EVENT_ACTIVATE, NULL);
+    if (!RET_IS_OK(ret)){
+        sui_message_box(_("Error"), RET_MSG(ret));
+    }
+}
+
+static void on_shutdown(GApplication *app){
+    sui_event_hdr(NULL, SUI_EVENT_SHUTDOWN, NULL);
+}
+
+static int on_handle_local_options(GApplication *app, GVariantDict *options,
+        gpointer user_data){
+    if (g_variant_dict_lookup(options, "version", "b", NULL)){
+        g_print("%s %s%s\n", PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_BUILD);
+        return 0; // Exit
+    }
+
+    return -1; // Return -1 to let the default option processing continue.
+}
+
+static int on_command_line(GApplication *app,
+        GApplicationCommandLine *cmdline, gpointer user_data){
+    char **urls;
+    GVariantDict *options;
+    GVariantDict* params;
+
+    options = g_application_command_line_get_options_dict(cmdline);
+    if (g_variant_dict_lookup(options, G_OPTION_REMAINING, "^as", &urls)){
+        /* If we have URLs to open, create window firstly. */
+        create_window(app);
+
+        params = g_variant_dict_new(NULL);
+        g_variant_dict_insert(params, "urls", SUI_EVENT_PARAM_STRINGS,
+                urls, g_strv_length(urls));
+
+        sui_event_hdr(NULL, SUI_EVENT_OPEN, params);
+
+        g_variant_dict_unref(params);
+        g_strfreev(urls);
+    }
+
+    g_application_activate(app);
+
+    return 0;
 }

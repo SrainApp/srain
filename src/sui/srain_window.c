@@ -78,7 +78,11 @@ static void quit_menu_item_on_activate(){
     srain_app_quit(srain_app);
 }
 
-static void monitor_active_window(GObject *object, GParamSpec *pspec,
+static void on_destroy(SrainWindow *win){
+    // Nothing to do for now
+}
+
+static void on_notify_is_active(GObject *object, GParamSpec *pspec,
         gpointer data ) {
    if (srain_window_is_active(SRAIN_WINDOW(object))){
        /* Stop stress the icon */
@@ -167,14 +171,16 @@ static void srain_window_init(SrainWindow *self){
     theme_apply(GTK_WIDGET(self->tray_menu));
 
     tray_icon_set_callback(self->tray_icon, self, self->tray_menu);
+
+    g_signal_connect(self, "destroy",
+            G_CALLBACK(on_destroy), NULL);
+    g_signal_connect(self, "notify::is-active",
+            G_CALLBACK(on_notify_is_active), NULL);
+
     g_signal_connect_swapped(self->quit_menu_item, "activate",
             G_CALLBACK(quit_menu_item_on_activate), NULL);
     g_signal_connect_swapped(self->about_menu_item, "activate",
             G_CALLBACK(show_about_dialog), self);
-
-
-    g_signal_connect(self, "notify::is-active",
-            G_CALLBACK(monitor_active_window), NULL);
 
     // Click to show/hide GtkPopover
     g_signal_connect_swapped(self->about_button, "clicked",
