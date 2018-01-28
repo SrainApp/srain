@@ -34,6 +34,7 @@
 #include "log.h"
 #include "file_helper.h"
 #include "i18n.h"
+#include "version.h"
 
 config_t user_cfg;
 config_t builtin_cfg;
@@ -183,7 +184,9 @@ SrnRet prefs_read_sui_prefs(SuiPrefs *prefs, const char *srv_name,
 
 static SrnRet prefs_read_file(config_t *cfg, const char *file){
     char *dir;
-    const char *version;
+    const char *rawver;
+    SrnVersion *ver;
+    SrnRet ret;
 
     dir = g_path_get_dirname(file);
     config_set_include_dir(cfg, dir);
@@ -196,9 +199,17 @@ static SrnRet prefs_read_file(config_t *cfg, const char *file){
     }
 
     /* Verify configure version */
-    if (!config_lookup_string(cfg, "version", &version)){
+    if (!config_lookup_string(cfg, "version", &rawver)){
         return RET_ERR(_("No version found"));
     }
+    ver = srn_version_new(rawver);
+    ret = srn_version_parse(ver);
+    if (!RET_IS_OK(ret)){
+        srn_version_free(ver);
+        return RET_ERR(_("Failed to parse version: %s"), RET_MSG(ret));
+    }
+    LOG_FR("Config version: %d.%d.%d", ver->major, ver->minor, ver->micro);
+    srn_version_free(ver);
 
     /* TODO:
     if (g_strcmp0(version, PACKAGE_VERSION) != 0){
