@@ -216,7 +216,7 @@ static void download_image(SrainImage *simg){
     str = download(simg->url);
 
     if (str){
-        str_assign(&simg->file, NULL);
+        str_assign(&simg->file, str->str);
         g_string_free(str, TRUE);
 
         gdk_threads_add_idle((GSourceFunc)set_image_idle, simg);
