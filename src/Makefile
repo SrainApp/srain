@@ -28,10 +28,10 @@ LIBCONFIGLIBS = $(shell pkg-config --libs libconfig)
 LIBSOUPFLAGS = $(shell pkg-config --cflags libsoup-2.4)
 LIBSOUPLIBS = $(shell pkg-config --libs libsoup-2.4)
 
-CFLAGS = -std=gnu99 -O2 -Wall -Iinc -Wno-deprecated-declarations \
+CFLAGS += -std=gnu99 -O2 -Wall -Iinc -Wno-deprecated-declarations \
 		 $(DEFS) $(GTK3FLAGS) $(PY3FLAGS) $(CURLFLAGS) $(LIBIRCCLINETFLAGS) \
 		 $(LIBNOTIFYFLAGS) $(LIBCONFIGFLAGS) $(LIBSOUPFLAGS) $(DBGFLAGS)
-LDFLAGS = $(GTK3LIBS) $(PY3LIBS) $(CURLLIBS) $(LIBIRCCLINETLIBS) \
+LDFLAGS += $(GTK3LIBS) $(PY3LIBS) $(CURLLIBS) $(LIBIRCCLINETLIBS) \
 		  $(LIBNOTIFYLIBS) $(LIBCONFIGLIBS) $(LIBSOUPLIBS) $(DBGFLAGS)
 
 SRCS = $(wildcard *.c */*.c $(BUILD_DIR)/resources.c)
