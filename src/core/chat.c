@@ -55,14 +55,14 @@ Chat *chat_new(Server *srv, const char *name){
     g_strlcpy(chat->name, name, sizeof(chat->name));
 
     /* sui */
-    chat->ui_prefs = sui_prefs_new();
-    ret = prefs_read_sui_prefs(chat->ui_prefs, chat->srv->prefs->name, chat->name);
+    chat->prefs = chat_prefs_new();
+    ret = prefs_read_chat_prefs(chat->prefs, chat->srv->prefs->name, chat->name);
     if (!RET_IS_OK(ret)){
         ERR_FR("Read sui prefs failed: %s", RET_MSG(ret));
     }
 
     flag = 0;
-    chat->ui = sui_new_session(&ui_events, chat->ui_prefs, flag);
+    chat->ui = sui_new_session(&ui_events, chat->prefs->ui, flag);
     if (!chat->ui){
         goto cleanup;
     }
@@ -102,8 +102,8 @@ cleanup:
     if (chat->ui) {
         sui_free_session(chat->ui);
     }
-    if (chat->ui_prefs) {
-        g_free(chat->ui_prefs);
+    if (chat->prefs) {
+        chat_prefs_free(chat->prefs);
     }
     if (chat){
         g_free(chat);
@@ -147,9 +147,9 @@ void chat_free(Chat *chat){
         chat->ui = NULL;
     }
 
-    if (chat->ui_prefs){
-        sui_prefs_free(chat->ui_prefs);
-        chat->ui_prefs = NULL;
+    if (chat->prefs){
+        chat_prefs_free(chat->prefs);
+        chat->prefs = NULL;
     }
 
     g_free(chat);
@@ -279,7 +279,7 @@ void chat_add_recv_message(Chat *chat, const char *origin, const char *content){
     FilterFlag fflag;
 
     dflag = DECORATOR_PANGO_MARKUP | DECORATOR_RELAY | DECORATOR_MENTION;
-    if (chat->ui_prefs->render_mirc_color) {
+    if (chat->prefs->ui->render_mirc_color) {
         dflag |= DECORATOR_MIRC_COLORIZE;
     } else {
         dflag |= DECORATOR_MIRC_STRIP;
@@ -353,7 +353,7 @@ void chat_add_action_message(Chat *chat, const char *origin, const char *content
     }
 
     dflag = DECORATOR_PANGO_MARKUP;
-    if (chat->ui_prefs->render_mirc_color) {
+    if (chat->prefs->ui->render_mirc_color) {
         dflag |= DECORATOR_MIRC_COLORIZE;
     } else {
         dflag |= DECORATOR_MIRC_STRIP;
@@ -527,7 +527,7 @@ void chat_set_topic(Chat *chat, const char *origin, const char *topic){
     }
 
     dflag = DECORATOR_PANGO_MARKUP;
-    if (chat->ui_prefs->render_mirc_color) {
+    if (chat->prefs->ui->render_mirc_color) {
         dflag |= DECORATOR_MIRC_COLORIZE;
     } else {
         dflag |= DECORATOR_MIRC_STRIP;

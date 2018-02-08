@@ -1,4 +1,4 @@
-/* Copyright (C) 2016-2017 Shengyu Zhang <srain@srain.im>
+/* Copyright (C) 2016-2018 Shengyu Zhang <srain@srain.im>
  *
  * This file is part of Srain.
  *
@@ -16,24 +16,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __PREFS_H
-#define __PREFS_H
+#include <glib.h>
 
-#include "srain.h"
 #include "server.h"
-#include "log.h"
+#include "sui/sui.h"
 #include "ret.h"
+#include "i18n.h"
 
-void prefs_init();
-SrnRet prefs_read();
-void prefs_finalize();
+ChatPrefs *chat_prefs_new(){
+    ChatPrefs *prefs;
 
-SrnRet prefs_read_log_prefs(LogPrefs *prefs);
-SrnRet prefs_read_sui_app_prefs(SuiAppPrefs *prefs);
-SrnRet prefs_read_server_prefs_list();
-SrnRet prefs_read_server_prefs(ServerPrefs *prefs);
-SrnRet prefs_read_chat_prefs(ChatPrefs *prefs, const char *srv_name, const char *chat_name);
-SrnRet prefs_read_sirc_prefs(SircPrefs *prefs, const char *srv_name);
-SrnRet prefs_read_sui_prefs(SuiPrefs *prefs, const char *srv_name, const char *chat_name);
+    prefs = g_malloc0(sizeof(ChatPrefs));
+    prefs->ui = sui_prefs_new();
 
-#endif /*__PREFS_H */
+    return prefs;
+}
+
+SrnRet chat_prefs_check(ChatPrefs *prefs){
+    if (!prefs){
+        return RET_ERR(_("Invalid ChatPrefs instance"));
+    }
+    return sui_prefs_check(prefs->ui);
+}
+
+void chat_prefs_free(ChatPrefs *prefs){
+    g_return_if_fail(prefs);
+
+    sui_prefs_free(prefs->ui);
+    g_free(prefs);
+}

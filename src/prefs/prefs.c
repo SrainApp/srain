@@ -167,6 +167,11 @@ SrnRet prefs_read_sirc_prefs(SircPrefs *prefs, const char *srv_name){
     return SRN_OK;
 }
 
+SrnRet prefs_read_chat_prefs(ChatPrefs *prefs, const char *srv_name,
+        const char *chat_name){
+    return prefs_read_sui_prefs(prefs->ui, srv_name, chat_name);
+}
+
 SrnRet prefs_read_sui_prefs(SuiPrefs *prefs, const char *srv_name,
         const char *chat_name){
     SrnRet ret;

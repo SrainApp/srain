@@ -49,6 +49,7 @@ typedef struct _Message Message;
 // typedef struct _UserType UserType;
 typedef struct _User User;
 typedef struct _Chat Chat;
+typedef struct _ChatPrefs ChatPrefs;
 typedef enum   _ServerState ServerState;
 typedef enum   _ServerAction ServerAction;
 typedef struct _Server Server;
@@ -124,7 +125,11 @@ struct _Chat {
 
     Server *srv;
     SuiSession *ui;
-    SuiPrefs *ui_prefs;
+    ChatPrefs *prefs;
+};
+
+struct _ChatPrefs {
+    SuiPrefs *ui;
 };
 
 enum _ServerState {
@@ -272,6 +277,10 @@ void chat_add_error_message(Chat *chat, const char *origin, const char *content)
 void chat_add_error_message_fmt(Chat *chat, const char *origin, const char *fmt, ...);
 void chat_set_topic(Chat *chat, const char *origin, const char *topic);
 void chat_set_topic_setter(Chat *chat, const char *setter);
+
+ChatPrefs *chat_prefs_new();
+SrnRet chat_prefs_check(ChatPrefs *prefs);
+void chat_prefs_free(ChatPrefs *prefs);
 
 User *user_new(Chat *chat, const char *nick, const char *username, const char *realname, UserType type);
 User *user_ref(User *user);
