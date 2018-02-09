@@ -23,7 +23,7 @@ If you found any mistake, feel free to file issue or pull request.
     :titlesonly:
 
     start
-    installation
+    install/index
     commands
     prefs
     develop

@@ -10,8 +10,8 @@ the plan.
     :depth: 3
     :backlinks: none
 
-Dependences
-===========
+Dependencies
+============
 
 =================== =========================== =======
 Name                Notes                       Version
@@ -41,8 +41,8 @@ Manual Installation
 You should install the aboved dependencies on your platfrom before manual
 installation.
 
-Install Dependences
--------------------
+Install Dependencies
+--------------------
 
 .. note::
 
@@ -58,34 +58,27 @@ Install Dependences
 Arch Linux
 ~~~~~~~~~~
 
-.. code-block:: console
-
-    # pacman -S make gcc pkg-config imagemagick # building
-    # pacman -S gettext glib-networking gtk3 python curl libsoup libnotify libconfig
+.. literalinclude:: archlinux.sh
+    :language: shell
 
 openSUSE
 ~~~~~~~~
 
-.. code-block:: console
+.. literalinclude:: opensuse.sh
+    :language: shell
 
-    # zypper in make gcc pkg-config imagemagick gettext-tools gtk3-devel>=3.16 libcurl-devel python3-devel libnotify-devel libconfig-devel>=1.5 # building
-    # zypper in gettext-runtime glib-networking gtk3 python3 libcurl4 libnotify-tools libconfig9>=1.5
 
 Debian & Ubuntu
 ~~~~~~~~~~~~~~~
 
-.. code-block:: console
-
-    # apt-get install make gcc pkg-config imagemagick gettext libgtk-3-dev>=3.16 libpython3-dev python3-dev libcurl4-dev libsoup2.4-dev libnotify-dev libconfig-dev>=1.5 # building
-    # apt-get install glib-networking libgtk3.0-0>=3.16 python3 libcurl4 libsoup2.4 libnotify4 libconfig9>=1.5
+.. literalinclude:: debian.sh
+    :language: shell
 
 macOS
 ~~~~~
 
-.. code-block:: console
-
-    $ brew install coreutils gcc pkg-config imagemagick # building
-    $ brew install gettext glib-networking gtk+3 python3 curl libsoup libnotify libconfig
+.. literalinclude:: macos.sh
+    :language: shell
 
 Compile & Install
 -------------------
@@ -107,13 +100,15 @@ Get git version(require ``git``):
     $ git clone https://github.com/SilverRainZ/srain.git
     $ cd srain
 
-Complile and install:
+Complile:
 
-.. code-block:: console
+.. literalinclude:: build.sh
+    :language: shell
 
-    $ ./configure --prefix=/usr/local --config-dir=/usr/local/etc
-    $ make
-    # make install
+Install(root privileges required):
+
+.. literalinclude:: install.sh
+    :language: shell
 
 .. note::
 
