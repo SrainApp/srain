@@ -1,6 +1,9 @@
-=====
-Srain
-=====
+=================
+Srain |ci-status|
+=================
+
+.. |ci-status| image:: https://travis-ci.org/SilverRainZ/srain.svg?branch=master
+    :target: https://travis-ci.org/SilverRainZ/srain
 
 Modern, beautiful IRC client written in GTK+ 3.
 
