@@ -874,7 +874,7 @@ msgstr "你被 %1$s 踢出了频道：%2$s"
 
 #: ../src/core/server_irc_event.c:374
 #, c-format
-msgid "You has joined"
+msgid "You have joined"
 msgstr "你加入了频道"
 
 #: ../src/sui/srain_app.c:65

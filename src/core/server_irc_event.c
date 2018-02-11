@@ -351,7 +351,7 @@ void server_irc_event_join(SircSession *sirc, const char *event,
     }
 
     if (youjoin) {
-        snprintf(buf, sizeof(buf), _("You has joined"));
+        snprintf(buf, sizeof(buf), _("You have joined"));
     } else {
         snprintf(buf, sizeof(buf), _("%1$s has joined"), origin);
         chat_add_user(chat, origin, USER_CHIGUA);
