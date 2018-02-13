@@ -1,4 +1,4 @@
-/* Copyright (C) 2016-2018 Shengyu Zhang <srain@srain.im>
+/* Copyright (C) 2016-2018 Shengyu Zhang <i@silverrainz.me>
  *
  * This file is part of Srain.
  *

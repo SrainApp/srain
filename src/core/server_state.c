@@ -1,4 +1,4 @@
-/* Copyright (C) 2016-2018 Shengyu Zhang <srain@srain.im>
+/* Copyright (C) 2016-2018 Shengyu Zhang <i@silverrainz.me>
  *
  * This file is part of Srain.
  *
@@ -19,7 +19,7 @@
 /**
  * @file server_state.c
  * @brief Server connection state control
- * @author Shengyu Zhang <srain@srain.im>
+ * @author Shengyu Zhang <i@silverrainz.me>
  * @version 0.06.3
  * @date 2018-01-22
  */

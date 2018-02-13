@@ -1,4 +1,4 @@
-/* Copyright (C) 2016-2017 Shengyu Zhang <srain@srain.im>
+/* Copyright (C) 2016-2017 Shengyu Zhang <i@silverrainz.me>
  *
  * This file is part of Srain.
  *
@@ -19,7 +19,7 @@
 /**
  * @file srain_image.c
  * @brief Widget which can load image from url asynchronously
- * @author Shengyu Zhang <srain@srain.im>
+ * @author Shengyu Zhang <i@silverrainz.me>
  * @version 0.06.2
  * @date 2016-04-01
  */

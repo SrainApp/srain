@@ -1,4 +1,4 @@
-/* Copyright (C) 2016-2017 Shengyu Zhang <srain@srain.im>
+/* Copyright (C) 2016-2017 Shengyu Zhang <i@silverrainz.me>
  *
  * This file is part of Srain.
  *
@@ -20,7 +20,7 @@
  * @file regex.c
  * @brief Regex message filter
  * @author Z.Wind.L <zwindl@protonmail.com>
- *         Shengyu Zhang <srain@srain.im>
+ *         Shengyu Zhang <i@silverrainz.me>
  * @version 0.06.2
  * @date 2017-03-16
  */

@@ -13,7 +13,7 @@ PACKAGE_BUILD = $(shell [ -d .git ] && \
 				echo -n -git@0.`git rev-list --count HEAD`.`git describe --always`)
 PACKAGE_VERSION = 0.06.3
 PACKAGE_AUTHOR = Shengyu Zhang
-PACKAGE_EMAIL = srain@srain.im
+PACKAGE_EMAIL = i@silverrainz.me
 PACKAGE_DESC = Modern, beautiful IRC client written in GTK+ 3.
 PACKAGE_WEBSITE = https://srain.im
 PACKAGE_COPYRIGHT_DATES = 2016 - 2017

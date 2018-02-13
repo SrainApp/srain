@@ -1,4 +1,4 @@
-/* Copyright (C) 2016-2017 Shengyu Zhang <srain@srain.im>
+/* Copyright (C) 2016-2017 Shengyu Zhang <i@silverrainz.me>
  *
  * This file is part of Srain.
  *
@@ -19,7 +19,7 @@
 /**
  * @file server_cap.c
  * @brief IRC client capability negotiation support, version 3.2
- * @author Shengyu Zhang <srain@srain.im>
+ * @author Shengyu Zhang <i@silverrainz.me>
  * @version 0.06.3
  * @date 2017-12-29
  *

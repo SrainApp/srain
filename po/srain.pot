@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Srain 0.06.3\n"
-"Report-Msgid-Bugs-To: srain@srain.im\n"
+"Report-Msgid-Bugs-To: i@silverrainz.me\n"
 "POT-Creation-Date: 2018-01-13 14:04+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"

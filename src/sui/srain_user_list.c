@@ -1,4 +1,4 @@
-/* Copyright (C) 2016-2017 Shengyu Zhang <srain@srain.im>
+/* Copyright (C) 2016-2017 Shengyu Zhang <i@silverrainz.me>
  *
  * This file is part of Srain.
  *
@@ -19,7 +19,7 @@
 /**
  * @file srain_user_list.c
  * @brief Widget for listing all participants of a Chat(usually a SrainChat)
- * @author Shengyu Zhang <srain@srain.im>
+ * @author Shengyu Zhang <i@silverrainz.me>
  * @version 0.06.2
  * @date 2016-04-03
  *
