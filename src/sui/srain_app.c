@@ -95,7 +95,7 @@ static void srain_app_class_init(SrainAppClass *class){
 
 SrainApp* srain_app_new(void){
     return g_object_new(SRAIN_TYPE_APP,
-            "application-id", "org.srain.srain",
+            "application-id", "im.srain.Srain",
             "flags", G_APPLICATION_HANDLES_COMMAND_LINE,
             NULL);
 }
