@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2018 Carles Pastor <cpbadosa@gmail.com> -->
+<component type="desktop-application">
+  <id>im.srain.Srain</id>
+  <metadata_license>FSFAP</metadata_license>
+  <project_license>GPL-3.0</project_license>
+  <name>Srain</name>
+  <summary>Modern, beautiful IRC client written in GTK+ 3</summary>
+
+  <keywords>
+    <keyword>srain</keyword>
+    <keyword>irc</keyword>
+    <keyword>chat</keyword>
+  </keywords>
+
+  <description>
+    <p>
+      Modern, beautiful IRC client written in GTK+ 3.
+    </p>
+  </description>
+
+  <launchable type="desktop-id">Srain.desktop</launchable>
+
+  <screenshots>
+    <screenshot type="default">
+      <caption>Channel joined</caption>
+      <image>https://raw.githubusercontent.com/SilverRainZ/srain/master/doc/_static/srain-joined-channel.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Channel search</caption>
+      <image>https://raw.githubusercontent.com/SilverRainZ/srain/master/doc/_static/srain-searched-chennel.png</image>
+    </screenshot>
+  </screenshots>
+
+  <url type="homepage">https://srain.im/</url>
+
+  <provides>
+    <binary>srain</binary>
+  </provides>
+
+  <content_rating type="oars-1.0">
+    <content_attribute id="violence-cartoon">none</content_attribute>
+    <content_attribute id="violence-fantasy">none</content_attribute>
+    <content_attribute id="violence-realistic">none</content_attribute>
+    <content_attribute id="violence-bloodshed">none</content_attribute>
+    <content_attribute id="violence-sexual">none</content_attribute>
+    <content_attribute id="drugs-alcohol">none</content_attribute>
+    <content_attribute id="drugs-narcotics">none</content_attribute>
+    <content_attribute id="drugs-tobacco">none</content_attribute>
+    <content_attribute id="sex-nudity">none</content_attribute>
+    <content_attribute id="sex-themes">none</content_attribute>
+    <content_attribute id="language-profanity">none</content_attribute>
+    <content_attribute id="language-humor">none</content_attribute>
+    <content_attribute id="language-discrimination">none</content_attribute>
+    <content_attribute id="social-chat">intense</content_attribute>
+    <content_attribute id="social-info">none</content_attribute>
+    <content_attribute id="social-audio">none</content_attribute>
+    <content_attribute id="social-location">none</content_attribute>
+    <content_attribute id="social-contacts">none</content_attribute>
+    <content_attribute id="money-purchasing">none</content_attribute>
+    <content_attribute id="money-gambling">none</content_attribute>
+  </content_rating>
+
+  <releases>
+    <release version="0.06.3" date="2017-12-22">
+      <description>
+        <p>Changed:</p>
+        <ul>
+          <li>Configurable file option tls_not_verify in irc block in server block is renamed to tls_noverify, old option name is still supported</li>
+          <li>Command option tls-not-verify for /server and /connect is renamed to tls-noverify, old option name is still supported</li>
+        </ul>
+        <p>Added:</p>
+        <ul>
+          <li>Connect popover supports connect to predefined server</li>
+          <li>Join popover supports channel search</li>
+        </ul>
+        <p>Improved:</p>
+        <ul>
+          <li>Modified margin and padding of some widgets</li>
+          <li>Improved the style of unread message counter</li>
+          <li>Fixed markup parse error of decorator</li>
+          <li>Fixed crashing while connecting from connect popover</li>
+          <li>Fixed use after free while removing user</li>
+          <li>Improved the performance and extensibility of user list</li>
+          <li>Improved compatibility with older versions of GTK(> 3.16)</li>
+          <li>Refactor the code of chat panel, helpful for the next development</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.06.2" date="2017-12-12">
+      <description>
+        <p>Added:</p>
+        <ul>
+          <li>mIRC color support, can be configured via render_mirc_color option</li>
+        </ul>
+        <p>Improved:</p>
+        <ul>
+          <li>Better error reporting while operating the UI</li>
+          <li>IRC URL can be opened directly within the application</li>
+          <li>Text in input entry, connection panel and join panel will not be cleared while operation is not successful</li>
+          <li>Fixed: in some cases, nickname registration will case infinity loop</li>
+          <li>Decorator and filter now can process xml message</li>
+          <li>Imporved the handling of channel topic</li>
+        </ul>
+      </description>
+    </release>
+  </releases>
+</component>
