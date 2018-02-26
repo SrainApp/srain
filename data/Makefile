@@ -8,6 +8,7 @@ SIZE = 14x14 16x16 22x22 24x24 32x32 36x36 48x48 64x64 72x72 96x96 128x128 192x1
 
 default: Srain.desktop icons themes plugins config
 	$(INSTALL) -Dm644 "Srain.desktop" "$(DESTDIR)$(PACKAGE_DATA_DIR)/share/applications/Srain.desktop"
+	$(INSTALL) -Dm644 "Srain.appdata.xml" "$(DESTDIR)$(PACKAGE_DATA_DIR)/share/metainfo/Srain.appdata.xml"
 
 icons:
 	cd icons; \
