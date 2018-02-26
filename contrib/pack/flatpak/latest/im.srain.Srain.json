@@ -5,6 +5,7 @@
   "sdk": "org.gnome.Sdk",
   "command": "srain",
   "rename-desktop-file": "Srain.desktop",
+  "rename-appdata-file": "Srain.appdata.xml",
   "rename-icon": "srain",
   "finish-args": [
     "--device=all",
