@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 0.06.2\n"
 "Report-Msgid-Bugs-To: i@silverrainz.me\n"
-"POT-Creation-Date: 2018-01-13 14:04+0800\n"
+"POT-Creation-Date: 2018-03-01 00:12+0800\n"
 "PO-Revision-Date: 2016-12-18 01:44+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -71,12 +71,12 @@ msgstr "\"%1$s\" 无法在 %2$s 的屏蔽列表中被找到"
 msgid "\"%1$s\" not found in %2$s 's relaybot list"
 msgstr "\"%1$s\" 无法在 %2$s 的转发机器人列表中被找到"
 
-#: ../src/core/server_irc_event.c:1278
+#: ../src/core/server_irc_event.c:1258
 #, c-format
 msgid "%1$s %2$s"
 msgstr "%1$s %2$s"
 
-#: ../src/core/server_irc_event.c:1267
+#: ../src/core/server_irc_event.c:1247
 #, c-format
 msgid "%1$s %2$s %3$s"
 msgstr "%1$s %2$s %3$s"
@@ -86,17 +86,17 @@ msgstr "%1$s %2$s %3$s"
 msgid "%1$s <fwd %2$s@%3$s>"
 msgstr "%1$s <fwd %2$s@%3$s>"
 
-#: ../src/core/server_irc_event.c:569
+#: ../src/core/server_irc_event.c:549
 #, c-format
 msgid "%1$s are kicked by %2$s"
 msgstr "%1$s 被 %2$s 踢出了频道"
 
-#: ../src/core/server_irc_event.c:566
+#: ../src/core/server_irc_event.c:546
 #, c-format
 msgid "%1$s are kicked by %2$s: %3$s"
 msgstr "%1$s 被 %2$s 踢出了频道：%3$s"
 
-#: ../src/core/server_irc_event.c:532
+#: ../src/core/server_irc_event.c:512
 #, c-format
 msgid ""
 "%1$s changed topic to:\n"
@@ -105,62 +105,62 @@ msgstr ""
 "%1$s 将主题更改为：\n"
 "\t%2$s"
 
-#: ../src/core/server_irc_event.c:529
+#: ../src/core/server_irc_event.c:509
 #, c-format
 msgid "%1$s cleared topic"
 msgstr "%1$s 清除了主题"
 
-#: ../src/core/server_irc_event.c:376
+#: ../src/core/server_irc_event.c:356
 #, c-format
 msgid "%1$s has joined"
 msgstr "%1$s 加入了频道"
 
-#: ../src/core/server_irc_event.c:399
+#: ../src/core/server_irc_event.c:379
 #, c-format
 msgid "%1$s has left"
 msgstr "%1$s 离开了频道"
 
-#: ../src/core/server_irc_event.c:397
+#: ../src/core/server_irc_event.c:377
 #, c-format
 msgid "%1$s has left: %2$s"
 msgstr "%1$s 离开了频道：%2$s"
 
-#: ../src/core/server_irc_event.c:326
+#: ../src/core/server_irc_event.c:306
 #, c-format
 msgid "%1$s has quit"
 msgstr "%1$s 退出了聊天室"
 
-#: ../src/core/server_irc_event.c:324
+#: ../src/core/server_irc_event.c:304
 #, c-format
 msgid "%1$s has quit: %2$s"
 msgstr "%1$s 退出了聊天室：%2$s"
 
-#: ../src/core/server_irc_event.c:658
+#: ../src/core/server_irc_event.c:638
 #, c-format
 msgid "%1$s invites you into %2$s"
 msgstr "%1$s 邀请你加入频道 %2$s"
 
-#: ../src/core/server_irc_event.c:1245
+#: ../src/core/server_irc_event.c:1225
 #, c-format
 msgid "%1$s is attached to %2$s at \"%3$s\""
 msgstr "%1$s 接入了位于 \"%3$s\" 的 %2$s"
 
-#: ../src/core/server_irc_event.c:1257
+#: ../src/core/server_irc_event.c:1237
 #, c-format
 msgid "%1$s is idle for %2$s seconds since %3$s"
 msgstr "%1$s 自 %3$s 以来待机了 %2$s 秒"
 
-#: ../src/core/server_irc_event.c:1236
+#: ../src/core/server_irc_event.c:1216
 #, c-format
 msgid "%1$s is member of %2$s"
 msgstr "%1$s 是频道 %2$s 的成员"
 
-#: ../src/core/server_irc_event.c:295 ../src/core/server_irc_event.c:303
+#: ../src/core/server_irc_event.c:275 ../src/core/server_irc_event.c:283
 #, c-format
 msgid "%1$s is now known as %2$s"
 msgstr "%1$s 将昵称更改为 %2$s"
 
-#: ../src/sui/srain_window.c:95
+#: ../src/sui/srain_window.c:99
 #, c-format
 msgid ""
 "%1$s%2$s\n"
@@ -169,13 +169,13 @@ msgstr ""
 "%1$s%2$s\n"
 "运行于 GTK+ %3$d.%4$d.%5$d"
 
-#: ../src/core/server_irc_event.c:1332
+#: ../src/core/server_irc_event.c:1312
 #, c-format
 msgid "%1$s: %2$s"
 msgstr "%1$s: %2$s"
 
-#: ../src/core/server_irc_event.c:1207 ../src/core/server_irc_event.c:1256
-#: ../src/sui/srain_msg.c:254
+#: ../src/core/server_irc_event.c:1187 ../src/core/server_irc_event.c:1236
+#: ../src/sui/srain_msg.c:256
 msgid "%Y-%m-%d %T"
 msgstr "%Y 年 %m 月 %d 日 %T"
 
@@ -188,7 +188,7 @@ msgstr "(这条消息无法被正确显示)."
 msgid "*** <b>%1$s</b> %2$s ***"
 msgstr "*** <b>%1$s</b> %2$s ***"
 
-#: ../src/core/server_prefs.c:307
+#: ../src/core/server_prefs.c:309
 #, c-format
 msgid ""
 "*** Server name: %s, Instance: %p\n"
@@ -205,7 +205,7 @@ msgstr ""
 "\t离开消息：%s，踢出消息：%s，暂离消息：%s，退出消息：%s\n"
 "\tIRC 配置：%s"
 
-#: ../src/core/server_cmd.c:819
+#: ../src/core/server_cmd.c:820
 #, c-format
 msgid "A message has been sent to \"%1$s\""
 msgstr "消息已发送至 \"%1$s\""
@@ -214,16 +214,16 @@ msgstr "消息已发送至 \"%1$s\""
 msgid "About"
 msgstr "关于"
 
-#: ../src/sui/srain_window.c:112
+#: ../src/sui/srain_window.c:116
 msgid "About Srain"
 msgstr "关于 Srain"
 
-#: ../src/core/server_irc_event.c:877
+#: ../src/core/server_irc_event.c:857
 #, c-format
 msgid "Acknowledged capabilities: %1$s"
 msgstr "已确认的扩展能力：%1$s"
 
-#: ../src/sui/sui.c:537
+#: ../src/sui/sui.c:545
 msgid "Action"
 msgstr "动作"
 
@@ -231,34 +231,26 @@ msgstr "动作"
 msgid "Address:"
 msgstr "地址："
 
-#: ../src/prefs/prefs.c:193
+#: ../src/prefs/prefs.c:201
 #, c-format
 msgid "At line %1$d: %2$s"
 msgstr "在第 %1$d 行：%2$s"
 
-#: ../src/core/server_irc_event.c:1208
+#: ../src/core/server_irc_event.c:1188
 #, c-format
 msgid "By %1$s at %2$s"
 msgstr "%1$s 于 %2$s 设置"
 
-#: ../src/core/server_cmd.c:429
-msgid "Can not connect to a connected server"
-msgstr "不能重复连接到已连接的服务器"
-
-#: ../src/core/server_cmd.c:448 ../src/core/server_cmd.c:452
+#: ../src/core/server_cmd.c:449
 msgid "Can not disconnect from a unconnected server"
 msgstr "无法从未连接的服务器断开连接"
 
-#: ../src/core/server_cmd.c:473
+#: ../src/core/server_cmd.c:471
 #, c-format
 msgid "Can not remove a predefined server: %1$s"
 msgstr "无法删除预定义服务器：%1$s"
 
-#: ../src/core/server_cmd.c:464
-msgid "Can not remove a server which is still connected"
-msgstr "无法删除已连接的服务器"
-
-#: ../src/core/server_ui_event.c:222 ../src/core/server_cmd.c:839
+#: ../src/core/server_cmd.c:840 ../src/core/server_ui_event.c:275
 msgid "Can not send message to a server"
 msgstr "不允许直接向服务器发送消息"
 
@@ -284,7 +276,7 @@ msgstr "命令在第 %1$d 行执行失败：%2$s"
 msgid "Connect"
 msgstr "连接"
 
-#: ../src/core/server_irc_event.c:108 ../src/core/server_irc_event.c:113
+#: ../src/core/server_irc_event.c:69 ../src/core/server_irc_event.c:74
 #, c-format
 msgid "Connected to %1$s(%2$s:%3$d)"
 msgstr "已连接到 %1$s(%2$s:%3$d)"
@@ -297,12 +289,7 @@ msgstr "复制消息"
 msgid "Custom Server"
 msgstr "自定义服务器"
 
-#: ../src/core/server_irc_event.c:198 ../src/core/server_irc_event.c:227
-#, c-format
-msgid "Disconnected from %1$s(%2$s:%3$d)"
-msgstr "到 %1$s(%2$s:%3$d) 的连接已断开"
-
-#: ../src/core/server_irc_event.c:195 ../src/core/server_irc_event.c:215
+#: ../src/core/server_irc_event.c:198 ../src/core/server_irc_event.c:212
 #, c-format
 msgid "Disconnected from %1$s(%2$s:%3$d): %4$s"
 msgstr "到 %1$s(%2$s:%3$d) 的连接已断开：%4$s"
@@ -311,12 +298,12 @@ msgstr "到 %1$s(%2$s:%3$d) 的连接已断开：%4$s"
 msgid "Do not verify certificate"
 msgstr "不校验服务器证书"
 
-#: ../src/core/server_irc_event.c:1053
+#: ../src/core/server_irc_event.c:1033
 #, c-format
 msgid "ERROR: %1$s"
 msgstr "错误: %1$s"
 
-#: ../src/core/server_irc_event.c:1470
+#: ../src/core/server_irc_event.c:1450
 #, c-format
 msgid "ERROR[%1$3d] %2$s"
 msgstr "错误[%1$3d] %2$s"
@@ -328,41 +315,46 @@ msgstr "已激活的扩展能力：%1$s"
 #: ../src/sui/srain_join_popover.c:296 ../src/sui/srain_join_popover.c:339
 #: ../src/sui/srain_join_popover.c:378 ../src/sui/srain_join_popover.c:384
 #: ../src/sui/sui.c:73 ../src/sui/sui.c:81 ../src/sui/sui.c:105
-#: ../src/sui/sui.c:533 ../src/sui/srain_connect_popover.c:193
+#: ../src/sui/sui.c:541 ../src/sui/srain_connect_popover.c:193
 #: ../src/sui/srain_connect_popover.c:229
-#: ../src/sui/srain_connect_popover.c:273 ../src/sui/srain_app.c:92
+#: ../src/sui/srain_connect_popover.c:273 ../src/sui/srain_app.c:141
 msgid "Error"
 msgstr "错误"
 
-#: ../src/prefs/prefs.c:159 ../src/prefs/prefs.c:163
+#: ../src/prefs/prefs.c:160 ../src/prefs/prefs.c:164
 #, c-format
 msgid "Error occurred while read irc prefs in %1$s: %2$s"
 msgstr "读取 IRC 配置时发生错误 %1$s：%2$s"
 
-#: ../src/prefs/prefs.c:106 ../src/prefs/prefs.c:110
+#: ../src/prefs/prefs.c:107 ../src/prefs/prefs.c:111
 #, c-format
 msgid "Error occurred while read log prefs in %1$s: %2$s"
 msgstr "读取日志配置时发生错误 %1$s：%2$s"
 
-#: ../src/prefs/prefs.c:144 ../src/prefs/prefs.c:148
+#: ../src/prefs/prefs.c:145 ../src/prefs/prefs.c:149
 #, c-format
 msgid "Error occurred while read server prefs in %1$s: %2$s"
 msgstr "读取服务器配置时发生错误 %1$s：%2$s"
 
-#: ../src/prefs/prefs.c:129 ../src/prefs/prefs.c:133
+#: ../src/prefs/prefs.c:130 ../src/prefs/prefs.c:134
 #, c-format
 msgid "Error occurred while read server prefs list in %1$s: %2$s"
 msgstr "读取服务器配置列表时发生错误 %1$s：%2$s"
 
-#: ../src/prefs/prefs.c:174 ../src/prefs/prefs.c:178
+#: ../src/prefs/prefs.c:180 ../src/prefs/prefs.c:184
 #, c-format
 msgid "Error occurred while read ui prefs in %1$s: %2$s"
 msgstr "读取 UI 配置 %1$s 时发生错误：%2$s"
 
-#: ../src/prefs/prefs.c:84 ../src/prefs/prefs.c:95
+#: ../src/prefs/prefs.c:85 ../src/prefs/prefs.c:96
 #, c-format
 msgid "Error occurred while reading %1$s: %2$s"
 msgstr "读取 %1$s 时发生错误：%2$s"
+
+#: ../src/core/server_irc_event.c:118 ../src/core/server_irc_event.c:132
+#, c-format
+msgid "Failed to connect to %1$s(%2$s:%3$d): %4$s"
+msgstr "无法连接到 %1$s(%2$s:%3$d)：%4$s"
 
 #: ../src/sui/sui.c:161
 msgid "Failed to create channel buffer"
@@ -372,8 +364,8 @@ msgstr "无法创建频道面板"
 msgid "Failed to create private buffer"
 msgstr "无法创建私聊面板"
 
-#: ../src/core/server_url.c:85 ../src/core/server_ui_event.c:103
-#: ../src/core/server_cmd.c:501
+#: ../src/core/server_url.c:85 ../src/core/server_cmd.c:499
+#: ../src/core/server_ui_event.c:123
 #, c-format
 msgid "Failed to create server \"%1$s\""
 msgstr "无法创建服务器 \"%1$s\""
@@ -387,8 +379,8 @@ msgstr "无法创建服务器面板"
 msgid "Failed to get server list: %1$s"
 msgstr "无法获取服务器列表：%1$s"
 
-#: ../src/core/server_url.c:120 ../src/core/server_ui_event.c:149
-#: ../src/core/server_cmd.c:424 ../src/core/server_cmd.c:554
+#: ../src/core/server_url.c:120 ../src/core/server_cmd.c:424
+#: ../src/core/server_cmd.c:552 ../src/core/server_ui_event.c:169
 #, c-format
 msgid "Failed to instantiate server \"%1$s\""
 msgstr "无法实例化服务器 \"%1$s\""
@@ -403,18 +395,27 @@ msgstr "无法加载主题 \"%1$s\""
 msgid "Failed to parse \"%1$s\" as a URL"
 msgstr "无法将 \"%1$s\" 解析为 URL"
 
-#: ../src/core/server_url.c:135 ../src/core/server_cmd.c:438
-#: ../src/core/server_cmd.c:564
+#: ../src/prefs/prefs.c:214
+#, c-format
+msgid "Failed to parse version: %s"
+msgstr "无法解析版本号：%1$s"
+
+#: ../src/core/server_ui_event.c:239
+msgid "Failed to quit from server, try again please"
+msgstr "无法从服务器退出，请重试"
+
+#: ../src/core/server_url.c:135 ../src/core/server_cmd.c:437
+#: ../src/core/server_cmd.c:565
 #, c-format
 msgid "Failed to register on server \"%1$s\""
 msgstr "无法在服务器 \"%1$s\" 上注册"
 
-#: ../src/core/server_cmd.c:848
+#: ../src/core/server_cmd.c:845
 #, c-format
 msgid "Failed to send action message: %1$s"
 msgstr "无法发送动作消息：%1$s"
 
-#: ../src/core/server_ui_event.c:232
+#: ../src/core/server_ui_event.c:285
 #, c-format
 msgid "Failed to send message: %1$s"
 msgstr "无法发送消息：%1$s"
@@ -440,6 +441,10 @@ msgstr "URL \"%1$s\" 中的 host 是空的"
 #, c-format
 msgid "Invail pattern: %1$s"
 msgstr "无效的正则表达式：%1$s"
+
+#: ../src/core/chat_prefs.c:37
+msgid "Invalid ChatPrefs instance"
+msgstr "无效的聊天配置"
 
 #: ../src/core/server_prefs.c:177 ../src/sirc/sirc_prefs.c:37
 msgid "Invalid ServerPrefs instance"
@@ -471,7 +476,7 @@ msgstr "服务器配置中出现了无效的值：%1$s"
 msgid "Invite to..."
 msgstr "邀请加入……"
 
-#: ../src/core/server_irc_event.c:222
+#: ../src/core/server_irc_event.c:138
 #, c-format
 msgid ""
 "It seems that you connect to a TLS port(%1$d) without enable TLS connection, "
@@ -488,7 +493,7 @@ msgstr "加入"
 msgid "Join Channel"
 msgstr "加入频道"
 
-#: ../src/core/server_irc_event.c:771
+#: ../src/core/server_irc_event.c:751
 #, c-format
 msgid "Latency between %1$s: %2$lums"
 msgstr "到 %1$s 的延迟为 %2$lu 毫秒"
@@ -501,7 +506,11 @@ msgstr "加载图片"
 msgid "Loading channels..."
 msgstr "正在加载频道列表……"
 
-#: ../src/core/server_irc_event.c:994
+#: ../src/sirc/sirc.c:166
+msgid "Local connection closed"
+msgstr ""
+
+#: ../src/core/server_irc_event.c:974
 #, c-format
 msgid "Logging in with %1$s as %2$s..."
 msgstr "正在通过 %1$s 以 %2$s 的身份登录……"
@@ -546,15 +555,15 @@ msgstr "可选参数 %1$s 缺少参数值"
 msgid "Nick name:"
 msgstr "昵称："
 
-#: ../src/core/server_irc_event.c:880
+#: ../src/core/server_irc_event.c:860
 msgid "No acknowledged capability"
 msgstr "没有已确认的扩展能力"
 
-#: ../src/core/server_irc_event.c:837
+#: ../src/core/server_irc_event.c:817
 msgid "No capability to be requested"
 msgstr "没有需要请求的扩展能力"
 
-#: ../src/core/server_irc_event.c:870
+#: ../src/core/server_irc_event.c:850
 msgid "No new capability to be requested"
 msgstr "没有需要请求的新的扩展能力"
 
@@ -562,20 +571,20 @@ msgstr "没有需要请求的新的扩展能力"
 msgid "No server is selected"
 msgstr "没有选中任何服务器"
 
-#: ../src/core/server_cmd.c:362 ../src/core/server_cmd.c:471
+#: ../src/core/server_cmd.c:362 ../src/core/server_cmd.c:469
 #, c-format
 msgid "No such server: %1$s"
 msgstr "没有这个服务器：%1$s"
 
-#: ../src/core/server_irc_event.c:1176
+#: ../src/core/server_irc_event.c:1156
 msgid "No topic is set"
 msgstr "没有设置任何主题"
 
-#: ../src/prefs/prefs.c:200
+#: ../src/prefs/prefs.c:208
 msgid "No version found"
 msgstr "配置文件没有发现版本号"
 
-#: ../src/core/server_prefs.c:293 ../src/core/server_prefs.c:299
+#: ../src/core/server_prefs.c:295 ../src/core/server_prefs.c:301
 msgid "None"
 msgstr "无"
 
@@ -603,7 +612,7 @@ msgstr "可选"
 msgid "Password:"
 msgstr "密码："
 
-#: ../src/core/server_irc_event.c:168
+#: ../src/core/server_irc_event.c:181
 msgid "Ping time out"
 msgstr "超时"
 
@@ -619,8 +628,8 @@ msgstr "在搜索频道之前请先连接到服务器"
 msgid "Predefined Server"
 msgstr "预定义服务器"
 
-#: ../src/core/server.c:105 ../src/core/server.c:110 ../src/core/server.c:115
-#: ../src/core/server.c:120
+#: ../src/core/server.c:108 ../src/core/server.c:113 ../src/core/server.c:118
+#: ../src/core/server.c:123
 msgid "Prefs read error"
 msgstr "配置读取错误"
 
@@ -636,37 +645,45 @@ msgstr "rc 文件未找到"
 msgid "Real name:"
 msgstr "真实姓名："
 
-#: ../src/core/server_irc_event.c:723
+#: ../src/core/server_irc_event.c:703
 #, c-format
 msgid "Received CTCP %1$s request form %2$s"
 msgstr "收到来自 %2$s 的 CTCP %1$s 请求"
 
-#: ../src/core/server_irc_event.c:755 ../src/core/server_irc_event.c:774
+#: ../src/core/server_irc_event.c:735 ../src/core/server_irc_event.c:754
 #, c-format
 msgid "Received CTCP %1$s response from %2$s: %3$s"
 msgstr "收到来自 %2$s 的 CTCP %1$s 响应: %3$s"
 
-#: ../src/core/server_irc_event.c:719
+#: ../src/core/server_irc_event.c:699
 #, c-format
 msgid "Received unsupported CTCP %1$s request form %2$s"
 msgstr "收到来自 %2$s 的不支持的 CTCP %1$s 请求"
 
-#: ../src/core/server_irc_event.c:759
+#: ../src/core/server_irc_event.c:739
 #, c-format
 msgid "Received unsupported CTCP %1$s response form %2$s"
 msgstr "收到来自 %2$s 的不支持的 CTCP %1$s 响应"
 
-#: ../src/core/server_irc_event.c:833
+#: ../src/core/server_cmd.c:455 ../src/core/server_ui_event.c:213
+msgid "Reconnection stopped"
+msgstr "已停止重新连接"
+
+#: ../src/sirc/sirc.c:178
+msgid "Remote connection closed"
+msgstr "远程连接已断开"
+
+#: ../src/core/server_irc_event.c:813
 #, c-format
 msgid "Requesting capabilities: %1$s"
 msgstr "正在请求扩展能力：%1$s"
 
-#: ../src/core/server_irc_event.c:866
+#: ../src/core/server_irc_event.c:846
 #, c-format
 msgid "Requesting new capabilities: %1$s"
 msgstr "正在请求新的扩展能力：%1$s"
 
-#: ../src/core/server_irc_event.c:950
+#: ../src/core/server_irc_event.c:930
 msgid "SASL authentication is not supported on this server, login skipped"
 msgstr "服务器不支持 SASL 认证，登录已跳过"
 
@@ -674,7 +691,7 @@ msgstr "服务器不支持 SASL 认证，登录已跳过"
 msgid "Search Channel"
 msgstr "搜索频道"
 
-#: ../src/core/server_ui_event.c:83
+#: ../src/core/server_ui_event.c:103
 #, c-format
 msgid "Server \"%1$s\" already exists"
 msgstr "服务器 \"%1$s\" 已存在"
@@ -689,36 +706,56 @@ msgstr "服务器 \"%1$s\" 已创建"
 msgid "Server \"%1$s\" is motified"
 msgstr "服务器 \"%1$s\" 已修改"
 
-#: ../src/core/server_cmd.c:478
+#: ../src/core/server_cmd.c:476
 #, c-format
 msgid "Server \"%1$s\" is removed"
 msgstr "服务器 \"%1$s\" 已移除"
 
-#: ../src/prefs/prefs.c:508 ../src/core/server_cmd.c:357
+#: ../src/prefs/prefs.c:524 ../src/core/server_cmd.c:357
 #, c-format
 msgid "Server already exist: %1$s"
 msgstr "服务器已存在：%1$s"
 
-#: ../src/core/server_irc_event.c:830
+#: ../src/core/server_irc_event.c:810
 #, c-format
 msgid "Server capabilities: %1$s"
 msgstr "服务器扩展能力：%1$s"
 
-#: ../src/core/server_irc_event.c:934
+#: ../src/core/server_irc_event.c:914
 #, c-format
 msgid "Server has deleted capabilities: %1$s"
 msgstr "服务器已删除扩展能力：%1$s"
 
-#: ../src/core/server_irc_event.c:863
+#: ../src/core/server_irc_event.c:843
 #, c-format
 msgid "Server has new capabilities: %1$s"
 msgstr "服务器新增的扩展能力：%1$s"
+
+#: ../src/core/server_state.c:120
+msgid "Server is already connected"
+msgstr "服务器已连接"
+
+#: ../src/core/server_state.c:76
+msgid "Server is already disconnected"
+msgstr "服务器已断开"
+
+#: ../src/core/server_state.c:91
+msgid "Server is connecting, please don't repeat connect"
+msgstr "正在连接服务器，请勿重复连接"
+
+#: ../src/core/server_state.c:148
+msgid "Server is disconnecting"
+msgstr "正在断开到服务器的连接"
+
+#: ../src/core/server_state.c:173 ../src/core/server_state.c:180
+msgid "Server is quiting"
+msgstr "正在退出服务器"
 
 #: ../src/sui/glade/connect_popover.glade:63
 msgid "Server:"
 msgstr "服务器："
 
-#: ../src/prefs/prefs.c:502
+#: ../src/prefs/prefs.c:518
 #, c-format
 msgid "Server[%1$d] in server_list doesn't have a name"
 msgstr "server_list 中的第 %1$d 个服务器没有名字"
@@ -752,7 +789,7 @@ msgstr "抱歉，命令解析失败，请提交 bug 报告到 <"
 msgid "Srain"
 msgstr "Srain"
 
-#: ../src/prefs/prefs.c:79
+#: ../src/prefs/prefs.c:80
 #, c-format
 msgid "System config file %1$s not found"
 msgstr "系统配置文件 %1$s 未找到"
@@ -762,7 +799,7 @@ msgstr "系统配置文件 %1$s 未找到"
 msgid "TLS: %1$s, TLS verify certificate: %2$s, Encoding: %3$s"
 msgstr "TLS：%1$s，验证 TLS 证书：%2$s，编码：%3$s"
 
-#: ../src/core/server_irc_event.c:1192
+#: ../src/core/server_irc_event.c:1172
 #, c-format
 msgid ""
 "The topic of this channel is:\n"
@@ -789,20 +826,26 @@ msgstr "主题"
 msgid "True"
 msgstr "启用"
 
-#: ../src/core/server_irc_event.c:1112
+#: ../src/core/server_irc_event.c:1092
 #, c-format
 msgid "Trying nickname: \"%1$s\"..."
 msgstr "正在尝试使用昵称：\"%1$s\"……"
 
-#: ../src/core/server_irc_event.c:203 ../src/core/server_irc_event.c:233
+#: ../src/core/server_irc_event.c:122 ../src/core/server_irc_event.c:143
+#: ../src/core/server_irc_event.c:202 ../src/core/server_irc_event.c:216
 #, c-format
 msgid "Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."
 msgstr "到 %1$s(%2$s:%3$d) 的连接已断开，%4$.1f 秒后尝试重新连接……"
 
-#: ../src/core/server_irc_event.c:1420
+#: ../src/core/server_irc_event.c:1400
 #, c-format
 msgid "URL of %1$s is: %2$s"
 msgstr "%1$s 的 URL 是：%2$s"
+
+#: ../src/core/server_state.c:63
+#, c-format
+msgid "Unallowed action: %1$s"
+msgstr "不允许的动作：%1$s"
 
 #: ../src/lib/command.c:261
 msgid "Unclosed single quotation"
@@ -818,7 +861,7 @@ msgstr "没有这个命令：%1$s"
 msgid "Unknown option %1$s"
 msgstr "没有这个选项：%1$s"
 
-#: ../src/lib/command.c:422 ../src/core/server_cmd.c:481
+#: ../src/core/server_cmd.c:479 ../src/lib/command.c:422
 #, c-format
 msgid "Unknown sub command: %1$s"
 msgstr "没有这个子命令：%1$s"
@@ -836,7 +879,7 @@ msgstr "上传图片"
 msgid "Use secure connection"
 msgstr "使用安全连接"
 
-#: ../src/prefs/prefs.c:90
+#: ../src/prefs/prefs.c:91
 #, c-format
 msgid "User config file %1$s not found"
 msgstr "用户文件 %1$s 未找到"
@@ -858,27 +901,27 @@ msgstr ""
 "在线用户: %d, <span color=\"#157915\">%d@</span>,<span color=\"#856117\">%d"
 "%%</span>,<span color=\"#451984\">%d+</span>"
 
-#: ../src/sui/sui.c:301 ../src/sui/sui.c:464
+#: ../src/sui/sui.c:309 ../src/sui/sui.c:472
 msgid "You"
 msgstr "你"
 
-#: ../src/core/server_irc_event.c:560
+#: ../src/core/server_irc_event.c:540
 #, c-format
 msgid "You are kicked by %1$s"
 msgstr "你被 %1$s 踢出了频道"
 
-#: ../src/core/server_irc_event.c:557
+#: ../src/core/server_irc_event.c:537
 #, c-format
 msgid "You are kicked by %1$s: %2$s"
 msgstr "你被 %1$s 踢出了频道：%2$s"
 
-#: ../src/core/server_irc_event.c:374
+#: ../src/core/server_irc_event.c:354
 #, c-format
 msgid "You have joined"
 msgstr "你加入了频道"
 
 #: ../src/sui/srain_app.c:65
-msgid "[URL...]"
+msgid "[URL…]"
 msgstr "[URL…]"
 
 #: ../src/sui/glade/nick_menu.glade:41
@@ -913,7 +956,7 @@ msgstr "退出"
 msgid "_Whois"
 msgstr "个人信息 (_W)"
 
-#: ../src/core/server_irc_event.c:437 ../src/core/server_irc_event.c:503
+#: ../src/core/server_irc_event.c:417 ../src/core/server_irc_event.c:483
 #, c-format
 msgid "mode %1$s %2$s by %3$s"
 msgstr "%3$s 将 %1$s 的模式变更为 %2$s"

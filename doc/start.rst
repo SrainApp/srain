@@ -16,7 +16,7 @@ Quick Start
 Start Srain
 ===========
 
-After the :doc:`installation` of Srain, you will find Srain in your
+After the :doc:`install/index` of Srain, you will find Srain in your
 applications list, if not, just type ``srain`` in your shell to run it. Then you
 will see Srain's initial interface.
 
