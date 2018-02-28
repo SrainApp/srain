@@ -89,9 +89,9 @@ Get stable(require ``wget`` and ``tar``):
 
 .. code-block:: console
 
-    $ wget https://github.com/SilverRainZ/srain/archive/0.06.3.tar.gz
-    $ tar -xvzf 0.06.3.tar.gz
-    $ cd srain-0.06.3
+    $ wget https://github.com/SilverRainZ/srain/archive/0.06.4.tar.gz
+    $ tar -xvzf 0.06.4.tar.gz
+    $ cd srain-0.06.4
 
 Get git version(require ``git``):
 
@@ -147,20 +147,51 @@ If you are the user of `Arch Linux CN Repository`_, try:
 .. _srain-git: https://aur.archlinux.org/packages/srain-git
 .. _Arch Linux CN Repository: https://www.archlinuxcn.org/archlinux-cn-repo-and-mirror
 
-Gentoo
-------
-
-`rtlanceroad`_ maintains `Gentoo ebuilds for Srain`_, please refer to it for
-more details.
-
-.. _rtlanceroad: https://aur.archlinux.org/packages/srain
-.. _Gentoo ebuilds for Srain: https://github.com/rtlanceroad/gentoo-srain
-
 Debian
 ------
+
+.. warning:: This package is **broken** now.
 
 `dfceaef`_ has written `Debian package script for Srain`_, but it is already
 **out of date**, I will be glad if anyone can fix it.
 
 .. _dfceaef: https://github.com/yangfl
 .. _Debian package script for Srain: https://github.com/SilverRainZ/srain/tree/debian/debian
+
+.. _package-flatpak:
+
+Flatpak
+-------
+
+`cpba`_ is maintaining `Flatpak manifest for Srain`_ and The built package is
+is available on `Flathub`_, just execute the following commands to install if
+you already have flatpak installed:
+
+.. code-block:: console
+
+    $ flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+    $ flatpak install flathub im.srain.Srain
+
+.. _cpba: https://github.com/cpba
+.. _Flatpak manifest for Srain: https://github.com/SilverRainZ/srain/tree/master/contrib/pack/flatpak
+.. _Flathub: https://flathub.org
+
+Gentoo
+------
+
+`rtlanceroad`_ is maintaining `Gentoo ebuilds for Srain`_, please refer to it
+for more details.
+
+.. _rtlanceroad: https://github.com/rtlanceroad
+.. _Gentoo ebuilds for Srain: https://github.com/SilverRainZ/srain/tree/master/contrib/pack/gentoo
+
+.. _package-opensuse:
+
+openSUSE
+--------
+
+`alois`_ is maintaining a `openSUSE package for Srain`_, following this link to
+install it.
+
+.. _alois: https://build.opensuse.org/user/show/alois
+.. _openSUSE package for Srain: https://software.opensuse.org/package/Srain

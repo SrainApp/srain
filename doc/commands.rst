@@ -359,6 +359,8 @@ Usage::
 
 Change ``target`` 's mode.
 
+.. _commands-ctcp:
+
 /ctcp
 -----
 

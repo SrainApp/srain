@@ -7,21 +7,33 @@ Change Log
     :depth: 1
     :backlinks: none
 
-2018-XX-XX Version 0.07[Draft]
-==============================
+2018-02-28 Version 0.06.4
+=========================
+
+- Changed:
+
+  - Change default application ID to ``im.srain.Srain``
 
 - Added:
 
   - CTCP support, including request & response CLIENTINFO, FINGER, PING,
     SOURCE, TIME, VERSION, USERINFO messages. DCC message is **not** yet
-    supported
+    supported. Use command :ref:`commands-ctcp` for sending a CTCP request
   - Login method support, you can specify it by configuration file option
     ``server.login_method``:
 
-      - ``sasl_plain``: SASL PLAIN authentication support
+      - ``sasl_plain``: SASL PLAIN authentication support, will use
+        ``server.user.username`` as identity, and use ``server.user.passwd`` as
+        password
 
   - Added documentation :doc:`support` used to show Srain's features,
     inspried by https://ircv3.net/software/clients.html
+  - Added a semantic version parser, not yet used
+  - Added appdata file which requier by application store, thanks to @cpba
+  - openSUSE package is available, please refer to :ref:`package-opensuse` for
+    details, thanks to @alois
+  - Flatpak package is available, please refer to :ref:`package-flatpak` for
+    details, thanks to @cpba
 
 - Improved:
 
@@ -34,6 +46,12 @@ Change Log
   - Fixed crash at ``g_type_check_instance()`` under GLib 2.54.3+
   - Fixed: Do not free a SrianServerBuffer which has non-empty buffer
   - Ensure the QUIT message can be sent before application shutdown
+  - Removed entry from desktop file, thanks to @TingPing
+  - Fixed grammer of join message, thanks to @raindev
+  - Re-enable CI for Srain: |ci-status|
+
+.. |ci-status| image:: https://travis-ci.org/SilverRainZ/srain.svg?branch=master
+    :target: https://travis-ci.org/SilverRainZ/srain
 
 2017-12-22 Version 0.06.3
 =========================
