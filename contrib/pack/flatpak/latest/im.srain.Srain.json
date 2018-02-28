@@ -7,6 +7,7 @@
   "rename-desktop-file": "Srain.desktop",
   "rename-appdata-file": "Srain.appdata.xml",
   "rename-icon": "srain",
+  "copy-icon": true,
   "finish-args": [
     "--device=all",
     "--filesystem=home:ro",
