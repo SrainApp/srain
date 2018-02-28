@@ -9,10 +9,12 @@
   "rename-icon": "srain",
   "copy-icon": true,
   "finish-args": [
+    "--share=ipc",
     "--device=all",
     "--filesystem=home:ro",
     "--socket=pulseaudio",
     "--socket=x11",
+    "--socket=session-bus",
     "--share=network"
   ],
   "modules": [
