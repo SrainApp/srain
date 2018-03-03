@@ -62,6 +62,46 @@
   </content_rating>
 
   <releases>
+    <release version="0.06.4" date="2018-02-28">
+      <description>
+        <p>Changed:</p>
+        <ul>
+          <li>Change default application ID to im.srain.Srain</li>
+        </ul>
+        <p>Added:</p>
+        <ul>
+          <li>CTCP support, including request and response CLIENTINFO, FINGER, PING,
+            SOURCE, TIME, VERSION, USERINFO messages. DCC message is not yet
+            supported. Use command commands-ctcp for sending a CTCP request</li>
+          <li>Login method support, you can specify it by configuration file option
+            server.login_method:
+              sasl_plain SASL PLAIN authentication support, will use server.user.username
+               as identity, and use server.user.passwd as password</li>
+          <li>Added documentation support used to show Srain's features,
+            inspried by https://ircv3.net/software/clients.html</li>
+          <li>Added a semantic version parser, not yet used</li>
+          <li>Added appdata file which requier by application store, thanks to @cpba</li>
+          <li>openSUSE package is available, please refer to package-opensuse for
+            details, thanks to @alois</li>
+          <li>Flatpak package is available, please refer to package-flatpak for
+            details, thanks to @cpba</li>
+        </ul>
+        <p>Improved:</p>
+        <ul>
+          <li>Fixed a logical error in IRC message parser: all parameters are equal
+            whether matched by &lt;middle&gt; or &lt;trailing&gt;, thanks to @DanielOaks</li>
+          <li>Improved connection state control, you can smoothly disconnect/quit from
+            server even it is unresponsive</li>
+          <li>Fixed truncated message output by commands-server list subcommand</li>
+          <li>Fixed crash at g_type_check_instance() under GLib 2.54.3+</li>
+          <li>Fixed: Do not free a SrianServerBuffer which has non-empty buffer</li>
+          <li>Ensure the QUIT message can be sent before application shutdown</li>
+          <li>Removed entry from desktop file, thanks to @TingPing</li>
+          <li>Fixed grammer of join message, thanks to @raindev</li>
+          <li>Re-enable CI for Srain</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.06.3" date="2017-12-22">
       <description>
         <p>Changed:</p>
