@@ -26,7 +26,6 @@ RDEPEND="${DEPEND}
 
 src_prepare(){
 	mkdir build
-	sed -i '/Version=0.06.3/d' data/Srain.desktop || die "sed failed"
 	sed -i \
 		-e 's,#include <Python.h>,#include <python3.5m/Python.h>,' src/plugin.c \
 		-e 's,PY3FLAGS = $(shell pkg-config --cflags python3),PY3FLAGS = $(shell pkg-config --cflags python-3.5m),' \
