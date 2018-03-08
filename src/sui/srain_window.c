@@ -112,7 +112,7 @@ static void show_about_dialog(gpointer user_data){
             "comments", PACKAGE_DESC,
             "authors", authors,
             "documenters", documentors,
-            "logo-icon-name", "srain",
+            "logo-icon-name", "im.srain.Srain",
             "title", _("About Srain"),
             NULL);
 }
@@ -301,7 +301,7 @@ void srain_window_stack_sidebar_update(SrainWindow *win, SrainBuffer *buffer,
 }
 
 void srain_window_tray_icon_stress(SrainWindow *win, int stress){
-    gtk_status_icon_set_from_icon_name(win->tray_icon, stress ? "srain-red": "srain");
+    gtk_status_icon_set_from_icon_name(win->tray_icon, stress ? "srain-red": "im.srain.Srain");
 }
 
 int srain_window_is_active(SrainWindow *win){
