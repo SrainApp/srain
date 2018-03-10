@@ -164,7 +164,7 @@ Flatpak
 -------
 
 `cpba`_ is maintaining `Flatpak manifest for Srain`_ and The built package is
-is available on `Flathub`_, just execute the following commands to install if
+available on `Flathub`_, just execute the following commands to install if
 you already have flatpak installed:
 
 .. code-block:: console
