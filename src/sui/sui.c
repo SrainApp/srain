@@ -530,7 +530,7 @@ void sui_message_notify(SuiMessage *smsg){
 
     title = NULL;
     msg = gtk_label_get_text(smsg->msg_label);
-    icon = "srain";
+    icon = "im.srain.Srain";
 
     if (SRAIN_IS_RECV_MSG(smsg)){
         title = gtk_label_get_text(SRAIN_RECV_MSG(smsg)->nick_label);

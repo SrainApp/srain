@@ -111,7 +111,7 @@ html_sidebars = {
     ]
 }
 
-html_logo = '../data/icons/raw/srain.png'
+html_logo = '../data/icons/raw/im.srain.Srain.png'
 html_favicon = html_logo
 
 # -- Options for HTMLHelp output ------------------------------------------
@@ -169,6 +169,3 @@ texinfo_documents = [
      author, 'Srain', 'One line description of project.',
      'Miscellaneous'),
 ]
-
-
-
