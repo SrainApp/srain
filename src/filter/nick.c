@@ -29,7 +29,7 @@
 
 #include "sirc/sirc.h"
 
-#include "server.h"
+#include "core/core.h"
 
 #include "filter.h"
 

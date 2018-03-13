@@ -27,7 +27,7 @@
 #include <stdio.h>
 #include <glib.h>
 
-#include "server.h"
+#include "core/core.h"
 #include "sirc/sirc.h"
 
 #include "srain.h"
@@ -196,7 +196,8 @@ SrnRet server_state_transfrom(Server *srv, ServerAction action){
         case SERVER_STATE_RECONNECTING:
             switch (action) {
                 case SERVER_ACTION_CONNECT:
-                    sirc_connect(srv->irc, srv->prefs->host, srv->prefs->port);
+                    // FIXME: config
+                    // sirc_connect(srv->irc, srv->prefs->host, srv->prefs->port);
                     next_state = SERVER_STATE_CONNECTING;
                     break;
                 case SERVER_ACTION_DISCONNECT:

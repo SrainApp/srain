@@ -30,7 +30,7 @@
 #include <strings.h>
 #include <glib.h>
 
-#include "server.h"
+#include "core/core.h"
 #include "server_irc_event.h"
 
 #include "sui/sui.h"
@@ -388,7 +388,7 @@ void server_irc_event_part(SircSession *sirc, const char *event,
     /* You has left a channel */
     if (strncasecmp(srv->user->nick, origin, NICK_LEN) == 0){
         chat->joined = FALSE;
-        server_rm_chat(srv, chan);
+        server_rm_chat(srv, chat);
     }
 }
 

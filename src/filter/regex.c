@@ -28,7 +28,7 @@
 #include <glib.h>
 #include <strings.h>
 
-#include "server.h"
+#include "core/core.h"
 
 #include "srain.h"
 #include "filter.h"

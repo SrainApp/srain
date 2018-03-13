@@ -26,12 +26,9 @@
 
 #include <string.h>
 
-#include "server.h"
-#include "server_cmd.h"
-#include "server_ui_event.h"
-
+#include "core/core.h"
 #include "sirc/sirc.h"
-
+#include "server_ui_event.h"
 #include "srain.h"
 #include "i18n.h"
 #include "log.h"
@@ -44,61 +41,39 @@
 static Server* ctx_get_server(SuiSession *sui);
 static Chat* ctx_get_chat(SuiSession *sui);
 
-SrnRet server_ui_event_open(SuiEvent event, GVariantDict *params){
-    int len;
-    char **urls;
-    SrnRet ret = SRN_OK;
-
-    g_variant_dict_lookup(params, "urls", SUI_EVENT_PARAM_STRINGS, &urls);
-    len =  g_strv_length(urls);
-
-    for (int i = 0; i < len; i ++){
-        ret = server_url_open(urls[i]);
-        if (!RET_IS_OK(ret)){
-            return ret;
-        }
-    }
-
-    return ret;
-}
-
-SrnRet server_ui_event_activate(SuiEvent event, GVariantDict *params){
-    return rc_read();
-}
-
-SrnRet server_ui_event_shutdown(SuiEvent event, GVariantDict *params){
-    extern GSList *server_prefs_list;
-    GSList *lst;
-
-    lst = server_prefs_list;
-    while (lst){
-        ServerPrefs *prefs = lst->data;
-        if (prefs->srv && prefs->srv->state == SERVER_STATE_CONNECTED){
-            sirc_cmd_quit(prefs->srv->irc, prefs->quit_message);
-            /* FIXME: we need a global App object in core module,
-             * force free server for now */
-            server_state_transfrom(prefs->srv, SERVER_ACTION_QUIT);
-            server_state_transfrom(prefs->srv, SERVER_ACTION_DISCONNECT_FINISH);
-        }
-        lst = g_slist_next(lst);
-    }
-
+SrnRet server_ui_event_open(SuiApplication *app, SuiEvent event, GVariantDict *params){
+    // TODO: config
     return SRN_OK;
 }
 
-SrnRet server_ui_event_connect(SuiEvent event, GVariantDict *params){
+SrnRet server_ui_event_activate(SuiApplication *app, SuiEvent event, GVariantDict *params){
+    SrnApplication *srn_app;
+
+    srn_app = sui_application_get_ctx(app);
+    sui_new_window(app, &srn_app->ui_win_events, sui_window_config_new());
+    return SRN_OK;
+}
+
+SrnRet server_ui_event_shutdown(SuiApplication *app, SuiEvent event, GVariantDict *params){
+    return SRN_OK;
+}
+
+SrnRet server_ui_event_connect(SuiWindow *win, SuiEvent event, GVariantDict *params){
     const char *name = NULL;
     const char *nick = NULL;
     const char *realname= "";
     const char *username = "";
     SrnRet ret = SRN_ERR;
+    SrnApplication *app;
     Server *srv = NULL;
     ServerPrefs *prefs = NULL;
+
+    app = srn_application_get_default();
 
     g_variant_dict_lookup(params, "name", SUI_EVENT_PARAM_STRING, &name);
     if (!str_is_empty(name)){
         /* If params "name" is not specified, connecting to predefined server */
-        prefs = server_prefs_get_prefs(name);
+        prefs = srn_application_get_server_config(app, name);
         if (prefs->srv){
             return RET_ERR(_("Server \"%1$s\" already exists"), name);
         }
@@ -122,16 +97,20 @@ SrnRet server_ui_event_connect(SuiEvent event, GVariantDict *params){
         if (!prefs) {
             return RET_ERR(_("Failed to create server \"%1$s\""), host);
         }
-        ret = prefs_read_server_prefs(prefs);
+        ret = srn_config_manager_read_server_config(
+                srn_application_get_default()->cfg_mgr,
+                prefs,
+                host);
         if (!RET_IS_OK(ret)){
             server_prefs_free(prefs);
             return ret;
         }
 
-        prefs->port = port;
-        if (!str_is_empty(host)){
-            str_assign(&prefs->host, host);
-        }
+        // FIXME: config
+        // prefs->port = port;
+        // if (!str_is_empty(host)){
+            // str_assign(&prefs->host, host);
+        // }
         if (!str_is_empty(passwd)){
             str_assign(&prefs->passwd, passwd);
         }
@@ -162,7 +141,7 @@ SrnRet server_ui_event_connect(SuiEvent event, GVariantDict *params){
     }
 
     /* Create Server */
-    srv = server_new_from_prefs(prefs);
+    srv = srn_application_add_server(app, prefs->name);
     if (!srv) {
         SrnRet ret;
 
@@ -176,12 +155,14 @@ SrnRet server_ui_event_connect(SuiEvent event, GVariantDict *params){
     return server_connect(srv);
 }
 
-SrnRet server_ui_event_server_list(SuiEvent event, GVariantDict *params){
+SrnRet server_ui_event_server_list(SuiWindow *win, SuiEvent event,
+        GVariantDict *params){
     // FIXME: dirty hack
-    extern GSList *server_prefs_list;
     GSList *lst;
+    SrnApplication *app;
 
-    lst = server_prefs_list;
+    app = srn_application_get_default();
+    lst = app->srv_cfg_list;
     while (lst){
         ServerPrefs *prefs = lst->data;
         if (prefs->predefined){
@@ -315,7 +296,7 @@ SrnRet server_ui_event_part(SuiSession *sui, SuiEvent event, GVariantDict *param
     if (chat->joined) {
         return sirc_cmd_part(srv->irc, chat->name, "Leave.");
     } else {
-        return server_rm_chat(srv, chat->name);
+        return server_rm_chat(srv, chat);
     }
 }
 
@@ -340,7 +321,7 @@ SrnRet server_ui_event_unquery(SuiSession *sui, SuiEvent event, GVariantDict *pa
     g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
     g_return_val_if_fail(chat, SRN_ERR);
 
-    return server_rm_chat(srv, chat->name);
+    return server_rm_chat(srv, chat);
 }
 
 SrnRet server_ui_event_kick(SuiSession *sui, SuiEvent event, GVariantDict *params){

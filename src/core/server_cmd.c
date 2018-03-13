@@ -31,9 +31,7 @@
 #include <strings.h>
 #include <glib.h>
 
-#include "server.h"
-#include "server_cmd.h"
-
+#include "core/core.h"
 #include "sui/sui.h"
 
 #include "srain.h"
@@ -327,15 +325,18 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
     const char *real;
     const char *encoding;
     SrnRet ret;
-
+    SrnApplication *app;
     Server *srv;
     ServerPrefs *prefs;
 
+    app = srn_application_get_default();
     subcmd = command_get_subcmd(cmd);
     g_return_val_if_fail(subcmd, SRN_ERR);
 
     if (g_ascii_strcasecmp(subcmd, "list") == 0){
-        char *dump = server_prefs_list_dump();
+        char *dump;
+
+        dump = srn_application_dump_server_config_list(app);
         ret = RET_OK("%s", dump);
         g_free(dump);
 
@@ -357,14 +358,17 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
             return RET_ERR(_("Server already exist: %1$s"), name);
         }
     } else {
-        prefs = server_prefs_get_prefs(name);
+        prefs = srn_application_get_server_config(app, name);
         if (!prefs){
             return RET_ERR(_("No such server: %1$s"), name);
         }
     }
 
     if (g_ascii_strcasecmp(subcmd, "add") == 0){
-        ret = prefs_read_server_prefs(prefs);
+        ret = srn_config_manager_read_server_config(
+                srn_application_get_default()->cfg_mgr,
+                prefs,
+                name);
         if (!RET_IS_OK(ret)){
             return ret;
         }
@@ -373,10 +377,12 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
     if (g_ascii_strcasecmp(subcmd, "add") == 0
             || g_ascii_strcasecmp(subcmd, "set") == 0){
         if (command_get_opt(cmd, "-host", &host)){
-            str_assign(&prefs->host, host);
+            // FIXME: config
+            // str_assign(&prefs->host, host);
         }
         if (command_get_opt(cmd, "-port", &port)){
-            prefs->port = atoi(port);
+            // FIXME: config
+            // prefs->port = atoi(port);
         }
         if (command_get_opt(cmd, "-pwd", &passwd)){
             str_assign(&prefs->passwd, passwd);
@@ -413,7 +419,7 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
     }
 
     if (g_ascii_strcasecmp(subcmd, "connect") == 0){
-        srv = server_get_by_name(name);
+        srv = srn_application_get_server(app, name);
         if (!srv) { // Create one
             ret = server_prefs_check(prefs);
             if (!RET_IS_OK(ret)){
@@ -443,7 +449,7 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
     if (g_ascii_strcasecmp(subcmd, "disconnect") == 0){
         ServerState prev_state;
 
-        srv = server_get_by_name(name);
+        srv = srn_application_get_server(app, name);
         if (!srv) {
             // FIXME: better errmsg?
             return RET_ERR(_("Can not disconnect from a unconnected server"));
@@ -459,12 +465,12 @@ static SrnRet on_command_server(Command *cmd, void *user_data){
     }
 
     if (g_ascii_strcasecmp(subcmd, "rm") == 0){
-        srv = server_get_by_name(name);
+        srv = srn_application_get_server(app, name);
         if (srv) {
             return server_state_transfrom(srv, SERVER_ACTION_QUIT);
         }
 
-        prefs = server_prefs_get_prefs(name);
+        prefs = srn_application_get_server_config(app, name);
         if (!prefs){
             return RET_ERR(_("No such server: %1$s"), name);
         } else if (prefs->predefined){
@@ -500,20 +506,25 @@ static SrnRet on_command_connect(Command *cmd, void *user_data){
         goto FIN;
     }
 
-    ret = prefs_read_server_prefs(prefs);
+    ret = srn_config_manager_read_server_config(
+            srn_application_get_default()->cfg_mgr,
+            prefs,
+            host);
     if (!RET_IS_OK(ret)){
         goto FIN;
     }
 
     if (!str_is_empty(host)){
-        str_assign(&prefs->host, host);
+        // FIXME: config
+        // str_assign(&prefs->host, host);
     }
     if (!str_is_empty(nick)){
         str_assign(&prefs->nickname, nick);
     }
 
     if (command_get_opt(cmd, "-port", &port)){
-        prefs->port = atoi(port);
+        // FIXME: config
+        // prefs->port = atoi(port);
     }
     if (command_get_opt(cmd, "-pwd", &passwd)){
         str_assign(&prefs->passwd, passwd);
@@ -721,16 +732,18 @@ static SrnRet on_command_query(Command *cmd, void *user_data){
 static SrnRet on_command_unquery(Command *cmd, void *user_data){
     const char *nick;
     Server *srv;
+    Chat *chat;
 
     srv = scctx_get_server(user_data);
     g_return_val_if_fail(srv, SRN_ERR);
 
     nick = command_get_arg(cmd, 0);
-    if (!nick){
-        nick = srv->cur_chat->name;
+    chat = server_get_chat(srv, nick);
+    if (!chat){
+        chat = srv->cur_chat;
     }
 
-    return server_rm_chat(srv, nick);
+    return server_rm_chat(srv, chat);
 }
 
 static SrnRet on_command_join(Command *cmd, void *user_data){

@@ -32,9 +32,7 @@
 #include <string.h>
 #include <glib.h>
 
-#include "server.h"
-#include "server_cap.h"
-
+#include "core/core.h"
 #include "srain.h"
 #include "log.h"
 #include "i18n.h"

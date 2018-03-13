@@ -19,7 +19,7 @@
 #include <stdio.h>
 #include <glib.h>
 
-#include "server.h"
+#include "core/core.h"
 
 #include "decorator.h"
 

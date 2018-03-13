@@ -17,7 +17,7 @@
  */
 
 
-#include "server.h"
+#include "core/core.h"
 #include "log.h"
 
 User *user_new(Chat *chat, const char *nick, const char *username,

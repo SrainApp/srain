@@ -27,7 +27,7 @@
 #include <glib.h>
 #include <libsoup/soup.h>
 
-#include "server.h"
+#include "core/core.h"
 
 #include "ret.h"
 #include "i18n.h"
@@ -89,16 +89,20 @@ SrnRet server_url_open(const char *url){
     }
     /* Instantiate Server */
     if (!prefs->srv){
-        ret = prefs_read_server_prefs(prefs);
+        ret = srn_config_manager_read_server_config(
+                srn_application_get_default()->cfg_mgr,
+                prefs,
+                prefs->name);
         if (!RET_IS_OK(ret)){
             goto fin;
         }
-        if (!str_is_empty(host)){
-            str_assign(&prefs->host, host);
-        }
-        if (port){
-            prefs->port = port;
-        }
+        // FIXME: config
+        // if (!str_is_empty(host)){
+        //     str_assign(&prefs->host, host);
+        // }
+        // if (port){
+        //     prefs->port = port;
+        // }
         if (!str_is_empty(passwd)){
             str_assign(&prefs->passwd, passwd);
         }

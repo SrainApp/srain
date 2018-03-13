@@ -19,7 +19,7 @@
 #ifndef __DECORATOR_H
 #define __DECORATOR_H
 
-#include "server.h"
+#include "core/core.h"
 
 #define DECORATOR_RELAY         1 << 0
 #define DECORATOR_MIRC_STRIP    1 << 1

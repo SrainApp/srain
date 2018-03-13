@@ -20,7 +20,7 @@
 #define __FILTER_H
 
 #include "srain.h"
-#include "server.h"
+#include "core/core.h"
 
 #define FILTER_NICK         1 << 0
 #define FILTER_REGEX        1 << 1

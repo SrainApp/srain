@@ -23,8 +23,11 @@
 
 #include "sirc/sirc.h"
 #include "sui/sui.h"
-#include "server_cap.h"
 #include "ret.h"
+
+#ifndef __IN_CORE_H
+	#error This file should not be included directly, include just core.h
+#endif
 
 /* In millseconds */
 #define SERVER_PING_INTERVAL    (30 * 1000)
@@ -110,7 +113,7 @@ struct _Message {
 
 /* Represent a channel or dialog or a server session */
 struct _Chat {
-    char name[CHAN_LEN];
+    char *name;
     bool joined;
     User *user;         // Yourself
 
@@ -129,6 +132,9 @@ struct _Chat {
 };
 
 struct _ChatPrefs {
+    bool log; // TODO
+    bool render_mirc_color;
+
     SuiPrefs *ui;
 };
 
@@ -193,9 +199,11 @@ struct _ServerPrefs {
                          appeared in predefined server list and *CAN NOT* be
                          freed by ``server_prefs_free()``. */
     char *name;
+    GSList *addrs;
+    char *passwd;
+    // FIXME: remove
     char *host;
     int port;
-    char *passwd;
 
     /* User */
     char *nickname;
@@ -244,9 +252,7 @@ struct _ServerCap {
     Server *srv;
 };
 
-void server_init_and_run(int argc, char *argv[]);
-void server_finalize();
-
+Server* server_new(ServerPrefs *cfg);
 Server* server_new_from_prefs(ServerPrefs *prefs);
 Server *server_get_by_name(const char *name);
 void server_free(Server *srv);
@@ -257,11 +263,11 @@ SrnRet server_state_transfrom(Server *srv, ServerAction act);
 bool server_is_registered(Server *srv);
 void server_wait_until_registered(Server *srv);
 int server_add_chat(Server *srv, const char *name);
-int server_rm_chat(Server *srv, const char *name);
+SrnRet server_rm_chat(Server *srv, Chat *chat);
 Chat* server_get_chat(Server *srv, const char *name);
 Chat* server_get_chat_fallback(Server *srv, const char *name);
 
-Chat *chat_new(Server *srv, const char *name);
+Chat *chat_new(Server *srv, const char *name, ChatPrefs *cfg);
 void chat_free(Chat *chat);
 int chat_add_user(Chat *chat, const char *nick, UserType type);
 int chat_add_user_full(Chat *chat, User *user);
@@ -315,4 +321,5 @@ char* server_cap_dump(ServerCap *scap);
 
 SrnRet server_url_open(const char *url);
 
+SrnRet server_cmd(Chat *chat, const char *cmd); // FIXME
 #endif /* __SERVER_H */

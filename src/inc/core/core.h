@@ -16,10 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SERVER_CAP_H
-#define __SERVER_CAP_H
+#ifndef __CORE_H
+#define __CORE_H
 
-#include "srain.h"
-#include "ret.h"
+#define __IN_CORE_H
+#include "server.h"
+#include "app.h"
+#undef __IN_CORE_H
 
-#endif /* __SERVER_CAP_H */
+#endif /* __CORE_H */

@@ -18,7 +18,7 @@
 
 #include <string.h>
 
-#include "server.h"
+#include "core/core.h"
 
 #include "meta.h"
 #include "decorator.h"
@@ -26,59 +26,51 @@
 #include "i18n.h"
 #include "command.h"
 #include "log.h"
+#include "utils.h"
 #include "prefs.h"
 
 #include "sirc/sirc.h"
 
-extern SuiEvents ui_events;
 extern CommandBind cmd_binds[];
 
 static void append_image(Message *msg);
 static void add_message(Chat *chat, Message *msg);
 static bool whether_merge_last_message(Chat *chat, Message *msg);
 
-Chat *chat_new(Server *srv, const char *name){
-    SrnRet ret;
+Chat *chat_new(Server *srv, const char *name, ChatPrefs *cfg){
     Chat *chat;
     SuiSessionFlag flag;
 
-    g_return_val_if_fail(name, NULL);
-
     chat = g_malloc0(sizeof(Chat));
 
-    chat->joined = FALSE;
+    str_assign(&chat->name, name);
     chat->srv = srv;
-    chat->user = user_ref(srv->user);
+    chat->prefs = cfg;
+    chat->joined = FALSE;
+    // FIXME:
+    // chat->user = user_ref(srv->user);
     // chat->user_list = NULL; // via g_malloc0()
     // chat->msg_list = NULL; // via g_malloc0()
     // chat->last_msg = NULL; // via g_malloc0()
-    g_strlcpy(chat->name, name, sizeof(chat->name));
-
-    /* sui */
-    chat->prefs = chat_prefs_new();
-    ret = prefs_read_chat_prefs(chat->prefs, chat->srv->prefs->name, chat->name);
-    if (!RET_IS_OK(ret)){
-        ERR_FR("Read sui prefs failed: %s", RET_MSG(ret));
-    }
 
     flag = 0;
-    chat->ui = sui_new_session(&ui_events, chat->prefs->ui, flag);
+    chat->ui = sui_new_session(&srn_application_get_default()->ui_events, cfg->ui, flag);
     if (!chat->ui){
         goto cleanup;
     }
     sui_set_ctx(chat->ui, chat);
 
-    if (strcmp(META_SERVER, name) == 0){
-        sui_server_session(chat->ui, srv->prefs->name);
+    if (strcmp(META_SERVER, chat->name) == 0){
         // Server
-    } else if (sirc_is_chan(name)){
+        sui_server_session(chat->ui, chat->name);
+    } else if (sirc_is_chan(chat->name)){
         // Channel
-        sui_channel_session(chat->ui, srv->chat->ui, name);
+        sui_channel_session(chat->ui, chat->srv->chat->ui, chat->name);
     } else {
         // Private, its user_list must have yourself and the dialogue target
-        sui_private_session(chat->ui, srv->chat->ui, name);
-        chat_add_user(chat, srv->user->nick, USER_CHIGUA);
-        chat_add_user(chat, name, USER_CHIGUA);
+        sui_private_session(chat->ui, chat->srv->chat->ui, chat->name);
+        chat_add_user(chat, chat->srv->user->nick, USER_CHIGUA);
+        chat_add_user(chat, chat->name, USER_CHIGUA);
     }
 
     sui_add_completion(chat->ui, chat->name);
@@ -145,11 +137,6 @@ void chat_free(Chat *chat){
     if (chat->ui){
         sui_free_session(chat->ui);
         chat->ui = NULL;
-    }
-
-    if (chat->prefs){
-        chat_prefs_free(chat->prefs);
-        chat->prefs = NULL;
     }
 
     g_free(chat);
@@ -279,7 +266,7 @@ void chat_add_recv_message(Chat *chat, const char *origin, const char *content){
     FilterFlag fflag;
 
     dflag = DECORATOR_PANGO_MARKUP | DECORATOR_RELAY | DECORATOR_MENTION;
-    if (chat->prefs->ui->render_mirc_color) {
+    if (chat->prefs->render_mirc_color) {
         dflag |= DECORATOR_MIRC_COLORIZE;
     } else {
         dflag |= DECORATOR_MIRC_STRIP;
@@ -353,7 +340,7 @@ void chat_add_action_message(Chat *chat, const char *origin, const char *content
     }
 
     dflag = DECORATOR_PANGO_MARKUP;
-    if (chat->prefs->ui->render_mirc_color) {
+    if (chat->prefs->render_mirc_color) {
         dflag |= DECORATOR_MIRC_COLORIZE;
     } else {
         dflag |= DECORATOR_MIRC_STRIP;
@@ -527,7 +514,7 @@ void chat_set_topic(Chat *chat, const char *origin, const char *topic){
     }
 
     dflag = DECORATOR_PANGO_MARKUP;
-    if (chat->prefs->ui->render_mirc_color) {
+    if (chat->prefs->render_mirc_color) {
         dflag |= DECORATOR_MIRC_COLORIZE;
     } else {
         dflag |= DECORATOR_MIRC_STRIP;

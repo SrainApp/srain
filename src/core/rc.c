@@ -29,8 +29,6 @@
 #include <gtk/gtk.h>
 #include <sys/stat.h>
 
-#include "server_cmd.h"
-
 #include "srain.h"
 #include "meta.h"
 #include "i18n.h"

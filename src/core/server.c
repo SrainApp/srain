@@ -29,9 +29,7 @@
 #include <strings.h>
 #include <gtk/gtk.h>
 
-#include "server.h"
-#include "server_cmd.h"
-#include "server_cap.h"
+#include "core/core.h"
 #include "server_irc_event.h"
 #include "server_ui_event.h"
 
@@ -44,96 +42,13 @@
 #include "prefs.h"
 #include "i18n.h"
 
-SuiAppEvents ui_app_events;
-SuiEvents ui_events;
-SircEvents irc_events;
-
-void server_init_and_run(int argc, char *argv[]){
-    /* UI event */
-    ui_events.disconnect = server_ui_event_disconnect;
-    ui_events.quit = server_ui_event_quit;
-    ui_events.send = server_ui_event_send;
-    ui_events.join = server_ui_event_join;
-    ui_events.part = server_ui_event_part;
-    ui_events.query = server_ui_event_query;
-    ui_events.unquery = server_ui_event_unquery;
-    ui_events.kick = server_ui_event_kick;
-    ui_events.invite = server_ui_event_invite;
-    ui_events.whois = server_ui_event_whois;
-    ui_events.ignore = server_ui_event_ignore;
-    ui_events.cutover = server_ui_event_cutover;
-    ui_events.chan_list = server_ui_event_chan_list;
-
-    ui_app_events.open = server_ui_event_open;
-    ui_app_events.activate = server_ui_event_activate;
-    ui_app_events.shutdown = server_ui_event_shutdown;
-    ui_app_events.connect = server_ui_event_connect;
-    ui_app_events.server_list = server_ui_event_server_list;
-
-    /* IRC event */
-    irc_events.connect = server_irc_event_connect;
-    irc_events.connect_fail = server_irc_event_connect_fail;
-    irc_events.disconnect = server_irc_event_disconnect;
-    irc_events.welcome = server_irc_event_welcome;
-    irc_events.nick = server_irc_event_nick;
-    irc_events.quit = server_irc_event_quit;
-    irc_events.join = server_irc_event_join;
-    irc_events.part = server_irc_event_part;
-    irc_events.mode = server_irc_event_mode;
-    irc_events.umode = server_irc_event_umode;
-    irc_events.topic = server_irc_event_topic;
-    irc_events.kick = server_irc_event_kick;
-    irc_events.channel = server_irc_event_channel;
-    irc_events.privmsg = server_irc_event_privmsg;
-    irc_events.notice = server_irc_event_notice;
-    irc_events.channel_notice = server_irc_event_channel_notice;
-    irc_events.invite = server_irc_event_invite;
-    irc_events.ctcp_req = server_irc_event_ctcp_req;
-    irc_events.ctcp_rsp = server_irc_event_ctcp_rsp;
-    irc_events.cap = server_irc_event_cap;
-    irc_events.authenticate = server_irc_event_authenticate;
-    irc_events.ping = server_irc_event_ping;
-    irc_events.pong = server_irc_event_pong;
-    irc_events.error = server_irc_event_error;
-    irc_events.numeric = server_irc_event_numeric;
-
-    server_cmd_init();
-
-    /* Read prefs **/
-    SrnRet ret;
-    SuiAppPrefs ui_app_prefs = {0};
-
-    ret = prefs_read();
-    if (!RET_IS_OK(ret)){
-        sui_message_box(_("Prefs read error"), RET_MSG(ret));
-    }
-
-    ret = log_read_prefs();
-    if (!RET_IS_OK(ret)){
-        sui_message_box(_("Prefs read error"), RET_MSG(ret));
-    }
-
-    ret = prefs_read_server_prefs_list();
-    if (!RET_IS_OK(ret)){
-        sui_message_box(_("Prefs read error"), RET_MSG(ret));
-    }
-
-    ret = prefs_read_sui_app_prefs(&ui_app_prefs);
-    if (!RET_IS_OK(ret)){
-        sui_message_box(_("Prefs read error"), RET_MSG(ret));
-    }
-
-    sui_main_loop(argc, argv, &ui_app_events, &ui_app_prefs);
+Server* server_new(ServerPrefs *cfg){
+    return server_new_from_prefs(cfg);
 }
 
-void server_finalize(){
-}
-
-Server* server_new_from_prefs(ServerPrefs *prefs){
+Server* server_new_from_prefs(ServerPrefs *cfg){
     Server *srv;
-
-    g_return_val_if_fail(RET_IS_OK(server_prefs_check(prefs)), NULL);
-    g_return_val_if_fail(!server_get_by_name(prefs->name), NULL);
+    ChatPrefs *chat_cfg;
 
     srv = g_malloc0(sizeof(Server));
 
@@ -142,17 +57,21 @@ Server* server_new_from_prefs(ServerPrefs *prefs){
     srv->negotiated = FALSE;
     srv->registered = FALSE;
 
-    srv->prefs = prefs;
+    srv->prefs = cfg;
     srv->cap = server_cap_new();
     srv->cap->srv = srv;
 
-    srv->chat = chat_new(srv, META_SERVER);
+    chat_cfg = chat_prefs_new();
+    srn_config_manager_read_chat_config(
+            srn_application_get_default()->cfg_mgr,
+            chat_cfg, srv->prefs->name, META_SERVER);
+    srv->chat = chat_new(srv, META_SERVER, chat_cfg);
     if (!srv->chat) goto bad;
 
     srv->user = user_new(srv->chat,
-            prefs->nickname,
-            prefs->username,
-            prefs->realname,
+            cfg->nickname,
+            cfg->username,
+            cfg->realname,
             USER_CHIGUA);
     if (!srv->user) goto bad;
     user_set_me(srv->user, TRUE);
@@ -170,11 +89,13 @@ Server* server_new_from_prefs(ServerPrefs *prefs){
     srv->cur_chat = srv->chat;
 
     /* sirc */
-    srv->irc = sirc_new_session(&irc_events, prefs->irc);
+    srv->irc = sirc_new_session(
+            &srn_application_get_default()->irc_events,
+            cfg->irc);
     if (!srv->irc) goto bad;
     sirc_set_ctx(srv->irc, srv);
 
-    prefs->srv = srv;   // Link server to its prefs
+    cfg->srv = srv;   // Link server to its cfg
 
     return srv;
 
@@ -193,8 +114,9 @@ void server_free(Server *srv){
     g_return_if_fail(server_is_valid(srv));
     g_return_if_fail(srv->state == SERVER_STATE_DISCONNECTED);
 
-    // srv->prefs is held by server_prefs_list, just unlink it
+    // srv->prefs is held by SrnApplication, just unlink it
     srv->prefs->srv = NULL;
+
     if (srv->cap) {
         server_cap_free(srv->cap);
         srv->cap = NULL;
@@ -233,18 +155,10 @@ void server_free(Server *srv){
 }
 
 bool server_is_valid(Server *srv){
-    return server_prefs_is_server_valid(srv);
-}
+    SrnApplication *app;
 
-Server *server_get_by_name(const char *name){
-    ServerPrefs *prefs;
-
-    prefs =  server_prefs_get_prefs(name);
-    if (prefs) {
-        return prefs->srv;
-    }
-
-    return NULL;
+    app = srn_application_get_default();
+    return srn_application_is_server_valid(app, srv);
 }
 
 /**
@@ -292,9 +206,11 @@ void server_wait_until_registered(Server *srv){
         sui_proc_pending_event();
 }
 
-int server_add_chat(Server *srv, const char *name){
+SrnRet server_add_chat(Server *srv, const char *name){
     GSList *lst;
+    SrnRet ret;
     Chat *chat;
+    ChatPrefs *chat_cfg;
 
     g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
 
@@ -307,38 +223,39 @@ int server_add_chat(Server *srv, const char *name){
         lst = g_slist_next(lst);
     }
 
-    chat = chat_new(srv, name);
-    g_return_val_if_fail(chat, SRN_ERR);
+    chat_cfg = chat_prefs_new();
+    ret = srn_config_manager_read_chat_config(
+            srn_application_get_default()->cfg_mgr,
+            chat_cfg, srv->prefs->name, name);
+    if (!RET_IS_OK(ret)) {
+        return ret;
+    }
 
+    chat = chat_new(srv, name, chat_cfg);
     srv->chat_list = g_slist_append(srv->chat_list, chat);
 
     return SRN_OK;
 }
 
-int server_rm_chat(Server *srv, const char *name){
+SrnRet server_rm_chat(Server *srv, Chat *chat){
     GSList *lst;
-    Chat *chat;
 
     g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
+    g_return_val_if_fail(!chat->joined, SRN_ERR);
 
-    lst = srv->chat_list;
-    while (lst) {
-        chat = lst->data;
-        if (strcasecmp(chat->name, name) == 0){
-            g_return_val_if_fail(!chat->joined, SRN_ERR);
-
-            if (srv->cur_chat == chat){
-                srv->cur_chat = srv->chat;
-            }
-            chat_free(chat);
-            srv->chat_list = g_slist_delete_link(srv->chat_list, lst);
-
-            return SRN_OK;
-        }
-        lst = g_slist_next(lst);
+    lst = g_slist_find(srv->chat_list, chat);
+    if (!lst) {
+        return SRN_ERR;
     }
 
-    return SRN_ERR;
+    if (srv->cur_chat == chat){
+        srv->cur_chat = srv->chat;
+    }
+    chat_prefs_free(chat->prefs);
+    chat_free(chat);
+    srv->chat_list = g_slist_delete_link(srv->chat_list, lst);
+
+    return SRN_OK;
 }
 
 Chat* server_get_chat(Server *srv, const char *name) {
