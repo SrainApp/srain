@@ -22,35 +22,43 @@
 #include "i18n.h"
 #include "utils.h"
 
-SuiAppPrefs *sui_app_prefs_new(){
-    SuiAppPrefs *prefs;
-
-    prefs = g_malloc0(sizeof(SuiAppPrefs));
-
-    return prefs;
+SuiApplicationConfig *sui_application_config_new(void){
+    return g_malloc0(sizeof(SuiApplicationConfig));
 }
 
-SrnRet sui_app_prefs_check(SuiAppPrefs *prefs){
-    const char *fmt = _("Missing field in SuiAppPrefs: %1$s");
+SrnRet sui_application_config_check(SuiApplicationConfig *cfg){
+    const char *fmt = _("Missing field in SuiApplicationConfig: %1$s");
 
-    if (!prefs){
-        return RET_ERR(_("Invalid SuiAppPrefs instance"));
-    }
-    if (str_is_empty(prefs->theme)){
+    if (str_is_empty(cfg->theme)){
         return RET_ERR(fmt, "theme");
     }
+
     return SRN_OK;
 }
 
-void sui_app_prefs_free(SuiAppPrefs *prefs){
-    g_return_if_fail(prefs);
+void sui_application_config_free(SuiApplicationConfig *cfg){
+    str_assign(&cfg->theme, NULL);
+    g_free(cfg);
+}
 
-    if (prefs->theme){
-        g_free(prefs->theme);
-        prefs->theme = NULL;
-    }
+SuiWindowConfig *sui_window_config_new(){
+    SuiWindowConfig *cfg;
 
-    g_free(prefs);
+    cfg = g_malloc0(sizeof(SuiWindowConfig));
+
+    return cfg;
+}
+
+SrnRet sui_window_config_check(SuiWindowConfig *cfg){
+    g_return_val_if_fail(cfg, SRN_ERR);
+
+    return SRN_OK;
+}
+
+void sui_window_config_free(SuiWindowConfig *cfg){
+    g_return_if_fail(cfg);
+
+    g_free(cfg);
 }
 
 SuiPrefs *sui_prefs_new(){

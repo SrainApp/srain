@@ -404,7 +404,7 @@ static gboolean user_tree_view_on_popup(GtkWidget *widget,
     }
 
     if (event->button == 3){
-        nick_menu_popup(event, user);
+        nick_menu_popup(GTK_WIDGET(list), event, user);
         pop = TRUE;
     } else {
         pop = FALSE;

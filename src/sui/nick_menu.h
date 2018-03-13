@@ -21,6 +21,6 @@
 
 #include <gtk/gtk.h>
 
-void nick_menu_popup(GdkEventButton *event, const char *nick);
+void nick_menu_popup(GtkWidget *widget, GdkEventButton *event, const char *nick);
 
 #endif /* __NICK_MENU_H */

@@ -26,12 +26,15 @@
 #include "srain.h"
 #include "ret.h"
 
-typedef struct _SuiAppPrefs SuiAppPrefs;
+typedef struct _SuiApplicationConfig SuiApplicationConfig;
+typedef struct _SuiWindowConfig SuiWindowConfig;
 typedef struct _SuiPrefs SuiPrefs;
 
-struct _SuiAppPrefs {
+struct _SuiApplicationConfig {
     char *theme;
-    // const char *font;
+};
+
+struct _SuiWindowConfig {
 };
 
 struct _SuiPrefs {
@@ -39,15 +42,18 @@ struct _SuiPrefs {
     bool show_topic;
     bool show_avatar;
     bool show_user_list;
-    bool preview_image;
-    bool render_mirc_color;
+    bool preview_image; // FIXME: config
 };
 
-SuiAppPrefs *sui_app_prefs_new();
-SrnRet sui_app_prefs_check(SuiAppPrefs *prefs);
-void sui_app_prefs_free(SuiAppPrefs *prefs);
+SuiApplicationConfig *sui_application_config_new(void);
+SrnRet sui_application_config_check(SuiApplicationConfig *cfg);
+void sui_application_config_free(SuiApplicationConfig *cfg);
 
-SuiPrefs *sui_prefs_new();
+SuiWindowConfig *sui_window_config_new(void);
+SrnRet sui_window_config_check(SuiWindowConfig *cfg);
+void sui_window_config_free(SuiWindowConfig *cfg);
+
+SuiPrefs *sui_prefs_new(void);
 SrnRet sui_prefs_check(SuiPrefs *prefs);
 void sui_prefs_free(SuiPrefs *prefs);
 

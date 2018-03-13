@@ -20,7 +20,6 @@
 #include <string.h>
 
 #include "sui_event_hdr.h"
-#include "srain_app.h"
 #include "srain_window.h"
 #include "srain_buffer.h"
 #include "srain_server_buffer.h"
@@ -34,7 +33,7 @@ static void nick_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
     GVariantDict *params;
     SrainBuffer *buffer;
 
-    buffer = srain_window_get_cur_buffer(srain_win);
+    buffer = srain_window_get_cur_buffer(srain_window_get_cur_window(widget));
     nick = user_data;
 
     params = g_variant_dict_new(NULL);
@@ -62,7 +61,7 @@ static void nick_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
     g_variant_dict_unref(params);
 }
 
-void nick_menu_popup(GdkEventButton *event, const char *nick){
+void nick_menu_popup(GtkWidget *widget, GdkEventButton *event, const char *nick){
     int n;
     GSList *lst;
     GtkBuilder *builder;
@@ -96,7 +95,7 @@ void nick_menu_popup(GdkEventButton *event, const char *nick){
             G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
 
     /* Create subitem of invite_menu_item */
-    buffer = srain_window_get_cur_buffer(srain_win);
+    buffer = srain_window_get_cur_buffer(srain_window_get_cur_window(widget));
     if (SRAIN_IS_CHAT_BUFFER(buffer)){
         buffer = SRAIN_BUFFER(srain_chat_buffer_get_server_buffer(
                     SRAIN_CHAT_BUFFER(buffer)));

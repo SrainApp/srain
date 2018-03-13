@@ -21,6 +21,8 @@
 
 #include "sui/sui.h"
 
+SrnRet sui_application_event_hdr(SuiApplication *sui, SuiEvent event, GVariantDict *params);
+SrnRet sui_windows_event_hdr(SuiWindow *sui, SuiEvent event, GVariantDict *params);
 SrnRet sui_event_hdr(SuiSession *sui, SuiEvent event, GVariantDict *params);
 
 #endif /* __SUI_EVENT_HDR_H */

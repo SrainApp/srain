@@ -28,11 +28,11 @@
 #include <string.h>
 #include <assert.h>
 
+#include "core/core.h"
 #include "sui/sui.h"
 #include "sui_common.h"
 #include "sui_event_hdr.h"
 #include "theme.h"
-#include "srain_app.h"
 #include "srain_window.h"
 #include "srain_buffer.h"
 #include "srain_server_buffer.h"
@@ -66,6 +66,7 @@ struct _SrainWindow {
     // Popovers
     SrainConnectPopover *connect_popover;
     SrainJoinPopover *join_popover;
+    SuiWindow *ctx;
 };
 
 struct _SrainWindowClass {
@@ -75,7 +76,8 @@ struct _SrainWindowClass {
 G_DEFINE_TYPE(SrainWindow, srain_window, GTK_TYPE_APPLICATION_WINDOW);
 
 static void quit_menu_item_on_activate(){
-    srain_app_quit(srain_app);
+    // srain_app_quit(srain_app);
+    // FIXME
 }
 
 static void on_destroy(SrainWindow *win){
@@ -224,8 +226,27 @@ static void srain_window_class_init(SrainWindowClass *class){
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, sidebar_box);
 }
 
-SrainWindow* srain_window_new(SrainApp *app){
-    return g_object_new(SRAIN_TYPE_WINDOW, "application", app, NULL);
+SrainWindow* srain_window_new(SrainApp *app, SuiWindow *ctx){
+    SrainWindow *win;
+
+    win =  g_object_new(SRAIN_TYPE_WINDOW, "application", app, NULL);
+    win->ctx = ctx;
+
+    return win;
+}
+SuiWindow *srain_window_get_ctx(SrainWindow *win){
+    return win->ctx;
+}
+
+SrainWindow *srain_window_get_cur_window(GtkWidget *widget){
+    GtkWidget *toplevel;
+
+    toplevel = gtk_widget_get_toplevel(widget);
+    if (SRAIN_IS_WINDOW(toplevel)) {
+        return SRAIN_WINDOW(toplevel);
+    }
+
+    return NULL;
 }
 
 void srain_window_add_buffer(SrainWindow *win, SrainBuffer *buffer){

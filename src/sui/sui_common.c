@@ -35,8 +35,6 @@
 #include "i18n.h"
 #include "log.h"
 
-extern SrainWindow *srain_win;
-
 /**
  * @brief get a non-internal child widget by `name` in GtkListBox `widget`
  *
@@ -199,16 +197,19 @@ void scale_size_to(int src_width, int src_height,
 gboolean activate_link(GtkLabel *label, const char *uri, gpointer user_data){
     const char *urls[]  = { uri, NULL};
     GVariantDict *params;
+    SrainApp *app;
 
+    app = srain_app_get_default();
     params = g_variant_dict_new(NULL);
     g_variant_dict_insert(params, "urls", SUI_EVENT_PARAM_STRINGS, urls, -1);
 
-    if (!RET_IS_OK(sui_event_hdr(NULL, SUI_EVENT_OPEN, params))){
+    if (!RET_IS_OK(sui_application_event_hdr(srain_app_get_ctx(app), SUI_EVENT_OPEN, params))){
         GError *err = NULL;
 
 #if GTK_CHECK_VERSION(3, 22, 0)
-        gtk_show_uri_on_window(GTK_WINDOW(srain_win), uri,
-                gtk_get_current_event_time(), &err);
+        gtk_show_uri_on_window(
+                GTK_WINDOW(srain_window_get_cur_window(GTK_WIDGET(label))),
+                uri, gtk_get_current_event_time(), &err);
 #else
         gtk_show_uri(NULL, uri, gtk_get_current_event_time(), &err);
 #endif

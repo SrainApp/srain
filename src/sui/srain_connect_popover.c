@@ -186,7 +186,11 @@ static void popover_on_visible(GObject *object, GParamSpec *pspec, gpointer data
         /* Update server list while displaying */
         SrnRet ret;
 
-        ret = sui_event_hdr(NULL, SUI_EVENT_SERVER_LIST, NULL);
+        ret = sui_windows_event_hdr(
+                srain_window_get_ctx(
+                    srain_window_get_cur_window(GTK_WIDGET(popover))),
+                SUI_EVENT_SERVER_LIST,
+                NULL);
         if (!RET_IS_OK(ret)){
             char *msg;
             msg = g_strdup_printf(_("Failed to get server list: %1$s"), RET_MSG(ret));
@@ -264,7 +268,11 @@ static void connect_button_on_click(gpointer user_data){
     g_variant_dict_insert(params, "tls", SUI_EVENT_PARAM_BOOL, tls);
     g_variant_dict_insert(params, "tls-noverify", SUI_EVENT_PARAM_BOOL, tls_noverify);
 
-    ret = sui_event_hdr(NULL, SUI_EVENT_CONNECT, params);
+    ret = sui_windows_event_hdr(
+            srain_window_get_ctx(
+                srain_window_get_cur_window(GTK_WIDGET(popover))),
+            SUI_EVENT_CONNECT,
+            params);
     g_variant_dict_unref(params);
 
     if (RET_IS_OK(ret)){

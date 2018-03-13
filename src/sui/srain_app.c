@@ -34,16 +34,22 @@
 #include "srain_window.h"
 
 #include "meta.h"
-#include "rc.h"
 #include "log.h"
 #include "i18n.h"
+
+struct _SrainApp {
+    GtkApplication parent;
+    SuiApplication *ctx;
+};
+
+struct _SrainAppClass {
+    GtkApplicationClass parent_class;
+};
 
 G_DEFINE_TYPE(SrainApp, srain_app, GTK_TYPE_APPLICATION);
 
 /* Only one SrainApp instance in one application */
-SrainApp *srain_app = NULL;
-/* Only one SrainWindow instance in one application */
-SrainWindow *srain_win = NULL;
+static SrainApp *app_instance = NULL;
 
 static GOptionEntry option_entries[] = {
     {
@@ -76,10 +82,6 @@ static int on_command_line(GApplication *app,
         GApplicationCommandLine *cmdline, gpointer user_data);
 
 static void srain_app_init(SrainApp *self){
-    if (srain_app) return;
-
-    srain_app = self;
-
     g_application_add_main_option_entries(G_APPLICATION(self), option_entries);
 
     g_signal_connect(self, "activate", G_CALLBACK(on_activate), NULL);
@@ -93,11 +95,20 @@ static void srain_app_init(SrainApp *self){
 static void srain_app_class_init(SrainAppClass *class){
 }
 
-SrainApp* srain_app_new(void){
-    return g_object_new(SRAIN_TYPE_APP,
-            "application-id", "im.srain.Srain",
-            "flags", G_APPLICATION_HANDLES_COMMAND_LINE,
-            NULL);
+SrainApp* srain_app_new(SuiApplication *ctx, const char *id){
+    if (app_instance == NULL) {
+        app_instance = g_object_new(SRAIN_TYPE_APP,
+                "application-id", id,
+                "flags", G_APPLICATION_HANDLES_COMMAND_LINE,
+                NULL);
+    }
+    app_instance->ctx = ctx;
+
+    return app_instance;
+}
+
+SrainApp* srain_app_get_default(){
+    return app_instance;
 }
 
 void srain_app_quit(SrainApp *app){
@@ -116,14 +127,19 @@ void srain_app_quit(SrainApp *app){
     g_application_quit(G_APPLICATION(app));
 }
 
-static SrnRet create_window(GApplication *app){
-    if (srain_win){
-        gtk_window_present(GTK_WINDOW(srain_win));
-        return SRN_ERR;
-    };
+SuiApplication* srain_app_get_ctx(SrainApp *app){
+    return app->ctx;
+}
 
-    srain_win = srain_window_new(SRAIN_APP(app));
-    gtk_window_present(GTK_WINDOW(srain_win));
+SrnApplication* srain_app_get_core_ctx(SrainApp *app){
+    return (SrnApplication *)sui_application_get_ctx(app->ctx);
+}
+
+static SrnRet create_window(GApplication *app){
+    // FIXME: config
+    // SrainWindow *win;
+    // win = srain_window_new(SRAIN_APP(app));
+    // gtk_window_present(GTK_WINDOW(win));
 
     return SRN_OK;
 }
@@ -136,14 +152,14 @@ static void on_activate(GApplication *app){
         return;
     }
 
-    ret = sui_event_hdr(NULL, SUI_EVENT_ACTIVATE, NULL);
+    ret = sui_application_event_hdr(SRAIN_APP(app)->ctx, SUI_EVENT_ACTIVATE, NULL);
     if (!RET_IS_OK(ret)){
         sui_message_box(_("Error"), RET_MSG(ret));
     }
 }
 
 static void on_shutdown(GApplication *app){
-    sui_event_hdr(NULL, SUI_EVENT_SHUTDOWN, NULL);
+    sui_application_event_hdr(SRAIN_APP(app)->ctx, SUI_EVENT_SHUTDOWN, NULL);
 }
 
 static int on_handle_local_options(GApplication *app, GVariantDict *options,
@@ -171,7 +187,7 @@ static int on_command_line(GApplication *app,
         g_variant_dict_insert(params, "urls", SUI_EVENT_PARAM_STRINGS,
                 urls, g_strv_length(urls));
 
-        sui_event_hdr(NULL, SUI_EVENT_OPEN, params);
+        sui_application_event_hdr(SRAIN_APP(app)->ctx, SUI_EVENT_OPEN, params);
 
         g_variant_dict_unref(params);
         g_strfreev(urls);

@@ -265,8 +265,8 @@ static void popover_on_visible(GObject *object, GParamSpec *pspec, gpointer data
     SrainServerBuffer *buf;
     SrainJoinPopover *popover;
 
-    win = srain_win;
     popover = SRAIN_JOIN_POPOVER(object);
+    win = srain_window_get_cur_window(GTK_WIDGET(popover));
     buf = srain_window_get_cur_server_buffer(win);
 
     if (!gtk_widget_is_visible(GTK_WIDGET(popover))){
@@ -291,14 +291,15 @@ static void join_button_on_click(gpointer user_data){
     SrainJoinPopover *popover;
     SrainBuffer *buffer;
 
-    buffer = srain_window_get_cur_buffer(srain_win);
+    popover = user_data;
+    buffer = srain_window_get_cur_buffer(
+            srain_window_get_cur_window(GTK_WIDGET(popover)));
     if (!SRAIN_IS_BUFFER(buffer)){
        sui_message_box(_("Error"),
                _("Please connect to server before joining any channel"));
        return;
     }
 
-    popover = user_data;
     page = gtk_stack_get_visible_child_name(popover->stack);
     if (g_strcmp0(page, PAGE_JOIN_CHANNEL) == 0){
         chan = gtk_entry_get_text(popover->chan_entry);
@@ -372,8 +373,11 @@ static void match_combo_box_on_changed(GtkComboBox *combobox,
 static void refresh_button_on_clicked(gpointer user_data){
     SrnRet ret;
     SrainBuffer *buffer;
+    SrainJoinPopover *popover;
 
-    buffer = srain_window_get_cur_buffer(srain_win);
+    popover = user_data;
+    buffer = srain_window_get_cur_buffer(
+            srain_window_get_cur_window(GTK_WIDGET(popover)));
     if (!SRAIN_IS_BUFFER(buffer)){
        sui_message_box(_("Error"), _("Please connect to server before searching any channel"));
        return;

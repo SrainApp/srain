@@ -104,14 +104,16 @@ static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_da
     char *sel_msg;
     char *line;
     const char *remark;
+    SrainWindow *win;
     SrainBuffer *buffer;
     SrainRecvMsg *smsg;
 
     smsg = SRAIN_RECV_MSG(user_data);
+    win = srain_window_get_cur_window(GTK_WIDGET(smsg));
     if ((sel_msg = label_get_selection(smsg->msg_label)) == NULL) return;
 
-    remark = srain_buffer_get_remark(srain_window_get_cur_buffer(srain_win));
-    buffer = srain_window_get_buffer(srain_win,
+    remark = srain_buffer_get_remark(srain_window_get_cur_buffer(win));
+    buffer = srain_window_get_buffer(win,
             gtk_menu_item_get_label(GTK_MENU_ITEM(widget)),
             remark);
 
@@ -122,7 +124,7 @@ static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_da
 
         fwd = g_strdup_printf(_("%1$s <fwd %2$s@%3$s>"), line,
                 gtk_label_get_text(smsg->nick_label),
-                srain_buffer_get_name(srain_window_get_cur_buffer(srain_win)));
+                srain_buffer_get_name(srain_window_get_cur_buffer(win)));
         line = strtok(NULL, "\n");
 
         params = g_variant_dict_new(NULL);
@@ -162,7 +164,8 @@ static void msg_label_on_popup(GtkLabel *label, GtkMenu *menu,
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), GTK_WIDGET(forward_menu_item));
 
     /* Create submenu of forward_menu_item */
-    buffer = srain_window_get_cur_server_buffer(srain_win);
+    buffer = srain_window_get_cur_server_buffer(
+            srain_window_get_cur_window(GTK_WIDGET(smsg)));
     g_return_if_fail(SRAIN_IS_SERVER_BUFFER(buffer));
 
     n = 0;
@@ -196,7 +199,8 @@ static gboolean nick_button_on_popup(GtkWidget *widget,
 
     nick_label = GTK_LABEL(user_data);
     if (event->button == 3){
-        nick_menu_popup(event, gtk_label_get_text(nick_label));
+        nick_menu_popup(GTK_WIDGET(nick_label), event,
+                gtk_label_get_text(nick_label));
 
         return TRUE;
     }
@@ -211,7 +215,10 @@ static void nick_button_on_click(GtkWidget *widget, gpointer *user_data){
     str = g_string_new(gtk_label_get_text(nick_label));
     str = g_string_append(str, ": ");
 
-    srain_buffer_insert_text(srain_window_get_cur_buffer(srain_win), str->str, 0);
+    srain_buffer_insert_text(
+            srain_window_get_cur_buffer(
+                srain_window_get_cur_window(GTK_WIDGET(nick_label))),
+            str->str, 0);
     g_string_free(str, TRUE);
 }
 

@@ -22,6 +22,8 @@
 #include <time.h>
 #include "srain.h"
 
+typedef struct _SuiApplication SuiApplication;
+typedef struct _SuiWindow SuiWindow;
 typedef struct _SuiSession SuiSession;
 typedef int SuiSessionFlag;
 typedef struct _SuiMessage SuiMessage;
@@ -30,7 +32,6 @@ typedef enum _UserType UserType;
 #define SUI_SESSION_SERVER      1 << 0
 #define SUI_SESSION_CHANNEL     1 << 1
 #define SUI_SESSION_DIALOG      1 << 2
-#define SUI_SESSION_NEWWINDOW   1 << 3  // Not used yet
 
 // TODO Rename type
 typedef enum {
@@ -58,8 +59,20 @@ enum _UserType {
 #include "sui_prefs.h"
 #undef __IN_SUI_H
 
-void sui_main_loop(int argc, char *argv[], SuiAppEvents *events, SuiAppPrefs *prefs);
-void sui_proc_pending_event();
+void sui_proc_pending_event(void);
+
+/* SuiAppliaction */
+SuiApplication* sui_new_application(const char *id, SuiApplicationEvents *events, SuiApplicationConfig *cfg);
+void sui_free_application(SuiApplication *app);
+SuiApplicationEvents* sui_application_get_events(SuiApplication *app);
+void* sui_application_get_ctx(SuiApplication *app);
+void sui_application_set_ctx(SuiApplication *app, void *ctx);
+void sui_run_application(SuiApplication *app, int argc, char *argv[]);
+
+/* SuiWindow */
+SuiWindow* sui_new_window(SuiApplication *app, SuiWindowEvents *events, SuiWindowConfig *cfg);
+void sui_free_window(SuiWindow *win);
+SuiWindowEvents* sui_window_get_events(SuiWindow *sui);
 
 /* SuiSession */
 SuiSession *sui_new_session(SuiEvents *events, SuiPrefs *prefs, SuiSessionFlag flag);

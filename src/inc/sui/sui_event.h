@@ -54,9 +54,22 @@ typedef enum {
     SUI_EVENT_UNKNOWN,
 } SuiEvent;
 
-typedef int (*SuiAppEventCallback) (SuiEvent event, GVariantDict *params);
+typedef int (*SuiApplicationEventCallback) (SuiApplication *sui, SuiEvent event, GVariantDict *params);
+
+typedef int (*SuiWindowEventCallback) (SuiWindow *sui, SuiEvent event, GVariantDict *params);
 
 typedef int (*SuiEventCallback) (SuiSession *sui, SuiEvent event, GVariantDict *params);
+
+typedef struct {
+    SuiApplicationEventCallback open;
+    SuiApplicationEventCallback activate;
+    SuiApplicationEventCallback shutdown;
+} SuiApplicationEvents;
+
+typedef struct {
+    SuiWindowEventCallback connect;
+    SuiWindowEventCallback server_list;
+} SuiWindowEvents;
 
 typedef struct {
     SuiEventCallback disconnect;
@@ -73,13 +86,5 @@ typedef struct {
     SuiEventCallback cutover;
     SuiEventCallback chan_list;
 } SuiEvents;
-
-typedef struct {
-    SuiAppEventCallback open;
-    SuiAppEventCallback activate;
-    SuiAppEventCallback shutdown;
-    SuiAppEventCallback connect;
-    SuiAppEventCallback server_list;
-} SuiAppEvents;
 
 #endif /* __SUI_EVENT_H */

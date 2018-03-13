@@ -28,9 +28,6 @@
 
 #include "log.h"
 
-/* extern from sui.c */
-extern SuiAppEvents *app_events;
-
 #define SUI_EVENT_MAX_PARAM     20
 
 typedef struct {
@@ -113,37 +110,70 @@ static SuiEventParamFormat formats[SUI_EVENT_UNKNOWN][SUI_EVENT_MAX_PARAM] = {
 
 static SrnRet check_params(SuiEvent event, GVariantDict *params);
 
-SrnRet sui_event_hdr(SuiSession *sui, SuiEvent event, GVariantDict *params){
-    SuiEvents *events;
+SrnRet sui_application_event_hdr(SuiApplication *sui, SuiEvent event,
+        GVariantDict *params){
+    SuiApplicationEvents *events;
+
+    DBG_FR("event: %d", event);
 
     if (!RET_IS_OK(check_params(event, params))){
         return SRN_ERR;
     }
 
-    /* App events */
+    g_return_val_if_fail(sui, SRN_ERR);
+    events = sui_application_get_events(sui);
+    g_return_val_if_fail(events, SRN_ERR);
+
     switch (event) {
         case SUI_EVENT_OPEN:
-            g_return_val_if_fail(app_events->open, SRN_ERR);
-            return app_events->open(event, params);
-            break;
+            g_return_val_if_fail(events->open, SRN_ERR);
+            return events->open(sui, event, params);
         case SUI_EVENT_ACTIVATE:
-            g_return_val_if_fail(app_events->activate, SRN_ERR);
-            return app_events->activate(event, params);
-            break;
+            g_return_val_if_fail(events->activate, SRN_ERR);
+            return events->activate(sui, event, params);
         case SUI_EVENT_SHUTDOWN:
-            g_return_val_if_fail(app_events->shutdown, SRN_ERR);
-            return app_events->shutdown(event, params);
-            break;
-        case SUI_EVENT_CONNECT:
-            g_return_val_if_fail(app_events->connect, SRN_ERR);
-            return app_events->connect(event, params);
-            break;
-        case SUI_EVENT_SERVER_LIST:
-            g_return_val_if_fail(app_events->server_list, SRN_ERR);
-            return app_events->server_list(event, params);
-            break;
+            g_return_val_if_fail(events->shutdown, SRN_ERR);
+            return events->shutdown(sui, event, params);
         default:
-            break;
+            ERR_FR("No such SuiEvent: %d", event);
+            return SRN_ERR;
+    }
+}
+
+SrnRet sui_windows_event_hdr(SuiWindow *sui, SuiEvent event,
+        GVariantDict *params){
+    SuiWindowEvents *events;
+
+    DBG_FR("event: %d", event);
+
+    if (!RET_IS_OK(check_params(event, params))){
+        return SRN_ERR;
+    }
+
+    g_return_val_if_fail(sui, SRN_ERR);
+    events = sui_window_get_events(sui);
+    g_return_val_if_fail(events, SRN_ERR);
+
+    switch (event) {
+        case SUI_EVENT_CONNECT:
+            g_return_val_if_fail(events->connect, SRN_ERR);
+            return events->connect(sui, event, params);
+        case SUI_EVENT_SERVER_LIST:
+            g_return_val_if_fail(events->server_list, SRN_ERR);
+            return events->server_list(sui, event, params);
+        default:
+            ERR_FR("No such SuiEvent: %d", event);
+            return SRN_ERR;
+    }
+}
+
+SrnRet sui_event_hdr(SuiSession *sui, SuiEvent event, GVariantDict *params){
+    SuiEvents *events;
+
+    DBG_FR("event: %d", event);
+
+    if (!RET_IS_OK(check_params(event, params))){
+        return SRN_ERR;
     }
 
     g_return_val_if_fail(sui, SRN_ERR);
@@ -155,55 +185,42 @@ SrnRet sui_event_hdr(SuiSession *sui, SuiEvent event, GVariantDict *params){
         case SUI_EVENT_DISCONNECT:
             g_return_val_if_fail(events->disconnect, SRN_ERR);
             return events->disconnect(sui, event, params);
-            break;
         case SUI_EVENT_QUIT:
             g_return_val_if_fail(events->quit, SRN_ERR);
             return events->quit(sui, event, params);
-            break;
         case SUI_EVENT_SEND:
             g_return_val_if_fail(events->send, SRN_ERR);
             return events->send(sui, event, params);
-            break;
         case SUI_EVENT_JOIN:
             g_return_val_if_fail(events->join, SRN_ERR);
             return events->join(sui, event, params);
-            break;
         case SUI_EVENT_PART:
             g_return_val_if_fail(events->part, SRN_ERR);
             return events->part(sui, event, params);
-            break;
         case SUI_EVENT_QUERY:
             g_return_val_if_fail(events->query, SRN_ERR);
             return events->query(sui, event, params);
-            break;
         case SUI_EVENT_UNQUERY:
             g_return_val_if_fail(events->unquery, SRN_ERR);
             return events->unquery(sui, event, params);
-            break;
         case SUI_EVENT_KICK:
             g_return_val_if_fail(events->kick, SRN_ERR);
             return events->kick(sui, event, params);
-            break;
         case SUI_EVENT_INVITE:
             g_return_val_if_fail(events->invite, SRN_ERR);
             return events->invite(sui, event, params);
-            break;
         case SUI_EVENT_WHOIS:
             g_return_val_if_fail(events->whois, SRN_ERR);
             return events->whois(sui, event, params);
-            break;
         case SUI_EVENT_IGNORE:
             g_return_val_if_fail(events->ignore, SRN_ERR);
             return events->ignore(sui, event, params);
-            break;
         case SUI_EVENT_CUTOVER:
             g_return_val_if_fail(events->cutover, SRN_ERR);
             return events->cutover(sui, event, params);
-            break;
         case SUI_EVENT_CHAN_LIST:
             g_return_val_if_fail(events->chan_list, SRN_ERR);
             return events->chan_list(sui, event, params);
-            break;
         default:
             ERR_FR("No such SuiEvent: %d", event);
             return SRN_ERR;
