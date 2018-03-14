@@ -169,14 +169,14 @@ static char* pango_markup(Message *msg, int index, const char *frag){
                 case MATCH_CHANNEL:
                     if (msg->chat->srv->prefs->irc->tls){
                         markuped_url = g_markup_printf_escaped("<a href=\"ircs://%s:%d/%s\">%s</a>",
-                                msg->chat->srv->prefs->host,
-                                msg->chat->srv->prefs->port,
+                                msg->chat->srv->addr->host,
+                                msg->chat->srv->addr->port,
                                 url + 1,
                                 url);
                     } else {
                         markuped_url = g_markup_printf_escaped("<a href=\"irc://%s:%d/%s\">%s</a>",
-                                msg->chat->srv->prefs->host,
-                                msg->chat->srv->prefs->port,
+                                msg->chat->srv->addr->host,
+                                msg->chat->srv->addr->port,
                                 url + 1,
                                 url);
                     }

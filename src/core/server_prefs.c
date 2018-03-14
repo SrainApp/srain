@@ -77,22 +77,31 @@ SrnRet server_prefs_check(ServerPrefs *prefs){
         return RET_ERR(_("Invalid ServerPrefs instance"));
     }
 
-    if (str_is_empty(prefs->name)) {
-        return RET_ERR(missing, "name");
-    }
-
     if (g_slist_length(prefs->addrs) == 0) {
         return RET_ERR(missing, "addrs");
     }
+    for (GSList *lst = prefs->addrs; lst; lst = g_slist_next(lst)){
+        SrnServerAddr *addr;
 
+        addr = lst->data;
+        if (addr->port == 0) {
+            if (prefs->irc->tls) {
+                addr->port = 6697;
+            } else {
+                addr->port = 6667;
+            }
+        }
+    }
+
+    if (str_is_empty(prefs->name)) {
+        return RET_ERR(missing, "name");
+    }
     if (str_is_empty(prefs->nickname)) {
         return RET_ERR(missing, "nickname");
     }
-
     if (str_is_empty(prefs->username)) {
         str_assign(&prefs->username, prefs->nickname);
     }
-
     if (str_is_empty(prefs->realname)) {
         str_assign(&prefs->realname, prefs->nickname);
     }
@@ -120,15 +129,12 @@ SrnRet server_prefs_check(ServerPrefs *prefs){
     if (str_is_empty(prefs->part_message)) {
         str_assign(&prefs->part_message, "Leaving");
     }
-
     if (str_is_empty(prefs->kick_message)) {
         str_assign(&prefs->kick_message, "Kick");
     }
-
     if (str_is_empty(prefs->away_message)) {
         str_assign(&prefs->away_message, "Away");
     }
-
     if (str_is_empty(prefs->quit_message)) {
         str_assign(&prefs->quit_message, "El Psy Congroo.");
     }
@@ -137,21 +143,12 @@ SrnRet server_prefs_check(ServerPrefs *prefs){
         return RET_ERR(missing, "irc");
     }
 
-    // FIXME
-    // if (prefs->port == 0) {
-    //     if (prefs->irc->tls) {
-    //         prefs->port = 6697;
-    //     } else {
-    //         prefs->port = 6667;
-    //     }
-    // }
-
     return sirc_prefs_check(prefs->irc);
 }
 
 void server_prefs_free(ServerPrefs *prefs){
     str_assign(&prefs->name, NULL);
-    g_slist_free_full(prefs->addrs, g_free);
+    g_slist_free_full(prefs->addrs, (GDestroyNotify)srn_server_addr_free);
     str_assign(&prefs->passwd, NULL);
     str_assign(&prefs->nickname, NULL);
     str_assign(&prefs->username, NULL);
@@ -171,6 +168,10 @@ void server_prefs_free(ServerPrefs *prefs){
         server_free(prefs->srv);
         prefs->srv = NULL;
     }
+}
+
+void server_prefs_add_addr(ServerPrefs *cfg, const char *host, int port){
+    cfg->addrs = g_slist_append(cfg->addrs, srn_server_addr_new(host, port));
 }
 
 char* server_prefs_dump(ServerPrefs *prefs){
@@ -266,4 +267,19 @@ LoginMethod login_method_from_string(const char *str){
     }
 
     return login;
+}
+
+SrnServerAddr* srn_server_addr_new(const char *host, int port) {
+    SrnServerAddr *addr;
+
+    addr = g_malloc0(sizeof(SrnServerAddr));
+    str_assign(&addr->host, host);
+    addr->port = port;
+
+    return addr;
+}
+
+void  srn_server_addr_free(SrnServerAddr *addr) {
+    str_assign(&addr->host, NULL);
+    g_free(addr);
 }

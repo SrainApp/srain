@@ -67,12 +67,12 @@ void server_irc_event_connect(SircSession *sirc, const char *event){
     srv->negotiated = FALSE;
 
     chat_add_misc_message_fmt(srv->chat, "", _("Connected to %1$s(%2$s:%3$d)"),
-            srv->prefs->name, srv->prefs->host, srv->prefs->port);
+            srv->prefs->name, srv->addr->host, srv->addr->port);
     list = srv->chat_list;
     while (list){
         chat = list->data;
         chat_add_misc_message_fmt(chat, "", _("Connected to %1$s(%2$s:%3$d)"),
-                srv->prefs->name, srv->prefs->host, srv->prefs->port);
+                srv->prefs->name, srv->addr->host, srv->addr->port);
         list = g_slist_next(list);
     }
 
@@ -116,13 +116,13 @@ void server_irc_event_connect_fail(SircSession *sirc, const char *event,
 
         chat = list->data;
         chat_add_misc_message_fmt(chat, "", _("Failed to connect to %1$s(%2$s:%3$d): %4$s"),
-                srv->prefs->name, srv->prefs->host, srv->prefs->port, msg);
+                srv->prefs->name, srv->addr->host, srv->addr->port, msg);
         if (srv->state == SERVER_STATE_RECONNECTING){
             chat_add_misc_message_fmt(chat, "",
                     _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
                     srv->prefs->name,
-                    srv->prefs->host,
-                    srv->prefs->port,
+                    srv->addr->host,
+                    srv->addr->port,
                     (srv->reconn_interval * 1.0) / 1000);
         }
 
@@ -130,20 +130,20 @@ void server_irc_event_connect_fail(SircSession *sirc, const char *event,
     }
 
     chat_add_error_message_fmt(srv->chat, "", _("Failed to connect to %1$s(%2$s:%3$d): %4$s"),
-            srv->prefs->name, srv->prefs->host, srv->prefs->port, msg);
+            srv->prefs->name, srv->addr->host, srv->addr->port, msg);
     /* If user trying connect to a TLS port via non-TLS connection, it will
      * be reset, give user some hints. */
-    if (!srv->prefs->irc->tls && srv->prefs->port == 6697) {
+    if (!srv->prefs->irc->tls && srv->addr->port == 6697) {
         chat_add_error_message_fmt(srv->chat, "",
                 _("It seems that you connect to a TLS port(%1$d) without enable TLS connection, try to enable it and reconnect"),
-                srv->prefs->port);
+                srv->addr->port);
     }
     if (srv->state == SERVER_STATE_RECONNECTING){
         chat_add_misc_message_fmt(srv->chat, "",
                 _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
                 srv->prefs->name,
-                srv->prefs->host,
-                srv->prefs->port,
+                srv->addr->host,
+                srv->addr->port,
                 (srv->reconn_interval * 1.0) / 1000);
     }
 }
@@ -196,13 +196,13 @@ void server_irc_event_disconnect(SircSession *sirc, const char *event,
         }
         // Only report error message to server chat
         chat_add_misc_message_fmt(chat, "", _("Disconnected from %1$s(%2$s:%3$d): %4$s"),
-                srv->prefs->name, srv->prefs->host, srv->prefs->port, msg);
+                srv->prefs->name, srv->addr->host, srv->addr->port, msg);
         if (srv->state == SERVER_STATE_RECONNECTING){
             chat_add_misc_message_fmt(chat, "",
                     _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
                     srv->prefs->name,
-                    srv->prefs->host,
-                    srv->prefs->port,
+                    srv->addr->host,
+                    srv->addr->port,
                     (srv->reconn_interval * 1.0) / 1000);
         }
 
@@ -210,13 +210,13 @@ void server_irc_event_disconnect(SircSession *sirc, const char *event,
     }
 
     chat_add_error_message_fmt(srv->chat, "", _("Disconnected from %1$s(%2$s:%3$d): %4$s"),
-            srv->prefs->name, srv->prefs->host, srv->prefs->port, msg);
+            srv->prefs->name, srv->addr->host, srv->addr->port, msg);
         if (srv->state == SERVER_STATE_RECONNECTING){
         chat_add_misc_message_fmt(srv->chat, "",
                 _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
                 srv->prefs->name,
-                srv->prefs->host,
-                srv->prefs->port,
+                srv->addr->host,
+                srv->addr->port,
                 (srv->reconn_interval * 1.0) / 1000);
     }
 }

@@ -292,7 +292,19 @@ static SrnRet read_server_config_from_server(config_setting_t *server,
 
             addr = config_setting_get_string_elem_ex(addrs, i);
             if (addr){
-                prefs->addrs = g_slist_append(prefs->addrs, addr);
+                int port;
+                char *tmp;
+                const char *host;
+
+                host = addr;
+                port = 0;
+                tmp = strchr(addr, ':');
+                if (tmp) {
+                    *tmp++ = '\0';
+                    port = g_ascii_strtoull(tmp, NULL, 10);
+                }
+                server_prefs_add_addr(prefs, host, port);
+                g_free(addr);
             }
         }
     }

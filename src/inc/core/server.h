@@ -53,6 +53,7 @@ typedef struct _Message Message;
 typedef struct _User User;
 typedef struct _Chat Chat;
 typedef struct _ChatPrefs ChatPrefs;
+typedef struct _SrnServerAddr SrnServerAddr;
 typedef enum   _ServerState ServerState;
 typedef enum   _ServerAction ServerAction;
 typedef struct _Server Server;
@@ -172,10 +173,12 @@ struct _Server {
     int ping_timer;
     int reconn_timer;
 
-    ServerCap *cap;     // Server capabilities
-    ServerPrefs *prefs; // All required static informations
-    User *user;         // Used to store your nick, username, realname
-    Chat *chat;         // Hold all messages that do not belong to any other Chat
+    SrnServerAddr *addr;    // Current server addr, is a element of
+                            // ServerPrefs->addrs
+    ServerCap *cap;         // Server capabilities
+    ServerPrefs *prefs;     // All required static informations
+    User *user;             // Used to store your nick, username, realname
+    Chat *chat;             // Hold all messages that do not belong to any other Chat
 
     Chat *cur_chat;
     GSList *chat_list;
@@ -192,6 +195,11 @@ enum _LoginMethod {
     LOGIN_UNKNOWN,
 };
 
+struct _SrnServerAddr {
+    char *host;
+    int port;
+};
+
 struct _ServerPrefs {
     /* For specificed server */
     bool predefined;  /* A ServerPrefs is predefined when it is loaded from
@@ -199,11 +207,8 @@ struct _ServerPrefs {
                          appeared in predefined server list and *CAN NOT* be
                          freed by ``server_prefs_free()``. */
     char *name;
-    GSList *addrs;
+    GSList *addrs; // List of SrnServerAddr
     char *passwd;
-    // FIXME: remove
-    char *host;
-    int port;
 
     /* User */
     char *nickname;
@@ -310,6 +315,10 @@ void server_prefs_free(ServerPrefs *prefs);
 char* server_prefs_list_dump();
 char* login_method_to_string(LoginMethod login);
 LoginMethod login_method_from_string(const char *str);
+
+void server_prefs_add_addr(ServerPrefs *cfg, const char *host, int port);
+SrnServerAddr* srn_server_addr_new(const char *host, int port);
+void  srn_server_addr_free(SrnServerAddr *addr);
 
 ServerCap* server_cap_new();
 void server_cap_free(ServerCap *scap);

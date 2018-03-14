@@ -57,6 +57,7 @@ Server* server_new_from_prefs(ServerPrefs *cfg){
     srv->negotiated = FALSE;
     srv->registered = FALSE;
 
+    srv->addr = cfg->addrs->data;
     srv->prefs = cfg;
     srv->cap = server_cap_new();
     srv->cap->srv = srv;
