@@ -35,9 +35,9 @@
 #include "utils.h"
 #include "config/config.h"
 
-static void join_comma_separated_chans(Server *srv, const char *comma_chans);
+static void join_comma_separated_chans(SrnServer *srv, const char *comma_chans);
 
-SrnRet server_url_open(const char *url){
+SrnRet srn_server_url_open(const char *url){
     const char *scheme;
     const char *user;
     const char *passwd;
@@ -49,7 +49,7 @@ SrnRet server_url_open(const char *url){
     SoupURI *suri = NULL;
     SrnRet ret = SRN_ERR;
     SrnServerConfig *cfg = NULL;
-    Server *srv = NULL;
+    SrnServer *srv = NULL;
 
     suri = soup_uri_new(url);
     if (!suri){
@@ -88,7 +88,7 @@ SrnRet server_url_open(const char *url){
         }
         new_cfg = TRUE;
     }
-    /* Instantiate Server */
+    /* Instantiate SrnServer */
     if (!cfg->srv){
         ret = srn_config_manager_read_server_config(
                 srn_application_get_default()->cfg_mgr,
@@ -119,8 +119,8 @@ SrnRet server_url_open(const char *url){
             goto fin;
         }
 
-        // If no such Server, create one
-        srv = server_new(cfg);
+        // If no such SrnServer, create one
+        srv = srn_server_new(cfg);
         if (!srv) {
             ret =  RET_ERR(_("Failed to instantiate server \"%1$s\""), host);
             goto fin;
@@ -131,12 +131,12 @@ SrnRet server_url_open(const char *url){
 
     DBG_FR("Server instance: %p", srv);
 
-    if (srv->state == SERVER_STATE_DISCONNECTED){
-        server_connect(srv);
+    if (srv->state == SRN_SERVER_STATE_DISCONNECTED){
+        srn_server_connect(srv);
     }
 
-    server_wait_until_registered(srv);
-    if (!server_is_registered(srv)){
+    srn_server_wait_until_registered(srv);
+    if (!srn_server_is_registered(srv)){
         ret =  RET_ERR(_("Failed to register on server \"%1$s\""), cfg->name);
         goto fin;
     }
@@ -166,7 +166,7 @@ fin:
     return ret;
 }
 
-static void join_comma_separated_chans(Server *srv, const char *comma_chans){
+static void join_comma_separated_chans(SrnServer *srv, const char *comma_chans){
     char *chans;
     const char *chan;
 

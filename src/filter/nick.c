@@ -104,7 +104,7 @@ static bool nick(const Message *msg, const char *content){
     GSList *lst;
 
     g_return_val_if_fail(msg->chat, TRUE);
-    g_return_val_if_fail(server_is_valid(msg->chat->srv), TRUE);
+    g_return_val_if_fail(srn_server_is_valid(msg->chat->srv), TRUE);
     g_return_val_if_fail(msg->chat->srv->chat, TRUE);
 
     lst = msg->chat->ignore_nick_list;

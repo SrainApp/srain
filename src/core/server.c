@@ -42,20 +42,20 @@
 #include "config/config.h"
 #include "i18n.h"
 
-Server* server_new(SrnServerConfig *cfg){
-    Server *srv;
+SrnServer* srn_server_new(SrnServerConfig *cfg){
+    SrnServer *srv;
     SrnChatConfig *chat_cfg;
 
-    srv = g_malloc0(sizeof(Server));
+    srv = g_malloc0(sizeof(SrnServer));
 
-    srv->state = SERVER_STATE_DISCONNECTED;
-    srv->last_action = SERVER_ACTION_DISCONNECT; // It should be OK
+    srv->state = SRN_SERVER_STATE_DISCONNECTED;
+    srv->last_action = SRN_SERVER_ACTION_DISCONNECT; // It should be OK
     srv->negotiated = FALSE;
     srv->registered = FALSE;
 
     srv->addr = cfg->addrs->data;
     srv->cfg = cfg;
-    srv->cap = server_cap_new();
+    srv->cap = srn_server_cap_new();
     srv->cap->srv = srv;
 
     chat_cfg = srn_chat_config_new();
@@ -77,7 +77,7 @@ Server* server_new(SrnServerConfig *cfg){
     srv->chat->user = user_ref(srv->user);
 
     /* NOTE: Ping related issuses are not handled in server.c */
-    srv->reconn_interval = SERVER_RECONN_INTERVAL;
+    srv->reconn_interval = SRN_SERVER_RECONN_INTERVAL;
     /* srv->last_pong = 0; */ // by g_malloc0()
     /* srv->delay = 0; */ // by g_malloc0()
     /* srv->ping_timer = 0; */ // by g_malloc0()
@@ -97,7 +97,7 @@ Server* server_new(SrnServerConfig *cfg){
     return srv;
 
 bad:
-    server_free(srv);
+    srn_server_free(srv);
     return NULL;
 }
 
@@ -107,15 +107,15 @@ bad:
  *
  * @param srv
  */
-void server_free(Server *srv){
-    g_return_if_fail(server_is_valid(srv));
-    g_return_if_fail(srv->state == SERVER_STATE_DISCONNECTED);
+void srn_server_free(SrnServer *srv){
+    g_return_if_fail(srn_server_is_valid(srv));
+    g_return_if_fail(srv->state == SRN_SERVER_STATE_DISCONNECTED);
 
     // srv->cfg is held by SrnApplication, just unlink it
     srv->cfg->srv = NULL;
 
     if (srv->cap) {
-        server_cap_free(srv->cap);
+        srn_server_cap_free(srv->cap);
         srv->cap = NULL;
     }
     if (srv->user != NULL){
@@ -151,7 +151,7 @@ void server_free(Server *srv){
     g_free(srv);
 }
 
-bool server_is_valid(Server *srv){
+bool srn_server_is_valid(SrnServer *srv){
     SrnApplication *app;
 
     app = srn_application_get_default();
@@ -165,8 +165,8 @@ bool server_is_valid(Server *srv){
  *
  * @return
  */
-SrnRet server_connect(Server *srv){
-    return server_state_transfrom(srv, SERVER_ACTION_CONNECT);
+SrnRet srn_server_connect(SrnServer *srv){
+    return srn_server_state_transfrom(srv, SRN_SERVER_ACTION_CONNECT);
 }
 
 /**
@@ -176,8 +176,8 @@ SrnRet server_connect(Server *srv){
  *
  * @return
  */
-SrnRet server_disconnect(Server *srv){
-    return server_state_transfrom(srv, SERVER_ACTION_DISCONNECT);
+SrnRet srn_server_disconnect(SrnServer *srv){
+    return srn_server_state_transfrom(srv, SRN_SERVER_ACTION_DISCONNECT);
 }
 
 /**
@@ -187,29 +187,29 @@ SrnRet server_disconnect(Server *srv){
  *
  * @return TRUE if registered
  */
-bool server_is_registered(Server *srv){
-    g_return_val_if_fail(server_is_valid(srv), FALSE);
+bool srn_server_is_registered(SrnServer *srv){
+    g_return_val_if_fail(srn_server_is_valid(srv), FALSE);
 
-    return srv->state == SERVER_STATE_CONNECTED && srv->registered == TRUE;
+    return srv->state == SRN_SERVER_STATE_CONNECTED && srv->registered == TRUE;
 }
 
-void server_wait_until_registered(Server *srv){
-    g_return_if_fail(server_is_valid(srv));
+void srn_server_wait_until_registered(SrnServer *srv){
+    g_return_if_fail(srn_server_is_valid(srv));
 
     /* Waiting for connection established */
-    while (srv->state == SERVER_STATE_CONNECTING) sui_proc_pending_event();
+    while (srv->state == SRN_SERVER_STATE_CONNECTING) sui_proc_pending_event();
     /* Waiting until server registered */
-    while (srv->state == SERVER_STATE_CONNECTED && srv->registered == FALSE)
+    while (srv->state == SRN_SERVER_STATE_CONNECTED && srv->registered == FALSE)
         sui_proc_pending_event();
 }
 
-SrnRet server_add_chat(Server *srv, const char *name){
+SrnRet srn_server_add_chat(SrnServer *srv, const char *name){
     GSList *lst;
     SrnRet ret;
     Chat *chat;
     SrnChatConfig *chat_cfg;
 
-    g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
+    g_return_val_if_fail(srn_server_is_valid(srv), SRN_ERR);
 
     lst = srv->chat_list;
     while (lst) {
@@ -234,11 +234,11 @@ SrnRet server_add_chat(Server *srv, const char *name){
     return SRN_OK;
 }
 
-SrnRet server_rm_chat(Server *srv, Chat *chat){
+SrnRet srn_server_rm_chat(SrnServer *srv, Chat *chat){
     GSList *lst;
     SrnChatConfig *chat_cfg;
 
-    g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
+    g_return_val_if_fail(srn_server_is_valid(srv), SRN_ERR);
     g_return_val_if_fail(!chat->joined, SRN_ERR);
 
     lst = g_slist_find(srv->chat_list, chat);
@@ -257,11 +257,11 @@ SrnRet server_rm_chat(Server *srv, Chat *chat){
     return SRN_OK;
 }
 
-Chat* server_get_chat(Server *srv, const char *name) {
+Chat* srn_server_get_chat(SrnServer *srv, const char *name) {
     GSList *lst;
     Chat *chat;
 
-    g_return_val_if_fail(server_is_valid(srv), NULL);
+    g_return_val_if_fail(srn_server_is_valid(srv), NULL);
 
     lst = srv->chat_list;
     while (lst) {
@@ -285,12 +285,12 @@ Chat* server_get_chat(Server *srv, const char *name) {
  *
  * @return A instance of Chat
  */
-Chat* server_get_chat_fallback(Server *srv, const char *name) {
+Chat* srn_server_get_chat_fallback(SrnServer *srv, const char *name) {
     Chat *chat;
 
-    g_return_val_if_fail(server_is_valid(srv), NULL);
+    g_return_val_if_fail(srn_server_is_valid(srv), NULL);
 
-    if (!name || !(chat = server_get_chat(srv, name))){
+    if (!name || !(chat = srn_server_get_chat(srv, name))){
         chat = srv->chat;
     }
 

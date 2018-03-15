@@ -37,7 +37,7 @@ static void append_image(Message *msg);
 static void add_message(Chat *chat, Message *msg);
 static bool whether_merge_last_message(Chat *chat, Message *msg);
 
-Chat *chat_new(Server *srv, const char *name, SrnChatConfig *cfg){
+Chat *chat_new(SrnServer *srv, const char *name, SrnChatConfig *cfg){
     Chat *chat;
     SuiSessionFlag flag;
 
@@ -61,7 +61,7 @@ Chat *chat_new(Server *srv, const char *name, SrnChatConfig *cfg){
     sui_set_ctx(chat->ui, chat);
 
     if (strcmp(META_SERVER, chat->name) == 0){
-        // Server
+        // SrnServer
         sui_server_session(chat->ui, chat->name);
     } else if (sirc_is_chan(chat->name)){
         // Channel

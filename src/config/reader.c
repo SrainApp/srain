@@ -317,7 +317,7 @@ static SrnRet read_server_config_from_server(config_setting_t *server,
 
         config_setting_lookup_string_ex(user, "login_method", &login_method);
         if (login_method) {
-            cfg->login_method = login_method_from_string(login_method);
+            cfg->login_method = srn_login_method_from_string(login_method);
             g_free(login_method);
         }
 

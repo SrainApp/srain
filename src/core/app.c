@@ -24,10 +24,11 @@
  * @date 2016-03-01
  */
 
+#include "core/core.h"
 #include "sui/sui.h"
+
 #include "filter.h"
 #include "decorator.h"
-#include "core/core.h"
 #include "server_ui_event.h"
 #include "server_irc_event.h"
 #include "meta.h"
@@ -123,8 +124,8 @@ void srn_application_run(SrnApplication *app, int argc, char *argv[]){
     sui_run_application(app->ui, argc, argv);
 }
 
-Server* srn_application_add_server(SrnApplication *app, const char *name) {
-    Server *srv;
+SrnServer* srn_application_add_server(SrnApplication *app, const char *name) {
+    SrnServer *srv;
     SrnServerConfig *cfg;
 
     cfg = srn_application_get_server_config(app, name);
@@ -132,7 +133,7 @@ Server* srn_application_add_server(SrnApplication *app, const char *name) {
     g_return_val_if_fail(!cfg->srv, NULL);
     g_return_val_if_fail(RET_IS_OK(srn_server_config_check(cfg)), NULL);
 
-    srv = server_new(cfg);
+    srv = srn_server_new(cfg);
     g_return_val_if_fail(srv, NULL);
 
     cfg->srv = srv;
@@ -141,7 +142,7 @@ Server* srn_application_add_server(SrnApplication *app, const char *name) {
     return srv;
 }
 
-SrnRet srn_application_rm_server(SrnApplication *app, Server *srv) {
+SrnRet srn_application_rm_server(SrnApplication *app, SrnServer *srv) {
     GSList *lst;
     SrnServerConfig *srv_cfg;
 
@@ -152,18 +153,18 @@ SrnRet srn_application_rm_server(SrnApplication *app, Server *srv) {
     app->srv_list = g_slist_delete_link(app->srv_list, lst);
 
     srv_cfg = srv->cfg;
-    server_free(srv);
+    srn_server_free(srv);
     srn_application_rm_server_config(app, srv_cfg);
 
     return SRN_OK;
 }
 
-Server* srn_application_get_server(SrnApplication *app, const char *name){
+SrnServer* srn_application_get_server(SrnApplication *app, const char *name){
     GSList *lst;
 
     lst = app->srv_list;
     while (lst) {
-        Server *srv;
+        SrnServer *srv;
 
         srv = lst->data;
         if (g_ascii_strcasecmp(srv->cfg->name, name) == 0){
@@ -175,7 +176,7 @@ Server* srn_application_get_server(SrnApplication *app, const char *name){
     return NULL;
 }
 
-bool srn_application_is_server_valid(SrnApplication *app, Server *srv) {
+bool srn_application_is_server_valid(SrnApplication *app, SrnServer *srv) {
     return g_slist_find(app->srv_list, srv) != NULL;
 }
 
@@ -260,53 +261,53 @@ char* srn_application_dump_server_config_list(SrnApplication *app){
 
 static void srn_application_init_event(SrnApplication *app) {
     /* UI event */
-    app->ui_app_events.open = server_ui_event_open;
-    app->ui_app_events.activate = server_ui_event_activate;
-    app->ui_app_events.shutdown = server_ui_event_shutdown;
+    app->ui_app_events.open = srn_server_ui_event_open;
+    app->ui_app_events.activate = srn_server_ui_event_activate;
+    app->ui_app_events.shutdown = srn_server_ui_event_shutdown;
 
-    app->ui_win_events.connect = server_ui_event_connect;
-    app->ui_win_events.server_list = server_ui_event_server_list;
+    app->ui_win_events.connect = srn_server_ui_event_connect;
+    app->ui_win_events.server_list = srn_server_ui_event_server_list;
 
-    app->ui_events.disconnect = server_ui_event_disconnect;
-    app->ui_events.quit = server_ui_event_quit;
-    app->ui_events.send = server_ui_event_send;
-    app->ui_events.join = server_ui_event_join;
-    app->ui_events.part = server_ui_event_part;
-    app->ui_events.query = server_ui_event_query;
-    app->ui_events.unquery = server_ui_event_unquery;
-    app->ui_events.kick = server_ui_event_kick;
-    app->ui_events.invite = server_ui_event_invite;
-    app->ui_events.whois = server_ui_event_whois;
-    app->ui_events.ignore = server_ui_event_ignore;
-    app->ui_events.cutover = server_ui_event_cutover;
-    app->ui_events.chan_list = server_ui_event_chan_list;
+    app->ui_events.disconnect = srn_server_ui_event_disconnect;
+    app->ui_events.quit = srn_server_ui_event_quit;
+    app->ui_events.send = srn_server_ui_event_send;
+    app->ui_events.join = srn_server_ui_event_join;
+    app->ui_events.part = srn_server_ui_event_part;
+    app->ui_events.query = srn_server_ui_event_query;
+    app->ui_events.unquery = srn_server_ui_event_unquery;
+    app->ui_events.kick = srn_server_ui_event_kick;
+    app->ui_events.invite = srn_server_ui_event_invite;
+    app->ui_events.whois = srn_server_ui_event_whois;
+    app->ui_events.ignore = srn_server_ui_event_ignore;
+    app->ui_events.cutover = srn_server_ui_event_cutover;
+    app->ui_events.chan_list = srn_server_ui_event_chan_list;
 
     /* IRC event */
-    app->irc_events.connect = server_irc_event_connect;
-    app->irc_events.connect_fail = server_irc_event_connect_fail;
-    app->irc_events.disconnect = server_irc_event_disconnect;
-    app->irc_events.welcome = server_irc_event_welcome;
-    app->irc_events.nick = server_irc_event_nick;
-    app->irc_events.quit = server_irc_event_quit;
-    app->irc_events.join = server_irc_event_join;
-    app->irc_events.part = server_irc_event_part;
-    app->irc_events.mode = server_irc_event_mode;
-    app->irc_events.umode = server_irc_event_umode;
-    app->irc_events.topic = server_irc_event_topic;
-    app->irc_events.kick = server_irc_event_kick;
-    app->irc_events.channel = server_irc_event_channel;
-    app->irc_events.privmsg = server_irc_event_privmsg;
-    app->irc_events.notice = server_irc_event_notice;
-    app->irc_events.channel_notice = server_irc_event_channel_notice;
-    app->irc_events.invite = server_irc_event_invite;
-    app->irc_events.ctcp_req = server_irc_event_ctcp_req;
-    app->irc_events.ctcp_rsp = server_irc_event_ctcp_rsp;
-    app->irc_events.cap = server_irc_event_cap;
-    app->irc_events.authenticate = server_irc_event_authenticate;
-    app->irc_events.ping = server_irc_event_ping;
-    app->irc_events.pong = server_irc_event_pong;
-    app->irc_events.error = server_irc_event_error;
-    app->irc_events.numeric = server_irc_event_numeric;
+    app->irc_events.connect = srn_server_irc_event_connect;
+    app->irc_events.connect_fail = srn_server_irc_event_connect_fail;
+    app->irc_events.disconnect = srn_server_irc_event_disconnect;
+    app->irc_events.welcome = srn_server_irc_event_welcome;
+    app->irc_events.nick = srn_server_irc_event_nick;
+    app->irc_events.quit = srn_server_irc_event_quit;
+    app->irc_events.join = srn_server_irc_event_join;
+    app->irc_events.part = srn_server_irc_event_part;
+    app->irc_events.mode = srn_server_irc_event_mode;
+    app->irc_events.umode = srn_server_irc_event_umode;
+    app->irc_events.topic = srn_server_irc_event_topic;
+    app->irc_events.kick = srn_server_irc_event_kick;
+    app->irc_events.channel = srn_server_irc_event_channel;
+    app->irc_events.privmsg = srn_server_irc_event_privmsg;
+    app->irc_events.notice = srn_server_irc_event_notice;
+    app->irc_events.channel_notice = srn_server_irc_event_channel_notice;
+    app->irc_events.invite = srn_server_irc_event_invite;
+    app->irc_events.ctcp_req = srn_server_irc_event_ctcp_req;
+    app->irc_events.ctcp_rsp = srn_server_irc_event_ctcp_rsp;
+    app->irc_events.cap = srn_server_irc_event_cap;
+    app->irc_events.authenticate = srn_server_irc_event_authenticate;
+    app->irc_events.ping = srn_server_irc_event_ping;
+    app->irc_events.pong = srn_server_irc_event_pong;
+    app->irc_events.error = srn_server_irc_event_error;
+    app->irc_events.numeric = srn_server_irc_event_numeric;
 }
 
 static void srn_application_init_logger(SrnApplication *app) {

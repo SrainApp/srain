@@ -30,22 +30,16 @@
 #endif
 
 /* In millseconds */
-#define SERVER_PING_INTERVAL    (30 * 1000)
-#define SERVER_PING_TIMEOUT     (SERVER_PING_INTERVAL * 2)
-#define SERVER_RECONN_INTERVAL  (5 * 1000)
-#define SERVER_RECONN_STEP      SERVER_RECONN_INTERVAL
+#define SRN_SERVER_PING_INTERVAL    (30 * 1000)
+#define SRN_SERVER_PING_TIMEOUT     (SRN_SERVER_PING_INTERVAL * 2)
+#define SRN_SERVER_RECONN_INTERVAL  (5 * 1000)
+#define SRN_SERVER_RECONN_STEP      SRN_SERVER_RECONN_INTERVAL
 
 /* In seconds */
 #define MESSAGE_MERGE_INTERVAL  60
 
 /* Structure members length */
-#define NAME_LEN        64
-#define PASSWD_LEN      64
-#define HOST_LEN        128
 #define NICK_LEN        128
-#define SERVER_LEN      128
-#define USER_LEN        128
-#define CHAN_LEN        200
 
 typedef enum   _MessageType MessageType;
 typedef struct _Message Message;
@@ -54,13 +48,13 @@ typedef struct _User User;
 typedef struct _Chat Chat;
 typedef struct _SrnChatConfig SrnChatConfig;
 typedef struct _SrnServerAddr SrnServerAddr;
-typedef enum   _ServerState ServerState;
-typedef enum   _ServerAction ServerAction;
-typedef struct _Server Server;
-typedef enum   _LoginMethod LoginMethod;
+typedef enum   _SrnServerState SrnServerState;
+typedef enum   _SrnServerAction SrnServerAction;
+typedef struct _SrnServer SrnServer;
+typedef enum   _SrnLoginMethod SrnLoginMethod;
 typedef struct _SrnServerConfig SrnServerConfig;
 typedef struct _EnabledCap EnabledCap;
-typedef struct _ServerCap ServerCap;
+typedef struct _SrnServerCap SrnServerCap;
 
 
 /*enum _UserType {
@@ -127,7 +121,7 @@ struct _Chat {
     GSList *ignore_regex_list;
     GSList *relaybot_list;
 
-    Server *srv;
+    SrnServer *srv;
     SuiSession *ui;
     SrnChatConfig *cfg;
 };
@@ -139,29 +133,29 @@ struct _SrnChatConfig {
     SuiConfig *ui;
 };
 
-enum _ServerState {
-    SERVER_STATE_DISCONNECTED,
-    SERVER_STATE_CONNECTING,
-    SERVER_STATE_CONNECTED,
-    SERVER_STATE_DISCONNECTING,
-    SERVER_STATE_QUITING,
-    SERVER_STATE_RECONNECTING,
+enum _SrnServerState {
+    SRN_SERVER_STATE_DISCONNECTED,
+    SRN_SERVER_STATE_CONNECTING,
+    SRN_SERVER_STATE_CONNECTED,
+    SRN_SERVER_STATE_DISCONNECTING,
+    SRN_SERVER_STATE_QUITING,
+    SRN_SERVER_STATE_RECONNECTING,
 };
 
-enum _ServerAction {
-    SERVER_ACTION_CONNECT,
-    SERVER_ACTION_CONNECT_FAIL,
-    SERVER_ACTION_CONNECT_FINISH,
-    SERVER_ACTION_DISCONNECT,
-    SERVER_ACTION_QUIT,
-    SERVER_ACTION_RECONNECT,
-    SERVER_ACTION_DISCONNECT_FINISH,
+enum _SrnServerAction {
+    SRN_SERVER_ACTION_CONNECT,
+    SRN_SERVER_ACTION_CONNECT_FAIL,
+    SRN_SERVER_ACTION_CONNECT_FINISH,
+    SRN_SERVER_ACTION_DISCONNECT,
+    SRN_SERVER_ACTION_QUIT,
+    SRN_SERVER_ACTION_RECONNECT,
+    SRN_SERVER_ACTION_DISCONNECT_FINISH,
 };
 
-struct _Server {
+struct _SrnServer {
     /* Status */
-    ServerState state;
-    ServerAction last_action;
+    SrnServerState state;
+    SrnServerAction last_action;
     bool negotiated;    // Client capability negotiation has finished
     bool registered;    // User has a nickname
     bool loggedin;      // User has identified as a certain account
@@ -175,8 +169,8 @@ struct _Server {
 
     SrnServerAddr *addr;    // Current server addr, is a element of
                             // SrnServerConfig->addrs
-    ServerCap *cap;         // Server capabilities
-    SrnServerConfig *cfg;     // All required static informations
+    SrnServerCap *cap;         // Server capabilities
+    SrnServerConfig *cfg;   // All required static informations
     User *user;             // Used to store your nick, username, realname
     Chat *chat;             // Hold all messages that do not belong to any other Chat
 
@@ -186,7 +180,7 @@ struct _Server {
     SircSession *irc;
 };
 
-enum _LoginMethod {
+enum _SrnLoginMethod {
     LOGIN_NONE,
     LOGIN_PASS,
     LOGIN_NICKSERV,
@@ -215,7 +209,7 @@ struct _SrnServerConfig {
     char *username;
     char *realname;
     char *user_passwd;
-    LoginMethod login_method;
+    SrnLoginMethod login_method;
 
     /* Default message */
     char *part_message;
@@ -226,7 +220,7 @@ struct _SrnServerConfig {
     SircConfig *irc;
 
     // ...
-    Server *srv;
+    SrnServer *srv;
 };
 
 struct _EnabledCap {
@@ -249,29 +243,29 @@ struct _EnabledCap {
     bool znc_server_time;
 };
 
-struct _ServerCap {
+struct _SrnServerCap {
     /* Capabilities */
     EnabledCap client_enabled;
     EnabledCap server_enabled;
 
-    Server *srv;
+    SrnServer *srv;
 };
 
-Server* server_new(SrnServerConfig *cfg);
-Server *server_get_by_name(const char *name);
-void server_free(Server *srv);
-bool server_is_valid(Server *srv);
-SrnRet server_connect(Server *srv);
-SrnRet server_disconnect(Server *srv);
-SrnRet server_state_transfrom(Server *srv, ServerAction act);
-bool server_is_registered(Server *srv);
-void server_wait_until_registered(Server *srv);
-int server_add_chat(Server *srv, const char *name);
-SrnRet server_rm_chat(Server *srv, Chat *chat);
-Chat* server_get_chat(Server *srv, const char *name);
-Chat* server_get_chat_fallback(Server *srv, const char *name);
+SrnServer* srn_server_new(SrnServerConfig *cfg);
+SrnServer *srn_server_get_by_name(const char *name);
+void srn_server_free(SrnServer *srv);
+bool srn_server_is_valid(SrnServer *srv);
+SrnRet srn_server_connect(SrnServer *srv);
+SrnRet srn_server_disconnect(SrnServer *srv);
+SrnRet srn_server_state_transfrom(SrnServer *srv, SrnServerAction act);
+bool srn_server_is_registered(SrnServer *srv);
+void srn_server_wait_until_registered(SrnServer *srv);
+int srn_server_add_chat(SrnServer *srv, const char *name);
+SrnRet srn_server_rm_chat(SrnServer *srv, Chat *chat);
+Chat* srn_server_get_chat(SrnServer *srv, const char *name);
+Chat* srn_server_get_chat_fallback(SrnServer *srv, const char *name);
 
-Chat *chat_new(Server *srv, const char *name, SrnChatConfig *cfg);
+Chat *chat_new(SrnServer *srv, const char *name, SrnChatConfig *cfg);
 void chat_free(Chat *chat);
 int chat_add_user(Chat *chat, const char *nick, UserType type);
 int chat_add_user_full(Chat *chat, User *user);
@@ -309,21 +303,21 @@ SrnRet srn_server_config_check(SrnServerConfig *cfg);
 char* srn_server_config_dump(SrnServerConfig *cfg);
 void srn_server_config_free(SrnServerConfig *cfg);
 
-char* login_method_to_string(LoginMethod login);
-LoginMethod login_method_from_string(const char *str);
+char* srn_login_method_to_string(SrnLoginMethod login);
+SrnLoginMethod srn_login_method_from_string(const char *str);
 
 SrnServerAddr* srn_server_addr_new(const char *host, int port);
 void  srn_server_addr_free(SrnServerAddr *addr);
 
-ServerCap* server_cap_new();
-void server_cap_free(ServerCap *scap);
-SrnRet server_cap_server_enable(ServerCap *scap, const char *name, bool enable);
-SrnRet server_cap_client_enable(ServerCap *scap, const char *name, bool enable);
-bool server_cap_all_enabled(ServerCap *scap);
-bool server_cap_is_support(ServerCap *scap, const char *name, const char *value);
-char* server_cap_dump(ServerCap *scap);
+SrnServerCap* srn_server_cap_new();
+void srn_server_cap_free(SrnServerCap *scap);
+SrnRet srn_server_cap_server_enable(SrnServerCap *scap, const char *name, bool enable);
+SrnRet srn_server_cap_client_enable(SrnServerCap *scap, const char *name, bool enable);
+bool srn_server_cap_all_enabled(SrnServerCap *scap);
+bool srn_server_cap_is_support(SrnServerCap *scap, const char *name, const char *value);
+char* srn_server_cap_dump(SrnServerCap *scap);
 
-SrnRet server_url_open(const char *url);
+SrnRet srn_server_url_open(const char *url);
 
-SrnRet server_cmd(Chat *chat, const char *cmd); // FIXME
+SrnRet srn_server_cmd(Chat *chat, const char *cmd); // FIXME
 #endif /* __SERVER_H */

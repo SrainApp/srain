@@ -21,25 +21,25 @@
 
 #include "sui/sui.h"
 
-SrnRet server_ui_event_open(SuiApplication *app, SuiEvent event, GVariantDict *params);
-SrnRet server_ui_event_activate(SuiApplication *app, SuiEvent event, GVariantDict *params);
-SrnRet server_ui_event_shutdown(SuiApplication *app, SuiEvent event, GVariantDict *params);
+SrnRet srn_server_ui_event_open(SuiApplication *app, SuiEvent event, GVariantDict *params);
+SrnRet srn_server_ui_event_activate(SuiApplication *app, SuiEvent event, GVariantDict *params);
+SrnRet srn_server_ui_event_shutdown(SuiApplication *app, SuiEvent event, GVariantDict *params);
 
-SrnRet server_ui_event_connect(SuiWindow *win, SuiEvent event, GVariantDict *params);
-SrnRet server_ui_event_server_list(SuiWindow *win, SuiEvent event, GVariantDict *params);
+SrnRet srn_server_ui_event_connect(SuiWindow *win, SuiEvent event, GVariantDict *params);
+SrnRet srn_server_ui_event_server_list(SuiWindow *win, SuiEvent event, GVariantDict *params);
 
-SrnRet server_ui_event_disconnect(SuiSession *sui, SuiEvent event, GVariantDict *params);
-SrnRet server_ui_event_quit(SuiSession *sui, SuiEvent event, GVariantDict *params);
-SrnRet server_ui_event_send(SuiSession *sui, SuiEvent event, GVariantDict *params);
-SrnRet server_ui_event_join(SuiSession *sui, SuiEvent event, GVariantDict *params);
-SrnRet server_ui_event_part(SuiSession *sui, SuiEvent event, GVariantDict *params);
-SrnRet server_ui_event_query(SuiSession *sui, SuiEvent event, GVariantDict *params);
-SrnRet server_ui_event_unquery(SuiSession *sui, SuiEvent event, GVariantDict *params);
-SrnRet server_ui_event_kick(SuiSession *sui, SuiEvent event, GVariantDict *params);
-SrnRet server_ui_event_invite(SuiSession *sui, SuiEvent event, GVariantDict *params);
-SrnRet server_ui_event_whois(SuiSession *sui, SuiEvent event, GVariantDict *params);
-SrnRet server_ui_event_ignore(SuiSession *sui, SuiEvent event, GVariantDict *params);
-SrnRet server_ui_event_cutover(SuiSession *sui, SuiEvent event, GVariantDict *params);
-SrnRet server_ui_event_chan_list(SuiSession *sui, SuiEvent event, GVariantDict *params);
+SrnRet srn_server_ui_event_disconnect(SuiSession *sui, SuiEvent event, GVariantDict *params);
+SrnRet srn_server_ui_event_quit(SuiSession *sui, SuiEvent event, GVariantDict *params);
+SrnRet srn_server_ui_event_send(SuiSession *sui, SuiEvent event, GVariantDict *params);
+SrnRet srn_server_ui_event_join(SuiSession *sui, SuiEvent event, GVariantDict *params);
+SrnRet srn_server_ui_event_part(SuiSession *sui, SuiEvent event, GVariantDict *params);
+SrnRet srn_server_ui_event_query(SuiSession *sui, SuiEvent event, GVariantDict *params);
+SrnRet srn_server_ui_event_unquery(SuiSession *sui, SuiEvent event, GVariantDict *params);
+SrnRet srn_server_ui_event_kick(SuiSession *sui, SuiEvent event, GVariantDict *params);
+SrnRet srn_server_ui_event_invite(SuiSession *sui, SuiEvent event, GVariantDict *params);
+SrnRet srn_server_ui_event_whois(SuiSession *sui, SuiEvent event, GVariantDict *params);
+SrnRet srn_server_ui_event_ignore(SuiSession *sui, SuiEvent event, GVariantDict *params);
+SrnRet srn_server_ui_event_cutover(SuiSession *sui, SuiEvent event, GVariantDict *params);
+SrnRet srn_server_ui_event_chan_list(SuiSession *sui, SuiEvent event, GVariantDict *params);
 
 #endif /* __UI_EVENT_H */

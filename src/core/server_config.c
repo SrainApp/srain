@@ -160,7 +160,7 @@ void srn_server_config_free(SrnServerConfig *cfg){
     }
 
     if (cfg->srv){
-        server_free(cfg->srv);
+        srn_server_free(cfg->srv);
         cfg->srv = NULL;
     }
 }
@@ -191,7 +191,7 @@ char* srn_server_config_dump(SrnServerConfig *cfg){
         user_passwd = _("None");
     }
 
-    login_method = login_method_to_string(cfg->login_method);
+    login_method = srn_login_method_to_string(cfg->login_method);
     irc_dump = sirc_config_dump(cfg->irc);
 
     str = g_string_new("");
@@ -217,7 +217,7 @@ char* srn_server_config_dump(SrnServerConfig *cfg){
     return dump;
 }
 
-char* login_method_to_string(LoginMethod lm){
+char* srn_login_method_to_string(SrnLoginMethod lm){
     const char *str;
 
     switch (lm) {
@@ -244,8 +244,8 @@ char* login_method_to_string(LoginMethod lm){
     return g_strdup(str);
 }
 
-LoginMethod login_method_from_string(const char *str){
-    LoginMethod login;
+SrnLoginMethod srn_login_method_from_string(const char *str){
+    SrnLoginMethod login;
 
     if (str == NULL || g_ascii_strcasecmp(str, "none") == 0){
         login = LOGIN_NONE;

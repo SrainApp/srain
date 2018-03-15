@@ -29,6 +29,7 @@
 #include <gtk/gtk.h>
 #include <sys/stat.h>
 
+#include "core/core.h"
 #include "srain.h"
 #include "meta.h"
 #include "i18n.h"
@@ -81,7 +82,7 @@ SrnRet rc_read(){
             continue;
         }
 
-        ret = server_cmd(NULL, line);
+        ret = srn_server_cmd(NULL, line);
         if (!RET_IS_OK(ret)){
             ret = RET_ERR(_("Command failed at line %1$d: %2$s"), nline, RET_MSG(ret));
             g_free(line);
