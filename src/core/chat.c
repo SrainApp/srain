@@ -37,7 +37,7 @@ static void append_image(Message *msg);
 static void add_message(Chat *chat, Message *msg);
 static bool whether_merge_last_message(Chat *chat, Message *msg);
 
-Chat *chat_new(Server *srv, const char *name, ChatPrefs *cfg){
+Chat *chat_new(Server *srv, const char *name, SrnChatConfig *cfg){
     Chat *chat;
     SuiSessionFlag flag;
 
@@ -45,7 +45,7 @@ Chat *chat_new(Server *srv, const char *name, ChatPrefs *cfg){
 
     str_assign(&chat->name, name);
     chat->srv = srv;
-    chat->prefs = cfg;
+    chat->cfg = cfg;
     chat->joined = FALSE;
     // FIXME:
     // chat->user = user_ref(srv->user);
@@ -94,8 +94,8 @@ cleanup:
     if (chat->ui) {
         sui_free_session(chat->ui);
     }
-    if (chat->prefs) {
-        chat_prefs_free(chat->prefs);
+    if (chat->cfg) {
+        srn_chat_config_free(chat->cfg);
     }
     if (chat){
         g_free(chat);
@@ -266,7 +266,7 @@ void chat_add_recv_message(Chat *chat, const char *origin, const char *content){
     FilterFlag fflag;
 
     dflag = DECORATOR_PANGO_MARKUP | DECORATOR_RELAY | DECORATOR_MENTION;
-    if (chat->prefs->render_mirc_color) {
+    if (chat->cfg->render_mirc_color) {
         dflag |= DECORATOR_MIRC_COLORIZE;
     } else {
         dflag |= DECORATOR_MIRC_STRIP;
@@ -340,7 +340,7 @@ void chat_add_action_message(Chat *chat, const char *origin, const char *content
     }
 
     dflag = DECORATOR_PANGO_MARKUP;
-    if (chat->prefs->render_mirc_color) {
+    if (chat->cfg->render_mirc_color) {
         dflag |= DECORATOR_MIRC_COLORIZE;
     } else {
         dflag |= DECORATOR_MIRC_STRIP;
@@ -514,7 +514,7 @@ void chat_set_topic(Chat *chat, const char *origin, const char *topic){
     }
 
     dflag = DECORATOR_PANGO_MARKUP;
-    if (chat->prefs->render_mirc_color) {
+    if (chat->cfg->render_mirc_color) {
         dflag |= DECORATOR_MIRC_COLORIZE;
     } else {
         dflag |= DECORATOR_MIRC_STRIP;

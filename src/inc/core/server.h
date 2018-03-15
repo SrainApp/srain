@@ -52,7 +52,7 @@ typedef struct _Message Message;
 // typedef struct _UserType UserType;
 typedef struct _User User;
 typedef struct _Chat Chat;
-typedef struct _ChatPrefs ChatPrefs;
+typedef struct _SrnChatConfig SrnChatConfig;
 typedef struct _SrnServerAddr SrnServerAddr;
 typedef enum   _ServerState ServerState;
 typedef enum   _ServerAction ServerAction;
@@ -129,10 +129,10 @@ struct _Chat {
 
     Server *srv;
     SuiSession *ui;
-    ChatPrefs *prefs;
+    SrnChatConfig *cfg;
 };
 
-struct _ChatPrefs {
+struct _SrnChatConfig {
     bool log; // TODO
     bool render_mirc_color;
 
@@ -272,7 +272,7 @@ SrnRet server_rm_chat(Server *srv, Chat *chat);
 Chat* server_get_chat(Server *srv, const char *name);
 Chat* server_get_chat_fallback(Server *srv, const char *name);
 
-Chat *chat_new(Server *srv, const char *name, ChatPrefs *cfg);
+Chat *chat_new(Server *srv, const char *name, SrnChatConfig *cfg);
 void chat_free(Chat *chat);
 int chat_add_user(Chat *chat, const char *nick, UserType type);
 int chat_add_user_full(Chat *chat, User *user);
@@ -289,9 +289,9 @@ void chat_add_error_message_fmt(Chat *chat, const char *origin, const char *fmt,
 void chat_set_topic(Chat *chat, const char *origin, const char *topic);
 void chat_set_topic_setter(Chat *chat, const char *setter);
 
-ChatPrefs *chat_prefs_new();
-SrnRet chat_prefs_check(ChatPrefs *prefs);
-void chat_prefs_free(ChatPrefs *prefs);
+SrnChatConfig *srn_chat_config_new();
+SrnRet srn_chat_config_check(SrnChatConfig *prefs);
+void srn_chat_config_free(SrnChatConfig *prefs);
 
 User *user_new(Chat *chat, const char *nick, const char *username, const char *realname, UserType type);
 User *user_ref(User *user);

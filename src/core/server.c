@@ -48,7 +48,7 @@ Server* server_new(ServerPrefs *cfg){
 
 Server* server_new_from_prefs(ServerPrefs *cfg){
     Server *srv;
-    ChatPrefs *chat_cfg;
+    SrnChatConfig *chat_cfg;
 
     srv = g_malloc0(sizeof(Server));
 
@@ -62,7 +62,7 @@ Server* server_new_from_prefs(ServerPrefs *cfg){
     srv->cap = server_cap_new();
     srv->cap->srv = srv;
 
-    chat_cfg = chat_prefs_new();
+    chat_cfg = srn_chat_config_new();
     srn_config_manager_read_chat_config(
             srn_application_get_default()->cfg_mgr,
             chat_cfg, srv->prefs->name, META_SERVER);
@@ -211,7 +211,7 @@ SrnRet server_add_chat(Server *srv, const char *name){
     GSList *lst;
     SrnRet ret;
     Chat *chat;
-    ChatPrefs *chat_cfg;
+    SrnChatConfig *chat_cfg;
 
     g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
 
@@ -224,7 +224,7 @@ SrnRet server_add_chat(Server *srv, const char *name){
         lst = g_slist_next(lst);
     }
 
-    chat_cfg = chat_prefs_new();
+    chat_cfg = srn_chat_config_new();
     ret = srn_config_manager_read_chat_config(
             srn_application_get_default()->cfg_mgr,
             chat_cfg, srv->prefs->name, name);
@@ -240,6 +240,7 @@ SrnRet server_add_chat(Server *srv, const char *name){
 
 SrnRet server_rm_chat(Server *srv, Chat *chat){
     GSList *lst;
+    SrnChatConfig *chat_cfg;
 
     g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
     g_return_val_if_fail(!chat->joined, SRN_ERR);
@@ -252,8 +253,9 @@ SrnRet server_rm_chat(Server *srv, Chat *chat){
     if (srv->cur_chat == chat){
         srv->cur_chat = srv->chat;
     }
-    chat_prefs_free(chat->prefs);
+    chat_cfg = chat->cfg;
     chat_free(chat);
+    srn_chat_config_free(chat_cfg);
     srv->chat_list = g_slist_delete_link(srv->chat_list, lst);
 
     return SRN_OK;

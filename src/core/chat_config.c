@@ -23,25 +23,25 @@
 #include "ret.h"
 #include "i18n.h"
 
-ChatPrefs *chat_prefs_new(){
-    ChatPrefs *prefs;
+SrnChatConfig* srn_chat_config_new(){
+    SrnChatConfig *cfg;
 
-    prefs = g_malloc0(sizeof(ChatPrefs));
-    prefs->ui = sui_config_new();
+    cfg = g_malloc0(sizeof(SrnChatConfig));
+    cfg->ui = sui_config_new();
 
-    return prefs;
+    return cfg;
 }
 
-SrnRet chat_prefs_check(ChatPrefs *prefs){
-    if (!prefs){
-        return RET_ERR(_("Invalid ChatPrefs instance"));
+SrnRet srn_chat_config_check(SrnChatConfig *cfg){
+    if (!cfg){
+        return RET_ERR(_("Invalid SrnChatConfig instance"));
     }
-    return sui_config_check(prefs->ui);
+    return sui_config_check(cfg->ui);
 }
 
-void chat_prefs_free(ChatPrefs *prefs){
-    g_return_if_fail(prefs);
+void srn_chat_config_free(SrnChatConfig *cfg){
+    g_return_if_fail(cfg);
 
-    sui_config_free(prefs->ui);
-    g_free(prefs);
+    sui_config_free(cfg->ui);
+    g_free(cfg);
 }
