@@ -20,16 +20,16 @@
 #include "core/core.h"
 #include "log.h"
 
-User *user_new(SrnChat *chat, const char *nick, const char *username,
+SrnUser *srn_user_new(SrnChat *chat, const char *nick, const char *username,
         const char *realname, UserType type){
-    User *user;
+    SrnUser *user;
 
     g_return_val_if_fail(chat, NULL);
     g_return_val_if_fail(nick, NULL);
     if (!username) username = nick;
     if (!realname) realname = nick;
 
-    user = g_malloc0(sizeof(User));
+    user = g_malloc0(sizeof(SrnUser));
 
     user->chat = chat;
     user->me = FALSE;
@@ -45,7 +45,7 @@ User *user_new(SrnChat *chat, const char *nick, const char *username,
     return user;
 }
 
-User *user_ref(User *user){
+SrnUser *srn_user_ref(SrnUser *user){
     g_return_val_if_fail(user, NULL);
 
     user->refcount++;
@@ -53,7 +53,7 @@ User *user_ref(User *user){
     return user;
 }
 
-void user_free(User *user){
+void srn_user_free(SrnUser *user){
     g_return_if_fail(user);
 
     DBG_FR("User %p '%s', refcount: %d", user, user->nick, user->refcount);
@@ -67,7 +67,7 @@ void user_free(User *user){
     g_free(user);
 }
 
-void user_rename(User *user, const char *new_nick){
+void srn_user_rename(SrnUser *user, const char *new_nick){
     /* Update UI status */
     if (user->chat) {
         sui_ren_user(user->chat->ui, user->nick, new_nick, user->type);
@@ -76,7 +76,7 @@ void user_rename(User *user, const char *new_nick){
     g_strlcpy(user->nick, new_nick, sizeof(user->nick));
 }
 
-void user_set_type(User *user, UserType type){
+void srn_user_set_type(SrnUser *user, UserType type){
     /* Update UI status */
     if (user->chat) {
         sui_ren_user(user->chat->ui, user->nick, user->nick, type);
@@ -85,6 +85,6 @@ void user_set_type(User *user, UserType type){
     user->type = type;
 }
 
-void user_set_me(User *user, bool me){
+void srn_user_set_me(SrnUser *user, bool me){
     user->me = me;
 }

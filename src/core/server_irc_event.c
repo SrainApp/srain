@@ -240,7 +240,7 @@ void srn_server_irc_event_welcome(SircSession *sirc, int event,
     srv->ping_timer = g_timeout_add(SRN_SERVER_PING_INTERVAL, irc_period_ping, srv);
     DBG_FR("Ping timer %d created", srv->ping_timer);
 
-    user_rename(srv->user, nick);
+    srn_user_rename(srv->user, nick);
 
     /* Join all channels already exists */
     list = srv->chat_list;
@@ -258,7 +258,7 @@ void srn_server_irc_event_nick(SircSession *sirc, const char *event,
     GSList *lst;
     SrnServer *srv;
     SrnChat *chat;
-    User *user;
+    SrnUser *user;
 
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srn_server_is_valid(srv));
@@ -274,7 +274,7 @@ void srn_server_irc_event_nick(SircSession *sirc, const char *event,
         if ((user = srn_chat_get_user(chat, old_nick)) != NULL){
             srn_chat_add_misc_message_fmt(chat, old_nick, _("%1$s is now known as %2$s"),
                     old_nick, new_nick);
-            user_rename(user, new_nick);
+            srn_user_rename(user, new_nick);
         }
         lst = g_slist_next(lst);
     }
@@ -282,7 +282,7 @@ void srn_server_irc_event_nick(SircSession *sirc, const char *event,
     if (sirc_nick_cmp(old_nick, srv->user->nick)){
         srn_chat_add_misc_message_fmt(srv->chat, old_nick, _("%1$s is now known as %2$s"),
                 old_nick, new_nick);
-        user_rename(srv->user, new_nick);
+        srn_user_rename(srv->user, new_nick);
     }
 }
 
@@ -292,7 +292,7 @@ void srn_server_irc_event_quit(SircSession *sirc, const char *event,
     GSList *lst;
     SrnServer *srv;
     SrnChat *chat;
-    User *user;
+    SrnUser *user;
 
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srn_server_is_valid(srv));
@@ -354,7 +354,7 @@ void srn_server_irc_event_join(SircSession *sirc, const char *event,
         snprintf(buf, sizeof(buf), _("You have joined"));
     } else {
         snprintf(buf, sizeof(buf), _("%1$s has joined"), origin);
-        srn_chat_add_user(chat, origin, USER_CHIGUA);
+        srn_chat_add_user(chat, origin, SRN_USER_CHIGUA);
     }
 
     srn_chat_add_misc_message(chat, origin, buf);
@@ -424,30 +424,30 @@ void srn_server_irc_event_mode(SircSession *sirc, const char *event,
         const char *mode = params[1];
         const char *mode_args = params[2];
 
-        User *user = srn_chat_get_user(chat, mode_args);
+        SrnUser *user = srn_chat_get_user(chat, mode_args);
         if (!user) break;
 
         if (strlen(mode) < 2) break;
 
         if (mode[0] == '-'){
-            user_set_type(user, USER_CHIGUA);
+            srn_user_set_type(user, SRN_USER_CHIGUA);
         }
         else if (mode[0] == '+'){
             switch (mode[1]){
                 case 'q':
-                    user_set_type(user, USER_OWNER);
+                    srn_user_set_type(user, SRN_USER_OWNER);
                     break;
                 case 'a':
-                    user_set_type(user, USER_ADMIN);
+                    srn_user_set_type(user, SRN_USER_ADMIN);
                     break;
                 case 'o':
-                    user_set_type(user, USER_FULL_OP);
+                    srn_user_set_type(user, SRN_USER_FULL_OP);
                     break;
                 case 'h':
-                    user_set_type(user, USER_HALF_OP);
+                    srn_user_set_type(user, SRN_USER_HALF_OP);
                     break;
                 case 'v':
-                    user_set_type(user, USER_VOICED);
+                    srn_user_set_type(user, SRN_USER_VOICED);
                     break;
                 default:
                     break;
@@ -559,7 +559,7 @@ void srn_server_irc_event_channel(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
     SrnServer *srv;
     SrnChat *chat;
-    User *user;
+    SrnUser *user;
 
     g_return_if_fail(count >= 2);
 
@@ -1115,26 +1115,26 @@ void srn_server_irc_event_numeric (SircSession *sirc, int event,
                     switch (nickptr[0]){
                         case '~':
                             nickptr++;
-                            type = USER_OWNER;
+                            type = SRN_USER_OWNER;
                             break;
                         case '&':
                             nickptr++;
-                            type = USER_ADMIN;
+                            type = SRN_USER_ADMIN;
                             break;
                         case '@':
                             nickptr++;
-                            type = USER_FULL_OP;
+                            type = SRN_USER_FULL_OP;
                             break;
                         case '%':
                             nickptr++;
-                            type = USER_HALF_OP;
+                            type = SRN_USER_HALF_OP;
                             break;
                         case '+':
                             nickptr++;
-                            type = USER_VOICED;
+                            type = SRN_USER_VOICED;
                             break;
                         default:
-                            type = USER_CHIGUA;
+                            type = SRN_USER_CHIGUA;
                     }
                     srn_chat_add_user(chat, nickptr, type);
                     nickptr = strtok(NULL, " ");

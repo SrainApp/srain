@@ -65,11 +65,11 @@ SrnServerConfig* srn_server_config_new_from_basename(const char *basename){
 }
 
 SrnRet srn_server_config_check(SrnServerConfig *cfg){
-    const char *missing = _("Missing field in SrnServerConfig: %1$s");
-    const char *invalid = _("Invalid value in SrnServerConfig: %1$s");
+    const char *missing = _("Missing field in server config: %1$s");
+    const char *invalid = _("Invalid value in server config: %1$s");
 
     if (!cfg){
-        return RET_ERR(_("Invalid SrnServerConfig instance"));
+        return RET_ERR(_("Invalid server config instance"));
     }
 
     if (g_slist_length(cfg->addrs) == 0) {

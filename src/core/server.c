@@ -65,16 +65,16 @@ SrnServer* srn_server_new(SrnServerConfig *cfg){
     srv->chat = srn_chat_new(srv, META_SERVER, chat_cfg);
     if (!srv->chat) goto bad;
 
-    srv->user = user_new(srv->chat,
+    srv->user = srn_user_new(srv->chat,
             cfg->nickname,
             cfg->username,
             cfg->realname,
-            USER_CHIGUA);
+            SRN_USER_CHIGUA);
     if (!srv->user) goto bad;
-    user_set_me(srv->user, TRUE);
+    srn_user_set_me(srv->user, TRUE);
 
     // FIXME: Corss-required between chat_new() and user_new()
-    srv->chat->user = user_ref(srv->user);
+    srv->chat->user = srn_user_ref(srv->user);
 
     /* NOTE: Ping related issuses are not handled in server.c */
     srv->reconn_interval = SRN_SERVER_RECONN_INTERVAL;
@@ -119,7 +119,7 @@ void srn_server_free(SrnServer *srv){
         srv->cap = NULL;
     }
     if (srv->user != NULL){
-        user_free(srv->user);
+        srn_user_free(srv->user);
         srv->user = NULL;
     }
     if (srv->irc != NULL){

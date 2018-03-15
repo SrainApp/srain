@@ -23,7 +23,7 @@
 #include "srain.h"
 #include "utils.h"
 
-Message* message_new(SrnChat *chat, User *user, const char *content, MessageType type){
+Message* message_new(SrnChat *chat, SrnUser *user, const char *content, MessageType type){
     Message *msg;
 
     g_return_val_if_fail(chat, NULL);
@@ -32,7 +32,7 @@ Message* message_new(SrnChat *chat, User *user, const char *content, MessageType
 
     msg = g_malloc0(sizeof(Message));
 
-    msg->user = user_ref(user);
+    msg->user = srn_user_ref(user);
     msg->chat = chat;
     // msg->role = NULL; // via g_malloc0()
     msg->content = g_strdup(content);
@@ -54,7 +54,7 @@ void message_free(Message *msg){
     if (msg->ui) { /* Nothing to do. */ }
 
     if (msg->user) {
-        user_free(msg->user);
+        srn_user_free(msg->user);
     }
 
     if (msg->urls) {

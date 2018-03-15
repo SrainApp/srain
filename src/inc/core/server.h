@@ -44,7 +44,7 @@
 typedef enum   _MessageType MessageType;
 typedef struct _Message Message;
 // typedef struct _UserType UserType;
-typedef struct _User User;
+typedef struct _SrnUser SrnUser;
 typedef struct _SrnChat SrnChat;
 typedef struct _SrnChatConfig SrnChatConfig;
 typedef struct _SrnServerAddr SrnServerAddr;
@@ -58,16 +58,16 @@ typedef struct _SrnServerCap SrnServerCap;
 
 
 /*enum _UserType {
-    USER_CHIGUA,    // No prefix
-    USER_OWNER,     // ~ mode +q
-    USER_ADMIN,     // & mode +a
-    USER_FULL_OP,   // @ mode +o
-    USER_HALF_OP,   // % mode +h
-    USER_VOICED,    // + mode +v
-    USER_TYPE_MAX
+    SRN_USER_CHIGUA,    // No prefix
+    SRN_USER_OWNER,     // ~ mode +q
+    SRN_USER_ADMIN,     // & mode +a
+    SRN_USER_FULL_OP,   // @ mode +o
+    SRN_USER_HALF_OP,   // % mode +h
+    SRN_USER_VOICED,    // + mode +v
+    SRN_USER_TYPE_MAX
 }; */
 
-struct _User {
+struct _SrnUser {
     char nick[NICK_LEN];
     char username[NICK_LEN];
     char realname[NICK_LEN];
@@ -92,7 +92,7 @@ enum _MessageType {
 
 struct _Message {
     SrnChat *chat;
-    User *user;     // Originator of this message, often refers to an existing user
+    SrnUser *user;     // Originator of this message, often refers to an existing user
     char *dname;    // Decorated name, maybe contains xml tags
     char *role;     // The role of the message originator
 
@@ -110,7 +110,7 @@ struct _Message {
 struct _SrnChat {
     char *name;
     bool joined;
-    User *user;         // Yourself
+    SrnUser *user;         // Yourself
 
     GSList *user_list;
     GList *msg_list;
@@ -171,7 +171,7 @@ struct _SrnServer {
                             // SrnServerConfig->addrs
     SrnServerCap *cap;         // Server capabilities
     SrnServerConfig *cfg;   // All required static informations
-    User *user;             // Used to store your nick, username, realname
+    SrnUser *user;             // Used to store your nick, username, realname
     SrnChat *chat;             // Hold all messages that do not belong to any other SrnChat
 
     SrnChat *cur_chat;
@@ -204,7 +204,7 @@ struct _SrnServerConfig {
     GSList *addrs; // List of SrnServerAddr
     char *passwd;
 
-    /* User */
+    /* SrnUser */
     char *nickname;
     char *username;
     char *realname;
@@ -268,9 +268,9 @@ SrnChat* srn_server_get_chat_fallback(SrnServer *srv, const char *name);
 SrnChat* srn_chat_new(SrnServer *srv, const char *name, SrnChatConfig *cfg);
 void srn_chat_free(SrnChat *chat);
 int srn_chat_add_user(SrnChat *chat, const char *nick, UserType type);
-int srn_chat_add_user_full(SrnChat *chat, User *user);
+int srn_chat_add_user_full(SrnChat *chat, SrnUser *user);
 int srn_chat_rm_user(SrnChat *chat, const char *nick);
-User* srn_chat_get_user(SrnChat *chat, const char *nick);
+SrnUser* srn_chat_get_user(SrnChat *chat, const char *nick);
 void srn_chat_add_sent_message(SrnChat *chat, const char *content);
 void srn_chat_add_recv_message(SrnChat *chat, const char *origin, const char *content);
 void srn_chat_add_action_message(SrnChat *chat, const char *origin, const char *content);
@@ -286,14 +286,14 @@ SrnChatConfig *srn_chat_config_new();
 SrnRet srn_chat_config_check(SrnChatConfig *cfg);
 void srn_chat_config_free(SrnChatConfig *cfg);
 
-User *user_new(SrnChat *chat, const char *nick, const char *username, const char *realname, UserType type);
-User *user_ref(User *user);
-void user_free(User *user);
-void user_rename(User *user, const char *new_nick);
-void user_set_type(User *user, UserType type);
-void user_set_me(User *user, bool me);
+SrnUser *srn_user_new(SrnChat *chat, const char *nick, const char *username, const char *realname, UserType type);
+SrnUser *srn_user_ref(SrnUser *user);
+void srn_user_free(SrnUser *user);
+void srn_user_rename(SrnUser *user, const char *new_nick);
+void srn_user_set_type(SrnUser *user, UserType type);
+void srn_user_set_me(SrnUser *user, bool me);
 
-Message* message_new(SrnChat *chat, User *user, const char *content, MessageType type);
+Message* message_new(SrnChat *chat, SrnUser *user, const char *content, MessageType type);
 void message_free(Message *msg);
 
 SrnServerConfig* srn_server_config_new(const char *name);

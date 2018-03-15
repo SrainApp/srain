@@ -28,6 +28,7 @@ typedef struct _SuiSession SuiSession;
 typedef int SuiSessionFlag;
 typedef struct _SuiMessage SuiMessage;
 typedef enum _UserType UserType;
+typedef enum _SrnUserType SrnUserType;
 
 #define SUI_SESSION_SERVER      1 << 0
 #define SUI_SESSION_CHANNEL     1 << 1
@@ -40,6 +41,17 @@ typedef enum {
     SYS_MSG_ACTION
 } SysMsgType;
 
+
+enum _SrnUserType {
+    SRN_USER_OWNER,     // ~ mode +q
+    SRN_USER_ADMIN,     // & mode +a
+    SRN_USER_FULL_OP,   // @ mode +o
+    SRN_USER_HALF_OP,   // % mode +h
+    SRN_USER_VOICED,    // + mode +v
+    SRN_USER_CHIGUA,    // No prefix
+    /* ... */
+    SRN_USER_TYPE_MAX
+};
 
 enum _UserType {
     USER_OWNER,     // ~ mode +q
