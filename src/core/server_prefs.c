@@ -36,14 +36,14 @@
 
 ServerPrefs* server_prefs_new(const char *name){
     ServerPrefs *prefs;
-    SircPrefs *irc_prefs;
+    SircConfig *irc_cfg;
 
     prefs = g_malloc0(sizeof(ServerPrefs));
-    irc_prefs = sirc_prefs_new();
+    irc_cfg = sirc_config_new();
 
     prefs->predefined = FALSE;
     prefs->name = g_strdup(name);
-    prefs->irc = irc_prefs;
+    prefs->irc = irc_cfg;
     prefs->srv = NULL;
 
     return prefs;
@@ -143,7 +143,7 @@ SrnRet server_prefs_check(ServerPrefs *prefs){
         return RET_ERR(missing, "irc");
     }
 
-    return sirc_prefs_check(prefs->irc);
+    return sirc_config_check(prefs->irc);
 }
 
 void server_prefs_free(ServerPrefs *prefs){
@@ -160,7 +160,7 @@ void server_prefs_free(ServerPrefs *prefs){
     str_assign(&prefs->quit_message, NULL);
 
     if (prefs->irc){
-        sirc_prefs_free(prefs->irc);
+        sirc_config_free(prefs->irc);
         prefs->irc = NULL;
     }
 
@@ -197,7 +197,7 @@ char* server_prefs_dump(ServerPrefs *prefs){
     }
 
     login_method = login_method_to_string(prefs->login_method);
-    irc_dump = sirc_prefs_dump(prefs->irc);
+    irc_dump = sirc_config_dump(prefs->irc);
 
     str = g_string_new("");
     g_string_append_printf(str,

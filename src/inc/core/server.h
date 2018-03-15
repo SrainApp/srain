@@ -223,7 +223,7 @@ struct _ServerPrefs {
     char *away_message;
     char *quit_message;
 
-    SircPrefs *irc;
+    SircConfig *irc;
 
     // ...
     Server *srv;
