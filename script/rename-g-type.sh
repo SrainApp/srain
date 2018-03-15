@@ -28,6 +28,7 @@ new_var=($(gen_var ${NEW_TYPE}))
 
 for f in $(find ./src/ \( -name '*.h' -o -name '*.c' \)); do
     sed -i "s/\b${old_var[0]}\b/${new_var[0]}/g" ${f}
+    sed -i "s/\b_${old_var[0]}\b/_${new_var[0]}/g" ${f}
     sed -i "s/\b${old_var[1]}\b/${new_var[1]}/g" ${f}
     sed -i "s/\b${old_var[2]}\([0-9a-zA-Z_]*\b\)/${new_var[2]}\1/g" ${f}
     sed -i "s/\b${old_var[3]}\([0-9a-zA-Z_ ]*(\)\b/${new_var[3]}\1/g" ${f}
