@@ -56,7 +56,7 @@ enum _UserType {
 
 #define __IN_SUI_H
 #include "sui_event.h"
-#include "sui_prefs.h"
+#include "sui_config.h"
 #undef __IN_SUI_H
 
 void sui_proc_pending_event(void);
@@ -75,7 +75,7 @@ void sui_free_window(SuiWindow *win);
 SuiWindowEvents* sui_window_get_events(SuiWindow *sui);
 
 /* SuiSession */
-SuiSession *sui_new_session(SuiEvents *events, SuiPrefs *prefs, SuiSessionFlag flag);
+SuiSession *sui_new_session(SuiEvents *events, SuiConfig *cfg, SuiSessionFlag flag);
 void sui_free_session(SuiSession *sui);
 SrnRet sui_server_session(SuiSession *sui, const char *srv);
 SrnRet sui_channel_session(SuiSession *sui, SuiSession *sui_srv, const char *chan);

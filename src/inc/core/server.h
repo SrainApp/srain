@@ -136,7 +136,7 @@ struct _ChatPrefs {
     bool log; // TODO
     bool render_mirc_color;
 
-    SuiPrefs *ui;
+    SuiConfig *ui;
 };
 
 enum _ServerState {

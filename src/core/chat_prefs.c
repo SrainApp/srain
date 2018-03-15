@@ -27,7 +27,7 @@ ChatPrefs *chat_prefs_new(){
     ChatPrefs *prefs;
 
     prefs = g_malloc0(sizeof(ChatPrefs));
-    prefs->ui = sui_prefs_new();
+    prefs->ui = sui_config_new();
 
     return prefs;
 }
@@ -36,12 +36,12 @@ SrnRet chat_prefs_check(ChatPrefs *prefs){
     if (!prefs){
         return RET_ERR(_("Invalid ChatPrefs instance"));
     }
-    return sui_prefs_check(prefs->ui);
+    return sui_config_check(prefs->ui);
 }
 
 void chat_prefs_free(ChatPrefs *prefs){
     g_return_if_fail(prefs);
 
-    sui_prefs_free(prefs->ui);
+    sui_config_free(prefs->ui);
     g_free(prefs);
 }

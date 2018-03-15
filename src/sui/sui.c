@@ -63,7 +63,7 @@ struct _SuiSession{
 
     SuiSessionFlag flag;
     SuiEvents *events;
-    SuiPrefs *prefs;
+    SuiConfig *cfg;
 
     void *ctx;
 };
@@ -145,14 +145,14 @@ void sui_proc_pending_event(){
     while (gtk_events_pending()) gtk_main_iteration();
 }
 
-SuiSession *sui_new_session(SuiEvents *events, SuiPrefs *prefs, SuiSessionFlag flag){
+SuiSession *sui_new_session(SuiEvents *events, SuiConfig *cfg, SuiSessionFlag flag){
     SrnRet ret;
     SuiSession *sui;
 
     g_return_val_if_fail(events, NULL);
-    g_return_val_if_fail(prefs, NULL);
+    g_return_val_if_fail(cfg, NULL);
 
-    ret = sui_prefs_check(prefs);
+    ret = sui_config_check(cfg);
     if (!RET_IS_OK(ret)){
         sui_message_box(_("Error"), RET_MSG(ret));
         return NULL;
@@ -163,7 +163,7 @@ SuiSession *sui_new_session(SuiEvents *events, SuiPrefs *prefs, SuiSessionFlag f
     // sui->buffer = NULL; // via g_malloc0()
     sui->flag = flag;
     sui->events = events;
-    sui->prefs = prefs;
+    sui->cfg = cfg;
 
     return sui;
 }
@@ -191,7 +191,7 @@ SrnRet sui_server_session(SuiSession *sui, const char *srv){
     sui->buffer = SRAIN_BUFFER(buffer);
 
     srain_window_add_buffer(sui_win->win, sui->buffer);
-    srain_buffer_show_topic(sui->buffer, sui->prefs->show_topic);
+    srain_buffer_show_topic(sui->buffer, sui->cfg->show_topic);
 
     popover = srain_window_get_join_popover(sui_win->win);
     srain_join_popover_prepare_model(popover, buffer);
@@ -217,9 +217,9 @@ SrnRet sui_channel_session(SuiSession *sui, SuiSession *srv_sui, const char *cha
     srain_window_add_buffer(sui_win->win, SRAIN_BUFFER(sui->buffer));
     srain_server_buffer_add_buffer(
             SRAIN_SERVER_BUFFER(srv_sui->buffer), SRAIN_BUFFER(buffer));
-    srain_buffer_show_topic(SRAIN_BUFFER(sui->buffer), sui->prefs->show_topic);
+    srain_buffer_show_topic(SRAIN_BUFFER(sui->buffer), sui->cfg->show_topic);
     srain_chat_buffer_show_user_list(
-            SRAIN_CHAT_BUFFER(sui->buffer), sui->prefs->show_user_list);
+            SRAIN_CHAT_BUFFER(sui->buffer), sui->cfg->show_user_list);
 
     return SRN_OK;
 }
@@ -242,9 +242,9 @@ SrnRet sui_private_session(SuiSession *sui, SuiSession *srv_sui, const char *nic
     srain_window_add_buffer(sui_win->win, SRAIN_BUFFER(sui->buffer));
     srain_server_buffer_add_buffer(
             SRAIN_SERVER_BUFFER(srv_sui->buffer), SRAIN_BUFFER(buffer));
-    srain_buffer_show_topic(SRAIN_BUFFER(sui->buffer), sui->prefs->show_topic);
+    srain_buffer_show_topic(SRAIN_BUFFER(sui->buffer), sui->cfg->show_topic);
     srain_chat_buffer_show_user_list(
-            SRAIN_CHAT_BUFFER(sui->buffer), sui->prefs->show_user_list);
+            SRAIN_CHAT_BUFFER(sui->buffer), sui->cfg->show_user_list);
 
     return SRN_OK;
 }
@@ -288,10 +288,10 @@ SuiEvents *sui_get_events(SuiSession *sui){
     return sui->events;
 }
 
-SuiPrefs *sui_get_prefs(SuiSession *sui){
+SuiConfig *sui_get_cfg(SuiSession *sui){
     g_return_val_if_fail(sui, NULL);
 
-    return sui->prefs;
+    return sui->cfg;
 }
 
 void* sui_get_ctx(SuiSession *sui){
@@ -380,7 +380,7 @@ SuiMessage *sui_add_recv_msg(SuiSession *sui, const char *nick, const char *id,
     list = srain_buffer_get_msg_list(buffer);
     smsg = (SuiMessage *)srain_recv_msg_new(nick, id, msg);
     sui_message_set_ctx(smsg, sui);
-    srain_recv_msg_show_avatar(SRAIN_RECV_MSG(smsg), sui->prefs->show_avatar);
+    srain_recv_msg_show_avatar(SRAIN_RECV_MSG(smsg), sui->cfg->show_avatar);
     srain_msg_list_add_message(list, smsg);
 
     srain_window_stack_sidebar_update(sui_win->win, buffer, nick, msg);
@@ -538,7 +538,7 @@ void sui_message_append_image(SuiMessage *smsg, const char *url){
     sui = sui_message_get_ctx(smsg);
     flag = SRAIN_IMAGE_ENLARGE | SRAIN_IMAGE_SPININER;
 
-    if (sui->prefs->preview_image){
+    if (sui->cfg->preview_image){
         flag |= SRAIN_IMAGE_AUTOLOAD;
     } else {
     }
@@ -576,7 +576,7 @@ void sui_message_notify(SuiMessage *smsg){
     }
 
     sui = sui_message_get_ctx(smsg);
-    if (sui && !sui->prefs->notify){
+    if (sui && !sui->cfg->notify){
         return;
     }
 

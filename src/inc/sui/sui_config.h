@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SUI_PREFS_H
-#define __SUI_PREFS_H
+#ifndef __SUI_CONFIG_H
+#define __SUI_CONFIG_H
 
 #ifndef __IN_SUI_H
 	#error This file should not be included directly, include just sui.h
@@ -28,7 +28,7 @@
 
 typedef struct _SuiApplicationConfig SuiApplicationConfig;
 typedef struct _SuiWindowConfig SuiWindowConfig;
-typedef struct _SuiPrefs SuiPrefs;
+typedef struct _SuiConfig SuiConfig;
 
 struct _SuiApplicationConfig {
     char *theme;
@@ -37,7 +37,7 @@ struct _SuiApplicationConfig {
 struct _SuiWindowConfig {
 };
 
-struct _SuiPrefs {
+struct _SuiConfig {
     bool notify;
     bool show_topic;
     bool show_avatar;
@@ -53,8 +53,8 @@ SuiWindowConfig *sui_window_config_new(void);
 SrnRet sui_window_config_check(SuiWindowConfig *cfg);
 void sui_window_config_free(SuiWindowConfig *cfg);
 
-SuiPrefs *sui_prefs_new(void);
-SrnRet sui_prefs_check(SuiPrefs *prefs);
-void sui_prefs_free(SuiPrefs *prefs);
+SuiConfig *sui_config_new(void);
+SrnRet sui_config_check(SuiConfig *cfg);
+void sui_config_free(SuiConfig *cfg);
 
-#endif /* __SUI_PREFS_H */
+#endif /* __SUI_CONFIG_H */

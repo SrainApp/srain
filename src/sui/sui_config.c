@@ -61,23 +61,23 @@ void sui_window_config_free(SuiWindowConfig *cfg){
     g_free(cfg);
 }
 
-SuiPrefs *sui_prefs_new(){
-    SuiPrefs *prefs;
+SuiConfig* sui_config_new(){
+    SuiConfig *cfg;
 
-    prefs = g_malloc0(sizeof(SuiPrefs));
+    cfg = g_malloc0(sizeof(SuiConfig));
 
-    return prefs;
+    return cfg;
 }
 
-SrnRet sui_prefs_check(SuiPrefs *prefs){
-    if (!prefs){
-        return RET_ERR(_("Invalid SuiPrefs instance"));
+SrnRet sui_config_check(SuiConfig *cfg){
+    if (!cfg){
+        return RET_ERR(_("Invalid SuiConfig instance"));
     }
     return SRN_OK;
 }
 
-void sui_prefs_free(SuiPrefs *prefs){
-    g_return_if_fail(prefs);
+void sui_config_free(SuiConfig *cfg){
+    g_return_if_fail(cfg);
 
-    g_free(prefs);
+    g_free(cfg);
 }
