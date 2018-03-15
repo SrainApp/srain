@@ -22,55 +22,55 @@
 #include "srain.h"
 #include "ret.h"
 
-#define COMMAND_MAX_OPTS        20
-#define COMMAND_MAX_ARGS        20
-#define COMMAND_MAX_SUBCMD      10
+#define SRN_COMMAND_MAX_OPTS        20
+#define SRN_COMMAND_MAX_ARGS        20
+#define SRN_COMMAND_MAX_SUBCMD      10
 
-#define COMMAND_OPT_PREFIX      '-'
-#define COMMAND_OPT_NO_VAL      NULL
-#define COMMAND_OPT_NO_DEFAULT  (const char *) 1 // FIXME: a better way?
+#define SRN_COMMAND_OPT_PREFIX      '-'
+#define SRN_COMMAND_OPT_NO_VAL      NULL
+#define SRN_COMMAND_OPT_NO_DEFAULT  (const char *) 1 // FIXME: a better way?
 
-#define COMMAND_FLAG_OMIT_ARG   1 << 1
+#define SRN_COMMAND_FLAG_OMIT_ARG   1 << 1
 
-#define COMMAND_EMPTY_OPT { .key = NULL, .val = COMMAND_OPT_NO_VAL }
-#define COMMAND_EMPTY {         \
-    .name = NULL,               \
-    .subcmd = {NULL},           \
-    .argc = 0,                  \
-    .opt = {COMMAND_EMPTY_OPT}, \
-    .flag = 0,                  \
-    .cb = NULL,                 \
+#define SRN_COMMAND_EMPTY_OPT { .key = NULL, .val = SRN_COMMAND_OPT_NO_VAL }
+#define SRN_COMMAND_EMPTY {         \
+    .name = NULL,                   \
+    .subcmd = {NULL},               \
+    .argc = 0,                      \
+    .opt = {SRN_COMMAND_EMPTY_OPT}, \
+    .flag = 0,                      \
+    .cb = NULL,                     \
     }
 
-typedef int CommandFlag;
-typedef struct _Command Command;
-typedef struct _CommandBind CommandBind;
-typedef struct _CommandOption CommandOption;
-typedef struct _CommandContext CommandContext;
-typedef SrnRet (CommandCallback) (Command *cmd, void *user_data);
+typedef int SrnCommandFlag;
+typedef struct _SrnCommand SrnCommand;
+typedef struct _SrnCommandBind SrnCommandBind;
+typedef struct _SrnCommandOption SrnCommandOption;
+typedef struct _SrnCommandContext SrnCommandContext;
+typedef SrnRet (SrnCommandCallback) (SrnCommand *cmd, void *user_data);
 
-struct _CommandOption {
+struct _SrnCommandOption {
     const char *key;
     const char *val;
 };
 
-struct _CommandBind {
+struct _SrnCommandBind {
     const char *name;
-    const char *subcmd[COMMAND_MAX_SUBCMD];
+    const char *subcmd[SRN_COMMAND_MAX_SUBCMD];
     const int argc;
-    const CommandOption opt[COMMAND_MAX_OPTS];
-    const CommandFlag flag;
-    CommandCallback *cb;
+    const SrnCommandOption opt[SRN_COMMAND_MAX_OPTS];
+    const SrnCommandFlag flag;
+    SrnCommandCallback *cb;
 };
 
-struct _CommandContext {
-    CommandBind *binds;
+struct _SrnCommandContext {
+    SrnCommandBind *binds;
 };
 
-SrnRet command_proc(CommandContext *ctx, const char *rawcmd, void *user_data);
-const char *command_get_subcmd(Command *cmd);
-const char *command_get_arg(Command *cmd, unsigned index);
-bool command_get_opt(Command *cmd, const char *opt_key, const char **opt_val);
+SrnRet srn_command_proc(SrnCommandContext *ctx, const char *rawcmd, void *user_data);
+const char *srn_command_get_subcmd(SrnCommand *cmd);
+const char *srn_command_get_arg(SrnCommand *cmd, unsigned index);
+bool srn_command_get_opt(SrnCommand *cmd, const char *opt_key, const char **opt_val);
 
 void command_test();
 void get_quote_arg_test();

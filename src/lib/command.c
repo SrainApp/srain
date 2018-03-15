@@ -33,45 +33,44 @@
 #include "log.h"
 #include "i18n.h"
 
-struct _Command {
+struct _SrnCommand {
     char *subcmd;
-    char *argv[COMMAND_MAX_ARGS];
-    char *opt_key[COMMAND_MAX_OPTS];
-    char *opt_val[COMMAND_MAX_OPTS];
+    char *argv[SRN_COMMAND_MAX_ARGS];
+    char *opt_key[SRN_COMMAND_MAX_OPTS];
+    char *opt_val[SRN_COMMAND_MAX_OPTS];
 
-    CommandBind *bind;
+    SrnCommandBind *bind;
     char *rawcmd;
 };
 
-static Command* command_new(CommandBind *bind, const char *rawcmd);
-static void command_free(Command *cmd);
-static SrnRet command_parse(CommandContext *ctx, Command *cmd, void *user_data);
+static SrnCommand* srn_command_new(SrnCommandBind *bind, const char *rawcmd);
+static void srn_command_free(SrnCommand *cmd);
+static SrnRet srn_command_parse(SrnCommandContext *ctx, SrnCommand *cmd, void *user_data);
 
 static SrnRet get_arg(char *ptr, char **arg, char **next);
 static SrnRet get_quote_arg(char *ptr, char **arg, char **next);
 static SrnRet get_last_quote_arg(char *ptr, char **arg);
 
 /**
- * @brief command_proc Check and parse command, and call the corresponding
- *      callback function
+ * @brief Check and parse command, and call the corresponding callback function
  *
- * @param ctx A CommandContext
+ * @param ctx A SrnCommandContext
  * @param rawcmd A string of command
  * @param user_data Custom data passing to command callback function
  *
  * @return SRN_ERR if failed, the reason is various(no such command, no enouch
  *         argument, callback function failed, etc.)
  */
-SrnRet command_proc(CommandContext *ctx, const char *rawcmd, void *user_data){
+SrnRet srn_command_proc(SrnCommandContext *ctx, const char *rawcmd, void *user_data){
     SrnRet ret;
-    Command *cmd;
+    SrnCommand *cmd;
 
     if (!ctx) return SRN_ERR;
 
     for (int i = 0; ctx->binds[i].name != NULL; i++){
         if (g_str_has_prefix(rawcmd, ctx->binds[i].name)){
-            cmd = command_new(&ctx->binds[i], rawcmd);
-            ret = command_parse(ctx, cmd, user_data);
+            cmd = srn_command_new(&ctx->binds[i], rawcmd);
+            ret = srn_command_parse(ctx, cmd, user_data);
             if (ret == SRN_OK){
                 // callback
                 ret = cmd->bind->cb(cmd, user_data);
@@ -79,7 +78,7 @@ SrnRet command_proc(CommandContext *ctx, const char *rawcmd, void *user_data){
                 // TODO: decorate
                 ret = RET_ERR(_("Sorry, command parse failed, please report a bug to <" PACKAGE_WEBSITE "/issues> ."));
             }
-            command_free(cmd);
+            srn_command_free(cmd);
             return ret;
         }
     }
@@ -94,7 +93,7 @@ SrnRet command_proc(CommandContext *ctx, const char *rawcmd, void *user_data){
  *
  * @return NULL or sub command
  */
-const char *command_get_subcmd(Command *cmd){
+const char *srn_command_get_subcmd(SrnCommand *cmd){
     g_return_val_if_fail(cmd, NULL);
 
     return cmd->subcmd;
@@ -108,7 +107,7 @@ const char *command_get_subcmd(Command *cmd){
  *
  * @return NULL or the nth argument, you do not need to free it
  */
-const char *command_get_arg(Command *cmd, unsigned index){
+const char *srn_command_get_arg(SrnCommand *cmd, unsigned index){
     g_return_val_if_fail(cmd, NULL);
 
     if (index < cmd->bind->argc){
@@ -135,7 +134,7 @@ const char *command_get_arg(Command *cmd, unsigned index){
  *      have a value, it will be return to the ``opt_key``
  *
  */
-bool command_get_opt(Command *cmd, const char *opt_key, const char **opt_val){
+bool srn_command_get_opt(SrnCommand *cmd, const char *opt_key, const char **opt_val){
     unsigned i = 0;
 
     g_return_val_if_fail(cmd, FALSE);
@@ -154,9 +153,9 @@ bool command_get_opt(Command *cmd, const char *opt_key, const char **opt_val){
     i = 0;
     while (cmd->bind->opt[i].key != NULL){
         if (g_ascii_strcasecmp(cmd->bind->opt[i].key, opt_key) == 0){
-            if (cmd->bind->opt[i].val == COMMAND_OPT_NO_VAL){
+            if (cmd->bind->opt[i].val == SRN_COMMAND_OPT_NO_VAL){
                 // Nothing todo
-            } else if (cmd->bind->opt[i].val == COMMAND_OPT_NO_DEFAULT){
+            } else if (cmd->bind->opt[i].val == SRN_COMMAND_OPT_NO_DEFAULT){
                 DBG_FR("No default value for opiton '%s'", opt_key);
             } else {
                 if (opt_val != NULL){
@@ -172,8 +171,8 @@ bool command_get_opt(Command *cmd, const char *opt_key, const char **opt_val){
     return FALSE;
 }
 
-static Command* command_new(CommandBind *bind, const char *rawcmd){
-    Command *cmd = g_malloc0(sizeof(Command));
+static SrnCommand* srn_command_new(SrnCommandBind *bind, const char *rawcmd){
+    SrnCommand *cmd = g_malloc0(sizeof(SrnCommand));
 
     cmd->bind = bind;
     cmd->rawcmd = g_strdup(rawcmd);
@@ -183,7 +182,7 @@ static Command* command_new(CommandBind *bind, const char *rawcmd){
     return cmd;
 }
 
-static void command_free(Command *cmd){
+static void srn_command_free(SrnCommand *cmd){
     if (cmd->rawcmd)
         g_free(cmd->rawcmd);
     g_free(cmd);
@@ -297,12 +296,12 @@ static SrnRet get_last_quote_arg(char *ptr, char **arg){
     return SRN_OK;
 }
 
-static SrnRet command_parse(CommandContext *ctx, Command *cmd, void *user_data){
+static SrnRet srn_command_parse(SrnCommandContext *ctx, SrnCommand *cmd, void *user_data){
     int nopt = 0;
     int narg = 0;
     char *ptr, *tmp;
     SrnRet ret;
-    CommandBind *bind = cmd->bind;
+    SrnCommandBind *bind = cmd->bind;
 
     /* Skip command name */
     ret = get_arg(cmd->rawcmd, &tmp, &ptr);
@@ -329,7 +328,7 @@ static SrnRet command_parse(CommandContext *ctx, Command *cmd, void *user_data){
     }
 
     /* Get options */
-    while (ptr && *ptr == COMMAND_OPT_PREFIX){
+    while (ptr && *ptr == SRN_COMMAND_OPT_PREFIX){
         int i;
         for (i = 0; bind->opt[i].key != NULL; i++){
             if (g_str_has_prefix(ptr, bind->opt[i].key)){
@@ -349,7 +348,7 @@ static SrnRet command_parse(CommandContext *ctx, Command *cmd, void *user_data){
         DBG_FR("Option '%s' found", cmd->opt_key[nopt]);
 
         /* Option has value */
-        if (bind->opt[i].val != COMMAND_OPT_NO_VAL){
+        if (bind->opt[i].val != SRN_COMMAND_OPT_NO_VAL){
             if (!ptr || *ptr == '-'){
                 goto missing_opt_val;
             }
@@ -362,7 +361,7 @@ static SrnRet command_parse(CommandContext *ctx, Command *cmd, void *user_data){
             cmd->opt_val[nopt] = NULL;
         }
 
-        if (nopt >= COMMAND_MAX_OPTS){
+        if (nopt >= SRN_COMMAND_MAX_OPTS){
             goto too_many_opt;
         }
 
@@ -392,7 +391,7 @@ static SrnRet command_parse(CommandContext *ctx, Command *cmd, void *user_data){
         DBG_FR("command: %s", cmd->bind->name);
         for (int i = 0; i < nopt; i++){
             DBG_FR("opt: '%s'", cmd->opt_key[i]);
-            if (bind->opt[i].val != COMMAND_OPT_NO_VAL)
+            if (bind->opt[i].val != SRN_COMMAND_OPT_NO_VAL)
                 DBG_FR("val: '%s'", cmd->opt_val[i]);
         }
 
@@ -404,7 +403,7 @@ static SrnRet command_parse(CommandContext *ctx, Command *cmd, void *user_data){
     return SRN_OK;
 
 missing_arg:
-    if (cmd->bind->flag & COMMAND_FLAG_OMIT_ARG){
+    if (cmd->bind->flag & SRN_COMMAND_FLAG_OMIT_ARG){
         return SRN_OK;
     }
     return RET_ERR(_("Missing argument, expect %1$d, actually %2$d"), cmd->bind->argc, narg);
@@ -413,7 +412,7 @@ unknown_opt:
     return RET_ERR(_("Unknown option %1$s"), cmd->opt_key[nopt]);
 
 too_many_opt:
-    return RET_ERR(_("Too many options, options count limit to %1$d"), COMMAND_MAX_OPTS);
+    return RET_ERR(_("Too many options, options count limit to %1$d"), SRN_COMMAND_MAX_OPTS);
 
 missing_opt_val:
     return RET_ERR(_("Missing vaule for option %1$s"), cmd->opt_key[nopt]);

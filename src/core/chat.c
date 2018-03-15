@@ -31,7 +31,7 @@
 
 #include "sirc/sirc.h"
 
-extern CommandBind cmd_binds[];
+extern SrnCommandBind cmd_binds[];
 
 static void append_image(SrnMessage *msg);
 static void add_message(SrnChat *chat, SrnMessage *msg);
