@@ -167,7 +167,7 @@ static char* pango_markup(Message *msg, int index, const char *frag){
                     markuped_url = g_markup_printf_escaped("<a href=\"http://%s\">%s</a>", url, url);
                     break;
                 case MATCH_CHANNEL:
-                    if (msg->chat->srv->prefs->irc->tls){
+                    if (msg->chat->srv->cfg->irc->tls){
                         markuped_url = g_markup_printf_escaped("<a href=\"ircs://%s:%d/%s\">%s</a>",
                                 msg->chat->srv->addr->host,
                                 msg->chat->srv->addr->port,

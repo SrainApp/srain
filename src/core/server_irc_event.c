@@ -67,22 +67,22 @@ void server_irc_event_connect(SircSession *sirc, const char *event){
     srv->negotiated = FALSE;
 
     chat_add_misc_message_fmt(srv->chat, "", _("Connected to %1$s(%2$s:%3$d)"),
-            srv->prefs->name, srv->addr->host, srv->addr->port);
+            srv->cfg->name, srv->addr->host, srv->addr->port);
     list = srv->chat_list;
     while (list){
         chat = list->data;
         chat_add_misc_message_fmt(chat, "", _("Connected to %1$s(%2$s:%3$d)"),
-                srv->prefs->name, srv->addr->host, srv->addr->port);
+                srv->cfg->name, srv->addr->host, srv->addr->port);
         list = g_slist_next(list);
     }
 
     /* Start client capability negotiation */
     sirc_cmd_cap_ls(srv->irc, "302");
 
-    if (!str_is_empty(srv->prefs->passwd)){
+    if (!str_is_empty(srv->cfg->passwd)){
         /* Send connection password, you should send it command before sending
          * the NICK/USER combination. */
-        sirc_cmd_pass(srv->irc, srv->prefs->passwd);
+        sirc_cmd_pass(srv->irc, srv->cfg->passwd);
     }
     sirc_cmd_nick(srv->irc, srv->user->nick);
     sirc_cmd_user(srv->irc, srv->user->username, "hostname", "servername",
@@ -116,11 +116,11 @@ void server_irc_event_connect_fail(SircSession *sirc, const char *event,
 
         chat = list->data;
         chat_add_misc_message_fmt(chat, "", _("Failed to connect to %1$s(%2$s:%3$d): %4$s"),
-                srv->prefs->name, srv->addr->host, srv->addr->port, msg);
+                srv->cfg->name, srv->addr->host, srv->addr->port, msg);
         if (srv->state == SERVER_STATE_RECONNECTING){
             chat_add_misc_message_fmt(chat, "",
                     _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
-                    srv->prefs->name,
+                    srv->cfg->name,
                     srv->addr->host,
                     srv->addr->port,
                     (srv->reconn_interval * 1.0) / 1000);
@@ -130,10 +130,10 @@ void server_irc_event_connect_fail(SircSession *sirc, const char *event,
     }
 
     chat_add_error_message_fmt(srv->chat, "", _("Failed to connect to %1$s(%2$s:%3$d): %4$s"),
-            srv->prefs->name, srv->addr->host, srv->addr->port, msg);
+            srv->cfg->name, srv->addr->host, srv->addr->port, msg);
     /* If user trying connect to a TLS port via non-TLS connection, it will
      * be reset, give user some hints. */
-    if (!srv->prefs->irc->tls && srv->addr->port == 6697) {
+    if (!srv->cfg->irc->tls && srv->addr->port == 6697) {
         chat_add_error_message_fmt(srv->chat, "",
                 _("It seems that you connect to a TLS port(%1$d) without enable TLS connection, try to enable it and reconnect"),
                 srv->addr->port);
@@ -141,7 +141,7 @@ void server_irc_event_connect_fail(SircSession *sirc, const char *event,
     if (srv->state == SERVER_STATE_RECONNECTING){
         chat_add_misc_message_fmt(srv->chat, "",
                 _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
-                srv->prefs->name,
+                srv->cfg->name,
                 srv->addr->host,
                 srv->addr->port,
                 (srv->reconn_interval * 1.0) / 1000);
@@ -196,11 +196,11 @@ void server_irc_event_disconnect(SircSession *sirc, const char *event,
         }
         // Only report error message to server chat
         chat_add_misc_message_fmt(chat, "", _("Disconnected from %1$s(%2$s:%3$d): %4$s"),
-                srv->prefs->name, srv->addr->host, srv->addr->port, msg);
+                srv->cfg->name, srv->addr->host, srv->addr->port, msg);
         if (srv->state == SERVER_STATE_RECONNECTING){
             chat_add_misc_message_fmt(chat, "",
                     _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
-                    srv->prefs->name,
+                    srv->cfg->name,
                     srv->addr->host,
                     srv->addr->port,
                     (srv->reconn_interval * 1.0) / 1000);
@@ -210,11 +210,11 @@ void server_irc_event_disconnect(SircSession *sirc, const char *event,
     }
 
     chat_add_error_message_fmt(srv->chat, "", _("Disconnected from %1$s(%2$s:%3$d): %4$s"),
-            srv->prefs->name, srv->addr->host, srv->addr->port, msg);
+            srv->cfg->name, srv->addr->host, srv->addr->port, msg);
         if (srv->state == SERVER_STATE_RECONNECTING){
         chat_add_misc_message_fmt(srv->chat, "",
                 _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
-                srv->prefs->name,
+                srv->cfg->name,
                 srv->addr->host,
                 srv->addr->port,
                 (srv->reconn_interval * 1.0) / 1000);
@@ -922,7 +922,7 @@ void server_irc_event_cap(SircSession *sirc, const char *event,
     if (!srv->negotiated && cap_end){
         sirc_cmd_cap_list(sirc);
 
-        if (srv->prefs->login_method == LOGIN_SASL_PLAIN){
+        if (srv->cfg->login_method == LOGIN_SASL_PLAIN){
             if (srv->cap->client_enabled.sasl){
                 // Negotiation should end after sasl authentication end
             } else {
@@ -947,32 +947,32 @@ void server_irc_event_authenticate(SircSession *sirc, const char *event,
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(server_is_valid(srv));
 
-    switch (srv->prefs->login_method){
+    switch (srv->cfg->login_method){
         case LOGIN_SASL_PLAIN:
             {
                 char *base64;
                 char *login_method;
                 GString *str;
 
-                g_return_if_fail(!str_is_empty(srv->prefs->username));
-                g_return_if_fail(!str_is_empty(srv->prefs->user_passwd));
+                g_return_if_fail(!str_is_empty(srv->cfg->username));
+                g_return_if_fail(!str_is_empty(srv->cfg->user_passwd));
 
                 /* ref: https://ircv3.net/specs/extensions/sasl-3.1.html */
                 str = g_string_new(NULL);
-                str = g_string_append(str, srv->prefs->username);
+                str = g_string_append(str, srv->cfg->username);
                 str = g_string_append_unichar(str, g_utf8_get_char("\0")); // Unicode null char
-                str = g_string_append(str, srv->prefs->username);
+                str = g_string_append(str, srv->cfg->username);
                 str = g_string_append_unichar(str, g_utf8_get_char("\0")); // Unicode null char
-                str = g_string_append(str, srv->prefs->user_passwd);
+                str = g_string_append(str, srv->cfg->user_passwd);
 
                 // TODO: 400 bytes limit
                 base64 = g_base64_encode((const guchar *)str->str, str->len);
                 sirc_cmd_authenticate(sirc, base64);
 
-                login_method = login_method_to_string(srv->prefs->login_method);
+                login_method = login_method_to_string(srv->cfg->login_method);
                 chat_add_misc_message_fmt(srv->chat, origin,
                         _("Logging in with %1$s as %2$s..."),
-                        login_method, srv->prefs->username);
+                        login_method, srv->cfg->username);
 
                 g_free(login_method);
                 g_free(base64);
@@ -1422,7 +1422,7 @@ void server_irc_event_numeric (SircSession *sirc, int event,
 
                     WARN_FR("Unspported message, You can report it at " PACKAGE_WEBSITE);
                     WARN_FR("server: %s, event: %d, origin: %s, count: %u, params: [%s]",
-                            srv->prefs->name, event, origin, count, buf->str);
+                            srv->cfg->name, event, origin, count, buf->str);
 
                     g_string_free(buf, TRUE);
                 }
@@ -1466,11 +1466,11 @@ static gboolean irc_period_ping(gpointer user_data){
     snprintf(timestr, sizeof(timestr), "%lu", time);
 
     DBG_FR("Server %s, %lu ms since last pong, time out: %d ms",
-            srv->prefs->name, time - srv->last_pong, SERVER_PING_TIMEOUT);
+            srv->cfg->name, time - srv->last_pong, SERVER_PING_TIMEOUT);
 
     /* Check whether ping time out */
     if (time - srv->last_pong > SERVER_PING_TIMEOUT){
-        WARN_FR("Server %s ping time out, %lums", srv->prefs->name, time - srv->last_pong);
+        WARN_FR("Server %s ping time out, %lums", srv->cfg->name, time - srv->last_pong);
 
         srv->ping_timer = 0;
         server_state_transfrom(srv, SERVER_ACTION_RECONNECT);

@@ -66,15 +66,15 @@ SrnRet server_ui_event_connect(SuiWindow *win, SuiEvent event, GVariantDict *par
     SrnRet ret = SRN_ERR;
     SrnApplication *app;
     Server *srv = NULL;
-    ServerPrefs *prefs = NULL;
+    SrnServerConfig *cfg = NULL;
 
     app = srn_application_get_default();
 
     g_variant_dict_lookup(params, "name", SUI_EVENT_PARAM_STRING, &name);
     if (!str_is_empty(name)){
         /* If params "name" is not specified, connecting to predefined server */
-        prefs = srn_application_get_server_config(app, name);
-        if (prefs->srv){
+        cfg = srn_application_get_server_config(app, name);
+        if (cfg->srv){
             return RET_ERR(_("Server \"%1$s\" already exists"), name);
         }
     } else {
@@ -92,33 +92,33 @@ SrnRet server_ui_event_connect(SuiWindow *win, SuiEvent event, GVariantDict *par
         g_variant_dict_lookup(params, "tls", SUI_EVENT_PARAM_BOOL, &tls);
         g_variant_dict_lookup(params, "tls-noverify", SUI_EVENT_PARAM_BOOL, &tls_noverify);
 
-        /* Create ServerPrefs */
-        prefs = server_prefs_new_from_basename(host);
-        if (!prefs) {
+        /* Create SrnServerConfig */
+        cfg = srn_server_config_new_from_basename(host);
+        if (!cfg) {
             return RET_ERR(_("Failed to create server \"%1$s\""), host);
         }
         ret = srn_config_manager_read_server_config(
                 srn_application_get_default()->cfg_mgr,
-                prefs,
+                cfg,
                 host);
         if (!RET_IS_OK(ret)){
-            server_prefs_free(prefs);
+            srn_server_config_free(cfg);
             return ret;
         }
 
         // FIXME: config
-        // prefs->port = port;
+        // cfg->port = port;
         // if (!str_is_empty(host)){
-            // str_assign(&prefs->host, host);
+            // str_assign(&cfg->host, host);
         // }
         if (!str_is_empty(passwd)){
-            str_assign(&prefs->passwd, passwd);
+            str_assign(&cfg->passwd, passwd);
         }
         if (!str_is_empty(encoding)){
-            str_assign(&prefs->irc->encoding, encoding);
+            str_assign(&cfg->irc->encoding, encoding);
         }
-        prefs->irc->tls = tls;
-        prefs->irc->tls_noverify = tls_noverify;
+        cfg->irc->tls = tls;
+        cfg->irc->tls_noverify = tls_noverify;
     }
 
     g_variant_dict_lookup(params, "nick", SUI_EVENT_PARAM_STRING, &nick);
@@ -126,28 +126,28 @@ SrnRet server_ui_event_connect(SuiWindow *win, SuiEvent event, GVariantDict *par
     g_variant_dict_lookup(params, "realname", SUI_EVENT_PARAM_STRING, &realname);
 
     if (!str_is_empty(nick)){
-        str_assign(&prefs->nickname, nick);
+        str_assign(&cfg->nickname, nick);
     }
     if (!str_is_empty(username)){
-        str_assign(&prefs->username, username);
+        str_assign(&cfg->username, username);
     }
     if (!str_is_empty(realname)){
-        str_assign(&prefs->realname, realname);
+        str_assign(&cfg->realname, realname);
     }
 
-    ret = server_prefs_check(prefs);
+    ret = srn_server_config_check(cfg);
     if (!RET_IS_OK(ret)){
         return ret;
     }
 
     /* Create Server */
-    srv = srn_application_add_server(app, prefs->name);
+    srv = srn_application_add_server(app, cfg->name);
     if (!srv) {
         SrnRet ret;
 
-        ret = RET_ERR(_("Failed to instantiate server \"%1$s\""), prefs->name);
+        ret = RET_ERR(_("Failed to instantiate server \"%1$s\""), cfg->name);
         if (str_is_empty(name)){
-            server_prefs_free(prefs);
+            srn_server_config_free(cfg);
         }
         return ret;
     }
@@ -164,9 +164,9 @@ SrnRet server_ui_event_server_list(SuiWindow *win, SuiEvent event,
     app = srn_application_get_default();
     lst = app->srv_cfg_list;
     while (lst){
-        ServerPrefs *prefs = lst->data;
-        if (prefs->predefined){
-            sui_server_list_add(prefs->name);
+        SrnServerConfig *cfg = lst->data;
+        if (cfg->predefined){
+            sui_server_list_add(cfg->name);
         }
         lst = g_slist_next(lst);
     }
@@ -207,7 +207,7 @@ SrnRet server_ui_event_quit(SuiSession *sui, SuiEvent event, GVariantDict *param
     g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
 
     if (server_is_registered(srv)) {
-        ret = sirc_cmd_quit(srv->irc, srv->prefs->quit_message);
+        ret = sirc_cmd_quit(srv->irc, srv->cfg->quit_message);
     } else {
         ret = server_state_transfrom(srv, SERVER_ACTION_QUIT);
         if (!server_is_valid(srv)){
@@ -383,7 +383,7 @@ SrnRet server_ui_event_cutover(SuiSession *sui, SuiEvent event, GVariantDict *pa
     Chat *chat;
 
     srv = ctx_get_server(sui);
-    // FIXME: server has not held by ServerPrefs now
+    // FIXME: server has not held by SrnServerConfig now
     // g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
     g_return_val_if_fail(srv, SRN_ERR);
     chat = ctx_get_chat(sui);

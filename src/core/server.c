@@ -42,11 +42,7 @@
 #include "config/config.h"
 #include "i18n.h"
 
-Server* server_new(ServerPrefs *cfg){
-    return server_new_from_prefs(cfg);
-}
-
-Server* server_new_from_prefs(ServerPrefs *cfg){
+Server* server_new(SrnServerConfig *cfg){
     Server *srv;
     SrnChatConfig *chat_cfg;
 
@@ -58,14 +54,14 @@ Server* server_new_from_prefs(ServerPrefs *cfg){
     srv->registered = FALSE;
 
     srv->addr = cfg->addrs->data;
-    srv->prefs = cfg;
+    srv->cfg = cfg;
     srv->cap = server_cap_new();
     srv->cap->srv = srv;
 
     chat_cfg = srn_chat_config_new();
     srn_config_manager_read_chat_config(
             srn_application_get_default()->cfg_mgr,
-            chat_cfg, srv->prefs->name, META_SERVER);
+            chat_cfg, srv->cfg->name, META_SERVER);
     srv->chat = chat_new(srv, META_SERVER, chat_cfg);
     if (!srv->chat) goto bad;
 
@@ -115,8 +111,8 @@ void server_free(Server *srv){
     g_return_if_fail(server_is_valid(srv));
     g_return_if_fail(srv->state == SERVER_STATE_DISCONNECTED);
 
-    // srv->prefs is held by SrnApplication, just unlink it
-    srv->prefs->srv = NULL;
+    // srv->cfg is held by SrnApplication, just unlink it
+    srv->cfg->srv = NULL;
 
     if (srv->cap) {
         server_cap_free(srv->cap);
@@ -227,7 +223,7 @@ SrnRet server_add_chat(Server *srv, const char *name){
     chat_cfg = srn_chat_config_new();
     ret = srn_config_manager_read_chat_config(
             srn_application_get_default()->cfg_mgr,
-            chat_cfg, srv->prefs->name, name);
+            chat_cfg, srv->cfg->name, name);
     if (!RET_IS_OK(ret)) {
         return ret;
     }

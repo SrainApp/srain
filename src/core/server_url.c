@@ -45,10 +45,10 @@ SrnRet server_url_open(const char *url){
     int port;
     const char *path;
     const char *fragment;
-    bool new_prefs = FALSE;
+    bool new_cfg = FALSE;
     SoupURI *suri = NULL;
     SrnRet ret = SRN_ERR;
-    ServerPrefs *prefs = NULL;
+    SrnServerConfig *cfg = NULL;
     Server *srv = NULL;
 
     suri = soup_uri_new(url);
@@ -76,56 +76,57 @@ SrnRet server_url_open(const char *url){
         goto fin;
     }
 
-    /* Got ServerPrefs */
-    prefs = server_prefs_get_prefs_by_host_port(host, port);
-    if (!prefs){
-        // If no such ServerPrefs, create one
-        prefs = server_prefs_new(host);
-        if (!prefs){
+    return SRN_ERR; // FIXME: config
+    /* Got SrnServerConfig */
+    cfg = NULL;
+    if (!cfg){
+        // If no such SrnServerConfig, create one
+        cfg = srn_server_config_new(host);
+        if (!cfg){
             ret =  RET_ERR(_("Failed to create server \"%1$s\""), host);
             goto fin;
         }
-        new_prefs = TRUE;
+        new_cfg = TRUE;
     }
     /* Instantiate Server */
-    if (!prefs->srv){
+    if (!cfg->srv){
         ret = srn_config_manager_read_server_config(
                 srn_application_get_default()->cfg_mgr,
-                prefs,
-                prefs->name);
+                cfg,
+                cfg->name);
         if (!RET_IS_OK(ret)){
             goto fin;
         }
         // FIXME: config
         // if (!str_is_empty(host)){
-        //     str_assign(&prefs->host, host);
+        //     str_assign(&cfg->host, host);
         // }
         // if (port){
-        //     prefs->port = port;
+        //     cfg->port = port;
         // }
         if (!str_is_empty(passwd)){
-            str_assign(&prefs->passwd, passwd);
+            str_assign(&cfg->passwd, passwd);
         }
         if (!str_is_empty(user)){
-            str_assign(&prefs->nickname, user);
+            str_assign(&cfg->nickname, user);
         }
         if (g_ascii_strcasecmp(scheme, "ircs") == 0){
-            prefs->irc->tls = TRUE;
+            cfg->irc->tls = TRUE;
         }
 
-        ret = server_prefs_check(prefs);
+        ret = srn_server_config_check(cfg);
         if (!RET_IS_OK(ret)){
             goto fin;
         }
 
         // If no such Server, create one
-        srv = server_new_from_prefs(prefs);
+        srv = server_new(cfg);
         if (!srv) {
             ret =  RET_ERR(_("Failed to instantiate server \"%1$s\""), host);
             goto fin;
         }
     } else {
-        srv = prefs->srv;
+        srv = cfg->srv;
     }
 
     DBG_FR("Server instance: %p", srv);
@@ -136,7 +137,7 @@ SrnRet server_url_open(const char *url){
 
     server_wait_until_registered(srv);
     if (!server_is_registered(srv)){
-        ret =  RET_ERR(_("Failed to register on server \"%1$s\""), prefs->name);
+        ret =  RET_ERR(_("Failed to register on server \"%1$s\""), cfg->name);
         goto fin;
     }
 
@@ -158,8 +159,8 @@ fin:
     if (suri){
         soup_uri_free(suri);
     }
-    if (new_prefs && prefs){
-        server_prefs_free(prefs);
+    if (new_cfg && cfg){
+        srn_server_config_free(cfg);
     }
 
     return ret;

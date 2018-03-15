@@ -17,8 +17,8 @@
  */
 
 /**
- * @file server_prefs.c
- * @brief Server Preference {con,de}structor
+ * @file server_config.c
+ * @brief Server config {con,de}structor
  * @author Shengyu Zhang <i@silverrainz.me>
  * @version 0.06.2
  * @date 2017-06-23
@@ -34,58 +34,53 @@
 #include "utils.h"
 #include "i18n.h"
 
-ServerPrefs* server_prefs_new(const char *name){
-    ServerPrefs *prefs;
+SrnServerConfig* srn_server_config_new(const char *name){
+    SrnServerConfig *cfg;
     SircConfig *irc_cfg;
 
-    prefs = g_malloc0(sizeof(ServerPrefs));
+    cfg = g_malloc0(sizeof(SrnServerConfig));
     irc_cfg = sirc_config_new();
 
-    prefs->predefined = FALSE;
-    prefs->name = g_strdup(name);
-    prefs->irc = irc_cfg;
-    prefs->srv = NULL;
+    cfg->predefined = FALSE;
+    cfg->name = g_strdup(name);
+    cfg->irc = irc_cfg;
+    cfg->srv = NULL;
 
-    return prefs;
+    return cfg;
 }
 
-ServerPrefs* server_prefs_new_from_basename(const char *basename){
+SrnServerConfig* srn_server_config_new_from_basename(const char *basename){
     int i = 0;
-    ServerPrefs *prefs;
+    SrnServerConfig *cfg;
 
-    prefs = server_prefs_new(basename);
-    while (!prefs && i < 10){
+    cfg = srn_server_config_new(basename);
+    while (!cfg && i < 10){
         /* If the name repeats, generates a name for it */
         char *name = g_strdup_printf("%s#%d", basename, ++i);
-        prefs = server_prefs_new(name);
+        cfg = srn_server_config_new(name);
         g_free(name);
     }
 
-    return prefs;
+    return cfg;
 }
 
-ServerPrefs* server_prefs_get_prefs_by_host_port(const char *host, int port){
-    // FIXME: config
-    return NULL;
-}
+SrnRet srn_server_config_check(SrnServerConfig *cfg){
+    const char *missing = _("Missing field in SrnServerConfig: %1$s");
+    const char *invalid = _("Invalid value in SrnServerConfig: %1$s");
 
-SrnRet server_prefs_check(ServerPrefs *prefs){
-    const char *missing = _("Missing field in ServerPrefs: %1$s");
-    const char *invalid = _("Invalid value in ServerPrefs: %1$s");
-
-    if (!prefs){
-        return RET_ERR(_("Invalid ServerPrefs instance"));
+    if (!cfg){
+        return RET_ERR(_("Invalid SrnServerConfig instance"));
     }
 
-    if (g_slist_length(prefs->addrs) == 0) {
+    if (g_slist_length(cfg->addrs) == 0) {
         return RET_ERR(missing, "addrs");
     }
-    for (GSList *lst = prefs->addrs; lst; lst = g_slist_next(lst)){
+    for (GSList *lst = cfg->addrs; lst; lst = g_slist_next(lst)){
         SrnServerAddr *addr;
 
         addr = lst->data;
         if (addr->port == 0) {
-            if (prefs->irc->tls) {
+            if (cfg->irc->tls) {
                 addr->port = 6697;
             } else {
                 addr->port = 6667;
@@ -93,31 +88,31 @@ SrnRet server_prefs_check(ServerPrefs *prefs){
         }
     }
 
-    if (str_is_empty(prefs->name)) {
+    if (str_is_empty(cfg->name)) {
         return RET_ERR(missing, "name");
     }
-    if (str_is_empty(prefs->nickname)) {
+    if (str_is_empty(cfg->nickname)) {
         return RET_ERR(missing, "nickname");
     }
-    if (str_is_empty(prefs->username)) {
-        str_assign(&prefs->username, prefs->nickname);
+    if (str_is_empty(cfg->username)) {
+        str_assign(&cfg->username, cfg->nickname);
     }
-    if (str_is_empty(prefs->realname)) {
-        str_assign(&prefs->realname, prefs->nickname);
+    if (str_is_empty(cfg->realname)) {
+        str_assign(&cfg->realname, cfg->nickname);
     }
 
-    switch (prefs->login_method) {
+    switch (cfg->login_method) {
         case LOGIN_NONE:
             break;
         case LOGIN_PASS:
-            if (str_is_empty(prefs->passwd)) {
+            if (str_is_empty(cfg->passwd)) {
                 return RET_ERR(missing, "passwd");
             }
             break;
         case LOGIN_NICKSERV:
         case LOGIN_MSG_NICKSERV:
         case LOGIN_SASL_PLAIN:
-            if (str_is_empty(prefs->user_passwd)) {
+            if (str_is_empty(cfg->user_passwd)) {
                 return RET_ERR(missing, "user.passwd");
             }
             break;
@@ -126,55 +121,55 @@ SrnRet server_prefs_check(ServerPrefs *prefs){
             return RET_ERR(invalid, "login_method");
     }
 
-    if (str_is_empty(prefs->part_message)) {
-        str_assign(&prefs->part_message, "Leaving");
+    if (str_is_empty(cfg->part_message)) {
+        str_assign(&cfg->part_message, "Leaving");
     }
-    if (str_is_empty(prefs->kick_message)) {
-        str_assign(&prefs->kick_message, "Kick");
+    if (str_is_empty(cfg->kick_message)) {
+        str_assign(&cfg->kick_message, "Kick");
     }
-    if (str_is_empty(prefs->away_message)) {
-        str_assign(&prefs->away_message, "Away");
+    if (str_is_empty(cfg->away_message)) {
+        str_assign(&cfg->away_message, "Away");
     }
-    if (str_is_empty(prefs->quit_message)) {
-        str_assign(&prefs->quit_message, "El Psy Congroo.");
+    if (str_is_empty(cfg->quit_message)) {
+        str_assign(&cfg->quit_message, "El Psy Congroo.");
     }
 
-    if (!prefs->irc) {
+    if (!cfg->irc) {
         return RET_ERR(missing, "irc");
     }
 
-    return sirc_config_check(prefs->irc);
+    return sirc_config_check(cfg->irc);
 }
 
-void server_prefs_free(ServerPrefs *prefs){
-    str_assign(&prefs->name, NULL);
-    g_slist_free_full(prefs->addrs, (GDestroyNotify)srn_server_addr_free);
-    str_assign(&prefs->passwd, NULL);
-    str_assign(&prefs->nickname, NULL);
-    str_assign(&prefs->username, NULL);
-    str_assign(&prefs->realname, NULL);
-    str_assign(&prefs->user_passwd, NULL);
-    str_assign(&prefs->part_message, NULL);
-    str_assign(&prefs->kick_message, NULL);
-    str_assign(&prefs->away_message, NULL);
-    str_assign(&prefs->quit_message, NULL);
+void srn_server_config_free(SrnServerConfig *cfg){
+    str_assign(&cfg->name, NULL);
+    g_slist_free_full(cfg->addrs, (GDestroyNotify)srn_server_addr_free);
+    str_assign(&cfg->passwd, NULL);
+    str_assign(&cfg->nickname, NULL);
+    str_assign(&cfg->username, NULL);
+    str_assign(&cfg->realname, NULL);
+    str_assign(&cfg->user_passwd, NULL);
+    str_assign(&cfg->part_message, NULL);
+    str_assign(&cfg->kick_message, NULL);
+    str_assign(&cfg->away_message, NULL);
+    str_assign(&cfg->quit_message, NULL);
 
-    if (prefs->irc){
-        sirc_config_free(prefs->irc);
-        prefs->irc = NULL;
+    if (cfg->irc){
+        sirc_config_free(cfg->irc);
+        cfg->irc = NULL;
     }
 
-    if (prefs->srv){
-        server_free(prefs->srv);
-        prefs->srv = NULL;
+    if (cfg->srv){
+        server_free(cfg->srv);
+        cfg->srv = NULL;
     }
 }
 
-void server_prefs_add_addr(ServerPrefs *cfg, const char *host, int port){
+void srn_server_config_add_addr(SrnServerConfig *cfg, const char *host, int port){
     cfg->addrs = g_slist_append(cfg->addrs, srn_server_addr_new(host, port));
 }
 
-char* server_prefs_dump(ServerPrefs *prefs){
+char* srn_server_config_dump(SrnServerConfig *cfg){
     char *passwd;
     char *user_passwd;
     char *login_method;
@@ -182,22 +177,22 @@ char* server_prefs_dump(ServerPrefs *prefs){
     char *irc_dump;
     GString *str;
 
-    g_return_val_if_fail(prefs, NULL);
+    g_return_val_if_fail(cfg, NULL);
 
-    if (!str_is_empty(prefs->passwd)){
+    if (!str_is_empty(cfg->passwd)){
         passwd = "********";
     } else {
         passwd = _("None");
     }
 
-    if (!str_is_empty(prefs->user_passwd)){
+    if (!str_is_empty(cfg->user_passwd)){
         user_passwd = "********";
     } else {
         user_passwd = _("None");
     }
 
-    login_method = login_method_to_string(prefs->login_method);
-    irc_dump = sirc_config_dump(prefs->irc);
+    login_method = login_method_to_string(cfg->login_method);
+    irc_dump = sirc_config_dump(cfg->irc);
 
     str = g_string_new("");
     g_string_append_printf(str,
@@ -207,11 +202,11 @@ char* server_prefs_dump(ServerPrefs *prefs){
                 "\tLogin method: %s, User password: %s\n"
                 "\tPart: %s, Kick: %s, Away: %s, Quit: %s\n"
                 "\tIRC configuration: %s"),
-            prefs->name, prefs->srv,
-            /* TODO: prefs->addrs */ "TODO", passwd,
-            prefs->nickname, prefs->username, prefs->realname,
+            cfg->name, cfg->srv,
+            /* TODO: cfg->addrs */ "TODO", passwd,
+            cfg->nickname, cfg->username, cfg->realname,
             login_method, user_passwd,
-            prefs->part_message, prefs->kick_message, prefs->away_message, prefs->quit_message,
+            cfg->part_message, cfg->kick_message, cfg->away_message, cfg->quit_message,
             irc_dump);
 
     g_free(login_method);

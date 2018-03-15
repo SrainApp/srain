@@ -34,7 +34,7 @@ SrnRet sirc_config_check(SircConfig *cfg){
     // const char *fmt = _("Missing field in SircConfig: %1$s");
 
     if (!cfg){
-        return RET_ERR(_("Invalid ServerPrefs instance"));
+        return RET_ERR(_("Invalid SrnServerConfig instance"));
     }
 
     if (str_is_empty(cfg->encoding)) {

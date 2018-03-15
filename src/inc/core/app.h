@@ -76,10 +76,10 @@ Server* srn_application_get_server(SrnApplication *app, const char *name);
 bool srn_application_is_server_valid(SrnApplication *app, Server *srv);
 
 // Server config
-SrnRet srn_application_add_server_config(SrnApplication *app, ServerPrefs *srv_cfg);
-SrnRet srn_application_add_server_config(SrnApplication *app, ServerPrefs *srv_cfg);
-SrnRet srn_application_rm_server_config(SrnApplication *app, ServerPrefs *srv_cfg);
-ServerPrefs* srn_application_get_server_config(SrnApplication *app, const char *name);
+SrnRet srn_application_add_server_config(SrnApplication *app, SrnServerConfig *srv_cfg);
+SrnRet srn_application_add_server_config(SrnApplication *app, SrnServerConfig *srv_cfg);
+SrnRet srn_application_rm_server_config(SrnApplication *app, SrnServerConfig *srv_cfg);
+SrnServerConfig* srn_application_get_server_config(SrnApplication *app, const char *name);
 char* srn_application_dump_server_config_list(SrnApplication *app);
 
 SrnApplicationConfig *srn_application_config_new(void);
@@ -90,7 +90,7 @@ void srn_application_config_free(SrnApplicationConfig *cfg);
 SrnRet srn_config_manager_read_log_config(SrnConfigManager *mgr, SrnLoggerConfig *cfg);
 SrnRet srn_config_manager_read_application_config(SrnConfigManager *mgr, SrnApplicationConfig *cfg);
 SrnRet srn_config_manager_read_server_config_list(SrnConfigManager *mgr, GSList **srv_cfg_list);
-SrnRet srn_config_manager_read_server_config(SrnConfigManager *mgr, ServerPrefs *cfg, const char *srv_name);
+SrnRet srn_config_manager_read_server_config(SrnConfigManager *mgr, SrnServerConfig *cfg, const char *srv_name);
 SrnRet srn_config_manager_read_chat_config(SrnConfigManager *mgr, SrnChatConfig *cfg, const char *srv_name, const char *chat_name);
 
 #endif /* __APP_H */

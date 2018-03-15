@@ -125,12 +125,12 @@ void srn_application_run(SrnApplication *app, int argc, char *argv[]){
 
 Server* srn_application_add_server(SrnApplication *app, const char *name) {
     Server *srv;
-    ServerPrefs *cfg;
+    SrnServerConfig *cfg;
 
     cfg = srn_application_get_server_config(app, name);
     g_return_val_if_fail(cfg, NULL);
     g_return_val_if_fail(!cfg->srv, NULL);
-    g_return_val_if_fail(RET_IS_OK(server_prefs_check(cfg)), NULL);
+    g_return_val_if_fail(RET_IS_OK(srn_server_config_check(cfg)), NULL);
 
     srv = server_new(cfg);
     g_return_val_if_fail(srv, NULL);
@@ -143,7 +143,7 @@ Server* srn_application_add_server(SrnApplication *app, const char *name) {
 
 SrnRet srn_application_rm_server(SrnApplication *app, Server *srv) {
     GSList *lst;
-    ServerPrefs *srv_cfg;
+    SrnServerConfig *srv_cfg;
 
     lst = g_slist_find(app->srv_list, srv);
     if (!lst){
@@ -151,7 +151,7 @@ SrnRet srn_application_rm_server(SrnApplication *app, Server *srv) {
     }
     app->srv_list = g_slist_delete_link(app->srv_list, lst);
 
-    srv_cfg = srv->prefs;
+    srv_cfg = srv->cfg;
     server_free(srv);
     srn_application_rm_server_config(app, srv_cfg);
 
@@ -166,7 +166,7 @@ Server* srn_application_get_server(SrnApplication *app, const char *name){
         Server *srv;
 
         srv = lst->data;
-        if (g_ascii_strcasecmp(srv->prefs->name, name) == 0){
+        if (g_ascii_strcasecmp(srv->cfg->name, name) == 0){
             return srv;
         }
         lst = g_slist_next(lst);
@@ -180,9 +180,9 @@ bool srn_application_is_server_valid(SrnApplication *app, Server *srv) {
 }
 
 SrnRet srn_application_add_server_config(SrnApplication *app,
-        ServerPrefs *srv_cfg){
+        SrnServerConfig *srv_cfg){
     GSList *lst;
-    ServerPrefs *srv_cfg2;
+    SrnServerConfig *srv_cfg2;
 
     lst = app->srv_list;
     while (lst){
@@ -198,7 +198,7 @@ SrnRet srn_application_add_server_config(SrnApplication *app,
 }
 
 SrnRet srn_application_rm_server_config(SrnApplication *app,
-        ServerPrefs *srv_cfg){
+        SrnServerConfig *srv_cfg){
     GSList *lst;
 
     g_return_val_if_fail(!srv_cfg, SRN_ERR);
@@ -215,10 +215,10 @@ SrnRet srn_application_rm_server_config(SrnApplication *app,
     return SRN_OK;
 }
 
-ServerPrefs* srn_application_get_server_config(SrnApplication *app,
+SrnServerConfig* srn_application_get_server_config(SrnApplication *app,
         const char *name) {
     GSList *lst;
-    ServerPrefs *srv_cfg;
+    SrnServerConfig *srv_cfg;
 
     lst = app->srv_cfg_list;
     while (lst) {
@@ -241,10 +241,10 @@ char* srn_application_dump_server_config_list(SrnApplication *app){
     lst = app->srv_cfg_list;
     while (lst){
         char *srv_dump;
-        ServerPrefs *srv_cfg;
+        SrnServerConfig *srv_cfg;
 
         srv_cfg = lst->data;
-        srv_dump = server_prefs_dump(srv_cfg);
+        srv_dump = srn_server_config_dump(srv_cfg);
         str = g_string_append(str, srv_dump);
         g_free(srv_dump);
 

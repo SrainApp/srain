@@ -251,7 +251,7 @@ static void sasl_on_enable(ServerCap *scap, const char *name){
     srv = scap->srv;
     g_return_if_fail(srv);
 
-    switch (srv->prefs->login_method){
+    switch (srv->cfg->login_method){
         case LOGIN_SASL_PLAIN:
             break;
         default:
@@ -264,7 +264,7 @@ static void sasl_on_enable(ServerCap *scap, const char *name){
         return; // TODO: reauth?
     }
 
-    switch (srv->prefs->login_method){
+    switch (srv->cfg->login_method){
         case LOGIN_SASL_PLAIN:
             sirc_cmd_authenticate(srv->irc, "PLAIN");
             break;

@@ -58,7 +58,7 @@ typedef enum   _ServerState ServerState;
 typedef enum   _ServerAction ServerAction;
 typedef struct _Server Server;
 typedef enum   _LoginMethod LoginMethod;
-typedef struct _ServerPrefs ServerPrefs;
+typedef struct _SrnServerConfig SrnServerConfig;
 typedef struct _EnabledCap EnabledCap;
 typedef struct _ServerCap ServerCap;
 
@@ -174,9 +174,9 @@ struct _Server {
     int reconn_timer;
 
     SrnServerAddr *addr;    // Current server addr, is a element of
-                            // ServerPrefs->addrs
+                            // SrnServerConfig->addrs
     ServerCap *cap;         // Server capabilities
-    ServerPrefs *prefs;     // All required static informations
+    SrnServerConfig *cfg;     // All required static informations
     User *user;             // Used to store your nick, username, realname
     Chat *chat;             // Hold all messages that do not belong to any other Chat
 
@@ -200,12 +200,12 @@ struct _SrnServerAddr {
     int port;
 };
 
-struct _ServerPrefs {
+struct _SrnServerConfig {
     /* For specificed server */
-    bool predefined;  /* A ServerPrefs is predefined when it is loaded from
-                         configuration file, a predefined ServerPrefs will
+    bool predefined;  /* A SrnServerConfig is predefined when it is loaded from
+                         configuration file, a predefined SrnServerConfig will
                          appeared in predefined server list and *CAN NOT* be
-                         freed by ``server_prefs_free()``. */
+                         directly freed by ``srn_server_config_free()``. */
     char *name;
     GSList *addrs; // List of SrnServerAddr
     char *passwd;
@@ -257,8 +257,7 @@ struct _ServerCap {
     Server *srv;
 };
 
-Server* server_new(ServerPrefs *cfg);
-Server* server_new_from_prefs(ServerPrefs *prefs);
+Server* server_new(SrnServerConfig *cfg);
 Server *server_get_by_name(const char *name);
 void server_free(Server *srv);
 bool server_is_valid(Server *srv);
@@ -290,8 +289,8 @@ void chat_set_topic(Chat *chat, const char *origin, const char *topic);
 void chat_set_topic_setter(Chat *chat, const char *setter);
 
 SrnChatConfig *srn_chat_config_new();
-SrnRet srn_chat_config_check(SrnChatConfig *prefs);
-void srn_chat_config_free(SrnChatConfig *prefs);
+SrnRet srn_chat_config_check(SrnChatConfig *cfg);
+void srn_chat_config_free(SrnChatConfig *cfg);
 
 User *user_new(Chat *chat, const char *nick, const char *username, const char *realname, UserType type);
 User *user_ref(User *user);
@@ -303,20 +302,16 @@ void user_set_me(User *user, bool me);
 Message* message_new(Chat *chat, User *user, const char *content, MessageType type);
 void message_free(Message *msg);
 
-ServerPrefs* server_prefs_new(const char *name);
-ServerPrefs* server_prefs_new_from_basename(const char *basename);
-ServerPrefs* server_prefs_get_prefs(const char *name);
-ServerPrefs* server_prefs_get_prefs_by_host_port(const char *host, int port);
-bool server_prefs_is_valid(ServerPrefs *prefs);
-bool server_prefs_is_server_valid(Server *srv);
-SrnRet server_prefs_check(ServerPrefs *prefs);
-char* server_prefs_dump(ServerPrefs *prefs);
-void server_prefs_free(ServerPrefs *prefs);
-char* server_prefs_list_dump();
+SrnServerConfig* srn_server_config_new(const char *name);
+SrnServerConfig* srn_server_config_new_from_basename(const char *basename);
+void srn_server_config_add_addr(SrnServerConfig *cfg, const char *host, int port);
+SrnRet srn_server_config_check(SrnServerConfig *cfg);
+char* srn_server_config_dump(SrnServerConfig *cfg);
+void srn_server_config_free(SrnServerConfig *cfg);
+
 char* login_method_to_string(LoginMethod login);
 LoginMethod login_method_from_string(const char *str);
 
-void server_prefs_add_addr(ServerPrefs *cfg, const char *host, int port);
 SrnServerAddr* srn_server_addr_new(const char *host, int port);
 void  srn_server_addr_free(SrnServerAddr *addr);
 

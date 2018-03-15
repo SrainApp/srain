@@ -48,9 +48,9 @@ static SrnRet read_log_targets_from_log(config_setting_t *log, const char *name,
 static SrnRet read_application_config_from_cfg(config_t *cfg, SrnApplicationConfig *app_cfg);
 static SrnRet read_server_config_list_from_cfg(config_t *cfg, GSList **srv_cfg_list);
 
-static SrnRet read_server_config_from_server(config_setting_t *server, ServerPrefs *cfg);
-static SrnRet read_server_config_from_server_list(config_setting_t *server_list, ServerPrefs *cfg, const char *srv_name);
-static SrnRet read_server_config_from_cfg(config_t *cfg, ServerPrefs *srv_cfg, const char *srv_name);
+static SrnRet read_server_config_from_server(config_setting_t *server, SrnServerConfig *cfg);
+static SrnRet read_server_config_from_server_list(config_setting_t *server_list, SrnServerConfig *cfg, const char *srv_name);
+static SrnRet read_server_config_from_cfg(config_t *cfg, SrnServerConfig *srv_cfg, const char *srv_name);
 
 static SrnRet read_chat_config_from_chat(config_setting_t *chat, SrnChatConfig *cfg);
 static SrnRet read_chat_config_from_chat_list(config_setting_t *chat_list, SrnChatConfig *cfg, const char *chat_name);
@@ -122,7 +122,7 @@ SrnRet srn_config_manager_read_server_config_list(SrnConfigManager *mgr,
 
 
 SrnRet srn_config_manager_read_server_config(SrnConfigManager *mgr,
-        ServerPrefs *cfg, const char *srv_name){
+        SrnServerConfig *cfg, const char *srv_name){
     SrnRet ret;
 
     ret = read_server_config_from_cfg(&mgr->system_cfg, cfg, srv_name);
@@ -232,7 +232,7 @@ static SrnRet read_server_config_list_from_cfg(config_t *cfg,
             GSList *lst;
             config_setting_t *server;
             SrnRet ret;
-            ServerPrefs *srv_cfg;
+            SrnServerConfig *srv_cfg;
 
             server = config_setting_get_elem(server_list, i);
             if (!server) break;
@@ -244,7 +244,7 @@ static SrnRet read_server_config_list_from_cfg(config_t *cfg,
             srv_cfg = NULL;
             lst = *srv_cfg_list;
             while (lst){
-                ServerPrefs *tmp;
+                SrnServerConfig *tmp;
 
                 tmp = lst->data;
                 if (g_ascii_strcasecmp(tmp->name, name) == 0){
@@ -254,13 +254,13 @@ static SrnRet read_server_config_list_from_cfg(config_t *cfg,
                 lst = g_slist_next(lst);
             }
             if (!srv_cfg) {
-                srv_cfg = server_prefs_new(name);
+                srv_cfg = srn_server_config_new(name);
                 srv_cfg->predefined = TRUE;
             }
 
             ret = read_server_config_from_cfg(cfg, srv_cfg, name);
             if (!RET_IS_OK(ret)){
-                server_prefs_free(srv_cfg);
+                srn_server_config_free(srv_cfg);
                 return ret;
             }
 
@@ -272,7 +272,7 @@ static SrnRet read_server_config_list_from_cfg(config_t *cfg,
 }
 
 static SrnRet read_server_config_from_server(config_setting_t *server,
-        ServerPrefs *cfg){
+        SrnServerConfig *cfg){
     /* Read server meta info */
     config_setting_lookup_string_ex(server, "name", &cfg->name);
     config_setting_lookup_string_ex(server, "password", &cfg->passwd);
@@ -303,7 +303,7 @@ static SrnRet read_server_config_from_server(config_setting_t *server,
                     *tmp++ = '\0';
                     port = g_ascii_strtoull(tmp, NULL, 10);
                 }
-                server_prefs_add_addr(cfg, host, port);
+                srn_server_config_add_addr(cfg, host, port);
                 g_free(addr);
             }
         }
@@ -341,7 +341,7 @@ static SrnRet read_server_config_from_server(config_setting_t *server,
 }
 
 static SrnRet read_server_config_from_server_list(config_setting_t *server_list,
-        ServerPrefs *cfg, const char *srv_name){
+        SrnServerConfig *cfg, const char *srv_name){
     int count;
     SrnRet ret;
 
@@ -364,7 +364,7 @@ static SrnRet read_server_config_from_server_list(config_setting_t *server_list,
     return SRN_OK;
 }
 
-static SrnRet read_server_config_from_cfg(config_t *cfg, ServerPrefs *srv_cfg,
+static SrnRet read_server_config_from_cfg(config_t *cfg, SrnServerConfig *srv_cfg,
         const char *srv_name){
     SrnRet ret;
     config_setting_t *server;

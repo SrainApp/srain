@@ -61,7 +61,7 @@ static bool chat_log(const Message *msg, const char *content){
     basename = g_string_new("");
 
     g_string_append_printf(basename, "%s.%s.log", datestr, msg->chat->name);
-    file = create_log_file(msg->chat->srv->prefs->name, basename->str);
+    file = create_log_file(msg->chat->srv->cfg->name, basename->str);
 
     if (!file){
         ERR_FR("Failed to create log file");
