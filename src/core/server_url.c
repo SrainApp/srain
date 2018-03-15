@@ -33,7 +33,7 @@
 #include "i18n.h"
 #include "log.h"
 #include "utils.h"
-#include "prefs.h"
+#include "config/config.h"
 
 static void join_comma_separated_chans(Server *srv, const char *comma_chans);
 

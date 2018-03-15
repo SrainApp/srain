@@ -41,7 +41,7 @@
 #include "command.h"
 #include "filter.h"
 #include "decorator.h"
-#include "prefs.h"
+#include "config/config.h"
 #include "utils.h"
 
 typedef struct _ServerCmdContext {

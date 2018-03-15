@@ -29,7 +29,7 @@
 
 #include "core/core.h"
 #include "sirc/sirc.h"
-#include "prefs.h"
+#include "config/config.h"
 #include "log.h"
 #include "utils.h"
 #include "i18n.h"

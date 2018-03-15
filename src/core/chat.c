@@ -27,7 +27,7 @@
 #include "command.h"
 #include "log.h"
 #include "utils.h"
-#include "prefs.h"
+#include "config/config.h"
 
 #include "sirc/sirc.h"
 

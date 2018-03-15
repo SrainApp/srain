@@ -17,7 +17,7 @@
  */
 
 /**
- * @file prefs.c
+ * @file manager.c
  * @brief Configuration manager for Srain, use Libconfig backend
  * @author Shengyu Zhang <i@silverrainz.me>
  * @version 0.06.2
@@ -28,7 +28,7 @@
 #include <libconfig.h>
 #include <string.h>
 
-#include "prefs.h"
+#include "config/config.h"
 #include "srain.h"
 #include "log.h"
 #include "file_helper.h"

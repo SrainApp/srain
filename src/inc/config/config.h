@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __PREFS_H
-#define __PREFS_H
+#ifndef __CONFIG_H
+#define __CONFIG_H
 
 #include <libconfig.h>
 
@@ -43,4 +43,4 @@ void srn_config_manager_free(SrnConfigManager *mgr);
 SrnRet srn_config_manager_read_user_config(SrnConfigManager *mgr, const char *file);
 SrnRet srn_config_manager_read_system_config(SrnConfigManager *mgr, const char *file);
 
-#endif /*__PREFS_H */
+#endif /*__CONFIG_H */

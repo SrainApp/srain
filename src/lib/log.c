@@ -28,7 +28,7 @@
 #include <glib.h>
 
 #include "srain.h"
-#include "prefs.h"
+#include "config/config.h"
 #include "log.h"
 
 struct _SrnLogger {

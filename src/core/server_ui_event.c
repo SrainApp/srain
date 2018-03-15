@@ -34,7 +34,7 @@
 #include "log.h"
 #include "rc.h"
 #include "filter.h"
-#include "prefs.h"
+#include "config/config.h"
 #include "ret.h"
 #include "utils.h"
 

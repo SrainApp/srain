@@ -23,7 +23,7 @@
 
 #include "sui/sui.h"
 #include "sirc/sirc.h"
-#include "prefs.h"
+#include "config/config.h"
 #include "version.h"
 
 #ifndef __IN_CORE_H

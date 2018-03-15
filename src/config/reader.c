@@ -28,7 +28,7 @@
 #include <libconfig.h>
 
 #include "core/core.h"
-#include "prefs.h"
+#include "config/config.h"
 #include "i18n.h"
 #include "utils.h"
 

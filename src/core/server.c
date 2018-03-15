@@ -39,7 +39,7 @@
 #include "srain.h"
 #include "log.h"
 #include "utils.h"
-#include "prefs.h"
+#include "config/config.h"
 #include "i18n.h"
 
 Server* server_new(ServerPrefs *cfg){
