@@ -18,7 +18,7 @@
 
 /**
  * @file srain_user_list.c
- * @brief Widget for listing all participants of a Chat(usually a SrainChat)
+ * @brief Widget for listing all participants of a chat
  * @author Shengyu Zhang <i@silverrainz.me>
  * @version 0.06.2
  * @date 2016-04-03

@@ -34,14 +34,14 @@
 extern CommandBind cmd_binds[];
 
 static void append_image(Message *msg);
-static void add_message(Chat *chat, Message *msg);
-static bool whether_merge_last_message(Chat *chat, Message *msg);
+static void add_message(SrnChat *chat, Message *msg);
+static bool whether_merge_last_message(SrnChat *chat, Message *msg);
 
-Chat *chat_new(SrnServer *srv, const char *name, SrnChatConfig *cfg){
-    Chat *chat;
+SrnChat *srn_chat_new(SrnServer *srv, const char *name, SrnChatConfig *cfg){
+    SrnChat *chat;
     SuiSessionFlag flag;
 
-    chat = g_malloc0(sizeof(Chat));
+    chat = g_malloc0(sizeof(SrnChat));
 
     str_assign(&chat->name, name);
     chat->srv = srv;
@@ -69,8 +69,8 @@ Chat *chat_new(SrnServer *srv, const char *name, SrnChatConfig *cfg){
     } else {
         // Private, its user_list must have yourself and the dialogue target
         sui_private_session(chat->ui, chat->srv->chat->ui, chat->name);
-        chat_add_user(chat, chat->srv->user->nick, USER_CHIGUA);
-        chat_add_user(chat, chat->name, USER_CHIGUA);
+        srn_chat_add_user(chat, chat->srv->user->nick, USER_CHIGUA);
+        srn_chat_add_user(chat, chat->name, USER_CHIGUA);
     }
 
     sui_add_completion(chat->ui, chat->name);
@@ -83,8 +83,8 @@ Chat *chat_new(SrnServer *srv, const char *name, SrnChatConfig *cfg){
     /* You will add 2 users with same nickname if you chat with yourself
     if (flag == SUI_SESSION_DIALOG){
         g_return_val_if_fail(chat->user, NULL);
-        chat_add_user(chat, chat->user->nick, USER_CHIGUA);
-        chat_add_user(chat, chat->name, USER_CHIGUA);
+        srn_chat_add_user(chat, chat->user->nick, USER_CHIGUA);
+        srn_chat_add_user(chat, chat->name, USER_CHIGUA);
     }
     */
 
@@ -104,7 +104,7 @@ cleanup:
     return NULL;
 }
 
-void chat_free(Chat *chat){
+void srn_chat_free(SrnChat *chat){
     user_free(chat->user);
 
     /* Free extra list */
@@ -142,13 +142,13 @@ void chat_free(Chat *chat){
     g_free(chat);
 }
 
-int chat_add_user(Chat *chat, const char *nick, UserType type){
+int srn_chat_add_user(SrnChat *chat, const char *nick, UserType type){
     int ret;
     User *user;
 
     user = user_new(chat, nick, NULL, NULL, type);
 
-    ret = chat_add_user_full(chat, user);
+    ret = srn_chat_add_user_full(chat, user);
     if (sirc_nick_cmp(chat->user->nick, nick)){
         user_set_me(user, TRUE);
     }
@@ -158,7 +158,7 @@ int chat_add_user(Chat *chat, const char *nick, UserType type){
     return ret;
 }
 
-int chat_add_user_full(Chat *chat, User *user){
+int srn_chat_add_user_full(SrnChat *chat, User *user){
     GSList *lst;
     User *user2;
 
@@ -179,7 +179,7 @@ int chat_add_user_full(Chat *chat, User *user){
     return SRN_OK;
 }
 
-int chat_rm_user(Chat *chat, const char *nick){
+int srn_chat_rm_user(SrnChat *chat, const char *nick){
     GSList *lst;
     User *user;
 
@@ -199,7 +199,7 @@ int chat_rm_user(Chat *chat, const char *nick){
 }
 
 
-User* chat_get_user(Chat *chat, const char *nick){
+User* srn_chat_get_user(SrnChat *chat, const char *nick){
     User *user;
     GSList *lst;
 
@@ -216,7 +216,7 @@ User* chat_get_user(Chat *chat, const char *nick){
 }
 
 
-void chat_add_sent_message(Chat *chat, const char *content){
+void srn_chat_add_sent_message(SrnChat *chat, const char *content){
     User *user;
     Message *msg;
     DecoratorFlag dflag;
@@ -258,7 +258,7 @@ cleanup:
     message_free(msg);
 }
 
-void chat_add_recv_message(Chat *chat, const char *origin, const char *content){
+void srn_chat_add_recv_message(SrnChat *chat, const char *origin, const char *content){
     bool invalid_user = FALSE;
     User *user;
     Message *msg;
@@ -273,7 +273,7 @@ void chat_add_recv_message(Chat *chat, const char *origin, const char *content){
     }
     fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
 
-    user = chat_get_user(chat, origin);
+    user = srn_chat_get_user(chat, origin);
     if (!user){
         user = user_new(chat, origin, NULL, NULL, USER_CHIGUA);
         invalid_user = TRUE;
@@ -321,18 +321,18 @@ cleanup:
     message_free(msg);
 }
 
-void chat_add_notice_message(Chat *chat, const char *origin, const char *content){
-    chat_add_recv_message(chat, origin, content);
+void srn_chat_add_notice_message(SrnChat *chat, const char *origin, const char *content){
+    srn_chat_add_recv_message(chat, origin, content);
 }
 
-void chat_add_action_message(Chat *chat, const char *origin, const char *content){
+void srn_chat_add_action_message(SrnChat *chat, const char *origin, const char *content){
     bool invalid_user = FALSE;
     User *user;
     Message *msg;
     FilterFlag fflag;
     DecoratorFlag dflag;
 
-    user = chat_get_user(chat, origin);
+    user = srn_chat_get_user(chat, origin);
 
     if (!user){
         user = user_new(chat, origin, NULL, NULL, USER_CHIGUA);
@@ -393,14 +393,14 @@ cleanup:
     message_free(msg);
 }
 
-void chat_add_misc_message(Chat *chat, const char *origin, const char *content){
+void srn_chat_add_misc_message(SrnChat *chat, const char *origin, const char *content){
     bool invalid_user = FALSE;
     User *user;
     Message *msg;
     DecoratorFlag dflag;
     FilterFlag fflag;
 
-    user = chat_get_user(chat, origin);
+    user = srn_chat_get_user(chat, origin);
     if (!user){
         user = user_new(chat, origin, NULL, NULL, USER_CHIGUA);
         invalid_user = TRUE;
@@ -432,7 +432,7 @@ cleanup:
     message_free(msg);
 }
 
-void chat_add_misc_message_fmt(Chat *chat, const char *origin, const char *fmt, ...){
+void srn_chat_add_misc_message_fmt(SrnChat *chat, const char *origin, const char *fmt, ...){
     char *content;
     va_list args;
 
@@ -440,19 +440,19 @@ void chat_add_misc_message_fmt(Chat *chat, const char *origin, const char *fmt, 
     content = g_strdup_vprintf(fmt, args);
     va_end(args);
 
-    chat_add_misc_message(chat, origin, content);
+    srn_chat_add_misc_message(chat, origin, content);
 
     g_free(content);
 }
 
-void chat_add_error_message(Chat *chat, const char *origin, const char *content){
+void srn_chat_add_error_message(SrnChat *chat, const char *origin, const char *content){
     bool invalid_user = FALSE;
     User *user;
     Message *msg;
     DecoratorFlag dflag;
     FilterFlag fflag;
 
-    user = chat_get_user(chat, origin);
+    user = srn_chat_get_user(chat, origin);
     if (!user){
         user = user_new(chat, origin, NULL, NULL, USER_CHIGUA);
         invalid_user = TRUE;
@@ -488,7 +488,7 @@ cleanup:
     message_free(msg);
 }
 
-void chat_add_error_message_fmt(Chat *chat, const char *origin, const char *fmt, ...){
+void srn_chat_add_error_message_fmt(SrnChat *chat, const char *origin, const char *fmt, ...){
     char *content;
     va_list args;
 
@@ -496,18 +496,18 @@ void chat_add_error_message_fmt(Chat *chat, const char *origin, const char *fmt,
     content = g_strdup_vprintf(fmt, args);
     va_end(args);
 
-    chat_add_error_message(chat, origin, content);
+    srn_chat_add_error_message(chat, origin, content);
 
     g_free(content);
 }
 
-void chat_set_topic(Chat *chat, const char *origin, const char *topic){
+void srn_chat_set_topic(SrnChat *chat, const char *origin, const char *topic){
     bool invalid_user = FALSE;
     User *user;
     Message *msg;
     DecoratorFlag dflag;
 
-    user = chat_get_user(chat, origin);
+    user = srn_chat_get_user(chat, origin);
     if (!user){
         user = user_new(chat, origin, NULL, NULL, USER_CHIGUA);
         invalid_user = TRUE;
@@ -532,16 +532,16 @@ void chat_set_topic(Chat *chat, const char *origin, const char *topic){
     message_free(msg);
 }
 
-void chat_set_topic_setter(Chat *chat, const char *setter){
+void srn_chat_set_topic_setter(SrnChat *chat, const char *setter){
     sui_set_topic_setter(chat->ui, setter);
 }
 
-static void add_message(Chat *chat, Message *msg){
+static void add_message(SrnChat *chat, Message *msg){
     chat->msg_list = g_list_append(chat->msg_list, msg);
     chat->last_msg = msg;
 }
 
-static bool whether_merge_last_message(Chat *chat, Message *msg){
+static bool whether_merge_last_message(SrnChat *chat, Message *msg){
     Message *last_msg;
 
     last_msg = chat->last_msg;

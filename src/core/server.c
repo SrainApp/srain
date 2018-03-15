@@ -62,7 +62,7 @@ SrnServer* srn_server_new(SrnServerConfig *cfg){
     srn_config_manager_read_chat_config(
             srn_application_get_default()->cfg_mgr,
             chat_cfg, srv->cfg->name, META_SERVER);
-    srv->chat = chat_new(srv, META_SERVER, chat_cfg);
+    srv->chat = srn_chat_new(srv, META_SERVER, chat_cfg);
     if (!srv->chat) goto bad;
 
     srv->user = user_new(srv->chat,
@@ -133,7 +133,7 @@ void srn_server_free(SrnServer *srv){
         lst = srv->chat_list;
         while (lst){
             if (lst->data){
-                chat_free(lst->data);
+                srn_chat_free(lst->data);
                 lst->data = NULL;
             }
             lst = g_slist_next(lst);
@@ -144,7 +144,7 @@ void srn_server_free(SrnServer *srv){
 
     /* Server's chat should be freed after all chat in chat list are freed */
     if (srv->chat != NULL){
-        chat_free(srv->chat);
+        srn_chat_free(srv->chat);
         srv->chat = NULL;
     }
 
@@ -206,7 +206,7 @@ void srn_server_wait_until_registered(SrnServer *srv){
 SrnRet srn_server_add_chat(SrnServer *srv, const char *name){
     GSList *lst;
     SrnRet ret;
-    Chat *chat;
+    SrnChat *chat;
     SrnChatConfig *chat_cfg;
 
     g_return_val_if_fail(srn_server_is_valid(srv), SRN_ERR);
@@ -228,13 +228,13 @@ SrnRet srn_server_add_chat(SrnServer *srv, const char *name){
         return ret;
     }
 
-    chat = chat_new(srv, name, chat_cfg);
+    chat = srn_chat_new(srv, name, chat_cfg);
     srv->chat_list = g_slist_append(srv->chat_list, chat);
 
     return SRN_OK;
 }
 
-SrnRet srn_server_rm_chat(SrnServer *srv, Chat *chat){
+SrnRet srn_server_rm_chat(SrnServer *srv, SrnChat *chat){
     GSList *lst;
     SrnChatConfig *chat_cfg;
 
@@ -250,16 +250,16 @@ SrnRet srn_server_rm_chat(SrnServer *srv, Chat *chat){
         srv->cur_chat = srv->chat;
     }
     chat_cfg = chat->cfg;
-    chat_free(chat);
+    srn_chat_free(chat);
     srn_chat_config_free(chat_cfg);
     srv->chat_list = g_slist_delete_link(srv->chat_list, lst);
 
     return SRN_OK;
 }
 
-Chat* srn_server_get_chat(SrnServer *srv, const char *name) {
+SrnChat* srn_server_get_chat(SrnServer *srv, const char *name) {
     GSList *lst;
-    Chat *chat;
+    SrnChat *chat;
 
     g_return_val_if_fail(srn_server_is_valid(srv), NULL);
 
@@ -283,10 +283,10 @@ Chat* srn_server_get_chat(SrnServer *srv, const char *name) {
  * @param srv
  * @param name
  *
- * @return A instance of Chat
+ * @return A instance of SrnChat
  */
-Chat* srn_server_get_chat_fallback(SrnServer *srv, const char *name) {
-    Chat *chat;
+SrnChat* srn_server_get_chat_fallback(SrnServer *srv, const char *name) {
+    SrnChat *chat;
 
     g_return_val_if_fail(srn_server_is_valid(srv), NULL);
 

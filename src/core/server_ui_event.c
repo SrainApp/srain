@@ -39,7 +39,7 @@
 #include "utils.h"
 
 static SrnServer* ctx_get_server(SuiSession *sui);
-static Chat* ctx_get_chat(SuiSession *sui);
+static SrnChat* ctx_get_chat(SuiSession *sui);
 
 SrnRet srn_server_ui_event_open(SuiApplication *app, SuiEvent event, GVariantDict *params){
     // TODO: config
@@ -178,7 +178,7 @@ SrnRet srn_server_ui_event_disconnect(SuiSession *sui, SuiEvent event, GVariantD
     SrnRet ret;
     SrnServer *srv;
     SrnServerState prev_state;
-    Chat *chat;
+    SrnChat *chat;
 
     srv = ctx_get_server(sui);
     chat = ctx_get_chat(sui);
@@ -187,11 +187,11 @@ SrnRet srn_server_ui_event_disconnect(SuiSession *sui, SuiEvent event, GVariantD
     prev_state = srv->state;
     ret = srn_server_disconnect(srv);
     if (!RET_IS_OK(ret)){
-        chat_add_error_message(chat, chat->user->nick, RET_MSG(ret));
+        srn_chat_add_error_message(chat, chat->user->nick, RET_MSG(ret));
     }
 
     if (prev_state == SRN_SERVER_STATE_RECONNECTING){
-        chat_add_misc_message(chat, chat->user->nick, _("Reconnection stopped"));
+        srn_chat_add_misc_message(chat, chat->user->nick, _("Reconnection stopped"));
     }
 
     return SRN_OK;
@@ -200,7 +200,7 @@ SrnRet srn_server_ui_event_disconnect(SuiSession *sui, SuiEvent event, GVariantD
 SrnRet srn_server_ui_event_quit(SuiSession *sui, SuiEvent event, GVariantDict *params){
     SrnRet ret;
     SrnServer *srv;
-    Chat *chat;
+    SrnChat *chat;
 
     srv = ctx_get_server(sui);
     chat = ctx_get_chat(sui);
@@ -216,7 +216,7 @@ SrnRet srn_server_ui_event_quit(SuiSession *sui, SuiEvent event, GVariantDict *p
     }
 
     if (!RET_IS_OK(ret)){
-        chat_add_error_message(chat, chat->user->nick,
+        srn_chat_add_error_message(chat, chat->user->nick,
                 _("Failed to quit from server, try again please"));
     }
 
@@ -227,7 +227,7 @@ SrnRet srn_server_ui_event_send(SuiSession *sui, SuiEvent event, GVariantDict *p
     const char *msg = NULL;
     SrnRet ret = SRN_ERR;
     SrnServer *srv;
-    Chat *chat;
+    SrnChat *chat;
 
     srv = ctx_get_server(sui);
     chat = ctx_get_chat(sui);
@@ -246,23 +246,23 @@ SrnRet srn_server_ui_event_send(SuiSession *sui, SuiEvent event, GVariantDict *p
         }
         if (RET_IS_OK(ret)){
             if (ret != SRN_OK) { // Has OK message
-                chat_add_misc_message(chat, chat->user->nick, RET_MSG(ret));
+                srn_chat_add_misc_message(chat, chat->user->nick, RET_MSG(ret));
             }
         } else {
-            chat_add_error_message(chat, chat->user->nick, RET_MSG(ret));
+            srn_chat_add_error_message(chat, chat->user->nick, RET_MSG(ret));
         }
     } else {
         if (chat == chat->srv->chat) {
             ret = RET_ERR(_("Can not send message to a server"));
-            chat_add_error_message(chat, chat->user->nick, RET_MSG(ret));
+            srn_chat_add_error_message(chat, chat->user->nick, RET_MSG(ret));
             return ret;
         }
 
-        chat_add_sent_message(chat, msg); // Show on UI first
+        srn_chat_add_sent_message(chat, msg); // Show on UI first
 
         ret = sirc_cmd_msg(chat->srv->irc, chat->name, msg);
         if (!RET_IS_OK(ret)){
-            chat_add_error_message_fmt(chat, chat->user->nick,
+            srn_chat_add_error_message_fmt(chat, chat->user->nick,
                     _("Failed to send message: %1$s"), RET_MSG(ret));
         }
     }
@@ -286,7 +286,7 @@ SrnRet srn_server_ui_event_join(SuiSession *sui, SuiEvent event, GVariantDict *p
 
 SrnRet srn_server_ui_event_part(SuiSession *sui, SuiEvent event, GVariantDict *params){
     SrnServer *srv;
-    Chat *chat;
+    SrnChat *chat;
 
     srv = ctx_get_server(sui);
     chat = ctx_get_chat(sui);
@@ -314,7 +314,7 @@ SrnRet srn_server_ui_event_query(SuiSession *sui, SuiEvent event, GVariantDict *
 
 SrnRet srn_server_ui_event_unquery(SuiSession *sui, SuiEvent event, GVariantDict *params){
     SrnServer *srv;
-    Chat *chat;
+    SrnChat *chat;
 
     srv = ctx_get_server(sui);
     chat = ctx_get_chat(sui);
@@ -327,7 +327,7 @@ SrnRet srn_server_ui_event_unquery(SuiSession *sui, SuiEvent event, GVariantDict
 SrnRet srn_server_ui_event_kick(SuiSession *sui, SuiEvent event, GVariantDict *params){
     const char *nick = NULL;
     SrnServer *srv;
-    Chat *chat;
+    SrnChat *chat;
 
     srv = ctx_get_server(sui);
     chat = ctx_get_chat(sui);
@@ -342,7 +342,7 @@ SrnRet srn_server_ui_event_kick(SuiSession *sui, SuiEvent event, GVariantDict *p
 SrnRet srn_server_ui_event_invite(SuiSession *sui, SuiEvent event, GVariantDict *params){
     const char *nick = NULL;
     SrnServer *srv;
-    Chat *chat;
+    SrnChat *chat;
 
     srv = ctx_get_server(sui);
     chat = ctx_get_chat(sui);
@@ -368,7 +368,7 @@ SrnRet srn_server_ui_event_whois(SuiSession *sui, SuiEvent event, GVariantDict *
 
 SrnRet srn_server_ui_event_ignore(SuiSession *sui, SuiEvent event, GVariantDict *params){
     const char *nick = NULL;
-    Chat *chat;
+    SrnChat *chat;
 
     chat = ctx_get_chat(sui);
     g_return_val_if_fail(chat, SRN_ERR);
@@ -380,7 +380,7 @@ SrnRet srn_server_ui_event_ignore(SuiSession *sui, SuiEvent event, GVariantDict 
 
 SrnRet srn_server_ui_event_cutover(SuiSession *sui, SuiEvent event, GVariantDict *params){
     SrnServer *srv;
-    Chat *chat;
+    SrnChat *chat;
 
     srv = ctx_get_server(sui);
     // FIXME: server has not held by SrnServerConfig now
@@ -406,7 +406,7 @@ SrnRet srn_server_ui_event_chan_list(SuiSession *sui, SuiEvent event, GVariantDi
 /* Get a SrnServer object from SuiSession context (sui->ctx) */
 static SrnServer* ctx_get_server(SuiSession *sui){
     void *ctx;
-    Chat *chat;
+    SrnChat *chat;
 
     ctx = sui_get_ctx(sui);
     g_return_val_if_fail(ctx, NULL);
@@ -416,7 +416,7 @@ static SrnServer* ctx_get_server(SuiSession *sui){
     return chat->srv;
 }
 
-/* Get a Chat object from SuiSession context (sui->ctx) */
-static Chat* ctx_get_chat(SuiSession *sui){
+/* Get a SrnChat object from SuiSession context (sui->ctx) */
+static SrnChat* ctx_get_chat(SuiSession *sui){
     return sui_get_ctx(sui);
 }

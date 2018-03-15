@@ -45,11 +45,11 @@
 #include "utils.h"
 
 typedef struct _ServerCmdContext {
-    Chat *chat;
+    SrnChat *chat;
 } ServerCmdContext;
 
 static SrnServer* scctx_get_server(ServerCmdContext *scctx);
-static Chat* scctx_get_chat(ServerCmdContext *scctx);
+static SrnChat* scctx_get_chat(ServerCmdContext *scctx);
 
 static SrnRet on_command_server(Command *cmd, void *user_data);
 static SrnRet on_command_connect(Command *cmd, void *user_data);
@@ -293,14 +293,14 @@ void server_cmd_init(){
 }
 
 /**
- * @brief server_cmd Run a command in specified Chat
+ * @brief server_cmd Run a command in specified SrnChat
  *
  * @param chat Can be NULL
  * @param cmd
  *
  * @return SRN_OK or SRN_ERR or other error
  */
-SrnRet srn_server_cmd(Chat *chat, const char *cmd){
+SrnRet srn_server_cmd(SrnChat *chat, const char *cmd){
     ServerCmdContext scctx;
 
     g_return_val_if_fail(cmd, SRN_ERR);
@@ -594,7 +594,7 @@ FIN:
 static SrnRet on_command_relay(Command *cmd, void *user_data){
     const char *nick;
     SrnServer *srv;
-    Chat *chat;
+    SrnChat *chat;
 
     nick = command_get_arg(cmd, 0);
     g_return_val_if_fail(nick, SRN_ERR);
@@ -615,7 +615,7 @@ static SrnRet on_command_relay(Command *cmd, void *user_data){
 static SrnRet on_command_unrelay(Command *cmd, void *user_data){
     const char *nick;
     SrnServer *srv;
-    Chat *chat;
+    SrnChat *chat;
 
     nick = command_get_arg(cmd, 0);
     g_return_val_if_fail(nick, SRN_ERR);
@@ -636,7 +636,7 @@ static SrnRet on_command_unrelay(Command *cmd, void *user_data){
 static SrnRet on_command_ignore(Command *cmd, void *user_data){
     const char *nick;
     SrnServer *srv;
-    Chat *chat;
+    SrnChat *chat;
 
     nick = command_get_arg(cmd, 0);
     g_return_val_if_fail(nick, SRN_ERR);
@@ -657,7 +657,7 @@ static SrnRet on_command_ignore(Command *cmd, void *user_data){
 static SrnRet on_command_unignore(Command *cmd, void *user_data){
     const char *nick;
     SrnServer *srv;
-    Chat *chat;
+    SrnChat *chat;
 
     nick = command_get_arg(cmd, 0);
     g_return_val_if_fail(nick, SRN_ERR);
@@ -677,7 +677,7 @@ static SrnRet on_command_rignore(Command *cmd, void *user_data){
     const char *name;
     const char *pattern;
     SrnServer *srv;
-    Chat *chat;
+    SrnChat *chat;
 
     name = command_get_arg(cmd, 0);
     pattern = command_get_arg(cmd, 1);
@@ -700,7 +700,7 @@ static SrnRet on_command_rignore(Command *cmd, void *user_data){
 static SrnRet on_command_unrignore(Command *cmd, void *user_data){
     const char *name;
     SrnServer *srv;
-    Chat *chat;
+    SrnChat *chat;
 
     name = command_get_arg(cmd, 0);
     g_return_val_if_fail(name, SRN_ERR);
@@ -732,7 +732,7 @@ static SrnRet on_command_query(Command *cmd, void *user_data){
 static SrnRet on_command_unquery(Command *cmd, void *user_data){
     const char *nick;
     SrnServer *srv;
-    Chat *chat;
+    SrnChat *chat;
 
     srv = scctx_get_server(user_data);
     g_return_val_if_fail(srv, SRN_ERR);
@@ -766,7 +766,7 @@ static SrnRet on_command_part(Command *cmd, void *user_data){
     const char *chan;
     const char *reason;
     SrnServer *srv;
-    Chat *chat;
+    SrnChat *chat;
 
     srv = scctx_get_server(user_data);
     g_return_val_if_fail(srv, SRN_ERR);
@@ -799,7 +799,7 @@ static SrnRet on_command_quit(Command *cmd, void *user_data){
 static SrnRet on_command_topic(Command *cmd, void *user_data){
     const char *topic;
     SrnServer *srv;
-    Chat *chat;
+    SrnChat *chat;
 
     srv = scctx_get_server(user_data);
     g_return_val_if_fail(srv, SRN_ERR);
@@ -840,7 +840,7 @@ static SrnRet on_command_me(Command *cmd, void *user_data){
     const char *msg;
     SrnRet ret;
     SrnServer *srv;
-    Chat *chat;
+    SrnChat *chat;
 
     srv = scctx_get_server(user_data);
     g_return_val_if_fail(srn_server_is_valid(srv), SRN_ERR);
@@ -858,7 +858,7 @@ static SrnRet on_command_me(Command *cmd, void *user_data){
         return RET_ERR(_("Failed to send action message: %1$s"), RET_MSG(ret));
     }
 
-    chat_add_action_message(chat, chat->user->nick, msg);
+    srn_chat_add_action_message(chat, chat->user->nick, msg);
 
     return SRN_OK;
 }
@@ -893,7 +893,7 @@ static SrnRet on_command_invite(Command *cmd, void *user_data){
     const char *nick;
     const char *chan;
     SrnServer *srv;
-    Chat *chat;
+    SrnChat *chat;
 
     srv = scctx_get_server(user_data);
     g_return_val_if_fail(srv, SRN_ERR);
@@ -916,7 +916,7 @@ static SrnRet on_command_kick(Command *cmd, void *user_data){
     const char *chan;
     const char *reason;
     SrnServer *srv;
-    Chat *chat;
+    SrnChat *chat;
 
     srv = scctx_get_server(user_data);
     g_return_val_if_fail(srv, SRN_ERR);
@@ -996,7 +996,7 @@ static SrnServer* scctx_get_server(ServerCmdContext *scctx){
     }
 }
 
-static Chat* scctx_get_chat(ServerCmdContext *scctx){
+static SrnChat* scctx_get_chat(ServerCmdContext *scctx){
     g_return_val_if_fail(scctx, NULL);
 
     if (scctx->chat){

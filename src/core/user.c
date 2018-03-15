@@ -20,7 +20,7 @@
 #include "core/core.h"
 #include "log.h"
 
-User *user_new(Chat *chat, const char *nick, const char *username,
+User *user_new(SrnChat *chat, const char *nick, const char *username,
         const char *realname, UserType type){
     User *user;
 

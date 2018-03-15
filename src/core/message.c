@@ -23,7 +23,7 @@
 #include "srain.h"
 #include "utils.h"
 
-Message* message_new(Chat *chat, User *user, const char *content, MessageType type){
+Message* message_new(SrnChat *chat, User *user, const char *content, MessageType type){
     Message *msg;
 
     g_return_val_if_fail(chat, NULL);
