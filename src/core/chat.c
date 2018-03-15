@@ -33,9 +33,9 @@
 
 extern CommandBind cmd_binds[];
 
-static void append_image(Message *msg);
-static void add_message(SrnChat *chat, Message *msg);
-static bool whether_merge_last_message(SrnChat *chat, Message *msg);
+static void append_image(SrnMessage *msg);
+static void add_message(SrnChat *chat, SrnMessage *msg);
+static bool whether_merge_last_message(SrnChat *chat, SrnMessage *msg);
 
 SrnChat *srn_chat_new(SrnServer *srv, const char *name, SrnChatConfig *cfg){
     SrnChat *chat;
@@ -218,14 +218,14 @@ SrnUser* srn_chat_get_user(SrnChat *chat, const char *nick){
 
 void srn_chat_add_sent_message(SrnChat *chat, const char *content){
     SrnUser *user;
-    Message *msg;
+    SrnMessage *msg;
     DecoratorFlag dflag;
     FilterFlag fflag;
 
     user = chat->user;
     dflag = DECORATOR_PANGO_MARKUP;
     fflag = FILTER_CHAT_LOG;
-    msg = message_new(chat, user, content, MESSAGE_SENT);
+    msg = srn_message_new(chat, user, content, SRN_MESSAGE_SENT);
 
     if (decorate_message(msg, dflag, NULL) != SRN_OK){
         goto cleanup;
@@ -255,13 +255,13 @@ void srn_chat_add_sent_message(SrnChat *chat, const char *content){
     return;
 
 cleanup:
-    message_free(msg);
+    srn_message_free(msg);
 }
 
 void srn_chat_add_recv_message(SrnChat *chat, const char *origin, const char *content){
     bool invalid_user = FALSE;
     SrnUser *user;
-    Message *msg;
+    SrnMessage *msg;
     DecoratorFlag dflag;
     FilterFlag fflag;
 
@@ -279,7 +279,7 @@ void srn_chat_add_recv_message(SrnChat *chat, const char *origin, const char *co
         invalid_user = TRUE;
     }
 
-    msg = message_new(chat, user, content, MESSAGE_RECV);
+    msg = srn_message_new(chat, user, content, SRN_MESSAGE_RECV);
 
     if (decorate_message(msg, dflag, NULL) != SRN_OK){
         goto cleanup;
@@ -318,7 +318,7 @@ cleanup:
     if (invalid_user){
         srn_user_free(user);
     }
-    message_free(msg);
+    srn_message_free(msg);
 }
 
 void srn_chat_add_notice_message(SrnChat *chat, const char *origin, const char *content){
@@ -328,7 +328,7 @@ void srn_chat_add_notice_message(SrnChat *chat, const char *origin, const char *
 void srn_chat_add_action_message(SrnChat *chat, const char *origin, const char *content){
     bool invalid_user = FALSE;
     SrnUser *user;
-    Message *msg;
+    SrnMessage *msg;
     FilterFlag fflag;
     DecoratorFlag dflag;
 
@@ -347,7 +347,7 @@ void srn_chat_add_action_message(SrnChat *chat, const char *origin, const char *
     }
     fflag = FILTER_CHAT_LOG;
 
-    msg = message_new(chat, user, content, MESSAGE_ACTION);
+    msg = srn_message_new(chat, user, content, SRN_MESSAGE_ACTION);
 
     if (user->me){
     } else {
@@ -390,13 +390,13 @@ cleanup:
     if (invalid_user){
         srn_user_free(user);
     }
-    message_free(msg);
+    srn_message_free(msg);
 }
 
 void srn_chat_add_misc_message(SrnChat *chat, const char *origin, const char *content){
     bool invalid_user = FALSE;
     SrnUser *user;
-    Message *msg;
+    SrnMessage *msg;
     DecoratorFlag dflag;
     FilterFlag fflag;
 
@@ -408,7 +408,7 @@ void srn_chat_add_misc_message(SrnChat *chat, const char *origin, const char *co
 
     dflag = DECORATOR_PANGO_MARKUP;
     fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
-    msg = message_new(chat, user, content, MESSAGE_MISC);
+    msg = srn_message_new(chat, user, content, SRN_MESSAGE_MISC);
 
     if (decorate_message(msg, dflag, NULL) != SRN_OK){
         goto cleanup;
@@ -429,7 +429,7 @@ cleanup:
     if (invalid_user){
         srn_user_free(user);
     }
-    message_free(msg);
+    srn_message_free(msg);
 }
 
 void srn_chat_add_misc_message_fmt(SrnChat *chat, const char *origin, const char *fmt, ...){
@@ -448,7 +448,7 @@ void srn_chat_add_misc_message_fmt(SrnChat *chat, const char *origin, const char
 void srn_chat_add_error_message(SrnChat *chat, const char *origin, const char *content){
     bool invalid_user = FALSE;
     SrnUser *user;
-    Message *msg;
+    SrnMessage *msg;
     DecoratorFlag dflag;
     FilterFlag fflag;
 
@@ -460,7 +460,7 @@ void srn_chat_add_error_message(SrnChat *chat, const char *origin, const char *c
 
     dflag = DECORATOR_PANGO_MARKUP;
     fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
-    msg = message_new(chat, user, content, MESSAGE_ERROR);
+    msg = srn_message_new(chat, user, content, SRN_MESSAGE_ERROR);
 
     if (decorate_message(msg, dflag, NULL) != SRN_OK){
         goto cleanup;
@@ -485,7 +485,7 @@ cleanup:
     if (invalid_user){
         srn_user_free(user);
     }
-    message_free(msg);
+    srn_message_free(msg);
 }
 
 void srn_chat_add_error_message_fmt(SrnChat *chat, const char *origin, const char *fmt, ...){
@@ -504,7 +504,7 @@ void srn_chat_add_error_message_fmt(SrnChat *chat, const char *origin, const cha
 void srn_chat_set_topic(SrnChat *chat, const char *origin, const char *topic){
     bool invalid_user = FALSE;
     SrnUser *user;
-    Message *msg;
+    SrnMessage *msg;
     DecoratorFlag dflag;
 
     user = srn_chat_get_user(chat, origin);
@@ -520,7 +520,7 @@ void srn_chat_set_topic(SrnChat *chat, const char *origin, const char *topic){
         dflag |= DECORATOR_MIRC_STRIP;
     }
 
-    msg = message_new(chat, user, topic, MESSAGE_UNKNOWN);
+    msg = srn_message_new(chat, user, topic, SRN_MESSAGE_UNKNOWN);
 
     if (decorate_message(msg, dflag, NULL) == SRN_OK){
         sui_set_topic(chat->ui, msg->dcontent);
@@ -529,25 +529,25 @@ void srn_chat_set_topic(SrnChat *chat, const char *origin, const char *topic){
     if (invalid_user){
         srn_user_free(user);
     }
-    message_free(msg);
+    srn_message_free(msg);
 }
 
 void srn_chat_set_topic_setter(SrnChat *chat, const char *setter){
     sui_set_topic_setter(chat->ui, setter);
 }
 
-static void add_message(SrnChat *chat, Message *msg){
+static void add_message(SrnChat *chat, SrnMessage *msg){
     chat->msg_list = g_list_append(chat->msg_list, msg);
     chat->last_msg = msg;
 }
 
-static bool whether_merge_last_message(SrnChat *chat, Message *msg){
-    Message *last_msg;
+static bool whether_merge_last_message(SrnChat *chat, SrnMessage *msg){
+    SrnMessage *last_msg;
 
     last_msg = chat->last_msg;
 
     return (last_msg
-            && msg->time - last_msg->time < MESSAGE_MERGE_INTERVAL
+            && msg->time - last_msg->time < SRN_MESSAGE_MERGE_INTERVAL
             && (!last_msg->mentioned && !msg->mentioned)
             && last_msg->type == msg->type
             && sirc_nick_cmp(last_msg->user->nick, msg->user->nick)
@@ -555,7 +555,7 @@ static bool whether_merge_last_message(SrnChat *chat, Message *msg){
 }
 
 // TODO
-static void append_image(Message *msg){
+static void append_image(SrnMessage *msg){
     GSList *url;
 
     url = msg->urls;

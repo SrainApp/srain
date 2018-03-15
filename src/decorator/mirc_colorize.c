@@ -67,7 +67,7 @@ static const char *color_map[] = {
     [MIRC_COLOR_UNKNOWN]        = "", // Preventing out of bound
 };
 
-static char *mirc_colorize(Message *msg, int index, const char *frag);
+static char *mirc_colorize(SrnMessage *msg, int index, const char *frag);
 static void do_colorize(ColorlizeContext *ctx, char ch);
 
 Decorator mirc_colorize_decroator = {
@@ -75,7 +75,7 @@ Decorator mirc_colorize_decroator = {
     .func = mirc_colorize,
 };
 
-static char *mirc_colorize(Message *msg, int index, const char *frag){
+static char *mirc_colorize(SrnMessage *msg, int index, const char *frag){
     int len;
     char *dfrag;
     GString *str;

@@ -62,7 +62,7 @@
 
 #define EMAIL_PATTERN       "[a-z0-9][._+%a-z0-9-]+@" HOST_PATTERN
 
-static char* pango_markup(Message *msg, int index, const char *frag);
+static char* pango_markup(SrnMessage *msg, int index, const char *frag);
 
 Decorator pango_markup_decroator = {
     .name = "pango_markup",
@@ -115,7 +115,7 @@ fin:
     return ret;
 }
 
-static char* pango_markup(Message *msg, int index, const char *frag){
+static char* pango_markup(SrnMessage *msg, int index, const char *frag){
     int start, end;
     int tmpstart, tmpend;
     char *left;

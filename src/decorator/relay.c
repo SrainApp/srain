@@ -29,8 +29,8 @@
 #include "i18n.h"
 #include "utils.h"
 
-static char* relay(Message *msg, int index, const char *frag);
-static char* do_relay(GSList *lst, Message *msg, const char *frag);
+static char* relay(SrnMessage *msg, int index, const char *frag);
+static char* do_relay(GSList *lst, SrnMessage *msg, const char *frag);
 
 Decorator relay_decroator = {
     .name = "relay",
@@ -92,7 +92,7 @@ void relay_decroator_free_list(SrnChat *chat){
     chat->relaybot_list = NULL;
 }
 
-static char* relay(Message *msg, int index, const char *frag){
+static char* relay(SrnMessage *msg, int index, const char *frag){
     char *dcontent;
 
     if (index != 0) {
@@ -108,7 +108,7 @@ static char* relay(Message *msg, int index, const char *frag){
     return dcontent;
 }
 
-static char* do_relay(GSList *lst, Message *msg, const char *frag){
+static char* do_relay(GSList *lst, SrnMessage *msg, const char *frag){
     char *dnick;
     char *dcontent = NULL;
     GError *err;

@@ -41,7 +41,7 @@ typedef struct _NamedPattern {
 } NamedPattern;
 
 static void named_pattern_free(NamedPattern *np);
-static bool regex(const Message *msg, const char *content);
+static bool regex(const SrnMessage *msg, const char *content);
 
 Filter regex_filter = {
     .name = "regex",
@@ -127,7 +127,7 @@ void regex_filter_free_list(SrnChat *chat){
     chat->ignore_regex_list = NULL;
 }
 
-static bool regex(const Message *msg, const char *content){
+static bool regex(const SrnMessage *msg, const char *content){
     GSList *lst;
     NamedPattern *np;
 

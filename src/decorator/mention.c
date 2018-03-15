@@ -26,14 +26,14 @@
 #include "srain.h"
 #include "log.h"
 
-static char* mention(Message *msg, int index, const char *frag);
+static char* mention(SrnMessage *msg, int index, const char *frag);
 
 Decorator mention_decroator = {
     .name = "mention",
     .func = mention,
 };
 
-static char* mention(Message *msg, int index, const char *frag){
+static char* mention(SrnMessage *msg, int index, const char *frag){
     char *nick = NULL;
     char pattern[128];
     GError *err;

@@ -34,14 +34,14 @@ typedef int DecoratorFlag;
  *      accepts the text fragment of XML message, decorates it then return
  *      the decorated fragment.
  *
- * @param msg A Message instance, ``msg->dcontent`` should be valid XML which
+ * @param msg A SrnMessage instance, ``msg->dcontent`` should be valid XML which
  *      may without root tag
  * @param index The index of ``frag`` in the current ``msg``
  * @param frag Plain text fragment of ``msg->dcontent``
  *
  * @return The decorated fragment, should be freed by ``g_free()``
  */
-typedef char* (DecoratorFunc) (Message *msg, int index, const char *frag);
+typedef char* (DecoratorFunc) (SrnMessage *msg, int index, const char *frag);
 
 typedef struct _Decorator {
     const char *name;
@@ -49,7 +49,7 @@ typedef struct _Decorator {
 } Decorator;
 
 void decorator_init();
-SrnRet decorate_message(Message *msg, DecoratorFlag flag, void *user_data);
+SrnRet decorate_message(SrnMessage *msg, DecoratorFlag flag, void *user_data);
 
 int relay_decroator_add_nick(SrnChat *chat, const char *nick);
 int relay_decroator_rm_nick(SrnChat *chat, const char *nick);

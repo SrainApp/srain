@@ -36,13 +36,13 @@
 #define SRN_SERVER_RECONN_STEP      SRN_SERVER_RECONN_INTERVAL
 
 /* In seconds */
-#define MESSAGE_MERGE_INTERVAL  60
+#define SRN_MESSAGE_MERGE_INTERVAL  60
 
 /* Structure members length */
 #define NICK_LEN        128
 
-typedef enum   _MessageType MessageType;
-typedef struct _Message Message;
+typedef enum   _SrnMessageType SrnMessageType;
+typedef struct _SrnMessage SrnMessage;
 // typedef struct _UserType UserType;
 typedef struct _SrnUser SrnUser;
 typedef struct _SrnChat SrnChat;
@@ -80,17 +80,17 @@ struct _SrnUser {
     // SuiUser *ui;
 };
 
-enum _MessageType {
-    MESSAGE_UNKNOWN,
-    MESSAGE_RECV,
-    MESSAGE_SENT,
-    MESSAGE_ACTION,
-    MESSAGE_NOTICE,
-    MESSAGE_MISC,
-    MESSAGE_ERROR,
+enum _SrnMessageType {
+    SRN_MESSAGE_UNKNOWN,
+    SRN_MESSAGE_RECV,
+    SRN_MESSAGE_SENT,
+    SRN_MESSAGE_ACTION,
+    SRN_MESSAGE_NOTICE,
+    SRN_MESSAGE_MISC,
+    SRN_MESSAGE_ERROR,
 };
 
-struct _Message {
+struct _SrnMessage {
     SrnChat *chat;
     SrnUser *user;     // Originator of this message, often refers to an existing user
     char *dname;    // Decorated name, maybe contains xml tags
@@ -100,7 +100,7 @@ struct _Message {
     char *dcontent; // Decorated message content
     time_t time;
     bool mentioned;
-    MessageType type;
+    SrnMessageType type;
 
     GSList *urls;   // URLs contains in message, like "http://xxx", "irc://xxx"
     SuiMessage *ui;
@@ -114,7 +114,7 @@ struct _SrnChat {
 
     GSList *user_list;
     GList *msg_list;
-    Message *last_msg;
+    SrnMessage *last_msg;
 
     /* Used by Filters & Decorators */
     GSList *ignore_nick_list;
@@ -293,8 +293,8 @@ void srn_user_rename(SrnUser *user, const char *new_nick);
 void srn_user_set_type(SrnUser *user, UserType type);
 void srn_user_set_me(SrnUser *user, bool me);
 
-Message* message_new(SrnChat *chat, SrnUser *user, const char *content, MessageType type);
-void message_free(Message *msg);
+SrnMessage* srn_message_new(SrnChat *chat, SrnUser *user, const char *content, SrnMessageType type);
+void srn_message_free(SrnMessage *msg);
 
 SrnServerConfig* srn_server_config_new(const char *name);
 SrnServerConfig* srn_server_config_new_from_basename(const char *basename);
