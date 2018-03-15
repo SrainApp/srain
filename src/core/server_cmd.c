@@ -355,7 +355,7 @@ static SrnRet on_command_server(SrnCommand *cmd, void *user_data){
     if (g_ascii_strcasecmp(subcmd, "add") == 0){
         cfg = srn_server_config_new(name);
         if (!cfg){
-            return RET_ERR(_("SrnServer already exist: %1$s"), name);
+            return RET_ERR(_("Server already exist: %1$s"), name);
         }
     } else {
         cfg = srn_application_get_server_config(app, name);
@@ -412,9 +412,9 @@ static SrnRet on_command_server(SrnCommand *cmd, void *user_data){
         }
 
         if (g_ascii_strcasecmp(subcmd, "add") == 0){
-            return RET_OK(_("SrnServer \"%1$s\" is created"), name);
+            return RET_OK(_("Server \"%1$s\" is created"), name);
         } else {
-            return RET_OK(_("SrnServer \"%1$s\" is motified"), name);
+            return RET_OK(_("Server \"%1$s\" is motified"), name);
         }
     }
 
@@ -479,7 +479,7 @@ static SrnRet on_command_server(SrnCommand *cmd, void *user_data){
             srn_server_config_free(cfg);
         }
 
-        return RET_OK(_("SrnServer \"%1$s\" is removed"), name);
+        return RET_OK(_("Server \"%1$s\" is removed"), name);
     }
 
     return RET_ERR(_("Unknown sub command: %1$s"), subcmd);

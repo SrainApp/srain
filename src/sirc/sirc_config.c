@@ -31,10 +31,10 @@ SircConfig* sirc_config_new(){
 }
 
 SrnRet sirc_config_check(SircConfig *cfg){
-    // const char *fmt = _("Missing field in SircConfig: %1$s");
+    // const char *fmt = _("Missing field in IRC config: %1$s");
 
     if (!cfg){
-        return RET_ERR(_("Invalid SrnServerConfig instance"));
+        return RET_ERR(_("Invalid IRC config instance"));
     }
 
     if (str_is_empty(cfg->encoding)) {
@@ -50,7 +50,7 @@ SrnRet sirc_config_check(SircConfig *cfg){
                 SRN_ENCODING, cfg->encoding,
                 NULL, NULL, &err);
         if (err){
-            return RET_ERR(_("Invalid encoding in SircConfig: %1$s"),
+            return RET_ERR(_("Invalid encoding in IRC config: %1$s"),
                     err->message);
         } else {
             g_free(test);

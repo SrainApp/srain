@@ -34,7 +34,7 @@ SrnChatConfig* srn_chat_config_new(){
 
 SrnRet srn_chat_config_check(SrnChatConfig *cfg){
     if (!cfg){
-        return RET_ERR(_("Invalid SrnChatConfig instance"));
+        return RET_ERR(_("Invalid chat config instance"));
     }
     return sui_config_check(cfg->ui);
 }

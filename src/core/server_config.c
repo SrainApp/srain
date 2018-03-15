@@ -102,21 +102,21 @@ SrnRet srn_server_config_check(SrnServerConfig *cfg){
     }
 
     switch (cfg->login_method) {
-        case LOGIN_NONE:
+        case SRN_LOGIN_METHOD_NONE:
             break;
-        case LOGIN_PASS:
+        case SRN_LOGIN_METHOD_PASS:
             if (str_is_empty(cfg->passwd)) {
                 return RET_ERR(missing, "passwd");
             }
             break;
-        case LOGIN_NICKSERV:
-        case LOGIN_MSG_NICKSERV:
-        case LOGIN_SASL_PLAIN:
+        case SRN_LOGIN_METHOD_NICKSERV:
+        case SRN_LOGIN_METHOD_MSG_NICKSERV:
+        case SRN_LOGIN_METHOD_SASL_PLAIN:
             if (str_is_empty(cfg->user_passwd)) {
                 return RET_ERR(missing, "user.passwd");
             }
             break;
-        case LOGIN_UNKNOWN:
+        case SRN_LOGIN_METHOD_UNKNOWN:
         default:
             return RET_ERR(invalid, "login_method");
     }
@@ -221,22 +221,22 @@ char* srn_login_method_to_string(SrnLoginMethod lm){
     const char *str;
 
     switch (lm) {
-        case LOGIN_NONE:
+        case SRN_LOGIN_METHOD_NONE:
             str = "none";
             break;
-        case LOGIN_PASS:
+        case SRN_LOGIN_METHOD_PASS:
             str = "pass";
             break;
-        case LOGIN_NICKSERV:
+        case SRN_LOGIN_METHOD_NICKSERV:
             str = "nickserv";
             break;
-        case LOGIN_MSG_NICKSERV:
+        case SRN_LOGIN_METHOD_MSG_NICKSERV:
             str = "msg_nickserv";
             break;
-        case LOGIN_SASL_PLAIN:
+        case SRN_LOGIN_METHOD_SASL_PLAIN:
             str = "sasl_plain";
             break;
-        case LOGIN_UNKNOWN:
+        case SRN_LOGIN_METHOD_UNKNOWN:
         default:
             str = "unknown";
     }
@@ -248,17 +248,17 @@ SrnLoginMethod srn_login_method_from_string(const char *str){
     SrnLoginMethod login;
 
     if (str == NULL || g_ascii_strcasecmp(str, "none") == 0){
-        login = LOGIN_NONE;
+        login = SRN_LOGIN_METHOD_NONE;
     } else if (g_ascii_strcasecmp(str, "pass") == 0){
-        login = LOGIN_PASS;
+        login = SRN_LOGIN_METHOD_PASS;
     } else if (g_ascii_strcasecmp(str, "nickserv") == 0){
-        login = LOGIN_NICKSERV;
+        login = SRN_LOGIN_METHOD_NICKSERV;
     } else if (g_ascii_strcasecmp(str, "msg_nickserv") == 0){
-        login = LOGIN_MSG_NICKSERV;
+        login = SRN_LOGIN_METHOD_MSG_NICKSERV;
     } else if (g_ascii_strcasecmp(str, "sasl_plain") == 0){
-        login = LOGIN_SASL_PLAIN;
+        login = SRN_LOGIN_METHOD_SASL_PLAIN;
     } else {
-        login = LOGIN_UNKNOWN;
+        login = SRN_LOGIN_METHOD_UNKNOWN;
     }
 
     return login;

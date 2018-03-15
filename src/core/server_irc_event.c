@@ -922,7 +922,7 @@ void srn_server_irc_event_cap(SircSession *sirc, const char *event,
     if (!srv->negotiated && cap_end){
         sirc_cmd_cap_list(sirc);
 
-        if (srv->cfg->login_method == LOGIN_SASL_PLAIN){
+        if (srv->cfg->login_method == SRN_LOGIN_METHOD_SASL_PLAIN){
             if (srv->cap->client_enabled.sasl){
                 // Negotiation should end after sasl authentication end
             } else {
@@ -948,7 +948,7 @@ void srn_server_irc_event_authenticate(SircSession *sirc, const char *event,
     g_return_if_fail(srn_server_is_valid(srv));
 
     switch (srv->cfg->login_method){
-        case LOGIN_SASL_PLAIN:
+        case SRN_LOGIN_METHOD_SASL_PLAIN:
             {
                 char *base64;
                 char *login_method;
