@@ -231,10 +231,10 @@ char* srn_login_method_to_string(SrnLoginMethod lm){
             str = "nickserv";
             break;
         case SRN_LOGIN_METHOD_MSG_NICKSERV:
-            str = "msg_nickserv";
+            str = "msg-nickserv";
             break;
         case SRN_LOGIN_METHOD_SASL_PLAIN:
-            str = "sasl_plain";
+            str = "sasl-plain";
             break;
         case SRN_LOGIN_METHOD_UNKNOWN:
         default:
@@ -253,9 +253,9 @@ SrnLoginMethod srn_login_method_from_string(const char *str){
         login = SRN_LOGIN_METHOD_PASS;
     } else if (g_ascii_strcasecmp(str, "nickserv") == 0){
         login = SRN_LOGIN_METHOD_NICKSERV;
-    } else if (g_ascii_strcasecmp(str, "msg_nickserv") == 0){
+    } else if (g_ascii_strcasecmp(str, "msg-nickserv") == 0){
         login = SRN_LOGIN_METHOD_MSG_NICKSERV;
-    } else if (g_ascii_strcasecmp(str, "sasl_plain") == 0){
+    } else if (g_ascii_strcasecmp(str, "sasl-plain") == 0){
         login = SRN_LOGIN_METHOD_SASL_PLAIN;
     } else {
         login = SRN_LOGIN_METHOD_UNKNOWN;

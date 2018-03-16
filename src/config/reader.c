@@ -172,18 +172,18 @@ static SrnRet read_log_config_from_cfg(config_t *cfg, SrnLoggerConfig *log_cfg){
 
     log = config_lookup(cfg, "log");
     if (log){
-        config_setting_lookup_bool_ex(log, "prompt_color", &log_cfg->prompt_color);
-        config_setting_lookup_bool_ex(log, "prompt_file", &log_cfg->prompt_file);
-        config_setting_lookup_bool_ex(log, "prompt_function", &log_cfg->prompt_function);
-        config_setting_lookup_bool_ex(log, "prompt_line", &log_cfg->prompt_line);
+        config_setting_lookup_bool_ex(log, "prompt-color", &log_cfg->prompt_color);
+        config_setting_lookup_bool_ex(log, "prompt-file", &log_cfg->prompt_file);
+        config_setting_lookup_bool_ex(log, "prompt-function", &log_cfg->prompt_function);
+        config_setting_lookup_bool_ex(log, "prompt-line", &log_cfg->prompt_line);
 
-        ret = read_log_targets_from_log(log, "debug_targets", &log_cfg->debug_targets);
+        ret = read_log_targets_from_log(log, "debug-targets", &log_cfg->debug_targets);
         if (!RET_IS_OK(ret)) return ret;
-        ret = read_log_targets_from_log(log, "info_targets", &log_cfg->info_targets);
+        ret = read_log_targets_from_log(log, "info-targets", &log_cfg->info_targets);
         if (!RET_IS_OK(ret)) return ret;
-        ret = read_log_targets_from_log(log, "warn_targets", &log_cfg->warn_targets);
+        ret = read_log_targets_from_log(log, "warn-targets", &log_cfg->warn_targets);
         if (!RET_IS_OK(ret)) return ret;
-        ret = read_log_targets_from_log(log, "error_targets", &log_cfg->error_targets);
+        ret = read_log_targets_from_log(log, "error-targets", &log_cfg->error_targets);
         if (!RET_IS_OK(ret)) return ret;
     }
 
@@ -225,7 +225,7 @@ static SrnRet read_server_config_list_from_cfg(config_t *cfg,
         GSList **srv_cfg_list){
     config_setting_t *server_list;
 
-    server_list = config_lookup(cfg, "server_list");
+    server_list = config_lookup(cfg, "server-list");
     if (server_list){
         for (int i = 0, count = config_setting_length(server_list); i < count; i++){
             const char *name = NULL;
@@ -238,7 +238,7 @@ static SrnRet read_server_config_list_from_cfg(config_t *cfg,
             if (!server) break;
 
             if (config_setting_lookup_string(server, "name", &name) != CONFIG_TRUE) {
-                return RET_ERR(_("server_list[%1$d] doesn't have a name"), i);
+                return RET_ERR(_("server-list[%1$d] doesn't have a name"), i);
             }
 
             srv_cfg = NULL;
@@ -277,7 +277,7 @@ static SrnRet read_server_config_from_server(config_setting_t *server,
     config_setting_lookup_string_ex(server, "name", &cfg->name);
     config_setting_lookup_string_ex(server, "password", &cfg->passwd);
     config_setting_lookup_bool_ex(server, "tls", &cfg->irc->tls);
-    config_setting_lookup_bool_ex(server, "tls_noverify", &cfg->irc->tls_noverify);
+    config_setting_lookup_bool_ex(server, "tls-noverify", &cfg->irc->tls_noverify);
     config_setting_lookup_string_ex(server, "encoding", &cfg->irc->encoding);
     if (cfg->irc->tls_noverify) {
         cfg->irc->tls = TRUE;
@@ -315,7 +315,7 @@ static SrnRet read_server_config_from_server(config_setting_t *server,
     if (user){
         char *login_method = NULL;
 
-        config_setting_lookup_string_ex(user, "login_method", &login_method);
+        config_setting_lookup_string_ex(user, "login-method", &login_method);
         if (login_method) {
             cfg->login_method = srn_login_method_from_string(login_method);
             g_free(login_method);
@@ -329,7 +329,7 @@ static SrnRet read_server_config_from_server(config_setting_t *server,
 
     /* Read server.default_messages */
     config_setting_t *default_messages;
-    default_messages = config_setting_lookup(server, "default_messages");
+    default_messages = config_setting_lookup(server, "default-messages");
     if (default_messages){
         config_setting_lookup_string_ex(default_messages, "part", &cfg->part_message);
         config_setting_lookup_string_ex(default_messages, "kick", &cfg->kick_message);
@@ -356,7 +356,7 @@ static SrnRet read_server_config_from_server_list(config_setting_t *server_list,
         config_setting_lookup_string(server, "name", &name);
         if (g_strcmp0(srv_name, name) != 0) continue;
 
-        DBG_FR("Read: server_list.[name = %s], srv_name: %s", name, srv_name);
+        DBG_FR("Read: server-list.[name = %s], srv_name: %s", name, srv_name);
         ret = read_server_config_from_server(server, cfg);
         if (!RET_IS_OK(ret)) return ret;
     }
@@ -380,7 +380,7 @@ static SrnRet read_server_config_from_cfg(config_t *cfg, SrnServerConfig *srv_cf
     /* Read server_list[name = srv_name] */
     config_setting_t *server_list;
 
-    server_list = config_lookup(cfg, "server_list");
+    server_list = config_lookup(cfg, "server-list");
     if (server_list){
         ret = read_server_config_from_server_list(server_list, srv_cfg, srv_name);
         if (!RET_IS_OK(ret)) return ret;
@@ -391,13 +391,13 @@ static SrnRet read_server_config_from_cfg(config_t *cfg, SrnServerConfig *srv_cf
 
 static SrnRet read_chat_config_from_chat(config_setting_t *chat, SrnChatConfig *cfg){
     config_setting_lookup_bool_ex(chat, "notify", &cfg->ui->notify);
-    config_setting_lookup_bool_ex(chat, "show_topic", &cfg->ui->show_topic);
-    config_setting_lookup_bool_ex(chat, "show_avatar", &cfg->ui->show_avatar);
-    config_setting_lookup_bool_ex(chat, "show_user_list", &cfg->ui->show_user_list);
-    config_setting_lookup_bool_ex(chat, "render_mirc_color", &cfg->render_mirc_color);
+    config_setting_lookup_bool_ex(chat, "show-topic", &cfg->ui->show_topic);
+    config_setting_lookup_bool_ex(chat, "show-avatar", &cfg->ui->show_avatar);
+    config_setting_lookup_bool_ex(chat, "show-user-list", &cfg->ui->show_user_list);
+    config_setting_lookup_bool_ex(chat, "render-mirc-color", &cfg->render_mirc_color);
 
     /* Read url handlers */
-    config_setting_lookup_bool_ex(chat, "url_handlers.http.fetch_image", &cfg->ui->preview_image);
+    config_setting_lookup_bool_ex(chat, "url-handlers.http.fetch-image", &cfg->ui->preview_image);
     // TODO
 
     return SRN_OK;
@@ -418,7 +418,7 @@ static SrnRet read_chat_config_from_chat_list(config_setting_t *chat_list,
         }
         if (g_strcmp0(chat_name, name) != 0) continue;
 
-        DBG_FR("Read: chat_list.%s, chat_name: %s", name, chat_name);
+        DBG_FR("Read: chat-list.%s, chat_name: %s", name, chat_name);
         ret = read_chat_config_from_chat(chat, cfg);
         if (!RET_IS_OK(ret)) return ret;
     }
@@ -444,7 +444,7 @@ static SrnRet read_chat_config_from_cfg(config_t *cfg, SrnChatConfig *chat_cfg,
     if (chat_name){
         config_setting_t *chat_list;
 
-        chat_list = config_lookup(cfg, "server.chat_list");
+        chat_list = config_lookup(cfg, "server.chat-list");
         if (chat_list){
             ret = read_chat_config_from_chat_list(chat_list, chat_cfg, chat_name);
             if (!RET_IS_OK(ret)) return ret;
@@ -454,7 +454,7 @@ static SrnRet read_chat_config_from_cfg(config_t *cfg, SrnChatConfig *chat_cfg,
     if (srv_name){
         config_setting_t *server_list;
 
-        server_list = config_lookup(cfg, "server_list");
+        server_list = config_lookup(cfg, "server-list");
         if (server_list){
             for (int i = 0, count = config_setting_length(server_list); i < count; i++){
                 const char *name = NULL;
@@ -470,7 +470,7 @@ static SrnRet read_chat_config_from_cfg(config_t *cfg, SrnChatConfig *chat_cfg,
                 /* Read server_list.[name = srv_name].chat */
                 chat = config_setting_lookup(server, "chat");
                 if (chat){
-                    DBG_FR("Read server_list.[name = %s].chat, srv_name: %s, chat_name: %s",
+                    DBG_FR("Read server-list.[name = %s].chat, srv_name: %s, chat_name: %s",
                             name, srv_name, chat_name);
                     ret = read_chat_config_from_chat(chat, chat_cfg);
                     if (!RET_IS_OK(ret)) return ret;
@@ -480,7 +480,7 @@ static SrnRet read_chat_config_from_cfg(config_t *cfg, SrnChatConfig *chat_cfg,
                 if (chat_name){
                     config_setting_t *chat_list;
 
-                    chat_list = config_setting_lookup(server, "server.chat_list");
+                    chat_list = config_setting_lookup(server, "server.chat-list");
                     if (chat_list){
                         ret = read_chat_config_from_chat_list(chat_list, chat_cfg, chat_name);
                         if (!RET_IS_OK(ret)) return ret;
