@@ -26,6 +26,7 @@
 
 #include "core/core.h"
 #include "sui/sui.h"
+#include "config/reader.h"
 
 #include "filter.h"
 #include "decorator.h"
@@ -90,6 +91,9 @@ SrnApplication* srn_application_new(void){
     app->cfg = cfg;
     app->cfg_mgr = cfg_mgr;
 
+    srn_application_init_event(app);
+    srn_application_init_logger(app);
+
     // Init server config list
     srv_cfg_list = NULL;
     srn_config_manager_read_server_config_list(cfg_mgr, &srv_cfg_list);
@@ -97,9 +101,6 @@ SrnApplication* srn_application_new(void){
         srn_application_add_server_config(app, lst->data);
     }
     g_slist_free(srv_cfg_list);
-
-    srn_application_init_event(app);
-    srn_application_init_logger(app);
 
     app->ui = sui_new_application(cfg->id, &app->ui_app_events, cfg->ui);
     sui_application_set_ctx(app->ui, app);

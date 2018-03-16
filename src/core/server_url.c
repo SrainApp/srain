@@ -28,12 +28,11 @@
 #include <libsoup/soup.h>
 
 #include "core/core.h"
-
+#include "config/reader.h"
 #include "ret.h"
 #include "i18n.h"
 #include "log.h"
 #include "utils.h"
-#include "config/config.h"
 
 static void join_comma_separated_chans(SrnServer *srv, const char *comma_chans);
 

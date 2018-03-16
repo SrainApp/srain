@@ -33,7 +33,7 @@
 
 #include "core/core.h"
 #include "sui/sui.h"
-
+#include "config/reader.h"
 #include "srain.h"
 #include "log.h"
 #include "meta.h"
@@ -41,7 +41,6 @@
 #include "command.h"
 #include "filter.h"
 #include "decorator.h"
-#include "config/config.h"
 #include "utils.h"
 
 typedef struct _ServerCmdContext {

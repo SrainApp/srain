@@ -29,7 +29,6 @@
 #include <string.h>
 
 #include "config/config.h"
-#include "srain.h"
 #include "log.h"
 #include "file_helper.h"
 #include "i18n.h"

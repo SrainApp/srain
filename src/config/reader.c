@@ -32,8 +32,6 @@
 #include "i18n.h"
 #include "utils.h"
 
-// FIXME: config
-
 /* Libconfig helpers */
 static int config_lookup_string_ex(const config_t *config, const char *path, char **value);
 static int config_setting_lookup_string_ex(const config_setting_t *config, const char *name, char **value);

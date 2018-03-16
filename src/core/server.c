@@ -30,17 +30,16 @@
 #include <gtk/gtk.h>
 
 #include "core/core.h"
-#include "server_irc_event.h"
-#include "server_ui_event.h"
-
 #include "sirc/sirc.h"
-
+#include "config/reader.h"
 #include "meta.h"
 #include "srain.h"
 #include "log.h"
 #include "utils.h"
-#include "config/config.h"
 #include "i18n.h"
+
+#include "server_irc_event.h"
+#include "server_ui_event.h"
 
 SrnServer* srn_server_new(SrnServerConfig *cfg){
     SrnServer *srv;

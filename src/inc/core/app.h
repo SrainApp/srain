@@ -25,6 +25,7 @@
 #include "sirc/sirc.h"
 #include "config/config.h"
 #include "version.h"
+#include "log.h"
 
 #ifndef __IN_CORE_H
 	#error This file should not be included directly, include just core.h
@@ -85,12 +86,5 @@ char* srn_application_dump_server_config_list(SrnApplication *app);
 SrnApplicationConfig *srn_application_config_new(void);
 SrnRet srn_application_config_check(SrnApplicationConfig *cfg);
 void srn_application_config_free(SrnApplicationConfig *cfg);
-
-// FIXME: config
-SrnRet srn_config_manager_read_log_config(SrnConfigManager *mgr, SrnLoggerConfig *cfg);
-SrnRet srn_config_manager_read_application_config(SrnConfigManager *mgr, SrnApplicationConfig *cfg);
-SrnRet srn_config_manager_read_server_config_list(SrnConfigManager *mgr, GSList **srv_cfg_list);
-SrnRet srn_config_manager_read_server_config(SrnConfigManager *mgr, SrnServerConfig *cfg, const char *srv_name);
-SrnRet srn_config_manager_read_chat_config(SrnConfigManager *mgr, SrnChatConfig *cfg, const char *srv_name, const char *chat_name);
 
 #endif /* __APP_H */

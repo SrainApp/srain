@@ -28,13 +28,13 @@
 
 #include "core/core.h"
 #include "sirc/sirc.h"
+#include "config/reader.h"
 #include "server_ui_event.h"
 #include "srain.h"
 #include "i18n.h"
 #include "log.h"
 #include "rc.h"
 #include "filter.h"
-#include "config/config.h"
 #include "ret.h"
 #include "utils.h"
 

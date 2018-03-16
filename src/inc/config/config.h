@@ -21,11 +21,9 @@
 
 #include <libconfig.h>
 
-#include "srain.h"
 #include "ret.h"
 #include "version.h"
 
-// FIXME
 typedef struct _SrnConfigManager SrnConfigManager;
 
 struct _SrnConfigManager {
@@ -33,10 +31,6 @@ struct _SrnConfigManager {
     config_t user_cfg;
     config_t system_cfg;
 };
-
-#include "log.h"
-#include "core/core.h"
-#include "core/core.h"
 
 SrnConfigManager* srn_config_manager_new(SrnVersion *ver);
 void srn_config_manager_free(SrnConfigManager *mgr);
