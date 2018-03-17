@@ -24,15 +24,11 @@
 
 typedef struct _SuiApplication SuiApplication;
 typedef struct _SuiWindow SuiWindow;
-typedef struct _SuiSession SuiSession;
-typedef int SuiSessionFlag;
+typedef struct _SuiBuffer SuiBuffer;
+typedef int SuiBufferFlag;
 typedef struct _SuiMessage SuiMessage;
 typedef enum _UserType UserType;
 typedef enum _SrnUserType SrnUserType;
-
-#define SUI_SESSION_SERVER      1 << 0
-#define SUI_SESSION_CHANNEL     1 << 1
-#define SUI_SESSION_DIALOG      1 << 2
 
 // TODO Rename type
 typedef enum {
@@ -76,30 +72,23 @@ void sui_proc_pending_event(void);
 /* SuiAppliaction */
 SuiApplication* sui_new_application(const char *id, SuiApplicationEvents *events, SuiApplicationConfig *cfg);
 void sui_free_application(SuiApplication *app);
-SuiApplicationEvents* sui_application_get_events(SuiApplication *app);
+void sui_run_application(SuiApplication *app, int argc, char *argv[]);
+
 void* sui_application_get_ctx(SuiApplication *app);
 void sui_application_set_ctx(SuiApplication *app, void *ctx);
-void sui_run_application(SuiApplication *app, int argc, char *argv[]);
 
 /* SuiWindow */
 SuiWindow* sui_new_window(SuiApplication *app, SuiWindowEvents *events, SuiWindowConfig *cfg);
 void sui_free_window(SuiWindow *win);
-SuiWindowEvents* sui_window_get_events(SuiWindow *sui);
 
-/* SuiSession */
-SuiSession *sui_new_session(SuiEvents *events, SuiConfig *cfg, SuiSessionFlag flag);
-void sui_free_session(SuiSession *sui);
-SrnRet sui_server_session(SuiSession *sui, const char *srv);
-SrnRet sui_channel_session(SuiSession *sui, SuiSession *sui_srv, const char *chan);
-SrnRet sui_private_session(SuiSession *sui, SuiSession *sui_srv, const char *nick);
-void sui_end_session(SuiSession *sui);
+/* SuiBuffer */
+SuiBuffer* sui_new_server_buffer(const char *srv, SuiBufferEvents *events, SuiBufferConfig *cfg);
+SuiBuffer* sui_new_channel_buffer(SuiBuffer *srv_buf, const char *chan, SuiBufferEvents *events, SuiBufferConfig *cfg);
+SuiBuffer* sui_new_private_buffer(SuiBuffer *srv_buf, const char *nick, SuiBufferEvents *events, SuiBufferConfig *cfg);
+void sui_free_buffer(SuiBuffer *sui);
 
-SuiSessionFlag sui_get_flag(SuiSession *sui);
-SuiEvents *sui_get_events(SuiSession *sui);
-void* sui_get_ctx(SuiSession *sui);
-void sui_set_ctx(SuiSession *sui, void *ctx);
-void sui_set_name(SuiSession *sui, const char *name);
-void sui_set_remark(SuiSession *sui, const char *remark);
+void* sui_buffer_get_ctx(SuiBuffer *sui);
+void sui_buffer_set_ctx(SuiBuffer *sui, void *ctx);
 
 /* SuiMessage */
 
@@ -111,28 +100,28 @@ void sui_message_append_image(SuiMessage *smsg, const char *url);
 void sui_message_mentioned(SuiMessage *smsg);
 void sui_message_notify(SuiMessage *smsg);
 
-SuiMessage *sui_add_sys_msg(SuiSession *sui, const char *msg, SysMsgType type);
-SuiMessage *sui_add_sent_msg(SuiSession *sui, const char *msg);
-SuiMessage *sui_add_recv_msg(SuiSession *sui, const char *nick, const char *id, const char *msg);
-void sui_message_append_message(SuiSession *sui, SuiMessage *smsg, const char *msg);
+SuiMessage *sui_add_sys_msg(SuiBuffer *sui, const char *msg, SysMsgType type);
+SuiMessage *sui_add_sent_msg(SuiBuffer *sui, const char *msg);
+SuiMessage *sui_add_recv_msg(SuiBuffer *sui, const char *nick, const char *id, const char *msg);
+void sui_message_append_message(SuiBuffer *sui, SuiMessage *smsg, const char *msg);
 
 /* Completion */
-void sui_add_completion(SuiSession *sui, const char *word);
-void sui_rm_completion(SuiSession *sui, const char *word);
+void sui_add_completion(SuiBuffer *sui, const char *word);
+void sui_rm_completion(SuiBuffer *sui, const char *word);
 
 /* User */
-SrnRet sui_add_user(SuiSession *sui, const char *nick, UserType type);
-SrnRet sui_rm_user(SuiSession *sui, const char *nick);
-SrnRet sui_ren_user(SuiSession *sui, const char *old_nick, const char *new_nick, UserType type);
+SrnRet sui_add_user(SuiBuffer *sui, const char *nick, UserType type);
+SrnRet sui_rm_user(SuiBuffer *sui, const char *nick);
+SrnRet sui_ren_user(SuiBuffer *sui, const char *old_nick, const char *new_nick, UserType type);
 
 /* Misc */
-void sui_set_topic(SuiSession *sui, const char *topic);
-void sui_set_topic_setter(SuiSession *sui, const char *setter);
+void sui_set_topic(SuiBuffer *sui, const char *topic);
+void sui_set_topic_setter(SuiBuffer *sui, const char *setter);
 void sui_message_box(const char *title, const char *msg);
 
-void sui_chan_list_start(SuiSession *sui);
-void sui_chan_list_add(SuiSession *sui, const char *chan, int users, const char *topic);
-void sui_chan_list_end(SuiSession *sui);
+void sui_chan_list_start(SuiBuffer *sui);
+void sui_chan_list_add(SuiBuffer *sui, const char *chan, int users, const char *topic);
+void sui_chan_list_end(SuiBuffer *sui);
 void sui_server_list_add(const char *server);
 
 #endif /* __SUI_H */

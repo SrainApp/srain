@@ -31,7 +31,6 @@
 #include "core/core.h"
 #include "sui/sui.h"
 #include "sui_common.h"
-#include "sui_event_hdr.h"
 #include "theme.h"
 #include "srain_window.h"
 #include "srain_buffer.h"
@@ -46,8 +45,12 @@
 #include "log.h"
 #include "i18n.h"
 
-struct _SrainWindow {
+struct _SuiWindow {
     GtkApplicationWindow parent;
+
+    SuiWindowEvents *events;
+    SuiWindowConfig *cfg;
+    void *ctx;
 
     // Header
     GtkButton *about_button;
@@ -66,90 +69,28 @@ struct _SrainWindow {
     // Popovers
     SrainConnectPopover *connect_popover;
     SrainJoinPopover *join_popover;
-    SuiWindow *ctx;
 };
 
-struct _SrainWindowClass {
+struct _SuiWindowClass {
     GtkApplicationWindowClass parent_class;
 };
 
-G_DEFINE_TYPE(SrainWindow, srain_window, GTK_TYPE_APPLICATION_WINDOW);
-
-static void quit_menu_item_on_activate(){
-    // srain_app_quit(srain_app);
-    // FIXME
-}
-
-static void on_destroy(SrainWindow *win){
-    // Nothing to do for now
-}
-
+static void quit_menu_item_on_activate();
+static void on_destroy(SuiWindow *self);
 static void on_notify_is_active(GObject *object, GParamSpec *pspec,
-        gpointer data ) {
-   if (srain_window_is_active(SRAIN_WINDOW(object))){
-       /* Stop stress the icon */
-       srain_window_tray_icon_stress(SRAIN_WINDOW(object), 0);
-   } else {
-
-   }
-}
-
-static void show_about_dialog(gpointer user_data){
-    GtkWidget *window = user_data;
-    const gchar *authors[] = { PACKAGE_AUTHOR " <" PACKAGE_EMAIL ">", NULL };
-    const gchar **documentors = authors;
-    const gchar *version = g_strdup_printf(_("%1$s%2$s\nRunning against GTK+ %3$d.%4$d.%5$d"),
-            PACKAGE_VERSION,
-            PACKAGE_BUILD,
-            gtk_get_major_version(),
-            gtk_get_minor_version(),
-            gtk_get_micro_version());
-
-    gtk_show_about_dialog(GTK_WINDOW(window),
-            "program-name", PACKAGE_NAME,
-            "version", version,
-            "copyright", "(C) " PACKAGE_COPYRIGHT_DATES " " PACKAGE_AUTHOR,
-            "license-type", GTK_LICENSE_GPL_3_0,
-            "website", PACKAGE_WEBSITE,
-            "comments", PACKAGE_DESC,
-            "authors", authors,
-            "documenters", documentors,
-            "logo-icon-name", "im.srain.Srain",
-            "title", _("About Srain"),
-            NULL);
-}
-
-static void popover_button_on_click(gpointer user_data){
-    GtkPopover *popover;
-
-    popover = user_data;
-    gtk_widget_set_visible(GTK_WIDGET(popover),
-            !gtk_widget_get_visible(GTK_WIDGET(popover)));
-}
-
+        gpointer data);
+static void show_about_dialog(gpointer user_data);
+static void popover_button_on_click(gpointer user_data);
 static gboolean CTRL_J_K_on_press(GtkAccelGroup *group, GObject *obj,
-        guint keyval, GdkModifierType mod, gpointer user_data){
-    SrainStackSidebar *sidebar;
+        guint keyval, GdkModifierType mod, gpointer user_data);
 
-    if (mod != GDK_CONTROL_MASK) return FALSE;
+/*****************************************************************************
+ * GObject functions
+ *****************************************************************************/
 
-    sidebar = user_data;
-    switch (keyval){
-        case GDK_KEY_k:
-            srain_stack_sidebar_prev(sidebar);
-            break;
-        case GDK_KEY_j:
-            srain_stack_sidebar_next(sidebar);
-            break;
-        default:
-            ERR_FR("unknown keyval %d", keyval);
-            return FALSE;
-    }
+G_DEFINE_TYPE(SuiWindow, sui_window, GTK_TYPE_APPLICATION_WINDOW);
 
-    return TRUE;
-}
-
-static void srain_window_init(SrainWindow *self){
+static void sui_window_init(SuiWindow *self){
     GClosure *closure_j;
     GClosure *closure_k;
     GtkAccelGroup *accel;
@@ -211,132 +152,214 @@ static void srain_window_init(SrainWindow *self){
     g_closure_unref(closure_k);
 }
 
-static void srain_window_class_init(SrainWindowClass *class){
+static void sui_window_class_init(SuiWindowClass *class){
     gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
             "/org/gtk/srain/window.glade");
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, about_button);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, join_button);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, connect_button);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, spinner);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, stack);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, tray_icon);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, tray_menu);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, quit_menu_item);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, about_menu_item);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainWindow, sidebar_box);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SuiWindow, about_button);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SuiWindow, join_button);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SuiWindow, connect_button);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SuiWindow, spinner);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SuiWindow, stack);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SuiWindow, tray_icon);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SuiWindow, tray_menu);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SuiWindow, quit_menu_item);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SuiWindow, about_menu_item);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SuiWindow, sidebar_box);
 }
 
-SrainWindow* srain_window_new(SrainApp *app, SuiWindow *ctx){
-    SrainWindow *win;
+/*****************************************************************************
+ * Exported functions
+ *****************************************************************************/
 
-    win =  g_object_new(SRAIN_TYPE_WINDOW, "application", app, NULL);
-    win->ctx = ctx;
+SuiWindow* sui_window_new(SuiApplication *app, SuiWindowEvents *events,
+        SuiWindowConfig *cfg){
+    SuiWindow *self;
 
-    return win;
+    self = g_object_new(SUI_TYPE_WINDOW, "application", app, NULL);
+    self->events = events;
+    self->cfg = cfg;
+
+    return self;
 }
-SuiWindow *srain_window_get_ctx(SrainWindow *win){
-    return win->ctx;
-}
-
-SrainWindow *srain_window_get_cur_window(GtkWidget *widget){
-    GtkWidget *toplevel;
-
-    toplevel = gtk_widget_get_toplevel(widget);
-    if (SRAIN_IS_WINDOW(toplevel)) {
-        return SRAIN_WINDOW(toplevel);
-    }
-
-    return NULL;
+SuiWindowEvents* sui_window_get_events(SuiWindow *sui) {
+    return sui->events;
 }
 
-void srain_window_add_buffer(SrainWindow *win, SrainBuffer *buffer){
+void* sui_window_get_ctx(SuiWindow *self){
+    return self->ctx;
+}
+
+void sui_window_set_ctx(SuiWindow *self, void *ctx){
+    self->ctx = ctx;
+}
+
+void sui_window_add_buffer(SuiWindow *self, SuiBuffer *buf){
     GString *gstr;
 
     gstr = g_string_new("");
     g_string_printf(gstr, "%s %s",
-            srain_buffer_get_remark(buffer),
-            srain_buffer_get_name(buffer));
-    gtk_stack_add_named(win->stack, GTK_WIDGET(buffer), gstr->str);
+            sui_buffer_get_remark(buf),
+            sui_buffer_get_name(buf));
+    gtk_stack_add_named(self->stack, GTK_WIDGET(buf), gstr->str);
     g_string_free(gstr, TRUE);
 
-    theme_apply(GTK_WIDGET(win));
+    theme_apply(GTK_WIDGET(self));
 
-    gtk_stack_set_visible_child(win->stack, GTK_WIDGET(buffer));
+    gtk_stack_set_visible_child(self->stack, GTK_WIDGET(buf));
 }
 
-void srain_window_rm_buffer(SrainWindow *win, SrainBuffer *buffer){
-    // srain_user_list_clear(srain_buffer_get_user_list(buffer));
-    gtk_container_remove(GTK_CONTAINER(win->stack), GTK_WIDGET(buffer));
+void sui_window_rm_buffer(SuiWindow *self, SuiBuffer *buf){
+    // srain_user_list_clear(sui_buffer_get_user_list(buf));
+    gtk_container_remove(GTK_CONTAINER(self->stack), GTK_WIDGET(buf));
 }
 
-SrainBuffer* srain_window_get_cur_buffer(SrainWindow *win){
-    SrainBuffer *buffer;
+SuiBuffer* sui_window_get_cur_buffer(SuiWindow *self){
+    SuiBuffer *buf;
 
-    buffer = SRAIN_BUFFER(gtk_stack_get_visible_child(win->stack));
+    buf = SUI_BUFFER(gtk_stack_get_visible_child(self->stack));
 
-    return buffer;
+    return buf;
 }
 
-SrainServerBuffer* srain_window_get_cur_server_buffer(SrainWindow *win){
-    SrainBuffer *buffer;
+SrainServerBuffer* sui_window_get_cur_server_buffer(SuiWindow *self){
+    SuiBuffer *buf;
 
-    buffer = srain_window_get_cur_buffer(win);
-    if (!SRAIN_IS_BUFFER(buffer)){
+    buf = sui_window_get_cur_buffer(self);
+    if (!SUI_IS_BUFFER(buf)){
         return NULL;
     }
-    if (SRAIN_IS_SERVER_BUFFER(buffer)){
-        return SRAIN_SERVER_BUFFER(buffer);
+    if (SRAIN_IS_SERVER_BUFFER(buf)){
+        return SRAIN_SERVER_BUFFER(buf);
     }
-    if (SRAIN_IS_CHAT_BUFFER(buffer)){
-        return srain_chat_buffer_get_server_buffer(SRAIN_CHAT_BUFFER(buffer));
+    if (SRAIN_IS_CHAT_BUFFER(buf)){
+        return srain_chat_buffer_get_server_buffer(SRAIN_CHAT_BUFFER(buf));
     }
 
     return NULL;
 }
 
-SrainBuffer* srain_window_get_buffer(SrainWindow *win,
+SuiBuffer* sui_window_get_buffer(SuiWindow *self,
         const char *name, const char *remark){
-    SrainBuffer *buffer;
+    SuiBuffer *buf;
 
     GString *fullname = g_string_new("");
     g_string_printf(fullname, "%s %s", remark, name);
-    buffer = SRAIN_BUFFER(gtk_stack_get_child_by_name(win->stack, fullname->str));
+    buf = SUI_BUFFER(gtk_stack_get_child_by_name(self->stack, fullname->str));
     g_string_free(fullname, TRUE);
 
-    return buffer;
+    return buf;
 }
 
-void srain_window_spinner_toggle(SrainWindow *win, gboolean is_busy){
+void sui_window_spinner_toggle(SuiWindow *self, gboolean is_busy){
    is_busy
-        ? gtk_spinner_start(win->spinner)
-        : gtk_spinner_stop(win->spinner);
+        ? gtk_spinner_start(self->spinner)
+        : gtk_spinner_stop(self->spinner);
 }
 
-void srain_window_stack_sidebar_update(SrainWindow *win, SrainBuffer *buffer,
+void sui_window_stack_sidebar_update(SuiWindow *self, SuiBuffer *buf,
         const char *nick, const char *msg){
-    if (SRAIN_BUFFER(gtk_stack_get_visible_child(win->stack)) != buffer){
-        srain_stack_sidebar_update(win->sidebar, buffer, nick, msg, 0);
+    if (SUI_BUFFER(gtk_stack_get_visible_child(self->stack)) != buf){
+        srain_stack_sidebar_update(self->sidebar, buf, nick, msg, 0);
     } else {
-        srain_stack_sidebar_update(win->sidebar, buffer, nick, msg, 1);
+        srain_stack_sidebar_update(self->sidebar, buf, nick, msg, 1);
     }
 }
 
-void srain_window_tray_icon_stress(SrainWindow *win, int stress){
-    gtk_status_icon_set_from_icon_name(win->tray_icon, stress ? "srain-red": "im.srain.Srain");
+void sui_window_tray_icon_stress(SuiWindow *self, int stress){
+    gtk_status_icon_set_from_icon_name(self->tray_icon,
+            stress ? "srain-red": "im.srain.Srain");
 }
 
-int srain_window_is_active(SrainWindow *win){
+int sui_window_is_active(SuiWindow *self){
     int active;
 
-    g_object_get(G_OBJECT(win), "is-active", &active, NULL);
+    g_object_get(G_OBJECT(self), "is-active", &active, NULL);
 
     return active;
 }
 
-SrainConnectPopover *srain_window_get_connect_popover(SrainWindow *win){
-    return win->connect_popover;
+SrainConnectPopover *sui_window_get_connect_popover(SuiWindow *self){
+    return self->connect_popover;
 }
 
-SrainJoinPopover *srain_window_get_join_popover(SrainWindow *win){
-    return win->join_popover;
+SrainJoinPopover *sui_window_get_join_popover(SuiWindow *self){
+    return self->join_popover;
+}
+
+/*****************************************************************************
+ * Static functions
+ *****************************************************************************/
+
+static void quit_menu_item_on_activate(){
+    // sui_application_quit(srain_app);
+    // FIXME
+}
+
+static void on_destroy(SuiWindow *self){
+    // Nothing to do for now
+}
+
+static void on_notify_is_active(GObject *object, GParamSpec *pspec,
+        gpointer data ) {
+   if (sui_window_is_active(SUI_WINDOW(object))){
+       /* Stop stress the icon */
+       sui_window_tray_icon_stress(SUI_WINDOW(object), 0);
+   } else {
+
+   }
+}
+
+static void show_about_dialog(gpointer user_data){
+    GtkWidget *window = user_data;
+    const gchar *authors[] = { PACKAGE_AUTHOR " <" PACKAGE_EMAIL ">", NULL };
+    const gchar **documentors = authors;
+    const gchar *version = g_strdup_printf(_("%1$s%2$s\nRunning against GTK+ %3$d.%4$d.%5$d"),
+            PACKAGE_VERSION,
+            PACKAGE_BUILD,
+            gtk_get_major_version(),
+            gtk_get_minor_version(),
+            gtk_get_micro_version());
+
+    gtk_show_about_dialog(GTK_WINDOW(window),
+            "program-name", PACKAGE_NAME,
+            "version", version,
+            "copyright", "(C) " PACKAGE_COPYRIGHT_DATES " " PACKAGE_AUTHOR,
+            "license-type", GTK_LICENSE_GPL_3_0,
+            "website", PACKAGE_WEBSITE,
+            "comments", PACKAGE_DESC,
+            "authors", authors,
+            "documenters", documentors,
+            "logo-icon-name", "im.srain.Srain",
+            "title", _("About Srain"),
+            NULL);
+}
+
+static void popover_button_on_click(gpointer user_data){
+    GtkPopover *popover;
+
+    popover = user_data;
+    gtk_widget_set_visible(GTK_WIDGET(popover),
+            !gtk_widget_get_visible(GTK_WIDGET(popover)));
+}
+
+static gboolean CTRL_J_K_on_press(GtkAccelGroup *group, GObject *obj,
+        guint keyval, GdkModifierType mod, gpointer user_data){
+    SrainStackSidebar *sidebar;
+
+    if (mod != GDK_CONTROL_MASK) return FALSE;
+
+    sidebar = user_data;
+    switch (keyval){
+        case GDK_KEY_k:
+            srain_stack_sidebar_prev(sidebar);
+            break;
+        case GDK_KEY_j:
+            srain_stack_sidebar_next(sidebar);
+            break;
+        default:
+            ERR_FR("unknown keyval %d", keyval);
+            return FALSE;
+    }
+
+    return TRUE;
 }

@@ -122,7 +122,7 @@ struct _SrnChat {
     GSList *relaybot_list;
 
     SrnServer *srv;
-    SuiSession *ui;
+    SuiBuffer *ui;
     SrnChatConfig *cfg;
 };
 
@@ -130,7 +130,7 @@ struct _SrnChatConfig {
     bool log; // TODO
     bool render_mirc_color;
 
-    SuiConfig *ui;
+    SuiBufferConfig *ui;
 };
 
 enum _SrnServerState {

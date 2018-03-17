@@ -39,7 +39,7 @@ static bool whether_merge_last_message(SrnChat *chat, SrnMessage *msg);
 
 SrnChat *srn_chat_new(SrnServer *srv, const char *name, SrnChatConfig *cfg){
     SrnChat *chat;
-    SuiSessionFlag flag;
+    SuiBufferEvents *events;
 
     chat = g_malloc0(sizeof(SrnChat));
 
@@ -53,46 +53,35 @@ SrnChat *srn_chat_new(SrnServer *srv, const char *name, SrnChatConfig *cfg){
     // chat->msg_list = NULL; // via g_malloc0()
     // chat->last_msg = NULL; // via g_malloc0()
 
-    flag = 0;
-    chat->ui = sui_new_session(&srn_application_get_default()->ui_events, cfg->ui, flag);
-    if (!chat->ui){
-        goto cleanup;
-    }
-    sui_set_ctx(chat->ui, chat);
-
+    // FIXME: ugly...
+    events = &srn_application_get_default()->ui_events;
     if (strcmp(META_SERVER, chat->name) == 0){
-        // SrnServer
-        sui_server_session(chat->ui, chat->name);
+        // Server
+        chat->ui = sui_new_server_buffer(srv->cfg->name, events, cfg->ui);
     } else if (sirc_is_chan(chat->name)){
         // Channel
-        sui_channel_session(chat->ui, chat->srv->chat->ui, chat->name);
+        chat->ui = sui_new_channel_buffer(srv->chat->ui, name, events, cfg->ui);
     } else {
         // Private, its user_list must have yourself and the dialogue target
-        sui_private_session(chat->ui, chat->srv->chat->ui, chat->name);
+        chat->ui = sui_new_private_buffer(srv->chat->ui, name, events, cfg->ui);
         srn_chat_add_user(chat, chat->srv->user->nick, SRN_USER_CHIGUA);
         srn_chat_add_user(chat, chat->name, SRN_USER_CHIGUA);
     }
+    if (!chat->ui){
+        goto cleanup;
+    }
+    sui_buffer_set_ctx(chat->ui, chat);
 
     sui_add_completion(chat->ui, chat->name);
     for (int i = 0; cmd_binds[i].name != NULL; i++){
         sui_add_completion(chat->ui, cmd_binds[i].name);
     }
 
-    /* Require chat->ui */
-
-    /* You will add 2 users with same nickname if you chat with yourself
-    if (flag == SUI_SESSION_DIALOG){
-        g_return_val_if_fail(chat->user, NULL);
-        srn_chat_add_user(chat, chat->user->nick, SRN_USER_CHIGUA);
-        srn_chat_add_user(chat, chat->name, SRN_USER_CHIGUA);
-    }
-    */
-
     return chat;
 
 cleanup:
     if (chat->ui) {
-        sui_free_session(chat->ui);
+        sui_free_buffer(chat->ui);
     }
     if (chat->cfg) {
         srn_chat_config_free(chat->cfg);
@@ -135,7 +124,7 @@ void srn_chat_free(SrnChat *chat){
     }
 
     if (chat->ui){
-        sui_free_session(chat->ui);
+        sui_free_buffer(chat->ui);
         chat->ui = NULL;
     }
 

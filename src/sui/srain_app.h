@@ -20,19 +20,24 @@
 #define __SRAIN_APP_H
 
 #include <gtk/gtk.h>
-#include "core/core.h"
 
-#define SRAIN_TYPE_APP (srain_app_get_type())
-#define SRAIN_APP(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SRAIN_TYPE_APP, SrainApp))
+#include "sui/sui.h"
 
-typedef struct _SrainApp SrainApp;
-typedef struct _SrainAppClass SrainAppClass;
+#define SUI_TYPE_APPLICATION (sui_application_get_type())
+#define SUI_APPLICATION(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SUI_TYPE_APPLICATION, SuiApplication))
 
-GType srain_app_get_type(void);
-SrainApp* srain_app_new(SuiApplication *ctx, const char *id);
-void srain_app_quit(SrainApp *app);
-SrainApp* srain_app_get_default();
-SuiApplication* srain_app_get_ctx(SrainApp *app);
-SrnApplication* srain_app_get_core_ctx(SrainApp *app);
+typedef struct _SuiApplication SuiApplication;
+typedef struct _SuiApplicationClass SuiApplicationClass;
+
+GType sui_application_get_type(void);
+SuiApplication* sui_application_new(const char *id, SuiApplicationEvents *events, SuiApplicationConfig *cfg);
+void sui_application_run(SuiApplication *self, int argc, char *argv[]);
+void sui_application_quit(SuiApplication *self);
+
+SuiWindow* sui_application_get_cur_window(SuiApplication *self);
+SuiApplication* sui_application_get_instance();
+SuiApplicationEvents* sui_application_get_events(SuiApplication *self);
+void* sui_application_get_ctx(SuiApplication *self);
+void sui_application_set_ctx(SuiApplication *self, void *ctx);
 
 #endif /* __SRAIN_APP_H */

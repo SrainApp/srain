@@ -27,7 +27,7 @@ SrnChatConfig* srn_chat_config_new(){
     SrnChatConfig *cfg;
 
     cfg = g_malloc0(sizeof(SrnChatConfig));
-    cfg->ui = sui_config_new();
+    cfg->ui = sui_buffer_config_new();
 
     return cfg;
 }
@@ -36,12 +36,12 @@ SrnRet srn_chat_config_check(SrnChatConfig *cfg){
     if (!cfg){
         return RET_ERR(_("Invalid chat config instance"));
     }
-    return sui_config_check(cfg->ui);
+    return sui_buffer_config_check(cfg->ui);
 }
 
 void srn_chat_config_free(SrnChatConfig *cfg){
     g_return_if_fail(cfg);
 
-    sui_config_free(cfg->ui);
+    sui_buffer_config_free(cfg->ui);
     g_free(cfg);
 }

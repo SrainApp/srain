@@ -58,7 +58,7 @@ typedef int (*SuiApplicationEventCallback) (SuiApplication *sui, SuiEvent event,
 
 typedef int (*SuiWindowEventCallback) (SuiWindow *sui, SuiEvent event, GVariantDict *params);
 
-typedef int (*SuiEventCallback) (SuiSession *sui, SuiEvent event, GVariantDict *params);
+typedef int (*SuiEventCallback) (SuiBuffer *sui, SuiEvent event, GVariantDict *params);
 
 typedef struct {
     SuiApplicationEventCallback open;
@@ -85,6 +85,6 @@ typedef struct {
     SuiEventCallback ignore;
     SuiEventCallback cutover;
     SuiEventCallback chan_list;
-} SuiEvents;
+} SuiBufferEvents;
 
 #endif /* __SUI_EVENT_H */

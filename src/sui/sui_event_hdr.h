@@ -19,10 +19,12 @@
 #ifndef __SUI_EVENT_HDR_H
 #define __SUI_EVENT_HDR_H
 
-#include "sui/sui.h"
+#include "srain_app.h"
+#include "srain_window.h"
+#include "srain_buffer.h"
 
-SrnRet sui_application_event_hdr(SuiApplication *sui, SuiEvent event, GVariantDict *params);
-SrnRet sui_windows_event_hdr(SuiWindow *sui, SuiEvent event, GVariantDict *params);
-SrnRet sui_event_hdr(SuiSession *sui, SuiEvent event, GVariantDict *params);
+SrnRet sui_application_event_hdr(SuiApplication *app, SuiEvent event, GVariantDict *params);
+SrnRet sui_window_event_hdr(SuiWindow *win, SuiEvent event, GVariantDict *params);
+SrnRet sui_buffer_event_hdr(SuiBuffer *buf, SuiEvent event, GVariantDict *params);
 
 #endif /* __SUI_EVENT_HDR_H */

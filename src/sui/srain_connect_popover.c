@@ -28,14 +28,15 @@
 #include <gtk/gtk.h>
 
 #include "sui/sui.h"
-#include "sui_event_hdr.h"
-#include "srain_window.h"
-#include "srain_connect_popover.h"
-
 #include "srain.h"
 #include "i18n.h"
 #include "log.h"
 #include "utils.h"
+
+#include "sui_common.h"
+#include "sui_event_hdr.h"
+#include "srain_window.h"
+#include "srain_connect_popover.h"
 
 #define SERVER_LIST_STORE_COL_NAME  0
 
@@ -186,9 +187,8 @@ static void popover_on_visible(GObject *object, GParamSpec *pspec, gpointer data
         /* Update server list while displaying */
         SrnRet ret;
 
-        ret = sui_windows_event_hdr(
-                srain_window_get_ctx(
-                    srain_window_get_cur_window(GTK_WIDGET(popover))),
+        ret = sui_window_event_hdr(
+                sui_get_cur_window(),
                 SUI_EVENT_SERVER_LIST,
                 NULL);
         if (!RET_IS_OK(ret)){
@@ -268,9 +268,8 @@ static void connect_button_on_click(gpointer user_data){
     g_variant_dict_insert(params, "tls", SUI_EVENT_PARAM_BOOL, tls);
     g_variant_dict_insert(params, "tls-noverify", SUI_EVENT_PARAM_BOOL, tls_noverify);
 
-    ret = sui_windows_event_hdr(
-            srain_window_get_ctx(
-                srain_window_get_cur_window(GTK_WIDGET(popover))),
+    ret = sui_window_event_hdr(
+            sui_get_cur_window(),
             SUI_EVENT_CONNECT,
             params);
     g_variant_dict_unref(params);

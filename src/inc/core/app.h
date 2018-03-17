@@ -45,7 +45,7 @@ struct _SrnApplication {
     SuiApplication *ui;
     SuiApplicationEvents ui_app_events;
     SuiWindowEvents ui_win_events;
-    SuiEvents ui_events;
+    SuiBufferEvents ui_events;
     SircEvents irc_events;
 
     GSList *win_list;

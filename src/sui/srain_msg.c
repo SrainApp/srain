@@ -104,16 +104,16 @@ static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_da
     char *sel_msg;
     char *line;
     const char *remark;
-    SrainWindow *win;
-    SrainBuffer *buffer;
+    SuiWindow *win;
+    SuiBuffer *buf;
     SrainRecvMsg *smsg;
 
     smsg = SRAIN_RECV_MSG(user_data);
-    win = srain_window_get_cur_window(GTK_WIDGET(smsg));
+    win = sui_get_cur_window();
     if ((sel_msg = label_get_selection(smsg->msg_label)) == NULL) return;
 
-    remark = srain_buffer_get_remark(srain_window_get_cur_buffer(win));
-    buffer = srain_window_get_buffer(win,
+    remark = sui_buffer_get_remark(sui_window_get_cur_buffer(win));
+    buf = sui_window_get_buffer(win,
             gtk_menu_item_get_label(GTK_MENU_ITEM(widget)),
             remark);
 
@@ -124,13 +124,13 @@ static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_da
 
         fwd = g_strdup_printf(_("%1$s <fwd %2$s@%3$s>"), line,
                 gtk_label_get_text(smsg->nick_label),
-                srain_buffer_get_name(srain_window_get_cur_buffer(win)));
+                sui_buffer_get_name(sui_window_get_cur_buffer(win)));
         line = strtok(NULL, "\n");
 
         params = g_variant_dict_new(NULL);
         g_variant_dict_insert(params, "message", SUI_EVENT_PARAM_STRING, fwd);
 
-        sui_event_hdr(srain_buffer_get_session(buffer), SUI_EVENT_SEND, params);
+        sui_buffer_event_hdr(buf, SUI_EVENT_SEND, params);
 
         g_variant_dict_unref(params);
         g_free(fwd);
@@ -147,7 +147,7 @@ static void msg_label_on_popup(GtkLabel *label, GtkMenu *menu,
     GtkMenuItem *forward_menu_item;
     GtkMenu *forward_submenu;
     SrainRecvMsg *smsg;
-    SrainServerBuffer *buffer;
+    SrainServerBuffer *buf;
 
     smsg = SRAIN_RECV_MSG(user_data);
 
@@ -164,18 +164,17 @@ static void msg_label_on_popup(GtkLabel *label, GtkMenu *menu,
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), GTK_WIDGET(forward_menu_item));
 
     /* Create submenu of forward_menu_item */
-    buffer = srain_window_get_cur_server_buffer(
-            srain_window_get_cur_window(GTK_WIDGET(smsg)));
-    g_return_if_fail(SRAIN_IS_SERVER_BUFFER(buffer));
+    buf = sui_window_get_cur_server_buffer(sui_get_cur_window());
+    g_return_if_fail(SRAIN_IS_SERVER_BUFFER(buf));
 
     n = 0;
     forward_submenu = GTK_MENU(gtk_menu_new());
-    lst = srain_server_buffer_get_buffer_list(buffer);
+    lst = srain_server_buffer_get_buffer_list(buf);
     while (lst){
         GtkMenuItem *item;
 
         item = GTK_MENU_ITEM(gtk_menu_item_new_with_label(
-                    srain_buffer_get_name(SRAIN_BUFFER(lst->data))));
+                    sui_buffer_get_name(SUI_BUFFER(lst->data))));
         gtk_widget_show(GTK_WIDGET(item));
         g_signal_connect(item, "activate",
                 G_CALLBACK(froward_submenu_item_on_activate), smsg);
@@ -215,10 +214,7 @@ static void nick_button_on_click(GtkWidget *widget, gpointer *user_data){
     str = g_string_new(gtk_label_get_text(nick_label));
     str = g_string_append(str, ": ");
 
-    srain_buffer_insert_text(
-            srain_window_get_cur_buffer(
-                srain_window_get_cur_window(GTK_WIDGET(nick_label))),
-            str->str, 0);
+    sui_buffer_insert_text(sui_get_cur_buffer(), str->str, 0);
     g_string_free(str, TRUE);
 }
 

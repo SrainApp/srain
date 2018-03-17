@@ -58,7 +58,7 @@ static void srain_channel_buffer_init(SrainChannelBuffer *self){
     self->leave_menu_item =
         (GtkMenuItem *)gtk_builder_get_object(builder, "leave_menu_item");
     gtk_menu_shell_append(
-            GTK_MENU_SHELL(srain_buffer_get_menu(SRAIN_BUFFER(self))),
+            GTK_MENU_SHELL(sui_buffer_get_menu(SUI_BUFFER(self))),
             GTK_WIDGET(self->leave_menu_item));
     g_object_unref(builder);
 
@@ -80,14 +80,15 @@ static void srain_channel_buffer_class_init(SrainChannelBufferClass *class){
  * Exported functions
  *****************************************************************************/
 
-SrainChannelBuffer* srain_channel_buffer_new(SuiSession *sui,
-        SrainServerBuffer *srv, const char *chan){
+SrainChannelBuffer* srain_channel_buffer_new(SrainServerBuffer *srv,
+        const char *chan, SuiBufferEvents *events, SuiBufferConfig *cfg){
     SrainChannelBuffer *self;
 
     self = g_object_new(SRAIN_TYPE_CHANNEL_BUFFER,
-            "session", sui,
             "server", srv,
             "name",   chan,
+            "events", events,
+            "config", cfg,
             NULL);
 
     return self;
@@ -103,6 +104,5 @@ static void leave_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
 
     self = user_data;
 
-    sui_event_hdr(srain_buffer_get_session(SRAIN_BUFFER(self)),
-                SUI_EVENT_PART, NULL);
+    sui_buffer_event_hdr(SUI_BUFFER(self), SUI_EVENT_PART, NULL);
 }

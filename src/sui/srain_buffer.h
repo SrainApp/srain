@@ -21,20 +21,22 @@
 
 #include <gtk/gtk.h>
 
-#include "sui/sui.h"
 #include "srain_msg.h"
 #include "srain_msg_list.h"
 #include "srain_user_list.h"
 #include "srain_entry_completion.h"
 
-#define SRAIN_TYPE_BUFFER (srain_buffer_get_type())
-#define SRAIN_BUFFER(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SRAIN_TYPE_BUFFER, SrainBuffer))
-#define SRAIN_IS_BUFFER(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), SRAIN_TYPE_BUFFER))
+#define SUI_TYPE_BUFFER (sui_buffer_get_type())
+#define SUI_BUFFER(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SUI_TYPE_BUFFER, SuiBuffer))
+#define SUI_IS_BUFFER(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), SUI_TYPE_BUFFER))
 
-struct _SrainBuffer {
+struct _SuiBuffer {
     GtkBox parent;
 
-    SuiSession *session;
+    SuiBufferEvents *events;
+    SuiBufferConfig *cfg;
+    void *ctx;
+
     char *name;
     char *remark;
 
@@ -63,33 +65,38 @@ struct _SrainBuffer {
     GtkButton *upload_image_button;
 };
 
-struct _SrainBufferClass {
+struct _SuiBufferClass {
     GtkBoxClass parent_class;
 };
 
-typedef struct _SrainBuffer SrainBuffer;
-typedef struct _SrainBufferClass SrainBufferClass;
+typedef struct _SuiBuffer SuiBuffer;
+typedef struct _SuiBufferClass SuiBufferClass;
 
-GType srain_buffer_get_type(void);
-SrainBuffer* srain_buffer_new(SuiSession *sui, const char *name, const char *remark);
+GType sui_buffer_get_type(void);
+SuiBuffer* sui_buffer_new(const char *name, const char *remark,
+        SuiBufferEvents *events, SuiBufferConfig *cfg);
 
-void srain_buffer_fcous_entry(SrainBuffer *buffer);
-void srain_buffer_insert_text(SrainBuffer *buffer, const char *text, int pos);
-void srain_buffer_show_topic(SrainBuffer *buffer, bool isshow);
+void sui_buffer_fcous_entry(SuiBuffer *self);
+void sui_buffer_insert_text(SuiBuffer *self, const char *text, int pos);
+void sui_buffer_show_topic(SuiBuffer *self, bool isshow);
 
-void srain_buffer_set_name(SrainBuffer *buffer, const char *name);
-const char* srain_buffer_get_name(SrainBuffer *buffer);
-void srain_buffer_set_remark(SrainBuffer *buffer, const char *remark);
-const char* srain_buffer_get_remark(SrainBuffer *buffer);
-void srain_buffer_set_nick(SrainBuffer *buffer, const char *nick);
-const char* srain_buffer_get_nick(SrainBuffer *buffer);
-void srain_buffer_set_topic(SrainBuffer *buffer, const char *topic);
-void srain_buffer_set_topic_setter(SrainBuffer *buffer, const char *setter);
+void sui_buffer_set_name(SuiBuffer *self, const char *name);
+const char* sui_buffer_get_name(SuiBuffer *self);
+void sui_buffer_set_remark(SuiBuffer *self, const char *remark);
+const char* sui_buffer_get_remark(SuiBuffer *self);
+void sui_buffer_set_config(SuiBuffer *self, SuiBufferConfig *cfg);
+SuiBufferConfig* sui_buffer_get_config(SuiBuffer *self);
+SuiBufferEvents* sui_buffer_get_events(SuiBuffer *self);
+void sui_buffer_set_ctx(SuiBuffer *self, void *ctx);
+void* sui_buffer_get_ctx(SuiBuffer *self);
 
-GtkMenu* srain_buffer_get_menu(SrainBuffer *buffer);
-SrainMsgList* srain_buffer_get_msg_list(SrainBuffer *buffer);
-SrainEntryCompletion* srain_buffer_get_entry_completion(SrainBuffer *buffer);
-void srain_buffer_set_session(SrainBuffer *buffer, SuiSession *session);
-SuiSession *srain_buffer_get_session(SrainBuffer *buffer);
+void sui_buffer_set_nick(SuiBuffer *self, const char *nick);
+const char* sui_buffer_get_nick(SuiBuffer *self);
+void sui_buffer_set_topic(SuiBuffer *self, const char *topic);
+void sui_buffer_set_topic_setter(SuiBuffer *self, const char *setter);
+
+GtkMenu* sui_buffer_get_menu(SuiBuffer *self);
+SrainMsgList* sui_buffer_get_msg_list(SuiBuffer *self);
+SrainEntryCompletion* sui_buffer_get_entry_completion(SuiBuffer *self);
 
 #endif /* __SRAIN_BUFFER_H */

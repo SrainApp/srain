@@ -28,7 +28,7 @@
 
 typedef struct _SuiApplicationConfig SuiApplicationConfig;
 typedef struct _SuiWindowConfig SuiWindowConfig;
-typedef struct _SuiConfig SuiConfig;
+typedef struct _SuiBufferConfig SuiBufferConfig;
 
 struct _SuiApplicationConfig {
     char *theme;
@@ -37,7 +37,7 @@ struct _SuiApplicationConfig {
 struct _SuiWindowConfig {
 };
 
-struct _SuiConfig {
+struct _SuiBufferConfig {
     bool notify;
     bool show_topic;
     bool show_avatar;
@@ -53,8 +53,8 @@ SuiWindowConfig *sui_window_config_new(void);
 SrnRet sui_window_config_check(SuiWindowConfig *cfg);
 void sui_window_config_free(SuiWindowConfig *cfg);
 
-SuiConfig *sui_config_new(void);
-SrnRet sui_config_check(SuiConfig *cfg);
-void sui_config_free(SuiConfig *cfg);
+SuiBufferConfig *sui_buffer_config_new(void);
+SrnRet sui_buffer_config_check(SuiBufferConfig *cfg);
+void sui_buffer_config_free(SuiBufferConfig *cfg);
 
 #endif /* __SUI_CONFIG_H */

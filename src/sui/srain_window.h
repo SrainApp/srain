@@ -27,30 +27,33 @@
 #include "srain_connect_popover.h"
 #include "srain_join_popover.h"
 
-#define SRAIN_TYPE_WINDOW (srain_window_get_type())
-#define SRAIN_WINDOW(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SRAIN_TYPE_WINDOW, SrainWindow))
-#define SRAIN_IS_WINDOW(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), SRAIN_TYPE_WINDOW))
+#define SUI_TYPE_WINDOW (sui_window_get_type())
+#define SUI_WINDOW(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SUI_TYPE_WINDOW, SuiWindow))
+#define SRAIN_IS_WINDOW(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), SUI_TYPE_WINDOW))
 
-typedef struct _SrainWindow SrainWindow;
-typedef struct _SrainWindowClass SrainWindowClass;
+typedef struct _SuiWindow SuiWindow;
+typedef struct _SuiWindowClass SuiWindowClass;
 
-GType srain_window_get_type(void);
-SrainWindow* srain_window_new(SrainApp *app, SuiWindow *ctx);
-SuiWindow *srain_window_get_ctx(SrainWindow *win);
+GType sui_window_get_type(void);
+SuiWindow* sui_window_new(SuiApplication *app, SuiWindowEvents *events, SuiWindowConfig *cfg);
 
-SrainWindow *srain_window_get_cur_window(GtkWidget *widget);
-void srain_window_add_buffer(SrainWindow *win, SrainBuffer *buffer);
-void srain_window_rm_buffer(SrainWindow *win, SrainBuffer *buffer);
-SrainBuffer *srain_window_get_buffer(SrainWindow *win, const char *name, const char *remark);
-SrainBuffer *srain_window_get_cur_buffer(SrainWindow *win);
-SrainServerBuffer* srain_window_get_cur_server_buffer(SrainWindow *win);
+/* Sui interface */
+void* sui_window_get_ctx(SuiWindow *self);
+void sui_window_set_ctx(SuiWindow *self, void *ctx);
+SuiWindowEvents* sui_window_get_events(SuiWindow *sui);
 
-void srain_window_spinner_toggle(SrainWindow *win, gboolean is_busy);
-void srain_window_stack_sidebar_update(SrainWindow *win, SrainBuffer *buffer, const char *nick, const char *msg);
-int srain_window_is_active(SrainWindow *win);
-void srain_window_tray_icon_stress(SrainWindow *win, int stress);
+void sui_window_add_buffer(SuiWindow *self, SuiBuffer *buffer);
+void sui_window_rm_buffer(SuiWindow *self, SuiBuffer *buffer);
+SuiBuffer *sui_window_get_buffer(SuiWindow *self, const char *name, const char *remark);
+SuiBuffer *sui_window_get_cur_buffer(SuiWindow *self);
+SrainServerBuffer* sui_window_get_cur_server_buffer(SuiWindow *self);
 
-SrainConnectPopover *srain_window_get_connect_popover(SrainWindow *win);
-SrainJoinPopover *srain_window_get_join_popover(SrainWindow *win);
+void sui_window_spinner_toggle(SuiWindow *self, gboolean is_busy);
+void sui_window_stack_sidebar_update(SuiWindow *self, SuiBuffer *buffer, const char *nick, const char *msg);
+int sui_window_is_active(SuiWindow *self);
+void sui_window_tray_icon_stress(SuiWindow *self, int stress);
+
+SrainConnectPopover *sui_window_get_connect_popover(SuiWindow *self);
+SrainJoinPopover *sui_window_get_join_popover(SuiWindow *self);
 
 #endif /* __SRAIN_WINDOW_H */
