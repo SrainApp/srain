@@ -84,11 +84,10 @@ void sui_buffer_set_name(SuiBuffer *self, const char *name);
 const char* sui_buffer_get_name(SuiBuffer *self);
 void sui_buffer_set_remark(SuiBuffer *self, const char *remark);
 const char* sui_buffer_get_remark(SuiBuffer *self);
+void* sui_buffer_get_ctx(SuiBuffer *self);
 void sui_buffer_set_config(SuiBuffer *self, SuiBufferConfig *cfg);
 SuiBufferConfig* sui_buffer_get_config(SuiBuffer *self);
 SuiBufferEvents* sui_buffer_get_events(SuiBuffer *self);
-void sui_buffer_set_ctx(SuiBuffer *self, void *ctx);
-void* sui_buffer_get_ctx(SuiBuffer *self);
 
 void sui_buffer_set_nick(SuiBuffer *self, const char *nick);
 const char* sui_buffer_get_nick(SuiBuffer *self);

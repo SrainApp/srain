@@ -82,13 +82,12 @@ SuiWindow* sui_new_window(SuiApplication *app, SuiWindowEvents *events, SuiWindo
 void sui_free_window(SuiWindow *win);
 
 /* SuiBuffer */
-SuiBuffer* sui_new_server_buffer(const char *srv, SuiBufferEvents *events, SuiBufferConfig *cfg);
-SuiBuffer* sui_new_channel_buffer(SuiBuffer *srv_buf, const char *chan, SuiBufferEvents *events, SuiBufferConfig *cfg);
-SuiBuffer* sui_new_private_buffer(SuiBuffer *srv_buf, const char *nick, SuiBufferEvents *events, SuiBufferConfig *cfg);
+SuiBuffer* sui_new_server_buffer(const char *srv, void *ctx, SuiBufferEvents *events, SuiBufferConfig *cfg);
+SuiBuffer* sui_new_channel_buffer(SuiBuffer *srv_buf, const char *chan, void *ctx, SuiBufferEvents *events, SuiBufferConfig *cfg);
+SuiBuffer* sui_new_private_buffer(SuiBuffer *srv_buf, const char *nick, void *ctx, SuiBufferEvents *events, SuiBufferConfig *cfg);
 void sui_free_buffer(SuiBuffer *sui);
 
 void* sui_buffer_get_ctx(SuiBuffer *sui);
-void sui_buffer_set_ctx(SuiBuffer *sui, void *ctx);
 
 /* SuiMessage */
 

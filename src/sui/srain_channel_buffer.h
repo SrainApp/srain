@@ -32,7 +32,7 @@ typedef struct _SrainChannelBufferClass SrainChannelBufferClass;
 
 GType srain_channel_buffer_get_type(void);
 SrainChannelBuffer* srain_channel_buffer_new(SrainServerBuffer *srv,
-        const char *chan, SuiBufferEvents *events, SuiBufferConfig *cfg);
+        const char *chan, void *ctx, SuiBufferEvents *events, SuiBufferConfig *cfg);
 
 void srain_channel_buffer_show_user_list(SrainChannelBuffer *self, bool isshow);
 

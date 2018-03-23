@@ -162,13 +162,14 @@ static void srain_server_buffer_class_init(SrainServerBufferClass *class){
  * Exported functions
  *****************************************************************************/
 
-SrainServerBuffer* srain_server_buffer_new(const char *server,
+SrainServerBuffer* srain_server_buffer_new(const char *server, void *ctx,
         SuiBufferEvents *events, SuiBufferConfig *cfg){
     SrainServerBuffer *self;
 
     self = g_object_new(SRAIN_TYPE_SERVER_BUFFER,
             "name", META_SERVER,
             "remark", server,
+            "ctx", ctx,
             "events", events,
             "config", cfg,
             NULL);

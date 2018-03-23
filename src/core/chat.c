@@ -44,33 +44,24 @@ SrnChat *srn_chat_new(SrnServer *srv, const char *name, SrnChatConfig *cfg){
     chat = g_malloc0(sizeof(SrnChat));
 
     str_assign(&chat->name, name);
-    chat->srv = srv;
     chat->cfg = cfg;
     chat->joined = FALSE;
-    // FIXME:
-    // chat->user = srn_user_ref(srv->user);
-    // chat->user_list = NULL; // via g_malloc0()
-    // chat->msg_list = NULL; // via g_malloc0()
-    // chat->last_msg = NULL; // via g_malloc0()
+    chat->srv = srv;
 
-    // FIXME: ugly...
+    // Init chat->ui
     events = &srn_application_get_default()->ui_events;
     if (strcmp(META_SERVER, chat->name) == 0){
         // Server
-        chat->ui = sui_new_server_buffer(srv->cfg->name, events, cfg->ui);
+        chat->ui = sui_new_server_buffer(chat->srv->cfg->name, chat, events, chat->cfg->ui);
     } else if (sirc_is_chan(chat->name)){
         // Channel
-        chat->ui = sui_new_channel_buffer(srv->chat->ui, name, events, cfg->ui);
+        chat->ui = sui_new_channel_buffer(chat->srv->chat->ui, chat->name, chat, events, chat->cfg->ui);
     } else {
         // Private, its user_list must have yourself and the dialogue target
-        chat->ui = sui_new_private_buffer(srv->chat->ui, name, events, cfg->ui);
+        chat->ui = sui_new_private_buffer(srv->chat->ui, chat->name, chat, events, chat->cfg->ui);
         srn_chat_add_user(chat, chat->srv->user->nick, SRN_USER_CHIGUA);
         srn_chat_add_user(chat, chat->name, SRN_USER_CHIGUA);
     }
-    if (!chat->ui){
-        goto cleanup;
-    }
-    sui_buffer_set_ctx(chat->ui, chat);
 
     sui_add_completion(chat->ui, chat->name);
     for (int i = 0; cmd_binds[i].name != NULL; i++){
@@ -78,19 +69,6 @@ SrnChat *srn_chat_new(SrnServer *srv, const char *name, SrnChatConfig *cfg){
     }
 
     return chat;
-
-cleanup:
-    if (chat->ui) {
-        sui_free_buffer(chat->ui);
-    }
-    if (chat->cfg) {
-        srn_chat_config_free(chat->cfg);
-    }
-    if (chat){
-        g_free(chat);
-    }
-
-    return NULL;
 }
 
 void srn_chat_free(SrnChat *chat){

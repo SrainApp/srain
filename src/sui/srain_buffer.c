@@ -44,6 +44,7 @@
 #include "i18n.h"
 #include "utils.h"
 
+static void sui_buffer_set_ctx(SuiBuffer *self, void *ctx);
 static void sui_buffer_set_events(SuiBuffer *self, SuiBufferEvents *events);
 static void topic_menu_item_on_toggled(GtkWidget* widget, gpointer user_data);
 static gboolean entry_on_key_press(gpointer user_data, GdkEventKey *event);
@@ -61,6 +62,7 @@ enum
   // 0 for PROP_NOME
   PROP_NAME = 1,
   PROP_REMARK,
+  PROP_CTX,
   PROP_EVENTS,
   PROP_CONFIG,
   N_PROPERTIES
@@ -80,6 +82,9 @@ static void sui_buffer_set_property(GObject *object, guint property_id,
       break;
     case PROP_REMARK:
       sui_buffer_set_remark(self, g_value_get_string(value));
+      break;
+    case PROP_CTX:
+      sui_buffer_set_ctx(self, g_value_get_pointer(value));
       break;
     case PROP_EVENTS:
       sui_buffer_set_events(self, g_value_get_pointer(value));
@@ -104,6 +109,9 @@ static void sui_buffer_get_property(GObject *object, guint property_id,
       break;
     case PROP_REMARK:
       g_value_set_string(value, sui_buffer_get_remark(self));
+      break;
+    case PROP_CTX:
+      g_value_set_pointer(value, sui_buffer_get_ctx(self));
       break;
     case PROP_EVENTS:
       g_value_set_pointer(value, sui_buffer_get_events(self));
@@ -175,27 +183,33 @@ static void sui_buffer_class_init(SuiBufferClass *class){
     obj_properties[PROP_NAME] =
         g_param_spec_string("name",
                 "Name",
-                "Name of self.",
+                "Name of buffer.",
                 NULL  /* default value */,
                 G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
     obj_properties[PROP_REMARK] =
         g_param_spec_string("remark",
                 "Remark",
-                "Remark of self.",
+                "Remark of buffer.",
                 NULL  /* default value */,
                 G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
+    obj_properties[PROP_CTX] =
+        g_param_spec_pointer("ctx",
+                "Ctx",
+                "Context of buffer.",
+                G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
+
     obj_properties[PROP_EVENTS] =
-        g_param_spec_pointer("event",
+        g_param_spec_pointer("events",
                 "Events",
-                "Event callbacks of self.",
+                "Event callbacks of buffer.",
                 G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
 
     obj_properties[PROP_CONFIG] =
         g_param_spec_pointer("config",
                 "Config",
-                "Configuration of self.",
+                "Configuration of buffer.",
                 G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
     g_object_class_install_properties(object_class,
@@ -282,9 +296,7 @@ SuiBufferConfig* sui_buffer_get_config(SuiBuffer *self){
     return self->cfg;
 }
 
-void sui_buffer_set_ctx(SuiBuffer *self, void *ctx){
-    self->ctx = ctx;
-}
+// sui_buffer_set_ctx() is static
 
 void* sui_buffer_get_ctx(SuiBuffer *self){
     return self->ctx;
@@ -326,6 +338,10 @@ GtkMenu* sui_buffer_get_menu(SuiBuffer *self){
 /*****************************************************************************
  * Static functions
  *****************************************************************************/
+
+static void sui_buffer_set_ctx(SuiBuffer *self, void *ctx){
+    self->ctx = ctx;
+}
 
 static void sui_buffer_set_events(SuiBuffer *self, SuiBufferEvents *events){
     self->events = events;

@@ -82,12 +82,13 @@ static void srain_private_buffer_class_init(SrainPrivateBufferClass *class){
  *****************************************************************************/
 
 SrainPrivateBuffer* srain_private_buffer_new(SrainServerBuffer *srv,
-        const char *nick, SuiBufferEvents *events, SuiBufferConfig *cfg){
+        const char *nick, void *ctx, SuiBufferEvents *events, SuiBufferConfig *cfg){
     SrainPrivateBuffer *self;
 
     self = g_object_new(SRAIN_TYPE_PRIVATE_BUFFER,
             "server", srv,
             "name",   nick,
+            "ctx", ctx,
             "events", events,
             "config", cfg,
             NULL);

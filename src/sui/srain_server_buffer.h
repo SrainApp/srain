@@ -34,7 +34,7 @@ typedef struct _SrainServerBuffer SrainServerBuffer;
 typedef struct _SrainServerBufferClass SrainServerBufferClass;
 
 GType srain_server_buffer_get_type(void);
-SrainServerBuffer* srain_server_buffer_new(const char *server, SuiBufferEvents *events, SuiBufferConfig *cfg);
+SrainServerBuffer* srain_server_buffer_new(const char *server, void *ctx, SuiBufferEvents *events, SuiBufferConfig *cfg);
 
 void srain_server_buffer_add_buffer(SrainServerBuffer *self, SuiBuffer *buffer);
 void srain_server_buffer_rm_buffer(SrainServerBuffer *self, SuiBuffer *buffer);
