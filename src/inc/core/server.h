@@ -267,6 +267,7 @@ SrnChat* srn_server_get_chat_fallback(SrnServer *srv, const char *name);
 
 SrnChat* srn_chat_new(SrnServer *srv, const char *name, SrnChatConfig *cfg);
 void srn_chat_free(SrnChat *chat);
+void srn_chat_set_server(SrnChat *chat, SrnServer *srv);
 int srn_chat_add_user(SrnChat *chat, const char *nick, UserType type);
 int srn_chat_add_user_full(SrnChat *chat, SrnUser *user);
 int srn_chat_rm_user(SrnChat *chat, const char *nick);

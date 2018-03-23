@@ -81,12 +81,13 @@ static void srain_channel_buffer_class_init(SrainChannelBufferClass *class){
  *****************************************************************************/
 
 SrainChannelBuffer* srain_channel_buffer_new(SrainServerBuffer *srv,
-        const char *chan, SuiBufferEvents *events, SuiBufferConfig *cfg){
+        const char *chan, void *ctx, SuiBufferEvents *events, SuiBufferConfig *cfg){
     SrainChannelBuffer *self;
 
     self = g_object_new(SRAIN_TYPE_CHANNEL_BUFFER,
             "server", srv,
             "name",   chan,
+            "ctx", ctx,
             "events", events,
             "config", cfg,
             NULL);

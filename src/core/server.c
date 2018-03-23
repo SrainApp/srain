@@ -43,7 +43,6 @@
 
 SrnServer* srn_server_new(SrnServerConfig *cfg){
     SrnServer *srv;
-    SrnChatConfig *chat_cfg;
 
     srv = g_malloc0(sizeof(SrnServer));
 
@@ -57,32 +56,12 @@ SrnServer* srn_server_new(SrnServerConfig *cfg){
     srv->cap = srn_server_cap_new();
     srv->cap->srv = srv;
 
-    chat_cfg = srn_chat_config_new();
-    srn_config_manager_read_chat_config(
-            srn_application_get_default()->cfg_mgr,
-            chat_cfg, srv->cfg->name, META_SERVER);
-    srv->chat = srn_chat_new(srv, META_SERVER, chat_cfg);
-    if (!srv->chat) goto bad;
-
-    srv->user = srn_user_new(srv->chat,
-            cfg->nickname,
-            cfg->username,
-            cfg->realname,
-            SRN_USER_CHIGUA);
-    if (!srv->user) goto bad;
-    srn_user_set_me(srv->user, TRUE);
-
-    // FIXME: Corss-required between chat_new() and user_new()
-    srv->chat->user = srn_user_ref(srv->user);
-
     /* NOTE: Ping related issuses are not handled in server.c */
     srv->reconn_interval = SRN_SERVER_RECONN_INTERVAL;
     /* srv->last_pong = 0; */ // by g_malloc0()
     /* srv->delay = 0; */ // by g_malloc0()
     /* srv->ping_timer = 0; */ // by g_malloc0()
     /* srv->reconn_timer = 0; */ // by g_malloc0()
-
-    srv->cur_chat = srv->chat;
 
     /* sirc */
     srv->irc = sirc_new_session(
@@ -228,7 +207,19 @@ SrnRet srn_server_add_chat(SrnServer *srv, const char *name){
     }
 
     chat = srn_chat_new(srv, name, chat_cfg);
-    srv->chat_list = g_slist_append(srv->chat_list, chat);
+    // Creating server chat
+    if (g_ascii_strcasecmp(name, META_SERVER) == 0) {
+        srv->chat = chat;
+        srv->user = srn_user_new(srv->chat,
+                srv->cfg->nickname,
+                srv->cfg->username,
+                srv->cfg->realname,
+                SRN_USER_CHIGUA);
+        srv->chat->user = srn_user_ref(srv->user);
+        srn_user_set_me(srv->user, TRUE);
+    } else {
+        srv->chat_list = g_slist_append(srv->chat_list, chat);
+    }
 
     return SRN_OK;
 }

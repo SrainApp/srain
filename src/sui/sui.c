@@ -75,12 +75,12 @@ void sui_free_window(SuiWindow *win){
     // TODO
 }
 
-SuiBuffer* sui_new_server_buffer(const char *srv, SuiBufferEvents *events,
-        SuiBufferConfig *cfg){
+SuiBuffer* sui_new_server_buffer(const char *srv, void *ctx,
+        SuiBufferEvents *events, SuiBufferConfig *cfg){
     SuiBuffer *buf;
     SrainJoinPopover *popover;
 
-    buf = SUI_BUFFER(srain_server_buffer_new(srv, events, cfg));
+    buf = SUI_BUFFER(srain_server_buffer_new(srv, ctx, events, cfg));
 
     sui_window_add_buffer(sui_get_cur_window(), buf);
     sui_buffer_show_topic(buf, buf->cfg->show_topic);
@@ -91,14 +91,14 @@ SuiBuffer* sui_new_server_buffer(const char *srv, SuiBufferEvents *events,
     return SRN_OK;
 }
 
-SuiBuffer *sui_new_channel_buffer(SuiBuffer *srv_buf, const char *chan,
+SuiBuffer *sui_new_channel_buffer(SuiBuffer *srv_buf, const char *chan, void *ctx,
         SuiBufferEvents *events, SuiBufferConfig *cfg){
     SuiBuffer *buf;
 
     g_return_val_if_fail(SRAIN_IS_SERVER_BUFFER(srv_buf), NULL);
 
     buf = SUI_BUFFER(srain_channel_buffer_new(
-            SRAIN_SERVER_BUFFER(srv_buf), chan, events, cfg));
+            SRAIN_SERVER_BUFFER(srv_buf), chan, ctx, events, cfg));
     sui_window_add_buffer(sui_get_cur_window(), buf);
     srain_server_buffer_add_buffer(SRAIN_SERVER_BUFFER(srv_buf), buf);
 
@@ -109,14 +109,14 @@ SuiBuffer *sui_new_channel_buffer(SuiBuffer *srv_buf, const char *chan,
     return buf;
 }
 
-SuiBuffer* sui_new_private_buffer(SuiBuffer *srv_buf, const char *nick,
+SuiBuffer* sui_new_private_buffer(SuiBuffer *srv_buf, const char *nick, void *ctx,
         SuiBufferEvents *events, SuiBufferConfig *cfg){
     SuiBuffer *buf;
 
     g_return_val_if_fail(SRAIN_IS_SERVER_BUFFER(srv_buf), NULL);
 
     buf = SUI_BUFFER(srain_private_buffer_new(
-            SRAIN_SERVER_BUFFER(srv_buf), nick, events, cfg));
+            SRAIN_SERVER_BUFFER(srv_buf), nick, ctx, events, cfg));
     sui_window_add_buffer(sui_get_cur_window(), buf);
     srain_server_buffer_add_buffer(SRAIN_SERVER_BUFFER(srv_buf), buf);
     sui_buffer_show_topic(buf, buf->cfg->show_topic);

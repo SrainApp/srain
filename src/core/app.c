@@ -126,6 +126,7 @@ void srn_application_run(SrnApplication *app, int argc, char *argv[]){
 }
 
 SrnServer* srn_application_add_server(SrnApplication *app, const char *name) {
+    SrnRet ret;
     SrnServer *srv;
     SrnServerConfig *cfg;
 
@@ -139,6 +140,9 @@ SrnServer* srn_application_add_server(SrnApplication *app, const char *name) {
 
     cfg->srv = srv;
     app->srv_list = g_slist_append(app->srv_list, srv);
+
+    ret = srn_server_add_chat(srv, META_SERVER);
+    g_return_val_if_fail(RET_IS_OK(ret), NULL);
 
     return srv;
 }
