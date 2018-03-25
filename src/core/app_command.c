@@ -103,9 +103,8 @@ SrnCommandBind cmd_binds[] = {
     },
     {
         .name = "/connect",
-        .argc = 2, // <hosts> <nick>
+        .argc = 2, // <addr> <nick>
         .opt = {
-            { .key = "-port",           .val = SRN_COMMAND_OPT_NO_DEFAULT },
             { .key = "-tls",            .val = SRN_COMMAND_OPT_NO_VAL },
             { .key = "-tls-noverify",   .val = SRN_COMMAND_OPT_NO_VAL },
             // Backward compatible
@@ -377,48 +376,22 @@ static SrnRet on_command_server(SrnCommand *cmd, void *user_data){
     }
 
     name = srn_command_get_arg(cmd, 0);
+    // Get server config
     if (g_ascii_strcasecmp(subcmd, "add") == 0){
-        cfg = srn_server_config_new(name);
-        if (!cfg){
-            return RET_ERR(_("Server already exist: %1$s"), name);
-        }
-    } else {
-        cfg = srn_application_get_server_config(app, name);
-        if (!cfg){
-            return RET_ERR(_("No such server: %1$s"), name);
+        ret = srn_application_add_server_config(app, name);
+        if (!RET_IS_OK(ret)){
+            return RET_ERR(_("Failed to create server config: %1$s"),
+                    RET_MSG(ret));
         }
     }
 
-    if (g_ascii_strcasecmp(subcmd, "add") == 0){
-        ret = srn_config_manager_read_server_config(
-                srn_application_get_default()->cfg_mgr,
-                cfg,
-                name);
-        if (!RET_IS_OK(ret)){
-            return ret;
-        }
+    cfg = srn_application_get_server_config(app, name);
+    if (!cfg){
+        return RET_ERR(_("No such server: %1$s"), name);
     }
 
     if (g_ascii_strcasecmp(subcmd, "add") == 0
             || g_ascii_strcasecmp(subcmd, "set") == 0){
-        if (srn_command_get_opt(cmd, "-addr", &addr)){
-            // NOTE:Every time you set address of a server config, the previous
-            // address list will be cleared
-            int port;
-            char *tmp;
-            const char *host;
-
-            host = addr;
-            port = 0;
-            tmp = strchr(addr, ':');
-            if (tmp) {
-                *tmp++ = '\0';
-                port = g_ascii_strtoull(tmp, NULL, 10);
-            }
-
-            g_slist_free_full(cfg->addrs, (GDestroyNotify)srn_server_addr_free);
-            srn_server_config_add_addr(cfg, host, port);
-        }
         if (srn_command_get_opt(cmd, "-pwd", &passwd)){
             str_assign(&cfg->passwd, passwd);
         }
@@ -445,11 +418,18 @@ static SrnRet on_command_server(SrnCommand *cmd, void *user_data){
             cfg->irc->tls = TRUE;
             cfg->irc->tls_noverify = TRUE;
         }
+        if (srn_command_get_opt(cmd, "-addr", &addr)){
+            ret = srn_server_config_set_addr(cfg, addr);
+            if (!RET_IS_OK(ret)){
+                return RET_ERR(_("Failed to resolve server address: %s"),
+                        RET_MSG(ret));
+            }
+        }
 
         if (g_ascii_strcasecmp(subcmd, "add") == 0){
-            return RET_OK(_("Server \"%1$s\" is created"), name);
+            return RET_OK(_("Server config \"%1$s\" is created"), name);
         } else {
-            return RET_OK(_("Server \"%1$s\" is motified"), name);
+            return RET_OK(_("Server config \"%1$s\" is motified"), name);
         }
     }
 
@@ -460,10 +440,11 @@ static SrnRet on_command_server(SrnCommand *cmd, void *user_data){
             if (!RET_IS_OK(ret)){
                 return ret;
             }
-            srv = srn_application_add_server(app, name);
-            if (!srv) {
-                return RET_ERR(_("Failed to instantiate server \"%1$s\""), cfg->name);
+            ret = srn_application_add_server(app, name);
+            if (!RET_IS_OK(ret)){
+                return RET_ERR(_("Failed to instantiate server \"%1$s\""), name);
             }
+            srv = srn_application_get_server(app, name);
         }
 
         ret = srn_server_connect(srv);
@@ -488,6 +469,7 @@ static SrnRet on_command_server(SrnCommand *cmd, void *user_data){
             return RET_ERR(_("Can not disconnect from a unconnected server"));
         }
 
+        // FIXME: looks tricky
         prev_state = srv->state;
         ret = srn_server_disconnect(srv);
         if (RET_IS_OK(ret) && prev_state == SRN_SERVER_STATE_RECONNECTING){
@@ -519,46 +501,29 @@ static SrnRet on_command_server(SrnCommand *cmd, void *user_data){
 }
 
 static SrnRet on_command_connect(SrnCommand *cmd, void *user_data){
-    const char *host;
-    const char *port;
+    const char *addr;
     const char *passwd;
     const char *nick;
     const char *user;
     const char *real;
     const char *encoding;
+    SrnApplication *app;
     SrnServer *srv = NULL;
     SrnServerConfig *cfg = NULL;
     SrnRet ret = SRN_OK;
 
-    host = srn_command_get_arg(cmd, 0);
+    app = ctx_get_app(user_data);
+    addr = srn_command_get_arg(cmd, 0);
     nick = srn_command_get_arg(cmd, 1);
 
-    cfg = srn_server_config_new_from_basename(host);
-    if (!cfg){
-        ret = RET_ERR(_("Failed to create server \"%1$s\""), host);
-        goto FIN;
-    }
-
-    ret = srn_config_manager_read_server_config(
-            srn_application_get_default()->cfg_mgr,
-            cfg,
-            host);
+    ret = srn_application_add_server_config(app, addr);
     if (!RET_IS_OK(ret)){
+        ret = RET_ERR(_("Failed to create server config: %s"), RET_MSG(ret));
         goto FIN;
     }
+    cfg = srn_application_get_server_config(app, addr);
 
-    if (!str_is_empty(host)){
-        // FIXME: config
-        // str_assign(&cfg->host, host);
-    }
-    if (!str_is_empty(nick)){
-        str_assign(&cfg->nickname, nick);
-    }
-
-    if (srn_command_get_opt(cmd, "-port", &port)){
-        // FIXME: config
-        // cfg->port = atoi(port);
-    }
+    str_assign(&cfg->nickname, nick);
     if (srn_command_get_opt(cmd, "-pwd", &passwd)){
         str_assign(&cfg->passwd, passwd);
     }
@@ -571,9 +536,7 @@ static SrnRet on_command_connect(SrnCommand *cmd, void *user_data){
     if (srn_command_get_opt(cmd, "-encode", &encoding)){
         str_assign(&cfg->irc->encoding, encoding);
     }
-
     cfg->irc->tls = srn_command_get_opt(cmd, "-tls", NULL);
-
     cfg->irc->tls_noverify = srn_command_get_opt(cmd, "-tls-noverify", NULL);
     if (cfg->irc->tls_noverify){
         cfg->irc->tls = TRUE;
@@ -586,16 +549,22 @@ static SrnRet on_command_connect(SrnCommand *cmd, void *user_data){
         }
     }
 
+    ret = srn_server_config_set_addr(cfg, addr);
+    if (!RET_IS_OK(ret)){
+        ret = RET_ERR(_("Failed to resolve server address: %s"), RET_MSG(ret));
+        goto FIN;
+    }
+
     ret = srn_server_config_check(cfg);
     if (!RET_IS_OK(ret)) {
         goto FIN;
     }
-
-    srv = srn_server_new(cfg);
-    if (!srv) {
+    ret = srn_application_add_server(app, cfg->name);
+    if (!RET_IS_OK(ret)) {
         ret = RET_ERR(_("Failed to instantiate server \"%1$s\""), cfg->name);
         goto FIN;
     }
+    srv = srn_application_get_server(app, cfg->name);
 
     ret = srn_server_connect(srv);
     if (!RET_IS_OK(ret)){
@@ -608,15 +577,13 @@ static SrnRet on_command_connect(SrnCommand *cmd, void *user_data){
         goto FIN;
     }
 
-    ret = SRN_OK;
-
-    return ret;
+    return SRN_OK;
 FIN:
     if (srv){
-        srn_server_free(srv);
+        srn_application_rm_server(app, srv);
     }
     if (cfg){
-        srn_server_config_free(cfg);
+        srn_application_rm_server_config(app, cfg);
     }
 
     return ret;

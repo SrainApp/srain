@@ -165,8 +165,40 @@ void srn_server_config_free(SrnServerConfig *cfg){
     }
 }
 
-void srn_server_config_add_addr(SrnServerConfig *cfg, const char *host, int port){
+SrnRet srn_server_config_add_addr(SrnServerConfig *cfg, const char *addr){
+    int port;
+    char *tmp;
+    const char *host;
+
+    tmp = g_strdup(addr);
+    host = tmp;
+    port = 0;
+    tmp = strchr(tmp, ':');
+    if (tmp) {
+        *tmp++ = '\0';
+        port = g_ascii_strtoull(tmp, NULL, 10);
+    }
+    if (port == 0) {
+        port = cfg->irc->tls ? 6697 : 6667;
+    }
     cfg->addrs = g_slist_append(cfg->addrs, srn_server_addr_new(host, port));
+    g_free(tmp);
+
+    return SRN_OK;
+}
+
+/**
+ * @brief Every time you set address of a server config, the previous
+ *      address list will be cleared.
+ *
+ * @param cfg
+ * @param addr
+ *
+ * @return
+ */
+SrnRet srn_server_config_set_addr(SrnServerConfig *cfg, const char *addr){
+    g_slist_free_full(cfg->addrs, (GDestroyNotify)srn_server_addr_free);
+    return srn_server_config_add_addr(cfg, addr);
 }
 
 char* srn_server_config_dump(SrnServerConfig *cfg){

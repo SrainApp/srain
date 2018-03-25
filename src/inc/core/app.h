@@ -72,14 +72,13 @@ void srn_application_quit(SrnApplication *app);
 SrnRet srn_application_run_command(SrnApplication *app, const char *cmd);
 
 // Server
-SrnServer* srn_application_add_server(SrnApplication *app, const char *name);
+SrnRet srn_application_add_server(SrnApplication *app, const char *name);
 SrnRet srn_application_rm_server(SrnApplication *app, SrnServer *srv);
 SrnServer* srn_application_get_server(SrnApplication *app, const char *name);
 bool srn_application_is_server_valid(SrnApplication *app, SrnServer *srv);
 
 // Server config
-SrnRet srn_application_add_server_config(SrnApplication *app, SrnServerConfig *srv_cfg);
-SrnRet srn_application_add_server_config(SrnApplication *app, SrnServerConfig *srv_cfg);
+SrnRet srn_application_add_server_config(SrnApplication *app, const char *name);
 SrnRet srn_application_rm_server_config(SrnApplication *app, SrnServerConfig *srv_cfg);
 SrnServerConfig* srn_application_get_server_config(SrnApplication *app, const char *name);
 char* srn_application_dump_server_config_list(SrnApplication *app);

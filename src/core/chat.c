@@ -59,8 +59,9 @@ SrnChat *srn_chat_new(SrnServer *srv, const char *name, SrnChatConfig *cfg){
     } else {
         // Private, its user_list must have yourself and the dialogue target
         chat->ui = sui_new_private_buffer(srv->chat->ui, chat->name, chat, events, chat->cfg->ui);
-        srn_chat_add_user(chat, chat->srv->user->nick, SRN_USER_CHIGUA);
-        srn_chat_add_user(chat, chat->name, SRN_USER_CHIGUA);
+        srn_server_add_user(srv, chat->name);
+        srn_chat_add_user(chat, srv->user, SRN_USER_CHIGUA);
+        srn_chat_add_user(chat, srn_server_get_user(srv, chat->name), SRN_USER_CHIGUA);
     }
 
     sui_add_completion(chat->ui, chat->name);
@@ -109,60 +110,26 @@ void srn_chat_free(SrnChat *chat){
     g_free(chat);
 }
 
-int srn_chat_add_user(SrnChat *chat, const char *nick, UserType type){
-    int ret;
-    SrnUser *user;
+SrnRet srn_chat_add_user(SrnChat *chat, SrnUser *user, SrnUserType type){
+    GSList *lst;
 
-    user = srn_user_new(chat, nick, NULL, NULL, type);
-
-    ret = srn_chat_add_user_full(chat, user);
-    if (sirc_nick_cmp(chat->user->nick, nick)){
-        srn_user_set_me(user, TRUE);
+    lst = g_slist_find(chat->user_list, user);
+    if (lst) {
+        return SRN_ERR;
     }
-
-    srn_user_free(user);
-
-    return ret;
+    chat->user_list = g_slist_append(chat->user_list, user);
+    return srn_user_attach_chat(user, chat, type);
 }
 
-int srn_chat_add_user_full(SrnChat *chat, SrnUser *user){
+SrnRet srn_chat_rm_user(SrnChat *chat, SrnUser *user){
     GSList *lst;
-    SrnUser *user2;
 
-    lst = chat->user_list;
-    while (lst){
-        user2 = lst->data;
-        if (sirc_nick_cmp(user2->nick, user->nick)){
-            return SRN_ERR;
-        }
-        lst = g_slist_next(lst);
+    lst = g_slist_find(chat->user_list, user);
+    if (!lst) {
+        return SRN_ERR;
     }
-
-    g_return_val_if_fail(user, SRN_ERR);
-
-    chat->user_list = g_slist_append(chat->user_list, srn_user_ref(user));
-    sui_add_user(chat->ui, user->nick, user->type);
-
-    return SRN_OK;
-}
-
-int srn_chat_rm_user(SrnChat *chat, const char *nick){
-    GSList *lst;
-    SrnUser *user;
-
-    lst = chat->user_list;
-    while (lst){
-        user = lst->data;
-        if (sirc_nick_cmp(user->nick, nick)){
-            sui_rm_user(chat->ui, user->nick);
-            chat->user_list = g_slist_delete_link(chat->user_list, lst);
-            srn_user_free(user);
-
-            return SRN_OK;
-        }
-        lst = g_slist_next(lst);
-    }
-    return SRN_ERR;
+    chat->user_list = g_slist_delete_link(chat->user_list, lst);
+    return srn_user_detach_chat(user, chat);
 }
 
 
@@ -240,11 +207,8 @@ void srn_chat_add_recv_message(SrnChat *chat, const char *origin, const char *co
     }
     fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
 
+    // FIXME:
     user = srn_chat_get_user(chat, origin);
-    if (!user){
-        user = srn_user_new(chat, origin, NULL, NULL, SRN_USER_CHIGUA);
-        invalid_user = TRUE;
-    }
 
     msg = srn_message_new(chat, user, content, SRN_MESSAGE_RECV);
 
@@ -299,12 +263,8 @@ void srn_chat_add_action_message(SrnChat *chat, const char *origin, const char *
     FilterFlag fflag;
     DecoratorFlag dflag;
 
+    // FIXME
     user = srn_chat_get_user(chat, origin);
-
-    if (!user){
-        user = srn_user_new(chat, origin, NULL, NULL, SRN_USER_CHIGUA);
-        invalid_user = TRUE;
-    }
 
     dflag = DECORATOR_PANGO_MARKUP;
     if (chat->cfg->render_mirc_color) {
@@ -367,11 +327,8 @@ void srn_chat_add_misc_message(SrnChat *chat, const char *origin, const char *co
     DecoratorFlag dflag;
     FilterFlag fflag;
 
+    // FIXME
     user = srn_chat_get_user(chat, origin);
-    if (!user){
-        user = srn_user_new(chat, origin, NULL, NULL, SRN_USER_CHIGUA);
-        invalid_user = TRUE;
-    }
 
     dflag = DECORATOR_PANGO_MARKUP;
     fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
@@ -419,11 +376,8 @@ void srn_chat_add_error_message(SrnChat *chat, const char *origin, const char *c
     DecoratorFlag dflag;
     FilterFlag fflag;
 
+    // FIXME
     user = srn_chat_get_user(chat, origin);
-    if (!user){
-        user = srn_user_new(chat, origin, NULL, NULL, SRN_USER_CHIGUA);
-        invalid_user = TRUE;
-    }
 
     dflag = DECORATOR_PANGO_MARKUP;
     fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
@@ -474,11 +428,8 @@ void srn_chat_set_topic(SrnChat *chat, const char *origin, const char *topic){
     SrnMessage *msg;
     DecoratorFlag dflag;
 
+    // FIXME
     user = srn_chat_get_user(chat, origin);
-    if (!user){
-        user = srn_user_new(chat, origin, NULL, NULL, SRN_USER_CHIGUA);
-        invalid_user = TRUE;
-    }
 
     dflag = DECORATOR_PANGO_MARKUP;
     if (chat->cfg->render_mirc_color) {

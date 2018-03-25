@@ -63,6 +63,10 @@ SrnServer* srn_server_new(SrnServerConfig *cfg){
     /* srv->ping_timer = 0; */ // by g_malloc0()
     /* srv->reconn_timer = 0; */ // by g_malloc0()
 
+    srv->user_table = g_hash_table_new_full(
+            g_str_hash, g_str_equal,
+            g_free, (GDestroyNotify)srn_user_free);
+
     /* sirc */
     srv->irc = sirc_new_session(
             &srn_application_get_default()->irc_events,
@@ -92,39 +96,14 @@ void srn_server_free(SrnServer *srv){
     // srv->cfg is held by SrnApplication, just unlink it
     srv->cfg->srv = NULL;
 
-    if (srv->cap) {
-        srn_server_cap_free(srv->cap);
-        srv->cap = NULL;
-    }
-    if (srv->user != NULL){
-        srn_user_free(srv->user);
-        srv->user = NULL;
-    }
-    if (srv->irc != NULL){
-        sirc_free_session(srv->irc);
-        srv->irc= NULL;
-    }
+    srn_server_cap_free(srv->cap);
+    srn_user_free(srv->user);
+    sirc_free_session(srv->irc);
 
-    GSList *lst;
-    /* Free chat list */
-    if (srv->chat_list){
-        lst = srv->chat_list;
-        while (lst){
-            if (lst->data){
-                srn_chat_free(lst->data);
-                lst->data = NULL;
-            }
-            lst = g_slist_next(lst);
-        }
-        g_slist_free(srv->chat_list);
-        srv->chat_list = NULL;
-    }
-
-    /* Server's chat should be freed after all chat in chat list are freed */
-    if (srv->chat != NULL){
-        srn_chat_free(srv->chat);
-        srv->chat = NULL;
-    }
+    g_slist_free_full(srv->chat_list, (GDestroyNotify)srn_chat_free);
+    g_hash_table_remove_all(srv->user_table);
+    // Server's chat should be freed after all chat in chat list are freed
+    srn_chat_free(srv->chat);
 
     g_free(srv);
 }
@@ -210,13 +189,12 @@ SrnRet srn_server_add_chat(SrnServer *srv, const char *name){
     // Creating server chat
     if (g_ascii_strcasecmp(name, META_SERVER) == 0) {
         srv->chat = chat;
-        srv->user = srn_user_new(srv->chat,
-                srv->cfg->nickname,
-                srv->cfg->username,
-                srv->cfg->realname,
-                SRN_USER_CHIGUA);
-        srv->chat->user = srn_user_ref(srv->user);
+        srn_server_add_user(srv, srv->cfg->nickname);
+        srv->user = srn_server_get_user(srv, srv->cfg->nickname);
+        srn_user_set_username(srv->user, srv->cfg->username);
+        srn_user_set_realname(srv->user, srv->cfg->realname);
         srn_user_set_me(srv->user, TRUE);
+        srn_user_attach_chat(srv->user, chat, SRN_USER_CHIGUA);
     } else {
         srv->chat_list = g_slist_append(srv->chat_list, chat);
     }
@@ -285,4 +263,24 @@ SrnChat* srn_server_get_chat_fallback(SrnServer *srv, const char *name) {
     }
 
     return chat;
+}
+
+SrnRet srn_server_add_user(SrnServer *srv, const char *nick){
+    SrnUser *user;
+
+    if (srn_server_get_user(srv, nick)) {
+        return SRN_ERR;
+    }
+    user = srn_user_new(srv, nick);
+    g_hash_table_insert(srv->user_table, nick, user);
+
+    return SRN_OK;
+}
+
+SrnUser* srn_server_get_user(SrnServer *srv, const char *nick){
+    return g_hash_table_lookup(srv->user_table, nick);
+}
+
+SrnRet srn_server_rm_user(SrnServer *srv, const char *nick){
+    return g_hash_table_remove(srv->user_table, nick) ? SRN_OK : SRN_ERR;
 }

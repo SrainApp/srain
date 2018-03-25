@@ -32,7 +32,7 @@ SrnMessage* srn_message_new(SrnChat *chat, SrnUser *user, const char *content, S
 
     msg = g_malloc0(sizeof(SrnMessage));
 
-    msg->user = srn_user_ref(user);
+    msg->user = user;
     msg->chat = chat;
     // msg->role = NULL; // via g_malloc0()
     msg->content = g_strdup(content);

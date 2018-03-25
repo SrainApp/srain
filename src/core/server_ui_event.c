@@ -80,6 +80,7 @@ SrnRet srn_server_ui_event_connect(SuiWindow *win, SuiEvent event, GVariantDict 
         }
     } else {
         /* Else, it means that user is trying to connect to a custom server */
+        char *addr;
         const char *host = NULL;
         int port = 0;
         const char *passwd = NULL;
@@ -94,24 +95,12 @@ SrnRet srn_server_ui_event_connect(SuiWindow *win, SuiEvent event, GVariantDict 
         g_variant_dict_lookup(params, "tls-noverify", SUI_EVENT_PARAM_BOOL, &tls_noverify);
 
         /* Create server config */
-        cfg = srn_server_config_new_from_basename(host);
-        if (!cfg) {
-            return RET_ERR(_("Failed to create server \"%1$s\""), host);
-        }
-        ret = srn_config_manager_read_server_config(
-                srn_application_get_default()->cfg_mgr,
-                cfg,
-                host);
+        ret = srn_application_add_server_config(app, host);
         if (!RET_IS_OK(ret)){
-            srn_server_config_free(cfg);
-            return ret;
+            return RET_ERR(_("Failed to create server config: %1$s"), RET_MSG(ret));
         }
+        cfg = srn_application_get_server_config(app, host);
 
-        // FIXME: config
-        // cfg->port = port;
-        // if (!str_is_empty(host)){
-            // str_assign(&cfg->host, host);
-        // }
         if (!str_is_empty(passwd)){
             str_assign(&cfg->passwd, passwd);
         }
@@ -120,6 +109,10 @@ SrnRet srn_server_ui_event_connect(SuiWindow *win, SuiEvent event, GVariantDict 
         }
         cfg->irc->tls = tls;
         cfg->irc->tls_noverify = tls_noverify;
+
+        addr = g_strdup_printf("%s:%d", host, port);
+        srn_server_config_set_addr(cfg, addr);
+        g_free(addr);
     }
 
     g_variant_dict_lookup(params, "nick", SUI_EVENT_PARAM_STRING, &nick);
@@ -138,20 +131,16 @@ SrnRet srn_server_ui_event_connect(SuiWindow *win, SuiEvent event, GVariantDict 
 
     ret = srn_server_config_check(cfg);
     if (!RET_IS_OK(ret)){
+        srn_application_rm_server_config(app, cfg);
         return ret;
     }
-
-    /* Create server */
-    srv = srn_application_add_server(app, cfg->name);
-    if (!srv) {
-        SrnRet ret;
-
+    ret = srn_application_add_server(app, cfg->name);
+    if (!RET_IS_OK(ret)){
         ret = RET_ERR(_("Failed to instantiate server \"%1$s\""), cfg->name);
-        if (str_is_empty(name)){
-            srn_server_config_free(cfg);
-        }
+        srn_application_rm_server_config(app, cfg);
         return ret;
     }
+    srv = srn_application_get_server(app, cfg->name);
 
     return srn_server_connect(srv);
 }
@@ -380,16 +369,17 @@ SrnRet srn_server_ui_event_ignore(SuiBuffer *sui, SuiEvent event, GVariantDict *
 }
 
 SrnRet srn_server_ui_event_cutover(SuiBuffer *sui, SuiEvent event, GVariantDict *params){
+    SrnApplication *app;
     SrnServer *srv;
     SrnChat *chat;
 
+    app = srn_application_get_default();
     srv = ctx_get_server(sui);
-    // FIXME: server has not held by SrnServerConfig now
-    // g_return_val_if_fail(srn_server_is_valid(srv), SRN_ERR);
-    g_return_val_if_fail(srv, SRN_ERR);
+    g_return_val_if_fail(srn_application_is_server_valid(app, srv), SRN_ERR);
     chat = ctx_get_chat(sui);
     g_return_val_if_fail(chat, SRN_ERR);
 
+    app->cur_srv = srv;
     srv->cur_chat = chat;
 
     return SRN_OK;

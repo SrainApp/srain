@@ -226,7 +226,7 @@ static SrnRet read_server_config_list_from_cfg(config_t *cfg,
     server_list = config_lookup(cfg, "server-list");
     if (server_list){
         for (int i = 0, count = config_setting_length(server_list); i < count; i++){
-            const char *name = NULL;
+            char *name = NULL;
             GSList *lst;
             config_setting_t *server;
             SrnRet ret;
@@ -235,34 +235,12 @@ static SrnRet read_server_config_list_from_cfg(config_t *cfg,
             server = config_setting_get_elem(server_list, i);
             if (!server) break;
 
-            if (config_setting_lookup_string(server, "name", &name) != CONFIG_TRUE) {
+            if (config_setting_lookup_string_ex(server, "name", &name) != CONFIG_TRUE) {
                 return RET_ERR(_("server-list[%1$d] doesn't have a name"), i);
             }
-
-            srv_cfg = NULL;
-            lst = *srv_cfg_list;
-            while (lst){
-                SrnServerConfig *tmp;
-
-                tmp = lst->data;
-                if (g_ascii_strcasecmp(tmp->name, name) == 0){
-                    srv_cfg = tmp;
-                    break;
-                }
-                lst = g_slist_next(lst);
+            if (name) {
+                *srv_cfg_list = g_slist_append(*srv_cfg_list, name);
             }
-            if (!srv_cfg) {
-                srv_cfg = srn_server_config_new(name);
-                srv_cfg->predefined = TRUE;
-            }
-
-            ret = read_server_config_from_cfg(cfg, srv_cfg, name);
-            if (!RET_IS_OK(ret)){
-                srn_server_config_free(srv_cfg);
-                return ret;
-            }
-
-            *srv_cfg_list = g_slist_append(*srv_cfg_list, srv_cfg);
         }
     }
 
@@ -272,7 +250,6 @@ static SrnRet read_server_config_list_from_cfg(config_t *cfg,
 static SrnRet read_server_config_from_server(config_setting_t *server,
         SrnServerConfig *cfg){
     /* Read server meta info */
-    config_setting_lookup_string_ex(server, "name", &cfg->name);
     config_setting_lookup_string_ex(server, "password", &cfg->passwd);
     config_setting_lookup_bool_ex(server, "tls", &cfg->irc->tls);
     config_setting_lookup_bool_ex(server, "tls-noverify", &cfg->irc->tls_noverify);
@@ -290,19 +267,12 @@ static SrnRet read_server_config_from_server(config_setting_t *server,
 
             addr = config_setting_get_string_elem_ex(addrs, i);
             if (addr){
-                int port;
-                char *tmp;
-                const char *host;
-
-                host = addr;
-                port = 0;
-                tmp = strchr(addr, ':');
-                if (tmp) {
-                    *tmp++ = '\0';
-                    port = g_ascii_strtoull(tmp, NULL, 10);
-                }
-                srn_server_config_add_addr(cfg, host, port);
+                SrnRet ret;
+                ret = srn_server_config_add_addr(cfg, addr);
                 g_free(addr);
+                if (!RET_IS_OK(ret)){
+                    return ret;
+                }
             }
         }
     }

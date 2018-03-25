@@ -98,9 +98,16 @@ SrnApplication* srn_application_new(void){
     srv_cfg_list = NULL;
     srn_config_manager_read_server_config_list(cfg_mgr, &srv_cfg_list);
     for (GSList *lst = srv_cfg_list; lst; lst = g_slist_next(lst)) {
-        srn_application_add_server_config(app, lst->data);
+        SrnServerConfig *srv_cfg;
+
+        ret = srn_application_add_server_config(app, lst->data);
+        if (!RET_IS_OK(ret)) {
+            sui_message_box(_("Error"), RET_MSG(ret));
+        }
+        srv_cfg = srn_application_get_server_config(app, lst->data);
+        srv_cfg->predefined = TRUE;
     }
-    g_slist_free(srv_cfg_list);
+    g_slist_free_full(srv_cfg_list, g_free);
 
     app->ui = sui_new_application(cfg->id, &app->ui_app_events, cfg->ui);
     sui_application_set_ctx(app->ui, app);
@@ -125,27 +132,27 @@ void srn_application_run(SrnApplication *app, int argc, char *argv[]){
     sui_run_application(app->ui, argc, argv);
 }
 
-SrnServer* srn_application_add_server(SrnApplication *app, const char *name) {
+SrnRet srn_application_add_server(SrnApplication *app, const char *name) {
     SrnRet ret;
     SrnServer *srv;
     SrnServerConfig *cfg;
 
     cfg = srn_application_get_server_config(app, name);
-    g_return_val_if_fail(cfg, NULL);
-    g_return_val_if_fail(!cfg->srv, NULL);
-    g_return_val_if_fail(RET_IS_OK(srn_server_config_check(cfg)), NULL);
+    g_return_val_if_fail(cfg, SRN_ERR);
+    g_return_val_if_fail(!cfg->srv, RET_ERR(_("Server already exists")));
+
+    ret = srn_server_config_check(cfg);
+    g_return_val_if_fail(RET_IS_OK(ret), ret);
 
     srv = srn_server_new(cfg);
-    g_return_val_if_fail(srv, NULL);
-
     cfg->srv = srv;
     app->cur_srv = srv;
     app->srv_list = g_slist_append(app->srv_list, srv);
 
     ret = srn_server_add_chat(srv, META_SERVER);
-    g_return_val_if_fail(RET_IS_OK(ret), NULL);
+    g_return_val_if_fail(RET_IS_OK(ret), ret);
 
-    return srv;
+    return SRN_OK;
 }
 
 SrnRet srn_application_rm_server(SrnApplication *app, SrnServer *srv) {
@@ -189,18 +196,28 @@ bool srn_application_is_server_valid(SrnApplication *app, SrnServer *srv) {
     return g_slist_find(app->srv_list, srv) != NULL;
 }
 
-SrnRet srn_application_add_server_config(SrnApplication *app,
-        SrnServerConfig *srv_cfg){
+SrnRet srn_application_add_server_config(SrnApplication *app, const char *name){
     GSList *lst;
-    SrnServerConfig *srv_cfg2;
+    SrnRet ret;
+    SrnServerConfig *srv_cfg;
 
-    lst = app->srv_list;
+    g_return_val_if_fail(name, SRN_ERR);
+
+    lst = app->srv_cfg_list;
     while (lst){
-        srv_cfg2 = lst->data;
-        if (g_ascii_strcasecmp(srv_cfg->name, srv_cfg2->name) == 0){
+        srv_cfg = lst->data;
+        if (g_ascii_strcasecmp(name, srv_cfg->name) == 0){
             return SRN_ERR;
         }
         lst = g_slist_next(lst);
+    }
+
+    srv_cfg = srn_server_config_new(name);
+    ret = srn_config_manager_read_server_config(
+            app->cfg_mgr, srv_cfg, srv_cfg->name);
+    if (!RET_IS_OK(ret)){
+        srn_server_config_free(srv_cfg);
+        return ret;
     }
     app->srv_cfg_list = g_slist_append(app->srv_cfg_list, srv_cfg);
 
@@ -211,7 +228,7 @@ SrnRet srn_application_rm_server_config(SrnApplication *app,
         SrnServerConfig *srv_cfg){
     GSList *lst;
 
-    g_return_val_if_fail(!srv_cfg, SRN_ERR);
+    g_return_val_if_fail(srv_cfg, SRN_ERR);
     if (srv_cfg->predefined) {
         return SRN_OK;
     }

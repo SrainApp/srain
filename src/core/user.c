@@ -18,73 +18,124 @@
 
 
 #include "core/core.h"
-#include "log.h"
 
-SrnUser *srn_user_new(SrnChat *chat, const char *nick, const char *username,
-        const char *realname, UserType type){
+#include "log.h"
+#include "utils.h"
+
+typedef struct _SrnUserContext SrnUserContext;
+
+struct _SrnUserContext {
+    SrnChat *chat;
+    SrnUserType type;
+};
+
+SrnUser *srn_user_new(SrnServer *srv, const char *nick){
     SrnUser *user;
 
-    g_return_val_if_fail(chat, NULL);
+    g_return_val_if_fail(srv, NULL);
     g_return_val_if_fail(nick, NULL);
-    if (!username) username = nick;
-    if (!realname) realname = nick;
 
     user = g_malloc0(sizeof(SrnUser));
-
-    user->chat = chat;
+    user->srv = srv;
     user->me = FALSE;
-    user->type = type;
-    user->refcount = 1;
-
-    g_strlcpy(user->nick, nick, sizeof(user->nick));
-    g_strlcpy(user->username, username, sizeof(user->username));
-    g_strlcpy(user->realname, realname, sizeof(user->realname));
-
-    DBG_FR("User %p '%s' created", user, user->nick);
-
-    return user;
-}
-
-SrnUser *srn_user_ref(SrnUser *user){
-    g_return_val_if_fail(user, NULL);
-
-    user->refcount++;
+    str_assign(&user->nick, nick);
 
     return user;
 }
 
 void srn_user_free(SrnUser *user){
-    g_return_if_fail(user);
+    g_return_if_fail(g_slist_length(user->chat_list) == 0);
 
-    DBG_FR("User %p '%s', refcount: %d", user, user->nick, user->refcount);
-
-    if (--user->refcount > 0){
-        return;
-    }
-
-    DBG_FR("User %p '%s' freed", user, user->nick);
-
+    str_assign(&user->nick, NULL);
+    str_assign(&user->username, NULL);
+    str_assign(&user->hostname, NULL);
+    str_assign(&user->realname, NULL);
     g_free(user);
 }
 
-void srn_user_rename(SrnUser *user, const char *new_nick){
-    /* Update UI status */
-    if (user->chat) {
-        sui_ren_user(user->chat->ui, user->nick, new_nick, user->type);
+SrnRet srn_user_attach_chat(SrnUser *user, SrnChat *chat, SrnUserType type){
+    GSList *lst;
+    SrnUserContext *ctx;
+
+    lst = user->chat_list;
+    while (lst){
+        ctx = lst->data;
+        if (ctx->chat == chat){
+            return SRN_ERR;
+        }
     }
 
-    g_strlcpy(user->nick, new_nick, sizeof(user->nick));
+    ctx = g_malloc0(sizeof(SrnUserContext));
+    ctx->chat = chat;
+    ctx->type = type;
+    sui_add_user(chat->ui, user->nick, type);
+
+    return SRN_OK;
 }
 
-void srn_user_set_type(SrnUser *user, UserType type){
-    /* Update UI status */
-    if (user->chat) {
-        sui_ren_user(user->chat->ui, user->nick, user->nick, type);
+SrnRet srn_user_detach_chat(SrnUser *user, SrnChat *chat){
+    GSList *lst;
+    SrnUserContext *ctx;
+
+    lst = user->chat_list;
+    while (lst){
+        ctx = lst->data;
+        if (ctx->chat == chat){
+            user->chat_list = g_slist_delete_link(user->chat_list, lst);
+            sui_rm_user(chat->ui, user->nick);
+            g_free(ctx);
+            return SRN_OK;
+        }
     }
 
-    user->type = type;
+    return SRN_ERR;
+}
+
+void srn_user_set_nick(SrnUser *user, const char *nick){
+    GSList *lst;
+
+    str_assign(&user->nick, nick);
+
+    /* Update UI status */
+    lst = user->chat_list;
+    while (lst) {
+        SrnUserContext *ctx;
+
+        ctx = lst->data;
+        sui_ren_user(ctx->chat->ui, user->nick, nick, ctx->type);
+    }
+}
+
+void srn_user_set_username(SrnUser *user, const char *username){
+    str_assign(&user->username, username);
+}
+
+void srn_user_set_hostname(SrnUser *user, const char *hostname){
+    str_assign(&user->hostname, hostname);
+}
+
+void srn_user_set_realname(SrnUser *user, const char *realname){
+    str_assign(&user->realname, realname);
 }
 
 void srn_user_set_me(SrnUser *user, bool me){
     user->me = me;
 }
+
+void srn_user_set_type(SrnUser *user, SrnChat *chat, SrnUserType type){
+    GSList *lst;
+
+    /* Update UI status */
+    lst = user->chat_list;
+    while (lst) {
+        SrnUserContext *ctx;
+
+        ctx = lst->data;
+        if (ctx->chat == chat){
+            ctx->type = type;
+            sui_ren_user(ctx->chat->ui, user->nick, user->nick, type);
+            return;
+        }
+    }
+}
+
