@@ -88,7 +88,7 @@ SuiBuffer* sui_new_server_buffer(const char *srv, void *ctx,
     popover = sui_window_get_join_popover(sui_get_cur_window());
     srain_join_popover_prepare_model(popover, SRAIN_SERVER_BUFFER(buf));
 
-    return SRN_OK;
+    return buf;
 }
 
 SuiBuffer *sui_new_channel_buffer(SuiBuffer *srv_buf, const char *chan, void *ctx,
@@ -123,7 +123,7 @@ SuiBuffer* sui_new_private_buffer(SuiBuffer *srv_buf, const char *nick, void *ct
     srain_chat_buffer_show_user_list(
             SRAIN_CHAT_BUFFER(buf), buf->cfg->show_user_list);
 
-    return SRN_OK;
+    return buf;
 }
 
 void sui_free_buffer(SuiBuffer *buf){
