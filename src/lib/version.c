@@ -41,7 +41,7 @@ SrnVersion *srn_version_new(const char *raw){
 
     ver = g_malloc0(sizeof(SrnVersion));
     str_assign(&ver->raw, raw);
-    
+
     return ver;
 }
 

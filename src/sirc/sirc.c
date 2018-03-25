@@ -46,7 +46,7 @@ struct _SircSession {
     GCancellable *cancel;
 
     SircEvents *events; // Event callbacks
-    SircPrefs *prefs;
+    SircConfig *cfg;
     void *ctx;
 };
 
@@ -61,16 +61,16 @@ static void on_disconnect_ready(GObject *obj, GAsyncResult *result, gpointer use
 static void on_recv_ready(GObject *obj, GAsyncResult *res, gpointer user_data);
 static void on_disconnect(SircSession *sirc, const char *reason);
 
-SircSession* sirc_new_session(SircEvents *events, SircPrefs *prefs){
+SircSession* sirc_new_session(SircEvents *events, SircConfig *cfg){
     SircSession *sirc;
 
     g_return_val_if_fail(events, NULL);
-    g_return_val_if_fail(prefs, NULL);
+    g_return_val_if_fail(cfg, NULL);
 
     sirc = g_malloc0(sizeof(SircSession));
 
     sirc->events = events;
-    sirc->prefs = prefs;
+    sirc->cfg = cfg;
     /* sirc->bufptr = 0; // via g_malloc0() */
     /* sirc->stream = NULL; // via g_malloc0() */
     sirc->client = g_socket_client_new();
@@ -211,7 +211,7 @@ static void on_recv_ready(GObject *obj, GAsyncResult *res, gpointer user_data){
 
     /* Transcoding */
     sirc_message_transcoding(imsg,
-            SRN_ENCODING, sirc->prefs->encoding, SRN_FALLBACK_CHAR);
+            SRN_ENCODING, sirc->cfg->encoding, SRN_FALLBACK_CHAR);
     /* Handle event */
     sirc_event_hdr(sirc, imsg);
 
@@ -290,7 +290,7 @@ static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data
         g_object_unref(addr);
     }
 
-    if (sirc->prefs->tls){
+    if (sirc->cfg->tls){
          GIOStream *tls_conn;
 
          err = NULL;
@@ -301,7 +301,7 @@ static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data
              return;
          }
 
-         if (sirc->prefs->tls_noverify){
+         if (sirc->cfg->tls_noverify){
              g_tls_client_connection_set_validation_flags(
                      G_TLS_CLIENT_CONNECTION(tls_conn), 0);
          } else {

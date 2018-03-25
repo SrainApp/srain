@@ -16,24 +16,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __PREFS_H
-#define __PREFS_H
+#ifndef __SIRC_CONFIG_H
+#define __SIRC_CONFIG_H
+
+#ifndef __IN_SIRC_H
+	#error This file should not be included directly, include just sirc.h
+#endif
 
 #include "srain.h"
-#include "server.h"
-#include "log.h"
 #include "ret.h"
 
-void prefs_init();
-SrnRet prefs_read();
-void prefs_finalize();
+typedef struct _SircConfig SircConfig;
 
-SrnRet prefs_read_log_prefs(LogPrefs *prefs);
-SrnRet prefs_read_sui_app_prefs(SuiAppPrefs *prefs);
-SrnRet prefs_read_server_prefs_list();
-SrnRet prefs_read_server_prefs(ServerPrefs *prefs);
-SrnRet prefs_read_chat_prefs(ChatPrefs *prefs, const char *srv_name, const char *chat_name);
-SrnRet prefs_read_sirc_prefs(SircPrefs *prefs, const char *srv_name);
-SrnRet prefs_read_sui_prefs(SuiPrefs *prefs, const char *srv_name, const char *chat_name);
+struct _SircConfig {
+    bool tls;
+    bool tls_noverify;
+    // bool ipv6;
+    // bool sasl;
+    char *encoding;
+};
 
-#endif /*__PREFS_H */
+SircConfig* sirc_config_new();
+SrnRet sirc_config_check(SircConfig *cfg);
+char* sirc_config_dump(SircConfig *cfg);
+void sirc_config_free(SircConfig *cfg);
+
+#endif /* __SIRC_CONFIG_H */

@@ -16,10 +16,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SERVER_CAP_H
-#define __SERVER_CAP_H
+#ifndef __CONFIG_H
+#define __CONFIG_H
 
-#include "srain.h"
+#include <libconfig.h>
+
 #include "ret.h"
+#include "version.h"
 
-#endif /* __SERVER_CAP_H */
+typedef struct _SrnConfigManager SrnConfigManager;
+
+struct _SrnConfigManager {
+    SrnVersion *ver; // Compatible version
+    config_t user_cfg;
+    config_t system_cfg;
+};
+
+SrnConfigManager* srn_config_manager_new(SrnVersion *ver);
+void srn_config_manager_free(SrnConfigManager *mgr);
+SrnRet srn_config_manager_read_user_config(SrnConfigManager *mgr, const char *file);
+SrnRet srn_config_manager_read_system_config(SrnConfigManager *mgr, const char *file);
+
+#endif /*__CONFIG_H */

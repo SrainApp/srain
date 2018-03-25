@@ -28,14 +28,13 @@
 #include <gtk/gtk.h>
 #include <assert.h>
 
-#include "srain_window.h"
-#include "sui_event_hdr.h"
-#include "theme.h"
-
 #include "i18n.h"
 #include "log.h"
 
-extern SrainWindow *srain_win;
+#include "sui_event_hdr.h"
+#include "sui_common.h"
+#include "srain_app.h"
+#include "theme.h"
 
 /**
  * @brief get a non-internal child widget by `name` in GtkListBox `widget`
@@ -199,15 +198,17 @@ void scale_size_to(int src_width, int src_height,
 gboolean activate_link(GtkLabel *label, const char *uri, gpointer user_data){
     const char *urls[]  = { uri, NULL};
     GVariantDict *params;
+    SuiApplication *app;
 
+    app = sui_application_get_instance();
     params = g_variant_dict_new(NULL);
     g_variant_dict_insert(params, "urls", SUI_EVENT_PARAM_STRINGS, urls, -1);
 
-    if (!RET_IS_OK(sui_event_hdr(NULL, SUI_EVENT_OPEN, params))){
+    if (!RET_IS_OK(sui_application_event_hdr(sui_application_get_ctx(app), SUI_EVENT_OPEN, params))){
         GError *err = NULL;
 
 #if GTK_CHECK_VERSION(3, 22, 0)
-        gtk_show_uri_on_window(GTK_WINDOW(srain_win), uri,
+        gtk_show_uri_on_window(GTK_WINDOW(sui_get_cur_window()), uri,
                 gtk_get_current_event_time(), &err);
 #else
         gtk_show_uri(NULL, uri, gtk_get_current_event_time(), &err);
@@ -222,4 +223,27 @@ gboolean activate_link(GtkLabel *label, const char *uri, gpointer user_data){
     g_variant_dict_unref(params);
 
     return TRUE;
+}
+
+SuiWindow *sui_get_cur_window(){
+    SuiApplication *app;
+    SuiWindow *win;
+
+    app = sui_application_get_instance();
+    g_return_val_if_fail(app, NULL);
+    win = sui_application_get_cur_window(app);
+    g_return_val_if_fail(win, NULL);
+
+    return win;
+}
+
+SuiBuffer *sui_get_cur_buffer(){
+    SuiWindow *win;
+    SuiBuffer *buf;
+
+    win = sui_get_cur_window();
+    buf = sui_window_get_cur_buffer(win);
+    g_return_val_if_fail(buf, NULL);
+
+    return buf;
 }

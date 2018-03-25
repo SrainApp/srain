@@ -18,21 +18,21 @@
 
 #include <glib.h>
 
-#include "server.h"
+#include "core/core.h"
 
 #include "srain.h"
 #include "utils.h"
 
-Message* message_new(Chat *chat, User *user, const char *content, MessageType type){
-    Message *msg;
+SrnMessage* srn_message_new(SrnChat *chat, SrnUser *user, const char *content, SrnMessageType type){
+    SrnMessage *msg;
 
     g_return_val_if_fail(chat, NULL);
     g_return_val_if_fail(user, NULL);
     g_return_val_if_fail(content, NULL);
 
-    msg = g_malloc0(sizeof(Message));
+    msg = g_malloc0(sizeof(SrnMessage));
 
-    msg->user = user_ref(user);
+    msg->user = srn_user_ref(user);
     msg->chat = chat;
     // msg->role = NULL; // via g_malloc0()
     msg->content = g_strdup(content);
@@ -49,12 +49,12 @@ Message* message_new(Chat *chat, User *user, const char *content, MessageType ty
     return msg;
 }
 
-void message_free(Message *msg){
+void srn_message_free(SrnMessage *msg){
     if (msg->chat) { /* Nothing to do. */ }
     if (msg->ui) { /* Nothing to do. */ }
 
     if (msg->user) {
-        user_free(msg->user);
+        srn_user_free(msg->user);
     }
 
     if (msg->urls) {

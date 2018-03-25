@@ -34,10 +34,10 @@ typedef struct _SrainServerBuffer SrainServerBuffer;
 typedef struct _SrainServerBufferClass SrainServerBufferClass;
 
 GType srain_server_buffer_get_type(void);
-SrainServerBuffer* srain_server_buffer_new(SuiSession *sui, const char *server);
+SrainServerBuffer* srain_server_buffer_new(const char *server, void *ctx, SuiBufferEvents *events, SuiBufferConfig *cfg);
 
-void srain_server_buffer_add_buffer(SrainServerBuffer *self, SrainBuffer *buffer);
-void srain_server_buffer_rm_buffer(SrainServerBuffer *self, SrainBuffer *buffer);
+void srain_server_buffer_add_buffer(SrainServerBuffer *self, SuiBuffer *buffer);
+void srain_server_buffer_rm_buffer(SrainServerBuffer *self, SuiBuffer *buffer);
 GSList* srain_server_buffer_get_buffer_list(SrainServerBuffer *self);
 GtkTreeModelFilter* srain_server_buffer_get_channel_model(SrainServerBuffer *self);
 

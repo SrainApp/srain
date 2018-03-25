@@ -22,23 +22,23 @@
 #include "i18n.h"
 #include "utils.h"
 
-SircPrefs *sirc_prefs_new(){
-    SircPrefs *prefs;
+SircConfig* sirc_config_new(){
+    SircConfig *cfg;
 
-    prefs = g_malloc0(sizeof(SircPrefs));
+    cfg = g_malloc0(sizeof(SircConfig));
 
-    return prefs;
+    return cfg;
 }
 
-SrnRet sirc_prefs_check(SircPrefs *prefs){
-    // const char *fmt = _("Missing field in SircPrefs: %1$s");
+SrnRet sirc_config_check(SircConfig *cfg){
+    // const char *fmt = _("Missing field in IRC config: %1$s");
 
-    if (!prefs){
-        return RET_ERR(_("Invalid ServerPrefs instance"));
+    if (!cfg){
+        return RET_ERR(_("Invalid IRC config instance"));
     }
 
-    if (str_is_empty(prefs->encoding)) {
-        str_assign(&prefs->encoding, "UTF-8");
+    if (str_is_empty(cfg->encoding)) {
+        str_assign(&cfg->encoding, "UTF-8");
     }
 
     /* Check encoding */
@@ -47,10 +47,10 @@ SrnRet sirc_prefs_check(SircPrefs *prefs){
         GError *err = NULL;
 
         test = g_convert("", -1,
-                SRN_ENCODING, prefs->encoding,
+                SRN_ENCODING, cfg->encoding,
                 NULL, NULL, &err);
         if (err){
-            return RET_ERR(_("Invalid encoding in SircPrefs: %1$s"),
+            return RET_ERR(_("Invalid encoding in IRC config: %1$s"),
                     err->message);
         } else {
             g_free(test);
@@ -60,9 +60,9 @@ SrnRet sirc_prefs_check(SircPrefs *prefs){
     return SRN_OK;
 }
 
-char* sirc_prefs_dump(SircPrefs *prefs){
+char* sirc_config_dump(SircConfig *cfg){
     GString *str;
-    g_return_val_if_fail(prefs, NULL);
+    g_return_val_if_fail(cfg, NULL);
 
     const char *t = _("True");
     const char *f = _("False");
@@ -70,7 +70,7 @@ char* sirc_prefs_dump(SircPrefs *prefs){
     str = g_string_new("");
     g_string_append_printf(str,
             _("TLS: %1$s, TLS verify certificate: %2$s, Encoding: %3$s"),
-            prefs->tls ? t : f, prefs->tls_noverify ? f : t, prefs->encoding);
+            cfg->tls ? t : f, cfg->tls_noverify ? f : t, cfg->encoding);
 
     char *dump = str->str;
     g_string_free(str, FALSE);
@@ -78,10 +78,10 @@ char* sirc_prefs_dump(SircPrefs *prefs){
     return dump;
 }
 
-void sirc_prefs_free(SircPrefs *prefs){
-    g_return_if_fail(prefs);
+void sirc_config_free(SircConfig *cfg){
+    g_return_if_fail(cfg);
 
-    g_free(prefs->encoding);
+    g_free(cfg->encoding);
 
-    g_free(prefs);
+    g_free(cfg);
 }

@@ -1,4 +1,4 @@
-/* Copyright (C) 2016-2017 Shengyu Zhang <i@silverrainz.me>
+/* Copyright (C) 2016-2018 Shengyu Zhang <i@silverrainz.me>
  *
  * This file is part of Srain.
  *
@@ -16,29 +16,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SIRC_PREFS_H
-#define __SIRC_PREFS_H
+#include <glib.h>
 
-#ifndef __IN_SIRC_H
-	#error This file should not be included directly, include just sirc.h
-#endif
-
-#include "srain.h"
+#include "core/core.h"
+#include "sui/sui.h"
 #include "ret.h"
+#include "i18n.h"
 
-typedef struct _SircPrefs SircPrefs;
+SrnChatConfig* srn_chat_config_new(){
+    SrnChatConfig *cfg;
 
-struct _SircPrefs {
-    bool tls;
-    bool tls_noverify;
-    // bool ipv6;
-    // bool sasl;
-    char *encoding;
-};
+    cfg = g_malloc0(sizeof(SrnChatConfig));
+    cfg->ui = sui_buffer_config_new();
 
-SircPrefs *sirc_prefs_new();
-SrnRet sirc_prefs_check(SircPrefs *prefs);
-char* sirc_prefs_dump(SircPrefs *prefs);
-void sirc_prefs_free(SircPrefs *prefs);
+    return cfg;
+}
 
-#endif /* __SIRC_PREFS_H */
+SrnRet srn_chat_config_check(SrnChatConfig *cfg){
+    if (!cfg){
+        return RET_ERR(_("Invalid chat config instance"));
+    }
+    return sui_buffer_config_check(cfg->ui);
+}
+
+void srn_chat_config_free(SrnChatConfig *cfg){
+    g_return_if_fail(cfg);
+
+    sui_buffer_config_free(cfg->ui);
+    g_free(cfg);
+}

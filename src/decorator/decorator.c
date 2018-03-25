@@ -37,7 +37,7 @@
 
 typedef struct _DecoratorContext {
     int index;
-    Message *msg;
+    SrnMessage *msg;
     Decorator *decorator;
     GString *str;
 } DecoratorContext;
@@ -91,7 +91,7 @@ void decorator_init(){
  *      decorated message will be stored in ``msg->dcontent`` and may be passed
  *      to the next decorator modules.
  *
- * @param msg A Message instance, ``msg->dcontent`` should be valid XML which
+ * @param msg A SrnMessage instance, ``msg->dcontent`` should be valid XML which
  *      may without root tag
  * @param flag Indicates which decorator modules to use
  * @param user_data Deprecated
@@ -99,9 +99,9 @@ void decorator_init(){
  * @return SRN_OK if success
  *
  * NOTE: As mentioned aboved, decorator module's DecoratorFunc may be called
- * multiple times for single Message instance.
+ * multiple times for single SrnMessage instance.
  */
-SrnRet decorate_message(Message *msg, DecoratorFlag flag, void *user_data){
+SrnRet decorate_message(SrnMessage *msg, DecoratorFlag flag, void *user_data){
     g_return_val_if_fail(msg, SRN_ERR);
 
     for (int i = 0; i < MAX_DECORATOR; i++){

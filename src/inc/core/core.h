@@ -16,13 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SERVER_CMD_H
-#define __SERVER_CMD_H
+#ifndef __CORE_H
+#define __CORE_H
 
+#define __IN_CORE_H
 #include "server.h"
-#include "ret.h"
+#include "app.h"
+#undef __IN_CORE_H
 
-void server_cmd_init();
-SrnRet server_cmd(Chat *chat, const char *cmd);
-
-#endif /* __SERVER_CMD_H */
+#endif /* __CORE_H */

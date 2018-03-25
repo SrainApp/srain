@@ -53,7 +53,7 @@ static void tray_icon_on_menu(GtkStatusIcon *status_icon, guint button,
     gtk_menu_popup(tray_menu, NULL, NULL, NULL, NULL, button, activate_time);
 }
 
-void tray_icon_set_callback(GtkStatusIcon *status_icon, SrainWindow *win, GtkMenu *menu){
+void tray_icon_set_callback(GtkStatusIcon *status_icon, SuiWindow *win, GtkMenu *menu){
     tray_menu = menu;
 
     g_signal_connect(G_OBJECT(status_icon), "activate", G_CALLBACK(tray_icon_on_click), win);

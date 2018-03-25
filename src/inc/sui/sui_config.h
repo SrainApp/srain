@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SUI_PREFS_H
-#define __SUI_PREFS_H
+#ifndef __SUI_CONFIG_H
+#define __SUI_CONFIG_H
 
 #ifndef __IN_SUI_H
 	#error This file should not be included directly, include just sui.h
@@ -26,29 +26,35 @@
 #include "srain.h"
 #include "ret.h"
 
-typedef struct _SuiAppPrefs SuiAppPrefs;
-typedef struct _SuiPrefs SuiPrefs;
+typedef struct _SuiApplicationConfig SuiApplicationConfig;
+typedef struct _SuiWindowConfig SuiWindowConfig;
+typedef struct _SuiBufferConfig SuiBufferConfig;
 
-struct _SuiAppPrefs {
+struct _SuiApplicationConfig {
     char *theme;
-    // const char *font;
 };
 
-struct _SuiPrefs {
+struct _SuiWindowConfig {
+};
+
+struct _SuiBufferConfig {
     bool notify;
     bool show_topic;
     bool show_avatar;
     bool show_user_list;
-    bool preview_image;
-    bool render_mirc_color;
+    bool preview_image; // FIXME: config
 };
 
-SuiAppPrefs *sui_app_prefs_new();
-SrnRet sui_app_prefs_check(SuiAppPrefs *prefs);
-void sui_app_prefs_free(SuiAppPrefs *prefs);
+SuiApplicationConfig *sui_application_config_new(void);
+SrnRet sui_application_config_check(SuiApplicationConfig *cfg);
+void sui_application_config_free(SuiApplicationConfig *cfg);
 
-SuiPrefs *sui_prefs_new();
-SrnRet sui_prefs_check(SuiPrefs *prefs);
-void sui_prefs_free(SuiPrefs *prefs);
+SuiWindowConfig *sui_window_config_new(void);
+SrnRet sui_window_config_check(SuiWindowConfig *cfg);
+void sui_window_config_free(SuiWindowConfig *cfg);
 
-#endif /* __SUI_PREFS_H */
+SuiBufferConfig *sui_buffer_config_new(void);
+SrnRet sui_buffer_config_check(SuiBufferConfig *cfg);
+void sui_buffer_config_free(SuiBufferConfig *cfg);
+
+#endif /* __SUI_CONFIG_H */

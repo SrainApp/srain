@@ -18,7 +18,7 @@
 
 /**
  * @file chat_log.c
- * @brief Message filter for chat logging
+ * @brief SrnMessage filter for chat logging
  * @author Shengyu Zhang <i@silverrainz.me>
  * @version 0.06.2
  * @date 2016-08-21
@@ -28,7 +28,7 @@
 #include <stdio.h>
 #include <glib.h>
 
-#include "server.h"
+#include "core/core.h"
 
 #include "filter.h"
 
@@ -39,14 +39,14 @@
 #include "i18n.h"
 #include "file_helper.h"
 
-static bool chat_log(const Message *msg, const char *content);
+static bool chat_log(const SrnMessage *msg, const char *content);
 
 Filter chat_log_filter = {
     .name = "chat_log",
     .func = chat_log,
 };
 
-static bool chat_log(const Message *msg, const char *content){
+static bool chat_log(const SrnMessage *msg, const char *content){
     char timestr[32];
     char datestr[32];
     FILE *fp;
@@ -61,7 +61,7 @@ static bool chat_log(const Message *msg, const char *content){
     basename = g_string_new("");
 
     g_string_append_printf(basename, "%s.%s.log", datestr, msg->chat->name);
-    file = create_log_file(msg->chat->srv->prefs->name, basename->str);
+    file = create_log_file(msg->chat->srv->cfg->name, basename->str);
 
     if (!file){
         ERR_FR("Failed to create log file");
@@ -75,23 +75,23 @@ static bool chat_log(const Message *msg, const char *content){
     }
 
     switch (msg->type){
-        case MESSAGE_SENT:
+        case SRN_MESSAGE_SENT:
             fprintf(fp,"[%s] <%s*> %s\n", timestr, msg->user->nick, msg->content);
             break;
-        case MESSAGE_RECV:
-        case MESSAGE_NOTICE:
+        case SRN_MESSAGE_RECV:
+        case SRN_MESSAGE_NOTICE:
             fprintf(fp,"[%s] <%s> %s\n", timestr, msg->user->nick, msg->content);
             break;
-        case MESSAGE_ACTION:
+        case SRN_MESSAGE_ACTION:
             fprintf(fp,"[%s] * %s %s\n", timestr, msg->user->nick, msg->content);
             break;
-        case MESSAGE_MISC:
+        case SRN_MESSAGE_MISC:
             fprintf(fp,"[%s] = %s\n", timestr, msg->content);
             break;
-        case MESSAGE_ERROR:
+        case SRN_MESSAGE_ERROR:
             fprintf(fp,"[%s] ! %s\n", timestr, msg->content);
             break;
-        case MESSAGE_UNKNOWN:
+        case SRN_MESSAGE_UNKNOWN:
         default:
             break;
     }

@@ -19,41 +19,41 @@
 #include <gtk/gtk.h>
 #include <string.h>
 
+#include "log.h"
+
+#include "sui_common.h"
 #include "sui_event_hdr.h"
-#include "srain_app.h"
 #include "srain_window.h"
 #include "srain_buffer.h"
 #include "srain_server_buffer.h"
 #include "srain_chat_buffer.h"
 #include "srain_channel_buffer.h"
 
-#include "log.h"
-
 static void nick_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
     const char *nick;
     GVariantDict *params;
-    SrainBuffer *buffer;
+    SuiBuffer *buf;
 
-    buffer = srain_window_get_cur_buffer(srain_win);
+    buf = sui_get_cur_buffer();
     nick = user_data;
 
     params = g_variant_dict_new(NULL);
     g_variant_dict_insert(params, "nick", SUI_EVENT_PARAM_STRING, nick);
 
     if (strcmp(gtk_widget_get_name(widget), "whois_menu_item") == 0){
-        sui_event_hdr(srain_buffer_get_session(buffer), SUI_EVENT_WHOIS, params);
+        sui_buffer_event_hdr(buf, SUI_EVENT_WHOIS, params);
     }
     else if (strcmp(gtk_widget_get_name(widget), "ignore_menu_item") == 0){
-        sui_event_hdr(srain_buffer_get_session(buffer), SUI_EVENT_IGNORE, params);
+        sui_buffer_event_hdr(buf, SUI_EVENT_IGNORE, params);
     }
     else if (strcmp(gtk_widget_get_name(widget), "kick_menu_item") == 0){
-        sui_event_hdr(srain_buffer_get_session(buffer), SUI_EVENT_KICK, params);
+        sui_buffer_event_hdr(buf, SUI_EVENT_KICK, params);
     }
     else if (strcmp(gtk_widget_get_name(widget), "chat_menu_item") == 0){
-        sui_event_hdr(srain_buffer_get_session(buffer), SUI_EVENT_QUERY, params);
+        sui_buffer_event_hdr(buf, SUI_EVENT_QUERY, params);
     }
     else if (strcmp(gtk_widget_get_name(widget), "invite_submenu_item") == 0){
-        sui_event_hdr(srain_buffer_get_session(buffer), SUI_EVENT_INVITE, params);
+        sui_buffer_event_hdr(buf, SUI_EVENT_INVITE, params);
     }
     else {
         ERR_FR("Unknown menu item: %s", gtk_widget_get_name(widget));
@@ -62,7 +62,7 @@ static void nick_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
     g_variant_dict_unref(params);
 }
 
-void nick_menu_popup(GdkEventButton *event, const char *nick){
+void nick_menu_popup(GtkWidget *widget, GdkEventButton *event, const char *nick){
     int n;
     GSList *lst;
     GtkBuilder *builder;
@@ -73,7 +73,7 @@ void nick_menu_popup(GdkEventButton *event, const char *nick){
     GtkMenuItem *chat_menu_item;
     GtkMenuItem *invite_menu_item;
     GtkMenu *invite_submenu;
-    SrainBuffer *buffer;
+    SuiBuffer *buf;
 
     LOG_FR("%s", nick);
 
@@ -96,18 +96,18 @@ void nick_menu_popup(GdkEventButton *event, const char *nick){
             G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
 
     /* Create subitem of invite_menu_item */
-    buffer = srain_window_get_cur_buffer(srain_win);
-    if (SRAIN_IS_CHAT_BUFFER(buffer)){
-        buffer = SRAIN_BUFFER(srain_chat_buffer_get_server_buffer(
-                    SRAIN_CHAT_BUFFER(buffer)));
+    buf = sui_get_cur_buffer();
+    if (SRAIN_IS_CHAT_BUFFER(buf)){
+        buf = SUI_BUFFER(srain_chat_buffer_get_server_buffer(
+                    SRAIN_CHAT_BUFFER(buf)));
     }
-    if (!SRAIN_IS_SERVER_BUFFER(buffer)){
+    if (!SRAIN_IS_SERVER_BUFFER(buf)){
         goto FIN;
     }
 
     n = 0;
     invite_submenu = GTK_MENU(gtk_menu_new());
-    lst = srain_server_buffer_get_buffer_list(SRAIN_SERVER_BUFFER(buffer));
+    lst = srain_server_buffer_get_buffer_list(SRAIN_SERVER_BUFFER(buf));
     while (lst){
         GtkMenuItem *item;
 
@@ -116,7 +116,7 @@ void nick_menu_popup(GdkEventButton *event, const char *nick){
             continue;
         }
         item = GTK_MENU_ITEM(gtk_menu_item_new_with_label(
-                    srain_buffer_get_name(lst->data)));
+                    sui_buffer_get_name(lst->data)));
         gtk_widget_show(GTK_WIDGET(item));
         gtk_widget_set_name(GTK_WIDGET(item), "invite_submenu_item");
         g_signal_connect(item, "activate",
