@@ -139,6 +139,7 @@ SrnServer* srn_application_add_server(SrnApplication *app, const char *name) {
     g_return_val_if_fail(srv, NULL);
 
     cfg->srv = srv;
+    app->cur_srv = srv;
     app->srv_list = g_slist_append(app->srv_list, srv);
 
     ret = srn_server_add_chat(srv, META_SERVER);
@@ -154,6 +155,9 @@ SrnRet srn_application_rm_server(SrnApplication *app, SrnServer *srv) {
     lst = g_slist_find(app->srv_list, srv);
     if (!lst){
         return SRN_ERR;
+    }
+    if (app->cur_srv == srv) {
+        app->cur_srv = NULL;
     }
     app->srv_list = g_slist_delete_link(app->srv_list, lst);
 

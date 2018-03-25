@@ -51,7 +51,8 @@ SrnRet srn_server_ui_event_activate(SuiApplication *app, SuiEvent event, GVarian
 
     srn_app = sui_application_get_ctx(app);
     sui_new_window(app, &srn_app->ui_win_events, sui_window_config_new());
-    return SRN_OK;
+
+    return rc_read(); // Read rc file
 }
 
 SrnRet srn_server_ui_event_shutdown(SuiApplication *app, SuiEvent event, GVariantDict *params){
@@ -239,7 +240,7 @@ SrnRet srn_server_ui_event_send(SuiBuffer *sui, SuiEvent event, GVariantDict *pa
 
     // Command or message?
     if (msg[0] == '/'){
-        ret = srn_server_cmd(chat, msg);
+        ret = srn_application_run_command(srn_application_get_default(), msg);
         // FIXME: chat may be invalid now
         if (!srn_server_is_valid(srv)){
             return SRN_ERR;

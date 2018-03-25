@@ -318,7 +318,6 @@ bool srn_server_cap_all_enabled(SrnServerCap *scap);
 bool srn_server_cap_is_support(SrnServerCap *scap, const char *name, const char *value);
 char* srn_server_cap_dump(SrnServerCap *scap);
 
-SrnRet srn_server_url_open(const char *url);
+SrnRet srn_server_url_open(const char *url); // FIXME
 
-SrnRet srn_server_cmd(SrnChat *chat, const char *cmd); // FIXME
 #endif /* __SERVER_H */

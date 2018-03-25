@@ -48,9 +48,9 @@ struct _SrnApplication {
     SuiBufferEvents ui_events;
     SircEvents irc_events;
 
-    GSList *win_list;
     SuiWindowConfig *win_cfg;
 
+    SrnServer *cur_srv;
     GSList *srv_list;
     GSList *srv_cfg_list;
 };
@@ -69,6 +69,7 @@ SrnApplication *srn_application_new(void);
 SrnApplication* srn_application_get_default(void);
 void srn_application_run(SrnApplication *app, int argc, char *argv[]);
 void srn_application_quit(SrnApplication *app);
+SrnRet srn_application_run_command(SrnApplication *app, const char *cmd);
 
 // Server
 SrnServer* srn_application_add_server(SrnApplication *app, const char *name);
