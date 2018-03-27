@@ -28,9 +28,12 @@ Message* message_new(Chat *chat, User *user, const char *content, MessageType ty
 
     g_return_val_if_fail(chat, NULL);
     g_return_val_if_fail(user, NULL);
-    g_return_val_if_fail(content, NULL);
 
     msg = g_malloc0(sizeof(Message));
+
+    if (!content) {
+        content = "";
+    }
 
     msg->user = user_ref(user);
     msg->chat = chat;
