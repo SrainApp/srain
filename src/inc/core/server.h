@@ -64,17 +64,33 @@ typedef struct _SrnServerCap SrnServerCap;
     SRN_USER_TYPE_MAX
 }; */
 
+typedef struct _SrnUserContext SrnUserContext;
+
+struct _SrnUserContext {
+    SrnChat *chat;
+    SrnUser *user;
+    SrnUserType type;
+    GList *msg_list;    // TODO: list of SrnMessage
+    // SuiUser *ui;
+};
+
 struct _SrnUser {
     char *nick;
     char *username;
     char *hostname;
     char *realname;
+    char *loginname;
+    char *servername;
+    char *serverloc;
 
-    bool me;
+    bool is_me;
+    bool is_server;
+    bool is_online;
+    bool is_away;
+    bool is_secure;
 
     SrnServer *srv;
-    GSList *chat_list;
-    // SuiUser *ui;
+    GSList *ctx_list;  // List of SrnUserContext
 };
 
 enum _SrnMessageType {
@@ -265,6 +281,8 @@ SrnChat* srn_server_get_chat_fallback(SrnServer *srv, const char *name);
 SrnRet srn_server_add_user(SrnServer *srv, const char *nick);
 SrnRet srn_server_rm_user(SrnServer *srv, const char *nick);
 SrnUser* srn_server_get_user(SrnServer *srv, const char *nick);
+SrnUser* srn_server_add_and_get_user(SrnServer *srv, const char *nick);
+SrnRet srn_server_rename_user(SrnServer *srv, const char *old_nick, const char *new_nick);
 
 SrnChat* srn_chat_new(SrnServer *srv, const char *name, SrnChatConfig *cfg);
 void srn_chat_free(SrnChat *chat);

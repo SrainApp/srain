@@ -50,38 +50,10 @@ SrnMessage* srn_message_new(SrnChat *chat, SrnUser *user, const char *content, S
 }
 
 void srn_message_free(SrnMessage *msg){
-    if (msg->chat) { /* Nothing to do. */ }
-    if (msg->ui) { /* Nothing to do. */ }
-
-    if (msg->user) {
-        srn_user_free(msg->user);
-    }
-
-    if (msg->urls) {
-        GSList *lst = msg->urls;
-        while (lst){
-            g_free(lst->data);
-            lst->data = NULL;
-            lst = g_slist_next(lst);
-        }
-        g_slist_free(msg->urls);
-    }
-
-    if (msg->dname) {
-        g_free(msg->dname);
-    }
-
-    if (msg->role) {
-        g_free(msg->role);
-    }
-
-    if (msg->content) {
-        g_free(msg->content);
-    }
-
-    if (msg->dcontent) {
-        g_free(msg->dcontent);
-    }
-
+    str_assign(&msg->dname, NULL);
+    str_assign(&msg->role, NULL);
+    str_assign(&msg->content, NULL);
+    str_assign(&msg->dcontent, NULL);
+    g_slist_free_full(msg->urls, g_free);
     g_free(msg);
 }

@@ -240,7 +240,7 @@ void srn_server_irc_event_welcome(SircSession *sirc, int event,
     srv->ping_timer = g_timeout_add(SRN_SERVER_PING_INTERVAL, irc_period_ping, srv);
     DBG_FR("Ping timer %d created", srv->ping_timer);
 
-    srn_user_set_nick(srv->user, nick);
+    srn_server_rename_user(srv, srv->user, nick);
 
     /* Join all channels already exists */
     list = srv->chat_list;
@@ -256,6 +256,7 @@ void srn_server_irc_event_welcome(SircSession *sirc, int event,
 void srn_server_irc_event_nick(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
     GSList *lst;
+    SrnRet ret;
     SrnServer *srv;
     SrnChat *chat;
     SrnUser *user;
@@ -267,6 +268,10 @@ void srn_server_irc_event_nick(SircSession *sirc, const char *event,
     const char *old_nick = origin;
     const char *new_nick = params[0];
 
+    user = srn_server_get_user(srv, old_nick);
+    g_return_if_fail(user);
+    ret = srn_server_rename_user(srv, user, new_nick);
+    g_return_if_fail(RET_IS_OK(ret));
     lst = srv->chat_list;
     while (lst){
         chat = lst->data;
@@ -274,7 +279,6 @@ void srn_server_irc_event_nick(SircSession *sirc, const char *event,
         if ((user = srn_chat_get_user(chat, old_nick)) != NULL){
             srn_chat_add_misc_message_fmt(chat, old_nick, _("%1$s is now known as %2$s"),
                     old_nick, new_nick);
-            srn_user_set_nick(user, new_nick);
         }
         lst = g_slist_next(lst);
     }

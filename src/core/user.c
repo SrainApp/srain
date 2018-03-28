@@ -22,13 +22,6 @@
 #include "log.h"
 #include "utils.h"
 
-typedef struct _SrnUserContext SrnUserContext;
-
-struct _SrnUserContext {
-    SrnChat *chat;
-    SrnUserType type;
-};
-
 SrnUser *srn_user_new(SrnServer *srv, const char *nick){
     SrnUser *user;
 
@@ -37,14 +30,14 @@ SrnUser *srn_user_new(SrnServer *srv, const char *nick){
 
     user = g_malloc0(sizeof(SrnUser));
     user->srv = srv;
-    user->me = FALSE;
+    user->is_me = FALSE;
     str_assign(&user->nick, nick);
 
     return user;
 }
 
 void srn_user_free(SrnUser *user){
-    g_return_if_fail(g_slist_length(user->chat_list) == 0);
+    g_return_if_fail(g_slist_length(user->ctx_list) == 0);
 
     str_assign(&user->nick, NULL);
     str_assign(&user->username, NULL);
@@ -57,7 +50,7 @@ SrnRet srn_user_attach_chat(SrnUser *user, SrnChat *chat, SrnUserType type){
     GSList *lst;
     SrnUserContext *ctx;
 
-    lst = user->chat_list;
+    lst = user->ctx_list;
     while (lst){
         ctx = lst->data;
         if (ctx->chat == chat){
@@ -77,11 +70,11 @@ SrnRet srn_user_detach_chat(SrnUser *user, SrnChat *chat){
     GSList *lst;
     SrnUserContext *ctx;
 
-    lst = user->chat_list;
+    lst = user->ctx_list;
     while (lst){
         ctx = lst->data;
         if (ctx->chat == chat){
-            user->chat_list = g_slist_delete_link(user->chat_list, lst);
+            user->ctx_list = g_slist_delete_link(user->ctx_list, lst);
             sui_rm_user(chat->ui, user->nick);
             g_free(ctx);
             return SRN_OK;
@@ -94,16 +87,16 @@ SrnRet srn_user_detach_chat(SrnUser *user, SrnChat *chat){
 void srn_user_set_nick(SrnUser *user, const char *nick){
     GSList *lst;
 
-    str_assign(&user->nick, nick);
-
     /* Update UI status */
-    lst = user->chat_list;
+    lst = user->ctx_list;
     while (lst) {
         SrnUserContext *ctx;
 
         ctx = lst->data;
         sui_ren_user(ctx->chat->ui, user->nick, nick, ctx->type);
     }
+
+    str_assign(&user->nick, nick);
 }
 
 void srn_user_set_username(SrnUser *user, const char *username){
@@ -119,14 +112,14 @@ void srn_user_set_realname(SrnUser *user, const char *realname){
 }
 
 void srn_user_set_me(SrnUser *user, bool me){
-    user->me = me;
+    user->is_me = me;
 }
 
 void srn_user_set_type(SrnUser *user, SrnChat *chat, SrnUserType type){
     GSList *lst;
 
     /* Update UI status */
-    lst = user->chat_list;
+    lst = user->ctx_list;
     while (lst) {
         SrnUserContext *ctx;
 
@@ -138,4 +131,3 @@ void srn_user_set_type(SrnUser *user, SrnChat *chat, SrnUserType type){
         }
     }
 }
-
