@@ -31,7 +31,7 @@ typedef struct _SircSession SircSession;
 #define SIRC_SESSION_SASL           1 << 2 // Not support yet
 #define SIRC_SESSION_IPV6           1 << 3 // Not support yet
 
-#define SIRC_BUF_LEN    513
+#define SIRC_BUF_LEN    1024
 
 #define __IN_SIRC_H
 #include "sirc_cmd.h"
