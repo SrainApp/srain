@@ -856,7 +856,7 @@ static SrnRet on_command_me(SrnCommand *cmd, void *user_data){
         return RET_ERR(_("Failed to send action message: %1$s"), RET_MSG(ret));
     }
 
-    srn_chat_add_action_message(chat, chat->user->nick, msg);
+    srn_chat_add_action_message(chat, chat->user, msg);
 
     return SRN_OK;
 }

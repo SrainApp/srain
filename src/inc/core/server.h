@@ -186,6 +186,7 @@ struct _SrnServer {
     SrnServerConfig *cfg;   // All required static informations
 
     SrnUser *user;          // Used to store your nick, username, realname
+    SrnUser *_user;         // Hold all messages that do not belong other any user
     SrnChat *chat;          // Hold all messages that do not belong to any other SrnChat
     SrnChat *cur_chat;
     GSList *chat_list;
@@ -291,14 +292,14 @@ SrnRet srn_chat_add_user(SrnChat *chat, SrnUser *user, SrnUserType type);
 SrnRet srn_chat_rm_user(SrnChat *chat, SrnUser *user);
 SrnUser* srn_chat_get_user(SrnChat *chat, const char *nick);
 void srn_chat_add_sent_message(SrnChat *chat, const char *content);
-void srn_chat_add_recv_message(SrnChat *chat, const char *origin, const char *content);
-void srn_chat_add_action_message(SrnChat *chat, const char *origin, const char *content);
-void srn_chat_add_notice_message(SrnChat *chat, const char *origin, const char *content);
-void srn_chat_add_misc_message(SrnChat *chat, const char *origin, const char *content);
-void srn_chat_add_misc_message_fmt(SrnChat *chat, const char *origin, const char *fmt, ...);
-void srn_chat_add_error_message(SrnChat *chat, const char *origin, const char *content);
-void srn_chat_add_error_message_fmt(SrnChat *chat, const char *origin, const char *fmt, ...);
-void srn_chat_set_topic(SrnChat *chat, const char *origin, const char *topic);
+void srn_chat_add_recv_message(SrnChat *chat, SrnUser *user, const char *content);
+void srn_chat_add_action_message(SrnChat *chat, SrnUser *user, const char *content);
+void srn_chat_add_notice_message(SrnChat *chat, SrnUser *user, const char *content);
+void srn_chat_add_misc_message(SrnChat *chat, SrnUser *user, const char *content);
+void srn_chat_add_misc_message_fmt(SrnChat *chat, SrnUser *user, const char *fmt, ...);
+void srn_chat_add_error_message(SrnChat *chat, SrnUser *user, const char *content);
+void srn_chat_add_error_message_fmt(SrnChat *chat, SrnUser *user, const char *fmt, ...);
+void srn_chat_set_topic(SrnChat *chat, SrnUser *user, const char *topic);
 void srn_chat_set_topic_setter(SrnChat *chat, const char *setter);
 
 SrnChatConfig *srn_chat_config_new();

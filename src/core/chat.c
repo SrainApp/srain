@@ -178,9 +178,8 @@ cleanup:
     srn_message_free(msg);
 }
 
-void srn_chat_add_recv_message(SrnChat *chat, const char *origin, const char *content){
+void srn_chat_add_recv_message(SrnChat *chat, SrnUser *user, const char *content){
     bool invalid_user = FALSE;
-    SrnUser *user;
     SrnMessage *msg;
     DecoratorFlag dflag;
     FilterFlag fflag;
@@ -193,11 +192,7 @@ void srn_chat_add_recv_message(SrnChat *chat, const char *origin, const char *co
     }
     fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
 
-    // FIXME:
-    user = srn_chat_get_user(chat, origin);
-
     msg = srn_message_new(chat, user, content, SRN_MESSAGE_RECV);
-
     if (decorate_message(msg, dflag, NULL) != SRN_OK){
         goto cleanup;
     }
@@ -238,19 +233,14 @@ cleanup:
     srn_message_free(msg);
 }
 
-void srn_chat_add_notice_message(SrnChat *chat, const char *origin, const char *content){
-    srn_chat_add_recv_message(chat, origin, content);
+void srn_chat_add_notice_message(SrnChat *chat, SrnUser *user, const char *content){
+    srn_chat_add_recv_message(chat, user, content);
 }
 
-void srn_chat_add_action_message(SrnChat *chat, const char *origin, const char *content){
-    bool invalid_user = FALSE;
-    SrnUser *user;
+void srn_chat_add_action_message(SrnChat *chat, SrnUser *user, const char *content){
     SrnMessage *msg;
     FilterFlag fflag;
     DecoratorFlag dflag;
-
-    // FIXME
-    user = srn_chat_get_user(chat, origin);
 
     dflag = DECORATOR_PANGO_MARKUP;
     if (chat->cfg->render_mirc_color) {
@@ -261,13 +251,10 @@ void srn_chat_add_action_message(SrnChat *chat, const char *origin, const char *
     fflag = FILTER_CHAT_LOG;
 
     msg = srn_message_new(chat, user, content, SRN_MESSAGE_ACTION);
-
-    if (user->is_me){
-    } else {
+    if (!user->is_me){
         fflag |= FILTER_NICK | FILTER_REGEX;
         dflag |= DECORATOR_RELAY | DECORATOR_MENTION;
     }
-
     if (decorate_message(msg, dflag, NULL) != SRN_OK){
         goto cleanup;
     }
@@ -276,10 +263,8 @@ void srn_chat_add_action_message(SrnChat *chat, const char *origin, const char *
     }
 
     {
-        // TODO: "<b>" no used?
         char *action_msg = g_strdup_printf(_("*** <b>%1$s</b> %2$s ***"),
                 msg->dname, msg->dcontent);
-
         msg->ui = sui_add_sys_msg(chat->ui, action_msg, SYS_MSG_ACTION);
         g_free(action_msg);
     }
@@ -288,7 +273,6 @@ void srn_chat_add_action_message(SrnChat *chat, const char *origin, const char *
     if (!msg->ui){
         goto cleanup;
     }
-
     if (msg->mentioned){
         sui_message_mentioned(msg->ui);
         sui_message_notify(msg->ui);
@@ -300,26 +284,17 @@ void srn_chat_add_action_message(SrnChat *chat, const char *origin, const char *
     return;
 
 cleanup:
-    if (invalid_user){
-        srn_user_free(user);
-    }
     srn_message_free(msg);
 }
 
-void srn_chat_add_misc_message(SrnChat *chat, const char *origin, const char *content){
-    bool invalid_user = FALSE;
-    SrnUser *user;
+void srn_chat_add_misc_message(SrnChat *chat, SrnUser *user, const char *content){
     SrnMessage *msg;
     DecoratorFlag dflag;
     FilterFlag fflag;
 
-    // FIXME
-    user = srn_chat_get_user(chat, origin);
-
     dflag = DECORATOR_PANGO_MARKUP;
     fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
     msg = srn_message_new(chat, user, content, SRN_MESSAGE_MISC);
-
     if (decorate_message(msg, dflag, NULL) != SRN_OK){
         goto cleanup;
     }
@@ -336,39 +311,28 @@ void srn_chat_add_misc_message(SrnChat *chat, const char *origin, const char *co
     return;
 
 cleanup:
-    if (invalid_user){
-        srn_user_free(user);
-    }
     srn_message_free(msg);
 }
 
-void srn_chat_add_misc_message_fmt(SrnChat *chat, const char *origin, const char *fmt, ...){
+void srn_chat_add_misc_message_fmt(SrnChat *chat, SrnUser *user, const char *fmt, ...){
     char *content;
     va_list args;
 
     va_start(args, fmt);
     content = g_strdup_vprintf(fmt, args);
     va_end(args);
-
-    srn_chat_add_misc_message(chat, origin, content);
-
+    srn_chat_add_misc_message(chat, user, content);
     g_free(content);
 }
 
-void srn_chat_add_error_message(SrnChat *chat, const char *origin, const char *content){
-    bool invalid_user = FALSE;
-    SrnUser *user;
+void srn_chat_add_error_message(SrnChat *chat, SrnUser *user, const char *content){
     SrnMessage *msg;
     DecoratorFlag dflag;
     FilterFlag fflag;
 
-    // FIXME
-    user = srn_chat_get_user(chat, origin);
-
     dflag = DECORATOR_PANGO_MARKUP;
     fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
     msg = srn_message_new(chat, user, content, SRN_MESSAGE_ERROR);
-
     if (decorate_message(msg, dflag, NULL) != SRN_OK){
         goto cleanup;
     }
@@ -377,11 +341,6 @@ void srn_chat_add_error_message(SrnChat *chat, const char *origin, const char *c
     }
 
     msg->ui = sui_add_sys_msg(chat->ui, msg->dcontent, SYS_MSG_ERROR);
-
-    if (!msg->ui){
-        goto cleanup;
-    }
-
     sui_message_notify(msg->ui);
 
     add_message(chat, msg);
@@ -389,33 +348,23 @@ void srn_chat_add_error_message(SrnChat *chat, const char *origin, const char *c
     return;
 
 cleanup:
-    if (invalid_user){
-        srn_user_free(user);
-    }
     srn_message_free(msg);
 }
 
-void srn_chat_add_error_message_fmt(SrnChat *chat, const char *origin, const char *fmt, ...){
+void srn_chat_add_error_message_fmt(SrnChat *chat, SrnUser *user, const char *fmt, ...){
     char *content;
     va_list args;
 
     va_start(args, fmt);
     content = g_strdup_vprintf(fmt, args);
     va_end(args);
-
-    srn_chat_add_error_message(chat, origin, content);
-
+    srn_chat_add_error_message(chat, user, content);
     g_free(content);
 }
 
-void srn_chat_set_topic(SrnChat *chat, const char *origin, const char *topic){
-    bool invalid_user = FALSE;
-    SrnUser *user;
+void srn_chat_set_topic(SrnChat *chat, SrnUser *user, const char *topic){
     SrnMessage *msg;
     DecoratorFlag dflag;
-
-    // FIXME
-    user = srn_chat_get_user(chat, origin);
 
     dflag = DECORATOR_PANGO_MARKUP;
     if (chat->cfg->render_mirc_color) {
@@ -425,13 +374,8 @@ void srn_chat_set_topic(SrnChat *chat, const char *origin, const char *topic){
     }
 
     msg = srn_message_new(chat, user, topic, SRN_MESSAGE_UNKNOWN);
-
     if (decorate_message(msg, dflag, NULL) == SRN_OK){
         sui_set_topic(chat->ui, msg->dcontent);
-    }
-
-    if (invalid_user){
-        srn_user_free(user);
     }
     srn_message_free(msg);
 }

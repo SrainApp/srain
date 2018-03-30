@@ -63,9 +63,15 @@ SrnServer* srn_server_new(SrnServerConfig *cfg){
     /* srv->ping_timer = 0; */ // by g_malloc0()
     /* srv->reconn_timer = 0; */ // by g_malloc0()
 
+    /* Server user */
     srv->user_table = g_hash_table_new_full(
             g_str_hash, g_str_equal,
             NULL, (GDestroyNotify)srn_user_free);
+    srv->_user = srn_server_add_and_get_user(srv, "");
+    srv->user = srn_server_add_and_get_user(srv, srv->cfg->nickname);
+    srn_user_set_username(srv->user, srv->cfg->username);
+    srn_user_set_realname(srv->user, srv->cfg->realname);
+    srn_user_set_me(srv->user, TRUE);
 
     /* sirc */
     srv->irc = sirc_new_session(
@@ -189,11 +195,6 @@ SrnRet srn_server_add_chat(SrnServer *srv, const char *name){
     // Creating server chat
     if (g_ascii_strcasecmp(name, META_SERVER) == 0) {
         srv->chat = chat;
-        srn_server_add_user(srv, srv->cfg->nickname);
-        srv->user = srn_server_get_user(srv, srv->cfg->nickname);
-        srn_user_set_username(srv->user, srv->cfg->username);
-        srn_user_set_realname(srv->user, srv->cfg->realname);
-        srn_user_set_me(srv->user, TRUE);
         srn_user_attach_chat(srv->user, chat, SRN_USER_CHIGUA);
     } else {
         srv->chat_list = g_slist_append(srv->chat_list, chat);
@@ -282,7 +283,7 @@ SrnUser* srn_server_get_user(SrnServer *srv, const char *nick){
 
 SrnUser* srn_server_add_and_get_user(SrnServer *srv, const char *nick){
     srn_server_add_user(srv, nick);
-    return srn_server_get_chat(srv, nick);
+    return srn_server_get_user(srv, nick);
 }
 
 SrnRet srn_server_rm_user(SrnServer *srv, const char *nick){
@@ -303,6 +304,6 @@ SrnRet srn_server_rename_user(SrnServer *srv, const char *old_nick,
         return SRN_ERR;
     }
     srn_user_set_nick(user, new_nick);
-    return g_hash_table_insert(srv->user_table, new_nick, user) ?
+    return g_hash_table_insert(srv->user_table, g_strdup(new_nick), user) ?
         SRN_OK : SRN_ERR;
 }

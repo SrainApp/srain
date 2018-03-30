@@ -60,7 +60,7 @@ int regex_filter_add_pattern(SrnChat *chat, const char *name, const char *patter
         if (lst->data){
             np = lst->data;
             if (strcasecmp(np->name, name) == 0){
-                srn_chat_add_error_message_fmt(chat->srv->cur_chat, chat->user->nick,
+                srn_chat_add_error_message_fmt(chat->srv->cur_chat, chat->user,
                         _("\"%1$s\" already exists in %2$s 's regex list"),
                         np->name, chat->name);
                 return SRN_ERR;
@@ -72,7 +72,7 @@ int regex_filter_add_pattern(SrnChat *chat, const char *name, const char *patter
     err = NULL;
     regex = g_regex_new(pattern, 0, 0, &err);
     if (!regex){
-        srn_chat_add_error_message_fmt(chat->srv->cur_chat, chat->user->nick,
+        srn_chat_add_error_message_fmt(chat->srv->cur_chat, chat->user,
                 _("Invail pattern: %1$s"), err->message);
         return SRN_ERR;
     }
@@ -85,7 +85,7 @@ int regex_filter_add_pattern(SrnChat *chat, const char *name, const char *patter
 
     chat->ignore_regex_list = g_slist_append(chat->ignore_regex_list, np);
 
-    srn_chat_add_misc_message_fmt(chat->srv->cur_chat, chat->user->nick,
+    srn_chat_add_misc_message_fmt(chat->srv->cur_chat, chat->user,
             _("\"%1$s\" has added to %2$s 's regex list"), np->name, chat->name);
 
     return SRN_OK;
@@ -101,7 +101,7 @@ int regex_filter_rm_pattern(SrnChat *chat, const char *name){
         if (lst->data){
             np = lst->data;
             if (strcasecmp(np->name, name) == 0){
-                srn_chat_add_misc_message_fmt(chat->srv->cur_chat, chat->user->nick,
+                srn_chat_add_misc_message_fmt(chat->srv->cur_chat, chat->user,
                         _("\"%1$s\" is removed from %2$s 's ignore list"),
                         name, chat->name);
 
@@ -114,7 +114,7 @@ int regex_filter_rm_pattern(SrnChat *chat, const char *name){
         lst = g_slist_next(lst);
     }
 
-    srn_chat_add_error_message_fmt(chat->srv->cur_chat, chat->user->nick,
+    srn_chat_add_error_message_fmt(chat->srv->cur_chat, chat->user,
             _("\"%1$s\" not found in %2$s 's ignore list"),
             name, chat->name);
 
