@@ -196,7 +196,7 @@ void scale_size_to(int src_width, int src_height,
  * @return
  */
 gboolean activate_link(GtkLabel *label, const char *uri, gpointer user_data){
-    const char *urls[]  = { uri, NULL};
+    const char *urls[]  = {uri, NULL};
     GVariantDict *params;
     SuiApplication *app;
 
@@ -204,7 +204,7 @@ gboolean activate_link(GtkLabel *label, const char *uri, gpointer user_data){
     params = g_variant_dict_new(NULL);
     g_variant_dict_insert(params, "urls", SUI_EVENT_PARAM_STRINGS, urls, -1);
 
-    if (!RET_IS_OK(sui_application_event_hdr(sui_application_get_ctx(app), SUI_EVENT_OPEN, params))){
+    if (!RET_IS_OK(sui_application_event_hdr(app, SUI_EVENT_OPEN, params))){
         GError *err = NULL;
 
 #if GTK_CHECK_VERSION(3, 22, 0)
@@ -215,7 +215,13 @@ gboolean activate_link(GtkLabel *label, const char *uri, gpointer user_data){
 #endif
 
         if (err) {
-            ERR_FR("Failed to open URL '%s': %s", uri, err->message); // TODO message box
+            char *errmsg;
+
+            errmsg = g_strdup_printf(_("Failed to open URL \"%s\": %s"),
+                    uri, err->message);
+            sui_message_box(_("Error"), errmsg);
+            g_free(errmsg);
+
             return FALSE;
         }
     }

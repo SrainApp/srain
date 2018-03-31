@@ -42,13 +42,35 @@ static SrnServer* ctx_get_server(SuiBuffer *sui);
 static SrnChat* ctx_get_chat(SuiBuffer *sui);
 
 SrnRet srn_server_ui_event_open(SuiApplication *app, SuiEvent event, GVariantDict *params){
-    // TODO: config
+    int len;
+    char **urls;
+    SrnApplication *srn_app;
+
+    srn_app = sui_application_get_ctx(app);
+    g_variant_dict_lookup(params, "urls", SUI_EVENT_PARAM_STRINGS, &urls);
+    len = g_strv_length(urls);
+
+    for (int i = 0; i < len; i ++){
+        SrnRet ret;
+
+        ret = srn_application_open_url(srn_app, urls[i]);
+        if (!RET_IS_OK(ret)){
+            return ret;
+        }
+    }
+
     return SRN_OK;
 }
 
 SrnRet srn_server_ui_event_activate(SuiApplication *app, SuiEvent event, GVariantDict *params){
+    static bool activated = FALSE; // FIXME
     SrnApplication *srn_app;
 
+    if (activated) {
+        return SRN_OK;
+    }
+
+    activated = TRUE;
     srn_app = sui_application_get_ctx(app);
     sui_new_window(app, &srn_app->ui_win_events, sui_window_config_new());
 
@@ -134,7 +156,7 @@ SrnRet srn_server_ui_event_connect(SuiWindow *win, SuiEvent event, GVariantDict 
         srn_application_rm_server_config(app, cfg);
         return ret;
     }
-    ret = srn_application_add_server(app, cfg->name);
+    ret = srn_application_add_server(app, cfg);
     if (!RET_IS_OK(ret)){
         ret = RET_ERR(_("Failed to instantiate server \"%1$s\""), cfg->name);
         srn_application_rm_server_config(app, cfg);

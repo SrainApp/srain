@@ -202,21 +202,25 @@ static int on_command_line(SuiApplication *self,
     char **urls;
     GVariantDict *options;
     GVariantDict* params;
+    SrnRet ret;
+
+    // Activate application firstly, it will create window if not exist
+    g_application_activate(G_APPLICATION(self));
 
     options = g_application_command_line_get_options_dict(cmdline);
     if (g_variant_dict_lookup(options, G_OPTION_REMAINING, "^as", &urls)){
-        /* If we have URLs to open, create window firstly. */
         params = g_variant_dict_new(NULL);
         g_variant_dict_insert(params, "urls", SUI_EVENT_PARAM_STRINGS,
                 urls, g_strv_length(urls));
 
-        sui_application_event_hdr(self, SUI_EVENT_OPEN, params);
+        ret = sui_application_event_hdr(self, SUI_EVENT_OPEN, params);
+        if (!RET_IS_OK(ret)){
+            sui_message_box(_("Error"), RET_MSG(ret));
+        }
 
         g_variant_dict_unref(params);
         g_strfreev(urls);
     }
-
-    g_application_activate(G_APPLICATION(self));
 
     return 0;
 }

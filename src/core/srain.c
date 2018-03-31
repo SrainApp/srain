@@ -43,7 +43,7 @@ int main(int argc, char *argv[]){
 
     logger_cfg = srn_logger_config_new();
     logger_cfg->warn_targets = g_slist_append(
-            logger_cfg->debug_targets, g_strdup(""));
+            logger_cfg->warn_targets, g_strdup(""));
     logger_cfg->prompt_function = TRUE;
     logger = srn_logger_new(logger_cfg);
     srn_logger_set_default(logger);

@@ -37,6 +37,7 @@
 #include "i18n.h"
 #include "file_helper.h"
 #include "rc.h"
+#include "utils.h"
 
 /* Only one SrnApplication instance in one application */
 static SrnApplication *app_instance = NULL;
@@ -125,32 +126,34 @@ SrnApplication* srn_application_get_default(void){
 }
 
 void srn_application_quit(SrnApplication *app){
-    g_application_quit(G_APPLICATION(app));
+    // TODO
 }
 
 void srn_application_run(SrnApplication *app, int argc, char *argv[]){
     sui_run_application(app->ui, argc, argv);
 }
 
-SrnRet srn_application_add_server(SrnApplication *app, const char *name) {
+SrnRet srn_application_add_server(SrnApplication *app, SrnServerConfig *srv_cfg) {
     SrnRet ret;
     SrnServer *srv;
-    SrnServerConfig *cfg;
 
-    cfg = srn_application_get_server_config(app, name);
-    g_return_val_if_fail(cfg, SRN_ERR);
-    g_return_val_if_fail(!cfg->srv, RET_ERR(_("Server already exists")));
+    g_return_val_if_fail(srn_application_is_server_config_valid(app, srv_cfg), SRN_ERR);
+    g_return_val_if_fail(!srv_cfg->srv, RET_ERR(_("Server already exists")));
 
-    ret = srn_server_config_check(cfg);
-    g_return_val_if_fail(RET_IS_OK(ret), ret);
+    ret = srn_server_config_check(srv_cfg);
+    if (!RET_IS_OK(ret)){
+        return ret;
+    }
 
-    srv = srn_server_new(cfg);
-    cfg->srv = srv;
+    srv = srn_server_new(srv_cfg);
+    srv_cfg->srv = srv;
     app->cur_srv = srv;
     app->srv_list = g_slist_append(app->srv_list, srv);
 
     ret = srn_server_add_chat(srv, META_SERVER);
-    g_return_val_if_fail(RET_IS_OK(ret), ret);
+    if (!RET_IS_OK(ret)){
+        return ret;
+    }
 
     return SRN_OK;
 }
@@ -199,14 +202,16 @@ bool srn_application_is_server_valid(SrnApplication *app, SrnServer *srv) {
 SrnRet srn_application_add_server_config(SrnApplication *app, const char *name){
     GSList *lst;
     SrnRet ret;
-    SrnServerConfig *srv_cfg;
+    SrnServerConfig *srv_cfg = NULL;
 
-    g_return_val_if_fail(name, SRN_ERR);
+    g_return_val_if_fail(!str_is_empty(name), SRN_ERR);
 
     lst = app->srv_cfg_list;
     while (lst){
-        srv_cfg = lst->data;
-        if (g_ascii_strcasecmp(name, srv_cfg->name) == 0){
+        SrnServerConfig *old_srv_cfg;
+
+        old_srv_cfg = lst->data;
+        if (g_ascii_strcasecmp(name, old_srv_cfg->name) == 0){
             return SRN_ERR;
         }
         lst = g_slist_next(lst);
@@ -216,12 +221,44 @@ SrnRet srn_application_add_server_config(SrnApplication *app, const char *name){
     ret = srn_config_manager_read_server_config(
             app->cfg_mgr, srv_cfg, srv_cfg->name);
     if (!RET_IS_OK(ret)){
-        srn_server_config_free(srv_cfg);
-        return ret;
+        goto FIN;
     }
     app->srv_cfg_list = g_slist_append(app->srv_cfg_list, srv_cfg);
 
     return SRN_OK;
+
+FIN:
+    if (srv_cfg) {
+        srn_server_config_free(srv_cfg);
+    }
+    return ret;
+}
+
+
+SrnServerConfig* srn_application_add_and_get_server_config_from_basename(
+        SrnApplication *app, const char *base){
+    int retry;
+    char *name;
+    SrnServerConfig *srv_cfg;
+
+    retry = 0;
+    name = g_strdup(base);
+    srv_cfg = NULL;
+    do {
+        SrnRet ret;
+
+        ret = srn_application_add_server_config(app, name);
+        if (RET_IS_OK(ret)){
+            srv_cfg = srn_application_get_server_config(app, name);
+            break;
+        }
+        g_free(name);
+        retry++;
+        name = g_strdup_printf("%s#%d", base, retry);
+    } while (retry < 10);
+    g_free(name);
+
+    return srv_cfg;
 }
 
 SrnRet srn_application_rm_server_config(SrnApplication *app,
@@ -258,6 +295,33 @@ SrnServerConfig* srn_application_get_server_config(SrnApplication *app,
     return NULL;
 }
 
+SrnServerConfig* srn_application_get_server_config_by_host_port(
+        SrnApplication *app, const char *host, int port){
+    GSList *lst;
+
+    lst = app->srv_cfg_list;
+    while (lst) {
+        GSList *addr_lst;
+        SrnServerConfig *srv_cfg;
+
+        srv_cfg = lst->data;
+        addr_lst = srv_cfg->addrs;
+        while (addr_lst) {
+            SrnServerAddr *addr;
+
+            addr = addr_lst->data;
+            // Some urls may not contain port
+            if (g_ascii_strcasecmp(addr->host, host) == 0
+                    && (addr->port == port || port == 0)){
+                return srv_cfg;
+            }
+            addr_lst = g_slist_next(addr_lst);
+        }
+        lst = g_slist_next(lst);
+    }
+    return NULL;
+}
+
 char* srn_application_dump_server_config_list(SrnApplication *app){
     char *dump;
     GSList *lst;
@@ -283,6 +347,11 @@ char* srn_application_dump_server_config_list(SrnApplication *app){
     g_string_free(str, FALSE);
 
     return dump;
+}
+
+bool srn_application_is_server_config_valid(SrnApplication *app,
+        SrnServerConfig *srv_cfg) {
+    return g_slist_find(app->srv_cfg_list, srv_cfg) != NULL;
 }
 
 static void srn_application_init_event(SrnApplication *app) {

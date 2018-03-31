@@ -440,7 +440,7 @@ static SrnRet on_command_server(SrnCommand *cmd, void *user_data){
             if (!RET_IS_OK(ret)){
                 return ret;
             }
-            ret = srn_application_add_server(app, name);
+            ret = srn_application_add_server(app, cfg);
             if (!RET_IS_OK(ret)){
                 return RET_ERR(_("Failed to instantiate server \"%1$s\""), name);
             }
@@ -559,7 +559,7 @@ static SrnRet on_command_connect(SrnCommand *cmd, void *user_data){
     if (!RET_IS_OK(ret)) {
         goto FIN;
     }
-    ret = srn_application_add_server(app, cfg->name);
+    ret = srn_application_add_server(app, cfg);
     if (!RET_IS_OK(ret)) {
         ret = RET_ERR(_("Failed to instantiate server \"%1$s\""), cfg->name);
         goto FIN;
