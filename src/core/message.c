@@ -23,7 +23,8 @@
 #include "srain.h"
 #include "utils.h"
 
-SrnMessage* srn_message_new(SrnChat *chat, SrnUser *user, const char *content, SrnMessageType type){
+SrnMessage* srn_message_new(SrnChat *chat, SrnChatUser *user,
+        const char *content, SrnMessageType type){
     SrnMessage *msg;
 
     g_return_val_if_fail(chat, NULL);
@@ -43,7 +44,7 @@ SrnMessage* srn_message_new(SrnChat *chat, SrnUser *user, const char *content, S
     // msg->ui = NULL; // via g_malloc0()
 
     /* Decorated */
-    msg->dname = g_strdup(user->nick);
+    msg->dname = g_strdup(user->srv_user->nick);
     msg->dcontent = g_markup_escape_text(content, -1);
 
     return msg;

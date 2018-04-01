@@ -124,7 +124,7 @@ static char* do_relay(GSList *lst, SrnMessage *msg, const char *frag){
     }
 
     while (lst){
-        if (sirc_nick_cmp(msg->user->nick, lst->data)){
+        if (sirc_nick_cmp(msg->user->srv_user->nick, lst->data)){
             DBG_FR("Brige bot '%s' found", (char *)lst->data);
             g_regex_match(regex, frag, 0, &match_info);
 

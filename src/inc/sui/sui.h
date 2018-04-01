@@ -28,7 +28,7 @@ typedef struct _SuiBuffer SuiBuffer;
 typedef int SuiBufferFlag;
 typedef struct _SuiMessage SuiMessage;
 typedef enum _UserType UserType;
-typedef enum _SrnUserType SrnUserType;
+typedef enum _SrnChatUserType SrnChatUserType;
 
 // TODO Rename type
 typedef enum {
@@ -38,15 +38,15 @@ typedef enum {
 } SysMsgType;
 
 
-enum _SrnUserType {
-    SRN_USER_OWNER,     // ~ mode +q
-    SRN_USER_ADMIN,     // & mode +a
-    SRN_USER_FULL_OP,   // @ mode +o
-    SRN_USER_HALF_OP,   // % mode +h
-    SRN_USER_VOICED,    // + mode +v
-    SRN_USER_CHIGUA,    // No prefix
+enum _SrnChatUserType {
+    SRN_SERVER_USER_OWNER,     // ~ mode +q
+    SRN_SERVER_USER_ADMIN,     // & mode +a
+    SRN_SERVER_USER_FULL_OP,   // @ mode +o
+    SRN_SERVER_USER_HALF_OP,   // % mode +h
+    SRN_SERVER_USER_VOICED,    // + mode +v
+    SRN_SERVER_USER_CHIGUA,    // No prefix
     /* ... */
-    SRN_USER_TYPE_MAX
+    SRN_SERVER_USER_TYPE_MAX
 };
 
 enum _UserType {

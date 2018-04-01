@@ -47,7 +47,8 @@ SrnChat *srn_chat_new(SrnServer *srv, const char *name, SrnChatConfig *cfg){
     chat->cfg = cfg;
     chat->joined = FALSE;
     chat->srv = srv;
-    chat->user = srv->user;
+    chat->user = srn_chat_add_and_get_user(chat, srv->user);
+    chat->_user = srn_chat_add_and_get_user(chat, srv->_user);
 
     // Init chat->ui
     events = &srn_application_get_default()->ui_events;
@@ -58,10 +59,10 @@ SrnChat *srn_chat_new(SrnServer *srv, const char *name, SrnChatConfig *cfg){
         // Channel
         chat->ui = sui_new_channel_buffer(chat->srv->chat->ui, chat->name, chat, events, chat->cfg->ui);
     } else {
-        // Private, its user_list must have yourself and the dialogue target
+        SrnChatUser *user;
+        // Private, its user_list must have yourself and your dialogue target
         chat->ui = sui_new_private_buffer(srv->chat->ui, chat->name, chat, events, chat->cfg->ui);
-        srn_chat_add_user(chat, srv->user, SRN_USER_CHIGUA);
-        srn_chat_add_user(chat, srn_server_add_and_get_user(srv, chat->name), SRN_USER_CHIGUA);
+        srn_chat_add_user(chat, srn_server_add_and_get_user(srv, chat->name));
     }
 
     sui_add_completion(chat->ui, chat->name);
@@ -73,42 +74,45 @@ SrnChat *srn_chat_new(SrnServer *srv, const char *name, SrnChatConfig *cfg){
 }
 
 void srn_chat_free(SrnChat *chat){
-    GSList *lst;
-
     str_assign(&chat->name, NULL);
 
-    /* Free extra list */
+    /* Free extra list: TODO: a better way? */
     relay_decroator_free_list(chat);
     nick_filter_free_list(chat);
     regex_filter_free_list(chat);
 
-    /* Free user list */
-    lst = chat->user_list;
-    while (lst){
-        SrnUser *user;
-
-        user = lst->data;
-        srn_user_detach_chat(user, chat);
-        lst = g_slist_next(lst);
-    }
-    g_slist_free(chat->user_list);
+    // Free user list, chat->user and chat->_user also in this list
+    g_slist_free_full(chat->user_list, (GDestroyNotify)srn_chat_user_free);
 
     sui_free_buffer(chat->ui);
     g_free(chat);
 }
 
-SrnRet srn_chat_add_user(SrnChat *chat, SrnUser *user, SrnUserType type){
+SrnRet srn_chat_add_user(SrnChat *chat, SrnServerUser *srv_user){
     GSList *lst;
+    SrnChatUser *user;
 
-    lst = g_slist_find(chat->user_list, user);
-    if (lst) {
-        return SRN_ERR;
+    lst = chat->user_list;
+    while (lst) {
+        user = lst->data;
+        if (user->srv_user == srv_user){
+            return SRN_ERR;
+        }
+        lst = g_slist_next(lst);
     }
+
+    user = srn_chat_user_new(chat, srv_user);
     chat->user_list = g_slist_append(chat->user_list, user);
-    return srn_user_attach_chat(user, chat, type);
+
+    return SRN_OK;
 }
 
-SrnRet srn_chat_rm_user(SrnChat *chat, SrnUser *user){
+SrnChatUser* srn_chat_add_and_get_user(SrnChat *chat, SrnServerUser *srv_user){
+    srn_chat_add_user(chat, srv_user);
+    return srn_chat_get_user(chat, srv_user->nick);
+}
+
+SrnRet srn_chat_rm_user(SrnChat *chat, SrnChatUser *user){
     GSList *lst;
 
     lst = g_slist_find(chat->user_list, user);
@@ -116,18 +120,19 @@ SrnRet srn_chat_rm_user(SrnChat *chat, SrnUser *user){
         return SRN_ERR;
     }
     chat->user_list = g_slist_delete_link(chat->user_list, lst);
-    return srn_user_detach_chat(user, chat);
+
+    return SRN_OK;
 }
 
 
-SrnUser* srn_chat_get_user(SrnChat *chat, const char *nick){
-    SrnUser *user;
+SrnChatUser* srn_chat_get_user(SrnChat *chat, const char *nick){
     GSList *lst;
+    SrnChatUser *user;
 
     lst = chat->user_list;
     while (lst){
         user = lst->data;
-        if (sirc_nick_cmp(user->nick, nick)){
+        if (sirc_nick_cmp(user->srv_user->nick, nick)){
             return user;
         }
         lst = g_slist_next(lst);
@@ -137,7 +142,7 @@ SrnUser* srn_chat_get_user(SrnChat *chat, const char *nick){
 }
 
 void srn_chat_add_sent_message(SrnChat *chat, const char *content){
-    SrnUser *user;
+    SrnChatUser *user;
     SrnMessage *msg;
     DecoratorFlag dflag;
     FilterFlag fflag;
@@ -178,8 +183,7 @@ cleanup:
     srn_message_free(msg);
 }
 
-void srn_chat_add_recv_message(SrnChat *chat, SrnUser *user, const char *content){
-    bool invalid_user = FALSE;
+void srn_chat_add_recv_message(SrnChat *chat, SrnChatUser *user, const char *content){
     SrnMessage *msg;
     DecoratorFlag dflag;
     FilterFlag fflag;
@@ -227,17 +231,14 @@ void srn_chat_add_recv_message(SrnChat *chat, SrnUser *user, const char *content
     return;
 
 cleanup:
-    if (invalid_user){
-        srn_user_free(user);
-    }
     srn_message_free(msg);
 }
 
-void srn_chat_add_notice_message(SrnChat *chat, SrnUser *user, const char *content){
+void srn_chat_add_notice_message(SrnChat *chat, SrnChatUser *user, const char *content){
     srn_chat_add_recv_message(chat, user, content);
 }
 
-void srn_chat_add_action_message(SrnChat *chat, SrnUser *user, const char *content){
+void srn_chat_add_action_message(SrnChat *chat, SrnChatUser *user, const char *content){
     SrnMessage *msg;
     FilterFlag fflag;
     DecoratorFlag dflag;
@@ -251,7 +252,7 @@ void srn_chat_add_action_message(SrnChat *chat, SrnUser *user, const char *conte
     fflag = FILTER_CHAT_LOG;
 
     msg = srn_message_new(chat, user, content, SRN_MESSAGE_ACTION);
-    if (!user->is_me){
+    if (!user->srv_user->is_me){
         fflag |= FILTER_NICK | FILTER_REGEX;
         dflag |= DECORATOR_RELAY | DECORATOR_MENTION;
     }
@@ -287,7 +288,7 @@ cleanup:
     srn_message_free(msg);
 }
 
-void srn_chat_add_misc_message(SrnChat *chat, SrnUser *user, const char *content){
+void srn_chat_add_misc_message(SrnChat *chat, SrnChatUser *user, const char *content){
     SrnMessage *msg;
     DecoratorFlag dflag;
     FilterFlag fflag;
@@ -314,7 +315,7 @@ cleanup:
     srn_message_free(msg);
 }
 
-void srn_chat_add_misc_message_fmt(SrnChat *chat, SrnUser *user, const char *fmt, ...){
+void srn_chat_add_misc_message_fmt(SrnChat *chat, SrnChatUser *user, const char *fmt, ...){
     char *content;
     va_list args;
 
@@ -325,7 +326,7 @@ void srn_chat_add_misc_message_fmt(SrnChat *chat, SrnUser *user, const char *fmt
     g_free(content);
 }
 
-void srn_chat_add_error_message(SrnChat *chat, SrnUser *user, const char *content){
+void srn_chat_add_error_message(SrnChat *chat, SrnChatUser *user, const char *content){
     SrnMessage *msg;
     DecoratorFlag dflag;
     FilterFlag fflag;
@@ -351,7 +352,7 @@ cleanup:
     srn_message_free(msg);
 }
 
-void srn_chat_add_error_message_fmt(SrnChat *chat, SrnUser *user, const char *fmt, ...){
+void srn_chat_add_error_message_fmt(SrnChat *chat, SrnChatUser *user, const char *fmt, ...){
     char *content;
     va_list args;
 
@@ -362,7 +363,7 @@ void srn_chat_add_error_message_fmt(SrnChat *chat, SrnUser *user, const char *fm
     g_free(content);
 }
 
-void srn_chat_set_topic(SrnChat *chat, SrnUser *user, const char *topic){
+void srn_chat_set_topic(SrnChat *chat, SrnChatUser *user, const char *topic){
     SrnMessage *msg;
     DecoratorFlag dflag;
 
@@ -398,7 +399,7 @@ static bool whether_merge_last_message(SrnChat *chat, SrnMessage *msg){
             && msg->time - last_msg->time < SRN_MESSAGE_MERGE_INTERVAL
             && (!last_msg->mentioned && !msg->mentioned)
             && last_msg->type == msg->type
-            && sirc_nick_cmp(last_msg->user->nick, msg->user->nick)
+            && sirc_nick_cmp(last_msg->user->srv_user->nick, msg->user->srv_user->nick)
             && sirc_nick_cmp(last_msg->dname, msg->dname));
 }
 

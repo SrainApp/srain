@@ -41,7 +41,8 @@
 typedef enum   _SrnMessageType SrnMessageType;
 typedef struct _SrnMessage SrnMessage;
 // typedef struct _UserType UserType;
-typedef struct _SrnUser SrnUser;
+typedef struct _SrnServerUser SrnServerUser;
+typedef struct _SrnChatUser SrnChatUser;
 typedef struct _SrnChat SrnChat;
 typedef struct _SrnChatConfig SrnChatConfig;
 typedef struct _SrnServerAddr SrnServerAddr;
@@ -55,32 +56,35 @@ typedef struct _SrnServerCap SrnServerCap;
 
 
 /*enum _UserType {
-    SRN_USER_CHIGUA,    // No prefix
-    SRN_USER_OWNER,     // ~ mode +q
-    SRN_USER_ADMIN,     // & mode +a
-    SRN_USER_FULL_OP,   // @ mode +o
-    SRN_USER_HALF_OP,   // % mode +h
-    SRN_USER_VOICED,    // + mode +v
-    SRN_USER_TYPE_MAX
+    SRN_SERVER_USER_CHIGUA,    // No prefix
+    SRN_SERVER_USER_OWNER,     // ~ mode +q
+    SRN_SERVER_USER_ADMIN,     // & mode +a
+    SRN_SERVER_USER_FULL_OP,   // @ mode +o
+    SRN_SERVER_USER_HALF_OP,   // % mode +h
+    SRN_SERVER_USER_VOICED,    // + mode +v
+    SRN_SERVER_USER_TYPE_MAX
 }; */
 
 typedef struct _SrnUserContext SrnUserContext;
 
-struct _SrnUserContext {
+struct _SrnChatUser{
     SrnChat *chat;
-    SrnUser *user;
-    SrnUserType type;
+
+    SrnChatUserType type;
     GList *msg_list;    // TODO: list of SrnMessage
     // SuiUser *ui;
+
+    SrnServerUser *srv_user;
 };
 
-struct _SrnUser {
-    char *nick;
+struct _SrnServerUser {
+    SrnServer *srv;
+
+    char *nick; // TODO: servername support
     char *username;
     char *hostname;
     char *realname;
     char *loginname;
-    char *servername;
     char *serverloc;
 
     bool is_me;
@@ -89,8 +93,7 @@ struct _SrnUser {
     bool is_away;
     bool is_secure;
 
-    SrnServer *srv;
-    GSList *ctx_list;  // List of SrnUserContext
+    GSList *chat_user_list;  // List of SrnChatUser
 };
 
 enum _SrnMessageType {
@@ -105,7 +108,7 @@ enum _SrnMessageType {
 
 struct _SrnMessage {
     SrnChat *chat;
-    SrnUser *user;  // Originator of this message, often refers to an existing user
+    SrnChatUser *user;  // Originator of this message, often refers to an existing user
     char *dname;    // Decorated name, maybe contains xml tags
     char *role;     // The role of the message originator
 
@@ -123,9 +126,10 @@ struct _SrnMessage {
 struct _SrnChat {
     char *name;
     bool joined;
-    SrnUser *user;         // Yourself
+    SrnChatUser *user;  // Yourself
+    SrnChatUser *_user; // Hold all messages that do not belong other any user
 
-    GSList *user_list;
+    GSList *user_list;  // List of SrnChatUser
     GList *msg_list;
     SrnMessage *last_msg;
 
@@ -185,12 +189,12 @@ struct _SrnServer {
     SrnServerCap *cap;      // Server capabilities
     SrnServerConfig *cfg;   // All required static informations
 
-    SrnUser *user;          // Used to store your nick, username, realname
-    SrnUser *_user;         // Hold all messages that do not belong other any user
+    SrnServerUser *user;    // Used to store your nick, username, realname
+    SrnServerUser *_user;   // Hold all messages that do not belong other any user
     SrnChat *chat;          // Hold all messages that do not belong to any other SrnChat
     SrnChat *cur_chat;
-    GSList *chat_list;
-    GHashTable *user_table;
+    GSList *chat_list;      // List of SrnChat
+    GHashTable *user_table; // Hash table of SrnServerUser
 
     SircSession *irc;
 };
@@ -219,7 +223,7 @@ struct _SrnServerConfig {
     GSList *addrs; // List of SrnServerAddr
     char *passwd;
 
-    /* SrnUser */
+    /* SrnServerUser */
     char *nickname;
     char *username;
     char *realname;
@@ -281,44 +285,49 @@ SrnChat* srn_server_get_chat(SrnServer *srv, const char *name);
 SrnChat* srn_server_get_chat_fallback(SrnServer *srv, const char *name);
 SrnRet srn_server_add_user(SrnServer *srv, const char *nick);
 SrnRet srn_server_rm_user(SrnServer *srv, const char *nick);
-SrnUser* srn_server_get_user(SrnServer *srv, const char *nick);
-SrnUser* srn_server_add_and_get_user(SrnServer *srv, const char *nick);
+SrnServerUser* srn_server_get_user(SrnServer *srv, const char *nick);
+SrnServerUser* srn_server_add_and_get_user(SrnServer *srv, const char *nick);
 SrnRet srn_server_rename_user(SrnServer *srv, const char *old_nick, const char *new_nick);
 
 SrnChat* srn_chat_new(SrnServer *srv, const char *name, SrnChatConfig *cfg);
 void srn_chat_free(SrnChat *chat);
 void srn_chat_set_server(SrnChat *chat, SrnServer *srv);
-SrnRet srn_chat_add_user(SrnChat *chat, SrnUser *user, SrnUserType type);
-SrnRet srn_chat_rm_user(SrnChat *chat, SrnUser *user);
-SrnUser* srn_chat_get_user(SrnChat *chat, const char *nick);
+SrnRet srn_chat_add_user(SrnChat *chat, SrnServerUser *srv_user);
+SrnRet srn_chat_rm_user(SrnChat *chat, SrnChatUser *user);
+SrnChatUser* srn_chat_get_user(SrnChat *chat, const char *nick);
+SrnChatUser* srn_chat_add_and_get_user(SrnChat *chat, SrnServerUser *srv_user);
 void srn_chat_add_sent_message(SrnChat *chat, const char *content);
-void srn_chat_add_recv_message(SrnChat *chat, SrnUser *user, const char *content);
-void srn_chat_add_action_message(SrnChat *chat, SrnUser *user, const char *content);
-void srn_chat_add_notice_message(SrnChat *chat, SrnUser *user, const char *content);
-void srn_chat_add_misc_message(SrnChat *chat, SrnUser *user, const char *content);
-void srn_chat_add_misc_message_fmt(SrnChat *chat, SrnUser *user, const char *fmt, ...);
-void srn_chat_add_error_message(SrnChat *chat, SrnUser *user, const char *content);
-void srn_chat_add_error_message_fmt(SrnChat *chat, SrnUser *user, const char *fmt, ...);
-void srn_chat_set_topic(SrnChat *chat, SrnUser *user, const char *topic);
+void srn_chat_add_recv_message(SrnChat *chat, SrnChatUser *user, const char *content);
+void srn_chat_add_action_message(SrnChat *chat, SrnChatUser *user, const char *content);
+void srn_chat_add_notice_message(SrnChat *chat, SrnChatUser *user, const char *content);
+void srn_chat_add_misc_message(SrnChat *chat, SrnChatUser *user, const char *content);
+void srn_chat_add_misc_message_fmt(SrnChat *chat, SrnChatUser *user, const char *fmt, ...);
+void srn_chat_add_error_message(SrnChat *chat, SrnChatUser *user, const char *content);
+void srn_chat_add_error_message_fmt(SrnChat *chat, SrnChatUser *user, const char *fmt, ...);
+void srn_chat_set_topic(SrnChat *chat, SrnChatUser *user, const char *topic);
 void srn_chat_set_topic_setter(SrnChat *chat, const char *setter);
 
 SrnChatConfig *srn_chat_config_new();
 SrnRet srn_chat_config_check(SrnChatConfig *cfg);
 void srn_chat_config_free(SrnChatConfig *cfg);
 
-SrnUser *srn_user_new(SrnServer *srv, const char *nick);
-SrnUser *srn_user_ref(SrnUser *user);
-void srn_user_free(SrnUser *user);
-void srn_user_set_nick(SrnUser *user, const char *nick);
-void srn_user_set_username(SrnUser *user, const char *username);
-void srn_user_set_hostname(SrnUser *user, const char *hostname);
-void srn_user_set_realname(SrnUser *user, const char *realname);
-void srn_user_set_me(SrnUser *user, bool me);
-void srn_user_set_type(SrnUser *user, SrnChat *chat, SrnUserType type);
-SrnRet srn_user_attach_chat(SrnUser *user, SrnChat *chat, SrnUserType type);
-SrnRet srn_user_detach_chat(SrnUser *user, SrnChat *chat);
+SrnServerUser *srn_server_user_new(SrnServer *srv, const char *nick);
+SrnServerUser *srn_server_user_ref(SrnServerUser *user);
+void srn_server_user_free(SrnServerUser *user);
+void srn_server_user_set_nick(SrnServerUser *user, const char *nick);
+void srn_server_user_set_username(SrnServerUser *user, const char *username);
+void srn_server_user_set_hostname(SrnServerUser *user, const char *hostname);
+void srn_server_user_set_realname(SrnServerUser *user, const char *realname);
+void srn_server_user_set_me(SrnServerUser *user, bool me);
+SrnRet srn_server_user_attach_chat_user(SrnServerUser *user, SrnChatUser *chat_user);
+SrnRet srn_server_user_detach_chat_user(SrnServerUser *user, SrnChatUser *chat_user);
 
-SrnMessage* srn_message_new(SrnChat *chat, SrnUser *user, const char *content, SrnMessageType type);
+SrnChatUser *srn_chat_user_new(SrnChat *chat, SrnServerUser *srv_user);
+void srn_chat_user_free(SrnChatUser *self);
+void srn_chat_user_set_type(SrnChatUser *self, SrnChatUserType type);
+void srn_chat_user_update(SrnChatUser *self);
+
+SrnMessage* srn_message_new(SrnChat *chat, SrnChatUser *user, const char *content, SrnMessageType type);
 void srn_message_free(SrnMessage *msg);
 
 SrnServerConfig* srn_server_config_new(const char *name);

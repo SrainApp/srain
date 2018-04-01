@@ -66,12 +66,12 @@ SrnServer* srn_server_new(SrnServerConfig *cfg){
     /* Server user */
     srv->user_table = g_hash_table_new_full(
             g_str_hash, g_str_equal,
-            NULL, (GDestroyNotify)srn_user_free);
+            NULL, (GDestroyNotify)srn_server_user_free);
     srv->_user = srn_server_add_and_get_user(srv, "");
     srv->user = srn_server_add_and_get_user(srv, srv->cfg->nickname);
-    srn_user_set_username(srv->user, srv->cfg->username);
-    srn_user_set_realname(srv->user, srv->cfg->realname);
-    srn_user_set_me(srv->user, TRUE);
+    srn_server_user_set_username(srv->user, srv->cfg->username);
+    srn_server_user_set_realname(srv->user, srv->cfg->realname);
+    srn_server_user_set_me(srv->user, TRUE);
 
     /* sirc */
     srv->irc = sirc_new_session(
@@ -103,7 +103,7 @@ void srn_server_free(SrnServer *srv){
     srv->cfg->srv = NULL;
 
     srn_server_cap_free(srv->cap);
-    srn_user_free(srv->user);
+    srn_server_user_free(srv->user);
     sirc_free_session(srv->irc);
 
     g_slist_free_full(srv->chat_list, (GDestroyNotify)srn_chat_free);
@@ -195,7 +195,6 @@ SrnRet srn_server_add_chat(SrnServer *srv, const char *name){
     // Creating server chat
     if (g_ascii_strcasecmp(name, META_SERVER) == 0) {
         srv->chat = chat;
-        srn_user_attach_chat(srv->user, chat, SRN_USER_CHIGUA);
     } else {
         srv->chat_list = g_slist_append(srv->chat_list, chat);
     }
@@ -267,21 +266,21 @@ SrnChat* srn_server_get_chat_fallback(SrnServer *srv, const char *name) {
 }
 
 SrnRet srn_server_add_user(SrnServer *srv, const char *nick){
-    SrnUser *user;
+    SrnServerUser *user;
 
     if (srn_server_get_user(srv, nick)) {
         return SRN_ERR;
     }
-    user = srn_user_new(srv, nick);
-    return g_hash_table_insert(srv->user_table, g_strdup(nick), user) ?
+    user = srn_server_user_new(srv, nick);
+    return g_hash_table_insert(srv->user_table, user->nick, user) ?
         SRN_OK : SRN_ERR;
 }
 
-SrnUser* srn_server_get_user(SrnServer *srv, const char *nick){
+SrnServerUser* srn_server_get_user(SrnServer *srv, const char *nick){
     return g_hash_table_lookup(srv->user_table, nick);
 }
 
-SrnUser* srn_server_add_and_get_user(SrnServer *srv, const char *nick){
+SrnServerUser* srn_server_add_and_get_user(SrnServer *srv, const char *nick){
     srn_server_add_user(srv, nick);
     return srn_server_get_user(srv, nick);
 }
@@ -292,18 +291,16 @@ SrnRet srn_server_rm_user(SrnServer *srv, const char *nick){
 
 SrnRet srn_server_rename_user(SrnServer *srv, const char *old_nick,
         const char *new_nick){
-    SrnUser *user;
+    SrnServerUser *user;
 
-    if (!(user = srn_server_get_user(srv, old_nick))) {
-        return SRN_ERR;
-    }
-    if (srn_server_get_user(srv, new_nick)) {
+    user = srn_server_get_user(srv, old_nick);
+    if (!user) {
         return SRN_ERR;
     }
     if (!g_hash_table_steal(srv->user_table, old_nick)){
         return SRN_ERR;
     }
-    srn_user_set_nick(user, new_nick);
-    return g_hash_table_insert(srv->user_table, g_strdup(new_nick), user) ?
+    srn_server_user_set_nick(user, new_nick);
+    return g_hash_table_insert(srv->user_table, user->nick, user) ?
         SRN_OK : SRN_ERR;
 }

@@ -127,7 +127,7 @@ SrnRet srn_server_state_transfrom(SrnServer *srv, SrnServerAction action){
                     sirc_disconnect(srv->irc);
                     next_state = SRN_SERVER_STATE_CONNECTED; // Keep state
                     break;
-                case SRN_SERVER_ACTION_QUIT: // SrnUser received a QUIT command sent by self
+                case SRN_SERVER_ACTION_QUIT: // SrnServerUser received a QUIT command sent by self
                     sirc_disconnect(srv->irc);
                     next_state = SRN_SERVER_STATE_QUITING;
                     break;

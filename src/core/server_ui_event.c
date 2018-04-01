@@ -199,11 +199,11 @@ SrnRet srn_server_ui_event_disconnect(SuiBuffer *sui, SuiEvent event, GVariantDi
     prev_state = srv->state;
     ret = srn_server_disconnect(srv);
     if (!RET_IS_OK(ret)){
-        srn_chat_add_error_message(chat, srv->_user, RET_MSG(ret));
+        srn_chat_add_error_message(chat, chat->_user, RET_MSG(ret));
     }
 
     if (prev_state == SRN_SERVER_STATE_RECONNECTING){
-        srn_chat_add_misc_message(chat, srv->_user, _("Reconnection stopped"));
+        srn_chat_add_misc_message(chat, chat->_user, _("Reconnection stopped"));
     }
 
     return SRN_OK;
@@ -228,7 +228,7 @@ SrnRet srn_server_ui_event_quit(SuiBuffer *sui, SuiEvent event, GVariantDict *pa
     }
 
     if (!RET_IS_OK(ret)){
-        srn_chat_add_error_message(chat, srv->_user,
+        srn_chat_add_error_message(chat, chat->_user,
                 _("Failed to quit from server, try again please"));
     }
 
@@ -258,15 +258,15 @@ SrnRet srn_server_ui_event_send(SuiBuffer *sui, SuiEvent event, GVariantDict *pa
         }
         if (RET_IS_OK(ret)){
             if (ret != SRN_OK) { // Has OK message
-                srn_chat_add_misc_message(chat, srv->_user, RET_MSG(ret));
+                srn_chat_add_misc_message(chat, chat->_user, RET_MSG(ret));
             }
         } else {
-            srn_chat_add_error_message(chat, srv->_user, RET_MSG(ret));
+            srn_chat_add_error_message(chat, chat->_user, RET_MSG(ret));
         }
     } else {
         if (chat == chat->srv->chat) {
             ret = RET_ERR(_("Can not send message to a server"));
-            srn_chat_add_error_message(chat, srv->_user, RET_MSG(ret));
+            srn_chat_add_error_message(chat, chat->_user, RET_MSG(ret));
             return ret;
         }
 
@@ -274,7 +274,7 @@ SrnRet srn_server_ui_event_send(SuiBuffer *sui, SuiEvent event, GVariantDict *pa
 
         ret = sirc_cmd_msg(chat->srv->irc, chat->name, msg);
         if (!RET_IS_OK(ret)){
-            srn_chat_add_error_message_fmt(chat, srv->_user,
+            srn_chat_add_error_message_fmt(chat, chat->_user,
                     _("Failed to send message: %1$s"), RET_MSG(ret));
         }
     }

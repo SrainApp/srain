@@ -76,14 +76,14 @@ static bool chat_log(const SrnMessage *msg, const char *content){
 
     switch (msg->type){
         case SRN_MESSAGE_SENT:
-            fprintf(fp,"[%s] <%s*> %s\n", timestr, msg->user->nick, msg->content);
+            fprintf(fp,"[%s] <%s*> %s\n", timestr, msg->user->srv_user->nick, msg->content);
             break;
         case SRN_MESSAGE_RECV:
         case SRN_MESSAGE_NOTICE:
-            fprintf(fp,"[%s] <%s> %s\n", timestr, msg->user->nick, msg->content);
+            fprintf(fp,"[%s] <%s> %s\n", timestr, msg->user->srv_user->nick, msg->content);
             break;
         case SRN_MESSAGE_ACTION:
-            fprintf(fp,"[%s] * %s %s\n", timestr, msg->user->nick, msg->content);
+            fprintf(fp,"[%s] * %s %s\n", timestr, msg->user->srv_user->nick, msg->content);
             break;
         case SRN_MESSAGE_MISC:
             fprintf(fp,"[%s] = %s\n", timestr, msg->content);
