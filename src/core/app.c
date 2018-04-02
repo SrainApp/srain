@@ -27,11 +27,8 @@
 #include "core/core.h"
 #include "sui/sui.h"
 #include "config/reader.h"
-
 #include "filter.h"
 #include "decorator.h"
-#include "server_ui_event.h"
-#include "server_irc_event.h"
 #include "meta.h"
 #include "log.h"
 #include "i18n.h"
@@ -39,10 +36,11 @@
 #include "rc.h"
 #include "utils.h"
 
+#include "app_event.h"
+
 /* Only one SrnApplication instance in one application */
 static SrnApplication *app_instance = NULL;
 
-static void srn_application_init_event(SrnApplication *app);
 static void srn_application_init_logger(SrnApplication *app);
 static void srn_application_finalize_logger(SrnApplication *app);
 
@@ -92,7 +90,8 @@ SrnApplication* srn_application_new(void){
     app->cfg = cfg;
     app->cfg_mgr = cfg_mgr;
 
-    srn_application_init_event(app);
+    srn_application_init_ui_event(app);
+    srn_application_init_irc_event(app);
     srn_application_init_logger(app);
 
     // Init server config list
@@ -352,57 +351,6 @@ char* srn_application_dump_server_config_list(SrnApplication *app){
 bool srn_application_is_server_config_valid(SrnApplication *app,
         SrnServerConfig *srv_cfg) {
     return g_slist_find(app->srv_cfg_list, srv_cfg) != NULL;
-}
-
-static void srn_application_init_event(SrnApplication *app) {
-    /* UI event */
-    app->ui_app_events.open = srn_server_ui_event_open;
-    app->ui_app_events.activate = srn_server_ui_event_activate;
-    app->ui_app_events.shutdown = srn_server_ui_event_shutdown;
-
-    app->ui_win_events.connect = srn_server_ui_event_connect;
-    app->ui_win_events.server_list = srn_server_ui_event_server_list;
-
-    app->ui_events.disconnect = srn_server_ui_event_disconnect;
-    app->ui_events.quit = srn_server_ui_event_quit;
-    app->ui_events.send = srn_server_ui_event_send;
-    app->ui_events.join = srn_server_ui_event_join;
-    app->ui_events.part = srn_server_ui_event_part;
-    app->ui_events.query = srn_server_ui_event_query;
-    app->ui_events.unquery = srn_server_ui_event_unquery;
-    app->ui_events.kick = srn_server_ui_event_kick;
-    app->ui_events.invite = srn_server_ui_event_invite;
-    app->ui_events.whois = srn_server_ui_event_whois;
-    app->ui_events.ignore = srn_server_ui_event_ignore;
-    app->ui_events.cutover = srn_server_ui_event_cutover;
-    app->ui_events.chan_list = srn_server_ui_event_chan_list;
-
-    /* IRC event */
-    app->irc_events.connect = srn_server_irc_event_connect;
-    app->irc_events.connect_fail = srn_server_irc_event_connect_fail;
-    app->irc_events.disconnect = srn_server_irc_event_disconnect;
-    app->irc_events.welcome = srn_server_irc_event_welcome;
-    app->irc_events.nick = srn_server_irc_event_nick;
-    app->irc_events.quit = srn_server_irc_event_quit;
-    app->irc_events.join = srn_server_irc_event_join;
-    app->irc_events.part = srn_server_irc_event_part;
-    app->irc_events.mode = srn_server_irc_event_mode;
-    app->irc_events.umode = srn_server_irc_event_umode;
-    app->irc_events.topic = srn_server_irc_event_topic;
-    app->irc_events.kick = srn_server_irc_event_kick;
-    app->irc_events.channel = srn_server_irc_event_channel;
-    app->irc_events.privmsg = srn_server_irc_event_privmsg;
-    app->irc_events.notice = srn_server_irc_event_notice;
-    app->irc_events.channel_notice = srn_server_irc_event_channel_notice;
-    app->irc_events.invite = srn_server_irc_event_invite;
-    app->irc_events.ctcp_req = srn_server_irc_event_ctcp_req;
-    app->irc_events.ctcp_rsp = srn_server_irc_event_ctcp_rsp;
-    app->irc_events.cap = srn_server_irc_event_cap;
-    app->irc_events.authenticate = srn_server_irc_event_authenticate;
-    app->irc_events.ping = srn_server_irc_event_ping;
-    app->irc_events.pong = srn_server_irc_event_pong;
-    app->irc_events.error = srn_server_irc_event_error;
-    app->irc_events.numeric = srn_server_irc_event_numeric;
 }
 
 static void srn_application_init_logger(SrnApplication *app) {

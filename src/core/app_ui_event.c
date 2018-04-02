@@ -29,7 +29,6 @@
 #include "core/core.h"
 #include "sirc/sirc.h"
 #include "config/reader.h"
-#include "server_ui_event.h"
 #include "srain.h"
 #include "i18n.h"
 #include "log.h"
@@ -41,7 +40,51 @@
 static SrnServer* ctx_get_server(SuiBuffer *sui);
 static SrnChat* ctx_get_chat(SuiBuffer *sui);
 
-SrnRet srn_server_ui_event_open(SuiApplication *app, SuiEvent event, GVariantDict *params){
+static SrnRet ui_event_open(SuiApplication *app, SuiEvent event, GVariantDict *params);
+static SrnRet ui_event_activate(SuiApplication *app, SuiEvent event, GVariantDict *params);
+static SrnRet ui_event_shutdown(SuiApplication *app, SuiEvent event, GVariantDict *params);
+
+static SrnRet ui_event_connect(SuiWindow *win, SuiEvent event, GVariantDict *params);
+static SrnRet ui_event_server_list(SuiWindow *win, SuiEvent event, GVariantDict *params);
+
+static SrnRet ui_event_disconnect(SuiBuffer *sui, SuiEvent event, GVariantDict *params);
+static SrnRet ui_event_quit(SuiBuffer *sui, SuiEvent event, GVariantDict *params);
+static SrnRet ui_event_send(SuiBuffer *sui, SuiEvent event, GVariantDict *params);
+static SrnRet ui_event_join(SuiBuffer *sui, SuiEvent event, GVariantDict *params);
+static SrnRet ui_event_part(SuiBuffer *sui, SuiEvent event, GVariantDict *params);
+static SrnRet ui_event_query(SuiBuffer *sui, SuiEvent event, GVariantDict *params);
+static SrnRet ui_event_unquery(SuiBuffer *sui, SuiEvent event, GVariantDict *params);
+static SrnRet ui_event_kick(SuiBuffer *sui, SuiEvent event, GVariantDict *params);
+static SrnRet ui_event_invite(SuiBuffer *sui, SuiEvent event, GVariantDict *params);
+static SrnRet ui_event_whois(SuiBuffer *sui, SuiEvent event, GVariantDict *params);
+static SrnRet ui_event_ignore(SuiBuffer *sui, SuiEvent event, GVariantDict *params);
+static SrnRet ui_event_cutover(SuiBuffer *sui, SuiEvent event, GVariantDict *params);
+static SrnRet ui_event_chan_list(SuiBuffer *sui, SuiEvent event, GVariantDict *params);
+
+void srn_application_init_ui_event(SrnApplication *app){
+    app->ui_app_events.open = ui_event_open;
+    app->ui_app_events.activate = ui_event_activate;
+    app->ui_app_events.shutdown = ui_event_shutdown;
+
+    app->ui_win_events.connect = ui_event_connect;
+    app->ui_win_events.server_list = ui_event_server_list;
+
+    app->ui_events.disconnect = ui_event_disconnect;
+    app->ui_events.quit = ui_event_quit;
+    app->ui_events.send = ui_event_send;
+    app->ui_events.join = ui_event_join;
+    app->ui_events.part = ui_event_part;
+    app->ui_events.query = ui_event_query;
+    app->ui_events.unquery = ui_event_unquery;
+    app->ui_events.kick = ui_event_kick;
+    app->ui_events.invite = ui_event_invite;
+    app->ui_events.whois = ui_event_whois;
+    app->ui_events.ignore = ui_event_ignore;
+    app->ui_events.cutover = ui_event_cutover;
+    app->ui_events.chan_list = ui_event_chan_list;
+}
+
+static SrnRet ui_event_open(SuiApplication *app, SuiEvent event, GVariantDict *params){
     int len;
     char **urls;
     SrnApplication *srn_app;
@@ -62,7 +105,7 @@ SrnRet srn_server_ui_event_open(SuiApplication *app, SuiEvent event, GVariantDic
     return SRN_OK;
 }
 
-SrnRet srn_server_ui_event_activate(SuiApplication *app, SuiEvent event, GVariantDict *params){
+static SrnRet ui_event_activate(SuiApplication *app, SuiEvent event, GVariantDict *params){
     static bool activated = FALSE; // FIXME
     SrnApplication *srn_app;
 
@@ -77,11 +120,11 @@ SrnRet srn_server_ui_event_activate(SuiApplication *app, SuiEvent event, GVarian
     return rc_read(); // Read rc file
 }
 
-SrnRet srn_server_ui_event_shutdown(SuiApplication *app, SuiEvent event, GVariantDict *params){
+static SrnRet ui_event_shutdown(SuiApplication *app, SuiEvent event, GVariantDict *params){
     return SRN_OK;
 }
 
-SrnRet srn_server_ui_event_connect(SuiWindow *win, SuiEvent event, GVariantDict *params){
+static SrnRet ui_event_connect(SuiWindow *win, SuiEvent event, GVariantDict *params){
     const char *name = NULL;
     const char *nick = NULL;
     const char *realname= "";
@@ -167,7 +210,7 @@ SrnRet srn_server_ui_event_connect(SuiWindow *win, SuiEvent event, GVariantDict 
     return srn_server_connect(srv);
 }
 
-SrnRet srn_server_ui_event_server_list(SuiWindow *win, SuiEvent event,
+static SrnRet ui_event_server_list(SuiWindow *win, SuiEvent event,
         GVariantDict *params){
     // FIXME: dirty hack
     GSList *lst;
@@ -186,7 +229,7 @@ SrnRet srn_server_ui_event_server_list(SuiWindow *win, SuiEvent event,
     return SRN_OK;
 }
 
-SrnRet srn_server_ui_event_disconnect(SuiBuffer *sui, SuiEvent event, GVariantDict *params){
+static SrnRet ui_event_disconnect(SuiBuffer *sui, SuiEvent event, GVariantDict *params){
     SrnRet ret;
     SrnServer *srv;
     SrnServerState prev_state;
@@ -209,7 +252,7 @@ SrnRet srn_server_ui_event_disconnect(SuiBuffer *sui, SuiEvent event, GVariantDi
     return SRN_OK;
 }
 
-SrnRet srn_server_ui_event_quit(SuiBuffer *sui, SuiEvent event, GVariantDict *params){
+static SrnRet ui_event_quit(SuiBuffer *sui, SuiEvent event, GVariantDict *params){
     SrnRet ret;
     SrnServer *srv;
     SrnChat *chat;
@@ -235,7 +278,7 @@ SrnRet srn_server_ui_event_quit(SuiBuffer *sui, SuiEvent event, GVariantDict *pa
     return ret;
 }
 
-SrnRet srn_server_ui_event_send(SuiBuffer *sui, SuiEvent event, GVariantDict *params){
+static SrnRet ui_event_send(SuiBuffer *sui, SuiEvent event, GVariantDict *params){
     const char *msg = NULL;
     SrnRet ret = SRN_ERR;
     SrnServer *srv;
@@ -282,7 +325,7 @@ SrnRet srn_server_ui_event_send(SuiBuffer *sui, SuiEvent event, GVariantDict *pa
     return ret;
 }
 
-SrnRet srn_server_ui_event_join(SuiBuffer *sui, SuiEvent event, GVariantDict *params){
+static SrnRet ui_event_join(SuiBuffer *sui, SuiEvent event, GVariantDict *params){
     const char *chan = NULL;
     const char *passwd = NULL;
     SrnServer *srv;
@@ -296,7 +339,7 @@ SrnRet srn_server_ui_event_join(SuiBuffer *sui, SuiEvent event, GVariantDict *pa
     return sirc_cmd_join(srv->irc, chan, passwd);
 }
 
-SrnRet srn_server_ui_event_part(SuiBuffer *sui, SuiEvent event, GVariantDict *params){
+static SrnRet ui_event_part(SuiBuffer *sui, SuiEvent event, GVariantDict *params){
     SrnServer *srv;
     SrnChat *chat;
 
@@ -312,7 +355,7 @@ SrnRet srn_server_ui_event_part(SuiBuffer *sui, SuiEvent event, GVariantDict *pa
     }
 }
 
-SrnRet srn_server_ui_event_query(SuiBuffer *sui, SuiEvent event, GVariantDict *params){
+static SrnRet ui_event_query(SuiBuffer *sui, SuiEvent event, GVariantDict *params){
     const char *nick = NULL;
     SrnServer *srv;
 
@@ -324,7 +367,7 @@ SrnRet srn_server_ui_event_query(SuiBuffer *sui, SuiEvent event, GVariantDict *p
     return srn_server_add_chat(srv, nick);;
 }
 
-SrnRet srn_server_ui_event_unquery(SuiBuffer *sui, SuiEvent event, GVariantDict *params){
+static SrnRet ui_event_unquery(SuiBuffer *sui, SuiEvent event, GVariantDict *params){
     SrnServer *srv;
     SrnChat *chat;
 
@@ -336,7 +379,7 @@ SrnRet srn_server_ui_event_unquery(SuiBuffer *sui, SuiEvent event, GVariantDict 
     return srn_server_rm_chat(srv, chat);
 }
 
-SrnRet srn_server_ui_event_kick(SuiBuffer *sui, SuiEvent event, GVariantDict *params){
+static SrnRet ui_event_kick(SuiBuffer *sui, SuiEvent event, GVariantDict *params){
     const char *nick = NULL;
     SrnServer *srv;
     SrnChat *chat;
@@ -351,7 +394,7 @@ SrnRet srn_server_ui_event_kick(SuiBuffer *sui, SuiEvent event, GVariantDict *pa
     return sirc_cmd_kick(srv->irc, nick, chat->name, "Kick.");
 }
 
-SrnRet srn_server_ui_event_invite(SuiBuffer *sui, SuiEvent event, GVariantDict *params){
+static SrnRet ui_event_invite(SuiBuffer *sui, SuiEvent event, GVariantDict *params){
     const char *nick = NULL;
     SrnServer *srv;
     SrnChat *chat;
@@ -366,7 +409,7 @@ SrnRet srn_server_ui_event_invite(SuiBuffer *sui, SuiEvent event, GVariantDict *
     return sirc_cmd_invite(srv->irc, nick, chat->name);
 }
 
-SrnRet srn_server_ui_event_whois(SuiBuffer *sui, SuiEvent event, GVariantDict *params){
+static SrnRet ui_event_whois(SuiBuffer *sui, SuiEvent event, GVariantDict *params){
     const char *nick = NULL;
     SrnServer *srv;
 
@@ -378,7 +421,7 @@ SrnRet srn_server_ui_event_whois(SuiBuffer *sui, SuiEvent event, GVariantDict *p
     return sirc_cmd_whois(srv->irc, nick);
 }
 
-SrnRet srn_server_ui_event_ignore(SuiBuffer *sui, SuiEvent event, GVariantDict *params){
+static SrnRet ui_event_ignore(SuiBuffer *sui, SuiEvent event, GVariantDict *params){
     const char *nick = NULL;
     SrnChat *chat;
 
@@ -390,7 +433,7 @@ SrnRet srn_server_ui_event_ignore(SuiBuffer *sui, SuiEvent event, GVariantDict *
     return nick_filter_add_nick(chat, nick);
 }
 
-SrnRet srn_server_ui_event_cutover(SuiBuffer *sui, SuiEvent event, GVariantDict *params){
+static SrnRet ui_event_cutover(SuiBuffer *sui, SuiEvent event, GVariantDict *params){
     SrnApplication *app;
     SrnServer *srv;
     SrnChat *chat;
@@ -407,7 +450,7 @@ SrnRet srn_server_ui_event_cutover(SuiBuffer *sui, SuiEvent event, GVariantDict 
     return SRN_OK;
 }
 
-SrnRet srn_server_ui_event_chan_list(SuiBuffer *sui, SuiEvent event, GVariantDict *params){
+static SrnRet ui_event_chan_list(SuiBuffer *sui, SuiEvent event, GVariantDict *params){
     SrnServer *srv;
 
     srv = ctx_get_server(sui);

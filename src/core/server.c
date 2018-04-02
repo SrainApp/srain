@@ -38,9 +38,6 @@
 #include "utils.h"
 #include "i18n.h"
 
-#include "server_irc_event.h"
-#include "server_ui_event.h"
-
 SrnServer* srn_server_new(SrnServerConfig *cfg){
     SrnServer *srv;
 
