@@ -162,6 +162,10 @@ SuiApplicationEvents* sui_application_get_events(SuiApplication *self){
     return self->events;
 }
 
+void sui_application_set_config(SuiApplication *self, SuiApplicationConfig *cfg){
+    self->cfg = cfg;
+}
+
 void* sui_application_get_ctx(SuiApplication *self){
     return self->ctx;
 }

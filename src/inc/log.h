@@ -100,7 +100,8 @@ void srn_logger_set_default(SrnLogger *logger);
 
 SrnLogger *srn_logger_new(SrnLoggerConfig *cfg);
 void srn_logger_free(SrnLogger *logger);
-SrnRet srn_logger_set_config(SrnLogger *logger, SrnLoggerConfig *cfg);
+void srn_logger_set_config(SrnLogger *logger, SrnLoggerConfig *cfg);
+SrnLoggerConfig *srn_logger_get_config(SrnLogger *logger);
 void srn_logger_log(SrnLogger *logger, SrnLogLevel lv, bool print_prompt,
         bool new_line, const char *file, const char *func, int line,
         const char *fmt, ...);

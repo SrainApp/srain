@@ -51,6 +51,7 @@ static SrnApplication* ctx_get_app(CommandContext *ctx);
 static SrnServer* ctx_get_server(CommandContext *ctx);
 static SrnChat* ctx_get_chat(CommandContext *ctx);
 
+static SrnRet on_command_reload(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_context(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_server(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_connect(SrnCommand *cmd, void *user_data);
@@ -76,6 +77,11 @@ static SrnRet on_command_mode(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_ctcp(SrnCommand *cmd, void *user_data);
 
 SrnCommandBind cmd_binds[] = {
+    {
+        .name = "/reload",
+        .argc = 0,
+        .cb = on_command_reload,
+    },
     {
         .name = "/context",
         .argc = 2, // <server> [chat]
@@ -312,6 +318,15 @@ SrnRet srn_application_run_command(SrnApplication *app, const char *cmd){
 /*******************************************************************************
  * SrnCommand callbacks
  ******************************************************************************/
+
+static SrnRet on_command_reload(SrnCommand *cmd, void *user_data){
+    SrnRet ret;
+    SrnApplication *app;
+
+    app = ctx_get_app(user_data);
+
+    return srn_application_reload_config(app);
+}
 
 static SrnRet on_command_context(SrnCommand *cmd, void *user_data){
     const char *srv_name;

@@ -288,8 +288,8 @@ SuiBufferEvents* sui_buffer_get_events(SuiBuffer *self){
 }
 
 void sui_buffer_set_config(SuiBuffer *self, SuiBufferConfig *cfg){
-    // TODO: config
     self->cfg = cfg;
+    sui_buffer_show_topic(self, self->cfg->show_topic);
 }
 
 SuiBufferConfig* sui_buffer_get_config(SuiBuffer *self){

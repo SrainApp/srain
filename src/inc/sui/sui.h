@@ -74,6 +74,7 @@ SuiApplication* sui_new_application(const char *id, SuiApplicationEvents *events
 void sui_free_application(SuiApplication *app);
 void sui_run_application(SuiApplication *app, int argc, char *argv[]);
 
+void sui_application_set_config(SuiApplication *self, SuiApplicationConfig *cfg);
 void* sui_application_get_ctx(SuiApplication *app);
 void sui_application_set_ctx(SuiApplication *app, void *ctx);
 
@@ -86,8 +87,10 @@ SuiBuffer* sui_new_server_buffer(const char *srv, void *ctx, SuiBufferEvents *ev
 SuiBuffer* sui_new_channel_buffer(SuiBuffer *srv_buf, const char *chan, void *ctx, SuiBufferEvents *events, SuiBufferConfig *cfg);
 SuiBuffer* sui_new_private_buffer(SuiBuffer *srv_buf, const char *nick, void *ctx, SuiBufferEvents *events, SuiBufferConfig *cfg);
 void sui_free_buffer(SuiBuffer *sui);
+void sui_buffer_set_config(SuiBuffer *self, SuiBufferConfig *cfg);
 
 void* sui_buffer_get_ctx(SuiBuffer *sui);
+
 
 /* SuiMessage */
 

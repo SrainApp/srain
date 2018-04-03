@@ -41,8 +41,10 @@
 /* Only one SrnApplication instance in one application */
 static SrnApplication *app_instance = NULL;
 
-static void srn_application_init_logger(SrnApplication *app);
-static void srn_application_finalize_logger(SrnApplication *app);
+static void init_logger(SrnApplication *app);
+static void finalize_logger(SrnApplication *app);
+static SrnRet add_server_config(SrnApplication *app, SrnServerConfig *srv_cfg);
+static SrnRet steal_server_config(SrnApplication *app, SrnServerConfig *srv_cfg);
 
 SrnApplication* srn_application_new(void){
     char *path;
@@ -90,9 +92,9 @@ SrnApplication* srn_application_new(void){
     app->cfg = cfg;
     app->cfg_mgr = cfg_mgr;
 
+    init_logger(app);
     srn_application_init_ui_event(app);
     srn_application_init_irc_event(app);
-    srn_application_init_logger(app);
 
     // Init server config list
     srv_cfg_list = NULL;
@@ -132,6 +134,134 @@ void srn_application_run(SrnApplication *app, int argc, char *argv[]){
     sui_run_application(app->ui, argc, argv);
 }
 
+void srn_application_set_config(SrnApplication *app, SrnApplicationConfig  *cfg){
+    sui_application_set_config(app->ui, cfg->ui);
+    app->cfg = cfg;
+}
+
+SrnRet srn_application_reload_config(SrnApplication *app){
+    char *path;
+    GSList *lst;
+    GSList *srv_cfg_list;
+    SrnRet ret;
+    SrnLoggerConfig *logger_cfg;
+    SrnLoggerConfig *old_logger_cfg;
+    SrnApplicationConfig *cfg;
+    SrnApplicationConfig *old_cfg;
+    SrnConfigManager *cfg_mgr;
+
+    cfg_mgr = app->cfg_mgr;
+
+    /* Read newest user config */
+    path = get_config_file("srain.cfg");
+    if (!path){
+        return RET_ERR(_("User config not found"));
+    }
+    ret = srn_config_manager_read_user_config(cfg_mgr, path);
+    g_free(path);
+    if (!RET_IS_OK(ret)){
+        return ret;
+    }
+
+    /* Update log config */
+    logger_cfg = srn_logger_config_new();
+    old_logger_cfg = srn_logger_get_config(app->logger);
+    ret = srn_config_manager_read_log_config(cfg_mgr, logger_cfg);
+    if (!RET_IS_OK(ret)){
+        goto ERR_RELOAD_LOGGER;
+    }
+    ret = srn_logger_config_check(logger_cfg);
+    if (!RET_IS_OK(ret)){
+        goto ERR_RELOAD_LOGGER;
+    }
+    srn_logger_set_config(app->logger, logger_cfg);
+    srn_logger_config_free(old_logger_cfg);
+
+    /* Update application config */
+    old_cfg = app->cfg;
+    cfg = srn_application_config_new();
+    ret = srn_config_manager_read_application_config(cfg_mgr, cfg);
+    if (!RET_IS_OK(ret)){
+        goto ERR_RELOAD_APP;
+    }
+    ret = srn_application_config_check(cfg);
+    if (!RET_IS_OK(ret)){
+        goto ERR_RELOAD_APP;
+    }
+    srn_application_set_config(app, cfg);
+    srn_application_config_free(old_cfg);
+
+    /* Update server configs */
+    ret = srn_config_manager_read_server_config_list(cfg_mgr, &srv_cfg_list);
+    if (!RET_IS_OK(ret)){
+        return RET_ERR(_("Failed to reload server config list: %1$s"),
+                RET_MSG(ret));
+    }
+    lst = srv_cfg_list;
+    while (lst) {
+        const char *name;
+        SrnServer *srv;
+        SrnServerConfig *srv_cfg;
+        SrnServerConfig *old_srv_cfg;
+
+        name = lst->data;
+        srv = NULL;
+
+        old_srv_cfg = srn_application_get_server_config(app, name);
+        if (old_srv_cfg){
+            srv = old_srv_cfg->srv;
+            steal_server_config(app, old_srv_cfg);
+        }
+
+        ret = srn_application_add_server_config(app, name);
+        if (!RET_IS_OK(ret)){
+            add_server_config(app, old_srv_cfg);
+            goto ERR_RELOAD_SERVER;
+        }
+
+        srv_cfg = srn_application_get_server_config(app, name);
+        srv_cfg->predefined = TRUE;
+        ret = srn_server_config_check(srv_cfg);
+        if (!RET_IS_OK(ret)){
+            srn_application_rm_server_config(app, srv_cfg);
+            add_server_config(app, old_srv_cfg);
+            goto ERR_RELOAD_SERVER;
+        }
+
+        if (old_srv_cfg){
+            old_srv_cfg->srv = NULL;
+            srn_server_config_free(old_srv_cfg);
+        }
+
+        if (srv){
+            srn_server_set_config(srv, srv_cfg);
+            srv_cfg->srv = srv;
+            ret = srn_server_reload_config(srv);
+            if (!RET_IS_OK(ret)){
+                goto ERR_RELOAD_SERVER;
+            }
+        }
+        lst = g_slist_next(lst);
+    }
+    g_slist_free_full(srv_cfg_list, g_free);
+
+    return RET_OK(_("All config reloaded"));
+
+ERR_RELOAD_LOGGER:
+    srn_logger_config_free(logger_cfg);
+    return RET_ERR(_("Failed to reload logger config: %1$s"),
+            RET_MSG(ret));
+
+ERR_RELOAD_APP:
+    srn_application_config_free(cfg);
+    return RET_ERR(_("Failed to reload application config: %1$s"),
+            RET_MSG(ret));
+
+ERR_RELOAD_SERVER:
+    g_slist_free_full(srv_cfg_list, g_free);
+    return ret;
+}
+
 SrnRet srn_application_add_server(SrnApplication *app, SrnServerConfig *srv_cfg) {
     SrnRet ret;
     SrnServer *srv;
@@ -145,7 +275,7 @@ SrnRet srn_application_add_server(SrnApplication *app, SrnServerConfig *srv_cfg)
     }
 
     srv = srn_server_new(srv_cfg);
-    srv_cfg->srv = srv;
+    srv_cfg->srv = srv; // Link server to its cfg
     app->cur_srv = srv;
     app->srv_list = g_slist_append(app->srv_list, srv);
 
@@ -171,8 +301,8 @@ SrnRet srn_application_rm_server(SrnApplication *app, SrnServer *srv) {
     app->srv_list = g_slist_delete_link(app->srv_list, lst);
 
     srv_cfg = srv->cfg;
+    srv_cfg->srv = NULL; // SrnServerConfig is held by SrnApplication, just unlink it
     srn_server_free(srv);
-    srn_application_rm_server_config(app, srv_cfg);
 
     return SRN_OK;
 }
@@ -199,40 +329,30 @@ bool srn_application_is_server_valid(SrnApplication *app, SrnServer *srv) {
 }
 
 SrnRet srn_application_add_server_config(SrnApplication *app, const char *name){
-    GSList *lst;
     SrnRet ret;
     SrnServerConfig *srv_cfg = NULL;
 
     g_return_val_if_fail(!str_is_empty(name), SRN_ERR);
 
-    lst = app->srv_cfg_list;
-    while (lst){
-        SrnServerConfig *old_srv_cfg;
-
-        old_srv_cfg = lst->data;
-        if (g_ascii_strcasecmp(name, old_srv_cfg->name) == 0){
-            return SRN_ERR;
-        }
-        lst = g_slist_next(lst);
-    }
-
     srv_cfg = srn_server_config_new(name);
     ret = srn_config_manager_read_server_config(
             app->cfg_mgr, srv_cfg, srv_cfg->name);
     if (!RET_IS_OK(ret)){
-        goto FIN;
+        goto ERR;
     }
-    app->srv_cfg_list = g_slist_append(app->srv_cfg_list, srv_cfg);
+
+    ret = add_server_config(app, srv_cfg);
+    if (!RET_IS_OK(ret)){
+        goto ERR;
+    }
 
     return SRN_OK;
-
-FIN:
+ERR:
     if (srv_cfg) {
         srn_server_config_free(srv_cfg);
     }
     return ret;
 }
-
 
 SrnServerConfig* srn_application_add_and_get_server_config_from_basename(
         SrnApplication *app, const char *base){
@@ -262,18 +382,20 @@ SrnServerConfig* srn_application_add_and_get_server_config_from_basename(
 
 SrnRet srn_application_rm_server_config(SrnApplication *app,
         SrnServerConfig *srv_cfg){
-    GSList *lst;
+    SrnRet ret;
 
-    g_return_val_if_fail(srv_cfg, SRN_ERR);
     if (srv_cfg->predefined) {
-        return SRN_OK;
-    }
-
-    lst = g_slist_find(app->srv_cfg_list, srv_cfg);
-    if (!lst){
         return SRN_ERR;
     }
-    app->srv_cfg_list = g_slist_delete_link(app->srv_cfg_list, lst);
+    if (srv_cfg->srv) {
+        return SRN_ERR;
+    }
+
+    ret = steal_server_config(app, srv_cfg);
+    if (!RET_IS_OK(ret)){
+        return ret;
+    }
+    srn_server_config_free(srv_cfg);
 
     return SRN_OK;
 }
@@ -353,7 +475,7 @@ bool srn_application_is_server_config_valid(SrnApplication *app,
     return g_slist_find(app->srv_cfg_list, srv_cfg) != NULL;
 }
 
-static void srn_application_init_logger(SrnApplication *app) {
+static void init_logger(SrnApplication *app) {
     SrnRet ret;
 
     app->logger_cfg = srn_logger_config_new();
@@ -365,7 +487,46 @@ static void srn_application_init_logger(SrnApplication *app) {
     srn_logger_set_default(app->logger);
 }
 
-static void srn_application_finalize_logger(SrnApplication *app) {
+static void finalize_logger(SrnApplication *app) {
     srn_logger_free(app->logger);
     srn_logger_config_free(app->logger_cfg);
+}
+
+static SrnRet add_server_config(SrnApplication *app, SrnServerConfig *srv_cfg){
+    GSList *lst;
+
+    lst = app->srv_cfg_list;
+    while (lst){
+        SrnServerConfig *old_srv_cfg;
+
+        old_srv_cfg = lst->data;
+        if (g_ascii_strcasecmp(old_srv_cfg->name, srv_cfg->name) == 0){
+            return SRN_ERR;
+        }
+        lst = g_slist_next(lst);
+    }
+    app->srv_cfg_list = g_slist_append(app->srv_cfg_list, srv_cfg);
+
+    return SRN_OK;
+}
+
+/**
+ * @brief Steal the ownership of srv_cfg from SrnApplication's server config
+ *      list.
+ *
+ * @param app
+ * @param srv_cfg
+ *
+ * @return Returns SRN_OK while successed.
+ */
+static SrnRet steal_server_config(SrnApplication *app, SrnServerConfig *srv_cfg){
+    GSList *lst;
+
+    lst = g_slist_find(app->srv_cfg_list, srv_cfg);
+    if (!lst){
+        return SRN_ERR;
+    }
+    app->srv_cfg_list = g_slist_delete_link(app->srv_cfg_list, lst);
+
+    return SRN_OK;
 }

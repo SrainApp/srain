@@ -83,6 +83,10 @@ static SrnRet read_config(SrnConfigManager *mgr, config_t *cfg, const char *file
     SrnVersion *ver;
     SrnRet ret;
 
+    /* Clear previous config */
+    config_destroy(cfg);
+    config_init(cfg);
+
     ver = NULL;
     dir = g_path_get_dirname(file);
     config_set_include_dir(cfg, dir);

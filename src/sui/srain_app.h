@@ -37,6 +37,7 @@ void sui_application_quit(SuiApplication *self);
 SuiWindow* sui_application_get_cur_window(SuiApplication *self);
 SuiApplication* sui_application_get_instance();
 SuiApplicationEvents* sui_application_get_events(SuiApplication *self);
+void sui_application_set_config(SuiApplication *self, SuiApplicationConfig *cfg);
 void* sui_application_get_ctx(SuiApplication *self);
 void sui_application_set_ctx(SuiApplication *self, void *ctx);
 

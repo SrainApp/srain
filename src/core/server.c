@@ -77,8 +77,6 @@ SrnServer* srn_server_new(SrnServerConfig *cfg){
     if (!srv->irc) goto bad;
     sirc_set_ctx(srv->irc, srv);
 
-    cfg->srv = srv;   // Link server to its cfg
-
     return srv;
 
 bad:
@@ -96,9 +94,6 @@ void srn_server_free(SrnServer *srv){
     g_return_if_fail(srn_server_is_valid(srv));
     g_return_if_fail(srv->state == SRN_SERVER_STATE_DISCONNECTED);
 
-    // srv->cfg is held by SrnApplication, just unlink it
-    srv->cfg->srv = NULL;
-
     srn_server_cap_free(srv->cap);
     srn_server_user_free(srv->user);
     sirc_free_session(srv->irc);
@@ -109,6 +104,51 @@ void srn_server_free(SrnServer *srv){
     srn_chat_free(srv->chat);
 
     g_free(srv);
+}
+
+void srn_server_set_config(SrnServer *srv, SrnServerConfig *cfg){
+    sirc_set_config(srv->irc, cfg->irc);
+
+    srv->cfg = cfg;
+    srv->addr = cfg->addrs->data;
+}
+
+SrnRet srn_server_reload_config(SrnServer *srv){
+    GSList *lst;
+    SrnRet ret;
+    SrnApplication *app;
+
+    app = srn_application_get_default();
+    lst = srv->chat_list;
+    while (lst){
+        SrnChat *chat;
+        SrnChatConfig *chat_cfg;
+        SrnChatConfig *old_chat_cfg;
+
+        chat = lst->data;
+        old_chat_cfg = chat->cfg;
+        chat_cfg = srn_chat_config_new();
+        ret = srn_config_manager_read_chat_config(
+                app->cfg_mgr, chat_cfg, srv->cfg->name, chat->name);
+        if (!RET_IS_OK(ret)){
+            goto ERR;
+        }
+        ret = srn_chat_config_check(chat_cfg);
+        if (!RET_IS_OK(ret)){
+            goto ERR;
+        }
+        srn_chat_set_config(chat, chat_cfg);
+        srn_chat_config_free(old_chat_cfg);
+
+        lst = g_slist_next(lst);
+        continue;
+ERR:
+        srn_chat_config_free(chat_cfg);
+        return RET_ERR(_("Failed to chat config \"%1$s\" of server config \"%2$s\": %3$s"),
+                chat->name, srv->cfg->name, RET_MSG(ret));
+    }
+
+    return SRN_OK;
 }
 
 bool srn_server_is_valid(SrnServer *srv){
@@ -184,6 +224,10 @@ SrnRet srn_server_add_chat(SrnServer *srv, const char *name){
     ret = srn_config_manager_read_chat_config(
             srn_application_get_default()->cfg_mgr,
             chat_cfg, srv->cfg->name, name);
+    if (!RET_IS_OK(ret)) {
+        return ret;
+    }
+    ret = srn_chat_config_check(chat_cfg);
     if (!RET_IS_OK(ret)) {
         return ret;
     }

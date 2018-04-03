@@ -42,7 +42,7 @@ struct _SuiBufferConfig {
     bool show_topic;
     bool show_avatar;
     bool show_user_list;
-    bool preview_image; // FIXME: config
+    bool preview_image;
 };
 
 SuiApplicationConfig *sui_application_config_new(void);

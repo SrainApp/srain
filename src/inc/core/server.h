@@ -271,8 +271,9 @@ struct _SrnServerCap {
 };
 
 SrnServer* srn_server_new(SrnServerConfig *cfg);
-SrnServer *srn_server_get_by_name(const char *name);
 void srn_server_free(SrnServer *srv);
+void srn_server_set_config(SrnServer *srv, SrnServerConfig *cfg);
+SrnRet srn_server_reload_config(SrnServer *srv);
 bool srn_server_is_valid(SrnServer *srv);
 SrnRet srn_server_connect(SrnServer *srv);
 SrnRet srn_server_disconnect(SrnServer *srv);
@@ -291,7 +292,7 @@ SrnRet srn_server_rename_user(SrnServer *srv, const char *old_nick, const char *
 
 SrnChat* srn_chat_new(SrnServer *srv, const char *name, SrnChatConfig *cfg);
 void srn_chat_free(SrnChat *chat);
-void srn_chat_set_server(SrnChat *chat, SrnServer *srv);
+void srn_chat_set_config(SrnChat *chat, SrnChatConfig *cfg);
 SrnRet srn_chat_add_user(SrnChat *chat, SrnServerUser *srv_user);
 SrnRet srn_chat_rm_user(SrnChat *chat, SrnChatUser *user);
 SrnChatUser* srn_chat_get_user(SrnChat *chat, const char *nick);

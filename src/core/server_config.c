@@ -142,6 +142,8 @@ SrnRet srn_server_config_check(SrnServerConfig *cfg){
 }
 
 void srn_server_config_free(SrnServerConfig *cfg){
+    g_return_if_fail(!cfg->srv);
+
     str_assign(&cfg->name, NULL);
     g_slist_free_full(cfg->addrs, (GDestroyNotify)srn_server_addr_free);
     str_assign(&cfg->passwd, NULL);
@@ -154,15 +156,7 @@ void srn_server_config_free(SrnServerConfig *cfg){
     str_assign(&cfg->away_message, NULL);
     str_assign(&cfg->quit_message, NULL);
 
-    if (cfg->irc){
-        sirc_config_free(cfg->irc);
-        cfg->irc = NULL;
-    }
-
-    if (cfg->srv){
-        srn_server_free(cfg->srv);
-        cfg->srv = NULL;
-    }
+    sirc_config_free(cfg->irc);
 }
 
 SrnRet srn_server_config_add_addr(SrnServerConfig *cfg, const char *addr){

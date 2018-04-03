@@ -97,6 +97,10 @@ void sirc_free_session(SircSession *sirc){
     g_free(sirc);
 }
 
+void sirc_set_config(SircSession *sirc, SircConfig *cfg){
+    sirc->cfg = cfg;
+}
+
 GIOStream* sirc_get_stream(SircSession *sirc){
     g_return_val_if_fail(sirc, NULL);
 

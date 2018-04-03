@@ -89,10 +89,12 @@ SrnLogger* srn_logger_get_default(void) {
     return srn_logger;
 }
 
-SrnRet srn_logger_set_config(SrnLogger *logger, SrnLoggerConfig *cfg) {
-    // TODO: free previous?
+void srn_logger_set_config(SrnLogger *logger, SrnLoggerConfig *cfg) {
     logger->cfg = cfg;
-    return SRN_OK;
+}
+
+SrnLoggerConfig *srn_logger_get_config(SrnLogger *logger) {
+    return logger->cfg;
 }
 
 void srn_logger_log(SrnLogger *logger, SrnLogLevel lv, bool print_prompt,

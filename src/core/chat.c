@@ -88,6 +88,11 @@ void srn_chat_free(SrnChat *chat){
     g_free(chat);
 }
 
+void srn_chat_set_config(SrnChat *chat, SrnChatConfig *cfg){
+    sui_buffer_set_config(chat->ui, cfg->ui);
+    chat->cfg = cfg;
+}
+
 SrnRet srn_chat_add_user(SrnChat *chat, SrnServerUser *srv_user){
     GSList *lst;
     SrnChatUser *user;

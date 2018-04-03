@@ -43,6 +43,7 @@ typedef struct _SircSession SircSession;
 
 SircSession* sirc_new_session(SircEvents *events, SircConfig *cfg);
 void sirc_free_session(SircSession *sirc);
+void sirc_set_config(SircSession *sirc, SircConfig *cfg);
 void sirc_connect(SircSession *sirc, const char *host, int port);
 void sirc_cancel_connect(SircSession *sirc);
 void sirc_disconnect(SircSession *sirc);
