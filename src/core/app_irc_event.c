@@ -17,8 +17,8 @@
  */
 
 /**
- * @file irc_event.c
- * @brief Server IRC event callbacks
+ * @file app_irc_event.c
+ * @brief Application IRC event callbacks
  * @author Shengyu Zhang <i@silverrainz.me>
  * @version 0.06.2
  * @date 2016-07-19
@@ -36,19 +36,17 @@
 #include "srain.h"
 #include "i18n.h"
 #include "log.h"
-#include "filter.h"
 #include "meta.h"
-#include "chat_log.h"
-#include "plugin.h"
-#include "decorator.h"
 #include "utils.h"
 
 static gboolean irc_period_ping(gpointer user_data);
+
 static void irc_event_connect(SircSession *sirc, const char *event);
 static void irc_event_connect_fail(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count);
 static void irc_event_disconnect(SircSession *sirc, const char *event,
         const char *origin, const char *params[], int count);
+
 static void irc_event_nick(SircSession *sirc, const char *event,
         const char *origin, const char *params[], int count);
 static void irc_event_quit(SircSession *sirc, const char *event,
@@ -98,6 +96,7 @@ void srn_application_init_irc_event(SrnApplication *app) {
     app->irc_events.connect = irc_event_connect;
     app->irc_events.connect_fail = irc_event_connect_fail;
     app->irc_events.disconnect = irc_event_disconnect;
+
     app->irc_events.welcome = irc_event_welcome;
     app->irc_events.nick = irc_event_nick;
     app->irc_events.quit = irc_event_quit;
@@ -123,16 +122,15 @@ void srn_application_init_irc_event(SrnApplication *app) {
 }
 
 static void irc_event_connect(SircSession *sirc, const char *event){
-    SrnRet state_ret;
     GSList *list;
+    SrnRet ret;
     SrnServer *srv;
     SrnChat *chat;
 
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srn_server_is_valid(srv));
-
-    state_ret = srn_server_state_transfrom(srv, SRN_SERVER_ACTION_CONNECT_FINISH);
-    g_return_if_fail(RET_IS_OK(state_ret));
+    ret = srn_server_state_transfrom(srv, SRN_SERVER_ACTION_CONNECT_FINISH);
+    g_return_if_fail(RET_IS_OK(ret));
 
     /* Default state */
     srv->registered = FALSE;
@@ -167,30 +165,32 @@ static void irc_event_connect(SircSession *sirc, const char *event){
 static void irc_event_connect_fail(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
     GSList *list;
-    SrnRet state_ret;
+    const char *msg;
+    SrnRet ret;
     SrnServer *srv;
+
+    g_return_if_fail(count == 1);
+    msg = params[0];
 
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srn_server_is_valid(srv));
 
-    state_ret = srn_server_state_transfrom(srv, SRN_SERVER_ACTION_CONNECT_FAIL);
+    ret = srn_server_state_transfrom(srv, SRN_SERVER_ACTION_CONNECT_FAIL);
+    g_return_if_fail(RET_IS_OK(ret));
     if (!srn_server_is_valid(srv)) {
-        /* SERVE_STATE_CONNECTING + SRN_SERVER_ACTION_QUIT will trigger a
+        /* FIXME: SERVE_STATE_CONNECTING + SRN_SERVER_ACTION_QUIT will trigger a
          * CONNECT_FAIL event and the server will be freed after apply the
          * SRN_SERVER_ACTION_CONNECT_FAIL action.
          */
         return;
     }
-    g_return_if_fail(RET_IS_OK(state_ret));
-
-    const char *msg = count >= 1 ? params[0] : RET_MSG(SRN_ERR);
 
     list = srv->chat_list;
     while (list){
         SrnChat *chat;
 
         chat = list->data;
-        srn_chat_add_misc_message_fmt(chat, srv->chat->_user,
+        srn_chat_add_misc_message_fmt(chat, chat->_user,
                 _("Failed to connect to %1$s(%2$s:%3$d): %4$s"),
                 srv->cfg->name, srv->addr->host, srv->addr->port, msg);
         if (srv->state == SRN_SERVER_STATE_RECONNECTING){
@@ -210,7 +210,8 @@ static void irc_event_connect_fail(SircSession *sirc, const char *event,
             srv->cfg->name, srv->addr->host, srv->addr->port, msg);
     /* If user trying connect to a TLS port via non-TLS connection, it will
      * be reset, give user some hints. */
-    if (!srv->cfg->irc->tls && srv->addr->port == 6697) {
+    if (!srv->cfg->irc->tls
+            && (srv->addr->port == 6697 || srv->addr->port == 7000)) {
         srn_chat_add_error_message_fmt(srv->chat, srv->chat->_user,
                 _("It seems that you connect to a TLS port(%1$d) without enable TLS connection, try to enable it and reconnect"),
                 srv->addr->port);
@@ -227,25 +228,30 @@ static void irc_event_connect_fail(SircSession *sirc, const char *event,
 
 static void irc_event_disconnect(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
-    bool is_timeout;
-    SrnRet state_ret;
+    const char *msg;
     GSList *list;
+    SrnRet ret;
     SrnServer *srv;
 
     g_return_if_fail(count == 1);
+    msg = params[0];
+
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srn_server_is_valid(srv));
+
+    if (srv->last_action == SRN_SERVER_ACTION_RECONNECT){
+        msg = _("Ping time out");
+    }
 
     /* Stop period ping */
     if (srv->ping_timer){
         DBG_FR("Ping timer %d removed", srv->ping_timer);
-
         g_source_remove(srv->ping_timer);
         srv->ping_timer = 0;
     }
 
-    is_timeout = srv->last_action == SRN_SERVER_ACTION_RECONNECT;
-    state_ret = srn_server_state_transfrom(srv, SRN_SERVER_ACTION_DISCONNECT_FINISH);
+    ret = srn_server_state_transfrom(srv, SRN_SERVER_ACTION_DISCONNECT_FINISH);
+    g_return_if_fail(RET_IS_OK(ret));
     if (!srn_server_is_valid(srv)) {
         /* SRN_SERVER_ACTION_QUIT will often trigger a DISCONNECT event and the
          * server will be freed after apply the SRN_SERVER_ACTION_DISCONNECT_FINISH
@@ -253,9 +259,6 @@ static void irc_event_disconnect(SircSession *sirc, const char *event,
          */
         return;
     }
-    g_return_if_fail(RET_IS_OK(state_ret));
-
-    const char *msg = is_timeout ?  _("Ping time out") : params[0];
 
     /* Update state */
     srv->registered = FALSE;
@@ -268,7 +271,7 @@ static void irc_event_disconnect(SircSession *sirc, const char *event,
         SrnChat *chat;
 
         chat = list->data;
-        if (sirc_is_chan(chat->name)){
+        if (sirc_target_is_channel(srv->irc, chat->name)){
             chat->joined = FALSE;
         }
         // Only report error message to server chat
@@ -287,9 +290,10 @@ static void irc_event_disconnect(SircSession *sirc, const char *event,
         list = g_slist_next(list);
     }
 
-    srn_chat_add_error_message_fmt(srv->chat, srv->chat->_user, _("Disconnected from %1$s(%2$s:%3$d): %4$s"),
+    srn_chat_add_error_message_fmt(srv->chat, srv->chat->_user,
+            _("Disconnected from %1$s(%2$s:%3$d): %4$s"),
             srv->cfg->name, srv->addr->host, srv->addr->port, msg);
-        if (srv->state == SRN_SERVER_STATE_RECONNECTING){
+    if (srv->state == SRN_SERVER_STATE_RECONNECTING){
         srn_chat_add_misc_message_fmt(srv->chat, srv->chat->_user,
                 _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
                 srv->cfg->name,
@@ -301,16 +305,17 @@ static void irc_event_disconnect(SircSession *sirc, const char *event,
 
 static void irc_event_welcome(SircSession *sirc, int event,
         const char *origin, const char **params, int count){
+    const char *nick ;
     GSList *list;
     SrnServer *srv;
+
+    g_return_if_fail(count >= 1);
+    nick = params[0];
 
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srn_server_is_valid(srv));
 
-    g_return_if_fail(count >= 1);
-    const char *nick = params[0];
-
-    /* You have registered when you recived a RPL_WELCOME(001) message */
+    // You have registered when you recived a RPL_WELCOME(001) message
     srv->registered = TRUE;
 
     /* Start peroid ping */
@@ -318,13 +323,14 @@ static void irc_event_welcome(SircSession *sirc, int event,
     srv->ping_timer = g_timeout_add(SRN_SERVER_PING_INTERVAL, irc_period_ping, srv);
     DBG_FR("Ping timer %d created", srv->ping_timer);
 
-    srn_server_rename_user(srv, srv->user->nick, nick);
+    // Set your actually nick
+    srn_server_rename_user(srv, srv->user, nick);
 
     /* Join all channels already exists */
     list = srv->chat_list;
     while (list){
         SrnChat *chat = list->data;
-        if (sirc_is_chan(chat->name)){
+        if (sirc_target_is_channel(srv->irc, chat->name)){
             sirc_cmd_join(srv->irc, chat->name, NULL);
         }
         list = g_slist_next(list);
@@ -333,17 +339,19 @@ static void irc_event_welcome(SircSession *sirc, int event,
 
 static void irc_event_nick(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
+    const char *old_nick;
+    const char *new_nick;
     GSList *lst;
     SrnRet ret;
     SrnServer *srv;
     SrnServerUser *srv_user;
 
+    g_return_if_fail(count >= 1);
+    old_nick = origin;
+    new_nick = params[0];
+
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srn_server_is_valid(srv));
-    g_return_if_fail(count >= 1);
-
-    const char *old_nick = origin;
-    const char *new_nick = params[0];
 
     srv_user = srn_server_get_user(srv, old_nick);
     g_return_if_fail(srv_user);
@@ -358,37 +366,36 @@ static void irc_event_nick(SircSession *sirc, const char *event,
                 _("%1$s is now known as %2$s"), old_nick, new_nick);
         lst = g_slist_next(lst);
     }
-
     if (srv_user->is_me){
         srn_chat_add_misc_message_fmt(srv->chat, srv->chat->user,
                 _("%1$s is now known as %2$s"), old_nick, new_nick);
     }
 
-    ret = srn_server_rename_user(srv, old_nick, new_nick);
-    g_warn_if_fail(RET_IS_OK(ret));
+    srn_server_rename_user(srv, srv_user, new_nick);
 }
 
 static void irc_event_quit(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
     char buf[512];
+    const char *reason;
     GSList *lst;
     SrnServer *srv;
     SrnServerUser *srv_user;
 
+    g_return_if_fail(count >= 1);
+    reason = params[0];
+
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srn_server_is_valid(srv));
-    g_return_if_fail(count >= 1);
 
-    const char *reason = params[0];
+    srv_user = srn_server_get_user(srv, origin);
+    g_return_if_fail(srv_user);
 
     if (reason) {
         snprintf(buf, sizeof(buf), _("%1$s has quit: %2$s"), origin, reason);
     } else {
         snprintf(buf, sizeof(buf), _("%1$s has quit"), origin);
     }
-
-    srv_user = srn_server_get_user(srv, origin);
-    g_return_if_fail(srv_user);
 
     lst = srv_user->chat_user_list;
     while (lst){
@@ -400,10 +407,10 @@ static void irc_event_quit(SircSession *sirc, const char *event,
         lst = g_slist_next(lst);
     }
 
-    srn_server_rm_user(srv, origin);
+    srn_server_user_set_is_online(srv_user, FALSE);
 
     /* You quit */
-    if (srv->user->is_me){
+    if (srv_user->is_me){
         srn_server_state_transfrom(srv, SRN_SERVER_ACTION_QUIT);
     }
 }
@@ -411,18 +418,20 @@ static void irc_event_quit(SircSession *sirc, const char *event,
 static void irc_event_join(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
     char buf[512];
+    const char *chan;
     SrnServer *srv;
     SrnChat *chat;
     SrnServerUser *srv_user;
     SrnChatUser *chat_user;
 
+    g_return_if_fail(count >= 1);
+    chan = params[0];
+
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srn_server_is_valid(srv));
-    g_return_if_fail(count >= 1);
-
-    const char *chan = params[0];
 
     srv_user = srn_server_add_and_get_user(srv, origin);
+    srn_server_user_set_is_online(srv_user, TRUE);
     if (srv_user->is_me) {
         /* You has join a channel */
         srn_server_add_chat(srv, chan);
@@ -440,22 +449,32 @@ static void irc_event_join(SircSession *sirc, const char *event,
         chat_user = srn_chat_add_and_get_user(chat, srv_user);
     }
 
+    g_return_if_fail(!chat_user->is_join);
+    srn_chat_user_set_is_join(chat_user, TRUE);
+
     srn_chat_add_misc_message(chat, chat_user, buf);
 }
 
 static void irc_event_part(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
     char buf[512];
+    const char *chan;
+    const char *reason;
     SrnServer *srv;
     SrnChat *chat;
     SrnChatUser *chat_user;
 
+    g_return_if_fail(count >= 1);
+    chan = params[0];
+    reason = count == 2 ? params[1] : NULL;
+
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srn_server_is_valid(srv));
-    g_return_if_fail(count >= 1);
-
-    const char *chan = params[0];
-    const char *reason = count == 2 ? params[1] : NULL;
+    chat = srn_server_get_chat(srv, chan);
+    g_return_if_fail(chat);
+    chat_user = srn_chat_get_user(chat, origin);
+    g_return_if_fail(chat_user);
+    g_return_if_fail(chat_user->is_join);
 
     if (reason){
         snprintf(buf, sizeof(buf), _("%1$s has left: %2$s"), origin, reason);
@@ -463,13 +482,8 @@ static void irc_event_part(SircSession *sirc, const char *event,
         snprintf(buf, sizeof(buf), _("%1$s has left"), origin);
     }
 
-    chat = srn_server_get_chat(srv, chan);
-    g_return_if_fail(chat);
-    chat_user = srn_chat_get_user(chat, origin);
-    g_return_if_fail(chat_user);
-
     srn_chat_add_misc_message(chat, chat_user, buf);
-    srn_chat_rm_user(chat, chat_user);
+    srn_chat_user_set_is_join(chat_user, FALSE);
 
     /* You has left a channel */
     if (chat_user->srv_user->is_me){
@@ -480,6 +494,7 @@ static void irc_event_part(SircSession *sirc, const char *event,
 
 static void irc_event_mode(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
+    const char *chan;
     GString *buf;
     GString *modes;
     SrnServer *srv;
@@ -487,8 +502,7 @@ static void irc_event_mode(SircSession *sirc, const char *event,
     SrnChatUser *chat_user;
 
     g_return_if_fail(count >= 1);
-
-    const char *chan = params[0];
+    chan = params[0];
 
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srn_server_is_valid(srv));
@@ -501,30 +515,40 @@ static void irc_event_mode(SircSession *sirc, const char *event,
     for (int i = 1; i < count; i++) {
         g_string_append_printf(modes, "%s ", params[i]);
     }
-
     buf = g_string_new(NULL);
     g_string_printf(buf, _("mode %1$s %2$s by %3$s"), chan, modes->str, origin);
 
     srn_chat_add_misc_message(chat, chat_user, buf->str);
 
+    g_string_free(modes, TRUE);
+    g_string_free(buf, TRUE);
+
     // FIXME: Only process the first mode
     do {
-        if (count < 3) break;
-        const char *mode = params[1];
-        const char *mode_args = params[2];
+        const char *mode;
+        const char *mode_args;
+        SrnServerUser *srv_user;
+        SrnChatUser *chat_user;
+        SrnChatUserType type;
 
-        SrnChatUserType type = SRN_SERVER_USER_CHIGUA;
-        SrnChatUser *chat_user = srn_chat_get_user(chat, mode_args);
-        if (!chat_user) break;
+        // <channel> *( ( "-" / "+" ) *<modes> *<modeparams>
+        g_return_if_fail(count >= 3);
+        mode = params[1];
+        g_return_if_fail(strlen(mode)>=2);
+        mode_args = params[2];
 
-        if (strlen(mode) < 2) break;
+        srv_user = srn_server_add_and_get_user(srv, mode_args);
+        g_return_if_fail(srv_user);
+        chat_user = srn_chat_add_and_get_user(chat, srv_user);
+        g_return_if_fail(chat_user);
 
+        type = SRN_SERVER_USER_CHIGUA;
         if (mode[0] == '-'){
             type = SRN_SERVER_USER_CHIGUA;
         } else if (mode[0] == '+'){
             switch (mode[1]){
                 case 'q':
-                    type =  SRN_SERVER_USER_OWNER;
+                    type = SRN_SERVER_USER_OWNER;
                     break;
                 case 'a':
                     type = SRN_SERVER_USER_ADMIN;
@@ -547,29 +571,25 @@ static void irc_event_mode(SircSession *sirc, const char *event,
         }
         srn_chat_user_set_type(chat_user, type);
     } while (0);
-
-    g_string_free(modes, TRUE);
-    g_string_free(buf, TRUE);
 }
 
 static void irc_event_umode(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
+    const char *nick;
     GString *buf;
     GString *modes;
     SrnServer *srv;
 
+    g_return_if_fail(count >= 1);
+    nick = params[0];
+
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srn_server_is_valid(srv));
-    g_return_if_fail(count >= 1);
-
-    const char *nick = params[0];
-
 
     modes = g_string_new(NULL);
     for (int i = 1; i < count; i++) {
         g_string_append_printf(modes, "%s ", params[i]);
     }
-
     buf = g_string_new(NULL);
     g_string_printf(buf, _("mode %1$s %2$s by %3$s"), nick, modes->str, origin);
 
@@ -582,23 +602,25 @@ static void irc_event_umode(SircSession *sirc, const char *event,
 
 static void irc_event_topic(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
+    const char *chan;
+    const char *topic;
     SrnServer *srv;
     SrnChat *chat;
     SrnServerUser *srv_user;
     SrnChatUser *chat_user;
 
+    g_return_if_fail(count >= 2);
+    chan = params[0];
+    topic = params[1];
+
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srn_server_is_valid(srv));
-    g_return_if_fail(count >= 2);
-
-    const char *chan = params[0];
-    const char *topic = params[1];
-
     chat = srn_server_get_chat(srv, chan);
     g_return_if_fail(chat);
     srv_user = srn_server_add_and_get_user(srv, origin);
     g_return_if_fail(srv_user);
     chat_user = srn_chat_add_and_get_user(chat, srv_user);
+    g_return_if_fail(chat_user);
 
     srn_chat_set_topic(chat, chat_user, topic);
 
@@ -614,57 +636,63 @@ static void irc_event_topic(SircSession *sirc, const char *event,
 static void irc_event_kick(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
     char buf[512];
+    const char *chan;
+    const char *kicked;
+    const char *reason;
     SrnServer *srv;
     SrnChat *chat;
-    SrnChatUser *chat_user;
+    SrnChatUser *kick_chat_user;
+    SrnChatUser *kicked_chat_user;
 
     g_return_if_fail(count >= 2);
-
-    const char *chan = params[0];
-    const char *kick_nick = params[1];
-    const char *reason = count == 3 ? params[2] : NULL;
+    chan = params[0];
+    kicked = params[1];
+    reason = count == 3 ? params[2] : NULL;
 
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srn_server_is_valid(srv));
     chat = srn_server_get_chat(srv, chan);
     g_return_if_fail(chat);
-    chat_user = srn_chat_get_user(chat, kick_nick);
-    g_return_if_fail(chat_user);
+    kick_chat_user = srn_chat_get_user(chat, origin);
+    g_return_if_fail(kick_chat_user);
+    kicked_chat_user = srn_chat_get_user(chat, kicked);
+    g_return_if_fail(kicked_chat_user);
 
-    if (chat_user->srv_user->is_me){
-        /* You are kicked 23333 */
+    /* You are kicked 23333 */
+    if (kicked_chat_user->srv_user->is_me){
         if (reason){
             snprintf(buf, sizeof(buf), _("You are kicked by %1$s: %2$s"),
-                    kick_nick, reason);
+                    origin, reason);
         } else {
             snprintf(buf, sizeof(buf), _("You are kicked by %1$s"),
-                    kick_nick);
+                    origin);
         }
         chat->joined = FALSE;
     } else {
         if (reason){
             snprintf(buf, sizeof(buf), _("%1$s are kicked by %2$s: %3$s"),
-                    kick_nick, origin, reason);
+                    kicked, origin, reason);
         } else {
             snprintf(buf, sizeof(buf), _("%1$s are kicked by %2$s"),
-                    kick_nick, origin);
+                    kicked, origin);
         }
     }
 
-    srn_chat_add_misc_message(chat, chat_user, buf);
-    srn_chat_rm_user(chat, chat_user);
+    srn_chat_user_set_is_join(kicked_chat_user, FALSE);
+    srn_chat_add_error_message(chat, kick_chat_user, buf);
 }
 
 static void irc_event_channel(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
+    const char *chan;
+    const char *msg;
     SrnServer *srv;
     SrnChat *chat;
     SrnChatUser *chat_user;
 
     g_return_if_fail(count >= 2);
-
-    const char *chan = params[0];
-    const char *msg = params[1];
+    chan = params[0];
+    msg = params[1];
 
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srn_server_is_valid(srv));
@@ -678,57 +706,71 @@ static void irc_event_channel(SircSession *sirc, const char *event,
 
 static void irc_event_privmsg(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
+    const char *msg;
     SrnServer *srv;
     SrnChat *chat;
     SrnServerUser *srv_user;
     SrnChatUser *chat_user;
 
     g_return_if_fail(count >= 2);
+    msg = params[1];
+
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srn_server_is_valid(srv));
-    chat = srn_server_get_chat_fallback(srv, origin); // TODO: create a new chat
-    g_return_if_fail(chat);
     srv_user = srn_server_add_and_get_user(srv, origin);
     g_return_if_fail(srv_user);
+    if (sirc_target_is_servername(sirc, origin)
+            || sirc_target_is_service(sirc, origin)){
+        chat = srv->chat;
+    } else {
+        chat = srn_server_add_and_get_chat(srv, origin);
+    }
+    g_return_if_fail(chat);
     chat_user = srn_chat_add_and_get_user(chat, srv_user);
     g_return_if_fail(chat_user);
-
-    const char *msg = params[1];
 
     srn_chat_add_recv_message(chat, chat_user, msg);
 }
 
 static void irc_event_notice(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
+    const char *msg;
     SrnServer *srv;
     SrnChat *chat;
     SrnServerUser *srv_user;
     SrnChatUser *chat_user;
 
     g_return_if_fail(count >= 2);
+    msg = params[1];
+
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srn_server_is_valid(srv));
-    chat = srn_server_get_chat_fallback(srv, origin);
-    g_return_if_fail(chat);
     srv_user = srn_server_add_and_get_user(srv, origin);
     g_return_if_fail(srv_user);
+    if (sirc_target_is_servername(sirc, origin)
+            || sirc_target_is_service(sirc, origin)){
+        chat = srv->chat;
+    } else {
+        chat = srn_server_add_and_get_chat(srv, origin);
+    }
+    g_return_if_fail(chat);
     chat_user = srn_chat_add_and_get_user(chat, srv_user);
     g_return_if_fail(chat_user);
-
-    const char *msg = params[1];
 
     srn_chat_add_notice_message(chat, chat_user, msg);
 }
 
 static void irc_event_channel_notice(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
+    const char *chan;
+    const char *msg;
     SrnServer *srv;
     SrnChat *chat;
     SrnChatUser *chat_user;
 
     g_return_if_fail(count >= 2);
-    const char *chan = params[0];
-    const char *msg = params[1];
+    chan = params[0];
+    msg = params[1];
 
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srn_server_is_valid(srv));
@@ -742,21 +784,30 @@ static void irc_event_channel_notice(SircSession *sirc, const char *event,
 
 static void irc_event_invite(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
+    const char *nick;
+    const char *chan;
     SrnServer *srv;
     SrnChat *chat;
     SrnServerUser *srv_user;
     SrnChatUser *chat_user;
 
     g_return_if_fail(count >= 2);
+    nick = params[0];
+    chan = params[1];
+
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srn_server_is_valid(srv));
-    chat = srn_server_get_chat(srv, origin);
     srv_user = srn_server_add_and_get_user(srv, origin);
     g_return_if_fail(srv_user);
+    chat = srn_server_add_and_get_chat(srv, origin);
+    g_return_if_fail(chat);
     chat_user = srn_chat_add_and_get_user(chat, srv_user);
     g_return_if_fail(chat_user);
 
-    const char *chan = params[1];
+    if (!sirc_target_equal(srv->user->nick, nick)){
+        WARN_FR("Received a invite message to %s", nick);
+        g_return_if_reached();
+    }
 
     srn_chat_add_misc_message_fmt(chat, chat_user,
             _("%1$s invites you into %2$s"), origin, chan);
@@ -764,17 +815,25 @@ static void irc_event_invite(SircSession *sirc, const char *event,
 
 static void irc_event_ctcp_req(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
+    const char *target;
+    const char *msg;
     SrnServer *srv;
     SrnChat *chat;
     SrnServerUser *srv_user;
     SrnChatUser *chat_user;
 
+    g_return_if_fail(count >= 1);
+    target = params[0];
+    msg = count == 2 ? params[1] : NULL;
+
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srn_server_is_valid(srv));
-    g_return_if_fail(count >= 1);
-
-    const char *target = params[0];
-    const char *msg = count == 2 ? params[1] : NULL;
+    chat = srn_server_get_chat_fallback(srv, origin);
+    g_return_if_fail(chat);
+    srv_user = srn_server_add_and_get_user(srv, origin);
+    g_return_if_fail(srv_user);
+    chat_user = srn_chat_add_and_get_user(chat, srv_user);
+    g_return_if_fail(chat_user);
 
     /* CTCP response, according to https://modern.ircdocs.horse/ctcp.html */
     if (strcmp(event, "ACTION") == 0) {
@@ -808,17 +867,6 @@ static void irc_event_ctcp_req(SircSession *sirc, const char *event,
         WARN_FR("Unknown CTCP message: %s", event);
     }
 
-    if (sirc_is_chan(target)){
-        chat = srn_server_get_chat(srv, target);
-    } else {
-        chat = srn_server_get_chat_fallback(srv, origin);
-    }
-    g_return_if_fail(chat);
-    srv_user = srn_server_add_and_get_user(srv, origin);
-    g_return_if_fail(srv_user);
-    chat_user = srn_chat_add_and_get_user(chat, srv_user);
-    g_return_if_fail(chat_user);
-
     /* Show it on ui */
     if (strcmp(event, "ACTION") == 0) {
         srn_chat_add_action_message(chat, chat_user, msg);
@@ -834,6 +882,8 @@ static void irc_event_ctcp_req(SircSession *sirc, const char *event,
 
 static void irc_event_ctcp_rsp(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
+    const char *target;
+    const char *msg;
     SrnServer *srv;
     SrnChat *chat;
     SrnServerUser *srv_user;
@@ -841,18 +891,13 @@ static void irc_event_ctcp_rsp(SircSession *sirc, const char *event,
 
     // TODO: ignore ignored user's CTCP request
 
+    g_return_if_fail(count >= 2);
+    target = params[0];
+    msg = params[1];
+
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srn_server_is_valid(srv));
-    g_return_if_fail(count >= 2);
-
-    const char *target = params[0];
-    const char *msg = params[1];
-
-    if (sirc_is_chan(target)){
-        chat = srn_server_get_chat(srv, target);
-    } else {
-        chat = srn_server_get_chat_fallback(srv, origin);
-    }
+    chat = srn_server_get_chat_fallback(srv, origin);
     g_return_if_fail(chat);
     srv_user = srn_server_add_and_get_user(srv, origin);
     g_return_if_fail(srv_user);
@@ -904,13 +949,13 @@ static void irc_event_cap(SircSession *sirc, const char *event,
     char **caps;
     SrnServer *srv;
 
-    srv = sirc_get_ctx(sirc);
-    g_return_if_fail(srn_server_is_valid(srv));
     g_return_if_fail(count >= 3);
-
     cap_end = FALSE;
     cap_event = params[1];
     rawcaps = params[2];
+
+    srv = sirc_get_ctx(sirc);
+    g_return_if_fail(srn_server_is_valid(srv));
 
     /* Multi line replies */
     multiline = ((g_ascii_strcasecmp(cap_event, "LS") == 0
@@ -1123,26 +1168,21 @@ static void irc_event_authenticate(SircSession *sirc, const char *event,
 
 static void irc_event_ping(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
-    /* Nothing to do
-    SrnServer *srv;
-
-    srv = sirc_get_ctx(sirc);
-    g_return_if_fail(srn_server_is_valid(srv));
-    */
+    // Nothing to do for now
 }
 
 static void irc_event_pong(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
-    SrnServer *srv;
+    const char *msg;
     unsigned long time;
     unsigned long nowtime;
+    SrnServer *srv;
+
+    g_return_if_fail(count >= 1);
+    msg = params[count - 1]; // time should be the last parameter
 
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srn_server_is_valid(srv));
-    g_return_if_fail(count >= 1);
-
-
-    const char *msg = params[count - 1]; // time should be the last parameter
 
     time = strtoul(msg, NULL, 10);
     nowtime = get_time_since_first_call_ms();
@@ -1159,15 +1199,17 @@ static void irc_event_pong(SircSession *sirc, const char *event,
 
 static void irc_event_error(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
+    const char *msg;
     SrnServer *srv;
 
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srn_server_is_valid(srv));
+
     g_return_if_fail(count >= 1);
+    msg = params[0];
 
-    const char *msg = params[0];
-
-    srn_chat_add_error_message_fmt(srv->cur_chat, srv->chat->_user, _("ERROR: %1$s"), msg);
+    srn_chat_add_error_message_fmt(srv->cur_chat, srv->chat->_user,
+            _("ERROR: %1$s"), msg);
 }
 
 static void irc_event_numeric(SircSession *sirc, int event,
@@ -1210,14 +1252,14 @@ static void irc_event_numeric(SircSession *sirc, int event,
                 }
                 srn_chat_add_recv_message(srv->chat, chat_user, buf->str);
                 g_string_free(buf, TRUE);
-
                 break;
             }
         case SIRC_RFC_ERR_NICKNAMEINUSE:
             {
-                g_return_if_fail(count >= 3);
+                const char *nick;
 
-                const char *nick = params[1];
+                g_return_if_fail(count >= 3);
+                nick = params[1];
 
                 /* If you don't have a nickname (unregistered) yet, try a nick
                  * with a trailing underline('_') */
@@ -1240,21 +1282,25 @@ static void irc_event_numeric(SircSession *sirc, int event,
             /************************ NAMES message ************************/
         case SIRC_RFC_RPL_NAMREPLY:
             {
-                g_return_if_fail(count >= 4);
-
                 char *nickptr;
-                const char *chan = params[2];
-                char *names = (char *)params[3];
+                char *dup_names;
+                const char *chan;
+                const char *names;
                 SrnChat *chat;
                 SrnServerUser *srv_user;
                 SrnChatUser *chat_user;
                 SrnChatUserType type;
 
+                g_return_if_fail(count >= 4);
+                chan = params[2];
+                names = params[3];
+
                 chat = srn_server_get_chat(srv, chan);
                 g_return_if_fail(chat);
 
-                nickptr = strtok(names, " ");
-                while (nickptr){
+                dup_names = g_strdup(names);
+                nickptr = strtok(dup_names, " ");
+                for (; nickptr = strtok(NULL, " "); nickptr){
                     switch (nickptr[0]){
                         case '~':
                             nickptr++;
@@ -1280,117 +1326,146 @@ static void irc_event_numeric(SircSession *sirc, int event,
                             type = SRN_SERVER_USER_CHIGUA;
                     }
                     srv_user = srn_server_add_and_get_user(srv, nickptr);
+                    g_warn_if_fail(srv_user);
+                    if (!srv_user) continue;
+                    srn_server_user_set_is_online(srv_user, TRUE);
+
                     chat_user = srn_chat_add_and_get_user(chat, srv_user);
+                    g_warn_if_fail(chat_user);
+                    if (!chat_user) continue;
+                    srn_chat_user_set_is_join(chat_user, TRUE);
                     srn_chat_user_set_type(chat_user, type);
-                    nickptr = strtok(NULL, " ");
                 }
+                g_free(dup_names);
                 break;
             }
         case SIRC_RFC_RPL_ENDOFNAMES:
-            break;
-
+            {
+                break;
+            }
         case SIRC_RFC_RPL_NOTOPIC:
             {
-                g_return_if_fail(count >= 2);
-                const char *chan = params[1];
+                const char *chan;
+                SrnChat *chat;
 
-                SrnChat *chat = srn_server_get_chat(srv, chan);
+                g_return_if_fail(count >= 2);
+                chan = params[1];
+
+                chat = srn_server_get_chat(srv, chan);
                 g_return_if_fail(chat);
 
                 srn_chat_add_misc_message_fmt(chat, chat->_user,
                         _("No topic is set"), chan);
-
                 break;
             }
         case SIRC_RFC_RPL_TOPIC:
             {
+                const char *chan;
+                const char *topic;
+                SrnChat *chat;
+                SrnChatUser *chat_user;
+
                 g_return_if_fail(count >= 3);
+                chan = params[1];
+                topic = params[2];
 
-                const char *chan = params[1];
-                const char *topic =params[2];
-
-                SrnChat *chat = srn_server_get_chat(srv, chan);
+                chat = srn_server_get_chat(srv, chan);
                 g_return_if_fail(chat);
-                SrnChatUser *chat_user = srn_chat_add_and_get_user(chat, srv_user);
+                chat_user = srn_chat_add_and_get_user(chat, srv_user);
                 g_return_if_fail(chat_user);
 
                 srn_chat_set_topic(chat, chat_user, topic);
-
                 srn_chat_add_misc_message_fmt(chat, chat_user,
                         _("The topic of this channel is:\n\t%1$s"), topic);
-
                 break;
             }
         case SIRC_RFC_RPL_TOPICWHOTIME:
             {
-                g_return_if_fail(count >= 4);
+                time_t time;
                 char timestr[64];
-                const char *chan = params[1];
-                const char *who = params[2];
-                time_t time = strtoul(params[3], NULL, 10);
+                char *setter;
+                const char *chan;
+                const char *who;
+                SrnChat *chat;
 
-                SrnChat *chat = srn_server_get_chat(srv, chan);
+                g_return_if_fail(count >= 4);
+                chan = params[1];
+                who = params[2];
+                time = strtoul(params[3], NULL, 10);
+
+                chat = srn_server_get_chat(srv, chan);
                 g_return_if_fail(chat);
 
                 time_to_str(time, timestr, sizeof(timestr), _("%Y-%m-%d %T"));
-                char *setter = g_strdup_printf(_("By %1$s at %2$s"), who, timestr);
+                setter = g_strdup_printf(_("By %1$s at %2$s"), who, timestr);
                 srn_chat_set_topic_setter(chat, setter);
                 g_free(setter);
-
                 break;
             }
 
             /************************ WHOIS message ************************/
         case SIRC_RFC_RPL_WHOISUSER:
             {
-                g_return_if_fail(count >= 6);
+                const char *nickname;
+                const char *username;
+                const char *hostname;
+                const char *realname;
 
-                const char *nickname = params[1];
-                const char *username = params[2];
-                const char *hostname = params[3];
-                const char *realname = params[4];
-                // srn_chat_add_misc_message_fmt(srv->cur_chat, user, "%s <%s@%s> %s",
-                        // nickname, username, hostname, realname);
+                g_return_if_fail(count >= 6);
+                nickname = params[1];
+                username = params[2];
+                hostname = params[3];
+                realname = params[4];
+
                 // TODO: dont show WHOIS message in message list
-                plugin_avatar(nickname, realname);
+                // srn_chat_add_misc_message_fmt(srv->cur_chat, user, "%s <%s@%s> %s",
+                // nickname, username, hostname, realname);
                 break;
             }
         case SIRC_RFC_RPL_WHOISCHANNELS:
             {
-                g_return_if_fail(count >= 3);
+                const char *msg;
 
-                const char *msg = params[2];
+                g_return_if_fail(count >= 3);
+                msg = params[2];
 
                 // srn_chat_add_misc_message_fmt(srv->cur_chat, user, _("%1$s is member of %2$s"), params[1], msg);
                 break;
             }
         case SIRC_RFC_RPL_WHOISSERVER:
             {
-                g_return_if_fail(count >= 4);
+                const char *msg;
 
-                const char *msg = params[3];
+                g_return_if_fail(count >= 4);
+                msg = params[3];
 
                 // srn_chat_add_misc_message_fmt(srv->cur_chat, user, _("%1$s is attached to %2$s at \"%3$s\""),
-                        // params[1], params[2], msg);
+                // params[1], params[2], msg);
                 break;
             }
         case SIRC_RFC_RPL_WHOISIDLE:
             {
-                g_return_if_fail(count >= 4);
-                const char *who = params[1];
-                const char *sec = params[2];
-                time_t since = strtoul(params[3], NULL, 10);
                 char timestr[64];
-                time_to_str(since, timestr, sizeof(timestr), _("%Y-%m-%d %T"));
+                time_t since;
+                const char *who;
+                const char *sec;
+
+                g_return_if_fail(count >= 4);
+                who = params[1];
+                sec = params[2];
+                since = strtoul(params[3], NULL, 10);
+
+                // time_to_str(since, timestr, sizeof(timestr), _("%Y-%m-%d %T"));
                 // srn_chat_add_misc_message_fmt(srv->cur_chat, user, _("%1$s is idle for %2$s seconds since %3$s"),
                         // who, sec, timestr);
                 break;
             }
         case SIRC_RFC_RPL_WHOWAS_TIME:
             {
-                g_return_if_fail(count >= 4);
+                const char *msg;
 
-                const char *msg = params[3];
+                g_return_if_fail(count >= 4);
+                msg = params[3];
 
                 // srn_chat_add_misc_message_fmt(srv->cur_chat, user, _("%1$s %2$s %3$s"),
                         // params[1], msg, params[2]);
@@ -1399,18 +1474,20 @@ static void irc_event_numeric(SircSession *sirc, int event,
         case SIRC_RFC_RPL_WHOISHOST:
         case SIRC_RFC_RPL_WHOISSECURE:
             {
-                g_return_if_fail(count >= 3);
+                const char *msg;
 
-                const char *msg = params[2];
+                g_return_if_fail(count >= 3);
+                msg = params[2];
 
                 // srn_chat_add_misc_message_fmt(srv->cur_chat, user, _("%1$s %2$s"), params[1], msg);
                 break;
             }
         case SIRC_RFC_RPL_ENDOFWHOIS:
             {
-                g_return_if_fail(count >= 3);
+                const char *msg;
 
-                const char *msg = params[2];
+                g_return_if_fail(count >= 3);
+                msg = params[2];
 
                 // srn_chat_add_misc_message(srv->cur_chat, user, msg);
                 break;
@@ -1419,29 +1496,36 @@ static void irc_event_numeric(SircSession *sirc, int event,
             /************************ WHO message ************************/
         case SIRC_RFC_RPL_WHOREPLY:
             {
+                const char *nick;
+                const char *realname;
+
                 g_return_if_fail(count >= 7);
+                nick = params[5];
+                // params[count - 1] = "<hopcount> <realname>", Skip ' '
+                realname = strchr(params[6], ' ');
 
-                /* params[count - 1] = "<hopcount> <realname>", Skip ' ' */
-                const char *nick = params[5];
-                const char *realname = strchr(params[6], ' ');
-
-                /* Use Real Name as avatar token :-( */
-                plugin_avatar(nick, realname);
+                // TODO
                 break;
             }
         case SIRC_RFC_RPL_ENDOFWHO:
-            break;
+            {
+                break;
+            }
             /************************ BANLIST message ************************/
         case SIRC_RFC_RPL_BANLIST:
             {
+                const char *chan;
+                const char *banmask;
+                SrnChat *chat;
+                SrnChatUser *chat_user;
+
                 g_return_if_fail(count >= 3);
+                chan = params[1];
+                banmask = params[2];
 
-                const char *chan = params[1];
-                const char *banmask = params[2];
-
-                SrnChat *chat = srn_server_get_chat(srv, chan);
+                chat = srn_server_get_chat(srv, chan);
                 g_return_if_fail(chat);
-                SrnChatUser *chat_user = srn_chat_add_and_get_user(chat, srv_user);
+                chat_user = srn_chat_add_and_get_user(chat, srv_user);
                 g_return_if_fail(chat_user);
 
                 srn_chat_add_misc_message_fmt(chat, chat_user,
@@ -1451,14 +1535,18 @@ static void irc_event_numeric(SircSession *sirc, int event,
             }
         case SIRC_RFC_RPL_ENDOFBANLIST:
             {
+                const char *chan;
+                const char *msg;
+                SrnChat *chat;
+                SrnChatUser *chat_user;
+
                 g_return_if_fail(count >= 3);
+                chan = params[1];
+                msg = params[2];
 
-                const char *chan = params[1];
-                const char *msg = params[2];
-
-                SrnChat *chat = srn_server_get_chat(srv, chan);
+                chat = srn_server_get_chat(srv, chan);
                 g_return_if_fail(chat);
-                SrnChatUser *chat_user = srn_chat_add_and_get_user(chat, srv_user);
+                chat_user = srn_chat_add_and_get_user(chat, srv_user);
                 g_return_if_fail(chat_user);
 
                 srn_chat_add_misc_message_fmt(chat, chat_user, _("%1$s: %2$s"),
@@ -1475,11 +1563,14 @@ static void irc_event_numeric(SircSession *sirc, int event,
             }
         case SIRC_RFC_RPL_LIST:
             {
-                g_return_if_fail(count >= 4);
+                int users;
+                const char *chan;
+                const char *topic;
 
-                const char *chan = params[1];
-                int users = atoi(params[2]);
-                const char *topic = params[3];
+                g_return_if_fail(count >= 4);
+                chan = params[1];
+                users = atoi(params[2]);
+                topic = params[3];
 
                 sui_chan_list_add(srv->chat->ui, chan, users, topic);
                 break;
@@ -1494,9 +1585,10 @@ static void irc_event_numeric(SircSession *sirc, int event,
             /************************ SASL message ************************/
         case SIRC_RFC_RPL_LOGGEDIN:
             {
-                g_return_if_fail(count >= 4);
+                const char *msg;
 
-                const char *msg = params[3];
+                g_return_if_fail(count >= 4);
+                msg = params[3];
 
                 srv->loggedin = TRUE;
                 sirc_cmd_cap_end(sirc); // End negotiation
@@ -1505,18 +1597,20 @@ static void irc_event_numeric(SircSession *sirc, int event,
             }
         case SIRC_RFC_RPL_SASLSUCCESS:
             {
-                g_return_if_fail(count >= 2);
+                const char *msg;
 
-                const char *msg = params[1];
+                g_return_if_fail(count >= 2);
+                msg = params[1];
 
                 srn_chat_add_recv_message(srv->chat, chat_user, msg);
                 break;
             }
         case SIRC_RFC_RPL_LOGGEDOUT:
             {
-                g_return_if_fail(count >= 3);
+                const char *msg;
 
-                const char *msg = params[2];
+                g_return_if_fail(count >= 3);
+                msg = params[2];
 
                 srv->loggedin = FALSE;
                 srn_chat_add_recv_message(srv->chat, chat_user, msg);
@@ -1542,16 +1636,19 @@ static void irc_event_numeric(SircSession *sirc, int event,
             /************************ MISC message ************************/
         case SIRC_RFC_RPL_CHANNEL_URL:
             {
+                const char *chan;
+                const char *msg;
+                SrnChat *chat;
+                SrnChatUser *chat_user;
+
                 g_return_if_fail(count >= 3);
+                chan = params[1];
+                msg = params[2];
 
-                const char *chan = params[1];
-                const char *msg = params[2];
-
-                SrnChat *chat = srn_server_get_chat(srv, chan);
+                chat = srn_server_get_chat(srv, chan);
                 g_return_if_fail(chat);
-                SrnChatUser *chat_user = srn_chat_add_and_get_user(chat, srv_user);
+                chat_user = srn_chat_add_and_get_user(chat, srv_user);
                 g_return_if_fail(chat_user);
-
 
                 srn_chat_add_misc_message_fmt(chat, chat_user,
                         _("URL of %1$s is: %2$s"), chan, msg);

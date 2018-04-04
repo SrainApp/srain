@@ -17,8 +17,8 @@
  */
 
 /**
- * @file server_ui_event.c
- * @brief SrnServer UI event callbacks
+ * @file app_ui_event.c
+ * @brief Application UI event callbacks
  * @author Shengyu Zhang <i@silverrainz.me>
  * @version 0.06.2
  * @date 2016-07-19
@@ -461,13 +461,10 @@ static SrnRet ui_event_chan_list(SuiBuffer *sui, SuiEvent event, GVariantDict *p
 
 /* Get a SrnServer object from SuiBuffer context (sui->ctx) */
 static SrnServer* ctx_get_server(SuiBuffer *sui){
-    void *ctx;
     SrnChat *chat;
 
-    ctx = sui_buffer_get_ctx(sui);
-    g_return_val_if_fail(ctx, NULL);
-
-    chat = ctx;
+    chat = sui_buffer_get_ctx(sui);
+    g_return_val_if_fail(chat, NULL);
 
     return chat->srv;
 }

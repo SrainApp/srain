@@ -105,6 +105,7 @@ SrnCommandBind cmd_binds[] = {
             { .key = "-encode",         .val = SRN_COMMAND_OPT_NO_DEFAULT },
             SRN_COMMAND_EMPTY_OPT,
         },
+        .flag = SRN_COMMAND_FLAG_OMIT_ARG,
         .cb = on_command_server,
     },
     {
@@ -320,7 +321,6 @@ SrnRet srn_application_run_command(SrnApplication *app, const char *cmd){
  ******************************************************************************/
 
 static SrnRet on_command_reload(SrnCommand *cmd, void *user_data){
-    SrnRet ret;
     SrnApplication *app;
 
     app = ctx_get_app(user_data);
