@@ -29,9 +29,12 @@ SrnMessage* srn_message_new(SrnChat *chat, SrnChatUser *user,
 
     g_return_val_if_fail(chat, NULL);
     g_return_val_if_fail(user, NULL);
-    g_return_val_if_fail(content, NULL);
 
     msg = g_malloc0(sizeof(SrnMessage));
+
+    if (!content) {
+        content = "";
+    }
 
     msg->user = user;
     msg->chat = chat;

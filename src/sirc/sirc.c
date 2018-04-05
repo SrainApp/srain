@@ -193,7 +193,7 @@ static void on_recv_ready(GObject *obj, GAsyncResult *res, gpointer user_data){
     if (!(sirc->bufptr >= 2
             && sirc->buf[sirc->bufptr-2] == '\r'
             && sirc->buf[sirc->bufptr-1] == '\n')){
-        goto FIN;
+        goto NOTREADY;
     }
 
     sirc->buf[sirc->bufptr-2] = '\0';
@@ -206,12 +206,8 @@ static void on_recv_ready(GObject *obj, GAsyncResult *res, gpointer user_data){
     imsg = sirc_parse(sirc->buf);
     if (!imsg){
         ERR_FR("Failed to parse line: %s", sirc->buf);
-        memset(sirc->buf, 0, sizeof(sirc->buf));
-        sirc->bufptr = 0;
         goto FIN;
     }
-    memset(sirc->buf, 0, sizeof(sirc->buf));
-    sirc->bufptr = 0;
 
     /* Transcoding */
     sirc_message_transcoding(imsg,
@@ -222,7 +218,11 @@ static void on_recv_ready(GObject *obj, GAsyncResult *res, gpointer user_data){
     sirc_message_free(imsg);
 
 FIN:
-    sirc_recv(sirc);
+    /* Clear buffer */
+    sirc->bufptr = 0;
+    memset(sirc->buf, 0, sizeof(sirc->buf));
+NOTREADY:
+    sirc_recv(sirc); // Continute receiving
 }
 
 static gboolean on_accept_certificate(GTlsClientConnection *conn,
@@ -358,7 +358,7 @@ static void on_connect_fail(SircSession *sirc, const char *reason){
 static void on_disconnect(SircSession *sirc, const char *reason){
     const char *params[] = { reason };
 
-    LOG_FR("Disconnected");
+    LOG_FR("Disconnected: %s", reason);
 
     g_object_unref(sirc->stream);
     sirc->stream = NULL;
