@@ -16,32 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <glib.h>
+#ifndef __READER_H
+#define __READER_H
 
-#include "server.h"
+#include "core/core.h"
 #include "sui/sui.h"
-#include "ret.h"
-#include "i18n.h"
+#include "sirc/sirc.h"
+#include "log.h"
 
-ChatPrefs *chat_prefs_new(){
-    ChatPrefs *prefs;
+SrnRet srn_config_manager_read_log_config(SrnConfigManager *mgr, SrnLoggerConfig *cfg);
+SrnRet srn_config_manager_read_application_config(SrnConfigManager *mgr, SrnApplicationConfig *cfg);
+SrnRet srn_config_manager_read_server_config_list(SrnConfigManager *mgr, GSList **srv_cfg_list);
+SrnRet srn_config_manager_read_server_config(SrnConfigManager *mgr, SrnServerConfig *cfg, const char *srv_name);
+SrnRet srn_config_manager_read_chat_config(SrnConfigManager *mgr, SrnChatConfig *cfg, const char *srv_name, const char *chat_name);
 
-    prefs = g_malloc0(sizeof(ChatPrefs));
-    prefs->ui = sui_prefs_new();
+#endif /* __READER_H */
 
-    return prefs;
-}
-
-SrnRet chat_prefs_check(ChatPrefs *prefs){
-    if (!prefs){
-        return RET_ERR(_("Invalid ChatPrefs instance"));
-    }
-    return sui_prefs_check(prefs->ui);
-}
-
-void chat_prefs_free(ChatPrefs *prefs){
-    g_return_if_fail(prefs);
-
-    sui_prefs_free(prefs->ui);
-    g_free(prefs);
-}

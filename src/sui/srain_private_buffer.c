@@ -59,7 +59,7 @@ static void srain_private_buffer_init(SrainPrivateBuffer *self){
     self->close_menu_item =
         (GtkMenuItem *)gtk_builder_get_object(builder, "close_menu_item");
     gtk_menu_shell_append(
-            GTK_MENU_SHELL(srain_buffer_get_menu(SRAIN_BUFFER(self))),
+            GTK_MENU_SHELL(sui_buffer_get_menu(SUI_BUFFER(self))),
             GTK_WIDGET(self->close_menu_item));
     g_object_unref(builder);
 
@@ -81,14 +81,16 @@ static void srain_private_buffer_class_init(SrainPrivateBufferClass *class){
  * Exported functions
  *****************************************************************************/
 
-SrainPrivateBuffer* srain_private_buffer_new(SuiSession *sui,
-        SrainServerBuffer *srv, const char *nick){
+SrainPrivateBuffer* srain_private_buffer_new(SrainServerBuffer *srv,
+        const char *nick, void *ctx, SuiBufferEvents *events, SuiBufferConfig *cfg){
     SrainPrivateBuffer *self;
 
     self = g_object_new(SRAIN_TYPE_PRIVATE_BUFFER,
-            "session", sui,
             "server", srv,
             "name",   nick,
+            "ctx", ctx,
+            "events", events,
+            "config", cfg,
             NULL);
 
     return self;
@@ -104,6 +106,5 @@ static void close_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
 
     self = user_data;
 
-    sui_event_hdr(srain_buffer_get_session(SRAIN_BUFFER(self)),
-                SUI_EVENT_UNQUERY, NULL);
+    sui_buffer_event_hdr((SUI_BUFFER(self)), SUI_EVENT_UNQUERY, NULL);
 }

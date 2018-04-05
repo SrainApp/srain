@@ -39,7 +39,7 @@ Predefined Server
 
 Since version 0.06.3, Srain has a predefined list of commonly used IRC servers,
 freenode is one of it. If you want to add server into this list, refer to
-:doc:`prefs`.
+:doc:`config`.
 
 Click the connection button on the Srain header bar, select the page "Predefined
 Server", select the item "freenode" from candidate box with label "Server",

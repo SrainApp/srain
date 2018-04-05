@@ -28,7 +28,7 @@
 #define SRAIN_IS_CHAT_BUFFER(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), SRAIN_TYPE_CHAT_BUFFER))
 
 struct _SrainChatBuffer {
-    SrainBuffer parent;
+    SuiBuffer parent;
 
     GtkCheckMenuItem *user_list_menu_item;
 
@@ -37,7 +37,7 @@ struct _SrainChatBuffer {
 };
 
 struct _SrainChatBufferClass {
-    SrainBufferClass parent_class;
+    SuiBufferClass parent_class;
 };
 
 typedef struct _SrainChatBuffer SrainChatBuffer;

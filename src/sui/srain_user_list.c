@@ -18,7 +18,7 @@
 
 /**
  * @file srain_user_list.c
- * @brief Widget for listing all participants of a Chat(usually a SrainChat)
+ * @brief Widget for listing all participants of a chat
  * @author Shengyu Zhang <i@silverrainz.me>
  * @version 0.06.2
  * @date 2016-04-03
@@ -404,7 +404,7 @@ static gboolean user_tree_view_on_popup(GtkWidget *widget,
     }
 
     if (event->button == 3){
-        nick_menu_popup(event, user);
+        nick_menu_popup(GTK_WIDGET(list), event, user);
         pop = TRUE;
     } else {
         pop = FALSE;

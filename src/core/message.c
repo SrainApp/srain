@@ -18,24 +18,25 @@
 
 #include <glib.h>
 
-#include "server.h"
+#include "core/core.h"
 
 #include "srain.h"
 #include "utils.h"
 
-Message* message_new(Chat *chat, User *user, const char *content, MessageType type){
-    Message *msg;
+SrnMessage* srn_message_new(SrnChat *chat, SrnChatUser *user,
+        const char *content, SrnMessageType type){
+    SrnMessage *msg;
 
     g_return_val_if_fail(chat, NULL);
     g_return_val_if_fail(user, NULL);
 
-    msg = g_malloc0(sizeof(Message));
+    msg = g_malloc0(sizeof(SrnMessage));
 
     if (!content) {
         content = "";
     }
 
-    msg->user = user_ref(user);
+    msg->user = user;
     msg->chat = chat;
     // msg->role = NULL; // via g_malloc0()
     msg->content = g_strdup(content);
@@ -46,45 +47,17 @@ Message* message_new(Chat *chat, User *user, const char *content, MessageType ty
     // msg->ui = NULL; // via g_malloc0()
 
     /* Decorated */
-    msg->dname = g_strdup(user->nick);
+    msg->dname = g_strdup(user->srv_user->nick);
     msg->dcontent = g_markup_escape_text(content, -1);
 
     return msg;
 }
 
-void message_free(Message *msg){
-    if (msg->chat) { /* Nothing to do. */ }
-    if (msg->ui) { /* Nothing to do. */ }
-
-    if (msg->user) {
-        user_free(msg->user);
-    }
-
-    if (msg->urls) {
-        GSList *lst = msg->urls;
-        while (lst){
-            g_free(lst->data);
-            lst->data = NULL;
-            lst = g_slist_next(lst);
-        }
-        g_slist_free(msg->urls);
-    }
-
-    if (msg->dname) {
-        g_free(msg->dname);
-    }
-
-    if (msg->role) {
-        g_free(msg->role);
-    }
-
-    if (msg->content) {
-        g_free(msg->content);
-    }
-
-    if (msg->dcontent) {
-        g_free(msg->dcontent);
-    }
-
+void srn_message_free(SrnMessage *msg){
+    str_assign(&msg->dname, NULL);
+    str_assign(&msg->role, NULL);
+    str_assign(&msg->content, NULL);
+    str_assign(&msg->dcontent, NULL);
+    g_slist_free_full(msg->urls, g_free);
     g_free(msg);
 }

@@ -34,14 +34,14 @@
 #include "srain.h"
 #include "log.h"
 
-static char *mirc_stirp(Message *msg, int index, const char *frag);
+static char *mirc_stirp(SrnMessage *msg, int index, const char *frag);
 
 Decorator mirc_strip_decroator = {
     .name = "mirc_strip",
     .func = mirc_stirp,
 };
 
-static char *mirc_stirp(Message *msg, int index, const char *frag){
+static char *mirc_stirp(SrnMessage *msg, int index, const char *frag){
     int len;
     char *dfrag;
     GString *str;

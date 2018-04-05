@@ -1,4 +1,4 @@
-/* Copyright (C) 2016-2017 Shengyu Zhang <i@silverrainz.me>
+/* Copyright (C) 2016-2018 Shengyu Zhang <i@silverrainz.me>
  *
  * This file is part of Srain.
  *
@@ -16,13 +16,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SERVER_CMD_H
-#define __SERVER_CMD_H
+#include <glib.h>
 
-#include "server.h"
+#include "core/core.h"
+#include "sui/sui.h"
 #include "ret.h"
+#include "i18n.h"
 
-void server_cmd_init();
-SrnRet server_cmd(Chat *chat, const char *cmd);
+SrnChatConfig* srn_chat_config_new(){
+    SrnChatConfig *cfg;
 
-#endif /* __SERVER_CMD_H */
+    cfg = g_malloc0(sizeof(SrnChatConfig));
+    cfg->ui = sui_buffer_config_new();
+
+    return cfg;
+}
+
+SrnRet srn_chat_config_check(SrnChatConfig *cfg){
+    if (!cfg){
+        return RET_ERR(_("Invalid chat config instance"));
+    }
+    return sui_buffer_config_check(cfg->ui);
+}
+
+void srn_chat_config_free(SrnChatConfig *cfg){
+    g_return_if_fail(cfg);
+
+    sui_buffer_config_free(cfg->ui);
+    g_free(cfg);
+}

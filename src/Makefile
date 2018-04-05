@@ -39,7 +39,7 @@ OBJS = $(patsubst %.c, $(BUILD_DIR)/%.o, $(notdir $(SRCS)))
 
 default: sui/glade/Makefile
 	$(MAKE) -C sui/glade
-	make $(TARGET)
+	$(MAKE) $(TARGET)
 
 $(BUILD_DIR)/%.o: %.c
 	$(CC) $(CFLAGS) -c $^ -o $@

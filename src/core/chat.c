@@ -18,7 +18,7 @@
 
 #include <string.h>
 
-#include "server.h"
+#include "core/core.h"
 
 #include "meta.h"
 #include "decorator.h"
@@ -26,59 +26,43 @@
 #include "i18n.h"
 #include "command.h"
 #include "log.h"
-#include "prefs.h"
+#include "utils.h"
+#include "config/config.h"
 
 #include "sirc/sirc.h"
 
-extern SuiEvents ui_events;
-extern CommandBind cmd_binds[];
+extern SrnCommandBind cmd_binds[];
 
-static void append_image(Message *msg);
-static void add_message(Chat *chat, Message *msg);
-static bool whether_merge_last_message(Chat *chat, Message *msg);
+static void append_image(SrnMessage *msg);
+static void add_message(SrnChat *chat, SrnMessage *msg);
+static bool whether_merge_last_message(SrnChat *chat, SrnMessage *msg);
 
-Chat *chat_new(Server *srv, const char *name){
-    SrnRet ret;
-    Chat *chat;
-    SuiSessionFlag flag;
+SrnChat *srn_chat_new(SrnServer *srv, const char *name, SrnChatConfig *cfg){
+    SrnChat *chat;
+    SuiBufferEvents *events;
 
-    g_return_val_if_fail(name, NULL);
+    chat = g_malloc0(sizeof(SrnChat));
 
-    chat = g_malloc0(sizeof(Chat));
-
+    str_assign(&chat->name, name);
+    chat->cfg = cfg;
     chat->joined = FALSE;
     chat->srv = srv;
-    chat->user = user_ref(srv->user);
-    // chat->user_list = NULL; // via g_malloc0()
-    // chat->msg_list = NULL; // via g_malloc0()
-    // chat->last_msg = NULL; // via g_malloc0()
-    g_strlcpy(chat->name, name, sizeof(chat->name));
+    chat->user = srn_chat_add_and_get_user(chat, srv->user);
+    chat->_user = srn_chat_add_and_get_user(chat, srv->_user);
 
-    /* sui */
-    chat->prefs = chat_prefs_new();
-    ret = prefs_read_chat_prefs(chat->prefs, chat->srv->prefs->name, chat->name);
-    if (!RET_IS_OK(ret)){
-        ERR_FR("Read sui prefs failed: %s", RET_MSG(ret));
-    }
-
-    flag = 0;
-    chat->ui = sui_new_session(&ui_events, chat->prefs->ui, flag);
-    if (!chat->ui){
-        goto cleanup;
-    }
-    sui_set_ctx(chat->ui, chat);
-
-    if (strcmp(META_SERVER, name) == 0){
-        sui_server_session(chat->ui, srv->prefs->name);
+    // Init chat->ui
+    events = &srn_application_get_default()->ui_events;
+    if (strcmp(META_SERVER, chat->name) == 0){
         // Server
-    } else if (sirc_is_chan(name)){
+        chat->ui = sui_new_server_buffer(chat->srv->cfg->name, chat, events, chat->cfg->ui);
+    } else if (sirc_target_is_channel(chat->srv->irc, chat->name)){
         // Channel
-        sui_channel_session(chat->ui, srv->chat->ui, name);
+        chat->ui = sui_new_channel_buffer(chat->srv->chat->ui, chat->name, chat, events, chat->cfg->ui);
     } else {
-        // Private, its user_list must have yourself and the dialogue target
-        sui_private_session(chat->ui, srv->chat->ui, name);
-        chat_add_user(chat, srv->user->nick, USER_CHIGUA);
-        chat_add_user(chat, name, USER_CHIGUA);
+        SrnChatUser *user;
+        // Private, its user_list must have yourself and your dialogue target
+        chat->ui = sui_new_private_buffer(srv->chat->ui, chat->name, chat, events, chat->cfg->ui);
+        srn_chat_add_user(chat, srn_server_add_and_get_user(srv, chat->name));
     }
 
     sui_add_completion(chat->ui, chat->name);
@@ -86,140 +70,74 @@ Chat *chat_new(Server *srv, const char *name){
         sui_add_completion(chat->ui, cmd_binds[i].name);
     }
 
-    /* Require chat->ui */
-
-    /* You will add 2 users with same nickname if you chat with yourself
-    if (flag == SUI_SESSION_DIALOG){
-        g_return_val_if_fail(chat->user, NULL);
-        chat_add_user(chat, chat->user->nick, USER_CHIGUA);
-        chat_add_user(chat, chat->name, USER_CHIGUA);
-    }
-    */
-
     return chat;
-
-cleanup:
-    if (chat->ui) {
-        sui_free_session(chat->ui);
-    }
-    if (chat->prefs) {
-        chat_prefs_free(chat->prefs);
-    }
-    if (chat){
-        g_free(chat);
-    }
-
-    return NULL;
 }
 
-void chat_free(Chat *chat){
-    user_free(chat->user);
+void srn_chat_free(SrnChat *chat){
+    str_assign(&chat->name, NULL);
 
-    /* Free extra list */
-    if (chat->relaybot_list){
-        relay_decroator_free_list(chat);
-    }
+    /* Free extra list: TODO: a better way? */
+    relay_decroator_free_list(chat);
+    nick_filter_free_list(chat);
+    regex_filter_free_list(chat);
 
-    if (chat->ignore_nick_list){
-        nick_filter_free_list(chat);
-    }
+    // Free user list, chat->user and chat->_user also in this list
+    g_slist_free_full(chat->user_list, (GDestroyNotify)srn_chat_user_free);
 
-    if (chat->ignore_regex_list){
-        regex_filter_free_list(chat);
-    }
-
-    /* Free user list */
-    if (chat->user_list){
-        GSList *lst = chat->user_list;
-        while (lst){
-            if (lst->data){
-                user_free((User *)lst->data);
-                lst->data = NULL;
-            }
-            lst = g_slist_next(lst);
-        }
-        g_slist_free(chat->user_list);
-        chat->user_list = NULL;
-    }
-
-    if (chat->ui){
-        sui_free_session(chat->ui);
-        chat->ui = NULL;
-    }
-
-    if (chat->prefs){
-        chat_prefs_free(chat->prefs);
-        chat->prefs = NULL;
-    }
-
+    sui_free_buffer(chat->ui);
     g_free(chat);
 }
 
-int chat_add_user(Chat *chat, const char *nick, UserType type){
-    int ret;
-    User *user;
-
-    user = user_new(chat, nick, NULL, NULL, type);
-
-    ret = chat_add_user_full(chat, user);
-    if (sirc_nick_cmp(chat->user->nick, nick)){
-        user_set_me(user, TRUE);
-    }
-
-    user_free(user);
-
-    return ret;
+void srn_chat_set_config(SrnChat *chat, SrnChatConfig *cfg){
+    sui_buffer_set_config(chat->ui, cfg->ui);
+    chat->cfg = cfg;
 }
 
-int chat_add_user_full(Chat *chat, User *user){
+SrnRet srn_chat_add_user(SrnChat *chat, SrnServerUser *srv_user){
     GSList *lst;
-    User *user2;
+    SrnChatUser *user;
 
     lst = chat->user_list;
-    while (lst){
-        user2 = lst->data;
-        if (sirc_nick_cmp(user2->nick, user->nick)){
+    while (lst) {
+        user = lst->data;
+        if (user->srv_user == srv_user){
             return SRN_ERR;
         }
         lst = g_slist_next(lst);
     }
 
-    g_return_val_if_fail(user, SRN_ERR);
-
-    chat->user_list = g_slist_append(chat->user_list, user_ref(user));
-    sui_add_user(chat->ui, user->nick, user->type);
+    user = srn_chat_user_new(chat, srv_user);
+    chat->user_list = g_slist_append(chat->user_list, user);
 
     return SRN_OK;
 }
 
-int chat_rm_user(Chat *chat, const char *nick){
+SrnChatUser* srn_chat_add_and_get_user(SrnChat *chat, SrnServerUser *srv_user){
+    srn_chat_add_user(chat, srv_user);
+    return srn_chat_get_user(chat, srv_user->nick);
+}
+
+SrnRet srn_chat_rm_user(SrnChat *chat, SrnChatUser *user){
     GSList *lst;
-    User *user;
 
-    lst = chat->user_list;
-    while (lst){
-        user = lst->data;
-        if (sirc_nick_cmp(user->nick, nick)){
-            sui_rm_user(chat->ui, user->nick);
-            chat->user_list = g_slist_delete_link(chat->user_list, lst);
-            user_free(user);
-
-            return SRN_OK;
-        }
-        lst = g_slist_next(lst);
+    lst = g_slist_find(chat->user_list, user);
+    if (!lst) {
+        return SRN_ERR;
     }
-    return SRN_ERR;
+    chat->user_list = g_slist_delete_link(chat->user_list, lst);
+
+    return SRN_OK;
 }
 
 
-User* chat_get_user(Chat *chat, const char *nick){
-    User *user;
+SrnChatUser* srn_chat_get_user(SrnChat *chat, const char *nick){
     GSList *lst;
+    SrnChatUser *user;
 
     lst = chat->user_list;
     while (lst){
         user = lst->data;
-        if (sirc_nick_cmp(user->nick, nick)){
+        if (sirc_target_equal(user->srv_user->nick, nick)){
             return user;
         }
         lst = g_slist_next(lst);
@@ -228,17 +146,16 @@ User* chat_get_user(Chat *chat, const char *nick){
     return NULL;
 }
 
-
-void chat_add_sent_message(Chat *chat, const char *content){
-    User *user;
-    Message *msg;
+void srn_chat_add_sent_message(SrnChat *chat, const char *content){
+    SrnChatUser *user;
+    SrnMessage *msg;
     DecoratorFlag dflag;
     FilterFlag fflag;
 
     user = chat->user;
     dflag = DECORATOR_PANGO_MARKUP;
     fflag = FILTER_CHAT_LOG;
-    msg = message_new(chat, user, content, MESSAGE_SENT);
+    msg = srn_message_new(chat, user, content, SRN_MESSAGE_SENT);
 
     if (decorate_message(msg, dflag, NULL) != SRN_OK){
         goto cleanup;
@@ -268,32 +185,23 @@ void chat_add_sent_message(Chat *chat, const char *content){
     return;
 
 cleanup:
-    message_free(msg);
+    srn_message_free(msg);
 }
 
-void chat_add_recv_message(Chat *chat, const char *origin, const char *content){
-    bool invalid_user = FALSE;
-    User *user;
-    Message *msg;
+void srn_chat_add_recv_message(SrnChat *chat, SrnChatUser *user, const char *content){
+    SrnMessage *msg;
     DecoratorFlag dflag;
     FilterFlag fflag;
 
     dflag = DECORATOR_PANGO_MARKUP | DECORATOR_RELAY | DECORATOR_MENTION;
-    if (chat->prefs->ui->render_mirc_color) {
+    if (chat->cfg->render_mirc_color) {
         dflag |= DECORATOR_MIRC_COLORIZE;
     } else {
         dflag |= DECORATOR_MIRC_STRIP;
     }
     fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
 
-    user = chat_get_user(chat, origin);
-    if (!user){
-        user = user_new(chat, origin, NULL, NULL, USER_CHIGUA);
-        invalid_user = TRUE;
-    }
-
-    msg = message_new(chat, user, content, MESSAGE_RECV);
-
+    msg = srn_message_new(chat, user, content, SRN_MESSAGE_RECV);
     if (decorate_message(msg, dflag, NULL) != SRN_OK){
         goto cleanup;
     }
@@ -316,7 +224,8 @@ void chat_add_recv_message(Chat *chat, const char *origin, const char *content){
         sui_message_mentioned(msg->ui);
         sui_message_notify(msg->ui);
     }
-    else if (chat != chat->srv->chat && !sirc_is_chan(chat->name)){
+    else if (chat != chat->srv->chat
+            && !sirc_target_is_channel(chat->srv->irc, chat->name)){
         sui_message_notify(msg->ui);
     }
 
@@ -328,46 +237,31 @@ void chat_add_recv_message(Chat *chat, const char *origin, const char *content){
     return;
 
 cleanup:
-    if (invalid_user){
-        user_free(user);
-    }
-    message_free(msg);
+    srn_message_free(msg);
 }
 
-void chat_add_notice_message(Chat *chat, const char *origin, const char *content){
-    chat_add_recv_message(chat, origin, content);
+void srn_chat_add_notice_message(SrnChat *chat, SrnChatUser *user, const char *content){
+    srn_chat_add_recv_message(chat, user, content);
 }
 
-void chat_add_action_message(Chat *chat, const char *origin, const char *content){
-    bool invalid_user = FALSE;
-    User *user;
-    Message *msg;
+void srn_chat_add_action_message(SrnChat *chat, SrnChatUser *user, const char *content){
+    SrnMessage *msg;
     FilterFlag fflag;
     DecoratorFlag dflag;
 
-    user = chat_get_user(chat, origin);
-
-    if (!user){
-        user = user_new(chat, origin, NULL, NULL, USER_CHIGUA);
-        invalid_user = TRUE;
-    }
-
     dflag = DECORATOR_PANGO_MARKUP;
-    if (chat->prefs->ui->render_mirc_color) {
+    if (chat->cfg->render_mirc_color) {
         dflag |= DECORATOR_MIRC_COLORIZE;
     } else {
         dflag |= DECORATOR_MIRC_STRIP;
     }
     fflag = FILTER_CHAT_LOG;
 
-    msg = message_new(chat, user, content, MESSAGE_ACTION);
-
-    if (user->me){
-    } else {
+    msg = srn_message_new(chat, user, content, SRN_MESSAGE_ACTION);
+    if (!user->srv_user->is_me){
         fflag |= FILTER_NICK | FILTER_REGEX;
         dflag |= DECORATOR_RELAY | DECORATOR_MENTION;
     }
-
     if (decorate_message(msg, dflag, NULL) != SRN_OK){
         goto cleanup;
     }
@@ -376,10 +270,8 @@ void chat_add_action_message(Chat *chat, const char *origin, const char *content
     }
 
     {
-        // TODO: "<b>" no used?
         char *action_msg = g_strdup_printf(_("*** <b>%1$s</b> %2$s ***"),
                 msg->dname, msg->dcontent);
-
         msg->ui = sui_add_sys_msg(chat->ui, action_msg, SYS_MSG_ACTION);
         g_free(action_msg);
     }
@@ -388,7 +280,6 @@ void chat_add_action_message(Chat *chat, const char *origin, const char *content
     if (!msg->ui){
         goto cleanup;
     }
-
     if (msg->mentioned){
         sui_message_mentioned(msg->ui);
         sui_message_notify(msg->ui);
@@ -400,29 +291,17 @@ void chat_add_action_message(Chat *chat, const char *origin, const char *content
     return;
 
 cleanup:
-    if (invalid_user){
-        user_free(user);
-    }
-    message_free(msg);
+    srn_message_free(msg);
 }
 
-void chat_add_misc_message(Chat *chat, const char *origin, const char *content){
-    bool invalid_user = FALSE;
-    User *user;
-    Message *msg;
+void srn_chat_add_misc_message(SrnChat *chat, SrnChatUser *user, const char *content){
+    SrnMessage *msg;
     DecoratorFlag dflag;
     FilterFlag fflag;
 
-    user = chat_get_user(chat, origin);
-    if (!user){
-        user = user_new(chat, origin, NULL, NULL, USER_CHIGUA);
-        invalid_user = TRUE;
-    }
-
     dflag = DECORATOR_PANGO_MARKUP;
     fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
-    msg = message_new(chat, user, content, MESSAGE_MISC);
-
+    msg = srn_message_new(chat, user, content, SRN_MESSAGE_MISC);
     if (decorate_message(msg, dflag, NULL) != SRN_OK){
         goto cleanup;
     }
@@ -439,42 +318,28 @@ void chat_add_misc_message(Chat *chat, const char *origin, const char *content){
     return;
 
 cleanup:
-    if (invalid_user){
-        user_free(user);
-    }
-    message_free(msg);
+    srn_message_free(msg);
 }
 
-void chat_add_misc_message_fmt(Chat *chat, const char *origin, const char *fmt, ...){
+void srn_chat_add_misc_message_fmt(SrnChat *chat, SrnChatUser *user, const char *fmt, ...){
     char *content;
     va_list args;
 
     va_start(args, fmt);
     content = g_strdup_vprintf(fmt, args);
     va_end(args);
-
-    chat_add_misc_message(chat, origin, content);
-
+    srn_chat_add_misc_message(chat, user, content);
     g_free(content);
 }
 
-void chat_add_error_message(Chat *chat, const char *origin, const char *content){
-    bool invalid_user = FALSE;
-    User *user;
-    Message *msg;
+void srn_chat_add_error_message(SrnChat *chat, SrnChatUser *user, const char *content){
+    SrnMessage *msg;
     DecoratorFlag dflag;
     FilterFlag fflag;
 
-    user = chat_get_user(chat, origin);
-    if (!user){
-        user = user_new(chat, origin, NULL, NULL, USER_CHIGUA);
-        invalid_user = TRUE;
-    }
-
     dflag = DECORATOR_PANGO_MARKUP;
     fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
-    msg = message_new(chat, user, content, MESSAGE_ERROR);
-
+    msg = srn_message_new(chat, user, content, SRN_MESSAGE_ERROR);
     if (decorate_message(msg, dflag, NULL) != SRN_OK){
         goto cleanup;
     }
@@ -483,11 +348,6 @@ void chat_add_error_message(Chat *chat, const char *origin, const char *content)
     }
 
     msg->ui = sui_add_sys_msg(chat->ui, msg->dcontent, SYS_MSG_ERROR);
-
-    if (!msg->ui){
-        goto cleanup;
-    }
-
     sui_message_notify(msg->ui);
 
     add_message(chat, msg);
@@ -495,80 +355,62 @@ void chat_add_error_message(Chat *chat, const char *origin, const char *content)
     return;
 
 cleanup:
-    if (invalid_user){
-        user_free(user);
-    }
-    message_free(msg);
+    srn_message_free(msg);
 }
 
-void chat_add_error_message_fmt(Chat *chat, const char *origin, const char *fmt, ...){
+void srn_chat_add_error_message_fmt(SrnChat *chat, SrnChatUser *user, const char *fmt, ...){
     char *content;
     va_list args;
 
     va_start(args, fmt);
     content = g_strdup_vprintf(fmt, args);
     va_end(args);
-
-    chat_add_error_message(chat, origin, content);
-
+    srn_chat_add_error_message(chat, user, content);
     g_free(content);
 }
 
-void chat_set_topic(Chat *chat, const char *origin, const char *topic){
-    bool invalid_user = FALSE;
-    User *user;
-    Message *msg;
+void srn_chat_set_topic(SrnChat *chat, SrnChatUser *user, const char *topic){
+    SrnMessage *msg;
     DecoratorFlag dflag;
 
-    user = chat_get_user(chat, origin);
-    if (!user){
-        user = user_new(chat, origin, NULL, NULL, USER_CHIGUA);
-        invalid_user = TRUE;
-    }
-
     dflag = DECORATOR_PANGO_MARKUP;
-    if (chat->prefs->ui->render_mirc_color) {
+    if (chat->cfg->render_mirc_color) {
         dflag |= DECORATOR_MIRC_COLORIZE;
     } else {
         dflag |= DECORATOR_MIRC_STRIP;
     }
 
-    msg = message_new(chat, user, topic, MESSAGE_UNKNOWN);
-
+    msg = srn_message_new(chat, user, topic, SRN_MESSAGE_UNKNOWN);
     if (decorate_message(msg, dflag, NULL) == SRN_OK){
         sui_set_topic(chat->ui, msg->dcontent);
     }
-
-    if (invalid_user){
-        user_free(user);
-    }
-    message_free(msg);
+    srn_message_free(msg);
 }
 
-void chat_set_topic_setter(Chat *chat, const char *setter){
+void srn_chat_set_topic_setter(SrnChat *chat, const char *setter){
     sui_set_topic_setter(chat->ui, setter);
 }
 
-static void add_message(Chat *chat, Message *msg){
+static void add_message(SrnChat *chat, SrnMessage *msg){
     chat->msg_list = g_list_append(chat->msg_list, msg);
     chat->last_msg = msg;
 }
 
-static bool whether_merge_last_message(Chat *chat, Message *msg){
-    Message *last_msg;
+static bool whether_merge_last_message(SrnChat *chat, SrnMessage *msg){
+    SrnMessage *last_msg;
 
     last_msg = chat->last_msg;
 
     return (last_msg
-            && msg->time - last_msg->time < MESSAGE_MERGE_INTERVAL
+            && msg->time - last_msg->time < SRN_MESSAGE_MERGE_INTERVAL
             && (!last_msg->mentioned && !msg->mentioned)
             && last_msg->type == msg->type
-            && sirc_nick_cmp(last_msg->user->nick, msg->user->nick)
-            && sirc_nick_cmp(last_msg->dname, msg->dname));
+            && sirc_target_equal(last_msg->user->srv_user->nick, msg->user->srv_user->nick)
+            && sirc_target_equal(last_msg->dname, msg->dname));
 }
 
 // TODO
-static void append_image(Message *msg){
+static void append_image(SrnMessage *msg){
     GSList *url;
 
     url = msg->urls;

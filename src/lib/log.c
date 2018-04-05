@@ -28,10 +28,14 @@
 #include <glib.h>
 
 #include "srain.h"
-#include "prefs.h"
+#include "config/config.h"
 #include "log.h"
 
-static LogPrefs *log_prefs = NULL;
+struct _SrnLogger {
+    SrnLoggerConfig *cfg;
+};
+
+static SrnLogger *srn_logger = NULL;
 
 static char *prompts[2][LOG_MAX] = {
     [0] = {
@@ -48,58 +52,13 @@ static char *prompts[2][LOG_MAX] = {
     },
 };
 
-static LogPrefs *log_prefs_new();
-static void log_prefs_free(LogPrefs *prefs);
-
 static bool is_exist(GSList *files, const char *file);
-static bool is_enabled(LogLevel lv, const char *file);
-
-void log_init(){
-    log_prefs = log_prefs_new();
-
-   /* Inital preset for prefs moduele */
-    log_prefs->debug_targets = g_slist_append(log_prefs->debug_targets, g_strdup(""));
-}
-
-SrnRet log_read_prefs(){
-    log_prefs_free(log_prefs);
-    log_prefs = log_prefs_new();
-
-    return prefs_read_log_prefs(log_prefs);
-}
-
-void log_finalize(){
-    log_prefs_free(log_prefs);
-}
-
-static LogPrefs *log_prefs_new(){
-    LogPrefs *prefs;
-
-    prefs = g_malloc0(sizeof(LogPrefs));
-
-    return prefs;
-}
-
-static void log_prefs_free(LogPrefs *prefs){
-    if (prefs->debug_targets){
-        g_slist_free_full(prefs->debug_targets, g_free);
-    }
-    if (prefs->info_targets){
-        g_slist_free_full(prefs->info_targets, g_free);
-    }
-    if (prefs->warn_targets){
-        g_slist_free_full(prefs->warn_targets, g_free);
-    }
-    if (prefs->error_targets){
-        g_slist_free_full(prefs->error_targets, g_free);
-    }
-
-    g_free(prefs);
-}
+static bool is_enabled(SrnLoggerConfig *cfg, SrnLogLevel lv, const char *file);
 
 /**
- * @brief log_printp Print log in a line(suffix "ln") with prompt suffix "p"
+ * @brief log_print Print a log
  *
+ * @param logger Instance of SrnLogger
  * @param lv Log level
  * @param print_prompt
  * @param new_line
@@ -109,14 +68,43 @@ static void log_prefs_free(LogPrefs *prefs){
  * @param fmt Format string
  * @param ...
  */
-void log_print(LogLevel lv, bool print_prompt, bool new_line,
-        const char *file, const char *func, int line,
+SrnLogger* srn_logger_new(SrnLoggerConfig *cfg){
+    SrnLogger *logger;
+
+    logger = g_malloc0(sizeof(SrnLogger));
+    logger->cfg = cfg;
+
+    return logger;
+}
+
+void srn_logger_free(SrnLogger *logger){
+    g_free(logger);
+}
+
+void srn_logger_set_default(SrnLogger *logger) {
+    srn_logger = logger;
+}
+
+SrnLogger* srn_logger_get_default(void) {
+    return srn_logger;
+}
+
+void srn_logger_set_config(SrnLogger *logger, SrnLoggerConfig *cfg) {
+    logger->cfg = cfg;
+}
+
+SrnLoggerConfig *srn_logger_get_config(SrnLogger *logger) {
+    return logger->cfg;
+}
+
+void srn_logger_log(SrnLogger *logger, SrnLogLevel lv, bool print_prompt,
+        bool new_line, const char *file, const char *func, int line,
         const char *fmt, ...){
     va_list args;
     GString *prompt;
     GString *output;
 
-    if (!file || !is_enabled(lv, file)) {
+    if (!file || !is_enabled(logger->cfg, lv, file)) {
         return;
     }
 
@@ -125,18 +113,18 @@ void log_print(LogLevel lv, bool print_prompt, bool new_line,
     if (print_prompt){
         prompt = g_string_new("");
 
-        if (log_prefs->prompt_file){
+        if (logger->cfg->prompt_file){
             g_string_append_printf(prompt, "%s", file);
         }
-        if (log_prefs->prompt_function){
-            if (log_prefs->prompt_file){
+        if (logger->cfg->prompt_function){
+            if (logger->cfg->prompt_file){
                 prompt = g_string_append(prompt, "::");
             }
             g_string_append_printf(prompt, "%s", func);
         }
 
-        if (log_prefs->prompt_line){
-            if (log_prefs->prompt_file || log_prefs->prompt_function){
+        if (logger->cfg->prompt_line){
+            if (logger->cfg->prompt_file || logger->cfg->prompt_function){
                 g_string_append_printf(prompt, "#L%u", line);
             } else {
                 /* If neither file name or function name is printed, print line
@@ -144,7 +132,7 @@ void log_print(LogLevel lv, bool print_prompt, bool new_line,
             }
         }
 
-        g_string_printf(output, prompts[log_prefs->prompt_color][lv], prompt->str);
+        g_string_printf(output, prompts[logger->cfg->prompt_color][lv], prompt->str);
         g_string_free(prompt, TRUE);
     }
 
@@ -165,6 +153,31 @@ void log_print(LogLevel lv, bool print_prompt, bool new_line,
     g_string_free(output, TRUE);
 }
 
+SrnLoggerConfig *srn_logger_config_new(void){
+    return g_malloc0(sizeof(SrnLoggerConfig));
+}
+
+void srn_logger_config_free(SrnLoggerConfig *cfg){
+    if (cfg->debug_targets){
+        g_slist_free_full(cfg->debug_targets, g_free);
+    }
+    if (cfg->info_targets){
+        g_slist_free_full(cfg->info_targets, g_free);
+    }
+    if (cfg->warn_targets){
+        g_slist_free_full(cfg->warn_targets, g_free);
+    }
+    if (cfg->error_targets){
+        g_slist_free_full(cfg->error_targets, g_free);
+    }
+
+    g_free(cfg);
+}
+
+SrnRet srn_logger_config_check(SrnLoggerConfig *cfg){
+    return SRN_OK;
+}
+
 static bool is_exist(GSList *targets, const char *file){
     GSList *lst;
 
@@ -180,19 +193,19 @@ static bool is_exist(GSList *targets, const char *file){
     return FALSE;
 }
 
-static bool is_enabled(LogLevel lv, const char *file){
+static bool is_enabled(SrnLoggerConfig *cfg, SrnLogLevel lv, const char *file){
     bool enable;
 
     enable = FALSE;
     switch (lv){
         case LOG_ERROR:
-            enable = enable || is_exist(log_prefs->error_targets, file);
+            enable = enable || is_exist(cfg->error_targets, file);
         case LOG_WARN:
-            enable = enable || is_exist(log_prefs->warn_targets, file);
+            enable = enable || is_exist(cfg->warn_targets, file);
         case LOG_INFO:
-            enable = enable || is_exist(log_prefs->info_targets, file);
+            enable = enable || is_exist(cfg->info_targets, file);
         case LOG_DEBUG:
-            enable = enable || is_exist(log_prefs->debug_targets, file);
+            enable = enable || is_exist(cfg->debug_targets, file);
             break;
         default:
             enable = FALSE;

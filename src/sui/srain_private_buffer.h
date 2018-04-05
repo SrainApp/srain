@@ -32,7 +32,8 @@ typedef struct _SrainPrivateBuffer SrainPrivateBuffer;
 typedef struct _SrainPrivateBufferClass SrainPrivateBufferClass;
 
 GType srain_private_buffer_get_type(void);
-SrainPrivateBuffer* srain_private_buffer_new(SuiSession *sui, SrainServerBuffer *buffer, const char *nick);
+SrainPrivateBuffer* srain_private_buffer_new(SrainServerBuffer *srv,
+        const char *nick, void *ctx, SuiBufferEvents *events, SuiBufferConfig *cfg);
 
 void srain_private_buffer_show_user_list(SrainPrivateBuffer *self, bool isshow);
 

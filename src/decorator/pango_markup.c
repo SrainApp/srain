@@ -62,7 +62,7 @@
 
 #define EMAIL_PATTERN       "[a-z0-9][._+%a-z0-9-]+@" HOST_PATTERN
 
-static char* pango_markup(Message *msg, int index, const char *frag);
+static char* pango_markup(SrnMessage *msg, int index, const char *frag);
 
 Decorator pango_markup_decroator = {
     .name = "pango_markup",
@@ -115,7 +115,7 @@ fin:
     return ret;
 }
 
-static char* pango_markup(Message *msg, int index, const char *frag){
+static char* pango_markup(SrnMessage *msg, int index, const char *frag){
     int start, end;
     int tmpstart, tmpend;
     char *left;
@@ -167,16 +167,16 @@ static char* pango_markup(Message *msg, int index, const char *frag){
                     markuped_url = g_markup_printf_escaped("<a href=\"http://%s\">%s</a>", url, url);
                     break;
                 case MATCH_CHANNEL:
-                    if (msg->chat->srv->prefs->irc->tls){
+                    if (msg->chat->srv->cfg->irc->tls){
                         markuped_url = g_markup_printf_escaped("<a href=\"ircs://%s:%d/%s\">%s</a>",
-                                msg->chat->srv->prefs->host,
-                                msg->chat->srv->prefs->port,
+                                msg->chat->srv->addr->host,
+                                msg->chat->srv->addr->port,
                                 url + 1,
                                 url);
                     } else {
                         markuped_url = g_markup_printf_escaped("<a href=\"irc://%s:%d/%s\">%s</a>",
-                                msg->chat->srv->prefs->host,
-                                msg->chat->srv->prefs->port,
+                                msg->chat->srv->addr->host,
+                                msg->chat->srv->addr->port,
                                 url + 1,
                                 url);
                     }

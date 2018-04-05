@@ -25,7 +25,7 @@ If you found any mistake, feel free to file issue or pull request.
     start
     install/index
     commands
-    prefs
+    config
     develop
     misc
     faq

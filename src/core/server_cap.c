@@ -32,9 +32,7 @@
 #include <string.h>
 #include <glib.h>
 
-#include "server.h"
-#include "server_cap.h"
-
+#include "core/core.h"
 #include "srain.h"
 #include "log.h"
 #include "i18n.h"
@@ -44,11 +42,11 @@ struct _ServerCapSupport {
     const char *name;
     ptrdiff_t offset;
     bool (*is_support)(const char *);
-    void (*on_enable)(ServerCap *, const char *);
+    void (*on_enable)(SrnServerCap *, const char *);
 };
 
 static bool sasl_is_support(const char *value);
-static void sasl_on_enable(ServerCap *scap, const char *name);
+static void sasl_on_enable(SrnServerCap *scap, const char *name);
 
 /* Global cap support table */
 static ServerCapSupport supported_caps[] = {
@@ -115,21 +113,21 @@ static ServerCapSupport supported_caps[] = {
     },
 };
 
-ServerCap* server_cap_new(){
-    ServerCap *scap;
+SrnServerCap* srn_server_cap_new(){
+    SrnServerCap *scap;
 
-    scap = g_malloc0(sizeof(ServerCap));
+    scap = g_malloc0(sizeof(SrnServerCap));
 
     return scap;
 }
 
-void server_cap_free(ServerCap *scap){
+void srn_server_cap_free(SrnServerCap *scap){
     g_return_if_fail(scap);
 
     g_free(scap);
 }
 
-SrnRet server_cap_server_enable(ServerCap *scap, const char *name, bool enable){
+SrnRet srn_server_cap_server_enable(SrnServerCap *scap, const char *name, bool enable){
     bool *cap;
 
     g_return_val_if_fail(scap, SRN_ERR);
@@ -146,7 +144,7 @@ SrnRet server_cap_server_enable(ServerCap *scap, const char *name, bool enable){
     return cap ? SRN_OK : SRN_ERR;
 }
 
-SrnRet server_cap_client_enable(ServerCap *scap, const char *name, bool enable){
+SrnRet srn_server_cap_client_enable(SrnServerCap *scap, const char *name, bool enable){
     g_return_val_if_fail(scap, SRN_ERR);
 
     for (int i = 0; supported_caps[i].name; i++){
@@ -167,7 +165,7 @@ SrnRet server_cap_client_enable(ServerCap *scap, const char *name, bool enable){
     return SRN_ERR;
 }
 
-bool server_cap_all_enabled(ServerCap *scap){
+bool srn_server_cap_all_enabled(SrnServerCap *scap){
     g_return_val_if_fail(scap, FALSE);
 
     for (int i = 0; supported_caps[i].name; i++){
@@ -186,7 +184,7 @@ bool server_cap_all_enabled(ServerCap *scap){
     return TRUE;
 }
 
-bool server_cap_is_support(ServerCap *scap, const char *name, const char *value){
+bool srn_server_cap_is_support(SrnServerCap *scap, const char *name, const char *value){
     g_return_val_if_fail(scap, FALSE);
 
     for (int i = 0; supported_caps[i].name; i++){
@@ -204,7 +202,7 @@ bool server_cap_is_support(ServerCap *scap, const char *name, const char *value)
     return FALSE;
 }
 
-char* server_cap_dump(ServerCap *scap){
+char* srn_server_cap_dump(SrnServerCap *scap){
     char *res;
     GString *str;
 
@@ -247,14 +245,14 @@ static bool sasl_is_support(const char *value){
     return supported;
 }
 
-static void sasl_on_enable(ServerCap *scap, const char *name){
-    Server *srv;
+static void sasl_on_enable(SrnServerCap *scap, const char *name){
+    SrnServer *srv;
 
     srv = scap->srv;
     g_return_if_fail(srv);
 
-    switch (srv->prefs->login_method){
-        case LOGIN_SASL_PLAIN:
+    switch (srv->cfg->login_method){
+        case SRN_LOGIN_METHOD_SASL_PLAIN:
             break;
         default:
             return;
@@ -266,8 +264,8 @@ static void sasl_on_enable(ServerCap *scap, const char *name){
         return; // TODO: reauth?
     }
 
-    switch (srv->prefs->login_method){
-        case LOGIN_SASL_PLAIN:
+    switch (srv->cfg->login_method){
+        case SRN_LOGIN_METHOD_SASL_PLAIN:
             sirc_cmd_authenticate(srv->irc, "PLAIN");
             break;
         default:

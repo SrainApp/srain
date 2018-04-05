@@ -27,7 +27,7 @@
 #include <stdio.h>
 #include <glib.h>
 
-#include "server.h"
+#include "core/core.h"
 #include "sirc/sirc.h"
 
 #include "srain.h"
@@ -35,12 +35,12 @@
 #include "utils.h"
 #include "i18n.h"
 
-static const char *server_state_to_string(ServerState state);
-static const char *server_action_to_string(ServerAction action);
-static gboolean server_reconnect_timeout(gpointer user_data);
+static const char *srn_server_state_to_string(SrnServerState state);
+static const char *srn_server_action_to_string(SrnServerAction action);
+static gboolean srn_server_reconnect_timeout(gpointer user_data);
 
 /**
- * @brief server_state_transfrom Server's connection state macheine, accept a
+ * @brief server_state_transfrom SrnServer's connection state macheine, accept a
  *      action and transform the server to next state
  *
  * @param srv
@@ -50,14 +50,14 @@ static gboolean server_reconnect_timeout(gpointer user_data);
  *
  * NOTE: The server may be freed in this function, check it carefully.
  */
-SrnRet server_state_transfrom(Server *srv, ServerAction action){
+SrnRet srn_server_state_transfrom(SrnServer *srv, SrnServerAction action){
     bool free;
     const char *unallowed;
     SrnRet ret;
-    ServerState cur_state;
-    ServerState next_state;
+    SrnServerState cur_state;
+    SrnServerState next_state;
 
-    g_return_val_if_fail(server_is_valid(srv), SRN_ERR);
+    g_return_val_if_fail(srn_server_is_valid(srv), SRN_ERR);
 
     free = FALSE;
     unallowed = _("Unallowed action: %1$s");
@@ -66,18 +66,18 @@ SrnRet server_state_transfrom(Server *srv, ServerAction action){
 
     /* State machine starts */
     switch (srv->state) {
-        case SERVER_STATE_DISCONNECTED:
+        case SRN_SERVER_STATE_DISCONNECTED:
             switch (action) {
-                case SERVER_ACTION_CONNECT:
-                    sirc_connect(srv->irc, srv->prefs->host, srv->prefs->port);
-                    next_state = SERVER_STATE_CONNECTING;
+                case SRN_SERVER_ACTION_CONNECT:
+                    sirc_connect(srv->irc, srv->addr->host, srv->addr->port);
+                    next_state = SRN_SERVER_STATE_CONNECTING;
                     break;
-                case SERVER_ACTION_DISCONNECT:
+                case SRN_SERVER_ACTION_DISCONNECT:
                     ret = RET_ERR(unallowed, _("Server is already disconnected"));
                     break;
-                case SERVER_ACTION_QUIT:
+                case SRN_SERVER_ACTION_QUIT:
                     free = TRUE;
-                    next_state = SERVER_STATE_DISCONNECTED;
+                    next_state = SRN_SERVER_STATE_DISCONNECTED;
                     break;
                 default:
                     ret = SRN_ERR;
@@ -85,28 +85,28 @@ SrnRet server_state_transfrom(Server *srv, ServerAction action){
             }
             break;
 
-        case SERVER_STATE_CONNECTING:
+        case SRN_SERVER_STATE_CONNECTING:
             switch (action) {
-                case SERVER_ACTION_CONNECT:
+                case SRN_SERVER_ACTION_CONNECT:
                     ret = RET_ERR(unallowed, _("Server is connecting, please don't repeat connect"));
                     break;
-                case SERVER_ACTION_CONNECT_FAIL:
+                case SRN_SERVER_ACTION_CONNECT_FAIL:
                     srv->reconn_timer = g_timeout_add(srv->reconn_interval,
-                            server_reconnect_timeout, srv);
-                    next_state = SERVER_STATE_RECONNECTING;
+                            srn_server_reconnect_timeout, srv);
+                    next_state = SRN_SERVER_STATE_RECONNECTING;
                     break;
-                case SERVER_ACTION_CONNECT_FINISH:
+                case SRN_SERVER_ACTION_CONNECT_FINISH:
                     // TODO: reset reconn_interval after connection becomes stable
-                    srv->reconn_interval = SERVER_RECONN_STEP;
-                    next_state = SERVER_STATE_CONNECTED;
+                    srv->reconn_interval = SRN_SERVER_RECONN_STEP;
+                    next_state = SRN_SERVER_STATE_CONNECTED;
                     break;
-                case SERVER_ACTION_DISCONNECT:
+                case SRN_SERVER_ACTION_DISCONNECT:
                     sirc_cancel_connect(srv->irc);
-                    next_state = SERVER_STATE_DISCONNECTING;
+                    next_state = SRN_SERVER_STATE_DISCONNECTING;
                     break;
-                case SERVER_ACTION_QUIT:
+                case SRN_SERVER_ACTION_QUIT:
                     sirc_cancel_connect(srv->irc);
-                    next_state = SERVER_STATE_QUITING;
+                    next_state = SRN_SERVER_STATE_QUITING;
                     break;
                 default:
                     ret = SRN_ERR;
@@ -114,27 +114,27 @@ SrnRet server_state_transfrom(Server *srv, ServerAction action){
             }
             break;
 
-        case SERVER_STATE_CONNECTED:
+        case SRN_SERVER_STATE_CONNECTED:
             switch (action) {
-                case SERVER_ACTION_CONNECT:
+                case SRN_SERVER_ACTION_CONNECT:
                     ret = RET_ERR(unallowed, _("Server is already connected"));
                     break;
-                case SERVER_ACTION_DISCONNECT: // Connection closed by local
+                case SRN_SERVER_ACTION_DISCONNECT: // Connection closed by local
                     sirc_disconnect(srv->irc);
-                    next_state = SERVER_STATE_DISCONNECTING;
+                    next_state = SRN_SERVER_STATE_DISCONNECTING;
                     break;
-                case SERVER_ACTION_RECONNECT: // Ping time out
+                case SRN_SERVER_ACTION_RECONNECT: // Ping time out
                     sirc_disconnect(srv->irc);
-                    next_state = SERVER_STATE_CONNECTED; // Keep state
+                    next_state = SRN_SERVER_STATE_CONNECTED; // Keep state
                     break;
-                case SERVER_ACTION_QUIT: // User received a QUIT command sent by self
+                case SRN_SERVER_ACTION_QUIT: // SrnServerUser received a QUIT command sent by self
                     sirc_disconnect(srv->irc);
-                    next_state = SERVER_STATE_QUITING;
+                    next_state = SRN_SERVER_STATE_QUITING;
                     break;
-                case SERVER_ACTION_DISCONNECT_FINISH:
+                case SRN_SERVER_ACTION_DISCONNECT_FINISH:
                     srv->reconn_timer = g_timeout_add(srv->reconn_interval,
-                            server_reconnect_timeout, srv);
-                    next_state = SERVER_STATE_RECONNECTING;
+                            srn_server_reconnect_timeout, srv);
+                    next_state = SRN_SERVER_STATE_RECONNECTING;
                     break;
                 default:
                     ret = SRN_ERR;
@@ -142,24 +142,24 @@ SrnRet server_state_transfrom(Server *srv, ServerAction action){
             }
             break;
 
-        case SERVER_STATE_DISCONNECTING:
+        case SRN_SERVER_STATE_DISCONNECTING:
             switch (action) {
-                case SERVER_ACTION_CONNECT:
+                case SRN_SERVER_ACTION_CONNECT:
                     ret = RET_ERR(unallowed, _("Server is disconnecting"));
                     break;
-                case SERVER_ACTION_CONNECT_FAIL:
-                    next_state = SERVER_STATE_DISCONNECTED;
+                case SRN_SERVER_ACTION_CONNECT_FAIL:
+                    next_state = SRN_SERVER_STATE_DISCONNECTED;
                     break;
-                 case SERVER_ACTION_DISCONNECT:
+                 case SRN_SERVER_ACTION_DISCONNECT:
                      sirc_cancel_connect(srv->irc); // Force disconnect
-                     next_state = SERVER_STATE_DISCONNECTING; // Keep state
+                     next_state = SRN_SERVER_STATE_DISCONNECTING; // Keep state
                      break;
-                 case SERVER_ACTION_QUIT:
+                 case SRN_SERVER_ACTION_QUIT:
                      sirc_cancel_connect(srv->irc); // Force quit
-                     next_state = SERVER_STATE_QUITING;
+                     next_state = SRN_SERVER_STATE_QUITING;
                      break;
-                case SERVER_ACTION_DISCONNECT_FINISH:
-                    next_state = SERVER_STATE_DISCONNECTED;
+                case SRN_SERVER_ACTION_DISCONNECT_FINISH:
+                    next_state = SRN_SERVER_STATE_DISCONNECTED;
                     break;
                 default:
                     ret = SRN_ERR;
@@ -167,25 +167,25 @@ SrnRet server_state_transfrom(Server *srv, ServerAction action){
             }
             break;
 
-        case SERVER_STATE_QUITING:
+        case SRN_SERVER_STATE_QUITING:
             switch (action) {
-                case SERVER_ACTION_CONNECT:
+                case SRN_SERVER_ACTION_CONNECT:
                     ret = RET_ERR(unallowed, _("Server is quiting"));
                     break;
-                case SERVER_ACTION_CONNECT_FAIL:
+                case SRN_SERVER_ACTION_CONNECT_FAIL:
                     free = TRUE;
-                    next_state = SERVER_STATE_DISCONNECTED;
+                    next_state = SRN_SERVER_STATE_DISCONNECTED;
                     break;
-                case SERVER_ACTION_DISCONNECT:
+                case SRN_SERVER_ACTION_DISCONNECT:
                     ret = RET_ERR(unallowed, _("Server is quiting"));
                     break;
-                case SERVER_ACTION_QUIT: // Force quit
+                case SRN_SERVER_ACTION_QUIT: // Force quit
                     sirc_cancel_connect(srv->irc);
-                    next_state = SERVER_STATE_QUITING; // Keep state
+                    next_state = SRN_SERVER_STATE_QUITING; // Keep state
                     break;
-                case SERVER_ACTION_DISCONNECT_FINISH:
+                case SRN_SERVER_ACTION_DISCONNECT_FINISH:
                     free = TRUE;
-                    next_state = SERVER_STATE_DISCONNECTED;
+                    next_state = SRN_SERVER_STATE_DISCONNECTED;
                     break;
                 default:
                     ret = SRN_ERR;
@@ -193,22 +193,22 @@ SrnRet server_state_transfrom(Server *srv, ServerAction action){
             }
             break;
 
-        case SERVER_STATE_RECONNECTING:
+        case SRN_SERVER_STATE_RECONNECTING:
             switch (action) {
-                case SERVER_ACTION_CONNECT:
-                    sirc_connect(srv->irc, srv->prefs->host, srv->prefs->port);
-                    next_state = SERVER_STATE_CONNECTING;
+                case SRN_SERVER_ACTION_CONNECT:
+                    sirc_connect(srv->irc, srv->addr->host, srv->addr->port);
+                    next_state = SRN_SERVER_STATE_CONNECTING;
                     break;
-                case SERVER_ACTION_DISCONNECT:
+                case SRN_SERVER_ACTION_DISCONNECT:
                     g_source_remove(srv->reconn_timer);
                     srv->reconn_timer = 0;
-                    next_state = SERVER_STATE_DISCONNECTED;
+                    next_state = SRN_SERVER_STATE_DISCONNECTED;
                     break;
-                case SERVER_ACTION_QUIT:
+                case SRN_SERVER_ACTION_QUIT:
                     g_source_remove(srv->reconn_timer);
                     srv->reconn_timer = 0;
                     free = TRUE;
-                    next_state = SERVER_STATE_DISCONNECTED;
+                    next_state = SRN_SERVER_STATE_DISCONNECTED;
                     break;
                 default:
                     ret = SRN_ERR;
@@ -223,75 +223,75 @@ SrnRet server_state_transfrom(Server *srv, ServerAction action){
 
     if (RET_IS_OK(ret)){
         LOG_FR("Server %s: %s + %s -> %s",
-                srv->prefs->name,
-                server_state_to_string(cur_state),
-                server_action_to_string(action),
-                server_state_to_string(next_state));
+                srv->cfg->name,
+                srn_server_state_to_string(cur_state),
+                srn_server_action_to_string(action),
+                srn_server_state_to_string(next_state));
         srv->state = next_state;
         srv->last_action = action;
     } else {
         WARN_FR("Server %s: %s + %s -> error: %s",
-                srv->prefs->name,
-                server_state_to_string(cur_state),
-                server_action_to_string(action),
+                srv->cfg->name,
+                srn_server_state_to_string(cur_state),
+                srn_server_action_to_string(action),
                 RET_MSG(ret));
     }
 
     if (free){ // The server should be free now, be careful
-        server_free(srv);
+        srn_server_free(srv);
     }
 
     return ret;
 }
 
-static const char *server_state_to_string(ServerState state){
+static const char *srn_server_state_to_string(SrnServerState state){
     switch (state) {
-        case SERVER_STATE_CONNECTING:
-            return "SERVER_STATE_CONNECTING";
-        case SERVER_STATE_CONNECTED:
-            return "SERVER_STATE_CONNECTED";
-        case SERVER_STATE_DISCONNECTING:
-            return "SERVER_STATE_DISCONNECTING";
-        case SERVER_STATE_QUITING:
-            return "SERVER_STATE_QUITING";
-        case SERVER_STATE_RECONNECTING:
-            return "SERVER_STATE_RECONNECTING";
-        case SERVER_STATE_DISCONNECTED:
-            return "SERVER_STATE_DISCONNECTED";
+        case SRN_SERVER_STATE_CONNECTING:
+            return "SRN_SERVER_STATE_CONNECTING";
+        case SRN_SERVER_STATE_CONNECTED:
+            return "SRN_SERVER_STATE_CONNECTED";
+        case SRN_SERVER_STATE_DISCONNECTING:
+            return "SRN_SERVER_STATE_DISCONNECTING";
+        case SRN_SERVER_STATE_QUITING:
+            return "SRN_SERVER_STATE_QUITING";
+        case SRN_SERVER_STATE_RECONNECTING:
+            return "SRN_SERVER_STATE_RECONNECTING";
+        case SRN_SERVER_STATE_DISCONNECTED:
+            return "SRN_SERVER_STATE_DISCONNECTED";
         default:
             g_warn_if_reached();
             return NULL;
     }
 }
 
-static const char *server_action_to_string(ServerAction action){
+static const char *srn_server_action_to_string(SrnServerAction action){
     switch (action) {
-        case SERVER_ACTION_CONNECT:
-            return "SERVER_ACTION_CONNECT";
-        case SERVER_ACTION_CONNECT_FAIL:
-            return "SERVER_ACTION_CONNECT_FAIL";
-        case SERVER_ACTION_CONNECT_FINISH:
-            return "SERVER_ACTION_CONNECT_FINISH";
-        case SERVER_ACTION_DISCONNECT:
-            return "SERVER_ACTION_DISCONNECT";
-        case SERVER_ACTION_QUIT:
-            return "SERVER_ACTION_QUIT";
-        case SERVER_ACTION_RECONNECT:
-            return "SERVER_ACTION_RECONNECT";
-        case SERVER_ACTION_DISCONNECT_FINISH:
-            return "SERVER_ACTION_DISCONNECT_FINISH";
+        case SRN_SERVER_ACTION_CONNECT:
+            return "SRN_SERVER_ACTION_CONNECT";
+        case SRN_SERVER_ACTION_CONNECT_FAIL:
+            return "SRN_SERVER_ACTION_CONNECT_FAIL";
+        case SRN_SERVER_ACTION_CONNECT_FINISH:
+            return "SRN_SERVER_ACTION_CONNECT_FINISH";
+        case SRN_SERVER_ACTION_DISCONNECT:
+            return "SRN_SERVER_ACTION_DISCONNECT";
+        case SRN_SERVER_ACTION_QUIT:
+            return "SRN_SERVER_ACTION_QUIT";
+        case SRN_SERVER_ACTION_RECONNECT:
+            return "SRN_SERVER_ACTION_RECONNECT";
+        case SRN_SERVER_ACTION_DISCONNECT_FINISH:
+            return "SRN_SERVER_ACTION_DISCONNECT_FINISH";
         default:
             g_warn_if_reached();
             return NULL;
     }
 }
 
-static gboolean server_reconnect_timeout(gpointer user_data){
-    Server *srv;
+static gboolean srn_server_reconnect_timeout(gpointer user_data){
+    SrnServer *srv;
 
     srv = user_data;
-    srv->reconn_interval += SERVER_RECONN_STEP;
-    server_state_transfrom(srv, SERVER_ACTION_CONNECT);
+    srv->reconn_interval += SRN_SERVER_RECONN_STEP;
+    srn_server_state_transfrom(srv, SRN_SERVER_ACTION_CONNECT);
 
     return G_SOURCE_REMOVE;
 }

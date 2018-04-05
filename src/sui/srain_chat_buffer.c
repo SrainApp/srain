@@ -18,7 +18,7 @@
 
 /**
  * @file srain_chat_buffer.c
- * @brief SrainBuffer derived class which represents a general chatting
+ * @brief SuiBuffer derived class which represents a general chatting
  * @author Shengyu Zhang <i@silverrainz.me>
  * @version 0.06.2
  * @date 2017-12-17
@@ -45,7 +45,7 @@ enum
 
 static GParamSpec *obj_properties[N_PROPERTIES] = { NULL, };
 
-G_DEFINE_TYPE(SrainChatBuffer, srain_chat_buffer, SRAIN_TYPE_BUFFER);
+G_DEFINE_TYPE(SrainChatBuffer, srain_chat_buffer, SUI_TYPE_BUFFER);
 
 static void srain_chat_buffer_set_property(GObject *object, guint property_id,
         const GValue *value, GParamSpec *pspec){
@@ -86,7 +86,7 @@ static void srain_chat_buffer_constructed(GObject *object){
             "server", &srv,
             NULL);
     g_object_set(object,
-            "remark", srain_buffer_get_remark(SRAIN_BUFFER(srv)),
+            "remark", sui_buffer_get_remark(SUI_BUFFER(srv)),
             NULL);
 
     G_OBJECT_CLASS(srain_chat_buffer_parent_class)->constructed(object);
@@ -100,7 +100,7 @@ static void srain_chat_buffer_init(SrainChatBuffer *self){
     self->user_list_menu_item =
         (GtkCheckMenuItem *)gtk_builder_get_object(builder, "user_list_menu_item");
     gtk_menu_shell_append(
-            GTK_MENU_SHELL(srain_buffer_get_menu(SRAIN_BUFFER(self))),
+            GTK_MENU_SHELL(sui_buffer_get_menu(SUI_BUFFER(self))),
             GTK_WIDGET(self->user_list_menu_item));
     g_object_unref(builder);
 
@@ -133,8 +133,8 @@ static void srain_chat_buffer_class_init(SrainChatBufferClass *class){
     obj_properties[PROP_SERVER] =
         g_param_spec_pointer("server",
                 "Server",
-                "Server buffer of buffer",
-                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+                "Server buffer buffer",
+                G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
 
     g_object_class_install_properties(object_class,
             N_PROPERTIES,

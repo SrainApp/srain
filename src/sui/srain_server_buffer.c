@@ -18,7 +18,7 @@
 
 /**
  * @file srain_server_buffer.c
- * @brief SrainBuffer derived class which represents a session to server
+ * @brief SuiBuffer derived class which represents a session to server
  * @author Shengyu Zhang <i@silverrainz.me>
  * @version 0.06.2
  * @date 2017-11-26
@@ -33,7 +33,7 @@
 #include "i18n.h"
 
 struct _SrainServerBuffer {
-    SrainBuffer parent;
+    SuiBuffer parent;
 
     bool adding_chan;
 
@@ -46,7 +46,7 @@ struct _SrainServerBuffer {
 };
 
 struct _SrainServerBufferClass {
-    SrainBufferClass parent_class;
+    SuiBufferClass parent_class;
 };
 
 static void disconn_menu_item_on_activate(GtkWidget* widget, gpointer user_data);
@@ -67,7 +67,7 @@ enum
 
 static GParamSpec *obj_properties[N_PROPERTIES] = { NULL, };
 
-G_DEFINE_TYPE(SrainServerBuffer, srain_server_buffer, SRAIN_TYPE_BUFFER);
+G_DEFINE_TYPE(SrainServerBuffer, srain_server_buffer, SUI_TYPE_BUFFER);
 
 static void srain_server_buffer_set_property(GObject *object, guint property_id,
         const GValue *value, GParamSpec *pspec){
@@ -120,10 +120,10 @@ static void srain_server_buffer_init(SrainServerBuffer *self){
     self->quit_menu_item =
         (GtkMenuItem *)gtk_builder_get_object(builder, "quit_menu_item");
     gtk_menu_shell_append(
-            GTK_MENU_SHELL(srain_buffer_get_menu(SRAIN_BUFFER(self))),
+            GTK_MENU_SHELL(sui_buffer_get_menu(SUI_BUFFER(self))),
             GTK_WIDGET(self->disconn_menu_item));
     gtk_menu_shell_append(
-            GTK_MENU_SHELL(srain_buffer_get_menu(SRAIN_BUFFER(self))),
+            GTK_MENU_SHELL(sui_buffer_get_menu(SUI_BUFFER(self))),
             GTK_WIDGET(self->quit_menu_item));
     g_object_unref(builder);
 
@@ -162,40 +162,43 @@ static void srain_server_buffer_class_init(SrainServerBufferClass *class){
  * Exported functions
  *****************************************************************************/
 
-SrainServerBuffer* srain_server_buffer_new(SuiSession *sui, const char *server){
+SrainServerBuffer* srain_server_buffer_new(const char *server, void *ctx,
+        SuiBufferEvents *events, SuiBufferConfig *cfg){
     SrainServerBuffer *self;
 
     self = g_object_new(SRAIN_TYPE_SERVER_BUFFER,
-            "session", sui,
             "name", META_SERVER,
             "remark", server,
+            "ctx", ctx,
+            "events", events,
+            "config", cfg,
             NULL);
 
     return self;
 }
 
-void srain_server_buffer_add_buffer(SrainServerBuffer *self, SrainBuffer *buffer){
+void srain_server_buffer_add_buffer(SrainServerBuffer *self, SuiBuffer *buf){
     GSList *lst;
 
-    g_return_if_fail(!SRAIN_IS_SERVER_BUFFER(buffer));
+    g_return_if_fail(!SRAIN_IS_SERVER_BUFFER(buf));
 
     lst = self->buffer_list;
     while (lst){
-        g_return_if_fail(lst->data != buffer);
+        g_return_if_fail(lst->data != buf);
         lst = g_slist_next(lst);
     }
 
-    self->buffer_list = g_slist_append(self->buffer_list, buffer);
+    self->buffer_list = g_slist_append(self->buffer_list, buf);
 }
 
-void srain_server_buffer_rm_buffer(SrainServerBuffer *self, SrainBuffer *buffer){
+void srain_server_buffer_rm_buffer(SrainServerBuffer *self, SuiBuffer *buf){
     GSList *lst;
 
-    g_return_if_fail(!SRAIN_IS_SERVER_BUFFER(buffer));
+    g_return_if_fail(!SRAIN_IS_SERVER_BUFFER(buf));
 
     lst = self->buffer_list;
     while (lst){
-        if (lst->data == buffer){
+        if (lst->data == buf){
             self->buffer_list = g_slist_delete_link(self->buffer_list, lst);
             return;
         }
@@ -252,8 +255,7 @@ static void disconn_menu_item_on_activate(GtkWidget* widget, gpointer user_data)
 
     self = user_data;
 
-    sui_event_hdr(srain_buffer_get_session(SRAIN_BUFFER(self)),
-            SUI_EVENT_DISCONNECT, NULL);
+    sui_buffer_event_hdr(SUI_BUFFER(self), SUI_EVENT_DISCONNECT, NULL);
 }
 
 static void quit_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
@@ -261,8 +263,7 @@ static void quit_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
 
     self = user_data;
 
-    sui_event_hdr(srain_buffer_get_session(SRAIN_BUFFER(self)),
-            SUI_EVENT_QUIT, NULL);
+    sui_buffer_event_hdr(SUI_BUFFER(self), SUI_EVENT_QUIT, NULL);
 }
 
 static void srain_server_buffer_set_adding_channel(SrainServerBuffer *self,

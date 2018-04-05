@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SIRC_PREFS_H
-#define __SIRC_PREFS_H
+#ifndef __SIRC_CONFIG_H
+#define __SIRC_CONFIG_H
 
 #ifndef __IN_SIRC_H
 	#error This file should not be included directly, include just sirc.h
@@ -26,9 +26,9 @@
 #include "srain.h"
 #include "ret.h"
 
-typedef struct _SircPrefs SircPrefs;
+typedef struct _SircConfig SircConfig;
 
-struct _SircPrefs {
+struct _SircConfig {
     bool tls;
     bool tls_noverify;
     // bool ipv6;
@@ -36,9 +36,9 @@ struct _SircPrefs {
     char *encoding;
 };
 
-SircPrefs *sirc_prefs_new();
-SrnRet sirc_prefs_check(SircPrefs *prefs);
-char* sirc_prefs_dump(SircPrefs *prefs);
-void sirc_prefs_free(SircPrefs *prefs);
+SircConfig* sirc_config_new();
+SrnRet sirc_config_check(SircConfig *cfg);
+char* sirc_config_dump(SircConfig *cfg);
+void sirc_config_free(SircConfig *cfg);
 
-#endif /* __SIRC_PREFS_H */
+#endif /* __SIRC_CONFIG_H */

@@ -35,7 +35,7 @@
 #define MAX_FILTER   32  // Bits of a FilterFlag(int)
 
 typedef struct _FilterContext {
-    const Message *msg;
+    const SrnMessage *msg;
     Filter *filter;
     GString *str;
 } FilterContext;
@@ -83,14 +83,14 @@ void filter_init(){
  *      pass the plain text to each filter module, if a filter returns ``FALSE``,
  *      This message will not be passed to the next module.
  *
- * @param msg A Message instance, ``msg->dcontent`` should be valid XML which
+ * @param msg A SrnMessage instance, ``msg->dcontent`` should be valid XML which
  *      may without root tag
  * @param flag Indicates which filter modules to use
  * @param user_data Deprecated
  *
  * @return FALSE if this message should be ignored
  */
-bool filter_message(const Message *msg, FilterFlag flag, void *user_data){
+bool filter_message(const SrnMessage *msg, FilterFlag flag, void *user_data){
     bool ret = TRUE;
 
     g_return_val_if_fail(msg, FALSE);

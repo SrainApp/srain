@@ -20,7 +20,7 @@
 #define __FILTER_H
 
 #include "srain.h"
-#include "server.h"
+#include "core/core.h"
 
 #define FILTER_NICK         1 << 0
 #define FILTER_REGEX        1 << 1
@@ -32,13 +32,13 @@ typedef int FilterFlag;
  * @brief FilterFunc Any filter module should implement this function,
  *      accepts the plain text of XML message
  *
- * @param msg A Message instance, ``msg->dcontent`` should be valid XML which
+ * @param msg A SrnMessage instance, ``msg->dcontent`` should be valid XML which
  *      may without root tag
  * @param content The plain text of ``msg->dcontent``
  *
  * @return FALSE if filter thinks this message should be ignored
  */
-typedef bool (FilterFunc) (const Message *msg, const char *content);
+typedef bool (FilterFunc) (const SrnMessage *msg, const char *content);
 
 typedef struct _Filter {
     const char *name;
@@ -46,14 +46,14 @@ typedef struct _Filter {
 } Filter;
 
 void filter_init();
-bool filter_message(const Message *msg, FilterFlag flag, void *user_data);
+bool filter_message(const SrnMessage *msg, FilterFlag flag, void *user_data);
 
-int nick_filter_add_nick(Chat *chat, const char *nick);
-int nick_filter_rm_nick(Chat *chat, const char *nick);
-void nick_filter_free_list(Chat *chat);
+int nick_filter_add_nick(SrnChat *chat, const char *nick);
+int nick_filter_rm_nick(SrnChat *chat, const char *nick);
+void nick_filter_free_list(SrnChat *chat);
 
-int regex_filter_add_pattern(Chat *chat, const char *name, const char *pattern);
-int regex_filter_rm_pattern(Chat *chat, const char *name);
-void regex_filter_free_list(Chat *chat);
+int regex_filter_add_pattern(SrnChat *chat, const char *name, const char *pattern);
+int regex_filter_rm_pattern(SrnChat *chat, const char *name);
+void regex_filter_free_list(SrnChat *chat);
 
 #endif /* __FILTER_H */

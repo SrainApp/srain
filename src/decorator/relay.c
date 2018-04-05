@@ -18,7 +18,7 @@
 
 #include <glib.h>
 
-#include "server.h"
+#include "core/core.h"
 
 #include "decorator.h"
 
@@ -29,21 +29,21 @@
 #include "i18n.h"
 #include "utils.h"
 
-static char* relay(Message *msg, int index, const char *frag);
-static char* do_relay(GSList *lst, Message *msg, const char *frag);
+static char* relay(SrnMessage *msg, int index, const char *frag);
+static char* do_relay(GSList *lst, SrnMessage *msg, const char *frag);
 
 Decorator relay_decroator = {
     .name = "relay",
     .func = relay,
 };
-int relay_decroator_add_nick(Chat *chat, const char *nick){
+int relay_decroator_add_nick(SrnChat *chat, const char *nick){
     GSList *lst;
 
     lst = chat->relaybot_list;
 
     while(lst){
-        if (sirc_nick_cmp(lst->data, nick)){
-            chat_add_error_message_fmt(chat->srv->cur_chat, chat->user->nick,
+        if (sirc_target_equal(lst->data, nick)){
+            srn_chat_add_error_message_fmt(chat->srv->cur_chat, chat->user,
                     _("\"%1$s\" already exists in %2$s 's relaybot list"),
                     nick, chat->name);
             return SRN_ERR;
@@ -53,24 +53,24 @@ int relay_decroator_add_nick(Chat *chat, const char *nick){
 
     chat->relaybot_list = g_slist_append(chat->relaybot_list, g_strdup(nick));
 
-    chat_add_misc_message_fmt(chat->srv->cur_chat, chat->user->nick,
+    srn_chat_add_misc_message_fmt(chat->srv->cur_chat, chat->user,
             _("\"%1$s\" has added to %2$s 's relaybot list"), nick, chat->name);
 
     return SRN_OK;
 }
 
-int relay_decroator_rm_nick(Chat *chat, const char *nick){
+int relay_decroator_rm_nick(SrnChat *chat, const char *nick){
     GSList *lst;
 
     lst = chat->relaybot_list;
 
     while(lst){
         if (lst->data){
-            if (sirc_nick_cmp(lst->data, nick)){
+            if (sirc_target_equal(lst->data, nick)){
                 g_free(lst->data);
                 chat->relaybot_list = g_slist_delete_link(chat->relaybot_list, lst);
 
-                chat_add_misc_message_fmt(chat->srv->cur_chat, chat->user->nick,
+                srn_chat_add_misc_message_fmt(chat->srv->cur_chat, chat->user,
                         _("\"%1$s\" is removed from %2$s 's relaybot list"),
                         nick, chat->name);
 
@@ -80,19 +80,19 @@ int relay_decroator_rm_nick(Chat *chat, const char *nick){
         lst = g_slist_next(lst);
     }
 
-    chat_add_error_message_fmt(chat->srv->cur_chat, chat->user->nick,
+    srn_chat_add_error_message_fmt(chat->srv->cur_chat, chat->user,
             _("\"%1$s\" not found in %2$s 's relaybot list"),
             nick, chat->name);
 
     return SRN_ERR;
 }
 
-void relay_decroator_free_list(Chat *chat){
+void relay_decroator_free_list(SrnChat *chat){
     g_slist_free_full(chat->relaybot_list, g_free);
     chat->relaybot_list = NULL;
 }
 
-static char* relay(Message *msg, int index, const char *frag){
+static char* relay(SrnMessage *msg, int index, const char *frag){
     char *dcontent;
 
     if (index != 0) {
@@ -108,7 +108,7 @@ static char* relay(Message *msg, int index, const char *frag){
     return dcontent;
 }
 
-static char* do_relay(GSList *lst, Message *msg, const char *frag){
+static char* do_relay(GSList *lst, SrnMessage *msg, const char *frag){
     char *dnick;
     char *dcontent = NULL;
     GError *err;
@@ -124,7 +124,7 @@ static char* do_relay(GSList *lst, Message *msg, const char *frag){
     }
 
     while (lst){
-        if (sirc_nick_cmp(msg->user->nick, lst->data)){
+        if (sirc_target_equal(msg->user->srv_user->nick, lst->data)){
             DBG_FR("Brige bot '%s' found", (char *)lst->data);
             g_regex_match(regex, frag, 0, &match_info);
 

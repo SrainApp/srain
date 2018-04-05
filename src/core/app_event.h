@@ -16,10 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SERVER_CAP_H
-#define __SERVER_CAP_H
+#ifndef __APP_EVENT_H
+#define __APP_EVENT_H
 
-#include "srain.h"
-#include "ret.h"
+#include "core/core.h"
 
-#endif /* __SERVER_CAP_H */
+void srn_application_init_ui_event(SrnApplication *app);
+void srn_application_init_irc_event(SrnApplication *app);
+
+#endif /* __APP_EVENT_H */
