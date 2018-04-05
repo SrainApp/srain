@@ -42,7 +42,7 @@ int relay_decroator_add_nick(SrnChat *chat, const char *nick){
     lst = chat->relaybot_list;
 
     while(lst){
-        if (sirc_nick_cmp(lst->data, nick)){
+        if (sirc_target_equal(lst->data, nick)){
             srn_chat_add_error_message_fmt(chat->srv->cur_chat, chat->user,
                     _("\"%1$s\" already exists in %2$s 's relaybot list"),
                     nick, chat->name);
@@ -66,7 +66,7 @@ int relay_decroator_rm_nick(SrnChat *chat, const char *nick){
 
     while(lst){
         if (lst->data){
-            if (sirc_nick_cmp(lst->data, nick)){
+            if (sirc_target_equal(lst->data, nick)){
                 g_free(lst->data);
                 chat->relaybot_list = g_slist_delete_link(chat->relaybot_list, lst);
 
@@ -124,7 +124,7 @@ static char* do_relay(GSList *lst, SrnMessage *msg, const char *frag){
     }
 
     while (lst){
-        if (sirc_nick_cmp(msg->user->srv_user->nick, lst->data)){
+        if (sirc_target_equal(msg->user->srv_user->nick, lst->data)){
             DBG_FR("Brige bot '%s' found", (char *)lst->data);
             g_regex_match(regex, frag, 0, &match_info);
 

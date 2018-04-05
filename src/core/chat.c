@@ -55,7 +55,7 @@ SrnChat *srn_chat_new(SrnServer *srv, const char *name, SrnChatConfig *cfg){
     if (strcmp(META_SERVER, chat->name) == 0){
         // Server
         chat->ui = sui_new_server_buffer(chat->srv->cfg->name, chat, events, chat->cfg->ui);
-    } else if (sirc_is_chan(chat->name)){
+    } else if (sirc_target_is_channel(chat->srv->irc, chat->name)){
         // Channel
         chat->ui = sui_new_channel_buffer(chat->srv->chat->ui, chat->name, chat, events, chat->cfg->ui);
     } else {
@@ -137,7 +137,7 @@ SrnChatUser* srn_chat_get_user(SrnChat *chat, const char *nick){
     lst = chat->user_list;
     while (lst){
         user = lst->data;
-        if (sirc_nick_cmp(user->srv_user->nick, nick)){
+        if (sirc_target_equal(user->srv_user->nick, nick)){
             return user;
         }
         lst = g_slist_next(lst);
@@ -224,7 +224,8 @@ void srn_chat_add_recv_message(SrnChat *chat, SrnChatUser *user, const char *con
         sui_message_mentioned(msg->ui);
         sui_message_notify(msg->ui);
     }
-    else if (chat != chat->srv->chat && !sirc_is_chan(chat->name)){
+    else if (chat != chat->srv->chat
+            && !sirc_target_is_channel(chat->srv->irc, chat->name)){
         sui_message_notify(msg->ui);
     }
 
@@ -404,8 +405,8 @@ static bool whether_merge_last_message(SrnChat *chat, SrnMessage *msg){
             && msg->time - last_msg->time < SRN_MESSAGE_MERGE_INTERVAL
             && (!last_msg->mentioned && !msg->mentioned)
             && last_msg->type == msg->type
-            && sirc_nick_cmp(last_msg->user->srv_user->nick, msg->user->srv_user->nick)
-            && sirc_nick_cmp(last_msg->dname, msg->dname));
+            && sirc_target_equal(last_msg->user->srv_user->nick, msg->user->srv_user->nick)
+            && sirc_target_equal(last_msg->dname, msg->dname));
 }
 
 // TODO

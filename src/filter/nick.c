@@ -50,7 +50,7 @@ int nick_filter_add_nick(SrnChat *chat, const char *nick){
     lst = chat->ignore_nick_list;
 
     while(lst){
-        if (sirc_nick_cmp(lst->data, nick)){
+        if (sirc_target_equal(lst->data, nick)){
             srn_chat_add_error_message_fmt(chat->srv->cur_chat, chat->user,
                     _("\"%1$s\" already exists in %2$s 's ignore list"),
                     nick, chat->name);
@@ -74,7 +74,7 @@ int nick_filter_rm_nick(SrnChat *chat, const char *nick){
 
     while(lst){
         if (lst->data){
-            if (sirc_nick_cmp(lst->data, nick)){
+            if (sirc_target_equal(lst->data, nick)){
                 g_free(lst->data);
                 chat->ignore_nick_list = g_slist_delete_link(chat->ignore_nick_list, lst);
 
@@ -109,7 +109,7 @@ static bool nick(const SrnMessage *msg, const char *content){
 
     lst = msg->chat->ignore_nick_list;
     while (lst){
-        if (sirc_nick_cmp(lst->data, msg->dname)){
+        if (sirc_target_equal(lst->data, msg->dname)){
             return FALSE;
         }
         lst = g_slist_next(lst);
@@ -117,7 +117,7 @@ static bool nick(const SrnMessage *msg, const char *content){
 
     lst = msg->chat->srv->chat->ignore_nick_list;
     while (lst){
-        if (sirc_nick_cmp(lst->data, msg->dname)){
+        if (sirc_target_equal(lst->data, msg->dname)){
             return FALSE;
         }
         lst = g_slist_next(lst);
