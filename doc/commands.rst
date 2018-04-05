@@ -12,21 +12,26 @@ Commands Manual
 Context
 =======
 
-User can run commands by typing them in the input entry on UI.
+User can run commands in two ways, the one way is typing them into the input
+entry of chat buffer.
 
-.. warning::
-
-    The rc file will be integrated into config file in the future.
-
-The rc(**r**\ un **c**\ ommand) file ``srainrc`` allows you save commands in
-file and run it at each time the Srain starts. The location of rc file is
-``$XDG_CONFIG_HOME/srain``, usually it is ``~/.config/srain``. Every line in rc
-file should be a valid command, empty line or line prefixed with ``#`` will be
-ignored.
+The another way is using rc(**r**\ un **c**\ ommand) file. Srain allows you to
+save commands in rc file and run them at each time Srain starts.
+The location of rc file is ``$XDG_CONFIG_HOME/srain``, usually it is
+``~/.config/srain/srainrc``.
+Every line in rc file should be a valid command, empty line or line prefixed
+with ``#`` will be ignored.
 
 Here is an example of rc file:
 
 .. literalinclude:: ../srainrc.example
+
+In both ways, when you run a command, Srain needs to know which server and
+which chat you want to operate on - this is the **"context"** of command.
+When you run commands by typing them into the input entry, the context is
+obvious.
+But **when you run commands in rc file, you should tell Srain the
+context via** :ref:`commands-usage-context`.
 
 .. _commands-syntax:
 
@@ -73,6 +78,34 @@ to escape it. For backslash itself, use double backslash ``\\``.
 Usage
 =====
 
+.. _commands-usage-context:
+
+/context
+--------
+
+Usage::
+
+    /context <server> [chat]
+
+Change the current context.
+
+Arguments:
+
+* ``server``: The server you want to operate after
+* ``chat``: Optional, the chat you want operate after, if not set, fallback to
+  server's current chat
+
+.. _commands-usage-reload:
+
+/reload
+-------
+
+Usage::
+
+    /reload
+
+Reload user configuration.
+
 .. _commands-server:
 
 /server
@@ -85,6 +118,8 @@ Usage::
         [-nick <nickname>] [-user <username>] [-real <realname>] <name>
 
 IRC server management.
+
+.. note:: This command may changes context.
 
 Sub commands:
 
@@ -127,6 +162,8 @@ Usage::
 
 Create a IRC server and connect to it immediately.
 
+.. note:: This command may changes context.
+
 Options:
 
 * ``-port``: server port, default ``6667``
@@ -150,10 +187,9 @@ Example::
 
 .. note::
 
-    The following commands should run under the context which has a
-    "default server", Briefly, **these commands must be executed after**
-    :ref:`commands-server` ``connect`` **or** :ref:`commands-connect`
-    **command.**
+    The following commands should run under the specified **context**.
+    The context can be changed by :ref:`commands-usage-context`,
+    :ref:`commands-server` or :ref:`commands-connect`.
 
 .. _commands-relay:
 
