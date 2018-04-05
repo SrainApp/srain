@@ -39,10 +39,23 @@ void srn_chat_user_free(SrnChatUser *self){
 }
 
 void srn_chat_user_update(SrnChatUser *self){
-    // TODO
+    // TODO: rename nick
+    sui_ren_user(self->chat->ui,
+            self->srv_user->nick,
+            self->srv_user->nick,
+            self->type);
 }
 
 void srn_chat_user_set_type(SrnChatUser *self, SrnChatUserType type){
     self->type = type;
     srn_chat_user_update(self);
+}
+
+void srn_chat_user_set_is_join(SrnChatUser *self, bool join){
+    self->is_join = join;
+    if (join){
+        sui_add_user(self->chat->ui, self->srv_user->nick, USER_CHIGUA);
+    } else {
+        sui_rm_user(self->chat->ui, self->srv_user->nick);
+    }
 }

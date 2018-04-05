@@ -95,10 +95,16 @@ void srn_server_user_set_realname(SrnServerUser *self, const char *realname){
     str_assign(&self->realname, realname);
 }
 
-void srn_server_user_set_me(SrnServerUser *self, bool me){
+void srn_server_user_set_is_me(SrnServerUser *self, bool me){
     self->is_me = me;
     srn_server_user_update_chat_user(self);
 }
+
+void srn_server_user_set_is_online(SrnServerUser *self, bool online){
+    self->is_online = online;
+    srn_server_user_update_chat_user(self);
+}
+
 
 static void srn_server_user_update_chat_user(SrnServerUser *self){
     GSList *lst;
