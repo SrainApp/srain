@@ -30,7 +30,7 @@
 #include <string.h>
 
 #include "sui_common.h"
-#include "srain_window.h"
+#include "sui_window.h"
 #include "srain_msg_list.h"
 #include "srain_msg.h"
 #include "snotify.h"

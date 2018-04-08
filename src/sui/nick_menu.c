@@ -23,7 +23,7 @@
 
 #include "sui_common.h"
 #include "sui_event_hdr.h"
-#include "srain_window.h"
+#include "sui_window.h"
 #include "srain_buffer.h"
 #include "srain_server_buffer.h"
 #include "srain_chat_buffer.h"

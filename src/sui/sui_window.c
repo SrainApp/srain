@@ -17,8 +17,8 @@
  */
 
 /**
- * @file srain_window.c
- * @brief Srain's main window
+ * @file sui_window.c
+ * @brief Sui window class
  * @author Shengyu Zhang <i@silverrainz.me>
  * @version 0.06.2
  * @date 2016-03-01
@@ -30,9 +30,13 @@
 
 #include "core/core.h"
 #include "sui/sui.h"
+#include "meta.h"
+#include "log.h"
+#include "i18n.h"
+
 #include "sui_common.h"
 #include "theme.h"
-#include "srain_window.h"
+#include "sui_window.h"
 #include "srain_buffer.h"
 #include "srain_server_buffer.h"
 #include "srain_chat_buffer.h"
@@ -40,10 +44,6 @@
 #include "srain_join_popover.h"
 #include "srain_stack_sidebar.h"
 #include "tray_icon.h"
-
-#include "meta.h"
-#include "log.h"
-#include "i18n.h"
 
 struct _SuiWindow {
     GtkApplicationWindow parent;

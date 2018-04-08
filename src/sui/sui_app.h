@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SRAIN_APP_H
-#define __SRAIN_APP_H
+#ifndef __SUI_APP_H
+#define __SUI_APP_H
 
 #include <gtk/gtk.h>
 
@@ -41,4 +41,4 @@ void sui_application_set_config(SuiApplication *self, SuiApplicationConfig *cfg)
 void* sui_application_get_ctx(SuiApplication *self);
 void sui_application_set_ctx(SuiApplication *self, void *ctx);
 
-#endif /* __SRAIN_APP_H */
+#endif /* __SUI_APP_H */

@@ -21,7 +21,7 @@
 
 #include <gtk/gtk.h>
 
-#include "srain_window.h"
+#include "sui_window.h"
 
 GtkListBoxRow* gtk_list_box_get_row_by_name(GtkListBox *listbox, const char* name);
 GtkListBoxRow* gtk_list_box_add_unfocusable_row(GtkListBox *listbox, GtkWidget *widget);

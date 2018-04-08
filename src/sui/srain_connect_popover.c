@@ -35,7 +35,7 @@
 
 #include "sui_common.h"
 #include "sui_event_hdr.h"
-#include "srain_window.h"
+#include "sui_window.h"
 #include "srain_connect_popover.h"
 
 #define SERVER_LIST_STORE_COL_NAME  0

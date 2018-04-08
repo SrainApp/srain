@@ -30,7 +30,7 @@
  */
 
 #include <gtk/gtk.h>
-#include "srain_window.h"
+#include "sui_window.h"
 #include "log.h"
 
 GtkMenu *tray_menu;

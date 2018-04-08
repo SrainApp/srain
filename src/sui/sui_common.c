@@ -17,7 +17,7 @@
  */
 
 /**
- * @file ui_common.c
+ * @file sui_common.c
  * @brief useful functions required by UI module
  * @author Shengyu Zhang <i@silverrainz.me>
  * @version 0.06.2
@@ -33,7 +33,7 @@
 
 #include "sui_event_hdr.h"
 #include "sui_common.h"
-#include "srain_app.h"
+#include "sui_app.h"
 #include "theme.h"
 
 /**

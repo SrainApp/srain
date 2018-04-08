@@ -17,8 +17,8 @@
  */
 
 /**
- * @file srain_app.c
- * @brief Srain's application class implementation
+ * @file sui_app.c
+ * @brief Sui module application class implementation
  * @author Shengyu Zhang <i@silverrainz.me>
  * @version 0.06.2
  * @date 2016-03-01
@@ -35,8 +35,8 @@
 #include "snotify.h"
 #include "sui_common.h"
 #include "sui_event_hdr.h"
-#include "srain_app.h"
-#include "srain_window.h"
+#include "sui_app.h"
+#include "sui_window.h"
 
 
 struct _SuiApplication {

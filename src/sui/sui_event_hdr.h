@@ -19,8 +19,8 @@
 #ifndef __SUI_EVENT_HDR_H
 #define __SUI_EVENT_HDR_H
 
-#include "srain_app.h"
-#include "srain_window.h"
+#include "sui_app.h"
+#include "sui_window.h"
 #include "srain_buffer.h"
 
 SrnRet sui_application_event_hdr(SuiApplication *app, SuiEvent event, GVariantDict *params);

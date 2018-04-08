@@ -21,7 +21,7 @@
 
 #include <gtk/gtk.h>
 
-#include "srain_app.h"
+#include "sui_app.h"
 #include "srain_buffer.h"
 #include "srain_server_buffer.h"
 #include "srain_connect_popover.h"
