@@ -828,7 +828,16 @@ static void irc_event_ctcp_req(SircSession *sirc, const char *event,
 
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srn_server_is_valid(srv));
-    chat = srn_server_get_chat_fallback(srv, origin);
+    if (sirc_target_is_channel(sirc, target)){
+        chat = srn_server_get_chat(srv, target);
+    } else {
+        if (strcmp(event, "ACTION") == 0) {
+            // Only create chat for ACTION message
+            chat = srn_server_add_and_get_chat(srv, origin);
+        } else {
+            chat = srn_server_get_chat_fallback(srv, origin);
+        }
+    }
     g_return_if_fail(chat);
     srv_user = srn_server_add_and_get_user(srv, origin);
     g_return_if_fail(srv_user);
