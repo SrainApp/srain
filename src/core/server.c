@@ -248,7 +248,7 @@ SrnRet srn_server_rm_chat(SrnServer *srv, SrnChat *chat){
     SrnChatConfig *chat_cfg;
 
     g_return_val_if_fail(srn_server_is_valid(srv), SRN_ERR);
-    g_return_val_if_fail(!chat->joined, SRN_ERR);
+    g_return_val_if_fail(!chat->is_joined, SRN_ERR);
 
     lst = g_slist_find(srv->chat_list, chat);
     if (!lst) {

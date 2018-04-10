@@ -45,7 +45,7 @@ SrnChat *srn_chat_new(SrnServer *srv, const char *name, SrnChatConfig *cfg){
 
     str_assign(&chat->name, name);
     chat->cfg = cfg;
-    chat->joined = FALSE;
+    chat->is_joined = FALSE;
     chat->srv = srv;
     chat->user = srn_chat_add_and_get_user(chat, srv->user);
     chat->_user = srn_chat_add_and_get_user(chat, srv->_user);
@@ -59,7 +59,6 @@ SrnChat *srn_chat_new(SrnServer *srv, const char *name, SrnChatConfig *cfg){
         // Channel
         chat->ui = sui_new_channel_buffer(chat->srv->chat->ui, chat->name, chat, events, chat->cfg->ui);
     } else {
-        SrnChatUser *user;
         // Private, its user_list must have yourself and your dialogue target
         chat->ui = sui_new_private_buffer(srv->chat->ui, chat->name, chat, events, chat->cfg->ui);
         srn_chat_add_user(chat, srn_server_add_and_get_user(srv, chat->name));
@@ -91,6 +90,26 @@ void srn_chat_free(SrnChat *chat){
 void srn_chat_set_config(SrnChat *chat, SrnChatConfig *cfg){
     sui_buffer_set_config(chat->ui, cfg->ui);
     chat->cfg = cfg;
+}
+
+void srn_chat_set_is_joined(SrnChat *chat, bool joined){
+    GSList *lst;
+
+    if (chat->is_joined == joined){
+        return;
+    }
+    chat->is_joined = joined;
+
+    if (!joined){
+        lst = chat->user_list;
+        while (lst){
+            SrnChatUser *user;
+
+            user = lst->data;
+            srn_chat_user_set_is_joined(user, FALSE);
+            lst = g_slist_next(lst);
+        }
+    }
 }
 
 SrnRet srn_chat_add_user(SrnChat *chat, SrnServerUser *srv_user){

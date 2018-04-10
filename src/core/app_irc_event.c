@@ -271,9 +271,8 @@ static void irc_event_disconnect(SircSession *sirc, const char *event,
         SrnChat *chat;
 
         chat = list->data;
-        if (sirc_target_is_channel(srv->irc, chat->name)){
-            chat->joined = FALSE;
-        }
+        // Mark all chats as unjoined
+        srn_chat_set_is_joined(chat, FALSE);
         // Only report error message to server chat
         srn_chat_add_misc_message_fmt(chat, chat->_user,
                 _("Disconnected from %1$s(%2$s:%3$d): %4$s"),
@@ -442,15 +441,15 @@ static void irc_event_join(SircSession *sirc, const char *event,
 
     if (srv_user->is_me) {
         snprintf(buf, sizeof(buf), _("You have joined"));
-        chat->joined = TRUE;
+        srn_chat_set_is_joined(chat, TRUE);
         chat_user = chat->user;
     } else {
         snprintf(buf, sizeof(buf), _("%1$s has joined"), origin);
         chat_user = srn_chat_add_and_get_user(chat, srv_user);
     }
 
-    g_return_if_fail(!chat_user->is_join);
-    srn_chat_user_set_is_join(chat_user, TRUE);
+    g_return_if_fail(!chat_user->is_joined);
+    srn_chat_user_set_is_joined(chat_user, TRUE);
 
     srn_chat_add_misc_message(chat, chat_user, buf);
 }
@@ -474,7 +473,7 @@ static void irc_event_part(SircSession *sirc, const char *event,
     g_return_if_fail(chat);
     chat_user = srn_chat_get_user(chat, origin);
     g_return_if_fail(chat_user);
-    g_return_if_fail(chat_user->is_join);
+    g_return_if_fail(chat_user->is_joined);
 
     if (reason){
         snprintf(buf, sizeof(buf), _("%1$s has left: %2$s"), origin, reason);
@@ -483,11 +482,11 @@ static void irc_event_part(SircSession *sirc, const char *event,
     }
 
     srn_chat_add_misc_message(chat, chat_user, buf);
-    srn_chat_user_set_is_join(chat_user, FALSE);
+    srn_chat_user_set_is_joined(chat_user, FALSE);
 
     /* You has left a channel */
     if (chat_user->srv_user->is_me){
-        chat->joined = FALSE;
+        srn_chat_set_is_joined(chat, FALSE);
         srn_server_rm_chat(srv, chat);
     }
 }
@@ -667,7 +666,7 @@ static void irc_event_kick(SircSession *sirc, const char *event,
             snprintf(buf, sizeof(buf), _("You are kicked by %1$s"),
                     origin);
         }
-        chat->joined = FALSE;
+        srn_chat_set_is_joined(chat, FALSE);
     } else {
         if (reason){
             snprintf(buf, sizeof(buf), _("%1$s are kicked by %2$s: %3$s"),
@@ -678,7 +677,7 @@ static void irc_event_kick(SircSession *sirc, const char *event,
         }
     }
 
-    srn_chat_user_set_is_join(kicked_chat_user, FALSE);
+    srn_chat_user_set_is_joined(kicked_chat_user, FALSE);
     srn_chat_add_error_message(chat, kick_chat_user, buf);
 }
 
@@ -1342,7 +1341,7 @@ static void irc_event_numeric(SircSession *sirc, int event,
                     chat_user = srn_chat_add_and_get_user(chat, srv_user);
                     g_warn_if_fail(chat_user);
                     if (!chat_user) continue;
-                    srn_chat_user_set_is_join(chat_user, TRUE);
+                    srn_chat_user_set_is_joined(chat_user, TRUE);
                     srn_chat_user_set_type(chat_user, type);
                 }
                 g_free(dup_names);

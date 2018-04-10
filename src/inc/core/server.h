@@ -72,7 +72,7 @@ struct _SrnChatUser{
 
     SrnChatUserType type;
 
-    bool is_join;
+    bool is_joined;
 
     SrnServerUser *srv_user;
     // SuiUser *ui;
@@ -128,7 +128,7 @@ struct _SrnMessage {
 /* Represent a channel or dialog or a server session */
 struct _SrnChat {
     char *name;
-    bool joined;
+    bool is_joined;
     SrnChatUser *user;  // Yourself
     SrnChatUser *_user; // Hold all messages that do not belong other any user
 
@@ -297,6 +297,7 @@ SrnRet srn_server_rename_user(SrnServer *srv, SrnServerUser *user, const char *n
 SrnChat* srn_chat_new(SrnServer *srv, const char *name, SrnChatConfig *cfg);
 void srn_chat_free(SrnChat *chat);
 void srn_chat_set_config(SrnChat *chat, SrnChatConfig *cfg);
+void srn_chat_set_is_joined(SrnChat *chat, bool joined);
 SrnRet srn_chat_add_user(SrnChat *chat, SrnServerUser *srv_user);
 SrnRet srn_chat_rm_user(SrnChat *chat, SrnChatUser *user);
 SrnChatUser* srn_chat_get_user(SrnChat *chat, const char *nick);
@@ -332,7 +333,7 @@ SrnChatUser *srn_chat_user_new(SrnChat *chat, SrnServerUser *srv_user);
 void srn_chat_user_free(SrnChatUser *self);
 void srn_chat_user_update(SrnChatUser *self);
 void srn_chat_user_set_type(SrnChatUser *self, SrnChatUserType type);
-void srn_chat_user_set_is_join(SrnChatUser *self, bool join);
+void srn_chat_user_set_is_joined(SrnChatUser *self, bool joined);
 
 SrnMessage* srn_message_new(SrnChat *chat, SrnChatUser *user, const char *content, SrnMessageType type);
 void srn_message_free(SrnMessage *msg);

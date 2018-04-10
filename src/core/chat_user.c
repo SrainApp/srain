@@ -47,13 +47,19 @@ void srn_chat_user_update(SrnChatUser *self){
 }
 
 void srn_chat_user_set_type(SrnChatUser *self, SrnChatUserType type){
+    if (self->type == type){
+        return;
+    }
     self->type = type;
     srn_chat_user_update(self);
 }
 
-void srn_chat_user_set_is_join(SrnChatUser *self, bool join){
-    self->is_join = join;
-    if (join){
+void srn_chat_user_set_is_joined(SrnChatUser *self, bool joined){
+    if (self->is_joined == joined){
+        return;
+    }
+    self->is_joined = joined;
+    if (joined){
         sui_add_user(self->chat->ui, self->srv_user->nick, USER_CHIGUA);
     } else {
         sui_rm_user(self->chat->ui, self->srv_user->nick);

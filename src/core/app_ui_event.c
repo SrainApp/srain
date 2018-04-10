@@ -348,7 +348,7 @@ static SrnRet ui_event_part(SuiBuffer *sui, SuiEvent event, GVariantDict *params
     g_return_val_if_fail(srn_server_is_valid(srv), SRN_ERR);
     g_return_val_if_fail(chat, SRN_ERR);
 
-    if (chat->joined) {
+    if (chat->is_joined) {
         return sirc_cmd_part(srv->irc, chat->name, "Leave.");
     } else {
         return srn_server_rm_chat(srv, chat);
