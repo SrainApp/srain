@@ -96,13 +96,28 @@ void srn_server_user_set_realname(SrnServerUser *self, const char *realname){
 }
 
 void srn_server_user_set_is_me(SrnServerUser *self, bool me){
+    if (self->is_me == me){
+        return;
+    }
     self->is_me = me;
     srn_server_user_update_chat_user(self);
 }
 
 void srn_server_user_set_is_online(SrnServerUser *self, bool online){
     self->is_online = online;
-    srn_server_user_update_chat_user(self);
+
+    if (!self->is_online){
+        GSList *lst;
+
+        lst = self->chat_user_list;
+        while (lst) {
+            SrnChatUser *chat_user;
+
+            chat_user = lst->data;
+            srn_chat_user_set_is_joined(chat_user, FALSE);
+            lst = g_slist_next(lst);
+        }
+    }
 }
 
 
