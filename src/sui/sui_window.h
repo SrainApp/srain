@@ -22,8 +22,7 @@
 #include <gtk/gtk.h>
 
 #include "sui_app.h"
-#include "srain_buffer.h"
-#include "srain_server_buffer.h"
+#include "sui_buffer.h"
 #include "srain_connect_popover.h"
 #include "srain_join_popover.h"
 
@@ -37,19 +36,16 @@ typedef struct _SuiWindowClass SuiWindowClass;
 GType sui_window_get_type(void);
 SuiWindow* sui_window_new(SuiApplication *app, SuiWindowEvents *events, SuiWindowConfig *cfg);
 
-/* Sui interface */
-void* sui_window_get_ctx(SuiWindow *self);
-void sui_window_set_ctx(SuiWindow *self, void *ctx);
 SuiWindowEvents* sui_window_get_events(SuiWindow *sui);
+void sui_window_set_config(SuiWindow *self, SuiWindowConfig *cfg);
+SuiWindowConfig* sui_window_get_config(SuiWindow *self);
 
 void sui_window_add_buffer(SuiWindow *self, SuiBuffer *buffer);
 void sui_window_rm_buffer(SuiWindow *self, SuiBuffer *buffer);
 SuiBuffer *sui_window_get_buffer(SuiWindow *self, const char *name, const char *remark);
 SuiBuffer *sui_window_get_cur_buffer(SuiWindow *self);
-SrainServerBuffer* sui_window_get_cur_server_buffer(SuiWindow *self);
 
-void sui_window_spinner_toggle(SuiWindow *self, gboolean is_busy);
-void sui_window_stack_sidebar_update(SuiWindow *self, SuiBuffer *buffer, const char *nick, const char *msg);
+void sui_window_side_bar_update(SuiWindow *self, SuiBuffer *buffer, const char *nick, const char *msg);
 int sui_window_is_active(SuiWindow *self);
 void sui_window_tray_icon_stress(SuiWindow *self, int stress);
 
