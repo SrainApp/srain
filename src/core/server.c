@@ -79,6 +79,7 @@ SrnServer* srn_server_new(SrnServerConfig *cfg){
 
     return srv;
 
+
 bad:
     srn_server_free(srv);
     return NULL;
@@ -214,7 +215,7 @@ SrnRet srn_server_add_chat(SrnServer *srv, const char *name){
     lst = srv->chat_list;
     while (lst) {
         chat = lst->data;
-        if (strcasecmp(chat->name, name) == 0){
+        if (g_ascii_strcasecmp(chat->name, name) == 0){
             return SRN_ERR;
         }
         lst = g_slist_next(lst);
@@ -232,11 +233,17 @@ SrnRet srn_server_add_chat(SrnServer *srv, const char *name){
         return ret;
     }
 
-    chat = srn_chat_new(srv, name, chat_cfg);
-    // Creating server chat
-    if (g_ascii_strcasecmp(name, META_SERVER) == 0) {
+    /* If server's chat is not yet created and the chat name as same as
+     * server name, create the server chat
+     */
+    if (!srv->chat && g_strcmp0(name, srv->cfg->name) == 0) {
+        chat = srn_chat_new(srv, name, SRN_CHAT_TYPE_SERVER, chat_cfg);
         srv->chat = chat;
     } else {
+        chat = srn_chat_new(srv, name,
+                sirc_target_is_channel(srv->irc, name) ?
+                SRN_CHAT_TYPE_CHANNEL : SRN_CHAT_TYPE_DIALOG,
+                chat_cfg);
         srv->chat_list = g_slist_append(srv->chat_list, chat);
     }
 
@@ -275,7 +282,7 @@ SrnChat* srn_server_get_chat(SrnServer *srv, const char *name) {
     lst = srv->chat_list;
     while (lst) {
         chat = lst->data;
-        if (strcasecmp(chat->name, name) == 0){
+        if (g_ascii_strcasecmp(chat->name, name) == 0){
             return chat;
         }
         lst = g_slist_next(lst);

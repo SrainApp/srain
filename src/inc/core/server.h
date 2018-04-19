@@ -44,6 +44,7 @@ typedef struct _SrnMessage SrnMessage;
 typedef struct _SrnServerUser SrnServerUser;
 typedef struct _SrnChatUser SrnChatUser;
 typedef struct _SrnChat SrnChat;
+typedef enum _SrnChatType SrnChatType;
 typedef struct _SrnChatConfig SrnChatConfig;
 typedef struct _SrnServerAddr SrnServerAddr;
 typedef enum   _SrnServerState SrnServerState;
@@ -54,6 +55,11 @@ typedef struct _SrnServerConfig SrnServerConfig;
 typedef struct _EnabledCap EnabledCap;
 typedef struct _SrnServerCap SrnServerCap;
 
+enum _SrnChatType {
+    SRN_CHAT_TYPE_SERVER,
+    SRN_CHAT_TYPE_CHANNEL,
+    SRN_CHAT_TYPE_DIALOG,
+};
 
 /*enum _UserType {
     SRN_SERVER_USER_CHIGUA,    // No prefix
@@ -128,11 +134,13 @@ struct _SrnMessage {
 /* Represent a channel or dialog or a server session */
 struct _SrnChat {
     char *name;
+    SrnChatType type;
     bool is_joined;
+
     SrnChatUser *user;  // Yourself
     SrnChatUser *_user; // Hold all messages that do not belong other any user
-
     GSList *user_list;  // List of SrnChatUser
+
     GList *msg_list;
     SrnMessage *last_msg;
 
@@ -294,7 +302,7 @@ SrnServerUser* srn_server_get_user(SrnServer *srv, const char *nick);
 SrnServerUser* srn_server_add_and_get_user(SrnServer *srv, const char *nick);
 SrnRet srn_server_rename_user(SrnServer *srv, SrnServerUser *user, const char *nick);
 
-SrnChat* srn_chat_new(SrnServer *srv, const char *name, SrnChatConfig *cfg);
+SrnChat* srn_chat_new(SrnServer *srv, const char *name, SrnChatType type, SrnChatConfig *cfg);
 void srn_chat_free(SrnChat *chat);
 void srn_chat_set_config(SrnChat *chat, SrnChatConfig *cfg);
 void srn_chat_set_is_joined(SrnChat *chat, bool joined);

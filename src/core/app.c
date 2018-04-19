@@ -111,8 +111,7 @@ SrnApplication* srn_application_new(void){
     }
     g_slist_free_full(srv_cfg_list, g_free);
 
-    app->ui = sui_new_application(cfg->id, &app->ui_app_events, cfg->ui);
-    sui_application_set_ctx(app->ui, app);
+    app->ui = sui_new_application(cfg->id, app, &app->ui_app_events, cfg->ui);
 
     filter_init(); // FIXME
     decorator_init();
@@ -279,7 +278,8 @@ SrnRet srn_application_add_server(SrnApplication *app, SrnServerConfig *srv_cfg)
     app->cur_srv = srv;
     app->srv_list = g_slist_append(app->srv_list, srv);
 
-    ret = srn_server_add_chat(srv, META_SERVER);
+    // Create server chat
+    ret = srn_server_add_chat(srv, srv->cfg->name);
     if (!RET_IS_OK(ret)){
         return ret;
     }
