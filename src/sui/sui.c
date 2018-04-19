@@ -36,20 +36,16 @@
 #include "sui_common.h"
 #include "sui_app.h"
 #include "sui_window.h"
-#include "srain_buffer.h"
-#include "srain_server_buffer.h"
-#include "srain_chat_buffer.h"
-#include "srain_channel_buffer.h"
-#include "srain_private_buffer.h"
+#include "sui_buffer.h"
 #include "snotify.h"
 
 void sui_proc_pending_event(){
     while (gtk_events_pending()) gtk_main_iteration();
 }
 
-SuiApplication* sui_new_application(const char *id,
+SuiApplication* sui_new_application(const char *id, void *ctx,
         SuiApplicationEvents *events, SuiApplicationConfig *cfg) {
-    return sui_application_new(id, events, cfg);
+    return sui_application_new(id, ctx, events, cfg);
 }
 
 void sui_free_application(SuiApplication *app){
@@ -75,77 +71,17 @@ void sui_free_window(SuiWindow *win){
     // TODO
 }
 
-SuiBuffer* sui_new_server_buffer(const char *srv, void *ctx,
-        SuiBufferEvents *events, SuiBufferConfig *cfg){
-    SuiBuffer *buf;
-    SrainJoinPopover *popover;
-
-    buf = SUI_BUFFER(srain_server_buffer_new(srv, ctx, events, cfg));
-
-    sui_window_add_buffer(sui_get_cur_window(), buf);
-    sui_buffer_show_topic(buf, buf->cfg->show_topic);
-
-    popover = sui_window_get_join_popover(sui_get_cur_window());
-    srain_join_popover_prepare_model(popover, SRAIN_SERVER_BUFFER(buf));
-
-    return buf;
-}
-
-SuiBuffer *sui_new_channel_buffer(SuiBuffer *srv_buf, const char *chan, void *ctx,
-        SuiBufferEvents *events, SuiBufferConfig *cfg){
+SuiBuffer* sui_new_buffer(void *ctx, SuiBufferEvents *events, SuiBufferConfig *cfg){
     SuiBuffer *buf;
 
-    g_return_val_if_fail(SRAIN_IS_SERVER_BUFFER(srv_buf), NULL);
-
-    buf = SUI_BUFFER(srain_channel_buffer_new(
-            SRAIN_SERVER_BUFFER(srv_buf), chan, ctx, events, cfg));
+    buf = sui_buffer_new(ctx, events, cfg);
     sui_window_add_buffer(sui_get_cur_window(), buf);
-    srain_server_buffer_add_buffer(SRAIN_SERVER_BUFFER(srv_buf), buf);
-
-    sui_buffer_show_topic(buf, buf->cfg->show_topic);
-    srain_chat_buffer_show_user_list(
-            SRAIN_CHAT_BUFFER(buf), buf->cfg->show_user_list);
-
-    return buf;
-}
-
-SuiBuffer* sui_new_private_buffer(SuiBuffer *srv_buf, const char *nick, void *ctx,
-        SuiBufferEvents *events, SuiBufferConfig *cfg){
-    SuiBuffer *buf;
-
-    g_return_val_if_fail(SRAIN_IS_SERVER_BUFFER(srv_buf), NULL);
-
-    buf = SUI_BUFFER(srain_private_buffer_new(
-            SRAIN_SERVER_BUFFER(srv_buf), nick, ctx, events, cfg));
-    sui_window_add_buffer(sui_get_cur_window(), buf);
-    srain_server_buffer_add_buffer(SRAIN_SERVER_BUFFER(srv_buf), buf);
-    sui_buffer_show_topic(buf, buf->cfg->show_topic);
-    srain_chat_buffer_show_user_list(
-            SRAIN_CHAT_BUFFER(buf), buf->cfg->show_user_list);
 
     return buf;
 }
 
 void sui_free_buffer(SuiBuffer *buf){
     g_return_if_fail(SUI_IS_BUFFER(buf));
-
-    if (SRAIN_IS_SERVER_BUFFER(buf)) {
-        GSList *buf_list;
-        SrainServerBuffer *srv_buf;
-
-        srv_buf = SRAIN_SERVER_BUFFER(buf);
-        buf_list = srain_server_buffer_get_buffer_list(srv_buf);
-        /* A server buffer with non-empty buffer list can not be freed */
-        g_return_if_fail(!buf_list || g_slist_length(buf_list) == 0);
-    } else if (SRAIN_IS_CHAT_BUFFER(buf)) {
-        SrainChatBuffer *chat_buf;
-        SrainServerBuffer *srv_buf;
-
-        chat_buf = SRAIN_CHAT_BUFFER(buf);
-        srv_buf = SRAIN_SERVER_BUFFER(srain_chat_buffer_get_server_buffer(chat_buf));
-        srain_server_buffer_rm_buffer(srv_buf, SUI_BUFFER(chat_buf));
-    }
-
     sui_window_rm_buffer(sui_get_cur_window(), buf);
 }
 
@@ -166,7 +102,7 @@ SuiMessage *sui_add_sys_msg(SuiBuffer *buf, const char *msg, SysMsgType type){
     srain_msg_list_add_message(list, smsg);
 
     if (type != SYS_MSG_NORMAL){
-        sui_window_stack_sidebar_update(sui_get_cur_window(), buffer, NULL, msg);
+        sui_window_side_bar_update(sui_get_cur_window(), buffer, NULL, msg);
     }
 
     return smsg;
@@ -187,7 +123,7 @@ SuiMessage *sui_add_sent_msg(SuiBuffer *buf, const char *msg){
     sui_message_set_ctx(smsg, buf);
     srain_msg_list_add_message(list, smsg);
 
-    sui_window_stack_sidebar_update(sui_get_cur_window(), buffer, _("You"), msg);
+    sui_window_side_bar_update(sui_get_cur_window(), buffer, _("You"), msg);
 
     return smsg;
 }
@@ -209,13 +145,15 @@ SuiMessage *sui_add_recv_msg(SuiBuffer *buf, const char *nick, const char *id,
     list = sui_buffer_get_msg_list(buffer);
     smsg = (SuiMessage *)srain_recv_msg_new(nick, id, msg);
     sui_message_set_ctx(smsg, buf);
-    srain_recv_msg_show_avatar(SRAIN_RECV_MSG(smsg), buf->cfg->show_avatar);
+    srain_recv_msg_show_avatar(SRAIN_RECV_MSG(smsg),
+            sui_buffer_get_config(buf)->show_avatar);
     srain_msg_list_add_message(list, smsg);
 
-    sui_window_stack_sidebar_update(sui_get_cur_window(), buffer, nick, msg);
+    sui_window_side_bar_update(sui_get_cur_window(), buffer, nick, msg);
     if (strlen(id) != 0){
-        comp = sui_buffer_get_entry_completion(buffer);
-        srain_entry_completion_add_keyword(comp, nick, KEYWORD_TMP);
+        // FIXME
+        // comp = sui_buffer_get_entry_completion(buffer);
+        // srain_entry_completion_add_keyword(comp, nick, KEYWORD_TMP);
     }
 
     return smsg;
@@ -223,21 +161,19 @@ SuiMessage *sui_add_recv_msg(SuiBuffer *buf, const char *nick, const char *id,
 
 SrnRet sui_add_user(SuiBuffer *buf, const char *nick, UserType type){
     SrnRet ret;
-    SrainChatBuffer *buffer;
     SrainUserList *list;
     SrainEntryCompletion *comp;
 
-    g_return_val_if_fail(buf, SRN_ERR);
+    g_return_val_if_fail(SUI_IS_BUFFER(buf), SRN_ERR);
     g_return_val_if_fail(nick, SRN_ERR);
-    g_return_val_if_fail(SRAIN_IS_CHAT_BUFFER(buf), SRN_ERR);
 
-    buffer = SRAIN_CHAT_BUFFER(buf);
-    list = srain_chat_buffer_get_user_list(buffer);
+    list = sui_buffer_get_user_list(buf);
 
     ret = srain_user_list_add(list, nick, type);
     if (RET_IS_OK(ret)){
-        comp = sui_buffer_get_entry_completion(SUI_BUFFER(buffer));
-        srain_entry_completion_add_keyword(comp, nick, KEYWORD_NORMAL);
+        // FIXME
+        // comp = sui_buffer_get_entry_completion(buf);
+        // srain_entry_completion_add_keyword(comp, nick, KEYWORD_NORMAL);
     };
 
     return ret;
@@ -245,21 +181,20 @@ SrnRet sui_add_user(SuiBuffer *buf, const char *nick, UserType type){
 
 SrnRet sui_rm_user(SuiBuffer *buf, const char *nick){
     SrnRet ret;
-    SrainChatBuffer *buffer;
+    SuiBuffer *buffer;
     SrainUserList *list;
     SrainEntryCompletion *comp;
 
-    g_return_val_if_fail(buf, SRN_ERR);
+    g_return_val_if_fail(SUI_IS_BUFFER(buf), SRN_ERR);
     g_return_val_if_fail(nick, SRN_ERR);
-    g_return_val_if_fail(SRAIN_IS_CHAT_BUFFER(buf), SRN_ERR);
 
-    buffer = SRAIN_CHAT_BUFFER(buf);
-    list = srain_chat_buffer_get_user_list(buffer);
+    list = sui_buffer_get_user_list(buf);
 
     ret = srain_user_list_rm(list, nick);
     if (RET_IS_OK(ret)){
-        comp = sui_buffer_get_entry_completion(SUI_BUFFER(buffer));
-        srain_entry_completion_rm_keyword(comp, nick);
+        // FIXME
+        // comp = sui_buffer_get_entry_completion(SUI_BUFFER(buf));
+        // srain_entry_completion_rm_keyword(comp, nick);
     }
 
     return ret;
@@ -268,30 +203,25 @@ SrnRet sui_rm_user(SuiBuffer *buf, const char *nick){
 SrnRet sui_ren_user(SuiBuffer *buf, const char *old_nick, const char *new_nick,
         UserType type){
     SrnRet ret;
-    SrainChatBuffer *buffer;
+    SuiBuffer *buffer;
     SrainUserList *list;
     SrainEntryCompletion *comp;
 
-    g_return_val_if_fail(buf, SRN_ERR);
+    g_return_val_if_fail(SUI_IS_BUFFER(buf), SRN_ERR);
     g_return_val_if_fail(old_nick, SRN_ERR);
     g_return_val_if_fail(new_nick, SRN_ERR);
-    if (!SRAIN_IS_CHAT_BUFFER(buf)){
-        return SRN_ERR;
-    }
 
-    buffer = SRAIN_CHAT_BUFFER(buf);
-    list = srain_chat_buffer_get_user_list(buffer);
+    list = sui_buffer_get_user_list(buf);
 
     /* Your nick changed */
-    if (strcmp(old_nick, sui_buffer_get_nick(SUI_BUFFER(buffer))) == 0){
-        sui_buffer_set_nick(SUI_BUFFER(buffer), new_nick);
-    }
-
+    // FIXME: new-ui
+    //
     ret = srain_user_list_rename(list, old_nick, new_nick, type);
     if (RET_IS_OK(ret)){
-        comp = sui_buffer_get_entry_completion(SUI_BUFFER(buffer));
-        srain_entry_completion_add_keyword(comp, old_nick, KEYWORD_NORMAL);
-        srain_entry_completion_rm_keyword(comp, new_nick);
+        // FIXME
+        // comp = sui_buffer_get_entry_completion(buf);
+        // srain_entry_completion_add_keyword(comp, old_nick, KEYWORD_NORMAL);
+        // srain_entry_completion_rm_keyword(comp, new_nick);
     }
 
     return ret;
@@ -346,11 +276,11 @@ void sui_message_append_message(SuiBuffer *buf, SuiMessage *smsg, const char *ms
     srain_msg_append_msg(smsg, msg);
 
     if (SRAIN_IS_RECV_MSG(smsg)){
-        sui_window_stack_sidebar_update(sui_get_cur_window(), buffer,
+        sui_window_side_bar_update(sui_get_cur_window(), buffer,
                 gtk_label_get_text(SRAIN_RECV_MSG(smsg)->nick_label), msg);
     }
     else if (SRAIN_IS_SEND_MSG(smsg)) {
-        sui_window_stack_sidebar_update(sui_get_cur_window(), buffer, _("You"), msg);
+        sui_window_side_bar_update(sui_get_cur_window(), buffer, _("You"), msg);
     } else {
         WARN_FR("Append message is not available for message %p", smsg);
     }
@@ -367,11 +297,9 @@ void sui_message_append_image(SuiMessage *smsg, const char *url){
     buf = sui_message_get_ctx(smsg);
     flag = SRAIN_IMAGE_ENLARGE | SRAIN_IMAGE_SPININER;
 
-    if (buf->cfg->preview_image){
+    if (sui_buffer_get_config(buf)->preview_image){
         flag |= SRAIN_IMAGE_AUTOLOAD;
-    } else {
     }
-
 
     srain_msg_append_image(smsg, url, flag);
 }
@@ -396,16 +324,10 @@ void sui_message_notify(SuiMessage *smsg){
     const char *title;
     const char *msg;
     const char *icon;
-    SuiBuffer *buf;
 
     g_return_if_fail(smsg);
 
     if (sui_window_is_active(sui_get_cur_window())){
-        return;
-    }
-
-    buf = sui_message_get_ctx(smsg);
-    if (buf && !buf->cfg->notify){
         return;
     }
 
@@ -434,17 +356,14 @@ void sui_message_notify(SuiMessage *smsg){
 }
 
 void sui_add_completion(SuiBuffer *buf, const char *keyword){
-    SuiBuffer *buffer;
     SrainEntryCompletion *comp;
 
-    g_return_if_fail(buf);
     g_return_if_fail(SUI_IS_BUFFER(buf));
     g_return_if_fail(keyword);
 
-    buffer = buf;
-    comp = sui_buffer_get_entry_completion(buffer);
+    // comp = sui_buffer_get_entry_completion(buffer);
 
-    srain_entry_completion_add_keyword(comp, keyword, KEYWORD_NORMAL);
+    // srain_entry_completion_add_keyword(comp, keyword, KEYWORD_NORMAL);
 }
 
 void sui_rm_completion(SuiBuffer *buf, const char *keyword){
@@ -456,9 +375,9 @@ void sui_rm_completion(SuiBuffer *buf, const char *keyword){
     g_return_if_fail(keyword);
 
     buffer = buf;
-    comp = sui_buffer_get_entry_completion(buffer);
-
-    srain_entry_completion_rm_keyword(comp, keyword);
+    // FIXME
+    // comp = sui_buffer_get_entry_completion(buffer);
+    // srain_entry_completion_rm_keyword(comp, keyword);
 }
 
 void sui_message_box(const char *title, const char *msg){
@@ -491,28 +410,20 @@ void sui_message_box(const char *title, const char *msg){
 
 void sui_chan_list_start(SuiBuffer *buf){
     g_return_if_fail(buf);
-    g_return_if_fail(SRAIN_IS_SERVER_BUFFER(buf));
 
-    srain_server_buffer_start_add_channel(SRAIN_SERVER_BUFFER(buf));
 }
 
 void sui_chan_list_add(SuiBuffer *buf, const char *chan, int users,
         const char *topic){
     g_return_if_fail(buf);
-    g_return_if_fail(SRAIN_IS_SERVER_BUFFER(buf));
     g_return_if_fail(chan);
     g_return_if_fail(topic);
 
-    srain_server_buffer_add_channel(SRAIN_SERVER_BUFFER(buf),
-            chan, users, topic);
     sui_proc_pending_event();
 }
 
 void sui_chan_list_end(SuiBuffer *buf){
     g_return_if_fail(buf);
-    g_return_if_fail(SRAIN_IS_SERVER_BUFFER(buf));
-
-    srain_server_buffer_end_add_channel(SRAIN_SERVER_BUFFER(buf));
 }
 
 void sui_server_list_add(const char *server){
