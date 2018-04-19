@@ -33,9 +33,7 @@
 #include "sui_event_hdr.h"
 #include "nick_menu.h"
 #include "sui_window.h"
-#include "srain_buffer.h"
-#include "srain_chat_buffer.h"
-#include "srain_server_buffer.h"
+#include "sui_buffer.h"
 #include "srain_msg.h"
 
 #include "plugin.h"
@@ -147,7 +145,7 @@ static void msg_label_on_popup(GtkLabel *label, GtkMenu *menu,
     GtkMenuItem *forward_menu_item;
     GtkMenu *forward_submenu;
     SrainRecvMsg *smsg;
-    SrainServerBuffer *buf;
+    SuiBuffer *buf;
 
     smsg = SRAIN_RECV_MSG(user_data);
 
@@ -164,12 +162,14 @@ static void msg_label_on_popup(GtkLabel *label, GtkMenu *menu,
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), GTK_WIDGET(forward_menu_item));
 
     /* Create submenu of forward_menu_item */
-    buf = sui_window_get_cur_server_buffer(sui_get_cur_window());
-    g_return_if_fail(SRAIN_IS_SERVER_BUFFER(buf));
+    // FIXME: new-ui
+    buf = NULL;
+    g_return_if_fail(buf);
 
     n = 0;
     forward_submenu = GTK_MENU(gtk_menu_new());
-    lst = srain_server_buffer_get_buffer_list(buf);
+    lst = NULL;
+    // FIXME
     while (lst){
         GtkMenuItem *item;
 
@@ -214,7 +214,8 @@ static void nick_button_on_click(GtkWidget *widget, gpointer *user_data){
     str = g_string_new(gtk_label_get_text(nick_label));
     str = g_string_append(str, ": ");
 
-    sui_buffer_insert_text(sui_get_cur_buffer(), str->str, 0);
+    sui_buffer_insert_text(sui_get_cur_buffer(), str->str, -1, 0);
+
     g_string_free(str, TRUE);
 }
 
@@ -273,7 +274,7 @@ static void srain_sys_msg_init(SrainSysMsg *self){
 
 static void srain_sys_msg_class_init(SrainSysMsgClass *class){
     gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
-            "/org/gtk/srain/sys_msg.glade");
+            "/im/srain/Srain/sys_msg.glade");
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainSysMsg, msg_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainSysMsg, time_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainSysMsg, padding_box);
@@ -313,7 +314,7 @@ static void srain_send_msg_init(SrainSendMsg *self){
 
 static void srain_send_msg_class_init(SrainSendMsgClass *class){
     gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
-            "/org/gtk/srain/send_msg.glade");
+            "/im/srain/Srain/send_msg.glade");
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainSendMsg, padding_box);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainSendMsg, msg_label);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainSendMsg, time_label);
@@ -345,7 +346,7 @@ static void srain_recv_msg_init(SrainRecvMsg *self){
 
 static void srain_recv_msg_class_init(SrainRecvMsgClass *class){
     gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
-            "/org/gtk/srain/recv_msg.glade");
+            "/im/srain/Srain/recv_msg.glade");
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, avatar_image);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, padding_box);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainRecvMsg, msg_label);

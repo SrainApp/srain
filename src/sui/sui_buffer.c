@@ -17,8 +17,8 @@
  */
 
 /**
- * @file srain_buffer.c
- * @brief Srain's chat panel widget, contains message list and input area
+ * @file sui_buffer.c
+ * @brief Chat buffer widget
  * @author Shengyu Zhang <i@silverrainz.me>
  * @version 0.06.2
  * @date 2016-03-01
@@ -29,29 +29,66 @@
 #include <assert.h>
 #include <string.h>
 
+#include "core/core.h"
 #include "sui/sui.h"
+
 #include "sui_common.h"
 #include "sui_event_hdr.h"
-#include "srain_buffer.h"
+#include "sui_buffer.h"
 #include "srain_entry_completion.h"
 #include "srain_msg_list.h"
 #include "srain_user_list.h"
 #include "srain_msg.h"
 #include "theme.h"
 
-#include "plugin.h"
 #include "log.h"
 #include "i18n.h"
 #include "utils.h"
 
+struct _SuiBuffer {
+    GtkBox parent;
+
+    SrnChat *ctx;
+    SuiBufferEvents *events;
+    SuiBufferConfig *cfg;
+
+    /* Topic */
+    GtkRevealer *topic_revealer;
+    GtkLabel *topic_label;
+
+    /* Menus */
+    GtkMenu *menu;
+    GtkCheckMenuItem *topic_menu_item;
+    GtkCheckMenuItem *user_list_menu_item;
+    GtkMenuItem *close_menu_item;
+    GtkMenuItem *leave_menu_item;
+    GtkMenuItem *disconn_menu_item;
+    GtkMenuItem *quit_menu_item;
+
+    /* Message list */
+    GtkBox *msg_list_box;
+    SrainMsgList *msg_list;
+
+    /* User list */
+    GtkRevealer *user_list_revealer;
+    SrainUserList *user_list;
+
+    GtkTextBuffer *input_text_buffer;
+};
+
+struct _SuiBufferClass {
+    GtkBoxClass parent_class;
+};
+
 static void sui_buffer_set_ctx(SuiBuffer *self, void *ctx);
 static void sui_buffer_set_events(SuiBuffer *self, SuiBufferEvents *events);
+
 static void topic_menu_item_on_toggled(GtkWidget* widget, gpointer user_data);
-static gboolean entry_on_key_press(gpointer user_data, GdkEventKey *event);
-static gboolean upload_image_idle(GtkEntry *entry);
-static void upload_image_async(GtkEntry *entry);
-static void upload_image_button_on_click(GtkWidget *widget, gpointer user_data);
-static void input_entry_on_activate(SuiBuffer *self);
+static void user_list_menu_item_on_toggled(GtkWidget* widget, gpointer user_data);
+static void close_menu_item_on_activate(GtkWidget* widget, gpointer user_data);
+static void leave_menu_item_on_activate(GtkWidget* widget, gpointer user_data);
+static void disconn_menu_item_on_activate(GtkWidget* widget, gpointer user_data);
+static void quit_menu_item_on_activate(GtkWidget* widget, gpointer user_data);
 
 /*****************************************************************************
  * GObject functions
@@ -60,29 +97,23 @@ static void input_entry_on_activate(SuiBuffer *self);
 enum
 {
   // 0 for PROP_NOME
-  PROP_NAME = 1,
-  PROP_REMARK,
-  PROP_CTX,
+  PROP_CTX = 1,
   PROP_EVENTS,
   PROP_CONFIG,
+  PROP_NAME,
+  PROP_REMARK,
   N_PROPERTIES
 };
 
-static GParamSpec *obj_properties[N_PROPERTIES] = { NULL, };
-
 G_DEFINE_TYPE(SuiBuffer, sui_buffer, GTK_TYPE_BOX);
+
+static GParamSpec *obj_properties[N_PROPERTIES] = { NULL, };
 
 static void sui_buffer_set_property(GObject *object, guint property_id,
         const GValue *value, GParamSpec *pspec){
   SuiBuffer *self = SUI_BUFFER(object);
 
   switch (property_id){
-    case PROP_NAME:
-      sui_buffer_set_name(self, g_value_get_string(value));
-      break;
-    case PROP_REMARK:
-      sui_buffer_set_remark(self, g_value_get_string(value));
-      break;
     case PROP_CTX:
       sui_buffer_set_ctx(self, g_value_get_pointer(value));
       break;
@@ -104,12 +135,6 @@ static void sui_buffer_get_property(GObject *object, guint property_id,
   SuiBuffer *self = SUI_BUFFER(object);
 
   switch (property_id){
-    case PROP_NAME:
-      g_value_set_string(value, sui_buffer_get_name(self));
-      break;
-    case PROP_REMARK:
-      g_value_set_string(value, sui_buffer_get_remark(self));
-      break;
     case PROP_CTX:
       g_value_set_pointer(value, sui_buffer_get_ctx(self));
       break;
@@ -119,6 +144,12 @@ static void sui_buffer_get_property(GObject *object, guint property_id,
     case PROP_CONFIG:
       g_value_set_pointer(value, sui_buffer_get_config(self));
       break;
+    case PROP_NAME:
+      g_value_set_string(value, sui_buffer_get_name(self));
+      break;
+    case PROP_REMARK:
+      g_value_set_string(value, sui_buffer_get_remark(self));
+      break;
     default:
       /* We don't have any other property... */
       G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
@@ -127,21 +158,14 @@ static void sui_buffer_get_property(GObject *object, guint property_id,
 }
 
 static void sui_buffer_init(SuiBuffer *self){
-    GtkBuilder *builder;
-
     gtk_widget_init_template(GTK_WIDGET(self));
 
-    /* Init menus */
-    builder = gtk_builder_new_from_resource("/org/gtk/srain/buffer_menu.glade");
-    self->topic_menu_item =
-        (GtkCheckMenuItem *)gtk_builder_get_object(builder, "topic_menu_item");
-    gtk_menu_shell_append(
-            GTK_MENU_SHELL(self->menu),
-            GTK_WIDGET(self->topic_menu_item));
-    g_object_unref(builder);
-
-    /* Init completion list */
-    self->completion = srain_entry_completion_new(self->input_entry);
+    /* Init user list*/
+    self->user_list = srain_user_list_new();
+    // Hide user_list for avoiding warning
+    gtk_widget_hide(GTK_WIDGET(self->user_list));
+    gtk_container_add(GTK_CONTAINER(self->user_list_revealer), // FIXME
+            GTK_WIDGET(self->user_list));
 
     /* Init msg list */
     self->msg_list = srain_msg_list_new();
@@ -149,32 +173,58 @@ static void sui_buffer_init(SuiBuffer *self){
             TRUE, TRUE, 0);
     gtk_widget_show(GTK_WIDGET(self->msg_list));
 
-    g_signal_connect(self->topic_menu_item, "toggled",
-            G_CALLBACK(topic_menu_item_on_toggled), self);
     g_signal_connect(self->topic_label, "activate-link",
             G_CALLBACK(activate_link), self);
-    g_signal_connect_swapped(self->input_entry, "activate",
-            G_CALLBACK(input_entry_on_activate), self);
-    g_signal_connect_swapped(self->input_entry, "key_press_event",
-            G_CALLBACK(entry_on_key_press), self);
-    g_signal_connect(self->upload_image_button, "clicked",
-            G_CALLBACK(upload_image_button_on_click), self->input_entry);
+    g_signal_connect(self->topic_menu_item, "toggled",
+            G_CALLBACK(topic_menu_item_on_toggled), self);
+    g_signal_connect(self->user_list_menu_item, "toggled",
+            G_CALLBACK(user_list_menu_item_on_toggled), self);
+    g_signal_connect(self->close_menu_item, "activate",
+            G_CALLBACK(close_menu_item_on_activate), self);
+    g_signal_connect(self->leave_menu_item, "activate",
+            G_CALLBACK(leave_menu_item_on_activate), self);
+    g_signal_connect(self->disconn_menu_item, "activate",
+            G_CALLBACK(disconn_menu_item_on_activate),self);
+    g_signal_connect(self->quit_menu_item, "activate",
+            G_CALLBACK(quit_menu_item_on_activate),self);
+}
+
+static void sui_buffer_constructed(GObject *object){
+    SuiBuffer *self;
+
+    self = SUI_BUFFER(object);
+    switch(self->ctx->type){
+        case SRN_CHAT_TYPE_SERVER:
+            gtk_widget_show(GTK_WIDGET(self->quit_menu_item));
+            gtk_widget_show(GTK_WIDGET(self->disconn_menu_item));
+            break;
+        case SRN_CHAT_TYPE_CHANNEL:
+            gtk_widget_show(GTK_WIDGET(self->leave_menu_item));
+            break;
+        case SRN_CHAT_TYPE_DIALOG:
+            gtk_widget_show(GTK_WIDGET(self->close_menu_item));
+            break;
+        default:
+            g_warn_if_reached();
+    }
+
+    sui_buffer_show_topic(self, self->cfg->show_topic);
+    sui_buffer_show_user_list(self, self->cfg->show_user_list);
+
+    G_OBJECT_CLASS(sui_buffer_parent_class)->constructed(object);
 }
 
 static void sui_buffer_finalize(GObject *object){
-    SuiBuffer *self = SUI_BUFFER(object);
-
-    g_free(self->name);
-    g_free(self->remark);
-
     G_OBJECT_CLASS(sui_buffer_parent_class)->finalize(object);
 }
 
 static void sui_buffer_class_init(SuiBufferClass *class){
-    GObjectClass *object_class = G_OBJECT_CLASS(class);
-    GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(class);
+    GObjectClass *object_class;
+    GtkWidgetClass *widget_class;
 
     /* Overwrite callbacks */
+    object_class = G_OBJECT_CLASS(class);
+    object_class->constructed = sui_buffer_constructed;
     object_class->finalize = sui_buffer_finalize;
     object_class->set_property = sui_buffer_set_property;
     object_class->get_property = sui_buffer_get_property;
@@ -185,18 +235,18 @@ static void sui_buffer_class_init(SuiBufferClass *class){
                 "Name",
                 "Name of buffer.",
                 NULL  /* default value */,
-                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+                G_PARAM_READABLE);
 
     obj_properties[PROP_REMARK] =
         g_param_spec_string("remark",
                 "Remark",
                 "Remark of buffer.",
                 NULL  /* default value */,
-                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+                G_PARAM_READABLE);
 
     obj_properties[PROP_CTX] =
-        g_param_spec_pointer("ctx",
-                "Ctx",
+        g_param_spec_pointer("context",
+                "Context",
                 "Context of buffer.",
                 G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
 
@@ -216,21 +266,27 @@ static void sui_buffer_class_init(SuiBufferClass *class){
             N_PROPERTIES,
             obj_properties);
 
-    /* Bind child */
-    gtk_widget_class_set_template_from_resource(widget_class, "/org/gtk/srain/buffer.glade");
+    widget_class = GTK_WIDGET_CLASS(class);
 
-    gtk_widget_class_bind_template_child(widget_class, SuiBuffer, name_label);
-    gtk_widget_class_bind_template_child(widget_class, SuiBuffer, remark_label);
-    gtk_widget_class_bind_template_child(widget_class, SuiBuffer, menu);
+    /* Bind child */
+    gtk_widget_class_set_template_from_resource(
+            widget_class, "/im/srain/Srain/buffer.glade");
+
     gtk_widget_class_bind_template_child(widget_class, SuiBuffer, topic_revealer);
     gtk_widget_class_bind_template_child(widget_class, SuiBuffer, topic_label);
+
+    gtk_widget_class_bind_template_child(widget_class, SuiBuffer, menu);
+    gtk_widget_class_bind_template_child(widget_class, SuiBuffer, topic_menu_item);
+    gtk_widget_class_bind_template_child(widget_class, SuiBuffer, user_list_menu_item);
+    gtk_widget_class_bind_template_child(widget_class, SuiBuffer, close_menu_item);
+    gtk_widget_class_bind_template_child(widget_class, SuiBuffer, leave_menu_item);
+    gtk_widget_class_bind_template_child(widget_class, SuiBuffer, disconn_menu_item);
+    gtk_widget_class_bind_template_child(widget_class, SuiBuffer, quit_menu_item);
 
     gtk_widget_class_bind_template_child(widget_class, SuiBuffer, msg_list_box);
     gtk_widget_class_bind_template_child(widget_class, SuiBuffer, user_list_revealer);
 
-    gtk_widget_class_bind_template_child(widget_class, SuiBuffer, nick_label);
-    gtk_widget_class_bind_template_child(widget_class, SuiBuffer, input_entry);
-    gtk_widget_class_bind_template_child(widget_class, SuiBuffer, upload_image_button);
+    gtk_widget_class_bind_template_child(widget_class, SuiBuffer, input_text_buffer);
 }
 
 
@@ -238,47 +294,45 @@ static void sui_buffer_class_init(SuiBufferClass *class){
  * Expored functions
  *****************************************************************************/
 
-/**
- * @brief Insert text into a SuiBuffer's input entry
- *
- * @param self
- * @param text
- * @param pos If the pos = -1, insert at current position
- */
-void sui_buffer_insert_text(SuiBuffer *self, const char *text, int pos){
-    GtkEntryBuffer *buf;
-
-    buf = gtk_entry_get_buffer(self->input_entry);
-    if (pos == -1)
-        pos = gtk_editable_get_position(GTK_EDITABLE(self->input_entry));
-
-    gtk_entry_buffer_insert_text(buf, pos, text, -1);
-    gtk_editable_set_position(GTK_EDITABLE(self->input_entry),
-            pos + strlen(text));
+SuiBuffer* sui_buffer_new(void *ctx, SuiBufferEvents *events, SuiBufferConfig *cfg){
+    return g_object_new(SUI_TYPE_BUFFER,
+            "context", ctx,
+            "events", events,
+            "config", cfg,
+            NULL);
 }
 
-void sui_buffer_fcous_entry(SuiBuffer *self){
-    gtk_widget_grab_focus(GTK_WIDGET(self->input_entry));
+void sui_buffer_insert_text(SuiBuffer *self, const char *text, int line, int offset){
+    GtkTextMark *insert;
+    GtkTextIter iter;
+
+    insert = gtk_text_buffer_get_insert(self->input_text_buffer);
+    gtk_text_buffer_get_iter_at_mark(self->input_text_buffer, &iter, insert);
+    if (line == -1){ // Current line
+        line = gtk_text_iter_get_line(&iter);
+    }
+    if (offset == -1) {
+        offset = gtk_text_iter_get_line_offset(&iter);
+    }
+
+    gtk_text_buffer_get_iter_at_line_offset(self->input_text_buffer, &iter, line, offset);
+    gtk_text_buffer_insert(self->input_text_buffer, &iter, text, -1);
 }
 
-void sui_buffer_set_name(SuiBuffer *self, const char *name){
-    str_assign(&self->name, name);
-    gtk_label_set_text(self->name_label, name);
-    gtk_widget_set_name(GTK_WIDGET(self), self->name);
+void sui_buffer_show_topic(SuiBuffer *self, bool isshow){
+    gtk_check_menu_item_set_active(self->topic_menu_item, isshow);
+}
 
+void sui_buffer_show_user_list(SuiBuffer *self, bool show){
+    gtk_check_menu_item_set_active(self->user_list_menu_item, show);
 }
 
 const char* sui_buffer_get_name(SuiBuffer *self){
-    return self->name;
-}
-
-void sui_buffer_set_remark(SuiBuffer *self, const char *remark){
-    str_assign(&self->remark, remark);
-    gtk_label_set_text(self->remark_label, remark);
+    return self->ctx->name;
 }
 
 const char* sui_buffer_get_remark(SuiBuffer *self){
-    return self->remark;
+    return self->ctx->srv->cfg->name;
 }
 
 // sui_buffer_set_events is static
@@ -302,14 +356,6 @@ void* sui_buffer_get_ctx(SuiBuffer *self){
     return self->ctx;
 }
 
-void sui_buffer_set_nick(SuiBuffer *self, const char *nick){
-    gtk_label_set_text(self->nick_label, nick);
-}
-
-const char* sui_buffer_get_nick(SuiBuffer *self){
-    return gtk_label_get_text(self->nick_label);
-}
-
 void sui_buffer_set_topic(SuiBuffer *self, const char *topic){
     gtk_label_set_markup(self->topic_label, topic);
     gtk_check_menu_item_toggled(self->topic_menu_item);
@@ -319,20 +365,20 @@ void sui_buffer_set_topic_setter(SuiBuffer *self, const char *setter){
     gtk_widget_set_tooltip_text(GTK_WIDGET(self->topic_label), setter);
 }
 
-void sui_buffer_show_topic(SuiBuffer *self, bool isshow){
-    gtk_check_menu_item_set_active(self->topic_menu_item, isshow);
-}
-
 SrainMsgList* sui_buffer_get_msg_list(SuiBuffer *self){
     return self->msg_list;
 }
 
-SrainEntryCompletion* sui_buffer_get_entry_completion(SuiBuffer *self){
-    return self->completion;
-}
-
 GtkMenu* sui_buffer_get_menu(SuiBuffer *self){
     return self->menu;
+}
+
+SrainUserList* sui_buffer_get_user_list(SuiBuffer *self){
+    return self->user_list;
+}
+
+GtkTextBuffer* sui_buffer_get_input_text_buffer(SuiBuffer *self){
+    return self->input_text_buffer;
 }
 
 /*****************************************************************************
@@ -363,107 +409,45 @@ static void topic_menu_item_on_toggled(GtkWidget* widget, gpointer user_data){
     }
 }
 
-static gboolean entry_on_key_press(gpointer user_data, GdkEventKey *event){
+static void user_list_menu_item_on_toggled(GtkWidget* widget, gpointer user_data){
+    bool active;
+    SuiBuffer *self  = SUI_BUFFER(user_data);
+    GtkCheckMenuItem *item = GTK_CHECK_MENU_ITEM(widget);
+
+    active = gtk_check_menu_item_get_active(item);
+    gtk_revealer_set_reveal_child(self->user_list_revealer, active);
+    if (active){
+        gtk_widget_show(GTK_WIDGET(self->user_list));
+    } else {
+        gtk_widget_hide(GTK_WIDGET(self->user_list));
+    }
+}
+
+static void close_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
     SuiBuffer *self;
 
     self = user_data;
-    switch (event->keyval){
-        case GDK_KEY_Down:
-            // TODO: use up/down to switch history message?
-            srain_msg_list_scroll_down(self->msg_list, 30);
-            break;
-        case GDK_KEY_Up:
-            srain_msg_list_scroll_up(self->msg_list, 30);
-            break;
-        case GDK_KEY_Tab:
-            srain_entry_completion_complete(self->completion);
-            break;
-        case GDK_KEY_n:
-            if (event->state & GDK_CONTROL_MASK){
-                srain_entry_completion_complete(self->completion);
-                break;
-            }
-        default:
-            return FALSE;
-    }
-
-    return TRUE;
+    sui_buffer_event_hdr(self, SUI_EVENT_UNQUERY, NULL);
 }
 
-static gboolean upload_image_idle(GtkEntry *entry){
-    char *url;
+static void leave_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
+    SuiBuffer *self;
 
-    /* Check whether object is alive now */
-    g_return_val_if_fail(GTK_IS_ENTRY(entry), FALSE);
-
-    url = g_object_get_data(G_OBJECT(entry), "image-url");
-    if (url){
-        gtk_entry_set_text(entry, url);
-        g_free(url);
-    } else {
-        gtk_entry_set_text(entry, _("Failed to upload image"));
-    }
-
-    g_object_set_data(G_OBJECT(entry), "image-url", NULL);
-    gtk_widget_set_sensitive(GTK_WIDGET(entry), TRUE);
-
-    /* NOTE: DON'T FORGET to return FALSE!!! */
-    return FALSE;
+    self = user_data;
+    sui_buffer_event_hdr(self, SUI_EVENT_PART, NULL);
 }
 
-static void upload_image_async(GtkEntry *entry){
-    char *url;
-    const char *filename;
+static void disconn_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
+    SuiBuffer *self;
 
-    filename = gtk_entry_get_text(entry);
-    url = plugin_upload(filename);
-
-    g_object_set_data(G_OBJECT(entry), "image-url", url);
-    gdk_threads_add_idle((GSourceFunc)upload_image_idle, entry);
+    self = user_data;
+    sui_buffer_event_hdr(self, SUI_EVENT_DISCONNECT, NULL);
 }
 
-static void upload_image_button_on_click(GtkWidget *widget, gpointer user_data){
-    char *filename;
-    GtkEntry *entry;
-    GtkWindow *toplevel;
+static void quit_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
+    SuiBuffer *self;
 
-    entry = user_data;
-
-    toplevel = GTK_WINDOW(gtk_widget_get_toplevel(widget));
-    filename = show_open_filechosser(toplevel);
-    if (filename) {
-        LOG_FR("filename: '%s'", filename);
-        gtk_widget_set_sensitive(GTK_WIDGET(entry), FALSE);
-        gtk_entry_set_text(entry, filename);
-
-        g_thread_new(NULL, (GThreadFunc)upload_image_async, entry);
-
-        g_free(filename);
-    }
+    self = user_data;
+    sui_buffer_event_hdr(self, SUI_EVENT_QUIT, NULL);
 }
 
-static void input_entry_on_activate(SuiBuffer *self){
-    const char *input;
-    GVariantDict *params;
-    SrnRet ret;
-
-    input = gtk_entry_get_text(self->input_entry);
-
-    if (str_is_empty(input)) goto RET;
-
-    params = g_variant_dict_new(NULL);
-    g_variant_dict_insert(params, "message", SUI_EVENT_PARAM_STRING, input);
-
-    ret = sui_buffer_event_hdr(self, SUI_EVENT_SEND, params);
-
-    g_variant_dict_unref(params);
-
-    if (!RET_IS_OK(ret)){
-        return; // Don't empty the input_entry if error occured
-    }
-
-RET:
-    gtk_entry_set_text(self->input_entry, "");
-
-    return;
-}

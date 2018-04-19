@@ -21,7 +21,7 @@
 
 #include "sui_app.h"
 #include "sui_window.h"
-#include "srain_buffer.h"
+#include "sui_buffer.h"
 
 SrnRet sui_application_event_hdr(SuiApplication *app, SuiEvent event, GVariantDict *params);
 SrnRet sui_window_event_hdr(SuiWindow *win, SuiEvent event, GVariantDict *params);

@@ -35,10 +35,8 @@
 #include "sui_common.h"
 #include "sui_event_hdr.h"
 #include "sui_window.h"
+#include "sui_buffer.h"
 #include "srain_join_popover.h"
-#include "srain_buffer.h"
-#include "srain_server_buffer.h"
-#include "srain_chat_buffer.h"
 
 #define PAGE_JOIN_CHANNEL           "join_channel_page"
 #define PAGE_SEARCH_CHANNEL         "search_channel_page"
@@ -49,6 +47,10 @@
 
 #define MATCH_LIST_STORE_COL_INDEX      0
 #define MATCH_LIST_STORE_COL_COMMENT    1
+
+#define CHANNEL_LIST_STORE_COL_CHANNEL     0
+#define CHANNEL_LIST_STORE_COL_USERS       1
+#define CHANNEL_LIST_STORE_COL_TOPIC 2
 
 struct _SrainJoinPopover {
     GtkPopover parent;
@@ -162,7 +164,7 @@ static void srain_join_popover_class_init(SrainJoinPopoverClass *class){
 
     widget_class = GTK_WIDGET_CLASS(class);
     gtk_widget_class_set_template_from_resource(widget_class,
-            "/org/gtk/srain/join_popover.glade");
+            "/im/srain/Srain/join_popover.glade");
 
     gtk_widget_class_bind_template_child(widget_class, SrainJoinPopover, stack);
 
@@ -187,11 +189,10 @@ static void srain_join_popover_class_init(SrainJoinPopoverClass *class){
     gtk_widget_class_bind_template_child(widget_class, SrainJoinPopover, join_button);
 }
 
-SrainJoinPopover* srain_join_popover_new(GtkWidget *relative){
+SrainJoinPopover* srain_join_popover_new(){
     SrainJoinPopover *popover;
 
     popover = g_object_new(SRAIN_TYPE_JOIN_POPOVER, NULL);
-    gtk_popover_set_relative_to(GTK_POPOVER(popover), relative);
 
     return popover;
 }
@@ -200,21 +201,10 @@ SrainJoinPopover* srain_join_popover_new(GtkWidget *relative){
  * Exported functions
  *****************************************************************************/
 
-void srain_join_popover_prepare_model(SrainJoinPopover *popover,
-        SrainServerBuffer *buf){
-    g_signal_connect(buf, "notify::adding-channel",
-            G_CALLBACK(on_adding_channel), popover);
-
-    // Can only be called once for a given filter model
-    gtk_tree_model_filter_set_visible_func(
-            srain_server_buffer_get_channel_model(buf),
-            chan_tree_visible_func, popover, NULL);
+void srain_join_popover_prepare_model(SrainJoinPopover *popover, SuiBuffer *buf){
 }
 
-void srain_join_popover_set_model(SrainJoinPopover *popover,
-        SrainServerBuffer *buf){
-    gtk_tree_view_set_model(popover->chan_tree_view,
-            GTK_TREE_MODEL(srain_server_buffer_get_channel_model(buf)));
+void srain_join_popover_set_model(SrainJoinPopover *popover, SuiBuffer *buf){
 }
 
 void srain_join_popover_clear(SrainJoinPopover *popover){
@@ -262,24 +252,6 @@ static void match_combo_box_set_model(SrainJoinPopover *popover){
 }
 
 static void popover_on_visible(GObject *object, GParamSpec *pspec, gpointer data){
-    SuiWindow *win;
-    SrainServerBuffer *buf;
-    SrainJoinPopover *popover;
-
-    popover = SRAIN_JOIN_POPOVER(object);
-    win = sui_get_cur_window();
-    buf = sui_window_get_cur_server_buffer(win);
-
-    if (!gtk_widget_is_visible(GTK_WIDGET(popover))){
-        return;
-    }
-    if (SRAIN_IS_SERVER_BUFFER(buf)){
-        srain_join_popover_set_model(popover, buf);
-        update_status(popover, srain_server_buffer_is_adding_channel(buf));
-    } else {
-        gtk_tree_view_set_model(popover->chan_tree_view, NULL);
-        update_status(popover, FALSE);
-    }
 }
 
 static void join_button_on_click(gpointer user_data){
@@ -499,19 +471,6 @@ FIN:
 
 static void on_adding_channel(GtkWidget *widget, GParamSpec *pspec,
         gpointer user_data){
-    SrainJoinPopover *popover;
-    SrainServerBuffer *buf;
-
-    popover = user_data;
-    buf = SRAIN_SERVER_BUFFER(widget);
-
-    // This buffer is not the one which showing on join popover
-    if (gtk_tree_view_get_model(popover->chan_tree_view) !=
-            GTK_TREE_MODEL(srain_server_buffer_get_channel_model(buf))){
-        return;
-    }
-
-    update_status(popover, srain_server_buffer_is_adding_channel(buf));
 }
 
 static void update_status(SrainJoinPopover *popover, bool adding){
