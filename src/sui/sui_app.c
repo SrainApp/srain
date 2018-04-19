@@ -76,43 +76,141 @@ static GOptionEntry option_entries[] = {
     {NULL}
 };
 
+static void sui_application_set_ctx(SuiApplication *self, void *ctx);
+static void sui_application_set_events(SuiApplication *self,
+        SuiApplicationEvents *events);
+
+static void on_startup(SuiApplication *self);
 static void on_activate(SuiApplication *self);
 static void on_shutdown(SuiApplication *self);
 static int on_handle_local_options(SuiApplication *self, GVariantDict *options,
         gpointer user_data);
 static int on_command_line(SuiApplication *self,
         GApplicationCommandLine *cmdline, gpointer user_data);
+static void on_notify_prefer_dark_theme(GObject *object, GParamSpec *pspec,
+        gpointer data);
 
 /*****************************************************************************
  * GObject functions
  *****************************************************************************/
 
+enum
+{
+  // 0 for PROP_NOME
+  PROP_CTX = 1,
+  PROP_EVENTS,
+  PROP_CONFIG,
+  N_PROPERTIES
+};
+
 G_DEFINE_TYPE(SuiApplication, sui_application, GTK_TYPE_APPLICATION);
+
+static GParamSpec *obj_properties[N_PROPERTIES] = { NULL, };
+
+static void sui_application_set_property(GObject *object, guint property_id,
+        const GValue *value, GParamSpec *pspec){
+  SuiApplication *self = SUI_APPLICATION(object);
+
+  switch (property_id){
+    case PROP_CTX:
+      sui_application_set_ctx(self, g_value_get_pointer(value));
+      break;
+    case PROP_EVENTS:
+      sui_application_set_events(self, g_value_get_pointer(value));
+      break;
+    case PROP_CONFIG:
+      sui_application_set_config(self, g_value_get_pointer(value));
+      break;
+    default:
+      /* We don't have any other property... */
+      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      break;
+    }
+}
+
+static void sui_application_get_property(GObject *object, guint property_id,
+        GValue *value, GParamSpec *pspec){
+  SuiApplication *self = SUI_APPLICATION(object);
+
+  switch (property_id){
+    case PROP_CTX:
+      g_value_set_pointer(value, sui_application_get_ctx(self));
+      break;
+    case PROP_EVENTS:
+      g_value_set_pointer(value, sui_application_get_events(self));
+      break;
+    case PROP_CONFIG:
+      g_value_set_pointer(value, sui_application_get_config(self));
+      break;
+    default:
+      /* We don't have any other property... */
+      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      break;
+    }
+}
 
 static void sui_application_init(SuiApplication *self){
     g_application_add_main_option_entries(G_APPLICATION(self), option_entries);
 
+    g_signal_connect(self, "startup", G_CALLBACK(on_startup), NULL);
     g_signal_connect(self, "activate", G_CALLBACK(on_activate), NULL);
     g_signal_connect(self, "shutdown", G_CALLBACK(on_shutdown), NULL);
     g_signal_connect(self, "command-line", G_CALLBACK(on_command_line), NULL);
-    g_signal_connect(self, "handle-local-options", G_CALLBACK(on_handle_local_options), NULL);
+    g_signal_connect(self, "handle-local-options",
+            G_CALLBACK(on_handle_local_options), NULL);
 }
 
-static void sui_application_class_init(SuiApplicationClass *class){}
+static void sui_application_constructed(GObject *object){
+    G_OBJECT_CLASS(sui_application_parent_class)->constructed(object);
+}
+
+static void sui_application_class_init(SuiApplicationClass *class){
+    GObjectClass *object_class;
+
+    /* Overwrite callbacks */
+    object_class = G_OBJECT_CLASS(class);
+    object_class->constructed = sui_application_constructed;
+    object_class->set_property = sui_application_set_property;
+    object_class->get_property = sui_application_get_property;
+
+    /* Install properties */
+    obj_properties[PROP_CTX] =
+        g_param_spec_pointer("context",
+                "Context",
+                "Context of application.",
+                G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
+
+    obj_properties[PROP_EVENTS] =
+        g_param_spec_pointer("events",
+                "Events",
+                "Event callbacks of application.",
+                G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
+
+    obj_properties[PROP_CONFIG] =
+        g_param_spec_pointer("config",
+                "Config",
+                "Configuration of application.",
+                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+
+    g_object_class_install_properties(object_class,
+            N_PROPERTIES,
+            obj_properties);
+}
 
 /*****************************************************************************
  * Exported functions
  *****************************************************************************/
 
-SuiApplication* sui_application_new(const char *id,
+SuiApplication* sui_application_new(const char *id, void *ctx,
         SuiApplicationEvents *events, SuiApplicationConfig *cfg){
     if (app_instance == NULL) {
         app_instance = g_object_new(SUI_TYPE_APPLICATION,
                 "application-id", id,
                 "flags", G_APPLICATION_HANDLES_COMMAND_LINE,
+                "context", ctx,
+                "events", events,
+                "config", cfg,
                 NULL);
-        app_instance->events = events;
-        app_instance->cfg = cfg;
     }
 
     return app_instance;
@@ -158,6 +256,10 @@ SuiWindow* sui_application_get_cur_window(SuiApplication *self){
     return SUI_WINDOW(gtk_application_get_active_window(GTK_APPLICATION(self)));
 }
 
+void* sui_application_get_ctx(SuiApplication *self){
+    return self->ctx;
+}
+
 SuiApplicationEvents* sui_application_get_events(SuiApplication *self){
     return self->events;
 }
@@ -166,17 +268,30 @@ void sui_application_set_config(SuiApplication *self, SuiApplicationConfig *cfg)
     self->cfg = cfg;
 }
 
-void* sui_application_get_ctx(SuiApplication *self){
-    return self->ctx;
-}
-
-void sui_application_set_ctx(SuiApplication *self, void *ctx){
-    self->ctx = ctx;
+SuiApplicationConfig* sui_application_get_config(SuiApplication *self){
+    return self->cfg;
 }
 
 /*****************************************************************************
  * Static functions
  *****************************************************************************/
+
+static void sui_application_set_ctx(SuiApplication *self, void *ctx){
+    self->ctx = ctx;
+}
+
+static void sui_application_set_events(SuiApplication *self,
+        SuiApplicationEvents *events){
+    self->events = events;
+}
+
+static void on_startup(SuiApplication *self){
+    GtkSettings *settings;
+
+    settings = gtk_settings_get_default();
+    g_signal_connect(settings, "notify::gtk-application-prefer-dark-theme",
+            G_CALLBACK(on_notify_prefer_dark_theme), self);
+}
 
 static void on_activate(SuiApplication *self){
     SrnRet ret;
@@ -227,4 +342,9 @@ static int on_command_line(SuiApplication *self,
     }
 
     return 0;
+}
+
+static void on_notify_prefer_dark_theme(GObject *object, GParamSpec *pspec,
+        gpointer data) {
+    // Update theme blahblah
 }

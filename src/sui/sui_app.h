@@ -30,15 +30,16 @@ typedef struct _SuiApplication SuiApplication;
 typedef struct _SuiApplicationClass SuiApplicationClass;
 
 GType sui_application_get_type(void);
-SuiApplication* sui_application_new(const char *id, SuiApplicationEvents *events, SuiApplicationConfig *cfg);
+SuiApplication* sui_application_get_instance();
+SuiApplication* sui_application_new(const char *id, void *ctx, SuiApplicationEvents *events, SuiApplicationConfig *cfg);
 void sui_application_run(SuiApplication *self, int argc, char *argv[]);
 void sui_application_quit(SuiApplication *self);
 
 SuiWindow* sui_application_get_cur_window(SuiApplication *self);
-SuiApplication* sui_application_get_instance();
+
+void* sui_application_get_ctx(SuiApplication *self);
 SuiApplicationEvents* sui_application_get_events(SuiApplication *self);
 void sui_application_set_config(SuiApplication *self, SuiApplicationConfig *cfg);
-void* sui_application_get_ctx(SuiApplication *self);
-void sui_application_set_ctx(SuiApplication *self, void *ctx);
+SuiApplicationConfig* sui_application_get_config(SuiApplication *self);
 
 #endif /* __SUI_APP_H */
