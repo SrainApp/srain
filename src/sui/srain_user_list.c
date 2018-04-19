@@ -273,7 +273,7 @@ static void srain_user_list_init(SrainUserList *self){
 
 static void srain_user_list_class_init(SrainUserListClass *class){
     gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
-            "/org/gtk/srain/user_list.glade");
+            "/im/srain/Srain/user_list.glade");
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainUserList, user_tree_view);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainUserList, stat_label);

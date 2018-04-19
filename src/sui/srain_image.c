@@ -76,7 +76,7 @@ static void srain_image_init(SrainImage*self){
 
 static void srain_image_class_init(SrainImageClass *class){
     gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
-            "/org/gtk/srain/image.glade");
+            "/im/srain/Srain/image.glade");
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainImage, load_button);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainImage, spinner);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainImage, image);
@@ -117,7 +117,7 @@ static void eventbox_on_click(gpointer user_data , GdkEventButton *event){
         simg = user_data;
         if (simg->file == NULL) return;
 
-        builder = gtk_builder_new_from_resource("/org/gtk/srain/image_window.glade");
+        builder = gtk_builder_new_from_resource("/im/srain/Srain/image_window.glade");
         iwin = GTK_WINDOW(gtk_builder_get_object(builder, "image_window"));
 
         screen = gdk_screen_get_default();

@@ -85,12 +85,10 @@ static void popover_on_visible(GObject *object, GParamSpec *pspec, gpointer data
 static void connect_button_on_click(gpointer user_data);
 static void cancel_button_on_click(gpointer user_data);
 
-SrainConnectPopover* srain_connect_popover_new(GtkWidget *relative){
+SrainConnectPopover* srain_connect_popover_new(){
     SrainConnectPopover *popover;
 
     popover = g_object_new(SRAIN_TYPE_CONNECT_POPOVER, NULL);
-
-    gtk_popover_set_relative_to(GTK_POPOVER(popover), relative);
 
     return popover;
 }
@@ -149,7 +147,7 @@ static void srain_connect_popover_init(SrainConnectPopover *self){
 
 static void srain_connect_popover_class_init(SrainConnectPopoverClass *class){
     gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
-            "/org/gtk/srain/connect_popover.glade");
+            "/im/srain/Srain/connect_popover.glade");
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainConnectPopover, stack);
 

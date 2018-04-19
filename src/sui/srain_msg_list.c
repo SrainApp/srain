@@ -209,7 +209,7 @@ static void srain_msg_list_init(SrainMsgList *self){
 
 static void srain_msg_list_class_init(SrainMsgListClass *class){
     gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
-            "/org/gtk/srain/msg_list.glade");
+            "/im/srain/Srain/msg_list.glade");
 
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SrainMsgList, list_box);
 }

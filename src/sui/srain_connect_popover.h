@@ -29,7 +29,7 @@ typedef struct _SrainConnectPopover SrainConnectPopover;
 typedef struct _SrainConnectPopoverClass SrainConnectPopoverClass;
 
 GType srain_connect_popover_get_type(void);
-SrainConnectPopover* srain_connect_popover_new(GtkWidget *relative);
+SrainConnectPopover* srain_connect_popover_new();
 void srain_connect_popover_add_server(SrainConnectPopover *popover, const char *server);
 void srain_connect_popover_clear(SrainConnectPopover *popover);
 
