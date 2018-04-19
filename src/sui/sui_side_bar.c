@@ -21,7 +21,7 @@
  */
 
 /**
- * @file srain_stack_sidebar.c
+ * @file sui_side_bar.c
  * @brief A simplified, customized stacksidebar implementation
  * @author Shengyu Zhang <i@silverrainz.me>
  * @version 0.06.2
@@ -32,47 +32,45 @@
 
 #include <gtk/gtk.h>
 
+#include "core/core.h"
+
 #include "sui_common.h"
 #include "sui_event_hdr.h"
-#include "srain_buffer.h"
-#include "srain_server_buffer.h"
-#include "srain_channel_buffer.h"
-#include "srain_private_buffer.h"
-#include "srain_stack_sidebar.h"
-#include "srain_stack_sidebar_item.h"
+#include "sui_buffer.h"
+#include "sui_side_bar.h"
+#include "sui_side_bar_item.h"
 
 #include "log.h"
 
-struct _SrainStackSidebar {
+struct _SuiSideBar {
     GtkBin parent;
     GtkListBox *list;
     GtkStack *stack;
     GHashTable *rows;
 };
 
-struct _SrainStackSidebarClass {
+struct _SuiSideBarClass {
     GtkBinClass parent_class;
 };
 
 
-G_DEFINE_TYPE(SrainStackSidebar, srain_stack_sidebar, GTK_TYPE_BIN)
+G_DEFINE_TYPE(SuiSideBar, sui_side_bar, GTK_TYPE_BIN)
 
 static void
 listbox_on_row_selected(GtkListBox *box, GtkListBoxRow *row, gpointer user_data){
-    SrainStackSidebar *sidebar;
-    SrainStackSidebarItem *item;
+    SuiSideBar *sidebar;
+    SuiSideBarItem *item;
     GtkWidget *child;
 
-    sidebar = SRAIN_STACK_SIDEBAR(user_data);
+    sidebar = SUI_SIDE_BAR(user_data);
 
     if (!row) return;
 
-    item = SRAIN_STACK_SIDEBAR_ITEM(gtk_bin_get_child(GTK_BIN(row)));
+    item = SUI_SIDE_BAR_ITEM(gtk_bin_get_child(GTK_BIN(row)));
     child = g_object_get_data(G_OBJECT(item), "stack-child");
     gtk_stack_set_visible_child(sidebar->stack, child);
 
-    srain_stack_sidebar_item_count_clear(item);
-    sui_buffer_fcous_entry(SUI_BUFFER(child));
+    sui_side_bar_item_clear_count(item);
 }
 
 static gboolean
@@ -80,7 +78,7 @@ list_box_on_popup(GtkWidget *widget, GdkEventButton *event, gpointer user_data){
     GtkListBox *list_box;
     GtkListBoxRow *row;
     SuiBuffer *child;
-    SrainStackSidebarItem *item;
+    SuiSideBarItem *item;
 
     list_box = GTK_LIST_BOX(widget);
 
@@ -88,7 +86,7 @@ list_box_on_popup(GtkWidget *widget, GdkEventButton *event, gpointer user_data){
         row = gtk_list_box_get_selected_row(list_box);
         if (!row) return FALSE;
 
-        item = SRAIN_STACK_SIDEBAR_ITEM(gtk_bin_get_child(GTK_BIN(row)));
+        item = SUI_SIDE_BAR_ITEM(gtk_bin_get_child(GTK_BIN(row)));
         child = g_object_get_data(G_OBJECT(item), "stack-child");
 
         gtk_menu_popup(sui_buffer_get_menu(child), NULL, NULL, NULL, NULL,
@@ -103,20 +101,20 @@ static gint list_sort_func(GtkListBoxRow *row1, GtkListBoxRow *row2,
         gpointer user_data){
     unsigned long time1;
     unsigned long time2;
-    SrainStackSidebarItem *item1;
-    SrainStackSidebarItem *item2;
+    SuiSideBarItem *item1;
+    SuiSideBarItem *item2;
 
-    item1 = SRAIN_STACK_SIDEBAR_ITEM(gtk_bin_get_child(GTK_BIN(row1)));
-    item2 = SRAIN_STACK_SIDEBAR_ITEM(gtk_bin_get_child(GTK_BIN(row2)));
+    item1 = SUI_SIDE_BAR_ITEM(gtk_bin_get_child(GTK_BIN(row1)));
+    item2 = SUI_SIDE_BAR_ITEM(gtk_bin_get_child(GTK_BIN(row2)));
 
-    time1 = srain_stack_sidebar_item_get_update_time(item1);
-    time2 = srain_stack_sidebar_item_get_update_time(item2);
+    time1 = sui_side_bar_item_get_update_time(item1);
+    time2 = sui_side_bar_item_get_update_time(item2);
 
     return time1 <= time2;
 }
 
 static void
-srain_stack_sidebar_init(SrainStackSidebar *self){
+sui_side_bar_init(SuiSideBar *self){
     GtkWidget *sw;
     GtkStyleContext *style;
 
@@ -148,28 +146,34 @@ srain_stack_sidebar_init(SrainStackSidebar *self){
 }
 
 static void
-add_child(GtkWidget *child, SrainStackSidebar *sidebar){
+add_child(GtkWidget *child, SuiSideBar *sidebar){
     const char *icon;
     GtkListBoxRow *row;
     SuiBuffer *buf;
-    SrainStackSidebarItem *item;
+    SuiSideBarItem *item;
+    SrnChat *chat;
 
     if (g_hash_table_lookup(sidebar->rows, child))
         return;
 
     buf = SUI_BUFFER(child);
-    if SRAIN_IS_SERVER_BUFFER(buf) {
-        icon = "srain-server";
-    } else if SRAIN_IS_CHANNEL_BUFFER(buf) {
-        icon = "srain-chan";
-    } else if SRAIN_IS_PRIVATE_BUFFER(buf) {
-        icon = "srain-person";
-    } else {
-        g_warn_if_reached();
-        icon = "";
-    }
+    chat = sui_buffer_get_ctx(buf);
 
-    item = srain_stack_sidebar_item_new(
+    switch (chat->type) {
+        case SRN_CHAT_TYPE_SERVER:
+            icon = "srain-server";
+            break;
+        case SRN_CHAT_TYPE_CHANNEL:
+            icon = "srain-chan";
+            break;
+        case SRN_CHAT_TYPE_DIALOG:
+            icon = "srain-person";
+            break;
+        default:
+            icon = "";
+            g_warn_if_reached();
+    }
+    item = sui_side_bar_item_new(
             sui_buffer_get_name(buf),
             sui_buffer_get_remark(buf),
             icon);
@@ -185,7 +189,7 @@ add_child(GtkWidget *child, SrainStackSidebar *sidebar){
 }
 
 static void
-remove_child(GtkWidget *widget, SrainStackSidebar *sidebar){
+remove_child(GtkWidget *widget, SuiSideBar *sidebar){
     GtkWidget *row;
 
     row = g_hash_table_lookup(sidebar->rows, widget);
@@ -196,7 +200,7 @@ remove_child(GtkWidget *widget, SrainStackSidebar *sidebar){
 }
 
 static void
-populate_sidebar(SrainStackSidebar *sidebar){
+populate_sidebar(SuiSideBar *sidebar){
     GtkWidget *widget, *row;
 
     gtk_container_foreach(GTK_CONTAINER(sidebar->stack),(GtkCallback)add_child, sidebar);
@@ -209,12 +213,12 @@ populate_sidebar(SrainStackSidebar *sidebar){
 }
 
 static void
-clear_sidebar(SrainStackSidebar *sidebar){
+clear_sidebar(SuiSideBar *sidebar){
     gtk_container_foreach(GTK_CONTAINER(sidebar->stack), (GtkCallback)remove_child, sidebar);
 }
 
 static void
-on_child_changed(GtkWidget *widget, GParamSpec *pspec, SrainStackSidebar *sidebar){
+on_child_changed(GtkWidget *widget, GParamSpec *pspec, SuiSideBar *sidebar){
     GtkWidget *child;
     GtkWidget *row;
     SuiBuffer *buf;
@@ -236,17 +240,17 @@ on_child_changed(GtkWidget *widget, GParamSpec *pspec, SrainStackSidebar *sideba
 }
 
 static void
-on_stack_child_added(GtkContainer *container, GtkWidget *widget, SrainStackSidebar *sidebar){
+on_stack_child_added(GtkContainer *container, GtkWidget *widget, SuiSideBar *sidebar){
     add_child(widget, sidebar);
 }
 
 static void
-on_stack_child_removed(GtkContainer *container, GtkWidget *widget, SrainStackSidebar *sidebar){
+on_stack_child_removed(GtkContainer *container, GtkWidget *widget, SuiSideBar *sidebar){
     remove_child(widget, sidebar);
 }
 
 static void
-disconnect_stack_signals(SrainStackSidebar *sidebar){
+disconnect_stack_signals(SuiSideBar *sidebar){
     g_signal_handlers_disconnect_by_func(sidebar->stack, on_stack_child_added, sidebar);
     g_signal_handlers_disconnect_by_func(sidebar->stack, on_stack_child_removed, sidebar);
     g_signal_handlers_disconnect_by_func(sidebar->stack, on_child_changed, sidebar);
@@ -254,7 +258,7 @@ disconnect_stack_signals(SrainStackSidebar *sidebar){
 }
 
 static void
-connect_stack_signals(SrainStackSidebar *sidebar){
+connect_stack_signals(SuiSideBar *sidebar){
     g_signal_connect_after(sidebar->stack, "add", G_CALLBACK(on_stack_child_added), sidebar);
     g_signal_connect_after(sidebar->stack, "remove", G_CALLBACK(on_stack_child_removed), sidebar);
     g_signal_connect(sidebar->stack, "notify::visible-child", G_CALLBACK(on_child_changed), sidebar);
@@ -262,40 +266,40 @@ connect_stack_signals(SrainStackSidebar *sidebar){
 }
 
 static void
-srain_stack_sidebar_dispose(GObject *object){
-  SrainStackSidebar *sidebar = SRAIN_STACK_SIDEBAR(object);
+sui_side_bar_dispose(GObject *object){
+  SuiSideBar *sidebar = SUI_SIDE_BAR(object);
 
-  srain_stack_sidebar_set_stack(sidebar, NULL);
+  sui_side_bar_set_stack(sidebar, NULL);
 
-  G_OBJECT_CLASS(srain_stack_sidebar_parent_class)->dispose(object);
+  G_OBJECT_CLASS(sui_side_bar_parent_class)->dispose(object);
 }
 
 static void
-srain_stack_sidebar_finalize(GObject *object){
-    SrainStackSidebar *sidebar = SRAIN_STACK_SIDEBAR(object);
+sui_side_bar_finalize(GObject *object){
+    SuiSideBar *sidebar = SUI_SIDE_BAR(object);
 
     g_hash_table_destroy(sidebar->rows);
 
-    G_OBJECT_CLASS(srain_stack_sidebar_parent_class)->finalize(object);
+    G_OBJECT_CLASS(sui_side_bar_parent_class)->finalize(object);
 }
 
 static void
-srain_stack_sidebar_class_init(SrainStackSidebarClass *klass){
+sui_side_bar_class_init(SuiSideBarClass *klass){
     GObjectClass *object_class = G_OBJECT_CLASS(klass);
 
-    object_class->dispose = srain_stack_sidebar_dispose;
-    object_class->finalize = srain_stack_sidebar_finalize;
+    object_class->dispose = sui_side_bar_dispose;
+    object_class->finalize = sui_side_bar_finalize;
 }
 
-SrainStackSidebar*
-srain_stack_sidebar_new(){
-    return g_object_new(SRAIN_TYPE_STACK_SIDEBAR, NULL);
+SuiSideBar*
+sui_side_bar_new(){
+    return g_object_new(SUI_TYPE_SIDE_BAR, NULL);
 }
 
 void
-srain_stack_sidebar_set_stack(SrainStackSidebar *sidebar, GtkStack *stack)
+sui_side_bar_set_stack(SuiSideBar *sidebar, GtkStack *stack)
 {
-    g_return_if_fail(SRAIN_IS_STACK_SIDEBAR(sidebar));
+    g_return_if_fail(SUI_IS_SIDE_BAR(sidebar));
     g_return_if_fail(GTK_IS_STACK(stack) || stack == NULL);
 
     if (sidebar->stack == stack) return;
@@ -316,32 +320,32 @@ srain_stack_sidebar_set_stack(SrainStackSidebar *sidebar, GtkStack *stack)
 }
 
 GtkStack*
-srain_stack_sidebar_get_stack(SrainStackSidebar *sidebar){
+sui_side_bar_get_stack(SuiSideBar *sidebar){
     g_return_val_if_fail(GTK_IS_STACK_SIDEBAR(sidebar), NULL);
 
     return GTK_STACK(sidebar->stack);
 }
 
 void
-srain_stack_sidebar_update(SrainStackSidebar *sidebar, SuiBuffer *buf,
+sui_side_bar_update(SuiSideBar *sidebar, SuiBuffer *buf,
         const char *nick, const char *msg, int is_visible){
     GtkListBoxRow *row;
-    SrainStackSidebarItem *item;
+    SuiSideBarItem *item;
 
     row = g_hash_table_lookup(sidebar->rows, buf);
     if (!row) return;
 
-    item = SRAIN_STACK_SIDEBAR_ITEM(gtk_bin_get_child(GTK_BIN(row)));
-    srain_stack_sidebar_item_recentmsg_update(item, nick, msg);
+    item = SUI_SIDE_BAR_ITEM(gtk_bin_get_child(GTK_BIN(row)));
+    sui_side_bar_item_update_message(item, nick, msg);
     gtk_list_box_row_changed(row);
 
     if (!is_visible){
-        srain_stack_sidebar_item_count_inc(item);
+        sui_side_bar_item_inc_count(item);
     }
 }
 
 void
-srain_stack_sidebar_prev(SrainStackSidebar *sidebar){
+sui_side_bar_prev(SuiSideBar *sidebar){
     GList *rows;
     GtkListBoxRow *tail, *cur_row;
 
@@ -368,7 +372,7 @@ srain_stack_sidebar_prev(SrainStackSidebar *sidebar){
     }
 }
 
-void srain_stack_sidebar_next(SrainStackSidebar *sidebar){
+void sui_side_bar_next(SuiSideBar *sidebar){
     GList *rows;
     GtkListBoxRow *head, *cur_row;
 
