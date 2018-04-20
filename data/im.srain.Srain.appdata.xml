@@ -4,7 +4,7 @@
   <id>im.srain.Srain</id>
   <metadata_license>FSFAP</metadata_license>
   <project_license>GPL-3.0</project_license>
-  <developer_name>谷月轩</developer_name>
+  <developer_name>Shengyu Zhang</developer_name>
   <name>Srain</name>
   <summary>Modern, beautiful IRC client written in GTK+ 3</summary>
 
