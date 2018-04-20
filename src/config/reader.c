@@ -363,10 +363,7 @@ static SrnRet read_chat_config_from_chat(config_setting_t *chat, SrnChatConfig *
     config_setting_lookup_bool_ex(chat, "show-avatar", &cfg->ui->show_avatar);
     config_setting_lookup_bool_ex(chat, "show-user-list", &cfg->ui->show_user_list);
     config_setting_lookup_bool_ex(chat, "render-mirc-color", &cfg->render_mirc_color);
-
-    /* Read url handlers */
-    config_setting_lookup_bool_ex(chat, "url-handlers.http.fetch-image", &cfg->ui->preview_image);
-    // TODO
+    config_setting_lookup_bool_ex(chat, "click-to-preview-url", &cfg->ui->click_to_preview_url);
 
     return SRN_OK;
 }

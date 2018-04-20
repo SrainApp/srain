@@ -31,5 +31,9 @@ void scale_size_to( int src_width, int src_height, int max_width, int max_height
 gboolean activate_link(GtkLabel *label, const char *uri, gpointer user_data);
 SuiWindow *sui_get_cur_window();
 SuiBuffer *sui_get_cur_buffer();
+SrnRet sui_open_url(const char *url);
+void sui_popup_popover(GtkWidget *relative_to, GtkWidget *child);
+void sui_popup_popover_at_point(GtkWidget *relative_to, GtkWidget *child, int x, int y);
+void sui_popdown_popover(GtkWidget *child);
 
 #endif /** __UI_COMMON_H **/

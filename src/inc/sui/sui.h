@@ -94,9 +94,7 @@ void sui_buffer_set_config(SuiBuffer *buf, SuiBufferConfig *cfg);
 
 void sui_message_set_ctx(SuiMessage *smsg, void *ctx);
 void *sui_message_get_ctx(SuiMessage *smsg);
-// TODO: pass a image file path
 void sui_message_set_time(SuiMessage *smsg, time_t time);
-void sui_message_append_image(SuiMessage *smsg, const char *url);
 void sui_message_mentioned(SuiMessage *smsg);
 void sui_message_notify(SuiMessage *smsg);
 

@@ -220,16 +220,6 @@ static void nick_button_on_click(GtkWidget *widget, gpointer *user_data){
 }
 
 /* ================ SRAIN_SRAIN_MSG ================ */
-void srain_msg_append_image(SrainMsg *smsg, const char *url, SrainImageFlag flag) {
-    SrainImage *simg = srain_image_new();
-    srain_image_set_from_url_async(simg, url, 300, flag);
-
-    gtk_container_add(GTK_CONTAINER(smsg->padding_box), GTK_WIDGET(simg));
-    gtk_container_set_border_width(GTK_CONTAINER(simg), 6);
-    gtk_widget_show(GTK_WIDGET(simg));
-    gtk_widget_queue_draw(GTK_WIDGET(smsg));
-}
-
 void srain_msg_set_msg(SrainMsg *smsg, const char *msg) {
     gtk_label_set_markup(smsg->msg_label, msg);
 }

@@ -190,45 +190,81 @@ void scale_size_to(int src_width, int src_height,
  * @brief activate_link General "activate-link" signal callback
  *
  * @param label
- * @param uri
+ * @param url
  * @param user_data
  *
  * @return
  */
-gboolean activate_link(GtkLabel *label, const char *uri, gpointer user_data){
-    const char *urls[]  = {uri, NULL};
+gboolean activate_link(GtkLabel *label, const char *url, gpointer user_data){
+    GdkEvent *event;
+    SuiBuffer *buf;
+    SuiBufferConfig *cfg;
+    SuiUrlPreviewer *previewer;
+
+    buf = sui_get_cur_buffer();
+    if (!SUI_IS_BUFFER(buf)){
+        return RET_IS_OK(sui_open_url(url));
+    }
+
+    cfg = sui_buffer_get_config(buf);
+    cfg->click_to_preview_url = TRUE;
+    if (!cfg->click_to_preview_url){
+        return RET_IS_OK(sui_open_url(url));
+    }
+
+    previewer = sui_url_previewer_new_from_cache(url);
+    event = gtk_get_current_event();
+    if (event->type == GDK_BUTTON_RELEASE){
+        int x, y;
+        GtkAllocation allocation;
+
+        // FIXME: I am not understand this code yet, copied from gtk3-demo/popover
+        gdk_window_coords_to_parent(event->button.window,
+                event->button.x, event->button.y,
+                &event->button.x, &event->button.y);
+        gtk_widget_get_allocation(GTK_WIDGET(label), &allocation);
+        x = event->button.x - allocation.x;
+        y = event->button.y - allocation.y;
+        sui_popup_popover_at_point(GTK_WIDGET(label), GTK_WIDGET(previewer), x, y);
+    } else {
+        sui_popup_popover(GTK_WIDGET(label), GTK_WIDGET(previewer));
+    }
+    gdk_event_free(event);
+
+    return TRUE;
+}
+
+SrnRet sui_open_url(const char *url){
+    int event_time;
+    const char *urls[]  = {url, NULL};
+    GError *err;
     GVariantDict *params;
+    SrnRet ret;
     SuiApplication *app;
 
     app = sui_application_get_instance();
     params = g_variant_dict_new(NULL);
     g_variant_dict_insert(params, "urls", SUI_EVENT_PARAM_STRINGS, urls, -1);
 
-    if (!RET_IS_OK(sui_application_event_hdr(app, SUI_EVENT_OPEN, params))){
-        GError *err = NULL;
-
-#if GTK_CHECK_VERSION(3, 22, 0)
-        gtk_show_uri_on_window(GTK_WINDOW(sui_get_cur_window()), uri,
-                gtk_get_current_event_time(), &err);
-#else
-        gtk_show_uri(NULL, uri, gtk_get_current_event_time(), &err);
-#endif
-
-        if (err) {
-            char *errmsg;
-
-            errmsg = g_strdup_printf(_("Failed to open URL \"%s\": %s"),
-                    uri, err->message);
-            sui_message_box(_("Error"), errmsg);
-            g_free(errmsg);
-
-            return FALSE;
-        }
+    ret = sui_application_event_hdr(app, SUI_EVENT_OPEN, params);
+    if (RET_IS_OK(ret)){
+        goto FIN;
     }
 
-    g_variant_dict_unref(params);
+    event_time = gtk_get_current_event_time();
+    err = NULL;
+#if GTK_CHECK_VERSION(3, 22, 0)
+    gtk_show_uri_on_window(GTK_WINDOW(sui_get_cur_window()), url, event_time, &err);
+#else
+    gtk_show_uri(NULL, url, event_time, &err);
+#endif
+    if (err) {
+        ret = RET_ERR(_("Failed to open URL \"%s\": %s"), url, err->message);
+    }
 
-    return TRUE;
+FIN:
+    g_variant_dict_unref(params);
+    return ret;
 }
 
 SuiWindow *sui_get_cur_window(){
@@ -252,4 +288,69 @@ SuiBuffer *sui_get_cur_buffer(){
     g_return_val_if_fail(buf, NULL);
 
     return buf;
+}
+
+static void popover_on_hide(GtkWidget *widget, gpointer user_data){
+    GtkWidget *child;
+    GtkPopover *popover;
+
+    popover = GTK_POPOVER(widget);
+    child = gtk_bin_get_child(GTK_BIN(popover));
+    gtk_container_remove(GTK_CONTAINER(popover), child);
+    g_object_unref(popover); // Free popover itself
+}
+
+/**
+ * @brief Popdown the GtkPopover create by ``sui_popup_popover``.
+ *
+ * @param child
+ */
+void sui_popdown_popover(GtkWidget *child){
+    GtkWidget *parent;
+
+    parent = gtk_widget_get_parent(child);
+    if (GTK_IS_POPOVER(parent)){
+        gtk_popover_popdown(GTK_POPOVER(parent));
+    }
+}
+
+/**
+ * @brief Create and popup a GtkPopover to show the widget ``child``.
+ * The created GtkPopover will be freed after it popdown.
+ *
+ * @param relative_to
+ * @param child
+ */
+void sui_popup_popover(GtkWidget *relative_to, GtkWidget *child){
+    GtkPopover *popover;
+
+    popover = GTK_POPOVER(gtk_popover_new(NULL));
+    gtk_popover_set_relative_to(popover, relative_to);
+    gtk_container_add(GTK_CONTAINER(popover), child);
+    gtk_container_set_border_width(GTK_CONTAINER(popover), 6);
+
+    g_signal_connect(popover, "hide",
+            G_CALLBACK(popover_on_hide), NULL);
+
+    gtk_popover_popup(popover);
+}
+
+void sui_popup_popover_at_point(GtkWidget *relative_to, GtkWidget *child, int x, int y){
+    GdkRectangle rect;
+    GtkPopover *popover;
+
+    rect.x = x;
+    rect.y = y;
+    rect.width = rect.height = 1;
+
+    popover = GTK_POPOVER(gtk_popover_new(NULL));
+    gtk_popover_set_relative_to(popover, relative_to);
+    gtk_popover_set_pointing_to(popover, &rect);
+    gtk_container_add(GTK_CONTAINER(popover), child);
+    gtk_container_set_border_width(GTK_CONTAINER(popover), 6);
+
+    g_signal_connect(popover, "hide",
+            G_CALLBACK(popover_on_hide), NULL);
+
+    gtk_popover_popup(popover);
 }
