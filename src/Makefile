@@ -19,8 +19,6 @@ GTK3FLAGS = $(shell pkg-config --cflags gtk+-3.0)
 GTK3LIBS = $(shell pkg-config --libs gtk+-3.0)
 PY3FLAGS = $(shell pkg-config --cflags python3)
 PY3LIBS = $(shell pkg-config --libs python3)
-CURLFLAGS = $(shell pkg-config --cflags libcurl)
-CURLLIBS = $(shell pkg-config --libs libcurl)
 LIBNOTIFYFLAGS = $(shell pkg-config --cflags libnotify)
 LIBNOTIFYLIBS = $(shell pkg-config --libs libnotify)
 LIBCONFIGFLAGS = $(shell pkg-config --cflags libconfig)
@@ -29,9 +27,9 @@ LIBSOUPFLAGS = $(shell pkg-config --cflags libsoup-2.4)
 LIBSOUPLIBS = $(shell pkg-config --libs libsoup-2.4)
 
 CFLAGS += -std=gnu99 -O2 -Wall -Iinc -Wno-deprecated-declarations \
-		 $(DEFS) $(GTK3FLAGS) $(PY3FLAGS) $(CURLFLAGS) $(LIBIRCCLINETFLAGS) \
+		 $(DEFS) $(GTK3FLAGS) $(PY3FLAGS) $(LIBIRCCLINETFLAGS) \
 		 $(LIBNOTIFYFLAGS) $(LIBCONFIGFLAGS) $(LIBSOUPFLAGS) $(DBGFLAGS)
-LDFLAGS += $(GTK3LIBS) $(PY3LIBS) $(CURLLIBS) $(LIBIRCCLINETLIBS) \
+LDFLAGS += $(GTK3LIBS) $(PY3LIBS) $(LIBIRCCLINETLIBS) \
 		  $(LIBNOTIFYLIBS) $(LIBCONFIGLIBS) $(LIBSOUPLIBS) $(DBGFLAGS)
 
 SRCS = $(wildcard *.c */*.c $(BUILD_DIR)/resources.c)
