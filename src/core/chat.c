@@ -33,7 +33,6 @@
 
 extern SrnCommandBind cmd_binds[];
 
-static void append_image(SrnMessage *msg);
 static void add_message(SrnChat *self, SrnMessage *msg);
 static bool whether_merge_last_message(SrnChat *self, SrnMessage *msg);
 
@@ -202,8 +201,6 @@ void srn_chat_add_sent_message(SrnChat *self, const char *content){
 
     sui_message_set_time(msg->ui, msg->time);
 
-    append_image(msg);
-
     add_message(self, msg);
 
     return;
@@ -252,8 +249,6 @@ void srn_chat_add_recv_message(SrnChat *self, SrnChatUser *user, const char *con
     }
 
     sui_message_set_time(msg->ui, msg->time);
-
-    append_image(msg);
 
     add_message(self, msg);
     return;
@@ -306,8 +301,6 @@ void srn_chat_add_action_message(SrnChat *self, SrnChatUser *user, const char *c
         sui_message_mentioned(msg->ui);
         sui_message_notify(msg->ui);
     }
-
-    append_image(msg);
 
     add_message(self, msg);
     return;
@@ -429,24 +422,4 @@ static bool whether_merge_last_message(SrnChat *self, SrnMessage *msg){
             && last_msg->type == msg->type
             && sirc_target_equal(last_msg->user->srv_user->nick, msg->user->srv_user->nick)
             && sirc_target_equal(last_msg->dname, msg->dname));
-}
-
-// TODO
-static void append_image(SrnMessage *msg){
-    GSList *url;
-
-    url = msg->urls;
-
-    while (url){
-        if (g_str_has_prefix(url->data, "http") // Both "http" and "https"
-                && (g_str_has_suffix(url->data, "png")
-                    || g_str_has_suffix(url->data, "jpg")
-                    || g_str_has_suffix(url->data, "jpeg")
-                    || g_str_has_suffix(url->data, "bmp")
-                    || g_str_has_suffix(url->data, "gif")
-                    )){
-            sui_message_append_image(msg->ui, url->data);
-        }
-        url = g_slist_next(url);
-    }
 }
