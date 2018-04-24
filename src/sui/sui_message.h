@@ -21,15 +21,46 @@
 
 #include <gtk/gtk.h>
 
-#define SUI_MESSAGE         \
-    GtkBox parent;          \
-    GtkLabel *msg_label;    \
-    GtkLabel *time_label;   \
-    GtkBox *padding_box;    \
-    void *ctx;              \
+#include "core/core.h"
+#include "sui/sui.h"
+
+/*****************************************************************************
+ * SuiMessage
+ *****************************************************************************/
+
+#define SUI_TYPE_MESSAGE (sui_message_get_type())
+#define SUI_MESSAGE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SUI_TYPE_MESSAGE, SuiMessage))
+#define SUI_IS_MESSAGE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), SUI_TYPE_MESSAGE))
+#define SUI_MESSAGE_CLASS(class) (G_TYPE_CHECK_CLASS_CAST((class), SUI_TYPE_MESSAGE, SuiMessageClass))
+#define SUI_MESSAGE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), SUI_TYPE_MESSAGE, SuiMessageClass))
+
+typedef struct _SuiMessage SuiMessage;
+typedef struct _SuiMessageClass SuiMessageClass;
 
 struct _SuiMessage {
-    SUI_MESSAGE;
+    GtkBox parent;
+    SrnMessage *ctx;
+    SuiBuffer *buf;
+    GtkLabel *message_label;
 };
+
+struct _SuiMessageClass {
+    GtkBoxClass parent_class;
+
+    void (*update) (SuiMessage *self);
+
+    /* Padding to allow adding up to 12 new virtual functions without
+     * breaking ABI */
+    gpointer padding[12];
+};
+
+GType sui_message_get_type(void);
+
+void sui_message_update(SuiMessage *self);
+
+void* sui_message_get_ctx(SuiMessage *self);
+void sui_message_set_buffer(SuiMessage *self, SuiBuffer *buf);
+SuiBuffer* sui_message_get_buffer(SuiMessage *self);
+void sui_message_label_on_popup(GtkLabel *label, GtkMenu *menu, gpointer user_data);
 
 #endif /* __SUI_MESSAGE_H */

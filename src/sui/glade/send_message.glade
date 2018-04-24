@@ -1,54 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.0 -->
+<!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.16"/>
-  <template class="SrainSysMsg" parent="GtkBox">
-    <property name="name">normal_sys_msg_box</property>
+  <template class="SuiSendMessage" parent="SuiMessage">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="margin_top">4</property>
-    <property name="margin_bottom">4</property>
     <child>
-      <object class="GtkBox" id="padding_box">
-        <property name="name">padding_box</property>
+      <object class="GtkBox" id="message_box">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="margin_left">10</property>
-        <property name="margin_right">10</property>
-        <property name="orientation">vertical</property>
+        <property name="halign">end</property>
+        <property name="border_width">2</property>
         <child>
-          <object class="GtkLabel" id="msg_label">
-            <property name="name">msg_label</property>
+          <object class="GtkLabel" id="message_label">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="halign">center</property>
-            <property name="valign">center</property>
-            <property name="xpad">4</property>
-            <property name="ypad">4</property>
+            <property name="halign">start</property>
+            <property name="label" translatable="yes">うれしぃこと 悲しいことも / 全部まるめて</property>
             <property name="use_markup">True</property>
             <property name="wrap">True</property>
             <property name="wrap_mode">word-char</property>
             <property name="selectable">True</property>
+            <property name="max_width_chars">80</property>
             <attributes>
               <attribute name="stretch" value="normal"/>
             </attributes>
+            <style>
+              <class name="sui-message-label"/>
+            </style>
           </object>
           <packing>
-            <property name="expand">True</property>
+            <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="position">0</property>
           </packing>
         </child>
         <child>
           <object class="GtkLabel" id="time_label">
+            <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="halign">end</property>
+            <property name="valign">end</property>
+            <property name="label" translatable="yes">19:51</property>
+            <style>
+              <class name="sui-message-time-label"/>
+            </style>
           </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
+            <property name="pack_type">end</property>
             <property name="position">1</property>
           </packing>
         </child>
+        <style>
+          <class name="sui-message-box"/>
+        </style>
       </object>
       <packing>
         <property name="expand">True</property>
@@ -56,5 +63,9 @@
         <property name="position">0</property>
       </packing>
     </child>
+    <style>
+      <class name="sui-send-message"/>
+      <class name="sui-message"/>
+    </style>
   </template>
 </interface>

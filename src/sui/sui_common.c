@@ -33,8 +33,9 @@
 
 #include "sui_event_hdr.h"
 #include "sui_common.h"
-#include "sui_app.h"
 #include "theme.h"
+#include "sui_app.h"
+#include "sui_url_previewer.h"
 
 /**
  * @brief get a non-internal child widget by `name` in GtkListBox `widget`

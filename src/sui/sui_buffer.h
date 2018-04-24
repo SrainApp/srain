@@ -21,7 +21,7 @@
 
 #include <gtk/gtk.h>
 
-#include "srain_msg.h"
+#include "sui_message.h"
 #include "srain_msg_list.h"
 #include "srain_user_list.h"
 #include "srain_entry_completion.h"

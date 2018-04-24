@@ -34,12 +34,8 @@
 
 #include "sui_common.h"
 #include "sui_event_hdr.h"
-#include "sui_buffer.h"
-#include "srain_entry_completion.h"
-#include "srain_msg_list.h"
-#include "srain_user_list.h"
-#include "srain_msg.h"
 #include "theme.h"
+#include "sui_buffer.h"
 
 #include "log.h"
 #include "i18n.h"
@@ -306,6 +302,8 @@ void sui_buffer_insert_text(SuiBuffer *self, const char *text, int line, int off
     GtkTextMark *insert;
     GtkTextIter iter;
 
+    g_return_if_fail(SUI_IS_BUFFER(self));
+
     insert = gtk_text_buffer_get_insert(self->input_text_buffer);
     gtk_text_buffer_get_iter_at_mark(self->input_text_buffer, &iter, insert);
     if (line == -1){ // Current line
@@ -320,64 +318,92 @@ void sui_buffer_insert_text(SuiBuffer *self, const char *text, int line, int off
 }
 
 void sui_buffer_show_topic(SuiBuffer *self, bool isshow){
+    g_return_if_fail(SUI_IS_BUFFER(self));
+
     gtk_check_menu_item_set_active(self->topic_menu_item, isshow);
 }
 
 void sui_buffer_show_user_list(SuiBuffer *self, bool show){
+    g_return_if_fail(SUI_IS_BUFFER(self));
+
     gtk_check_menu_item_set_active(self->user_list_menu_item, show);
 }
 
 const char* sui_buffer_get_name(SuiBuffer *self){
+    g_return_val_if_fail(SUI_IS_BUFFER(self), NULL);
+
     return self->ctx->name;
 }
 
 const char* sui_buffer_get_remark(SuiBuffer *self){
+    g_return_val_if_fail(SUI_IS_BUFFER(self), NULL);
+
     return self->ctx->srv->cfg->name;
 }
 
 // sui_buffer_set_events is static
 
 SuiBufferEvents* sui_buffer_get_events(SuiBuffer *self){
+    g_return_val_if_fail(SUI_IS_BUFFER(self), NULL);
+
     return self->events;
 }
 
 void sui_buffer_set_config(SuiBuffer *self, SuiBufferConfig *cfg){
+    g_return_if_fail(SUI_IS_BUFFER(self));
+
     self->cfg = cfg;
     sui_buffer_show_topic(self, self->cfg->show_topic);
 }
 
 SuiBufferConfig* sui_buffer_get_config(SuiBuffer *self){
+    g_return_val_if_fail(SUI_IS_BUFFER(self), NULL);
+
     return self->cfg;
 }
 
 // sui_buffer_set_ctx() is static
 
 void* sui_buffer_get_ctx(SuiBuffer *self){
+    g_return_val_if_fail(SUI_IS_BUFFER(self), NULL);
+
     return self->ctx;
 }
 
 void sui_buffer_set_topic(SuiBuffer *self, const char *topic){
+    g_return_if_fail(SUI_IS_BUFFER(self));
+
     gtk_label_set_markup(self->topic_label, topic);
     gtk_check_menu_item_toggled(self->topic_menu_item);
 }
 
 void sui_buffer_set_topic_setter(SuiBuffer *self, const char *setter){
+    g_return_if_fail(SUI_IS_BUFFER(self));
+
     gtk_widget_set_tooltip_text(GTK_WIDGET(self->topic_label), setter);
 }
 
 SrainMsgList* sui_buffer_get_msg_list(SuiBuffer *self){
+    g_return_val_if_fail(SUI_IS_BUFFER(self), NULL);
+
     return self->msg_list;
 }
 
 GtkMenu* sui_buffer_get_menu(SuiBuffer *self){
+    g_return_val_if_fail(SUI_IS_BUFFER(self), NULL);
+
     return self->menu;
 }
 
 SrainUserList* sui_buffer_get_user_list(SuiBuffer *self){
+    g_return_val_if_fail(SUI_IS_BUFFER(self), NULL);
+
     return self->user_list;
 }
 
 GtkTextBuffer* sui_buffer_get_input_text_buffer(SuiBuffer *self){
+    g_return_val_if_fail(SUI_IS_BUFFER(self), NULL);
+
     return self->input_text_buffer;
 }
 

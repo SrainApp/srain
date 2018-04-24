@@ -1,74 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.0 -->
+<!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.16"/>
-  <template class="SrainRecvMsg" parent="GtkBox">
-    <property name="name">normal_recv_msg_box</property>
+  <template class="SuiRecvMessage" parent="SuiMessage">;
     <property name="visible">True</property>
     <property name="can_focus">False</property>
+    <property name="orientation">vertical</property>
     <child>
-      <object class="GtkBox" id="avatar_box">
-        <property name="name">avatar_box</property>
+      <object class="GtkBox" id="message_box">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="valign">start</property>
-        <property name="margin_left">10</property>
-        <property name="border_width">4</property>
-        <property name="orientation">vertical</property>
-        <child>
-          <object class="GtkImage" id="avatar_image">
-            <property name="width_request">36</property>
-            <property name="height_request">36</property>
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="pixel_size">36</property>
-            <property name="icon_name">srain-avatar</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-      </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">0</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkBox" id="padding_box">
-        <property name="name">padding_box</property>
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="margin_right">10</property>
-        <property name="border_width">4</property>
+        <property name="halign">start</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkBox" id="nick_box">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="margin_left">4</property>
-            <property name="margin_right">4</property>
             <property name="spacing">2</property>
             <child>
-              <object class="GtkButton" id="nick_button">
-                <property name="name">nick_button</property>
+              <object class="GtkEventBox" id="nick_event_box">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="focus_on_click">False</property>
-                <property name="receives_default">True</property>
-                <property name="relief">none</property>
+                <property name="can_focus">False</property>
                 <child>
                   <object class="GtkLabel" id="nick_label">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">nickname</property>
                     <property name="wrap">True</property>
                     <property name="lines">0</property>
                     <attributes>
                       <attribute name="weight" value="semibold"/>
                     </attributes>
+                    <style>
+                      <class name="sui-message-nick-label"/>
+                    </style>
                   </object>
                 </child>
               </object>
@@ -87,7 +52,7 @@
                   <attribute name="weight" value="normal"/>
                 </attributes>
                 <style>
-                  <class name="dim-label"/>
+                  <class name="sui-message-subnick-label"/>
                 </style>
               </object>
               <packing>
@@ -104,30 +69,29 @@
           </packing>
         </child>
         <child>
-          <object class="GtkBox" id="msg_box">
+          <object class="GtkBox" id="content_box">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="border_width">2</property>
             <child>
-              <object class="GtkLabel" id="msg_label">
+              <object class="GtkLabel" id="message_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="halign">start</property>
-                <property name="margin_left">4</property>
-                <property name="margin_right">4</property>
-                <property name="margin_bottom">4</property>
-                <property name="label" translatable="yes">(This message can not be showed correctly).</property>
+                <property name="label" translatable="yes">うれしぃこと 悲しいことも / 全部まるめて</property>
                 <property name="use_markup">True</property>
                 <property name="wrap">True</property>
                 <property name="wrap_mode">word-char</property>
                 <property name="selectable">True</property>
-                <property name="max_width_chars">72</property>
+                <property name="max_width_chars">80</property>
                 <attributes>
                   <attribute name="stretch" value="normal"/>
                 </attributes>
+                <style>
+                  <class name="sui-message-label"/>
+                </style>
               </object>
               <packing>
-                <property name="expand">True</property>
+                <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">0</property>
               </packing>
@@ -139,31 +103,38 @@
                 <property name="can_focus">False</property>
                 <property name="halign">end</property>
                 <property name="valign">end</property>
-                <property name="margin_left">4</property>
-                <property name="margin_right">4</property>
+                <property name="label" translatable="yes">19:51</property>
                 <style>
-                  <class name="dim-label"/>
+                  <class name="sui-message-time-label"/>
                 </style>
               </object>
               <packing>
-                <property name="expand">True</property>
+                <property name="expand">False</property>
                 <property name="fill">True</property>
+                <property name="pack_type">end</property>
                 <property name="position">1</property>
               </packing>
             </child>
           </object>
           <packing>
-            <property name="expand">True</property>
+            <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="position">1</property>
           </packing>
         </child>
+        <style>
+          <class name="sui-message-box"/>
+        </style>
       </object>
       <packing>
         <property name="expand">False</property>
         <property name="fill">True</property>
-        <property name="position">1</property>
+        <property name="position">2</property>
       </packing>
     </child>
+    <style>
+      <class name="sui-recv-message"/>
+      <class name="sui-message"/>
+    </style>
   </template>
 </interface>

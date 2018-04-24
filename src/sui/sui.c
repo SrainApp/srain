@@ -37,6 +37,10 @@
 #include "sui_app.h"
 #include "sui_window.h"
 #include "sui_buffer.h"
+#include "sui_message.h"
+#include "sui_misc_message.h"
+#include "sui_send_message.h"
+#include "sui_recv_message.h"
 #include "snotify.h"
 
 void sui_proc_pending_event(){
@@ -85,78 +89,32 @@ void sui_free_buffer(SuiBuffer *buf){
     sui_window_rm_buffer(sui_get_cur_window(), buf);
 }
 
-SuiMessage *sui_add_sys_msg(SuiBuffer *buf, const char *msg, SysMsgType type){
-    SuiMessage *smsg;
-    SuiBuffer *buffer;
+void sui_buffer_add_message(SuiBuffer *buf, SuiMessage *msg){
     SrainMsgList *list;
 
-    g_return_val_if_fail(buf, NULL);
-    g_return_val_if_fail(SUI_IS_BUFFER(buf), NULL);
-    g_return_val_if_fail(msg, NULL);
+    g_return_if_fail(SUI_IS_BUFFER(buf));
+    g_return_if_fail(SUI_IS_MESSAGE(msg));
 
-    buffer = buf;
-
-    list = sui_buffer_get_msg_list(buffer);
-    smsg = (SuiMessage *)srain_sys_msg_new(msg, type);
-    sui_message_set_ctx(smsg, buf);
-    srain_msg_list_add_message(list, smsg);
-
-    if (type != SYS_MSG_NORMAL){
-        sui_window_side_bar_update(sui_get_cur_window(), buffer, NULL, msg);
-    }
-
-    return smsg;
+    sui_message_set_buffer(msg, buf);
+    list = sui_buffer_get_msg_list(buf);
+    srain_msg_list_add_message(list, msg);
 }
 
-SuiMessage *sui_add_sent_msg(SuiBuffer *buf, const char *msg){
-    SuiBuffer *buffer;
-    SrainMsgList *list;
-    SuiMessage *smsg;
-
-    g_return_val_if_fail(buf, NULL);
-    g_return_val_if_fail(SUI_IS_BUFFER(buf), NULL);
-    g_return_val_if_fail(msg, NULL);
-
-    buffer = buf;
-    list = sui_buffer_get_msg_list(buffer);
-    smsg = (SuiMessage *)srain_send_msg_new(msg);
-    sui_message_set_ctx(smsg, buf);
-    srain_msg_list_add_message(list, smsg);
-
-    sui_window_side_bar_update(sui_get_cur_window(), buffer, _("You"), msg);
-
-    return smsg;
+SuiMessage *sui_new_misc_message(void *ctx, SuiMiscMessageStyle style){
+    return SUI_MESSAGE(sui_misc_message_new(ctx, style));
 }
 
-SuiMessage *sui_add_recv_msg(SuiBuffer *buf, const char *nick, const char *id,
-        const char *msg){
-    SuiBuffer *buffer;
-    SrainMsgList *list;
-    SrainEntryCompletion *comp;
-    SuiMessage *smsg;
+SuiMessage *sui_new_send_message(void *ctx){
+    return SUI_MESSAGE(sui_send_message_new(ctx));
+}
 
-    g_return_val_if_fail(buf, NULL);
-    g_return_val_if_fail(SUI_IS_BUFFER(buf), NULL);
-    g_return_val_if_fail(nick, NULL);
-    g_return_val_if_fail(msg, NULL);
-    if (!id) id = "";
+SuiMessage *sui_new_recv_message(void *ctx){
+    SuiRecvMessage *srmsg;
 
-    buffer = buf;
-    list = sui_buffer_get_msg_list(buffer);
-    smsg = (SuiMessage *)srain_recv_msg_new(nick, id, msg);
-    sui_message_set_ctx(smsg, buf);
-    srain_recv_msg_show_avatar(SRAIN_RECV_MSG(smsg),
-            sui_buffer_get_config(buf)->show_avatar);
-    srain_msg_list_add_message(list, smsg);
+    srmsg = sui_recv_message_new(ctx);
+    sui_message_update(srmsg);
 
-    sui_window_side_bar_update(sui_get_cur_window(), buffer, nick, msg);
-    if (strlen(id) != 0){
-        // FIXME
-        // comp = sui_buffer_get_entry_completion(buffer);
-        // srain_entry_completion_add_keyword(comp, nick, KEYWORD_TMP);
-    }
-
-    return smsg;
+    return SUI_MESSAGE(srmsg);
 }
 
 SrnRet sui_add_user(SuiBuffer *buf, const char *nick, UserType type){
@@ -251,49 +209,33 @@ void sui_set_topic_setter(SuiBuffer *buf, const char *setter){
     sui_buffer_set_topic_setter(buffer, setter);
 }
 
-void sui_message_set_ctx(SuiMessage *smsg, void *ctx){
-    g_return_if_fail(smsg);
-
-    smsg->ctx = ctx;
-}
-
-void *sui_message_get_ctx(SuiMessage *smsg){
-    g_return_val_if_fail(smsg, NULL);
-
-    return smsg->ctx;
-}
-
 void sui_message_append_message(SuiBuffer *buf, SuiMessage *smsg, const char *msg){
+    g_return_if_reached();
+
     SuiBuffer *buffer;
 
-    g_return_if_fail(buf);
     g_return_if_fail(SUI_IS_BUFFER(buf));
     g_return_if_fail(smsg);
     g_return_if_fail(msg);
 
-    buffer = buf;
+    // TODO
+    // sui_message_append_message(smsg, msg);
 
-    srain_msg_append_msg(smsg, msg);
-
-    if (SRAIN_IS_RECV_MSG(smsg)){
-        sui_window_side_bar_update(sui_get_cur_window(), buffer,
-                gtk_label_get_text(SRAIN_RECV_MSG(smsg)->nick_label), msg);
-    }
-    else if (SRAIN_IS_SEND_MSG(smsg)) {
-        sui_window_side_bar_update(sui_get_cur_window(), buffer, _("You"), msg);
+    if (SUI_IS_RECV_MESSAGE(smsg)){
+        sui_window_side_bar_update(sui_get_cur_window(), buf,
+                gtk_label_get_text(SUI_RECV_MESSAGE(smsg)->nick_label), msg);
+    } else if (SUI_IS_SEND_MESSAGE(smsg)) {
+        sui_window_side_bar_update(sui_get_cur_window(), buf, _("You"), msg);
     } else {
         WARN_FR("Append message is not available for message %p", smsg);
     }
 }
 
 void sui_message_mentioned(SuiMessage *smsg){
+    g_return_if_reached();
     g_return_if_fail(smsg);
 
     srain_msg_list_highlight_message(smsg);
-}
-
-void sui_message_set_time(SuiMessage *smsg, time_t time){
-    srain_msg_set_time(smsg, time);
 }
 
 /**
@@ -303,6 +245,7 @@ void sui_message_set_time(SuiMessage *smsg, time_t time){
  * @param smsg
  */
 void sui_message_notify(SuiMessage *smsg){
+    g_return_if_reached();
     const char *title;
     const char *msg;
     const char *icon;
@@ -314,19 +257,20 @@ void sui_message_notify(SuiMessage *smsg){
     }
 
     title = NULL;
-    msg = gtk_label_get_text(smsg->msg_label);
+    msg = sui_message_get_message(smsg);
     icon = "im.srain.Srain";
 
-    if (SRAIN_IS_RECV_MSG(smsg)){
-        title = gtk_label_get_text(SRAIN_RECV_MSG(smsg)->nick_label);
+    if (SUI_IS_RECV_MESSAGE(smsg)){
+        // TODO
+        title = "TODO";
     }
-    else if (SRAIN_IS_SYS_MSG(smsg)){
-        SrainSysMsg *ssmsg = SRAIN_SYS_MSG(smsg);
-        if (ssmsg->type == SYS_MSG_ERROR){
+    else if (SUI_IS_MISC_MESSAGE(smsg)){
+        SuiMiscMessage *ssmsg = SUI_MISC_MESSAGE(smsg);
+        if (ssmsg->style == SUI_MISC_MESSAGE_STYLE_ERROR){
             title = _("Error");
             icon = "srain-red";
         }
-        else if (ssmsg->type == SYS_MSG_ACTION){
+        else if (ssmsg->style == SUI_MISC_MESSAGE_STYLE_ACTION){
             title = _("Action");
         }
     }

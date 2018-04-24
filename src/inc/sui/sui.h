@@ -27,16 +27,17 @@ typedef struct _SuiWindow SuiWindow;
 typedef struct _SuiBuffer SuiBuffer;
 typedef int SuiBufferFlag;
 typedef struct _SuiMessage SuiMessage;
+typedef enum _SuiMiscMessageStyle SuiMiscMessageStyle;
 typedef enum _UserType UserType;
 typedef enum _SrnChatUserType SrnChatUserType;
 
-// TODO Rename type
-typedef enum {
-    SYS_MSG_NORMAL,
-    SYS_MSG_ERROR,
-    SYS_MSG_ACTION
-} SysMsgType;
-
+enum _SuiMiscMessageStyle {
+    SUI_MISC_MESSAGE_STYLE_NONE = 0,
+    SUI_MISC_MESSAGE_STYLE_NORMAL,
+    SUI_MISC_MESSAGE_STYLE_ERROR,
+    SUI_MISC_MESSAGE_STYLE_ACTION,
+    SUI_MISC_MESSAGE_STYLE_UNKNOWN,
+};
 
 enum _SrnChatUserType {
     SRN_SERVER_USER_OWNER,     // ~ mode +q
@@ -59,8 +60,6 @@ enum _UserType {
     /* ... */
     USER_TYPE_MAX
 };
-
-#define SRAIN_MSG_MENTIONED 0x1
 
 #define __IN_SUI_H
 #include "sui_event.h"
@@ -89,19 +88,19 @@ void sui_free_buffer(SuiBuffer *buf);
 
 void* sui_buffer_get_ctx(SuiBuffer *buf);
 void sui_buffer_set_config(SuiBuffer *buf, SuiBufferConfig *cfg);
+void sui_buffer_add_message(SuiBuffer *buf, SuiMessage *msg);
 
 /* SuiMessage */
+SuiMessage *sui_new_misc_message(void *ctx, SuiMiscMessageStyle style);
+SuiMessage *sui_new_send_message(void *ctx);
+SuiMessage *sui_new_recv_message(void *ctx);
 
-void sui_message_set_ctx(SuiMessage *smsg, void *ctx);
-void *sui_message_get_ctx(SuiMessage *smsg);
-void sui_message_set_time(SuiMessage *smsg, time_t time);
+void sui_message_update(SuiMessage *self);
 void sui_message_mentioned(SuiMessage *smsg);
 void sui_message_notify(SuiMessage *smsg);
-
-SuiMessage *sui_add_sys_msg(SuiBuffer *sui, const char *msg, SysMsgType type);
-SuiMessage *sui_add_sent_msg(SuiBuffer *sui, const char *msg);
-SuiMessage *sui_add_recv_msg(SuiBuffer *sui, const char *nick, const char *id, const char *msg);
 void sui_message_append_message(SuiBuffer *sui, SuiMessage *smsg, const char *msg);
+
+void sui_message_set_time(SuiMessage *smsg, GTimeVal *time);
 
 /* Completion */
 void sui_add_completion(SuiBuffer *sui, const char *word);

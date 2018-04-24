@@ -20,7 +20,7 @@
 #define __SRAIN_MSG_LIST_H
 
 #include <gtk/gtk.h>
-#include "srain_msg.h"
+#include "sui_message.h"
 
 #define SRAIN_TYPE_MSG_LIST (srain_msg_list_get_type())
 #define SRAIN_MSG_LIST(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SRAIN_TYPE_MSG_LIST, SrainMsgList))

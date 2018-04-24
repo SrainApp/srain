@@ -32,7 +32,6 @@
 #include "sui_common.h"
 #include "sui_window.h"
 #include "srain_msg_list.h"
-#include "srain_msg.h"
 #include "snotify.h"
 
 #include "i18n.h"
@@ -45,7 +44,7 @@ struct _SrainMsgList {
 
     int vis_row_num;
     GtkListBox *list_box;
-    SrainMsg *last_msg;
+    SuiMessage *last_msg;
 };
 
 struct _SrainMsgListClass {
@@ -219,9 +218,6 @@ SrainMsgList* srain_msg_list_new(void){
 }
 
 void srain_msg_list_add_message(SrainMsgList *list, SuiMessage *smsg){
-    g_signal_connect(smsg->msg_label, "activate-link",
-            G_CALLBACK(activate_link), NULL);
-
     gtk_list_box_add_unfocusable_row(list->list_box, GTK_WIDGET(smsg));
     smart_scroll(list, 0);
 }
