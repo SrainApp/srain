@@ -25,40 +25,98 @@
 
 SrnMessage* srn_message_new(SrnChat *chat, SrnChatUser *user,
         const char *content, SrnMessageType type){
-    SrnMessage *msg;
+    SrnMessage *self;
 
     g_return_val_if_fail(chat, NULL);
     g_return_val_if_fail(user, NULL);
     g_return_val_if_fail(user->srv_user, NULL);
 
-    msg = g_malloc0(sizeof(SrnMessage));
+    self = g_malloc0(sizeof(SrnMessage));
 
     if (!content) {
         content = "";
     }
 
-    msg->user = user;
-    msg->chat = chat;
-    // msg->role = NULL; // via g_malloc0()
-    msg->content = g_strdup(content);
-    msg->time = get_current_time_s();
-    msg->mentioned = FALSE;
-    msg->type = type;
-    // msg->urls = NULL; // via g_malloc0()
-    // msg->ui = NULL; // via g_malloc0()
+    self->user = user;
+    self->chat = chat;
+    self->content = g_strdup(content);
+    self->time = g_date_time_new_now_local();
+    self->mentioned = FALSE;
+    self->type = type;
 
     /* Decorated */
-    msg->dname = g_strdup(user->srv_user->nick);
-    msg->dcontent = g_markup_escape_text(content, -1);
+    self->dname = g_markup_escape_text(user->srv_user->nick, -1);
+    self->dcontent = g_markup_escape_text(content, -1);
 
-    return msg;
+    switch (self->type){
+        case SRN_MESSAGE_SENT:
+            self->ui = sui_new_send_message(self);
+            break;
+        case SRN_MESSAGE_RECV:
+            self->ui = sui_new_recv_message(self);
+            break;
+        case SRN_MESSAGE_MISC:
+            self->ui = sui_new_misc_message(self, SUI_MISC_MESSAGE_STYLE_NORMAL);
+            break;
+        case SRN_MESSAGE_ERROR:
+            self->ui = sui_new_misc_message(self, SUI_MISC_MESSAGE_STYLE_ERROR);
+            break;
+        case SRN_MESSAGE_ACTION:
+            self->ui = sui_new_misc_message(self, SUI_MISC_MESSAGE_STYLE_ACTION);
+            break;
+        default:
+            self->ui = sui_new_misc_message(self, SUI_MISC_MESSAGE_STYLE_NORMAL);
+            g_warn_if_reached();
+    }
+
+    return self;
 }
 
-void srn_message_free(SrnMessage *msg){
-    str_assign(&msg->dname, NULL);
-    str_assign(&msg->role, NULL);
-    str_assign(&msg->content, NULL);
-    str_assign(&msg->dcontent, NULL);
-    g_slist_free_full(msg->urls, g_free);
-    g_free(msg);
+char* srn_message_to_string(SrnMessage *self){
+    char *time_str;
+    char *msg_str;
+
+    time_str = g_date_time_format(self->time, "%T");
+    g_return_val_if_fail(time_str, NULL);
+
+    switch (self->type){
+        case SRN_MESSAGE_SENT:
+            msg_str = g_strdup_printf("[%s] <%s*> %s",
+                    time_str, self->user->srv_user->nick, self->content);
+            break;
+        case SRN_MESSAGE_RECV:
+        case SRN_MESSAGE_NOTICE:
+            msg_str = g_strdup_printf("[%s] <%s> %s",
+                    time_str, self->user->srv_user->nick, self->content);
+            break;
+        case SRN_MESSAGE_ACTION:
+            msg_str = g_strdup_printf("[%s] * %s %s",
+                    time_str, self->user->srv_user->nick, self->content);
+            break;
+        case SRN_MESSAGE_MISC:
+            msg_str = g_strdup_printf("[%s] = %s", time_str, self->content);
+            break;
+        case SRN_MESSAGE_ERROR:
+            msg_str = g_strdup_printf("[%s] ! %s", time_str, self->content);
+            break;
+        case SRN_MESSAGE_UNKNOWN:
+        default:
+            g_warn_if_reached();
+            msg_str = NULL;
+            break;
+    }
+
+    g_free(time_str);
+
+    return msg_str;
+}
+
+void srn_message_free(SrnMessage *self){
+    str_assign(&self->dname, NULL);
+    str_assign(&self->role, NULL);
+    str_assign(&self->content, NULL);
+    str_assign(&self->dcontent, NULL);
+    g_date_time_unref(self->time);
+    g_slist_free_full(self->urls, g_free);
+    g_free(self);
 }

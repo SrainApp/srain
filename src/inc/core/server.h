@@ -123,7 +123,7 @@ struct _SrnMessage {
 
     char *content;
     char *dcontent; // Decorated message content
-    time_t time;
+    GDateTime *time;
     bool mentioned;
     SrnMessageType type;
 
@@ -345,6 +345,7 @@ void srn_chat_user_set_is_joined(SrnChatUser *self, bool joined);
 
 SrnMessage* srn_message_new(SrnChat *chat, SrnChatUser *user, const char *content, SrnMessageType type);
 void srn_message_free(SrnMessage *msg);
+char* srn_message_to_string(SrnMessage *self);
 
 SrnServerConfig* srn_server_config_new(const char *name);
 SrnRet srn_server_config_add_addr(SrnServerConfig *cfg, const char *addr);

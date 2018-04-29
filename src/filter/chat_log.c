@@ -47,20 +47,17 @@ Filter chat_log_filter = {
 };
 
 static bool chat_log(const SrnMessage *msg, const char *content){
-    char timestr[32];
-    char datestr[32];
+    char *date_str;
+    char *msg_str;
     FILE *fp;
     char *file;
     GString *basename;
 
-    strftime(timestr, 32, "%T", localtime(&msg->time));
-    timestr[31] = '\0';
-    strftime(datestr, 32, "%F", localtime(&msg->time));
-    datestr[31] = '\0';
+    date_str = g_date_time_format(msg->time, "%F");
+    g_return_val_if_fail(date_str, TRUE);
 
     basename = g_string_new("");
-
-    g_string_append_printf(basename, "%s.%s.log", datestr, msg->chat->name);
+    g_string_append_printf(basename, "%s.%s.log", date_str, msg->chat->name);
     file = create_log_file(msg->chat->srv->cfg->name, basename->str);
 
     if (!file){
@@ -74,26 +71,10 @@ static bool chat_log(const SrnMessage *msg, const char *content){
         goto cleanup2;
     }
 
-    switch (msg->type){
-        case SRN_MESSAGE_SENT:
-            fprintf(fp,"[%s] <%s*> %s\n", timestr, msg->user->srv_user->nick, msg->content);
-            break;
-        case SRN_MESSAGE_RECV:
-        case SRN_MESSAGE_NOTICE:
-            fprintf(fp,"[%s] <%s> %s\n", timestr, msg->user->srv_user->nick, msg->content);
-            break;
-        case SRN_MESSAGE_ACTION:
-            fprintf(fp,"[%s] * %s %s\n", timestr, msg->user->srv_user->nick, msg->content);
-            break;
-        case SRN_MESSAGE_MISC:
-            fprintf(fp,"[%s] = %s\n", timestr, msg->content);
-            break;
-        case SRN_MESSAGE_ERROR:
-            fprintf(fp,"[%s] ! %s\n", timestr, msg->content);
-            break;
-        case SRN_MESSAGE_UNKNOWN:
-        default:
-            break;
+    msg_str = srn_message_to_string(msg);
+    if (msg_str){
+        fprintf(fp, "%s\n", msg_str);
+        g_free(msg_str);
     }
 
     fclose(fp);

@@ -188,18 +188,13 @@ void srn_chat_add_sent_message(SrnChat *self, const char *content){
         goto cleanup;
     }
 
-    if (whether_merge_last_message(self, msg)){
-        msg->ui = self->last_msg->ui;
-        sui_message_append_message(self->ui, msg->ui, msg->dcontent);
-    } else {
-        msg->ui = sui_add_sent_msg(self->ui, msg->dcontent);
-    }
-
-    if (!msg->ui){
-        goto cleanup;
-    }
-
-    sui_message_set_time(msg->ui, msg->time);
+    // FIXME
+    // if (whether_merge_last_message(self, msg)){
+    //     msg->ui = self->last_msg->ui;
+    //     sui_message_append_message(self->ui, msg->ui, msg->dcontent);
+    // } else {
+    //     msg->ui = sui_add_sent_msg(self->ui, msg->dcontent);
+    // }
 
     add_message(self, msg);
 
@@ -230,16 +225,12 @@ void srn_chat_add_recv_message(SrnChat *self, SrnChatUser *user, const char *con
         goto cleanup;
     }
 
-    if (whether_merge_last_message(self, msg)){
-        msg->ui = self->last_msg->ui;
-        sui_message_append_message(self->ui, msg->ui, msg->dcontent);
-    } else {
-        msg->ui = sui_add_recv_msg(self->ui, msg->dname, msg->role, msg->dcontent);
-    }
-
-    if (!msg->ui){
-        goto cleanup;
-    }
+    // if (whether_merge_last_message(self, msg)){
+    //     msg->ui = self->last_msg->ui;
+    //     sui_message_append_message(self->ui, msg->ui, msg->dcontent);
+    // } else {
+    //     msg->ui = sui_add_recv_msg(self->ui, msg->dname, msg->role, msg->dcontent);
+    // }
 
     if (msg->mentioned){
         sui_message_mentioned(msg->ui);
@@ -247,8 +238,6 @@ void srn_chat_add_recv_message(SrnChat *self, SrnChatUser *user, const char *con
     } else if (self->type == SRN_CHAT_TYPE_DIALOG){
         sui_message_notify(msg->ui);
     }
-
-    sui_message_set_time(msg->ui, msg->time);
 
     add_message(self, msg);
     return;
@@ -286,14 +275,6 @@ void srn_chat_add_action_message(SrnChat *self, SrnChatUser *user, const char *c
         goto cleanup;
     }
 
-    {
-        char *action_msg = g_strdup_printf(_("*** <b>%1$s</b> %2$s ***"),
-                msg->dname, msg->dcontent);
-        msg->ui = sui_add_sys_msg(self->ui, action_msg, SYS_MSG_ACTION);
-        g_free(action_msg);
-    }
-
-
     if (!msg->ui){
         goto cleanup;
     }
@@ -321,11 +302,6 @@ void srn_chat_add_misc_message(SrnChat *self, SrnChatUser *user, const char *con
         goto cleanup;
     }
     if (!filter_message(msg, fflag, NULL)){
-        goto cleanup;
-    }
-
-    msg->ui = sui_add_sys_msg(self->ui, msg->dcontent, SYS_MSG_NORMAL);
-    if (!msg->ui){
         goto cleanup;
     }
 
@@ -361,9 +337,6 @@ void srn_chat_add_error_message(SrnChat *self, SrnChatUser *user, const char *co
     if (!filter_message(msg, fflag, NULL)){
         goto cleanup;
     }
-
-    msg->ui = sui_add_sys_msg(self->ui, msg->dcontent, SYS_MSG_ERROR);
-    sui_message_notify(msg->ui);
 
     add_message(self, msg);
 
@@ -407,7 +380,9 @@ void srn_chat_set_topic_setter(SrnChat *self, const char *setter){
 }
 
 static void add_message(SrnChat *self, SrnMessage *msg){
+    sui_message_update(msg->ui);
     self->msg_list = g_list_append(self->msg_list, msg);
+    sui_buffer_add_message(self->ui, msg->ui);
     self->last_msg = msg;
 }
 
@@ -417,7 +392,7 @@ static bool whether_merge_last_message(SrnChat *self, SrnMessage *msg){
     last_msg = self->last_msg;
 
     return (last_msg
-            && msg->time - last_msg->time < SRN_MESSAGE_MERGE_INTERVAL
+            // && msg->time - last_msg->time < SRN_MESSAGE_MERGE_INTERVAL
             && (!last_msg->mentioned && !msg->mentioned)
             && last_msg->type == msg->type
             && sirc_target_equal(last_msg->user->srv_user->nick, msg->user->srv_user->nick)
