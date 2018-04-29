@@ -211,7 +211,7 @@ SrnRet srain_user_list_rename(SrainUserList *list, const char *old_user,
     } while (gtk_tree_model_iter_next(model, &iter));
 
     if (!found){
-        DBG_FR("'%s' not found");
+        DBG_FR("'%s' not found", old_user);
         return SRN_ERR;
     }
 
