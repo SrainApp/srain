@@ -217,8 +217,22 @@ SrainMsgList* srain_msg_list_new(void){
     return g_object_new(SRAIN_TYPE_MSG_LIST, NULL);
 }
 
-void srain_msg_list_add_message(SrainMsgList *list, SuiMessage *smsg){
-    gtk_list_box_add_unfocusable_row(list->list_box, GTK_WIDGET(smsg));
+void srain_msg_list_add_message(SrainMsgList *list, SuiMessage *smsg,
+        GtkAlign halign){
+    GtkBox *box;
+
+    if (list->last_msg
+            && (G_OBJECT_TYPE(smsg) == G_OBJECT_TYPE(list->last_msg))) {
+        sui_message_compose_prev(smsg, list->last_msg);
+        sui_message_compose_next(list->last_msg, smsg);
+    }
+    list->last_msg = smsg;
+
+    box = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0));
+    gtk_box_pack_start(box, GTK_WIDGET(smsg), TRUE, TRUE, 0);
+    gtk_widget_set_halign(GTK_WIDGET(smsg), halign);
+    gtk_list_box_add_unfocusable_row(list->list_box, GTK_WIDGET(box));
+
     smart_scroll(list, 0);
 }
 

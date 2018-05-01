@@ -29,6 +29,8 @@
 #include "sui_misc_message.h"
 
 static void sui_misc_message_update(SuiMessage *msg);
+static void sui_misc_message_compose_prev(SuiMessage *_self, SuiMessage *_prev);
+static void sui_misc_message_compose_next(SuiMessage *_self, SuiMessage *_next);
 
 static void sui_misc_message_set_style(SuiMiscMessage *self,
         SuiMiscMessageStyle style);
@@ -114,10 +116,21 @@ static void sui_misc_message_class_init(SuiMiscMessageClass *class){
     widget_class = GTK_WIDGET_CLASS(class);
     gtk_widget_class_set_template_from_resource(widget_class,
             "/im/srain/Srain/misc_message.glade");
+    gtk_widget_class_bind_template_child(widget_class, SuiMessage, message_box);
     gtk_widget_class_bind_template_child(widget_class, SuiMessage, message_label);
 
     message_class = SUI_MESSAGE_CLASS(class);
     message_class->update = sui_misc_message_update;
+    message_class->compose_prev = sui_misc_message_compose_prev;
+    message_class->compose_next = sui_misc_message_compose_next;
+}
+
+static void sui_misc_message_compose_prev(SuiMessage *_self, SuiMessage *_prev){
+    // Do nothing
+}
+
+static void sui_misc_message_compose_next(SuiMessage *_self, SuiMessage *_next){
+    // Do nothing
 }
 
 /*****************************************************************************

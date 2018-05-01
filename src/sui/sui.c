@@ -90,6 +90,7 @@ void sui_free_buffer(SuiBuffer *buf){
 }
 
 void sui_buffer_add_message(SuiBuffer *buf, SuiMessage *msg){
+    GType type;
     SrainMsgList *list;
 
     g_return_if_fail(SUI_IS_BUFFER(buf));
@@ -97,7 +98,16 @@ void sui_buffer_add_message(SuiBuffer *buf, SuiMessage *msg){
 
     sui_message_set_buffer(msg, buf);
     list = sui_buffer_get_msg_list(buf);
-    srain_msg_list_add_message(list, msg);
+    type = G_OBJECT_TYPE(msg);
+    if (type == SUI_TYPE_MISC_MESSAGE){
+        srain_msg_list_add_message(list, msg, GTK_ALIGN_CENTER);
+    } else if (type == SUI_TYPE_SEND_MESSAGE){
+        srain_msg_list_add_message(list, msg, GTK_ALIGN_END);
+    } else if (type == SUI_TYPE_RECV_MESSAGE){
+        srain_msg_list_add_message(list, msg, GTK_ALIGN_START);
+    } else {
+        g_warn_if_reached();
+    }
 }
 
 SuiMessage *sui_new_misc_message(void *ctx, SuiMiscMessageStyle style){

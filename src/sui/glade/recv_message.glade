@@ -2,7 +2,7 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.16"/>
-  <template class="SuiRecvMessage" parent="SuiMessage">;
+  <template class="SuiRecvMessage" parent="SuiMessage">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="orientation">vertical</property>
@@ -10,19 +10,18 @@
       <object class="GtkBox" id="message_box">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="halign">start</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkBox" id="nick_box">
+          <object class="GtkBox" id="user_box">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="spacing">2</property>
             <child>
-              <object class="GtkEventBox" id="nick_event_box">
+              <object class="GtkEventBox" id="user_event_box">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkLabel" id="nick_label">
+                  <object class="GtkLabel" id="user_name_label">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">nickname</property>
@@ -44,7 +43,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="identify_label">
+              <object class="GtkLabel" id="user_subname_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="use_underline">True</property>
@@ -61,6 +60,9 @@
                 <property name="position">1</property>
               </packing>
             </child>
+            <style>
+              <class name="sui-user-box"/>
+            </style>
           </object>
           <packing>
             <property name="expand">False</property>

@@ -41,7 +41,10 @@
 #include "meta.h"
 #include "utils.h"
 
+static void sui_message_size_allocate(GtkWidget *widget, GtkAllocation *allocation);
 static void sui_message_real_update(SuiMessage *self);
+static void sui_message_real_compose_prev(SuiMessage *self, SuiMessage *prev);
+static void sui_message_real_compose_next(SuiMessage *self, SuiMessage *next);
 
 static void sui_message_set_ctx(SuiMessage *self, void *ctx);
 
@@ -101,6 +104,11 @@ static void sui_message_get_property(GObject *object, guint property_id,
 }
 
 static void sui_message_init(SuiMessage *self){
+    GtkStyleContext *style_context;
+
+    style_context = gtk_widget_get_style_context(GTK_WIDGET(self));
+    gtk_style_context_add_class(style_context, "sui-message-head");
+    gtk_style_context_add_class(style_context, "sui-message-tail");
 }
 
 static void sui_message_constructed(GObject *object){
@@ -113,6 +121,7 @@ static void sui_message_finalize(GObject *object){
 
 static void sui_message_class_init(SuiMessageClass *class){
     GObjectClass *object_class;
+    GtkWidgetClass *widget_class;
 
     /* Overwrite callbacks */
     object_class = G_OBJECT_CLASS(class);
@@ -138,7 +147,54 @@ static void sui_message_class_init(SuiMessageClass *class){
             N_PROPERTIES,
             obj_properties);
 
+    widget_class = GTK_WIDGET_CLASS(class);
+    widget_class->size_allocate = sui_message_size_allocate;
+
     class->update = sui_message_real_update;
+    class->compose_prev = sui_message_real_compose_prev;
+    class->compose_next = sui_message_real_compose_next;
+
+}
+
+static void allocate_width(SuiMessage *self, int x, int width){
+    GtkAllocation alloc;
+    SuiMessageClass *class;
+
+    if (!self->prev) {
+        return;
+    }
+
+    gtk_widget_get_allocation(GTK_WIDGET(self->prev), &alloc);
+    alloc.x = x;
+    alloc.width = width;
+    // FIXME: Why gtk_widget_size_allocate() does not work?
+    sui_message_size_allocate(self->prev, &alloc);
+    gtk_widget_queue_draw(GTK_WIDGET(self->prev));
+
+    allocate_width(self->prev, x, width);
+}
+
+static void sui_message_size_allocate(GtkWidget *widget,
+        GtkAllocation *alloc){
+    SuiMessage *self;
+
+    self = SUI_MESSAGE(widget);
+    if (!self->prev) {
+        self->min_x = alloc->x;
+        self->max_width = alloc->width;
+    } else {
+        self->min_x = self->prev->min_x < alloc->x ?
+            self->prev->min_x : alloc->x;
+        self->max_width = self->prev->max_width > alloc->width ?
+            self->prev->max_width : alloc->width;
+    }
+    if (!self->next) {
+        alloc->x = self->min_x;
+        alloc->width = self->max_width;
+        allocate_width(self, self->min_x, self->max_width);
+    }
+
+    GTK_WIDGET_CLASS(sui_message_parent_class)->size_allocate(widget, alloc);
 }
 
 /*****************************************************************************
@@ -165,6 +221,28 @@ void sui_message_update(SuiMessage *self){
     g_return_if_fail (class->update);
 
     class->update(self);
+}
+
+void sui_message_compose_prev(SuiMessage *self, SuiMessage *prev){
+    SuiMessageClass *class;
+
+    g_return_if_fail(SUI_IS_MESSAGE(self));
+    class = SUI_MESSAGE_GET_CLASS(self);
+    g_return_if_fail(class->compose_prev);
+    g_return_if_fail(!self->prev);
+
+    class->compose_prev(self, prev);
+}
+
+void sui_message_compose_next(SuiMessage *self, SuiMessage *next){
+    SuiMessageClass *class;
+
+    g_return_if_fail(SUI_IS_MESSAGE(self));
+    class = SUI_MESSAGE_GET_CLASS(self);
+    g_return_if_fail(class->compose_next);
+    g_return_if_fail(!self->next);
+
+    class->compose_next(self, next);
 }
 
 void sui_message_label_on_popup(GtkLabel *label, GtkMenu *menu, gpointer user_data){
@@ -222,6 +300,26 @@ void sui_message_label_on_popup(GtkLabel *label, GtkMenu *menu, gpointer user_da
 
 static void sui_message_real_update(SuiMessage *self){
     gtk_label_set_markup(self->message_label, self->ctx->dcontent);
+}
+
+static void sui_message_real_compose_prev(SuiMessage *self, SuiMessage *prev){
+    GtkStyleContext *style_context;
+
+    g_return_if_fail(!self->prev);
+    self->prev = prev;
+
+    style_context = gtk_widget_get_style_context(GTK_WIDGET(self));
+    gtk_style_context_remove_class(style_context, "sui-message-head");
+}
+
+static void sui_message_real_compose_next(SuiMessage *self, SuiMessage *next){
+    GtkStyleContext *style_context;
+
+    g_return_if_fail(!self->next);
+    self->next = next;
+
+    style_context = gtk_widget_get_style_context(GTK_WIDGET(self));
+    gtk_style_context_remove_class(style_context, "sui-message-tail");
 }
 
 static void sui_message_set_ctx(SuiMessage *self, void *ctx){

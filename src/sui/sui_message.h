@@ -41,26 +41,53 @@ struct _SuiMessage {
     GtkBox parent;
     SrnMessage *ctx;
     SuiBuffer *buf;
+    GtkLabel *message_box;
     GtkLabel *message_label;
+
+    /* SuiMessage's style is varies with whether it has previous and next message.
+     *
+     * If a SuiMessage has not previous message, that it is a head of a serial
+     * of composed message. And it has a style class named "sui-message-head".
+     * If a SuiMessage has not next message, that it is a tail of a serial of
+     * composed message. And it has a style class named "sui-message-tail".
+     * A serial of composed message have the same widget width and same x
+     * coordinate.  The ``min_x`` and ``max_width`` are used to do this stuff.
+     *
+     * Subclass should hide/show some widget in SuiMessageClass's
+     * compose_prev/compose_next hander.
+     *
+     * NOTE: The prev and next pointer should only pointer to the same type of
+     * intance with self.
+     */
+    SuiMessage *prev;
+    SuiMessage *next;
+    int min_x;
+    int max_width;
 };
 
 struct _SuiMessageClass {
     GtkBoxClass parent_class;
 
+    // Update the view of SuiMessage according self->ctx
     void (*update) (SuiMessage *self);
-
-    /* Padding to allow adding up to 12 new virtual functions without
-     * breaking ABI */
-    gpointer padding[12];
+    // Compose self to previous message
+    void (*compose_prev) (SuiMessage *self, SuiMessage *prev);
+    // Compose self to enxt message
+    void (*compose_next) (SuiMessage *self, SuiMessage *next);
 };
 
 GType sui_message_get_type(void);
 
 void sui_message_update(SuiMessage *self);
+void sui_message_compose_prev(SuiMessage *self, SuiMessage *prev);
+void sui_message_compose_next(SuiMessage *self, SuiMessage *next);
 
 void* sui_message_get_ctx(SuiMessage *self);
 void sui_message_set_buffer(SuiMessage *self, SuiBuffer *buf);
 SuiBuffer* sui_message_get_buffer(SuiMessage *self);
+SuiMessage* sui_message_get_prev(SuiMessage *self);
+SuiMessage* sui_message_get_next(SuiMessage *self);
+
 void sui_message_label_on_popup(GtkLabel *label, GtkMenu *menu, gpointer user_data);
 
 #endif /* __SUI_MESSAGE_H */

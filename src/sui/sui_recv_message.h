@@ -33,10 +33,13 @@ typedef struct _SuiRecvMessageClass SuiRecvMessageClass;
 struct _SuiRecvMessage {
     SuiMessage parent;
 
-    GtkEventBox *nick_event_box;
-    GtkLabel *nick_label;
-    GtkLabel *identify_label;
+    GtkBox *message_box;
     GtkLabel *time_label;
+
+    GtkBox *user_box;
+    GtkEventBox *user_event_box;
+    GtkLabel *user_name_label;
+    GtkLabel *user_subname_label;
 };
 
 struct _SuiRecvMessageClass {

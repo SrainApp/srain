@@ -29,6 +29,8 @@
 #include "sui_send_message.h"
 
 static void sui_send_message_update(SuiMessage *msg);
+static void sui_send_message_compose_prev(SuiMessage *_self, SuiMessage *_prev);
+static void sui_send_message_compose_next(SuiMessage *_self, SuiMessage *_next);
 
 /*****************************************************************************
  * GObject functions
@@ -50,11 +52,14 @@ static void sui_send_message_class_init(SuiSendMessageClass *class){
     widget_class = GTK_WIDGET_CLASS(class);
     gtk_widget_class_set_template_from_resource(widget_class,
             "/im/srain/Srain/send_message.glade");
+    gtk_widget_class_bind_template_child(widget_class, SuiMessage, message_box);
     gtk_widget_class_bind_template_child(widget_class, SuiMessage, message_label);
     gtk_widget_class_bind_template_child(widget_class, SuiSendMessage, time_label);
 
     message_class = SUI_MESSAGE_CLASS(class);
     message_class->update = sui_send_message_update;
+    message_class->compose_prev = sui_send_message_compose_prev;
+    message_class->compose_next = sui_send_message_compose_next;
 }
 
 /*****************************************************************************
@@ -89,4 +94,26 @@ static void sui_send_message_update(SuiMessage *msg){
     g_free(time);
 
     SUI_MESSAGE_CLASS(sui_send_message_parent_class)->update(msg);
+}
+
+static void sui_send_message_compose_prev(SuiMessage *_self, SuiMessage *_prev){
+    SuiSendMessage *self;
+    SuiSendMessage *prev;
+
+    self = SUI_SEND_MESSAGE(_self);
+    prev = SUI_SEND_MESSAGE(_prev);
+
+    SUI_MESSAGE_CLASS(sui_send_message_parent_class)->compose_prev(_self, _prev);
+}
+
+static void sui_send_message_compose_next(SuiMessage *_self, SuiMessage *_next){
+    SuiSendMessage *self;
+    SuiSendMessage *next;
+
+    self = SUI_SEND_MESSAGE(_self);
+    next = SUI_SEND_MESSAGE(_next);
+
+    gtk_widget_hide(self->time_label);
+
+    SUI_MESSAGE_CLASS(sui_send_message_parent_class)->compose_next(_self, _next);
 }
