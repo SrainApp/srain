@@ -91,20 +91,20 @@ void sui_free_buffer(SuiBuffer *buf){
 
 void sui_buffer_add_message(SuiBuffer *buf, SuiMessage *msg){
     GType type;
-    SrainMsgList *list;
+    SuiMessageList *list;
 
     g_return_if_fail(SUI_IS_BUFFER(buf));
     g_return_if_fail(SUI_IS_MESSAGE(msg));
 
     sui_message_set_buffer(msg, buf);
-    list = sui_buffer_get_msg_list(buf);
+    list = sui_buffer_get_message_list(buf);
     type = G_OBJECT_TYPE(msg);
     if (type == SUI_TYPE_MISC_MESSAGE){
-        srain_msg_list_add_message(list, msg, GTK_ALIGN_CENTER);
+        sui_message_list_add_message(list, msg, GTK_ALIGN_CENTER);
     } else if (type == SUI_TYPE_SEND_MESSAGE){
-        srain_msg_list_add_message(list, msg, GTK_ALIGN_END);
+        sui_message_list_add_message(list, msg, GTK_ALIGN_END);
     } else if (type == SUI_TYPE_RECV_MESSAGE){
-        srain_msg_list_add_message(list, msg, GTK_ALIGN_START);
+        sui_message_list_add_message(list, msg, GTK_ALIGN_START);
     } else {
         g_warn_if_reached();
     }
@@ -220,32 +220,13 @@ void sui_set_topic_setter(SuiBuffer *buf, const char *setter){
 }
 
 void sui_message_append_message(SuiBuffer *buf, SuiMessage *smsg, const char *msg){
-    g_return_if_reached();
-
-    SuiBuffer *buffer;
-
-    g_return_if_fail(SUI_IS_BUFFER(buf));
-    g_return_if_fail(smsg);
-    g_return_if_fail(msg);
-
-    // TODO
-    // sui_message_append_message(smsg, msg);
-
-    if (SUI_IS_RECV_MESSAGE(smsg)){
-        sui_window_side_bar_update(sui_get_cur_window(), buf,
-                gtk_label_get_text(SUI_RECV_MESSAGE(smsg)->nick_label), msg);
-    } else if (SUI_IS_SEND_MESSAGE(smsg)) {
-        sui_window_side_bar_update(sui_get_cur_window(), buf, _("You"), msg);
-    } else {
-        WARN_FR("Append message is not available for message %p", smsg);
-    }
 }
 
 void sui_message_mentioned(SuiMessage *smsg){
     g_return_if_reached();
     g_return_if_fail(smsg);
 
-    srain_msg_list_highlight_message(smsg);
+    sui_message_list_highlight_message(smsg);
 }
 
 /**

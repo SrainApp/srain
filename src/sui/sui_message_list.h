@@ -16,26 +16,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SRAIN_MSG_LIST_H
-#define __SRAIN_MSG_LIST_H
+#ifndef __SUI_MESSAGE_LIST_H
+#define __SUI_MESSAGE_LIST_H
 
 #include <gtk/gtk.h>
 #include "sui_message.h"
 
-#define SRAIN_TYPE_MSG_LIST (srain_msg_list_get_type())
-#define SRAIN_MSG_LIST(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SRAIN_TYPE_MSG_LIST, SrainMsgList))
-#define SRAIN_IS_MSG_LIST(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), SRAIN_TYPE_MSG_LIST))
+#define SUI_TYPE_MESSAGE_LIST (sui_message_list_get_type())
+#define SUI_MESSAGE_LIST(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SUI_TYPE_MESSAGE_LIST, SuiMessageList))
+#define SUI_IS_MESSAGE_LIST(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), SUI_TYPE_MESSAGE_LIST))
 
-typedef struct _SrainMsgList SrainMsgList;
-typedef struct _SrainMsgListClass SrainMsgListClass;
+typedef struct _SuiMessageList SuiMessageList;
+typedef struct _SuiMessageListClass SuiMessageListClass;
 
-GType srain_msg_list_get_type(void);
-SrainMsgList *srain_msg_list_new(void);
+GType sui_message_list_get_type(void);
+SuiMessageList *sui_message_list_new(void);
 
-void srain_msg_list_add_message(SrainMsgList *list, SuiMessage *smsg, GtkAlign halign);
-void srain_msg_list_highlight_message(SuiMessage *smsg);
+void sui_message_list_add_message(SuiMessageList *self, SuiMessage *msg, GtkAlign halign);
 
-void srain_msg_list_scroll_up(SrainMsgList *list, double step);
-void srain_msg_list_scroll_down(SrainMsgList *list, double step);
+void sui_message_list_scroll_up(SuiMessageList *self, double step);
+void sui_message_list_scroll_down(SuiMessageList *self, double step);
 
-#endif /* __SRAIN_MSG_LIST_H */
+#endif /* __SUI_MESSAGE_LIST_H */

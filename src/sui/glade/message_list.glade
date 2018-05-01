@@ -2,7 +2,7 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.16"/>
-  <template class="SrainMsgList" parent="GtkScrolledWindow">
+  <template class="SuiMessageList" parent="GtkScrolledWindow">
     <property name="visible">True</property>
     <property name="can_focus">True</property>
     <property name="hscrollbar_policy">never</property>
@@ -21,5 +21,8 @@
         </child>
       </object>
     </child>
+    <style>
+      <class name="sui-message-list"/>
+    </style>
   </template>
 </interface>

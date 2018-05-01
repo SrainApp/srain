@@ -63,7 +63,7 @@ struct _SuiBuffer {
 
     /* Message list */
     GtkBox *msg_list_box;
-    SrainMsgList *msg_list;
+    SuiMessageList *msg_list;
 
     /* User list */
     GtkRevealer *user_list_revealer;
@@ -164,7 +164,7 @@ static void sui_buffer_init(SuiBuffer *self){
             GTK_WIDGET(self->user_list));
 
     /* Init msg list */
-    self->msg_list = srain_msg_list_new();
+    self->msg_list = sui_message_list_new();
     gtk_box_pack_start(self->msg_list_box, GTK_WIDGET(self->msg_list),
             TRUE, TRUE, 0);
     gtk_widget_show(GTK_WIDGET(self->msg_list));
@@ -383,7 +383,7 @@ void sui_buffer_set_topic_setter(SuiBuffer *self, const char *setter){
     gtk_widget_set_tooltip_text(GTK_WIDGET(self->topic_label), setter);
 }
 
-SrainMsgList* sui_buffer_get_msg_list(SuiBuffer *self){
+SuiMessageList* sui_buffer_get_message_list(SuiBuffer *self){
     g_return_val_if_fail(SUI_IS_BUFFER(self), NULL);
 
     return self->msg_list;

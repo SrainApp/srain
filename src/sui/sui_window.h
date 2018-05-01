@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SRAIN_WINDOW_H
-#define __SRAIN_WINDOW_H
+#ifndef __SUI_WINDOW_H
+#define __SUI_WINDOW_H
 
 #include <gtk/gtk.h>
 
@@ -28,7 +28,7 @@
 
 #define SUI_TYPE_WINDOW (sui_window_get_type())
 #define SUI_WINDOW(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SUI_TYPE_WINDOW, SuiWindow))
-#define SRAIN_IS_WINDOW(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), SUI_TYPE_WINDOW))
+#define SUI_IS_WINDOW(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), SUI_TYPE_WINDOW))
 
 typedef struct _SuiWindow SuiWindow;
 typedef struct _SuiWindowClass SuiWindowClass;
@@ -52,4 +52,4 @@ void sui_window_tray_icon_stress(SuiWindow *self, int stress);
 SrainConnectPopover *sui_window_get_connect_popover(SuiWindow *self);
 SrainJoinPopover *sui_window_get_join_popover(SuiWindow *self);
 
-#endif /* __SRAIN_WINDOW_H */
+#endif /* __SUI_WINDOW_H */
