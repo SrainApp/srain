@@ -1,4 +1,4 @@
-/* Copyright (C) 2016-2017 Shengyu Zhang <i@silverrainz.me>
+/* Copyright (C) 2016-2018 Shengyu Zhang <i@silverrainz.me>
  *
  * This file is part of Srain.
  *
@@ -16,11 +16,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SNOTIFY_H
-#define __SNOTIFY_H
+/**
+ * @file sui_notification.c
+ * @brief 
+ * @author Shengyu Zhang <i@silverrainz.me>
+ * @version 
+ * @date 2018-05-05
+ */
 
-void snotify_init();
-void snotify_notify(const char *title, const char *msg, const char *icon);
-void snotify_finalize();
+#include "sui_notification.h"
 
-#endif /* __SNOTIFY_H */
+#include "utils.h"
+
+SuiNotification* sui_notification_new(void){
+    SuiNotification *self;
+
+    self = g_malloc0(sizeof(SuiNotification));
+
+    return self;
+}
+
+void sui_notification_free(SuiNotification* self){
+    str_assign(&self->id, NULL);
+    str_assign(&self->icon, NULL);
+    str_assign(&self->title, NULL);
+    str_assign(&self->body, NULL);
+    g_free(self);
+}

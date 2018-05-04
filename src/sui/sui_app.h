@@ -23,9 +23,11 @@
 
 #include "sui/sui.h"
 
+#include "sui_notification.h"
+
 #define SUI_TYPE_APPLICATION (sui_application_get_type())
 #define SUI_APPLICATION(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SUI_TYPE_APPLICATION, SuiApplication))
-
+#define SUI_IS_APPLICATION(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), SUI_TYPE_APPLICATION))
 typedef struct _SuiApplication SuiApplication;
 typedef struct _SuiApplicationClass SuiApplicationClass;
 
@@ -34,6 +36,7 @@ SuiApplication* sui_application_get_instance();
 SuiApplication* sui_application_new(const char *id, void *ctx, SuiApplicationEvents *events, SuiApplicationConfig *cfg);
 void sui_application_run(SuiApplication *self, int argc, char *argv[]);
 void sui_application_quit(SuiApplication *self);
+void sui_application_send_notification(SuiApplication *self, SuiNotification *notif);
 
 SuiWindow* sui_application_get_cur_window(SuiApplication *self);
 

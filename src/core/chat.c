@@ -216,14 +216,15 @@ void srn_chat_add_recv_message(SrnChat *self, SrnChatUser *user, const char *con
         goto cleanup;
     }
 
+    add_message(self, msg);
+
     if (msg->mentioned){
         sui_message_mentioned(msg->ui);
-        sui_message_notify(msg->ui);
+        sui_notify_message(msg->ui);
     } else if (self->type == SRN_CHAT_TYPE_DIALOG){
-        sui_message_notify(msg->ui);
+        sui_notify_message(msg->ui);
     }
 
-    add_message(self, msg);
     return;
 
 cleanup:
@@ -262,12 +263,14 @@ void srn_chat_add_action_message(SrnChat *self, SrnChatUser *user, const char *c
     if (!msg->ui){
         goto cleanup;
     }
-    if (msg->mentioned){
-        sui_message_mentioned(msg->ui);
-        sui_message_notify(msg->ui);
-    }
 
     add_message(self, msg);
+
+    if (msg->mentioned){
+        sui_message_mentioned(msg->ui);
+        sui_notify_message(msg->ui);
+    }
+
     return;
 
 cleanup:

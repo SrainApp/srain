@@ -24,6 +24,8 @@
 #include "core/core.h"
 #include "sui/sui.h"
 
+#include "sui_notification.h"
+
 /*****************************************************************************
  * SuiMessage
  *****************************************************************************/
@@ -72,8 +74,10 @@ struct _SuiMessageClass {
     void (*update) (SuiMessage *self);
     // Compose self to previous message
     void (*compose_prev) (SuiMessage *self, SuiMessage *prev);
-    // Compose self to enxt message
+    // Compose self to next message
     void (*compose_next) (SuiMessage *self, SuiMessage *next);
+    // New a SuiNotification for self
+    SuiNotification* (*new_notification) (SuiMessage *self);
 };
 
 GType sui_message_get_type(void);
@@ -81,6 +85,7 @@ GType sui_message_get_type(void);
 void sui_message_update(SuiMessage *self);
 void sui_message_compose_prev(SuiMessage *self, SuiMessage *prev);
 void sui_message_compose_next(SuiMessage *self, SuiMessage *next);
+SuiNotification* sui_message_new_notification(SuiMessage *self);
 
 void* sui_message_get_ctx(SuiMessage *self);
 void sui_message_set_buffer(SuiMessage *self, SuiBuffer *buf);

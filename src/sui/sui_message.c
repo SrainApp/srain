@@ -32,7 +32,6 @@
 #include "sui_common.h"
 #include "sui_event_hdr.h"
 #include "nick_menu.h"
-#include "sui_window.h"
 #include "sui_buffer.h"
 #include "sui_message.h"
 
@@ -45,6 +44,7 @@ static void sui_message_size_allocate(GtkWidget *widget, GtkAllocation *allocati
 static void sui_message_real_update(SuiMessage *self);
 static void sui_message_real_compose_prev(SuiMessage *self, SuiMessage *prev);
 static void sui_message_real_compose_next(SuiMessage *self, SuiMessage *next);
+static SuiNotification* sui_message_real_new_notification(SuiMessage *self);
 
 static void sui_message_set_ctx(SuiMessage *self, void *ctx);
 
@@ -153,12 +153,11 @@ static void sui_message_class_init(SuiMessageClass *class){
     class->update = sui_message_real_update;
     class->compose_prev = sui_message_real_compose_prev;
     class->compose_next = sui_message_real_compose_next;
-
+    class->new_notification = sui_message_real_new_notification;
 }
 
 static void allocate_width(SuiMessage *self, int x, int width){
     GtkAllocation alloc;
-    SuiMessageClass *class;
 
     if (!self->prev) {
         return;
@@ -168,7 +167,7 @@ static void allocate_width(SuiMessage *self, int x, int width){
     alloc.x = x;
     alloc.width = width;
     // FIXME: Why gtk_widget_size_allocate() does not work?
-    sui_message_size_allocate(self->prev, &alloc);
+    sui_message_size_allocate(GTK_WIDGET(self->prev), &alloc);
     gtk_widget_queue_draw(GTK_WIDGET(self->prev));
 
     allocate_width(self->prev, x, width);
@@ -243,6 +242,16 @@ void sui_message_compose_next(SuiMessage *self, SuiMessage *next){
     g_return_if_fail(!self->next);
 
     class->compose_next(self, next);
+}
+
+SuiNotification* sui_message_new_notification(SuiMessage *self){
+    SuiMessageClass *class;
+
+    g_return_val_if_fail(SUI_IS_MESSAGE(self), NULL);
+    class = SUI_MESSAGE_GET_CLASS(self);
+    g_return_val_if_fail(class->new_notification, NULL);
+
+    return class->new_notification(self);
 }
 
 void sui_message_label_on_popup(GtkLabel *label, GtkMenu *menu, gpointer user_data){
@@ -320,6 +329,38 @@ static void sui_message_real_compose_next(SuiMessage *self, SuiMessage *next){
 
     style_context = gtk_widget_get_style_context(GTK_WIDGET(self));
     gtk_style_context_remove_class(style_context, "sui-message-tail");
+}
+
+static SuiNotification* sui_message_real_new_notification(SuiMessage *self){
+    SuiNotification *notif;
+    char *title;
+
+    notif = sui_notification_new();
+
+    switch (self->ctx->chat->type) {
+        case SRN_CHAT_TYPE_SERVER:
+        case SRN_CHAT_TYPE_DIALOG:
+            title = g_strdup_printf(_("%1$s @ %2$s"),
+                    self->ctx->dname,
+                    self->ctx->chat->srv->chat->name);
+            break;
+        case SRN_CHAT_TYPE_CHANNEL:
+            title = g_strdup_printf(_("%1$s %2$s @ %3$s"),
+                    self->ctx->dname,
+                    self->ctx->chat->name,
+                    self->ctx->chat->srv->chat->name);
+            break;
+        default:
+            title = g_strdup_printf(_("Message from unknown chat"));
+            g_warn_if_reached();
+    }
+
+    str_assign(&notif->id, "sui-message");
+    str_assign(&notif->icon, "im.srain.Srain");
+    notif->title = title; // No need to copy
+    str_assign(&notif->body, self->ctx->dcontent);
+
+    return notif;
 }
 
 static void sui_message_set_ctx(SuiMessage *self, void *ctx){

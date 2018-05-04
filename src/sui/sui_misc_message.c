@@ -28,9 +28,12 @@
 
 #include "sui_misc_message.h"
 
+#include "utils.h"
+
 static void sui_misc_message_update(SuiMessage *msg);
 static void sui_misc_message_compose_prev(SuiMessage *_self, SuiMessage *_prev);
 static void sui_misc_message_compose_next(SuiMessage *_self, SuiMessage *_next);
+static SuiNotification *sui_misc_message_new_notification(SuiMessage *_self);
 
 static void sui_misc_message_set_style(SuiMiscMessage *self,
         SuiMiscMessageStyle style);
@@ -123,14 +126,30 @@ static void sui_misc_message_class_init(SuiMiscMessageClass *class){
     message_class->update = sui_misc_message_update;
     message_class->compose_prev = sui_misc_message_compose_prev;
     message_class->compose_next = sui_misc_message_compose_next;
+    message_class->new_notification = sui_misc_message_new_notification;
 }
 
 static void sui_misc_message_compose_prev(SuiMessage *_self, SuiMessage *_prev){
-    // Do nothing
+    // Do nothing and not need to chain up
 }
 
 static void sui_misc_message_compose_next(SuiMessage *_self, SuiMessage *_next){
-    // Do nothing
+    // Do nothing and not need to chain up
+}
+
+static SuiNotification *sui_misc_message_new_notification(SuiMessage *_self){
+    SuiMiscMessage *self;
+    SuiNotification *notif;
+
+    self = SUI_MISC_MESSAGE(_self);
+    notif = SUI_MESSAGE_CLASS(sui_misc_message_parent_class)->new_notification(_self);
+    g_return_val_if_fail(notif, NULL);
+
+    if (self->style == SUI_MISC_MESSAGE_STYLE_ERROR){
+        str_assign(&notif->icon, "srain-red");
+    }
+
+    return notif;
 }
 
 /*****************************************************************************
@@ -138,7 +157,6 @@ static void sui_misc_message_compose_next(SuiMessage *_self, SuiMessage *_next){
  *****************************************************************************/
 
 SuiMiscMessage* sui_misc_message_new(void *ctx, SuiMiscMessageStyle style){
-    LOG_FR("%p %d", ctx, style);
     return g_object_new(SUI_TYPE_MISC_MESSAGE,
             "context", ctx,
             "style", style,

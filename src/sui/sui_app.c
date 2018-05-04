@@ -32,12 +32,10 @@
 #include "i18n.h"
 
 #include "theme.h"
-#include "snotify.h"
 #include "sui_common.h"
 #include "sui_event_hdr.h"
 #include "sui_app.h"
 #include "sui_window.h"
-
 
 struct _SuiApplication {
     GtkApplication parent;
@@ -217,7 +215,7 @@ SuiApplication* sui_application_new(const char *id, void *ctx,
 }
 
 void sui_application_run(SuiApplication *self, int argc, char *argv[]){
-    snotify_init();
+    g_return_if_fail(SUI_IS_APPLICATION(self));
 
     if (theme_load(self->cfg->theme) == SRN_ERR){
         char *errmsg;
@@ -229,10 +227,10 @@ void sui_application_run(SuiApplication *self, int argc, char *argv[]){
     }
 
     g_application_run(G_APPLICATION(self), argc, argv);
-    snotify_finalize();
 }
 
 void sui_application_quit(SuiApplication *self){
+    g_return_if_fail(SUI_IS_APPLICATION(self));
     /*
     GtkWidget *win;
     GList *list, *next;
@@ -246,6 +244,34 @@ void sui_application_quit(SuiApplication *self){
     }
     */
     g_application_quit(G_APPLICATION(self));
+}
+
+/**
+ * @brief ``sui_application_send_notification``
+ *
+ * @param self
+ * @param msg
+ */
+void sui_application_send_notification(SuiApplication *self,
+        SuiNotification *notif){
+    GIcon *icon;
+    GNotification *gnotif;
+
+    g_return_if_fail(SUI_IS_APPLICATION(self));
+    g_return_if_fail(notif);
+
+    icon = g_themed_icon_new(notif->icon);
+    g_return_if_fail(icon);
+
+    gnotif = g_notification_new(notif->title);
+    g_notification_set_body(gnotif, notif->body);
+    g_notification_set_icon(gnotif, icon);
+
+    sui_window_tray_icon_stress(sui_get_cur_window(), 1); // FIXME
+    g_application_send_notification(G_APPLICATION(self), notif->id, gnotif);
+
+    g_object_unref(gnotif);
+    g_object_unref(icon);
 }
 
 SuiApplication* sui_application_get_instance(){

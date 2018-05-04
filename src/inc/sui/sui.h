@@ -97,7 +97,7 @@ SuiMessage *sui_new_recv_message(void *ctx);
 
 void sui_message_update(SuiMessage *self);
 void sui_message_mentioned(SuiMessage *smsg);
-void sui_message_notify(SuiMessage *smsg);
+void sui_notify_message(SuiMessage *msg);
 void sui_message_append_message(SuiBuffer *sui, SuiMessage *smsg, const char *msg);
 
 void sui_message_set_time(SuiMessage *smsg, GTimeVal *time);

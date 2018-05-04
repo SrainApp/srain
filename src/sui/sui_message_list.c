@@ -32,7 +32,6 @@
 #include "sui_common.h"
 #include "sui_window.h"
 #include "sui_message_list.h"
-#include "snotify.h"
 
 #include "i18n.h"
 #include "log.h"

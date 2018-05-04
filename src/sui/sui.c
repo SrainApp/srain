@@ -41,7 +41,6 @@
 #include "sui_misc_message.h"
 #include "sui_send_message.h"
 #include "sui_recv_message.h"
-#include "snotify.h"
 
 void sui_proc_pending_event(){
     while (gtk_events_pending()) gtk_main_iteration();
@@ -110,6 +109,57 @@ void sui_buffer_add_message(SuiBuffer *buf, SuiMessage *msg){
     }
 }
 
+void sui_free_message(SuiMessage *msg){
+    // TODO
+}
+
+/**
+ * @brief ``sui_notify_message`` sends a notification about the ``msg`` as
+ * appropriate.
+ *
+ * @param msg
+ */
+void sui_notify_message(SuiMessage *msg){
+    bool in_app; // Whether a in-app notification
+    SuiApplication *app;
+    SuiWindow *win;
+    SuiBuffer *buf;
+    SuiBufferConfig *buf_cfg;
+    SuiNotification *notif;
+
+    g_return_if_fail(SUI_IS_MESSAGE(msg));
+    in_app = FALSE;
+    app = sui_application_get_instance();
+    g_return_if_fail(SUI_IS_APPLICATION(app));
+    win = sui_application_get_cur_window(app);
+    g_return_if_fail(SUI_IS_WINDOW(win));
+    buf = sui_message_get_buffer(msg);
+    g_return_if_fail(SUI_IS_BUFFER(buf));
+    buf_cfg = sui_buffer_get_config(buf);
+
+    if (!buf_cfg->notify){
+        DBG_FR("Notification is disabled");
+        return;
+    }
+    if (sui_window_is_active(win)){
+        DBG_FR("Window is active");
+        if (sui_window_get_cur_buffer(win) == buf){
+            DBG_FR("Buffer is active");
+            return;
+        }
+        in_app = TRUE;
+    }
+
+    notif = sui_message_new_notification(msg);
+    if (in_app) {
+        // TODO: In-app notification support
+    } else {
+        sui_application_send_notification(app, notif);
+    }
+
+    sui_notification_free(notif);
+}
+
 SuiMessage *sui_new_misc_message(void *ctx, SuiMiscMessageStyle style){
     return SUI_MESSAGE(sui_misc_message_new(ctx, style));
 }
@@ -119,12 +169,7 @@ SuiMessage *sui_new_send_message(void *ctx){
 }
 
 SuiMessage *sui_new_recv_message(void *ctx){
-    SuiRecvMessage *srmsg;
-
-    srmsg = sui_recv_message_new(ctx);
-    sui_message_update(srmsg);
-
-    return SUI_MESSAGE(srmsg);
+    return SUI_MESSAGE(sui_recv_message_new(ctx));
 }
 
 SrnRet sui_add_user(SuiBuffer *buf, const char *nick, UserType type){
@@ -227,49 +272,6 @@ void sui_message_mentioned(SuiMessage *smsg){
     g_return_if_fail(smsg);
 
     sui_message_list_highlight_message(smsg);
-}
-
-/**
- * @brief sui_message_noitfy Send a desktop notification, if windows is active,
- *        notification will not be sent.
- *
- * @param smsg
- */
-void sui_message_notify(SuiMessage *smsg){
-    g_return_if_reached();
-    const char *title;
-    const char *msg;
-    const char *icon;
-
-    g_return_if_fail(smsg);
-
-    if (sui_window_is_active(sui_get_cur_window())){
-        return;
-    }
-
-    title = NULL;
-    msg = sui_message_get_message(smsg);
-    icon = "im.srain.Srain";
-
-    if (SUI_IS_RECV_MESSAGE(smsg)){
-        // TODO
-        title = "TODO";
-    }
-    else if (SUI_IS_MISC_MESSAGE(smsg)){
-        SuiMiscMessage *ssmsg = SUI_MISC_MESSAGE(smsg);
-        if (ssmsg->style == SUI_MISC_MESSAGE_STYLE_ERROR){
-            title = _("Error");
-            icon = "srain-red";
-        }
-        else if (ssmsg->style == SUI_MISC_MESSAGE_STYLE_ACTION){
-            title = _("Action");
-        }
-    }
-
-    g_return_if_fail(title);
-
-    snotify_notify(title, msg, icon);
-    sui_window_tray_icon_stress(sui_get_cur_window(), 1);
 }
 
 void sui_add_completion(SuiBuffer *buf, const char *keyword){
