@@ -34,7 +34,6 @@
 extern SrnCommandBind cmd_binds[];
 
 static void add_message(SrnChat *self, SrnMessage *msg);
-static bool whether_merge_last_message(SrnChat *self, SrnMessage *msg);
 
 SrnChat* srn_chat_new(SrnServer *srv, const char *name, SrnChatType type,
         SrnChatConfig *cfg){
@@ -178,7 +177,7 @@ void srn_chat_add_sent_message(SrnChat *self, const char *content){
     user = self->user;
     dflag = DECORATOR_PANGO_MARKUP;
     fflag = FILTER_CHAT_LOG;
-    msg = srn_message_new(self, user, content, SRN_MESSAGE_SENT);
+    msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_SENT);
 
     if (decorate_message(msg, dflag, NULL) != SRN_OK){
         goto cleanup;
@@ -187,14 +186,6 @@ void srn_chat_add_sent_message(SrnChat *self, const char *content){
         /* Ignore this message */
         goto cleanup;
     }
-
-    // FIXME
-    // if (whether_merge_last_message(self, msg)){
-    //     msg->ui = self->last_msg->ui;
-    //     sui_message_append_message(self->ui, msg->ui, msg->dcontent);
-    // } else {
-    //     msg->ui = sui_add_sent_msg(self->ui, msg->dcontent);
-    // }
 
     add_message(self, msg);
 
@@ -217,20 +208,13 @@ void srn_chat_add_recv_message(SrnChat *self, SrnChatUser *user, const char *con
     }
     fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
 
-    msg = srn_message_new(self, user, content, SRN_MESSAGE_RECV);
+    msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_RECV);
     if (decorate_message(msg, dflag, NULL) != SRN_OK){
         goto cleanup;
     }
     if (!filter_message(msg, fflag, NULL)){
         goto cleanup;
     }
-
-    // if (whether_merge_last_message(self, msg)){
-    //     msg->ui = self->last_msg->ui;
-    //     sui_message_append_message(self->ui, msg->ui, msg->dcontent);
-    // } else {
-    //     msg->ui = sui_add_recv_msg(self->ui, msg->dname, msg->role, msg->dcontent);
-    // }
 
     if (msg->mentioned){
         sui_message_mentioned(msg->ui);
@@ -263,7 +247,7 @@ void srn_chat_add_action_message(SrnChat *self, SrnChatUser *user, const char *c
     }
     fflag = FILTER_CHAT_LOG;
 
-    msg = srn_message_new(self, user, content, SRN_MESSAGE_ACTION);
+    msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_ACTION);
     if (!user->srv_user->is_me){
         fflag |= FILTER_NICK | FILTER_REGEX;
         dflag |= DECORATOR_RELAY | DECORATOR_MENTION;
@@ -297,7 +281,7 @@ void srn_chat_add_misc_message(SrnChat *self, SrnChatUser *user, const char *con
 
     dflag = DECORATOR_PANGO_MARKUP;
     fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
-    msg = srn_message_new(self, user, content, SRN_MESSAGE_MISC);
+    msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_MISC);
     if (decorate_message(msg, dflag, NULL) != SRN_OK){
         goto cleanup;
     }
@@ -330,7 +314,7 @@ void srn_chat_add_error_message(SrnChat *self, SrnChatUser *user, const char *co
 
     dflag = DECORATOR_PANGO_MARKUP;
     fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
-    msg = srn_message_new(self, user, content, SRN_MESSAGE_ERROR);
+    msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_ERROR);
     if (decorate_message(msg, dflag, NULL) != SRN_OK){
         goto cleanup;
     }
@@ -368,7 +352,7 @@ void srn_chat_set_topic(SrnChat *self, SrnChatUser *user, const char *topic){
         dflag |= DECORATOR_MIRC_STRIP;
     }
 
-    msg = srn_message_new(self, user, topic, SRN_MESSAGE_UNKNOWN);
+    msg = srn_message_new(self, user, topic, SRN_MESSAGE_TYPE_UNKNOWN);
     if (decorate_message(msg, dflag, NULL) == SRN_OK){
         sui_set_topic(self->ui, msg->dcontent);
     }
@@ -384,17 +368,4 @@ static void add_message(SrnChat *self, SrnMessage *msg){
     self->msg_list = g_list_append(self->msg_list, msg);
     sui_buffer_add_message(self->ui, msg->ui);
     self->last_msg = msg;
-}
-
-static bool whether_merge_last_message(SrnChat *self, SrnMessage *msg){
-    SrnMessage *last_msg;
-
-    last_msg = self->last_msg;
-
-    return (last_msg
-            // && msg->time - last_msg->time < SRN_MESSAGE_MERGE_INTERVAL
-            && (!last_msg->mentioned && !msg->mentioned)
-            && last_msg->type == msg->type
-            && sirc_target_equal(last_msg->user->srv_user->nick, msg->user->srv_user->nick)
-            && sirc_target_equal(last_msg->dname, msg->dname));
 }

@@ -49,19 +49,19 @@ SrnMessage* srn_message_new(SrnChat *chat, SrnChatUser *user,
     self->dcontent = g_markup_escape_text(content, -1);
 
     switch (self->type){
-        case SRN_MESSAGE_SENT:
+        case SRN_MESSAGE_TYPE_SENT:
             self->ui = sui_new_send_message(self);
             break;
-        case SRN_MESSAGE_RECV:
+        case SRN_MESSAGE_TYPE_RECV:
             self->ui = sui_new_recv_message(self);
             break;
-        case SRN_MESSAGE_MISC:
+        case SRN_MESSAGE_TYPE_MISC:
             self->ui = sui_new_misc_message(self, SUI_MISC_MESSAGE_STYLE_NORMAL);
             break;
-        case SRN_MESSAGE_ERROR:
+        case SRN_MESSAGE_TYPE_ERROR:
             self->ui = sui_new_misc_message(self, SUI_MISC_MESSAGE_STYLE_ERROR);
             break;
-        case SRN_MESSAGE_ACTION:
+        case SRN_MESSAGE_TYPE_ACTION:
             self->ui = sui_new_misc_message(self, SUI_MISC_MESSAGE_STYLE_ACTION);
             break;
         default:
@@ -80,26 +80,26 @@ char* srn_message_to_string(SrnMessage *self){
     g_return_val_if_fail(time_str, NULL);
 
     switch (self->type){
-        case SRN_MESSAGE_SENT:
+        case SRN_MESSAGE_TYPE_SENT:
             msg_str = g_strdup_printf("[%s] <%s*> %s",
                     time_str, self->user->srv_user->nick, self->content);
             break;
-        case SRN_MESSAGE_RECV:
-        case SRN_MESSAGE_NOTICE:
+        case SRN_MESSAGE_TYPE_RECV:
+        case SRN_MESSAGE_TYPE_NOTICE:
             msg_str = g_strdup_printf("[%s] <%s> %s",
                     time_str, self->user->srv_user->nick, self->content);
             break;
-        case SRN_MESSAGE_ACTION:
+        case SRN_MESSAGE_TYPE_ACTION:
             msg_str = g_strdup_printf("[%s] * %s %s",
                     time_str, self->user->srv_user->nick, self->content);
             break;
-        case SRN_MESSAGE_MISC:
+        case SRN_MESSAGE_TYPE_MISC:
             msg_str = g_strdup_printf("[%s] = %s", time_str, self->content);
             break;
-        case SRN_MESSAGE_ERROR:
+        case SRN_MESSAGE_TYPE_ERROR:
             msg_str = g_strdup_printf("[%s] ! %s", time_str, self->content);
             break;
-        case SRN_MESSAGE_UNKNOWN:
+        case SRN_MESSAGE_TYPE_UNKNOWN:
         default:
             g_warn_if_reached();
             msg_str = NULL;

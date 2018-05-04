@@ -35,9 +35,6 @@
 #define SRN_SERVER_RECONN_INTERVAL  (5 * 1000)
 #define SRN_SERVER_RECONN_STEP      SRN_SERVER_RECONN_INTERVAL
 
-/* In seconds */
-#define SRN_MESSAGE_MERGE_INTERVAL  60
-
 typedef enum   _SrnMessageType SrnMessageType;
 typedef struct _SrnMessage SrnMessage;
 // typedef struct _UserType UserType;
@@ -106,13 +103,13 @@ struct _SrnServerUser {
 };
 
 enum _SrnMessageType {
-    SRN_MESSAGE_UNKNOWN,
-    SRN_MESSAGE_RECV,
-    SRN_MESSAGE_SENT,
-    SRN_MESSAGE_ACTION,
-    SRN_MESSAGE_NOTICE,
-    SRN_MESSAGE_MISC,
-    SRN_MESSAGE_ERROR,
+    SRN_MESSAGE_TYPE_UNKNOWN,
+    SRN_MESSAGE_TYPE_RECV,
+    SRN_MESSAGE_TYPE_SENT,
+    SRN_MESSAGE_TYPE_ACTION,
+    SRN_MESSAGE_TYPE_NOTICE,
+    SRN_MESSAGE_TYPE_MISC,
+    SRN_MESSAGE_TYPE_ERROR,
 };
 
 struct _SrnMessage {
