@@ -42,6 +42,8 @@
 
 static void sui_message_size_allocate(GtkWidget *widget, GtkAllocation *allocation);
 static void sui_message_real_update(SuiMessage *self);
+static void sui_message_real_update_side_bar_item(SuiMessage *self,
+        SuiSideBarItem *item);
 static void sui_message_real_compose_prev(SuiMessage *self, SuiMessage *prev);
 static void sui_message_real_compose_next(SuiMessage *self, SuiMessage *next);
 static SuiNotification* sui_message_real_new_notification(SuiMessage *self);
@@ -151,6 +153,7 @@ static void sui_message_class_init(SuiMessageClass *class){
     widget_class->size_allocate = sui_message_size_allocate;
 
     class->update = sui_message_real_update;
+    class->update_side_bar_item = sui_message_real_update_side_bar_item;
     class->compose_prev = sui_message_real_compose_prev;
     class->compose_next = sui_message_real_compose_next;
     class->new_notification = sui_message_real_new_notification;
@@ -220,6 +223,16 @@ void sui_message_update(SuiMessage *self){
     g_return_if_fail (class->update);
 
     class->update(self);
+}
+
+void sui_message_update_side_bar_item(SuiMessage *self, SuiSideBarItem *item){
+    SuiMessageClass *class;
+
+    g_return_if_fail(SUI_IS_MESSAGE(self));
+    class = SUI_MESSAGE_GET_CLASS(self);
+    g_return_if_fail (class->update_side_bar_item);
+
+    class->update_side_bar_item(self, item);
 }
 
 void sui_message_compose_prev(SuiMessage *self, SuiMessage *prev){
@@ -308,7 +321,23 @@ void sui_message_label_on_popup(GtkLabel *label, GtkMenu *menu, gpointer user_da
  *****************************************************************************/
 
 static void sui_message_real_update(SuiMessage *self){
+    GtkStyleContext *style_context;
+
     gtk_label_set_markup(self->message_label, self->ctx->dcontent);
+
+    style_context = gtk_widget_get_style_context(GTK_WIDGET(self));
+    if (self->ctx->mentioned){
+        gtk_style_context_add_class(style_context, "highlighted");
+    }
+}
+
+static void sui_message_real_update_side_bar_item(SuiMessage *self,
+        SuiSideBarItem *item){
+    sui_side_bar_item_update(item, self->ctx->dname, self->ctx->dcontent);
+    sui_side_bar_item_inc_count(item);
+    if (self->ctx->mentioned){
+        sui_side_bar_item_highlight(item);
+    }
 }
 
 static void sui_message_real_compose_prev(SuiMessage *self, SuiMessage *prev){

@@ -27,6 +27,7 @@
 #include <gtk/gtkstack.h>
 
 #include "sui_buffer.h"
+#include "sui_side_bar_item.h"
 
 #define SUI_TYPE_SIDE_BAR           (sui_side_bar_get_type())
 #define SUI_SIDE_BAR(obj)           (G_TYPE_CHECK_INSTANCE_CAST((obj), SUI_TYPE_SIDE_BAR, SuiSideBar))
@@ -39,7 +40,7 @@ GType sui_side_bar_get_type();
 SuiSideBar* sui_side_bar_new();
 void sui_side_bar_set_stack(SuiSideBar *self, GtkStack *stack);
 GtkStack *sui_side_bar_get_stack(SuiSideBar *self);
-void sui_side_bar_update(SuiSideBar *self, SuiBuffer *buffer, const char *nick, const char *msg, int is_visible);
+SuiSideBarItem* sui_side_bar_get_item(SuiSideBar *self, SuiBuffer *buffer);
 void sui_side_bar_prev(SuiSideBar *self);
 void sui_side_bar_next(SuiSideBar *self);
 

@@ -448,13 +448,8 @@ SuiBuffer* sui_window_get_buffer(SuiWindow *self,
     return buf;
 }
 
-void sui_window_side_bar_update(SuiWindow *self, SuiBuffer *buf,
-        const char *nick, const char *msg){
-    if (SUI_BUFFER(gtk_stack_get_visible_child(self->buffer_stack)) != buf){
-        sui_side_bar_update(self->side_bar, buf, nick, msg, 0);
-    } else {
-        sui_side_bar_update(self->side_bar, buf, nick, msg, 1);
-    }
+SuiSideBar* sui_window_get_side_bar(SuiWindow *self){
+    return self->side_bar;
 }
 
 void sui_window_tray_icon_stress(SuiWindow *self, int stress){

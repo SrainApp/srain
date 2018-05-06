@@ -25,6 +25,7 @@
 #include "sui/sui.h"
 
 #include "sui_notification.h"
+#include "sui_side_bar.h"
 
 /*****************************************************************************
  * SuiMessage
@@ -72,6 +73,8 @@ struct _SuiMessageClass {
 
     // Update the view of SuiMessage according self->ctx
     void (*update) (SuiMessage *self);
+    // Update the view of SuiSidebarItem
+    void (*update_side_bar_item) (SuiMessage *self, SuiSideBarItem *item);
     // Compose self to previous message
     void (*compose_prev) (SuiMessage *self, SuiMessage *prev);
     // Compose self to next message
@@ -83,6 +86,7 @@ struct _SuiMessageClass {
 GType sui_message_get_type(void);
 
 void sui_message_update(SuiMessage *self);
+void sui_message_update_side_bar_item(SuiMessage *self, SuiSideBarItem *item);
 void sui_message_compose_prev(SuiMessage *self, SuiMessage *prev);
 void sui_message_compose_next(SuiMessage *self, SuiMessage *next);
 SuiNotification* sui_message_new_notification(SuiMessage *self);

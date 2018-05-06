@@ -21,8 +21,6 @@
 
 #include <gtk/gtk.h>
 
-#include "sui_buffer.h"
-
 #define SUI_TYPE_SIDE_BAR_ITEM (sui_side_bar_item_get_type())
 #define SUI_SIDE_BAR_ITEM(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SUI_TYPE_SIDE_BAR_ITEM, SuiSideBarItem))
 #define SUI_IS_SIDE_BAR_ITEM(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), SUI_TYPE_SIDE_BAR_ITEM))
@@ -33,9 +31,10 @@ typedef struct _SuiSideBarItemClass SuiSideBarItemClass;
 GType sui_side_bar_item_get_type(void);
 SuiSideBarItem *sui_side_bar_item_new(const char *name, const char *remark, const char *icon);
 
-void sui_side_bar_item_clear_count(SuiSideBarItem *self);
+void sui_side_bar_item_update(SuiSideBarItem *self, const char *nick, const char *msg);
+void sui_side_bar_item_highlight(SuiSideBarItem *self);
 void sui_side_bar_item_inc_count(SuiSideBarItem *self);
-void sui_side_bar_item_update_message(SuiSideBarItem *self, const char *nick, const char *msg);
+void sui_side_bar_item_clear_count(SuiSideBarItem *self);
 
 unsigned long sui_side_bar_item_get_update_time(SuiSideBarItem *self);
 

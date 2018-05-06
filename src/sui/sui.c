@@ -90,11 +90,16 @@ void sui_free_buffer(SuiBuffer *buf){
 
 void sui_buffer_add_message(SuiBuffer *buf, SuiMessage *msg){
     GType type;
+    SuiWindow *win;
+    SuiSideBar *sidebar;
+    SuiSideBarItem *item;
     SuiMessageList *list;
 
     g_return_if_fail(SUI_IS_BUFFER(buf));
     g_return_if_fail(SUI_IS_MESSAGE(msg));
 
+    /* Add message */
+    sui_message_update(msg);
     sui_message_set_buffer(msg, buf);
     list = sui_buffer_get_message_list(buf);
     type = G_OBJECT_TYPE(msg);
@@ -106,6 +111,19 @@ void sui_buffer_add_message(SuiBuffer *buf, SuiMessage *msg){
         sui_message_list_add_message(list, msg, GTK_ALIGN_START);
     } else {
         g_warn_if_reached();
+    }
+
+    /* Update side bar */
+    win = SUI_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(buf)));
+    g_return_if_fail(SUI_IS_WINDOW(win));
+
+    sidebar = sui_window_get_side_bar(win);
+    item = sui_side_bar_get_item(sidebar, buf);
+    sui_message_update_side_bar_item(msg, item);
+
+    if (buf == sui_get_cur_buffer()){
+        // Don't show counter while buffer is active
+        sui_side_bar_item_clear_count(item);
     }
 }
 
@@ -265,13 +283,6 @@ void sui_set_topic_setter(SuiBuffer *buf, const char *setter){
 }
 
 void sui_message_append_message(SuiBuffer *buf, SuiMessage *smsg, const char *msg){
-}
-
-void sui_message_mentioned(SuiMessage *smsg){
-    g_return_if_reached();
-    g_return_if_fail(smsg);
-
-    sui_message_list_highlight_message(smsg);
 }
 
 void sui_add_completion(SuiBuffer *buf, const char *keyword){

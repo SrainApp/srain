@@ -95,12 +95,8 @@ SuiMessage *sui_new_misc_message(void *ctx, SuiMiscMessageStyle style);
 SuiMessage *sui_new_send_message(void *ctx);
 SuiMessage *sui_new_recv_message(void *ctx);
 
-void sui_message_update(SuiMessage *self);
-void sui_message_mentioned(SuiMessage *smsg);
+void sui_update_message(SuiMessage *msg);
 void sui_notify_message(SuiMessage *msg);
-void sui_message_append_message(SuiBuffer *sui, SuiMessage *smsg, const char *msg);
-
-void sui_message_set_time(SuiMessage *smsg, GTimeVal *time);
 
 /* Completion */
 void sui_add_completion(SuiBuffer *sui, const char *word);

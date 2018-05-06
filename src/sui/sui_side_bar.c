@@ -36,9 +36,7 @@
 
 #include "sui_common.h"
 #include "sui_event_hdr.h"
-#include "sui_buffer.h"
 #include "sui_side_bar.h"
-#include "sui_side_bar_item.h"
 
 #include "log.h"
 
@@ -186,6 +184,8 @@ add_child(GtkWidget *child, SuiSideBar *sidebar){
     row = gtk_list_box_add_unfocusable_row(sidebar->list, GTK_WIDGET(item));
     g_hash_table_insert(sidebar->rows, child, row);
     gtk_list_box_select_row(sidebar->list, GTK_LIST_BOX_ROW(row));
+
+    sui_side_bar_item_update(item, NULL, "");
 }
 
 static void
@@ -326,22 +326,13 @@ sui_side_bar_get_stack(SuiSideBar *sidebar){
     return GTK_STACK(sidebar->stack);
 }
 
-void
-sui_side_bar_update(SuiSideBar *sidebar, SuiBuffer *buf,
-        const char *nick, const char *msg, int is_visible){
+SuiSideBarItem*
+sui_side_bar_get_item(SuiSideBar *sidebar, SuiBuffer *buf){
     GtkListBoxRow *row;
-    SuiSideBarItem *item;
 
     row = g_hash_table_lookup(sidebar->rows, buf);
-    if (!row) return;
-
-    item = SUI_SIDE_BAR_ITEM(gtk_bin_get_child(GTK_BIN(row)));
-    sui_side_bar_item_update_message(item, nick, msg);
-    gtk_list_box_row_changed(row);
-
-    if (!is_visible){
-        sui_side_bar_item_inc_count(item);
-    }
+    g_return_val_if_fail(row, NULL);
+    return SUI_SIDE_BAR_ITEM(gtk_bin_get_child(GTK_BIN(row)));
 }
 
 void

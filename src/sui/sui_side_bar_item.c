@@ -94,9 +94,10 @@ SuiSideBarItem *sui_side_bar_item_new(const char *title,
     return self;
 }
 
-void sui_side_bar_item_update_message(SuiSideBarItem *self,
+void sui_side_bar_item_update(SuiSideBarItem *self,
         const char *nick, const char *msg){
     char *text;
+    GtkWidget *row;
 
     text = strip_markup_tag(msg);
     g_return_if_fail(text);
@@ -114,14 +115,17 @@ void sui_side_bar_item_update_message(SuiSideBarItem *self,
 
     self->update_time = get_time_since_first_call_ms();
 
-    sui_side_bar_item_inc_count(self);
+    /* Mark as chagned */
+    row = gtk_widget_get_parent(self);
+    g_return_if_fail(GTK_IS_LIST_BOX_ROW(row));
+    gtk_list_box_row_changed(row);
 }
 
-void sui_side_bar_item_highlight_count_label(SuiSideBarItem *self){
-    GtkStyleContext *ctx;
+void sui_side_bar_item_highlight(SuiSideBarItem *self){
+    GtkStyleContext *style_context;
 
-    ctx = gtk_widget_get_style_context(GTK_WIDGET(self->unread_count_label));
-    gtk_style_context_add_class(ctx, "highlighted-message-count-label");
+    style_context = gtk_widget_get_style_context(GTK_WIDGET(self->unread_count_label));
+    gtk_style_context_add_class(style_context, "highlighted");
 }
 
 void sui_side_bar_item_inc_count(SuiSideBarItem *self){

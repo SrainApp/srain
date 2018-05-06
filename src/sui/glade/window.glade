@@ -490,6 +490,7 @@
                             <property name="can_focus">True</property>
                             <property name="has_focus">True</property>
                             <property name="is_focus">True</property>
+                            <property name="wrap_mode">word-char</property>
                             <property name="left_margin">4</property>
                             <property name="right_margin">4</property>
                             <property name="top_margin">7</property>

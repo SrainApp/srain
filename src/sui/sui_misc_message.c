@@ -29,8 +29,11 @@
 #include "sui_misc_message.h"
 
 #include "utils.h"
+#include "i18n.h"
 
-static void sui_misc_message_update(SuiMessage *msg);
+static void sui_misc_message_update(SuiMessage *_self);
+static void sui_misc_message_update_side_bar_item(SuiMessage *_self,
+        SuiSideBarItem *item);
 static void sui_misc_message_compose_prev(SuiMessage *_self, SuiMessage *_prev);
 static void sui_misc_message_compose_next(SuiMessage *_self, SuiMessage *_next);
 static SuiNotification *sui_misc_message_new_notification(SuiMessage *_self);
@@ -124,9 +127,67 @@ static void sui_misc_message_class_init(SuiMiscMessageClass *class){
 
     message_class = SUI_MESSAGE_CLASS(class);
     message_class->update = sui_misc_message_update;
+    message_class->update_side_bar_item = sui_misc_message_update_side_bar_item;
     message_class->compose_prev = sui_misc_message_compose_prev;
     message_class->compose_next = sui_misc_message_compose_next;
     message_class->new_notification = sui_misc_message_new_notification;
+}
+
+static void sui_misc_message_update(SuiMessage *_self){
+    char *full_time;
+    SrnMessage *ctx;
+    SuiMiscMessage *self;
+
+    ctx = sui_message_get_ctx(_self);
+    g_return_if_fail(ctx);
+    self = SUI_MISC_MESSAGE(_self);
+
+    full_time = g_date_time_format(ctx->time, "%c");
+    g_return_if_fail(full_time);
+    gtk_widget_set_tooltip_text(GTK_WIDGET(_self->message_label), full_time);
+    g_free(full_time);
+
+    SUI_MESSAGE_CLASS(sui_misc_message_parent_class)->update(_self);
+
+    /* Override the content of message_label */
+    if (self->style == SUI_MISC_MESSAGE_STYLE_ACTION) {
+        char *action_msg;
+
+        action_msg = g_strdup_printf("<b>%s</b> %s", ctx->dname, ctx->dcontent);
+        gtk_label_set_markup(_self->message_label, action_msg);
+        g_free(action_msg);
+    }
+}
+
+static void sui_misc_message_update_side_bar_item(SuiMessage *_self,
+        SuiSideBarItem *item){
+    char *msg;
+    SrnMessage *ctx;
+    SuiMiscMessage *self;
+
+    ctx = sui_message_get_ctx(_self);
+    g_return_if_fail(ctx);
+    self = SUI_MISC_MESSAGE(_self);
+
+    switch (self->style) {
+        case SUI_MISC_MESSAGE_STYLE_NORMAL:
+            // Do not update
+            break;
+        case SUI_MISC_MESSAGE_STYLE_ACTION:
+            msg = g_strdup_printf("%1$s %2$s", ctx->dname, ctx->dcontent);
+            SUI_MESSAGE_CLASS(sui_misc_message_parent_class)->
+                update_side_bar_item(_self, item);
+            sui_side_bar_item_update(item, NULL, msg);
+            g_free(msg);
+            break;
+        case SUI_MISC_MESSAGE_STYLE_ERROR:
+            SUI_MESSAGE_CLASS(sui_misc_message_parent_class)->
+                update_side_bar_item(_self, item);
+            sui_side_bar_item_update(item, _("Error"), ctx->dcontent);
+            break;
+        default:
+            g_warn_if_reached();
+    }
 }
 
 static void sui_misc_message_compose_prev(SuiMessage *_self, SuiMessage *_prev){
@@ -170,32 +231,6 @@ SuiMiscMessageStyle sui_misc_message_get_style(SuiMiscMessage *self){
 /*****************************************************************************
  * Static functions
  *****************************************************************************/
-
-static void sui_misc_message_update(SuiMessage *msg){
-    char *full_time;
-    SrnMessage *ctx;
-    SuiMiscMessage *self;
-
-    ctx = sui_message_get_ctx(msg);
-    g_return_if_fail(ctx);
-    self = SUI_MISC_MESSAGE(msg);
-
-    full_time = g_date_time_format(ctx->time, "%c");
-    g_return_if_fail(full_time);
-    gtk_widget_set_tooltip_text(GTK_WIDGET(msg->message_label), full_time);
-    g_free(full_time);
-
-    SUI_MESSAGE_CLASS(sui_misc_message_parent_class)->update(msg);
-
-    /* Override the content of message_label */
-    if (self->style == SUI_MISC_MESSAGE_STYLE_ACTION) {
-        char *action_msg;
-
-        action_msg = g_strdup_printf("<b>%s</b> %s", ctx->dname, ctx->dcontent);
-        gtk_label_set_markup(msg->message_label, action_msg);
-        g_free(action_msg);
-    }
-}
 
 static void sui_misc_message_set_style(SuiMiscMessage *self,
         SuiMiscMessageStyle style) {

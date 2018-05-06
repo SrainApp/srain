@@ -218,13 +218,6 @@ void srn_chat_add_recv_message(SrnChat *self, SrnChatUser *user, const char *con
 
     add_message(self, msg);
 
-    if (msg->mentioned){
-        sui_message_mentioned(msg->ui);
-        sui_notify_message(msg->ui);
-    } else if (self->type == SRN_CHAT_TYPE_DIALOG){
-        sui_notify_message(msg->ui);
-    }
-
     return;
 
 cleanup:
@@ -265,11 +258,6 @@ void srn_chat_add_action_message(SrnChat *self, SrnChatUser *user, const char *c
     }
 
     add_message(self, msg);
-
-    if (msg->mentioned){
-        sui_message_mentioned(msg->ui);
-        sui_notify_message(msg->ui);
-    }
 
     return;
 
@@ -367,8 +355,12 @@ void srn_chat_set_topic_setter(SrnChat *self, const char *setter){
 }
 
 static void add_message(SrnChat *self, SrnMessage *msg){
-    sui_message_update(msg->ui);
     self->msg_list = g_list_append(self->msg_list, msg);
-    sui_buffer_add_message(self->ui, msg->ui);
     self->last_msg = msg;
+
+    sui_buffer_add_message(self->ui, msg->ui);
+    if (msg->mentioned
+            || self->type == SRN_CHAT_TYPE_DIALOG){
+        sui_notify_message(msg->ui);
+    }
 }
