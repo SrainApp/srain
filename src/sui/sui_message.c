@@ -243,6 +243,12 @@ void sui_message_compose_prev(SuiMessage *self, SuiMessage *prev){
     g_return_if_fail(class->compose_prev);
     g_return_if_fail(!self->prev);
 
+    // Only compose messages sent by same user.
+    if (self->ctx->user != prev->ctx->user
+            || g_ascii_strcasecmp(self->ctx->dname, prev->ctx->dname) != 0){
+        return;
+    }
+
     class->compose_prev(self, prev);
 }
 
@@ -253,6 +259,12 @@ void sui_message_compose_next(SuiMessage *self, SuiMessage *next){
     class = SUI_MESSAGE_GET_CLASS(self);
     g_return_if_fail(class->compose_next);
     g_return_if_fail(!self->next);
+
+    // Only compose messages sent by same user.
+    if (self->ctx->user != next->ctx->user
+            || g_ascii_strcasecmp(self->ctx->dname, next->ctx->dname) != 0){
+        return;
+    }
 
     class->compose_next(self, next);
 }
