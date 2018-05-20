@@ -44,8 +44,8 @@ static SrnRet read_log_config_from_cfg(config_t *cfg, SrnLoggerConfig *log_cfg);
 static SrnRet read_log_targets_from_log(config_setting_t *log, const char *name, GSList **lst);
 
 static SrnRet read_application_config_from_cfg(config_t *cfg, SrnApplicationConfig *app_cfg);
-static SrnRet read_server_config_list_from_cfg(config_t *cfg, GSList **srv_cfg_list);
 
+static SrnRet read_server_config_list_from_cfg(config_t *cfg, GSList **srv_cfg_list);
 static SrnRet read_server_config_from_server(config_setting_t *server, SrnServerConfig *cfg);
 static SrnRet read_server_config_from_server_list(config_setting_t *server_list, SrnServerConfig *cfg, const char *srv_name);
 static SrnRet read_server_config_from_cfg(config_t *cfg, SrnServerConfig *srv_cfg, const char *srv_name);
@@ -53,6 +53,8 @@ static SrnRet read_server_config_from_cfg(config_t *cfg, SrnServerConfig *srv_cf
 static SrnRet read_chat_config_from_chat(config_setting_t *chat, SrnChatConfig *cfg);
 static SrnRet read_chat_config_from_chat_list(config_setting_t *chat_list, SrnChatConfig *cfg, const char *chat_name);
 static SrnRet read_chat_config_from_cfg(config_t *cfg, SrnChatConfig *chat_cfg, const char *srv_name, const char *chat_name);
+
+static SrnRet read_user_config_from_user(config_setting_t *user, SrnUserConfig *cfg);
 
 /*****************************************************************************
  * Exported functions
@@ -118,7 +120,6 @@ SrnRet srn_config_manager_read_server_config_list(SrnConfigManager *mgr,
     return SRN_OK;
 }
 
-
 SrnRet srn_config_manager_read_server_config(SrnConfigManager *mgr,
         SrnServerConfig *cfg, const char *srv_name){
     SrnRet ret;
@@ -137,6 +138,46 @@ SrnRet srn_config_manager_read_server_config(SrnConfigManager *mgr,
     }
 
     return SRN_OK;
+}
+
+SrnRet srn_config_manager_read_server_config_by_addr(SrnConfigManager *mgr,
+        SrnServerConfig *cfg, SrnServerAddr *addr){
+    GSList *lst;
+    GSList *cfg_lst;
+    SrnRet ret;
+
+    cfg_lst = NULL;
+    ret = srn_config_manager_read_server_config_list(mgr, &cfg_lst);
+    if (!RET_IS_OK(ret)){
+        goto FIN;
+    }
+
+    lst = cfg_lst;
+    while (lst) {
+        GSList *addr_lst;
+
+        ret = srn_config_manager_read_server_config(mgr, cfg, lst->data);
+        if (!RET_IS_OK(ret)){
+            goto FIN;
+        }
+
+        addr_lst = cfg->addrs;
+        while (addr_lst){
+            if (srn_server_addr_equal(addr, lst->data)){
+                ret = SRN_OK;
+                goto FIN;
+            }
+            addr_lst = g_slist_next(addr_lst);
+        }
+        lst = g_slist_next(lst);
+    }
+
+    ret = SRN_ERR;
+FIN:
+    if (cfg_lst) {
+        g_slist_free_full(cfg_lst, g_free);
+    }
+    return ret;
 }
 
 SrnRet srn_config_manager_read_chat_config(SrnConfigManager *mgr,
@@ -227,10 +268,7 @@ static SrnRet read_server_config_list_from_cfg(config_t *cfg,
     if (server_list){
         for (int i = 0, count = config_setting_length(server_list); i < count; i++){
             char *name = NULL;
-            GSList *lst;
             config_setting_t *server;
-            SrnRet ret;
-            SrnServerConfig *srv_cfg;
 
             server = config_setting_get_elem(server_list, i);
             if (!server) break;
@@ -239,7 +277,18 @@ static SrnRet read_server_config_list_from_cfg(config_t *cfg,
                 return RET_ERR(_("server-list[%1$d] doesn't have a name"), i);
             }
             if (name) {
-                *srv_cfg_list = g_slist_append(*srv_cfg_list, name);
+                GSList *lst;
+
+                lst = *srv_cfg_list;
+                while (lst) {
+                    if (g_ascii_strcasecmp(name, lst->data) == 0){
+                        break;
+                    }
+                    lst = g_slist_next(lst);
+                }
+                if (!lst){
+                    *srv_cfg_list = g_slist_append(*srv_cfg_list, name);
+                }
             }
         }
     }
@@ -268,9 +317,14 @@ static SrnRet read_server_config_from_server(config_setting_t *server,
             addr = config_setting_get_string_elem_ex(addrs, i);
             if (addr){
                 SrnRet ret;
-                ret = srn_server_config_add_addr(cfg, addr);
+                SrnServerAddr *srv_addr;
+
+                srv_addr = srn_server_addr_new_from_string(addr);
+                ret = srn_server_config_add_addr(cfg, srv_addr);
                 g_free(addr);
+
                 if (!RET_IS_OK(ret)){
+                    srn_server_addr_free(srv_addr);
                     return ret;
                 }
             }
@@ -281,28 +335,11 @@ static SrnRet read_server_config_from_server(config_setting_t *server,
     config_setting_t *user;
     user = config_setting_lookup(server, "user");
     if (user){
-        char *login_method = NULL;
-
-        config_setting_lookup_string_ex(user, "login-method", &login_method);
-        if (login_method) {
-            cfg->login_method = srn_login_method_from_string(login_method);
-            g_free(login_method);
+        SrnRet ret;
+        ret = read_user_config_from_user(user, cfg->user);
+        if (!RET_IS_OK(ret)){
+            return ret;
         }
-
-        config_setting_lookup_string_ex(user, "nickname", &cfg->nickname);
-        config_setting_lookup_string_ex(user, "username", &cfg->username);
-        config_setting_lookup_string_ex(user, "realname", &cfg->realname);
-        config_setting_lookup_string_ex(user, "password", &cfg->user_passwd);
-    }
-
-    /* Read server.default_messages */
-    config_setting_t *default_messages;
-    default_messages = config_setting_lookup(server, "default-messages");
-    if (default_messages){
-        config_setting_lookup_string_ex(default_messages, "part", &cfg->part_message);
-        config_setting_lookup_string_ex(default_messages, "kick", &cfg->kick_message);
-        config_setting_lookup_string_ex(default_messages, "away", &cfg->away_message);
-        config_setting_lookup_string_ex(default_messages, "quit", &cfg->quit_message);
     }
 
     return SRN_OK;
@@ -458,6 +495,36 @@ static SrnRet read_chat_config_from_cfg(config_t *cfg, SrnChatConfig *chat_cfg,
     return SRN_OK;
 }
 
+static SrnRet read_user_config_from_user(config_setting_t *user, SrnUserConfig *cfg){
+    config_setting_t *login;
+
+    // Read user.login
+    login = config_setting_lookup(user, "login");
+    if (login) {
+        const char *method = NULL;
+
+        config_setting_lookup_string(login, "method", &method);
+        cfg->login->method = srn_login_method_from_string(method);
+
+        config_setting_lookup_string_ex(login, "pass-password", &cfg->login->pass_password);
+        config_setting_lookup_string_ex(login, "nickserv-password", &cfg->login->nickserv_password);
+        config_setting_lookup_string_ex(login, "msg-nickserv-password", &cfg->login->msg_nickserv_password);
+        config_setting_lookup_string_ex(login, "sasl-plain-identify", &cfg->login->sasl_plain_identify);
+        config_setting_lookup_string_ex(login, "sasl-plain-password", &cfg->login->sasl_plain_password);
+    }
+
+    config_setting_lookup_string_ex(user, "nick", &cfg->nick);
+    config_setting_lookup_string_ex(user, "username", &cfg->username);
+    config_setting_lookup_string_ex(user, "realname", &cfg->realname);
+
+    config_setting_lookup_string_ex(user, "part-message", &cfg->part_message);
+    config_setting_lookup_string_ex(user, "kick-message", &cfg->kick_message);
+    config_setting_lookup_string_ex(user, "away-message", &cfg->away_message);
+    config_setting_lookup_string_ex(user, "quit-message", &cfg->quit_message);
+
+    return SRN_OK;
+}
+
 /**
  * @brief Wrapper of config_lookup_string(), This function will allocate a new
  * string, you should free it by yourself
@@ -473,8 +540,8 @@ static int config_lookup_string_ex(const config_t *config, const char *path, cha
     const char *constval = NULL;
 
     ret = config_lookup_string(config, path, &constval);
-    if (constval){
-        *value = g_strdup(constval);
+    if (ret == CONFIG_TRUE){
+        str_assign(value, constval);
     }
 
     return ret;
@@ -496,7 +563,9 @@ static int config_setting_lookup_string_ex(const config_setting_t *config,
     const char *constval = NULL;
 
     ret = config_setting_lookup_string(config, name, &constval);
-    str_assign(value, constval);
+    if (ret == CONFIG_TRUE){
+        str_assign(value, constval);
+    }
 
     return ret;
 }
