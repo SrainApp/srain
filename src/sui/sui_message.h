@@ -49,12 +49,10 @@ struct _SuiMessage {
 
     /* SuiMessage's style is varies with whether it has previous and next message.
      *
-     * If a SuiMessage has not previous message, that it is a head of a serial
+     * If a SuiMessage has not previous message, that it is a head of a group
      * of composed message. And it has a style class named "sui-message-head".
-     * If a SuiMessage has not next message, that it is a tail of a serial of
+     * If a SuiMessage has not next message, that it is a tail of a group of
      * composed message. And it has a style class named "sui-message-tail".
-     * A serial of composed message have the same widget width and same x
-     * coordinate.  The ``min_x`` and ``max_width`` are used to do this stuff.
      *
      * Subclass should hide/show some widget in SuiMessageClass's
      * compose_prev/compose_next hander.
@@ -64,8 +62,7 @@ struct _SuiMessage {
      */
     SuiMessage *prev;
     SuiMessage *next;
-    int min_x;
-    int max_width;
+    GtkSizeGroup *size_group; // Used to align a group of messages
 };
 
 struct _SuiMessageClass {

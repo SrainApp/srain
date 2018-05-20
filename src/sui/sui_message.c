@@ -40,7 +40,6 @@
 #include "meta.h"
 #include "utils.h"
 
-static void sui_message_size_allocate(GtkWidget *widget, GtkAllocation *allocation);
 static void sui_message_real_update(SuiMessage *self);
 static void sui_message_real_update_side_bar_item(SuiMessage *self,
         SuiSideBarItem *item);
@@ -118,12 +117,13 @@ static void sui_message_constructed(GObject *object){
 }
 
 static void sui_message_finalize(GObject *object){
+    /* Widget will be automaticlly removed from GtkSizeGroup before it is
+     * destroyed */
     G_OBJECT_CLASS(sui_message_parent_class)->finalize(object);
 }
 
 static void sui_message_class_init(SuiMessageClass *class){
     GObjectClass *object_class;
-    GtkWidgetClass *widget_class;
 
     /* Overwrite callbacks */
     object_class = G_OBJECT_CLASS(class);
@@ -149,54 +149,11 @@ static void sui_message_class_init(SuiMessageClass *class){
             N_PROPERTIES,
             obj_properties);
 
-    widget_class = GTK_WIDGET_CLASS(class);
-    widget_class->size_allocate = sui_message_size_allocate;
-
     class->update = sui_message_real_update;
     class->update_side_bar_item = sui_message_real_update_side_bar_item;
     class->compose_prev = sui_message_real_compose_prev;
     class->compose_next = sui_message_real_compose_next;
     class->new_notification = sui_message_real_new_notification;
-}
-
-static void allocate_width(SuiMessage *self, int x, int width){
-    GtkAllocation alloc;
-
-    if (!self->prev) {
-        return;
-    }
-
-    gtk_widget_get_allocation(GTK_WIDGET(self->prev), &alloc);
-    alloc.x = x;
-    alloc.width = width;
-    // FIXME: Why gtk_widget_size_allocate() does not work?
-    sui_message_size_allocate(GTK_WIDGET(self->prev), &alloc);
-    gtk_widget_queue_draw(GTK_WIDGET(self->prev));
-
-    allocate_width(self->prev, x, width);
-}
-
-static void sui_message_size_allocate(GtkWidget *widget,
-        GtkAllocation *alloc){
-    SuiMessage *self;
-
-    self = SUI_MESSAGE(widget);
-    if (!self->prev) {
-        self->min_x = alloc->x;
-        self->max_width = alloc->width;
-    } else {
-        self->min_x = self->prev->min_x < alloc->x ?
-            self->prev->min_x : alloc->x;
-        self->max_width = self->prev->max_width > alloc->width ?
-            self->prev->max_width : alloc->width;
-    }
-    if (!self->next) {
-        alloc->x = self->min_x;
-        alloc->width = self->max_width;
-        allocate_width(self, self->min_x, self->max_width);
-    }
-
-    GTK_WIDGET_CLASS(sui_message_parent_class)->size_allocate(widget, alloc);
 }
 
 /*****************************************************************************
@@ -360,6 +317,18 @@ static void sui_message_real_compose_prev(SuiMessage *self, SuiMessage *prev){
 
     style_context = gtk_widget_get_style_context(GTK_WIDGET(self));
     gtk_style_context_remove_class(style_context, "sui-message-head");
+
+    if (!self->size_group && !prev->size_group) {
+        self->size_group = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
+        gtk_size_group_add_widget(self->size_group, GTK_WIDGET(self));
+    } else if (self->size_group && !prev->size_group) {
+        // Noting to do
+    } else if (!self->size_group && prev->size_group) {
+        self->size_group = prev->size_group;
+        gtk_size_group_add_widget(self->size_group, GTK_WIDGET(self));
+    } else {
+        g_warn_if_reached();
+    }
 }
 
 static void sui_message_real_compose_next(SuiMessage *self, SuiMessage *next){
@@ -370,6 +339,18 @@ static void sui_message_real_compose_next(SuiMessage *self, SuiMessage *next){
 
     style_context = gtk_widget_get_style_context(GTK_WIDGET(self));
     gtk_style_context_remove_class(style_context, "sui-message-tail");
+
+    if (!self->size_group && !next->size_group) {
+        self->size_group = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
+        gtk_size_group_add_widget(self->size_group, GTK_WIDGET(self));
+    } else if (self->size_group && !next->size_group) {
+        // Noting to do
+    } else if (!self->size_group && next->size_group) {
+        self->size_group = next->size_group;
+        gtk_size_group_add_widget(self->size_group, GTK_WIDGET(self));
+    } else {
+        g_warn_if_reached();
+    }
 }
 
 static SuiNotification* sui_message_real_new_notification(SuiMessage *self){

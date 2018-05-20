@@ -41,6 +41,7 @@ struct _SuiMessageList {
 
     int scroll_timer;
     GtkListBox *list_box;
+    SuiMessage *first_msg;
     SuiMessage *last_msg;
 };
 
@@ -122,23 +123,47 @@ void sui_message_list_scroll_down(SuiMessageList *self, double step){
     gtk_adjustment_set_value(adj, gtk_adjustment_get_value(adj) + step);
 }
 
-void sui_message_list_add_message(SuiMessageList *self, SuiMessage *msg,
+void sui_message_list_append_message(SuiMessageList *self, SuiMessage *msg,
         GtkAlign halign){
     GtkBox *box;
 
     if (self->last_msg
             && (G_OBJECT_TYPE(msg) == G_OBJECT_TYPE(self->last_msg))) {
-        sui_message_compose_prev(msg, self->last_msg);
         sui_message_compose_next(self->last_msg, msg);
+        sui_message_compose_prev(msg, self->last_msg);
     }
     self->last_msg = msg;
 
     box = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0));
-    gtk_box_pack_start(box, GTK_WIDGET(msg), TRUE, TRUE, 0);
-    gtk_widget_set_halign(GTK_WIDGET(msg), halign);
-    gtk_list_box_add_unfocusable_row(self->list_box, GTK_WIDGET(box));
+     gtk_box_pack_start(box, GTK_WIDGET(msg), TRUE, TRUE, 0);
+     gtk_widget_set_halign(GTK_WIDGET(msg), halign);
+     gtk_list_box_add_unfocusable_row(self->list_box, GTK_WIDGET(box));
 
     smart_scroll(self);
+}
+
+void sui_message_list_prepend_message(SuiMessageList *self, SuiMessage *msg,
+        GtkAlign halign){
+    GtkBox *box;
+
+    if (self->first_msg
+            && (G_OBJECT_TYPE(msg) == G_OBJECT_TYPE(self->first_msg))) {
+        sui_message_compose_prev(self->first_msg, msg);
+        sui_message_compose_next(msg, self->first_msg);
+    }
+    self->first_msg = msg;
+
+    box = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0));
+    gtk_box_pack_start(box, GTK_WIDGET(msg), TRUE, TRUE, 0);
+    gtk_widget_set_halign(GTK_WIDGET(msg), halign);
+    gtk_list_box_prepend(self->list_box, GTK_WIDGET(box)); // FIXME: theme & fcous
+
+    smart_scroll(self);
+}
+
+void sui_message_list_add_message(SuiMessageList *self, SuiMessage *msg,
+        GtkAlign halign){
+    sui_message_list_append_message(self, msg, halign);
 }
 
 /*****************************************************************************
