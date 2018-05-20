@@ -149,7 +149,7 @@ void sui_side_bar_item_clear_count(SuiSideBarItem *self){
 
     ctx = gtk_widget_get_style_context(GTK_WIDGET(self->unread_count_label));
     gtk_style_context_remove_class(ctx, "message-count-label");
-    gtk_style_context_remove_class(ctx, "highlighted-message-count-label");
+    gtk_style_context_remove_class(ctx, "highlighted");
 }
 
 unsigned long sui_side_bar_item_get_update_time(SuiSideBarItem *self){
