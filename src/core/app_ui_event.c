@@ -125,107 +125,11 @@ static SrnRet ui_event_shutdown(SuiApplication *app, SuiEvent event, GVariantDic
 }
 
 static SrnRet ui_event_connect(SuiWindow *win, SuiEvent event, GVariantDict *params){
-    const char *name = NULL;
-    const char *nick = NULL;
-    const char *realname= "";
-    const char *username = "";
-    SrnRet ret = SRN_ERR;
-    SrnApplication *app;
-    SrnServer *srv = NULL;
-    SrnServerConfig *cfg = NULL;
-
-    app = srn_application_get_default();
-
-    g_variant_dict_lookup(params, "name", SUI_EVENT_PARAM_STRING, &name);
-    if (!str_is_empty(name)){
-        /* If params "name" is not specified, connecting to predefined server */
-        cfg = srn_application_get_server_config(app, name);
-        if (cfg->srv){
-            return RET_ERR(_("Server \"%1$s\" already exists"), name);
-        }
-    } else {
-        /* Else, it means that user is trying to connect to a custom server */
-        char *addr;
-        const char *host = NULL;
-        int port = 0;
-        const char *passwd = NULL;
-        const char *encoding = "utf-8"; // TODO
-        gboolean tls = FALSE;
-        gboolean tls_noverify = FALSE;
-
-        g_variant_dict_lookup(params, "host", SUI_EVENT_PARAM_STRING, &host);
-        g_variant_dict_lookup(params, "port", SUI_EVENT_PARAM_INT, &port);
-        g_variant_dict_lookup(params, "password", SUI_EVENT_PARAM_STRING, &passwd);
-        g_variant_dict_lookup(params, "tls", SUI_EVENT_PARAM_BOOL, &tls);
-        g_variant_dict_lookup(params, "tls-noverify", SUI_EVENT_PARAM_BOOL, &tls_noverify);
-
-        /* Create server config */
-        ret = srn_application_add_server_config(app, host);
-        if (!RET_IS_OK(ret)){
-            return RET_ERR(_("Failed to create server config: %1$s"), RET_MSG(ret));
-        }
-        cfg = srn_application_get_server_config(app, host);
-
-        if (!str_is_empty(passwd)){
-            str_assign(&cfg->passwd, passwd);
-        }
-        if (!str_is_empty(encoding)){
-            str_assign(&cfg->irc->encoding, encoding);
-        }
-        cfg->irc->tls = tls;
-        cfg->irc->tls_noverify = tls_noverify;
-
-        addr = g_strdup_printf("%s:%d", host, port);
-        srn_server_config_set_addr(cfg, addr);
-        g_free(addr);
-    }
-
-    g_variant_dict_lookup(params, "nick", SUI_EVENT_PARAM_STRING, &nick);
-    g_variant_dict_lookup(params, "username", SUI_EVENT_PARAM_STRING, &username);
-    g_variant_dict_lookup(params, "realname", SUI_EVENT_PARAM_STRING, &realname);
-
-    if (!str_is_empty(nick)){
-        str_assign(&cfg->nickname, nick);
-    }
-    if (!str_is_empty(username)){
-        str_assign(&cfg->username, username);
-    }
-    if (!str_is_empty(realname)){
-        str_assign(&cfg->realname, realname);
-    }
-
-    ret = srn_server_config_check(cfg);
-    if (!RET_IS_OK(ret)){
-        srn_application_rm_server_config(app, cfg);
-        return ret;
-    }
-    ret = srn_application_add_server(app, cfg);
-    if (!RET_IS_OK(ret)){
-        ret = RET_ERR(_("Failed to instantiate server \"%1$s\""), cfg->name);
-        srn_application_rm_server_config(app, cfg);
-        return ret;
-    }
-    srv = srn_application_get_server(app, cfg->name);
-
-    return srn_server_connect(srv);
+    return SRN_OK;
 }
 
 static SrnRet ui_event_server_list(SuiWindow *win, SuiEvent event,
         GVariantDict *params){
-    // FIXME: dirty hack
-    GSList *lst;
-    SrnApplication *app;
-
-    app = srn_application_get_default();
-    lst = app->srv_cfg_list;
-    while (lst){
-        SrnServerConfig *cfg = lst->data;
-        if (cfg->predefined){
-            sui_server_list_add(cfg->name);
-        }
-        lst = g_slist_next(lst);
-    }
-
     return SRN_OK;
 }
 
@@ -262,7 +166,7 @@ static SrnRet ui_event_quit(SuiBuffer *sui, SuiEvent event, GVariantDict *params
     g_return_val_if_fail(srn_server_is_valid(srv), SRN_ERR);
 
     if (srn_server_is_registered(srv)) {
-        ret = sirc_cmd_quit(srv->irc, srv->cfg->quit_message);
+        ret = sirc_cmd_quit(srv->irc, srv->cfg->user->quit_message);;
     } else {
         ret = srn_server_state_transfrom(srv, SRN_SERVER_ACTION_QUIT);
         if (!srn_server_is_valid(srv)){

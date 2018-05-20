@@ -223,7 +223,7 @@ SrnRet srn_server_state_transfrom(SrnServer *srv, SrnServerAction action){
 
     if (RET_IS_OK(ret)){
         LOG_FR("Server %s: %s + %s -> %s",
-                srv->cfg->name,
+                srv->name,
                 srn_server_state_to_string(cur_state),
                 srn_server_action_to_string(action),
                 srn_server_state_to_string(next_state));
@@ -231,7 +231,7 @@ SrnRet srn_server_state_transfrom(SrnServer *srv, SrnServerAction action){
         srv->last_action = action;
     } else {
         WARN_FR("Server %s: %s + %s -> error: %s",
-                srv->cfg->name,
+                srv->name,
                 srn_server_state_to_string(cur_state),
                 srn_server_action_to_string(action),
                 RET_MSG(ret));

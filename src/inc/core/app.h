@@ -75,19 +75,12 @@ void srn_application_set_config(SrnApplication *app, SrnApplicationConfig *cfg);
 SrnRet srn_application_reload_config(SrnApplication *app);
 
 // Server
-SrnRet srn_application_add_server(SrnApplication *app, SrnServerConfig *srv_cfg);
+SrnRet srn_application_add_server(SrnApplication *app, const char *name);
+SrnRet srn_application_add_server_with_config(SrnApplication *app, const char *name, SrnServerConfig *srv_cfg);
 SrnRet srn_application_rm_server(SrnApplication *app, SrnServer *srv);
 SrnServer* srn_application_get_server(SrnApplication *app, const char *name);
+SrnServer* srn_application_get_server_by_addr(SrnApplication *app, SrnServerAddr *addr);
 bool srn_application_is_server_valid(SrnApplication *app, SrnServer *srv);
-
-// Server config
-SrnRet srn_application_add_server_config(SrnApplication *app, const char *name);
-SrnRet srn_application_rm_server_config(SrnApplication *app, SrnServerConfig *srv_cfg);
-SrnServerConfig* srn_application_get_server_config(SrnApplication *app, const char *name);
-SrnServerConfig* srn_application_get_server_config_by_host_port(SrnApplication *app, const char *host, int port);
-SrnServerConfig* srn_application_add_and_get_server_config_from_basename(SrnApplication *app, const char *base);
-char* srn_application_dump_server_config_list(SrnApplication *app);
-bool srn_application_is_server_config_valid(SrnApplication *app, SrnServerConfig *srv_cfg);
 
 SrnApplicationConfig *srn_application_config_new(void);
 SrnRet srn_application_config_check(SrnApplicationConfig *cfg);

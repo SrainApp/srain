@@ -38,18 +38,23 @@
 #include "utils.h"
 #include "i18n.h"
 
-SrnServer* srn_server_new(SrnServerConfig *cfg){
+SrnServer* srn_server_new(const char *name, SrnServerConfig *cfg){
     SrnServer *srv;
 
+    g_return_val_if_fail(name, NULL);
+    g_return_val_if_fail(RET_IS_OK(srn_server_config_check(cfg)), NULL);
+
     srv = g_malloc0(sizeof(SrnServer));
+
+    str_assign(&srv->name, name);
+    srv->cfg = cfg;
+    srv->addr = cfg->addrs->data;
 
     srv->state = SRN_SERVER_STATE_DISCONNECTED;
     srv->last_action = SRN_SERVER_ACTION_DISCONNECT; // It should be OK
     srv->negotiated = FALSE;
     srv->registered = FALSE;
 
-    srv->addr = cfg->addrs->data;
-    srv->cfg = cfg;
     srv->cap = srn_server_cap_new();
     srv->cap->srv = srv;
 
@@ -65,9 +70,9 @@ SrnServer* srn_server_new(SrnServerConfig *cfg){
             g_str_hash, g_str_equal,
             NULL, (GDestroyNotify)srn_server_user_free);
     srv->_user = srn_server_add_and_get_user(srv, "");
-    srv->user = srn_server_add_and_get_user(srv, srv->cfg->nickname);
-    srn_server_user_set_username(srv->user, srv->cfg->username);
-    srn_server_user_set_realname(srv->user, srv->cfg->realname);
+    srv->user = srn_server_add_and_get_user(srv, srv->cfg->user->nick);
+    srn_server_user_set_username(srv->user, srv->cfg->user->username);
+    srn_server_user_set_realname(srv->user, srv->cfg->user->realname);
     srn_server_user_set_is_me(srv->user, TRUE);
 
     /* sirc */
@@ -86,14 +91,15 @@ bad:
 }
 
 /**
- * @brief server_free Free a disconnected server, NEVER use this function
- *      directly on server which has been initialized
+ * @brief ``server_free`` frees a disconnected server.
  *
  * @param srv
  */
 void srn_server_free(SrnServer *srv){
     g_return_if_fail(srn_server_is_valid(srv));
     g_return_if_fail(srv->state == SRN_SERVER_STATE_DISCONNECTED);
+
+    str_assign(&srv->name, NULL);
 
     srn_server_cap_free(srv->cap);
     srn_server_user_free(srv->user);
@@ -130,7 +136,7 @@ SrnRet srn_server_reload_config(SrnServer *srv){
         old_chat_cfg = chat->cfg;
         chat_cfg = srn_chat_config_new();
         ret = srn_config_manager_read_chat_config(
-                app->cfg_mgr, chat_cfg, srv->cfg->name, chat->name);
+                app->cfg_mgr, chat_cfg, srv->name, chat->name);
         if (!RET_IS_OK(ret)){
             goto ERR;
         }
@@ -146,7 +152,7 @@ SrnRet srn_server_reload_config(SrnServer *srv){
 ERR:
         srn_chat_config_free(chat_cfg);
         return RET_ERR(_("Failed to chat config \"%1$s\" of server config \"%2$s\": %3$s"),
-                chat->name, srv->cfg->name, RET_MSG(ret));
+                chat->name, srv->name, RET_MSG(ret));
     }
 
     return SRN_OK;
@@ -224,7 +230,7 @@ SrnRet srn_server_add_chat(SrnServer *srv, const char *name){
     chat_cfg = srn_chat_config_new();
     ret = srn_config_manager_read_chat_config(
             srn_application_get_default()->cfg_mgr,
-            chat_cfg, srv->cfg->name, name);
+            chat_cfg, srv->name, name);
     if (!RET_IS_OK(ret)) {
         return ret;
     }
@@ -236,7 +242,7 @@ SrnRet srn_server_add_chat(SrnServer *srv, const char *name){
     /* If server's chat is not yet created and the chat name as same as
      * server name, create the server chat
      */
-    if (!srv->chat && g_strcmp0(name, srv->cfg->name) == 0) {
+    if (!srv->chat && g_strcmp0(name, srv->name) == 0) {
         chat = srn_chat_new(srv, name, SRN_CHAT_TYPE_SERVER, chat_cfg);
         srv->chat = chat;
     } else {

@@ -21,7 +21,6 @@
 #include "log.h"
 #include "utils.h"
 
-
 SrnChatUser *srn_chat_user_new(SrnChat *chat, SrnServerUser *srv_user){
     SrnChatUser *self;
 
