@@ -357,8 +357,4 @@ void sui_chan_list_end(SuiBuffer *buf){
 }
 
 void sui_server_list_add(const char *server){
-    SrainConnectPopover *popover;
-
-    popover = sui_window_get_connect_popover(sui_get_cur_window());
-    srain_connect_popover_add_server(popover, server);
 }

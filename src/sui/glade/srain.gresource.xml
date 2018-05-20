@@ -12,7 +12,7 @@
       <file preprocess="xml-stripblanks">message_list.glade</file>
       <file preprocess="xml-stripblanks">user_list.glade</file>
       <file preprocess="xml-stripblanks">nick_menu.glade</file>
-      <file preprocess="xml-stripblanks">connect_popover.glade</file>
+      <file preprocess="xml-stripblanks">connect_panel.glade</file>
       <file preprocess="xml-stripblanks">join_popover.glade</file>
   </gresource>
 </gresources>

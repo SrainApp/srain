@@ -338,7 +338,7 @@ const char* sui_buffer_get_name(SuiBuffer *self){
 const char* sui_buffer_get_remark(SuiBuffer *self){
     g_return_val_if_fail(SUI_IS_BUFFER(self), NULL);
 
-    return self->ctx->srv->cfg->name;
+    return self->ctx->srv->name;
 }
 
 // sui_buffer_set_events is static

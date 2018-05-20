@@ -32,8 +32,10 @@ gboolean activate_link(GtkLabel *label, const char *uri, gpointer user_data);
 SuiWindow *sui_get_cur_window();
 SuiBuffer *sui_get_cur_buffer();
 SrnRet sui_open_url(const char *url);
-void sui_popup_popover(GtkWidget *relative_to, GtkWidget *child);
-void sui_popup_popover_at_point(GtkWidget *relative_to, GtkWidget *child, int x, int y);
-void sui_popdown_popover(GtkWidget *child);
+
+/* Panel helper function */
+void sui_panel_popup(GtkWidget *relative_to, GtkWidget *child);
+void sui_panel_popup_at_point(GtkWidget *relative_to, GtkWidget *child, int x, int y);
+void sui_panel_popdown(GtkWidget *child);
 
 #endif /** __UI_COMMON_H **/

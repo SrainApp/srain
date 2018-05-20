@@ -37,6 +37,14 @@
 #include "sui_app.h"
 #include "sui_url_previewer.h"
 
+static void filechooser_on_update_preview(GtkFileChooser *chooser,
+        gpointer user_data);
+static void popover_on_hide(GtkWidget *widget, gpointer user_data);
+
+/*****************************************************************************
+ * Expored functions
+ *****************************************************************************/
+
 /**
  * @brief get a non-internal child widget by `name` in GtkListBox `widget`
  *
@@ -57,29 +65,6 @@ GtkListBoxRow* gtk_list_box_get_row_by_name(GtkListBox *listbox, const char* nam
         rows = g_list_next(rows);
     }
     return NULL;
-}
-
-static void filechooser_on_update_preview(GtkFileChooser *chooser,
-        gpointer user_data){
-    char *filename;
-    GError *error = NULL;
-    GtkImage *preview;
-    GdkPixbuf *pixbuf;
-
-    filename = gtk_file_chooser_get_preview_filename(chooser);
-    preview = GTK_IMAGE(gtk_file_chooser_get_preview_widget(chooser));
-    if (!filename || !preview) return;
-
-    pixbuf = gdk_pixbuf_new_from_file_at_size(filename, 300, 300, &error);
-
-    if (error == NULL){
-        gtk_image_set_from_pixbuf(preview, pixbuf);
-        g_object_unref(pixbuf);
-    } else {
-        gtk_image_clear(preview);
-    }
-
-    g_free(filename);
 }
 
 
@@ -226,9 +211,9 @@ gboolean activate_link(GtkLabel *label, const char *url, gpointer user_data){
         gtk_widget_get_allocation(GTK_WIDGET(label), &allocation);
         x = event->button.x - allocation.x;
         y = event->button.y - allocation.y;
-        sui_popup_popover_at_point(GTK_WIDGET(label), GTK_WIDGET(previewer), x, y);
+        sui_panel_popup_at_point(GTK_WIDGET(label), GTK_WIDGET(previewer), x, y);
     } else {
-        sui_popup_popover(GTK_WIDGET(label), GTK_WIDGET(previewer));
+        sui_panel_popup(GTK_WIDGET(label), GTK_WIDGET(previewer));
     }
     gdk_event_free(event);
 
@@ -291,22 +276,12 @@ SuiBuffer *sui_get_cur_buffer(){
     return buf;
 }
 
-static void popover_on_hide(GtkWidget *widget, gpointer user_data){
-    GtkWidget *child;
-    GtkPopover *popover;
-
-    popover = GTK_POPOVER(widget);
-    child = gtk_bin_get_child(GTK_BIN(popover));
-    gtk_container_remove(GTK_CONTAINER(popover), child);
-    g_object_unref(popover); // Free popover itself
-}
-
 /**
- * @brief Popdown the GtkPopover create by ``sui_popup_popover``.
+ * @brief Popdown the GtkPopover create by ``sui_panel_popup``.
  *
  * @param child
  */
-void sui_popdown_popover(GtkWidget *child){
+void sui_panel_popdown(GtkWidget *child){
     GtkWidget *parent;
 
     parent = gtk_widget_get_parent(child);
@@ -322,7 +297,7 @@ void sui_popdown_popover(GtkWidget *child){
  * @param relative_to
  * @param child
  */
-void sui_popup_popover(GtkWidget *relative_to, GtkWidget *child){
+void sui_panel_popup(GtkWidget *relative_to, GtkWidget *child){
     GtkPopover *popover;
 
     popover = GTK_POPOVER(gtk_popover_new(NULL));
@@ -336,7 +311,8 @@ void sui_popup_popover(GtkWidget *relative_to, GtkWidget *child){
     gtk_popover_popup(popover);
 }
 
-void sui_popup_popover_at_point(GtkWidget *relative_to, GtkWidget *child, int x, int y){
+void sui_panel_popup_at_point(GtkWidget *relative_to, GtkWidget *child,
+        int x, int y){
     GdkRectangle rect;
     GtkPopover *popover;
 
@@ -354,4 +330,41 @@ void sui_popup_popover_at_point(GtkWidget *relative_to, GtkWidget *child, int x,
             G_CALLBACK(popover_on_hide), NULL);
 
     gtk_popover_popup(popover);
+}
+
+/*****************************************************************************
+ * Static functions
+ *****************************************************************************/
+
+static void filechooser_on_update_preview(GtkFileChooser *chooser,
+        gpointer user_data){
+    char *filename;
+    GError *error = NULL;
+    GtkImage *preview;
+    GdkPixbuf *pixbuf;
+
+    filename = gtk_file_chooser_get_preview_filename(chooser);
+    preview = GTK_IMAGE(gtk_file_chooser_get_preview_widget(chooser));
+    if (!filename || !preview) return;
+
+    pixbuf = gdk_pixbuf_new_from_file_at_size(filename, 300, 300, &error);
+
+    if (error == NULL){
+        gtk_image_set_from_pixbuf(preview, pixbuf);
+        g_object_unref(pixbuf);
+    } else {
+        gtk_image_clear(preview);
+    }
+
+    g_free(filename);
+}
+
+static void popover_on_hide(GtkWidget *widget, gpointer user_data){
+    GtkWidget *child;
+    GtkPopover *popover;
+
+    popover = GTK_POPOVER(widget);
+    child = gtk_bin_get_child(GTK_BIN(popover));
+    gtk_container_remove(GTK_CONTAINER(popover), child);
+    g_object_unref(popover); // Free popover itself
 }

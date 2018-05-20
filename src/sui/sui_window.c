@@ -39,7 +39,7 @@
 #include "theme.h"
 #include "sui_window.h"
 #include "sui_buffer.h"
-#include "srain_connect_popover.h"
+#include "sui_connect_panel.h"
 #include "srain_join_popover.h"
 #include "sui_side_bar.h"
 #include "tray_icon.h"
@@ -87,7 +87,7 @@ struct _SuiWindow {
     GtkMenuButton *buffer_menu_button;
 
     /* Welcome page */
-    GtkButton *welcome_connect_button;
+    GtkBox *welcome_connect_box;
 
     /* Main page */
     GtkPaned *main_paned;
@@ -100,7 +100,7 @@ struct _SuiWindow {
     int send_timer;
 
     /* Popovers */
-    SrainConnectPopover *connect_popover;
+    SuiConnectPanel *connect_panel;
     SrainJoinPopover *join_popover;
 };
 
@@ -217,7 +217,7 @@ static void sui_window_init(SuiWindow *self){
     gtk_widget_show(GTK_WIDGET(self->side_bar));
 
     /* Popover init */
-    self->connect_popover = srain_connect_popover_new();
+    self->connect_panel = g_object_ref(sui_connect_panel_new());
     self->join_popover = srain_join_popover_new();
 
     theme_apply(GTK_WIDGET(self));
@@ -239,11 +239,9 @@ static void sui_window_init(SuiWindow *self){
     g_signal_connect_swapped(self->start_button, "clicked",
             G_CALLBACK(show_about_dialog), self);
     g_signal_connect(self->connect_button, "clicked",
-            G_CALLBACK(popover_button_on_click), self->connect_popover);
+            G_CALLBACK(popover_button_on_click), self->connect_panel);
     g_signal_connect(self->join_button, "clicked",
             G_CALLBACK(popover_button_on_click), self->join_popover);
-    g_signal_connect(self->welcome_connect_button, "clicked",
-            G_CALLBACK(popover_button_on_click), self->connect_popover);
 
     g_signal_connect(self->window_stack, "notify::visible-child",
             G_CALLBACK(window_stack_on_child_changed), self);
@@ -370,7 +368,7 @@ static void sui_window_class_init(SuiWindowClass *class){
     gtk_widget_class_bind_template_child(widget_class, SuiWindow, buffer_subtitle_label);
     gtk_widget_class_bind_template_child(widget_class, SuiWindow, buffer_menu_button);
 
-    gtk_widget_class_bind_template_child(widget_class, SuiWindow, welcome_connect_button);
+    gtk_widget_class_bind_template_child(widget_class, SuiWindow, welcome_connect_box);
 
     gtk_widget_class_bind_template_child(widget_class, SuiWindow, main_paned);
     gtk_widget_class_bind_template_child(widget_class, SuiWindow, side_box);
@@ -486,8 +484,8 @@ void sui_window_set_subtitle(SuiWindow *self, const char *subtitle){
 }
 
 
-SrainConnectPopover *sui_window_get_connect_popover(SuiWindow *self){
-    return self->connect_popover;
+SuiConnectPanel *sui_window_get_connect_panel(SuiWindow *self){
+    return self->connect_panel;
 }
 
 SrainJoinPopover *sui_window_get_join_popover(SuiWindow *self){
@@ -540,6 +538,10 @@ static void update_header(SuiWindow *self){
         } else {
             gtk_widget_set_visible(GTK_WIDGET(self->buffer_header_box), FALSE);
         }
+
+        // Add connect panel to welcome page
+        gtk_box_pack_start(self->welcome_connect_box,
+                GTK_WIDGET(self->connect_panel), TRUE, TRUE, 0);
     } else if (g_strcmp0(page, WINDOW_STACK_PAGE_MAIN) == 0){
         gtk_widget_set_visible(GTK_WIDGET(self->connect_button), TRUE);
         gtk_widget_set_visible(GTK_WIDGET(self->join_button), TRUE);
@@ -549,6 +551,10 @@ static void update_header(SuiWindow *self){
         } else {
             gtk_widget_set_visible(GTK_WIDGET(self->buffer_header_box), TRUE);
         }
+
+        // Remove connect panel to welcome page
+        gtk_container_remove(GTK_CONTAINER(self->welcome_connect_box),
+                GTK_WIDGET(self->connect_panel));
     } else {
         g_warn_if_reached();
     }
@@ -627,10 +633,8 @@ static void on_notify_is_active(GObject *object, GParamSpec *pspec,
 static void popover_button_on_click(GtkButton *button, gpointer user_data){
     GtkPopover *popover;
 
-    popover = user_data;
-    gtk_popover_set_relative_to(popover, GTK_WIDGET(button));
-    gtk_widget_set_visible(GTK_WIDGET(popover),
-            !gtk_widget_get_visible(GTK_WIDGET(popover)));
+    popover = GTK_POPOVER(user_data);
+    sui_panel_popup(GTK_WIDGET(button), GTK_WIDGET(popover));
 }
 
 static void quit_menu_item_on_activate(){

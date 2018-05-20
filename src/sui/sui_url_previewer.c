@@ -395,7 +395,7 @@ static void open_button_on_clicked(GtkWidget *widget, gpointer user_data){
 
     self = SUI_URL_PREVIEWER(user_data);
     sui_open_url(self->url);
-    sui_popdown_popover(GTK_WIDGET(self));
+    sui_panel_popdown(GTK_WIDGET(self));
 }
 
 static void cancel_button_on_clicked(GtkWidget *widget, gpointer user_data){
@@ -403,7 +403,7 @@ static void cancel_button_on_clicked(GtkWidget *widget, gpointer user_data){
 
     self = SUI_URL_PREVIEWER(user_data);
     cancel_preview(self);
-    sui_popdown_popover(GTK_WIDGET(self));
+    sui_panel_popdown(GTK_WIDGET(self));
 }
 
 static void image_event_box_on_button_release(GtkWidget *widget,
