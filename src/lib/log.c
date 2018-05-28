@@ -145,9 +145,9 @@ void srn_logger_log(SrnLogger *logger, SrnLogLevel lv, bool print_prompt,
     }
 
     if (lv >= LOG_ERROR){
-        fprintf(stderr, "%s", output->str);
+        g_fprintf(stderr, "%s", output->str);
     } else {
-        fprintf(stdout, "%s", output->str);
+        g_fprintf(stdout, "%s", output->str);
     }
 
     g_string_free(output, TRUE);
