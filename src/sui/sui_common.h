@@ -22,6 +22,8 @@
 #include <gtk/gtk.h>
 
 #include "sui_window.h"
+#include "sui_buffer.h"
+#include "sui_server_buffer.h"
 
 GtkListBoxRow* gtk_list_box_get_row_by_name(GtkListBox *listbox, const char* name);
 GtkListBoxRow* gtk_list_box_add_unfocusable_row(GtkListBox *listbox, GtkWidget *widget);
@@ -31,6 +33,7 @@ void scale_size_to( int src_width, int src_height, int max_width, int max_height
 gboolean activate_link(GtkLabel *label, const char *uri, gpointer user_data);
 SuiWindow *sui_get_cur_window();
 SuiBuffer *sui_get_cur_buffer();
+SuiServerBuffer *sui_get_cur_server_buffer();
 SrnRet sui_open_url(const char *url);
 
 /* Panel helper function */

@@ -26,7 +26,9 @@
 #include <gtk/gtk.h>
 #include <string.h>
 
+#include "core/core.h"
 #include "sui/sui.h"
+
 #include "srain.h"
 #include "i18n.h"
 #include "log.h"
@@ -37,6 +39,10 @@
 #include "sui_app.h"
 #include "sui_window.h"
 #include "sui_buffer.h"
+#include "sui_server_buffer.h"
+#include "sui_chat_buffer.h"
+#include "sui_channel_buffer.h"
+#include "sui_dialog_buffer.h"
 #include "sui_message.h"
 #include "sui_misc_message.h"
 #include "sui_send_message.h"
@@ -76,8 +82,23 @@ void sui_free_window(SuiWindow *win){
 
 SuiBuffer* sui_new_buffer(void *ctx, SuiBufferEvents *events, SuiBufferConfig *cfg){
     SuiBuffer *buf;
+    SrnChat *chat;
 
-    buf = sui_buffer_new(ctx, events, cfg);
+    // FIXME: dont use core's type here?
+    chat = ctx;
+    switch (chat->type) {
+        case SRN_CHAT_TYPE_SERVER:
+            buf = SUI_BUFFER(sui_server_buffer_new(ctx, events, cfg));
+            break;
+        case SRN_CHAT_TYPE_CHANNEL:
+            buf = SUI_BUFFER(sui_channel_buffer_new(ctx, events, cfg));
+            break;
+        case SRN_CHAT_TYPE_DIALOG:
+            buf = SUI_BUFFER(sui_dialog_buffer_new(ctx, events, cfg));
+            break;
+        default:
+            g_return_val_if_reached(NULL);
+    }
     sui_window_add_buffer(sui_get_cur_window(), buf);
 
     return buf;
@@ -192,13 +213,15 @@ SuiMessage *sui_new_recv_message(void *ctx){
 
 SrnRet sui_add_user(SuiBuffer *buf, const char *nick, UserType type){
     SrnRet ret;
+    SuiChatBuffer *chat_buf;
     SrainUserList *list;
     SrainEntryCompletion *comp;
 
-    g_return_val_if_fail(SUI_IS_BUFFER(buf), SRN_ERR);
+    g_return_val_if_fail(SUI_IS_CHAT_BUFFER(buf), SRN_ERR);
     g_return_val_if_fail(nick, SRN_ERR);
 
-    list = sui_buffer_get_user_list(buf);
+    chat_buf = SUI_CHAT_BUFFER(buf);
+    list = sui_chat_buffer_get_user_list(chat_buf);
 
     ret = srain_user_list_add(list, nick, type);
     if (RET_IS_OK(ret)){
@@ -212,14 +235,15 @@ SrnRet sui_add_user(SuiBuffer *buf, const char *nick, UserType type){
 
 SrnRet sui_rm_user(SuiBuffer *buf, const char *nick){
     SrnRet ret;
-    SuiBuffer *buffer;
+    SuiChatBuffer *chat_buf;
     SrainUserList *list;
     SrainEntryCompletion *comp;
 
-    g_return_val_if_fail(SUI_IS_BUFFER(buf), SRN_ERR);
+    g_return_val_if_fail(SUI_IS_CHAT_BUFFER(buf), SRN_ERR);
     g_return_val_if_fail(nick, SRN_ERR);
 
-    list = sui_buffer_get_user_list(buf);
+    chat_buf = SUI_CHAT_BUFFER(buf);
+    list = sui_chat_buffer_get_user_list(chat_buf);
 
     ret = srain_user_list_rm(list, nick);
     if (RET_IS_OK(ret)){
@@ -234,15 +258,16 @@ SrnRet sui_rm_user(SuiBuffer *buf, const char *nick){
 SrnRet sui_ren_user(SuiBuffer *buf, const char *old_nick, const char *new_nick,
         UserType type){
     SrnRet ret;
-    SuiBuffer *buffer;
+    SuiChatBuffer *chat_buf;
     SrainUserList *list;
     SrainEntryCompletion *comp;
 
-    g_return_val_if_fail(SUI_IS_BUFFER(buf), SRN_ERR);
+    g_return_val_if_fail(SUI_IS_CHAT_BUFFER(buf), SRN_ERR);
     g_return_val_if_fail(old_nick, SRN_ERR);
     g_return_val_if_fail(new_nick, SRN_ERR);
 
-    list = sui_buffer_get_user_list(buf);
+    chat_buf = SUI_CHAT_BUFFER(buf);
+    list = sui_chat_buffer_get_user_list(chat_buf);
 
     /* Your nick changed */
     // FIXME: new-ui
@@ -339,22 +364,46 @@ void sui_message_box(const char *title, const char *msg){
 }
 
 void sui_chan_list_start(SuiBuffer *buf){
-    g_return_if_fail(buf);
+    SuiServerBuffer *srv_buf;
+    SuiJoinPanel *panel;
 
+    g_return_if_fail(SUI_IS_SERVER_BUFFER(buf));
+    srv_buf = SUI_SERVER_BUFFER(buf);
+    panel = sui_server_buffer_get_join_panel(srv_buf);
+    g_return_if_fail(!sui_join_panel_get_is_adding(panel));
+
+    sui_join_panel_set_is_adding(panel, TRUE);
+    sui_server_buffer_clear_channel(srv_buf);
 }
 
 void sui_chan_list_add(SuiBuffer *buf, const char *chan, int users,
         const char *topic){
-    g_return_if_fail(buf);
+    SuiServerBuffer *srv_buf;
+    SuiJoinPanel *panel;
+
+    g_return_if_fail(SUI_IS_SERVER_BUFFER(buf));
     g_return_if_fail(chan);
     g_return_if_fail(topic);
+    srv_buf = SUI_SERVER_BUFFER(buf);
+    panel = sui_server_buffer_get_join_panel(srv_buf);
+    g_return_if_fail(sui_join_panel_get_is_adding(panel));
 
+    sui_server_buffer_add_channel(srv_buf, chan, users, topic);
     sui_proc_pending_event();
 }
 
 void sui_chan_list_end(SuiBuffer *buf){
-    g_return_if_fail(buf);
+    SuiServerBuffer *srv_buf;
+    SuiJoinPanel *panel;
+
+    g_return_if_fail(SUI_IS_SERVER_BUFFER(buf));
+    srv_buf = SUI_SERVER_BUFFER(buf);
+    panel = sui_server_buffer_get_join_panel(srv_buf);
+    g_return_if_fail(sui_join_panel_get_is_adding(panel));
+
+    sui_join_panel_set_is_adding(panel, FALSE);
 }
 
 void sui_server_list_add(const char *server){
+    // NOTE: deprecated
 }

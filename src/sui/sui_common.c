@@ -35,6 +35,7 @@
 #include "sui_common.h"
 #include "theme.h"
 #include "sui_app.h"
+#include "sui_chat_buffer.h"
 #include "sui_url_previewer.h"
 
 static void filechooser_on_update_preview(GtkFileChooser *chooser,
@@ -274,6 +275,21 @@ SuiBuffer *sui_get_cur_buffer(){
     g_return_val_if_fail(buf, NULL);
 
     return buf;
+}
+
+SuiServerBuffer *sui_get_cur_server_buffer(){
+    SuiBuffer *buf;
+
+    buf = sui_get_cur_buffer();
+    g_return_val_if_fail(buf, NULL);
+
+    if (SUI_IS_SERVER_BUFFER(buf)){
+        return SUI_SERVER_BUFFER(buf);
+    } else if (SUI_IS_CHAT_BUFFER(buf)){
+        return sui_chat_buffer_get_server_buffer(SUI_CHAT_BUFFER(buf));
+    }
+
+    g_return_val_if_reached(NULL);
 }
 
 /**

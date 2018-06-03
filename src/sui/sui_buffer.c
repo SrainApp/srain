@@ -18,7 +18,7 @@
 
 /**
  * @file sui_buffer.c
- * @brief Chat buffer widget
+ * @brief
  * @author Shengyu Zhang <i@silverrainz.me>
  * @version 0.06.2
  * @date 2016-03-01
@@ -41,50 +41,10 @@
 #include "i18n.h"
 #include "utils.h"
 
-struct _SuiBuffer {
-    GtkBox parent;
-
-    SrnChat *ctx;
-    SuiBufferEvents *events;
-    SuiBufferConfig *cfg;
-
-    /* Topic */
-    GtkRevealer *topic_revealer;
-    GtkLabel *topic_label;
-
-    /* Menus */
-    GtkMenu *menu;
-    GtkCheckMenuItem *topic_menu_item;
-    GtkCheckMenuItem *user_list_menu_item;
-    GtkMenuItem *close_menu_item;
-    GtkMenuItem *leave_menu_item;
-    GtkMenuItem *disconn_menu_item;
-    GtkMenuItem *quit_menu_item;
-
-    /* Message list */
-    GtkBox *msg_list_box;
-    SuiMessageList *msg_list;
-
-    /* User list */
-    GtkRevealer *user_list_revealer;
-    SrainUserList *user_list;
-
-    GtkTextBuffer *input_text_buffer;
-};
-
-struct _SuiBufferClass {
-    GtkBoxClass parent_class;
-};
-
 static void sui_buffer_set_ctx(SuiBuffer *self, void *ctx);
 static void sui_buffer_set_events(SuiBuffer *self, SuiBufferEvents *events);
 
 static void topic_menu_item_on_toggled(GtkWidget* widget, gpointer user_data);
-static void user_list_menu_item_on_toggled(GtkWidget* widget, gpointer user_data);
-static void close_menu_item_on_activate(GtkWidget* widget, gpointer user_data);
-static void leave_menu_item_on_activate(GtkWidget* widget, gpointer user_data);
-static void disconn_menu_item_on_activate(GtkWidget* widget, gpointer user_data);
-static void quit_menu_item_on_activate(GtkWidget* widget, gpointer user_data);
 
 /*****************************************************************************
  * GObject functions
@@ -110,58 +70,62 @@ static void sui_buffer_set_property(GObject *object, guint property_id,
   SuiBuffer *self = SUI_BUFFER(object);
 
   switch (property_id){
-    case PROP_CTX:
-      sui_buffer_set_ctx(self, g_value_get_pointer(value));
-      break;
-    case PROP_EVENTS:
-      sui_buffer_set_events(self, g_value_get_pointer(value));
-      break;
-    case PROP_CONFIG:
-      sui_buffer_set_config(self, g_value_get_pointer(value));
-      break;
-    default:
-      /* We don't have any other property... */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
-      break;
-    }
+      case PROP_CTX:
+          sui_buffer_set_ctx(self, g_value_get_pointer(value));
+          break;
+      case PROP_EVENTS:
+          sui_buffer_set_events(self, g_value_get_pointer(value));
+          break;
+      case PROP_CONFIG:
+          sui_buffer_set_config(self, g_value_get_pointer(value));
+          break;
+      default:
+          /* We don't have any other property... */
+          G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+          break;
+  }
 }
 
 static void sui_buffer_get_property(GObject *object, guint property_id,
         GValue *value, GParamSpec *pspec){
-  SuiBuffer *self = SUI_BUFFER(object);
+    SuiBuffer *self = SUI_BUFFER(object);
 
-  switch (property_id){
-    case PROP_CTX:
-      g_value_set_pointer(value, sui_buffer_get_ctx(self));
-      break;
-    case PROP_EVENTS:
-      g_value_set_pointer(value, sui_buffer_get_events(self));
-      break;
-    case PROP_CONFIG:
-      g_value_set_pointer(value, sui_buffer_get_config(self));
-      break;
-    case PROP_NAME:
-      g_value_set_string(value, sui_buffer_get_name(self));
-      break;
-    case PROP_REMARK:
-      g_value_set_string(value, sui_buffer_get_remark(self));
-      break;
-    default:
-      /* We don't have any other property... */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
-      break;
+    switch (property_id){
+        case PROP_CTX:
+            g_value_set_pointer(value, sui_buffer_get_ctx(self));
+            break;
+        case PROP_EVENTS:
+            g_value_set_pointer(value, sui_buffer_get_events(self));
+            break;
+        case PROP_CONFIG:
+            g_value_set_pointer(value, sui_buffer_get_config(self));
+            break;
+        case PROP_NAME:
+            g_value_set_string(value, sui_buffer_get_name(self));
+            break;
+        case PROP_REMARK:
+            g_value_set_string(value, sui_buffer_get_remark(self));
+            break;
+        default:
+            /* We don't have any other property... */
+            G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+            break;
     }
 }
 
 static void sui_buffer_init(SuiBuffer *self){
+    GtkBuilder *builder;
+
     gtk_widget_init_template(GTK_WIDGET(self));
 
-    /* Init user list*/
-    self->user_list = srain_user_list_new();
-    // Hide user_list for avoiding warning
-    gtk_widget_hide(GTK_WIDGET(self->user_list));
-    gtk_container_add(GTK_CONTAINER(self->user_list_revealer), // FIXME
-            GTK_WIDGET(self->user_list));
+    /* Init menus */
+    builder = gtk_builder_new_from_resource("/im/srain/Srain/buffer_menu.glade");
+    self->topic_menu_item =
+        (GtkCheckMenuItem *)gtk_builder_get_object(builder, "topic_menu_item");
+    gtk_menu_shell_append(
+            GTK_MENU_SHELL(self->menu),
+            GTK_WIDGET(self->topic_menu_item));
+    g_object_unref(builder);
 
     /* Init msg list */
     self->msg_list = sui_message_list_new();
@@ -173,39 +137,14 @@ static void sui_buffer_init(SuiBuffer *self){
             G_CALLBACK(activate_link), self);
     g_signal_connect(self->topic_menu_item, "toggled",
             G_CALLBACK(topic_menu_item_on_toggled), self);
-    g_signal_connect(self->user_list_menu_item, "toggled",
-            G_CALLBACK(user_list_menu_item_on_toggled), self);
-    g_signal_connect(self->close_menu_item, "activate",
-            G_CALLBACK(close_menu_item_on_activate), self);
-    g_signal_connect(self->leave_menu_item, "activate",
-            G_CALLBACK(leave_menu_item_on_activate), self);
-    g_signal_connect(self->disconn_menu_item, "activate",
-            G_CALLBACK(disconn_menu_item_on_activate),self);
-    g_signal_connect(self->quit_menu_item, "activate",
-            G_CALLBACK(quit_menu_item_on_activate),self);
 }
 
 static void sui_buffer_constructed(GObject *object){
     SuiBuffer *self;
 
     self = SUI_BUFFER(object);
-    switch(self->ctx->type){
-        case SRN_CHAT_TYPE_SERVER:
-            gtk_widget_show(GTK_WIDGET(self->quit_menu_item));
-            gtk_widget_show(GTK_WIDGET(self->disconn_menu_item));
-            break;
-        case SRN_CHAT_TYPE_CHANNEL:
-            gtk_widget_show(GTK_WIDGET(self->leave_menu_item));
-            break;
-        case SRN_CHAT_TYPE_DIALOG:
-            gtk_widget_show(GTK_WIDGET(self->close_menu_item));
-            break;
-        default:
-            g_warn_if_reached();
-    }
 
     sui_buffer_show_topic(self, self->cfg->show_topic);
-    sui_buffer_show_user_list(self, self->cfg->show_user_list);
 
     G_OBJECT_CLASS(sui_buffer_parent_class)->constructed(object);
 }
@@ -268,20 +207,11 @@ static void sui_buffer_class_init(SuiBufferClass *class){
     gtk_widget_class_set_template_from_resource(
             widget_class, "/im/srain/Srain/buffer.glade");
 
+    gtk_widget_class_bind_template_child(widget_class, SuiBuffer, menu);
     gtk_widget_class_bind_template_child(widget_class, SuiBuffer, topic_revealer);
     gtk_widget_class_bind_template_child(widget_class, SuiBuffer, topic_label);
-
-    gtk_widget_class_bind_template_child(widget_class, SuiBuffer, menu);
-    gtk_widget_class_bind_template_child(widget_class, SuiBuffer, topic_menu_item);
-    gtk_widget_class_bind_template_child(widget_class, SuiBuffer, user_list_menu_item);
-    gtk_widget_class_bind_template_child(widget_class, SuiBuffer, close_menu_item);
-    gtk_widget_class_bind_template_child(widget_class, SuiBuffer, leave_menu_item);
-    gtk_widget_class_bind_template_child(widget_class, SuiBuffer, disconn_menu_item);
-    gtk_widget_class_bind_template_child(widget_class, SuiBuffer, quit_menu_item);
-
-    gtk_widget_class_bind_template_child(widget_class, SuiBuffer, msg_list_box);
     gtk_widget_class_bind_template_child(widget_class, SuiBuffer, user_list_revealer);
-
+    gtk_widget_class_bind_template_child(widget_class, SuiBuffer, msg_list_box);
     gtk_widget_class_bind_template_child(widget_class, SuiBuffer, input_text_buffer);
 }
 
@@ -321,12 +251,6 @@ void sui_buffer_show_topic(SuiBuffer *self, bool isshow){
     g_return_if_fail(SUI_IS_BUFFER(self));
 
     gtk_check_menu_item_set_active(self->topic_menu_item, isshow);
-}
-
-void sui_buffer_show_user_list(SuiBuffer *self, bool show){
-    g_return_if_fail(SUI_IS_BUFFER(self));
-
-    gtk_check_menu_item_set_active(self->user_list_menu_item, show);
 }
 
 const char* sui_buffer_get_name(SuiBuffer *self){
@@ -395,12 +319,6 @@ GtkMenu* sui_buffer_get_menu(SuiBuffer *self){
     return self->menu;
 }
 
-SrainUserList* sui_buffer_get_user_list(SuiBuffer *self){
-    g_return_val_if_fail(SUI_IS_BUFFER(self), NULL);
-
-    return self->user_list;
-}
-
 GtkTextBuffer* sui_buffer_get_input_text_buffer(SuiBuffer *self){
     g_return_val_if_fail(SUI_IS_BUFFER(self), NULL);
 
@@ -434,46 +352,3 @@ static void topic_menu_item_on_toggled(GtkWidget* widget, gpointer user_data){
         gtk_widget_hide(GTK_WIDGET(self->topic_label));
     }
 }
-
-static void user_list_menu_item_on_toggled(GtkWidget* widget, gpointer user_data){
-    bool active;
-    SuiBuffer *self  = SUI_BUFFER(user_data);
-    GtkCheckMenuItem *item = GTK_CHECK_MENU_ITEM(widget);
-
-    active = gtk_check_menu_item_get_active(item);
-    gtk_revealer_set_reveal_child(self->user_list_revealer, active);
-    if (active){
-        gtk_widget_show(GTK_WIDGET(self->user_list));
-    } else {
-        gtk_widget_hide(GTK_WIDGET(self->user_list));
-    }
-}
-
-static void close_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
-    SuiBuffer *self;
-
-    self = user_data;
-    sui_buffer_event_hdr(self, SUI_EVENT_UNQUERY, NULL);
-}
-
-static void leave_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
-    SuiBuffer *self;
-
-    self = user_data;
-    sui_buffer_event_hdr(self, SUI_EVENT_PART, NULL);
-}
-
-static void disconn_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
-    SuiBuffer *self;
-
-    self = user_data;
-    sui_buffer_event_hdr(self, SUI_EVENT_DISCONNECT, NULL);
-}
-
-static void quit_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
-    SuiBuffer *self;
-
-    self = user_data;
-    sui_buffer_event_hdr(self, SUI_EVENT_QUIT, NULL);
-}
-
