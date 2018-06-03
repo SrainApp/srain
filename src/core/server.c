@@ -27,7 +27,6 @@
 
 #include <string.h>
 #include <strings.h>
-#include <gtk/gtk.h>
 
 #include "core/core.h"
 #include "sirc/sirc.h"
@@ -99,16 +98,18 @@ void srn_server_free(SrnServer *srv){
     g_return_if_fail(srn_server_is_valid(srv));
     g_return_if_fail(srv->state == SRN_SERVER_STATE_DISCONNECTED);
 
-    str_assign(&srv->name, NULL);
-
-    srn_server_cap_free(srv->cap);
-    srn_server_user_free(srv->user);
     sirc_free_session(srv->irc);
 
     g_slist_free_full(srv->chat_list, (GDestroyNotify)srn_chat_free);
-    g_hash_table_remove_all(srv->user_table);
     // Server's chat should be freed after all chat in chat list are freed
     srn_chat_free(srv->chat);
+
+    // srv->user and srv->_user are freed here as well
+    g_hash_table_remove_all(srv->user_table);
+
+    srn_server_cap_free(srv->cap);
+
+    str_assign(&srv->name, NULL);
 
     g_free(srv);
 }
