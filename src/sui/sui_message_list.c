@@ -181,7 +181,7 @@ static void scroll_to_bottom(SuiMessageList *self){
     // Use timer for avoiding duplicated calls of this function.
     // And the allocated size of the ``SuiMessage`` may changed after being
     // added into list. So do scroll later.
-    g_timeout_add(100, scroll_to_bottom_timeout, self);
+    self->scroll_timer = g_timeout_add(100, scroll_to_bottom_timeout, self);
 }
 
 static gboolean scroll_to_bottom_timeout(gpointer user_data){
