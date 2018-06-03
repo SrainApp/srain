@@ -23,8 +23,6 @@
 
 #include "sui_app.h"
 #include "sui_buffer.h"
-#include "sui_connect_panel.h"
-#include "srain_join_popover.h"
 
 #define SUI_TYPE_WINDOW (sui_window_get_type())
 #define SUI_WINDOW(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SUI_TYPE_WINDOW, SuiWindow))
@@ -48,8 +46,5 @@ SuiSideBar* sui_window_get_side_bar(SuiWindow *self);
 
 int sui_window_is_active(SuiWindow *self);
 void sui_window_tray_icon_stress(SuiWindow *self, int stress);
-
-SuiConnectPanel *sui_window_get_connect_panel(SuiWindow *self);
-SrainJoinPopover *sui_window_get_join_popover(SuiWindow *self);
 
 #endif /* __SUI_WINDOW_H */
