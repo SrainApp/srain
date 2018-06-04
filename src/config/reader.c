@@ -163,7 +163,7 @@ SrnRet srn_config_manager_read_server_config_by_addr(SrnConfigManager *mgr,
 
         addr_lst = cfg->addrs;
         while (addr_lst){
-            if (srn_server_addr_equal(addr, lst->data)){
+            if (srn_server_addr_equal(addr, addr_lst->data)){
                 ret = SRN_OK;
                 goto FIN;
             }

@@ -332,7 +332,7 @@ SrnServer* srn_application_get_server_by_addr(SrnApplication *app,
         srv = lst->data;
         addr_lst = srv->cfg->addrs;
         while (addr_lst){
-            if (srn_server_addr_equal(addr, lst->data)){
+            if (srn_server_addr_equal(addr, addr_lst->data)){
                 return srv;
             }
             addr_lst = g_slist_next(addr_lst);
