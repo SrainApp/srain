@@ -25,24 +25,23 @@ SrnChatUser *srn_chat_user_new(SrnChat *chat, SrnServerUser *srv_user){
     SrnChatUser *self;
 
     self = g_malloc0(sizeof(SrnChatUser));
+    self->type = SRN_CHAT_USER_TYPE_CHIGUA;
     self->chat = chat;
     self->srv_user = srv_user;
     srn_server_user_attach_chat_user(srv_user, self);
+    self->ui = sui_new_user(self);
 
     return self;
 }
 
 void srn_chat_user_free(SrnChatUser *self){
+    sui_free_user(self->ui);
     srn_server_user_detach_chat_user(self->srv_user, self);
     g_free(self);
 }
 
 void srn_chat_user_update(SrnChatUser *self){
-    // TODO: rename nick
-    sui_ren_user(self->chat->ui,
-            self->srv_user->nick,
-            self->srv_user->nick,
-            self->type);
+    sui_update_user(self->ui);
 }
 
 void srn_chat_user_set_type(SrnChatUser *self, SrnChatUserType type){
@@ -59,8 +58,8 @@ void srn_chat_user_set_is_joined(SrnChatUser *self, bool joined){
     }
     self->is_joined = joined;
     if (joined){
-        sui_add_user(self->chat->ui, self->srv_user->nick, USER_CHIGUA);
+        sui_add_user(self->chat->ui, self->ui);
     } else {
-        sui_rm_user(self->chat->ui, self->srv_user->nick);
+        sui_rm_user(self->chat->ui, self->ui);
     }
 }

@@ -37,11 +37,11 @@
 
 typedef enum   _SrnMessageType SrnMessageType;
 typedef struct _SrnMessage SrnMessage;
-// typedef struct _UserType UserType;
 typedef struct _SrnServerUser SrnServerUser;
 typedef struct _SrnChatUser SrnChatUser;
+typedef enum   _SrnChatUserType SrnChatUserType;
 typedef struct _SrnChat SrnChat;
-typedef enum _SrnChatType SrnChatType;
+typedef enum   _SrnChatType SrnChatType;
 typedef struct _SrnChatConfig SrnChatConfig;
 typedef struct _SrnServerAddr SrnServerAddr;
 typedef enum   _SrnServerState SrnServerState;
@@ -60,29 +60,29 @@ enum _SrnChatType {
     SRN_CHAT_TYPE_DIALOG,
 };
 
-/*enum _UserType {
-    SRN_SERVER_USER_CHIGUA,    // No prefix
-    SRN_SERVER_USER_OWNER,     // ~ mode +q
-    SRN_SERVER_USER_ADMIN,     // & mode +a
-    SRN_SERVER_USER_FULL_OP,   // @ mode +o
-    SRN_SERVER_USER_HALF_OP,   // % mode +h
-    SRN_SERVER_USER_VOICED,    // + mode +v
+enum _SrnChatUserType {
+    SRN_CHAT_USER_TYPE_OWNER,     // ~ mode +q
+    SRN_CHAT_USER_TYPE_ADMIN,     // & mode +a
+    SRN_CHAT_USER_TYPE_FULL_OP,   // @ mode +o
+    SRN_CHAT_USER_TYPE_HALF_OP,   // % mode +h
+    SRN_CHAT_USER_TYPE_VOICED,    // + mode +v
+    SRN_CHAT_USER_TYPE_CHIGUA,    // No prefix
+    /* ... */
     SRN_SERVER_USER_TYPE_MAX
-}; */
+};
 
 typedef struct _SrnUserContext SrnUserContext;
 
 struct _SrnChatUser{
     SrnChat *chat;
 
-    SrnChatUserType type;
-
     bool is_joined;
 
+    SrnChatUserType type;
     SrnServerUser *srv_user;
-    // SuiUser *ui;
-
     GList *msg_list;    // TODO: List of SrnMessage
+
+    SuiUser *ui;
 };
 
 struct _SrnServerUser {

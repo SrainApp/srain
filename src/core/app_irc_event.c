@@ -541,25 +541,25 @@ static void irc_event_mode(SircSession *sirc, const char *event,
         chat_user = srn_chat_add_and_get_user(chat, srv_user);
         g_return_if_fail(chat_user);
 
-        type = SRN_SERVER_USER_CHIGUA;
+        type = SRN_CHAT_USER_TYPE_CHIGUA;
         if (mode[0] == '-'){
-            type = SRN_SERVER_USER_CHIGUA;
+            type = SRN_CHAT_USER_TYPE_CHIGUA;
         } else if (mode[0] == '+'){
             switch (mode[1]){
                 case 'q':
-                    type = SRN_SERVER_USER_OWNER;
+                    type = SRN_CHAT_USER_TYPE_OWNER;
                     break;
                 case 'a':
-                    type = SRN_SERVER_USER_ADMIN;
+                    type = SRN_CHAT_USER_TYPE_ADMIN;
                     break;
                 case 'o':
-                    type = SRN_SERVER_USER_FULL_OP;
+                    type = SRN_CHAT_USER_TYPE_FULL_OP;
                     break;
                 case 'h':
-                    type = SRN_SERVER_USER_HALF_OP;
+                    type = SRN_CHAT_USER_TYPE_HALF_OP;
                     break;
                 case 'v':
-                    type = SRN_SERVER_USER_VOICED;
+                    type = SRN_CHAT_USER_TYPE_VOICED;
                     break;
                 default:
                     break;
@@ -1308,26 +1308,26 @@ static void irc_event_numeric(SircSession *sirc, int event,
                     switch (nickptr[0]){
                         case '~':
                             nickptr++;
-                            type = SRN_SERVER_USER_OWNER;
+                            type = SRN_CHAT_USER_TYPE_OWNER;
                             break;
                         case '&':
                             nickptr++;
-                            type = SRN_SERVER_USER_ADMIN;
+                            type = SRN_CHAT_USER_TYPE_ADMIN;
                             break;
                         case '@':
                             nickptr++;
-                            type = SRN_SERVER_USER_FULL_OP;
+                            type = SRN_CHAT_USER_TYPE_FULL_OP;
                             break;
                         case '%':
                             nickptr++;
-                            type = SRN_SERVER_USER_HALF_OP;
+                            type = SRN_CHAT_USER_TYPE_HALF_OP;
                             break;
                         case '+':
                             nickptr++;
-                            type = SRN_SERVER_USER_VOICED;
+                            type = SRN_CHAT_USER_TYPE_VOICED;
                             break;
                         default:
-                            type = SRN_SERVER_USER_CHIGUA;
+                            type = SRN_CHAT_USER_TYPE_CHIGUA;
                     }
                     srv_user = srn_server_add_and_get_user(srv, nickptr);
                     g_warn_if_fail(srv_user);
