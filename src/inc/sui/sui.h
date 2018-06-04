@@ -26,10 +26,9 @@ typedef struct _SuiApplication SuiApplication;
 typedef struct _SuiWindow SuiWindow;
 typedef struct _SuiBuffer SuiBuffer;
 typedef int SuiBufferFlag;
+typedef struct _SuiUser SuiUser;
 typedef struct _SuiMessage SuiMessage;
 typedef enum _SuiMiscMessageStyle SuiMiscMessageStyle;
-typedef enum _UserType UserType;
-typedef enum _SrnChatUserType SrnChatUserType;
 
 enum _SuiMiscMessageStyle {
     SUI_MISC_MESSAGE_STYLE_NONE = 0,
@@ -37,28 +36,6 @@ enum _SuiMiscMessageStyle {
     SUI_MISC_MESSAGE_STYLE_ERROR,
     SUI_MISC_MESSAGE_STYLE_ACTION,
     SUI_MISC_MESSAGE_STYLE_UNKNOWN,
-};
-
-enum _SrnChatUserType {
-    SRN_SERVER_USER_OWNER,     // ~ mode +q
-    SRN_SERVER_USER_ADMIN,     // & mode +a
-    SRN_SERVER_USER_FULL_OP,   // @ mode +o
-    SRN_SERVER_USER_HALF_OP,   // % mode +h
-    SRN_SERVER_USER_VOICED,    // + mode +v
-    SRN_SERVER_USER_CHIGUA,    // No prefix
-    /* ... */
-    SRN_SERVER_USER_TYPE_MAX
-};
-
-enum _UserType {
-    USER_OWNER,     // ~ mode +q
-    USER_ADMIN,     // & mode +a
-    USER_FULL_OP,   // @ mode +o
-    USER_HALF_OP,   // % mode +h
-    USER_VOICED,    // + mode +v
-    USER_CHIGUA,    // No prefix
-    /* ... */
-    USER_TYPE_MAX
 };
 
 #define __IN_SUI_H
@@ -103,9 +80,11 @@ void sui_add_completion(SuiBuffer *sui, const char *word);
 void sui_rm_completion(SuiBuffer *sui, const char *word);
 
 /* User */
-SrnRet sui_add_user(SuiBuffer *sui, const char *nick, UserType type);
-SrnRet sui_rm_user(SuiBuffer *sui, const char *nick);
-SrnRet sui_ren_user(SuiBuffer *sui, const char *old_nick, const char *new_nick, UserType type);
+SuiUser* sui_new_user(void *ctx);
+void sui_free_user(SuiUser *user);
+void sui_update_user(SuiUser *user);
+void sui_add_user(SuiBuffer *buf, SuiUser *user);
+void sui_rm_user(SuiBuffer *buf, SuiUser *user);
 
 /* Misc */
 void sui_set_topic(SuiBuffer *sui, const char *topic);

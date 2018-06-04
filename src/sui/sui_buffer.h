@@ -23,7 +23,6 @@
 
 #include "sui_message.h"
 #include "sui_message_list.h"
-#include "srain_user_list.h"
 #include "srain_entry_completion.h"
 
 #define SUI_TYPE_BUFFER (sui_buffer_get_type())

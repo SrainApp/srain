@@ -416,7 +416,6 @@ void sui_window_add_buffer(SuiWindow *self, SuiBuffer *buf){
 }
 
 void sui_window_rm_buffer(SuiWindow *self, SuiBuffer *buf){
-    // srain_user_list_clear(sui_buffer_get_user_list(buf));
     gtk_container_remove(GTK_CONTAINER(self->buffer_stack), GTK_WIDGET(buf));
 
     if (get_buffer_count(self) == 0){

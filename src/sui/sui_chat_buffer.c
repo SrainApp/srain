@@ -81,6 +81,7 @@ static void sui_chat_buffer_get_property(GObject *object, guint property_id,
 static void sui_chat_buffer_constructed(GObject *object){
     SrnChat *ctx;
     SuiServerBuffer *srv;
+    SuiBufferConfig *cfg;
     SuiChatBuffer *self;
 
     g_object_get(object, "context", &ctx, NULL);
@@ -94,6 +95,9 @@ static void sui_chat_buffer_constructed(GObject *object){
     g_object_set(object, "server-buffer", srv, NULL);
     // Add self to server buffer list
     sui_server_buffer_add_buffer(srv, SUI_BUFFER(self));
+
+    cfg = sui_buffer_get_config(SUI_BUFFER(self));
+    sui_chat_buffer_show_user_list(self, cfg->show_user_list);
 
     G_OBJECT_CLASS(sui_chat_buffer_parent_class)->constructed(object);
 }
@@ -111,9 +115,7 @@ static void sui_chat_buffer_init(SuiChatBuffer *self){
     g_object_unref(builder);
     
     /* Init user list*/
-    self->user_list = srain_user_list_new();
-    // Hide user_list for avoiding warning
-    gtk_widget_hide(GTK_WIDGET(self->user_list));
+    self->user_list = sui_user_list_new();
     gtk_container_add(GTK_CONTAINER(self->parent.user_list_revealer), // FIXME
             GTK_WIDGET(self->user_list));
 
@@ -128,6 +130,8 @@ static void sui_chat_buffer_finalize(GObject *object){
 
     self = SUI_CHAT_BUFFER(object);
     sui_server_buffer_rm_buffer(self->server_buffer, SUI_BUFFER(self));
+
+    sui_user_list_clear(self->user_list);
 
     G_OBJECT_CLASS(sui_chat_buffer_parent_class)->finalize(object);
 }
@@ -163,7 +167,7 @@ SuiServerBuffer* sui_chat_buffer_get_server_buffer(SuiChatBuffer *self){
     return self->server_buffer;
 }
 
-SrainUserList* sui_chat_buffer_get_user_list(SuiChatBuffer *self){
+SuiUserList* sui_chat_buffer_get_user_list(SuiChatBuffer *self){
     return self->user_list;
 }
 

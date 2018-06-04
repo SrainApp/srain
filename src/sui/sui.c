@@ -211,76 +211,50 @@ SuiMessage *sui_new_recv_message(void *ctx){
     return SUI_MESSAGE(sui_recv_message_new(ctx));
 }
 
-SrnRet sui_add_user(SuiBuffer *buf, const char *nick, UserType type){
-    SrnRet ret;
-    SuiChatBuffer *chat_buf;
-    SrainUserList *list;
-    SrainEntryCompletion *comp;
-
-    g_return_val_if_fail(SUI_IS_CHAT_BUFFER(buf), SRN_ERR);
-    g_return_val_if_fail(nick, SRN_ERR);
-
-    chat_buf = SUI_CHAT_BUFFER(buf);
-    list = sui_chat_buffer_get_user_list(chat_buf);
-
-    ret = srain_user_list_add(list, nick, type);
-    if (RET_IS_OK(ret)){
-        // FIXME
-        // comp = sui_buffer_get_entry_completion(buf);
-        // srain_entry_completion_add_keyword(comp, nick, KEYWORD_NORMAL);
-    };
-
-    return ret;
+SuiUser* sui_new_user(void *ctx){
+    return sui_user_new(ctx);
 }
 
-SrnRet sui_rm_user(SuiBuffer *buf, const char *nick){
-    SrnRet ret;
-    SuiChatBuffer *chat_buf;
-    SrainUserList *list;
-    SrainEntryCompletion *comp;
-
-    g_return_val_if_fail(SUI_IS_CHAT_BUFFER(buf), SRN_ERR);
-    g_return_val_if_fail(nick, SRN_ERR);
-
-    chat_buf = SUI_CHAT_BUFFER(buf);
-    list = sui_chat_buffer_get_user_list(chat_buf);
-
-    ret = srain_user_list_rm(list, nick);
-    if (RET_IS_OK(ret)){
-        // FIXME
-        // comp = sui_buffer_get_entry_completion(SUI_BUFFER(buf));
-        // srain_entry_completion_rm_keyword(comp, nick);
-    }
-
-    return ret;
+void sui_free_user(SuiUser *user){
+    sui_user_free(user);
 }
 
-SrnRet sui_ren_user(SuiBuffer *buf, const char *old_nick, const char *new_nick,
-        UserType type){
-    SrnRet ret;
+void sui_update_user(SuiUser *user){
+    sui_user_update(user);
+}
+
+void sui_add_user(SuiBuffer *buf, SuiUser *user){
     SuiChatBuffer *chat_buf;
-    SrainUserList *list;
+    SuiUserList *list;
     SrainEntryCompletion *comp;
 
-    g_return_val_if_fail(SUI_IS_CHAT_BUFFER(buf), SRN_ERR);
-    g_return_val_if_fail(old_nick, SRN_ERR);
-    g_return_val_if_fail(new_nick, SRN_ERR);
+    g_return_if_fail(SUI_IS_CHAT_BUFFER(buf));
+    g_return_if_fail(user);
 
     chat_buf = SUI_CHAT_BUFFER(buf);
     list = sui_chat_buffer_get_user_list(chat_buf);
 
-    /* Your nick changed */
-    // FIXME: new-ui
-    //
-    ret = srain_user_list_rename(list, old_nick, new_nick, type);
-    if (RET_IS_OK(ret)){
-        // FIXME
-        // comp = sui_buffer_get_entry_completion(buf);
-        // srain_entry_completion_add_keyword(comp, old_nick, KEYWORD_NORMAL);
-        // srain_entry_completion_rm_keyword(comp, new_nick);
-    }
+    sui_user_list_add_user(list, user);
+    // FIXME
+    // comp = sui_buffer_get_entry_completion(buf);
+    // srain_entry_completion_add_keyword(comp, nick, KEYWORD_NORMAL);
+}
 
-    return ret;
+void sui_rm_user(SuiBuffer *buf, SuiUser *user){
+    SuiChatBuffer *chat_buf;
+    SuiUserList *list;
+    SrainEntryCompletion *comp;
+
+    g_return_if_fail(SUI_IS_CHAT_BUFFER(buf));
+    g_return_if_fail(user);
+
+    chat_buf = SUI_CHAT_BUFFER(buf);
+    list = sui_chat_buffer_get_user_list(chat_buf);
+
+    sui_user_list_rm_user(list, user);
+    // FIXME
+    // comp = sui_buffer_get_entry_completion(SUI_BUFFER(buf));
+    // srain_entry_completion_rm_keyword(comp, nick);
 }
 
 void sui_set_topic(SuiBuffer *buf, const char *topic){

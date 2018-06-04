@@ -23,6 +23,7 @@
 
 #include "sui/sui.h"
 #include "sui_server_buffer.h"
+#include "sui_user_list.h"
 
 #define SUI_TYPE_CHAT_BUFFER (sui_chat_buffer_get_type())
 #define SUI_CHAT_BUFFER(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SUI_TYPE_CHAT_BUFFER, SuiChatBuffer))
@@ -35,7 +36,7 @@ struct _SuiChatBuffer {
 
     GtkCheckMenuItem *user_list_menu_item;
     GtkRevealer *user_list_revealer;
-    SrainUserList *user_list;
+    SuiUserList *user_list;
 };
 
 struct _SuiChatBufferClass {
@@ -49,6 +50,6 @@ GType sui_chat_buffer_get_type(void);
 
 void sui_chat_buffer_show_user_list(SuiChatBuffer *self, bool isshow);
 SuiServerBuffer* sui_chat_buffer_get_server_buffer(SuiChatBuffer *self);
-SrainUserList* sui_chat_buffer_get_user_list(SuiChatBuffer *self);
+SuiUserList* sui_chat_buffer_get_user_list(SuiChatBuffer *self);
 
 #endif /* __SUI_CHAT_BUFFER_H */
