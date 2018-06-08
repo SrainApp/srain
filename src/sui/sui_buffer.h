@@ -23,7 +23,7 @@
 
 #include "sui_message.h"
 #include "sui_message_list.h"
-#include "srain_entry_completion.h"
+#include "sui_completion.h"
 
 #define SUI_TYPE_BUFFER (sui_buffer_get_type())
 #define SUI_BUFFER(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SUI_TYPE_BUFFER, SuiBuffer))

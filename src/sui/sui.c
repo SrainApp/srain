@@ -226,7 +226,7 @@ void sui_update_user(SuiUser *user){
 void sui_add_user(SuiBuffer *buf, SuiUser *user){
     SuiChatBuffer *chat_buf;
     SuiUserList *list;
-    SrainEntryCompletion *comp;
+    SuiCompletion *comp;
 
     g_return_if_fail(SUI_IS_CHAT_BUFFER(buf));
     g_return_if_fail(user);
@@ -237,13 +237,13 @@ void sui_add_user(SuiBuffer *buf, SuiUser *user){
     sui_user_list_add_user(list, user);
     // FIXME
     // comp = sui_buffer_get_entry_completion(buf);
-    // srain_entry_completion_add_keyword(comp, nick, KEYWORD_NORMAL);
+    // sui_completion_add_keyword(comp, nick, KEYWORD_NORMAL);
 }
 
 void sui_rm_user(SuiBuffer *buf, SuiUser *user){
     SuiChatBuffer *chat_buf;
     SuiUserList *list;
-    SrainEntryCompletion *comp;
+    SuiCompletion *comp;
 
     g_return_if_fail(SUI_IS_CHAT_BUFFER(buf));
     g_return_if_fail(user);
@@ -254,7 +254,7 @@ void sui_rm_user(SuiBuffer *buf, SuiUser *user){
     sui_user_list_rm_user(list, user);
     // FIXME
     // comp = sui_buffer_get_entry_completion(SUI_BUFFER(buf));
-    // srain_entry_completion_rm_keyword(comp, nick);
+    // sui_completion_rm_keyword(comp, nick);
 }
 
 void sui_set_topic(SuiBuffer *buf, const char *topic){
@@ -285,19 +285,19 @@ void sui_message_append_message(SuiBuffer *buf, SuiMessage *smsg, const char *ms
 }
 
 void sui_add_completion(SuiBuffer *buf, const char *keyword){
-    SrainEntryCompletion *comp;
+    SuiCompletion *comp;
 
     g_return_if_fail(SUI_IS_BUFFER(buf));
     g_return_if_fail(keyword);
 
     // comp = sui_buffer_get_entry_completion(buffer);
 
-    // srain_entry_completion_add_keyword(comp, keyword, KEYWORD_NORMAL);
+    // sui_completion_add_keyword(comp, keyword, KEYWORD_NORMAL);
 }
 
 void sui_rm_completion(SuiBuffer *buf, const char *keyword){
     SuiBuffer *buffer;
-    SrainEntryCompletion *comp;
+    SuiCompletion *comp;
 
     g_return_if_fail(buf);
     g_return_if_fail(SUI_IS_BUFFER(buf));
@@ -306,7 +306,7 @@ void sui_rm_completion(SuiBuffer *buf, const char *keyword){
     buffer = buf;
     // FIXME
     // comp = sui_buffer_get_entry_completion(buffer);
-    // srain_entry_completion_rm_keyword(comp, keyword);
+    // sui_completion_rm_keyword(comp, keyword);
 }
 
 void sui_message_box(const char *title, const char *msg){
