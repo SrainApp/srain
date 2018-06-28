@@ -29,6 +29,7 @@
 #define SUI_BUFFER(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SUI_TYPE_BUFFER, SuiBuffer))
 #define SUI_IS_BUFFER(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), SUI_TYPE_BUFFER))
 #define SUI_BUFFER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), SUI_TYPE_BUFFER, SuiBufferClass))
+#define SUI_BUFFER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), SUI_TYPE_BUFFER, SuiBufferClass))
 
 typedef struct _SuiBuffer SuiBuffer;
 typedef struct _SuiBufferClass SuiBufferClass;
@@ -57,16 +58,23 @@ struct _SuiBuffer {
     SuiMessageList *msg_list;
 
     GtkTextBuffer *input_text_buffer;
+    SuiCompletion *completion;
 };
 
 struct _SuiBufferClass {
     GtkBoxClass parent_class;
+
+    // SuiBuffer and its child class should implement this functions for input
+    // completing.
+    GtkListStore* (*completion_func)(SuiBuffer *self, const char *context);
 };
 
 GType sui_buffer_get_type(void);
 
 void sui_buffer_insert_text(SuiBuffer *self, const char *text, int line, int offset);
 void sui_buffer_show_topic(SuiBuffer *self, bool show);
+void sui_buffer_complete(SuiBuffer *self);
+GtkTreeModel* sui_buffer_completion_func(const char *context, void *user_data);
 
 void* sui_buffer_get_ctx(SuiBuffer *self);
 SuiBufferEvents* sui_buffer_get_events(SuiBuffer *self);

@@ -41,6 +41,8 @@
 #include "i18n.h"
 #include "utils.h"
 
+static GtkListStore* real_completion_func(SuiBuffer *self, const char *context);
+
 static void sui_buffer_set_ctx(SuiBuffer *self, void *ctx);
 static void sui_buffer_set_events(SuiBuffer *self, SuiBufferEvents *events);
 
@@ -133,6 +135,9 @@ static void sui_buffer_init(SuiBuffer *self){
             TRUE, TRUE, 0);
     gtk_widget_show(GTK_WIDGET(self->msg_list));
 
+    /* Setup completion */
+    self->completion = sui_completion_new(self->input_text_buffer);
+
     g_signal_connect(self->topic_label, "activate-link",
             G_CALLBACK(activate_link), self);
     g_signal_connect(self->topic_menu_item, "toggled",
@@ -213,6 +218,8 @@ static void sui_buffer_class_init(SuiBufferClass *class){
     gtk_widget_class_bind_template_child(widget_class, SuiBuffer, user_list_revealer);
     gtk_widget_class_bind_template_child(widget_class, SuiBuffer, msg_list_box);
     gtk_widget_class_bind_template_child(widget_class, SuiBuffer, input_text_buffer);
+
+    class->completion_func = real_completion_func;
 }
 
 
@@ -251,6 +258,28 @@ void sui_buffer_show_topic(SuiBuffer *self, bool isshow){
     g_return_if_fail(SUI_IS_BUFFER(self));
 
     gtk_check_menu_item_set_active(self->topic_menu_item, isshow);
+}
+
+/**
+ * @brief sui_buffer_complete completes the contents of the input text
+ * buffer of SuiBuffer
+ *
+ * @param self
+ */
+void sui_buffer_complete(SuiBuffer *self){
+    sui_completion_complete(self->completion, sui_buffer_completion_func, self);
+}
+
+GtkTreeModel* sui_buffer_completion_func(const char *context, void *user_data) {
+    SuiBuffer *self;
+    SuiBufferClass *class;
+
+    self = user_data;
+    g_return_val_if_fail(SUI_IS_BUFFER(self), NULL);
+    class = SUI_BUFFER_GET_CLASS(self);
+    g_return_val_if_fail(class->completion_func, NULL);
+
+    return GTK_TREE_MODEL(class->completion_func(self, context));
 }
 
 const char* sui_buffer_get_name(SuiBuffer *self){
@@ -351,4 +380,11 @@ static void topic_menu_item_on_toggled(GtkWidget* widget, gpointer user_data){
     } else {
         gtk_widget_hide(GTK_WIDGET(self->topic_label));
     }
+}
+
+static GtkListStore* real_completion_func(SuiBuffer *self, const char *context){
+    return gtk_list_store_new(SUI_COMPLETION_N_COLUMNS,
+            G_TYPE_STRING,
+            G_TYPE_STRING,
+            G_TYPE_STRING);
 }
