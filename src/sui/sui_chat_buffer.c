@@ -136,8 +136,53 @@ static void sui_chat_buffer_finalize(GObject *object){
     G_OBJECT_CLASS(sui_chat_buffer_parent_class)->finalize(object);
 }
 
+static GtkListStore* sui_chat_buffer_completion_func(SuiBuffer *_self,
+        const char *context){
+    const char *prev;
+    const char *prefix;
+    GSList *users;
+    GtkListStore *store;
+    SuiChatBuffer *self;
+
+    self = SUI_CHAT_BUFFER(_self);
+    store = SUI_BUFFER_CLASS(sui_chat_buffer_parent_class)->completion_func(_self, context);
+
+    prev = context + strlen(context);
+    do {
+        prefix = prev;
+        prev = g_utf8_find_prev_char(context, prefix);
+        if (!prev) {
+            break;
+        }
+    } while (!g_unichar_isspace(g_utf8_get_char(prev)));
+
+    DBG_FR("Get prefix: '%s'", prefix);
+
+    if (strlen(prefix) < 3) {
+        DBG_FR("Prefix too short");
+        return store;
+    }
+
+    users = sui_user_list_get_users_by_prefix(self->user_list, prefix);
+    for (GSList *lst = users; lst; lst = g_slist_next(lst)){
+        SuiUser *user;
+        GtkTreeIter iter;
+
+        user = lst->data;
+        gtk_list_store_append(store, &iter);
+        gtk_list_store_set(store, &iter,
+                SUI_COMPLETION_COLUMN_PREFIX, prefix,
+                SUI_COMPLETION_COLUMN_SUFFIX, sui_user_get_nickname(user) + strlen(prefix),
+                -1);
+    }
+    g_slist_free_full(users, (GDestroyNotify)sui_user_free);
+
+    return store;
+}
+
 static void sui_chat_buffer_class_init(SuiChatBufferClass *class){
     GObjectClass *object_class;
+    SuiBufferClass *buffer_class;
 
     object_class = G_OBJECT_CLASS(class);
 
@@ -157,6 +202,10 @@ static void sui_chat_buffer_class_init(SuiChatBufferClass *class){
     g_object_class_install_properties(object_class,
             N_PROPERTIES,
             obj_properties);
+
+    buffer_class = SUI_BUFFER_CLASS(class);
+
+    buffer_class->completion_func = sui_chat_buffer_completion_func;
 }
 
 /*****************************************************************************

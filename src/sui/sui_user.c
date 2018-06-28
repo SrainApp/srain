@@ -161,6 +161,10 @@ void* sui_user_get_ctx(SuiUser *self){
     return self->ctx;
 }
 
+const char* sui_user_get_nickname(SuiUser *self){
+    return self->ctx->srv_user->nick;
+}
+
 /*****************************************************************************
  * Static functions
  *****************************************************************************/

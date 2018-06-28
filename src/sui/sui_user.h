@@ -41,5 +41,6 @@ int sui_user_compare(SuiUser *user1, SuiUser *user2);
 void sui_user_set_list(SuiUser *self, GtkListStore *list);
 void sui_user_set_stat(SuiUser *self, SuiUserStat *stat);
 void* sui_user_get_ctx(SuiUser *self);
+const char* sui_user_get_nickname(SuiUser *self);
 
 #endif /* __SUI_USER_H */

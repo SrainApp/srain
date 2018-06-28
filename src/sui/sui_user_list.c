@@ -123,6 +123,31 @@ void sui_user_list_clear(SuiUserList *self){
     memset(&self->user_stat, 0, sizeof(self->user_stat));
 }
 
+GSList* sui_user_list_get_users_by_prefix(SuiUserList *self, const char *prefix){
+    GSList *users;
+    GtkTreeModel *model;
+    GtkTreeIter iter;
+
+    model = GTK_TREE_MODEL(self->user_list_store);
+    if (!gtk_tree_model_get_iter_first(model, &iter)){
+        return NULL;
+    }
+
+    users = NULL;
+    do {
+        SuiUser *user;
+
+        user = sui_user_new_from_iter(GTK_LIST_STORE(model), &iter);
+        if (g_str_has_prefix(sui_user_get_nickname(user), prefix)){
+            users = g_slist_append(users, user);
+        } else {
+            sui_user_free(user);
+        }
+    } while (gtk_tree_model_iter_next(model, &iter));
+
+    return users;
+}
+
 /*****************************************************************************
  * Static functions
  *****************************************************************************/
@@ -176,7 +201,7 @@ static int user_list_store_sort_func(GtkTreeModel *model,
     SuiUser *user2;
 
     user1 = sui_user_new_from_iter(GTK_LIST_STORE(model), iter1);
-    user2 = sui_user_new_from_iter(GTK_LIST_STORE(model),iter2);
+    user2 = sui_user_new_from_iter(GTK_LIST_STORE(model), iter2);
 
     ret = sui_user_compare(user1, user2);
 
