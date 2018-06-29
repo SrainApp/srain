@@ -670,6 +670,17 @@ static gboolean input_text_view_on_key_press(GtkTextView *text_view,
     SuiWindow *self;
 
     self = SUI_WINDOW(user_data);
+
+    if (event->keyval == GDK_KEY_Tab){
+        SuiBuffer *buf;
+
+        buf = sui_window_get_cur_buffer(self);
+        g_return_val_if_fail(buf, FALSE);
+
+        sui_buffer_complete(buf);
+
+        return TRUE;
+    }
     if (event->keyval != GDK_KEY_Return){
         return FALSE;
     }
