@@ -36,6 +36,7 @@
 #include "sui_event_hdr.h"
 #include "theme.h"
 #include "sui_buffer.h"
+#include "sui_recv_message.h"
 
 #include "log.h"
 #include "i18n.h"
@@ -383,8 +384,50 @@ static void topic_menu_item_on_toggled(GtkWidget* widget, gpointer user_data){
 }
 
 static GtkListStore* real_completion_func(SuiBuffer *self, const char *context){
-    return gtk_list_store_new(SUI_COMPLETION_N_COLUMNS,
+    const char *prev;
+    const char *prefix;
+    GSList *msgs;
+    GtkListStore *store;
+
+    store = gtk_list_store_new(SUI_COMPLETION_N_COLUMNS,
             G_TYPE_STRING,
             G_TYPE_STRING,
             G_TYPE_STRING);
+
+    /* Get longest valid prefix */
+    prev = context + strlen(context);
+    do {
+        prefix = prev;
+        prev = g_utf8_find_prev_char(context, prefix);
+        if (!prev) {
+            break;
+        }
+    } while (!g_unichar_isspace(g_utf8_get_char(prev)));
+
+    if (!prefix) {
+        prefix = "";
+    }
+
+    msgs = sui_message_list_get_recent_messages(self->msg_list, 10);
+    for (GSList *lst = msgs; lst; lst = g_slist_next(lst)){
+        const char *user;
+        GtkTreeIter iter;
+        SuiRecvMessage *rmsg;
+
+        if (!SUI_IS_RECV_MESSAGE(lst->data)){
+            continue;
+        }
+        rmsg = SUI_RECV_MESSAGE(lst->data);
+        user = gtk_label_get_text(rmsg->user_name_label);
+        if (g_str_has_prefix(user, prefix)){
+            gtk_list_store_append(store, &iter);
+            gtk_list_store_set(store, &iter,
+                    SUI_COMPLETION_COLUMN_PREFIX, prefix,
+                    SUI_COMPLETION_COLUMN_SUFFIX, user + strlen(prefix),
+                    -1);
+        }
+    }
+    g_slist_free(msgs);
+
+    return store;
 }

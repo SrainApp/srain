@@ -135,9 +135,9 @@ void sui_message_list_append_message(SuiMessageList *self, SuiMessage *msg,
     self->last_msg = msg;
 
     box = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0));
-     gtk_box_pack_start(box, GTK_WIDGET(msg), TRUE, TRUE, 0);
-     gtk_widget_set_halign(GTK_WIDGET(msg), halign);
-     gtk_list_box_add_unfocusable_row(self->list_box, GTK_WIDGET(box));
+    gtk_box_pack_start(box, GTK_WIDGET(msg), TRUE, TRUE, 0);
+    gtk_widget_set_halign(GTK_WIDGET(msg), halign);
+    gtk_list_box_add_unfocusable_row(self->list_box, GTK_WIDGET(box));
 
     smart_scroll(self);
 }
@@ -164,6 +164,39 @@ void sui_message_list_prepend_message(SuiMessageList *self, SuiMessage *msg,
 void sui_message_list_add_message(SuiMessageList *self, SuiMessage *msg,
         GtkAlign halign){
     sui_message_list_append_message(self, msg, halign);
+}
+
+GSList *sui_message_list_get_recent_messages(SuiMessageList *self, int limit){
+    GList *rows;
+    GList *lst;
+    GSList *msgs;
+
+    rows = gtk_container_get_children(GTK_CONTAINER(self->list_box));
+    lst = g_list_last(rows);
+    msgs = NULL;
+
+    while (lst && limit){
+        GtkListBoxRow *row;
+        SuiMessage *msg;
+        GtkBox *box;
+        GList *box_child;
+
+        row = GTK_LIST_BOX_ROW(lst->data);
+        box = GTK_BOX(gtk_bin_get_child(GTK_BIN(row)));
+        box_child = gtk_container_get_children(GTK_CONTAINER(box));
+        g_return_val_if_fail(box_child, NULL);
+
+        msg = SUI_MESSAGE(box_child->data);
+        msgs = g_slist_append(msgs, msg);
+
+        g_list_free(box_child);
+
+        lst = g_list_previous(lst);
+        limit--;
+    }
+    g_list_free(rows);
+
+    return msgs;
 }
 
 /*****************************************************************************
