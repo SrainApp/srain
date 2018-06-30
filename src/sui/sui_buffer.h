@@ -59,6 +59,9 @@ struct _SuiBuffer {
 
     GtkTextBuffer *input_text_buffer;
     SuiCompletion *completion;
+    GList *input_history;
+    GList *input_history_iter;
+    GList *input_stage;
 };
 
 struct _SuiBufferClass {
@@ -76,6 +79,8 @@ void sui_buffer_show_topic(SuiBuffer *self, bool show);
 void sui_buffer_complete(SuiBuffer *self);
 GtkTreeModel* sui_buffer_completion_func(const char *context, void *user_data);
 bool sui_buffer_send_input(SuiBuffer *self);
+void sui_buffer_browse_prev_input(SuiBuffer *self);
+void sui_buffer_browse_next_input(SuiBuffer *self);
 
 void* sui_buffer_get_ctx(SuiBuffer *self);
 SuiBufferEvents* sui_buffer_get_events(SuiBuffer *self);

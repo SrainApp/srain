@@ -43,6 +43,9 @@
 #include "utils.h"
 
 static GtkListStore* real_completion_func(SuiBuffer *self, const char *context);
+static void push_input_history(SuiBuffer *self, char *msg);
+static void start_browse_input(SuiBuffer *self);
+static void reset_browse_input(SuiBuffer *self);
 
 static void sui_buffer_set_ctx(SuiBuffer *self, void *ctx);
 static void sui_buffer_set_events(SuiBuffer *self, SuiBufferEvents *events);
@@ -333,10 +336,54 @@ bool sui_buffer_send_input(SuiBuffer *self){
         return FALSE;
     }
 
+    // Push history, ownership of line transfered into it
+    push_input_history(self, line);
     // Delete the sent line from text buffer
     gtk_text_buffer_delete(buf, &start, &end);
 
     return TRUE;
+}
+
+void sui_buffer_browse_prev_input(SuiBuffer *self){
+    if (!self->input_history_iter){
+        DBG_FR("No input history");
+        return; // No history to browse
+    }
+
+    if (!self->input_stage) { // Start browsing history
+        start_browse_input(self);
+    } else {
+        if (!g_list_previous(self->input_history_iter)){
+            DBG_FR("No previous input history");
+            return;
+        }
+        // Browse previous history
+        self->input_history_iter = g_list_previous(self->input_history_iter);
+    }
+
+    /* Whether last input history available? */
+    gtk_text_buffer_set_text(self->input_text_buffer,
+            self->input_history_iter->data, -1);
+}
+
+void sui_buffer_browse_next_input(SuiBuffer *self){
+    if (!self->input_stage) {
+        DBG_FR("Not in browsing history");
+        return;
+    }
+    g_return_if_fail(self->input_history_iter);
+
+    if (!g_list_next(self->input_history_iter)){
+        // Reached the newest history(a.k.a stage), end browsing
+        DBG_FR("No next input history");
+        reset_browse_input(self);
+        return;
+    }
+    // Browse next history
+    self->input_history_iter = g_list_next(self->input_history_iter);
+
+    gtk_text_buffer_set_text(self->input_text_buffer,
+            self->input_history_iter->data, -1);
 }
 
 const char* sui_buffer_get_name(SuiBuffer *self){
@@ -486,4 +533,46 @@ static GtkListStore* real_completion_func(SuiBuffer *self, const char *context){
     g_slist_free(msgs);
 
     return store;
+}
+
+static void push_input_history(SuiBuffer *self, char *msg){
+    DBG_FR("Push input history");
+
+    self->input_history = g_list_append(self->input_history, msg);
+    if (g_list_length(self->input_history) > 10){
+        GList *head;
+
+        head = g_list_first(self->input_history);
+        g_free(head->data);
+        self->input_history = g_list_delete_link(self->input_history, head);
+    }
+
+    reset_browse_input(self);
+}
+
+static void start_browse_input(SuiBuffer *self){
+    char *stage;
+    GtkTextIter start;
+    GtkTextIter end;
+
+    DBG_FR("Start browsing input history");
+
+    /* Save current input text to input stage */
+    gtk_text_buffer_get_start_iter(self->input_text_buffer, &start);
+    gtk_text_buffer_get_end_iter(self->input_text_buffer, &end);
+    stage = gtk_text_buffer_get_text(self->input_text_buffer, &start, &end, FALSE);
+
+    self->input_history = g_list_append(self->input_history, stage);
+    self->input_stage = g_list_last(self->input_history);
+}
+
+static void reset_browse_input(SuiBuffer *self){
+    DBG_FR("Reset browsing input history");
+
+    if (self->input_stage) {
+        g_free(self->input_stage->data);
+        self->input_history = g_list_delete_link(self->input_history, self->input_stage);
+        self->input_stage = NULL;
+    }
+    self->input_history_iter = g_list_last(self->input_history);
 }

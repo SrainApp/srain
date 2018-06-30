@@ -671,25 +671,69 @@ static gboolean input_text_view_on_key_press(GtkTextView *text_view,
 
     self = SUI_WINDOW(user_data);
 
-    if (event->keyval == GDK_KEY_Tab){
-        SuiBuffer *buf;
+    switch (event->keyval) {
+        case GDK_KEY_Tab:
+            {
+                SuiBuffer *buf;
 
-        buf = sui_window_get_cur_buffer(self);
-        g_return_val_if_fail(buf, FALSE);
+                if (!gtk_text_view_get_editable(self->input_text_view)){
+                    return FALSE;
+                }
 
-        sui_buffer_complete(buf);
+                buf = sui_window_get_cur_buffer(self);
+                g_return_val_if_fail(buf, FALSE);
+                sui_buffer_complete(buf);
+                break;
+            }
+        case GDK_KEY_Return:
+            {
+                if ((self->cfg->send_on_ctrl_enter)
+                        ^ (event->state & GDK_CONTROL_MASK )){
+                    // TODO: filter SHIFT, ALT and META?
+                    return FALSE;
+                }
+                gtk_button_clicked(self->send_button);
+                break;
+            }
+        case GDK_KEY_Up:
+        case GDK_KEY_Down:
+            {
+                int cursor_pos;
+                int nline;
+                int cursor_line;
+                GtkTextBuffer *text_buf;
+                GtkTextIter cursor;
+                SuiBuffer *buf;
 
-        return TRUE;
+                if (!gtk_text_view_get_editable(self->input_text_view)){
+                    return FALSE;
+                }
+
+                buf = sui_window_get_cur_buffer(self);
+                g_return_val_if_fail(buf, FALSE);
+                text_buf = gtk_text_view_get_buffer(self->input_text_view);
+
+                g_object_get(text_buf, "cursor-position", &cursor_pos, NULL);
+                gtk_text_buffer_get_iter_at_offset(text_buf, &cursor, cursor_pos);
+                cursor_line = gtk_text_iter_get_line(&cursor);
+                nline = gtk_text_buffer_get_line_count(text_buf);
+
+                if (event->keyval == GDK_KEY_Up){
+                    if (cursor_line != 0) {
+                        return FALSE;
+                    }
+                    sui_buffer_browse_prev_input(buf);
+                } else {
+                    if (cursor_line != nline - 1) {
+                        return FALSE;
+                    }
+                    sui_buffer_browse_next_input(buf);
+                }
+            }
+            break;
+        default:
+            return FALSE;
     }
-    if (event->keyval != GDK_KEY_Return){
-        return FALSE;
-    }
-    if ((self->cfg->send_on_ctrl_enter) ^ (event->state & GDK_CONTROL_MASK )){
-        // TODO: filter SHIFT, ALT and META?
-        return FALSE;
-    }
-
-    gtk_button_clicked(self->send_button);
 
     return TRUE;
 }
