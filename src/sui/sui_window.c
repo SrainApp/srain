@@ -736,6 +736,12 @@ static void buffer_stack_on_child_changed(GtkWidget *widget, GParamSpec *pspec,
     SuiBuffer *buf;
 
     self = user_data;
+
+    // Cancel sending message when current buffer is replaced
+    if (self->send_timer){
+        send_message_cancel(self);
+    }
+
     buf = sui_window_get_cur_buffer(self);
     if (!SUI_IS_BUFFER(buf)){
         return;
