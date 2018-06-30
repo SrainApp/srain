@@ -283,6 +283,62 @@ GtkTreeModel* sui_buffer_completion_func(const char *context, void *user_data) {
     return GTK_TREE_MODEL(class->completion_func(self, context));
 }
 
+/**
+ * @brief sui_buffer_send_input Send a single line of input message via
+ * SuiBufferEvent
+ *
+ * @param self
+ *
+ * @return TRUE if send successfully
+ */
+bool sui_buffer_send_input(SuiBuffer *self){
+    int nline;
+    char *line;
+    GVariantDict *params;
+    GtkTextBuffer *buf;
+    GtkTextIter start;
+    GtkTextIter end;
+    SrnRet ret;
+
+    buf = self->input_text_buffer;
+
+    nline = gtk_text_buffer_get_line_count(buf);
+    gtk_text_buffer_get_iter_at_line(buf, &start, 0);
+    gtk_text_buffer_get_iter_at_line(buf, &end, 1);
+    line = gtk_text_buffer_get_text(buf, &start, &end, FALSE);
+
+    if (g_str_has_suffix(line, "\n")){
+        line[strlen(line)-1] = '\0'; // Remove the trailing newline
+    }
+    if (strlen(line) == 0){
+        g_free(line);
+
+        if (nline <= 1){
+            // Text buffer is empty
+            return FALSE;
+        } else {
+            // Only a newline, skip it
+            gtk_text_buffer_delete(buf, &start, &end);
+            return TRUE;
+        }
+    }
+
+    params = g_variant_dict_new(NULL);
+    g_variant_dict_insert(params, "message", SUI_EVENT_PARAM_STRING, line);
+    ret = sui_buffer_event_hdr(self, SUI_EVENT_SEND, params);
+    g_variant_dict_unref(params);
+
+    if (!RET_IS_OK(ret)){
+        g_free(line);
+        return FALSE;
+    }
+
+    // Delete the sent line from text buffer
+    gtk_text_buffer_delete(buf, &start, &end);
+
+    return TRUE;
+}
+
 const char* sui_buffer_get_name(SuiBuffer *self){
     g_return_val_if_fail(SUI_IS_BUFFER(self), NULL);
 

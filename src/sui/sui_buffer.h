@@ -75,6 +75,7 @@ void sui_buffer_insert_text(SuiBuffer *self, const char *text, int line, int off
 void sui_buffer_show_topic(SuiBuffer *self, bool show);
 void sui_buffer_complete(SuiBuffer *self);
 GtkTreeModel* sui_buffer_completion_func(const char *context, void *user_data);
+bool sui_buffer_send_input(SuiBuffer *self);
 
 void* sui_buffer_get_ctx(SuiBuffer *self);
 SuiBufferEvents* sui_buffer_get_events(SuiBuffer *self);

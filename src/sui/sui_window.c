@@ -707,50 +707,18 @@ static void send_button_on_clicked(GtkWidget *widget, gpointer user_data){
 }
 
 static gboolean send_message_timeout(gpointer user_data){
-    int nline;
-    char *line;
-    GVariantDict *params;
-    GtkTextIter start;
-    GtkTextIter end;
-    GtkTextBuffer *text_buffer;
-    SrnRet ret;
     SuiWindow *self;
     SuiBuffer *buf;
 
     self = SUI_WINDOW(user_data);
     buf = sui_window_get_cur_buffer(self);
-    if (!SUI_IS_BUFFER(buf)) {
-        goto FIN;
+
+    if (!sui_buffer_send_input(buf)){
+        send_message_cancel(self);
+        return G_SOURCE_REMOVE;
     }
-    text_buffer = gtk_text_view_get_buffer(self->input_text_view);
-
-    nline = gtk_text_buffer_get_line_count(text_buffer);
-    gtk_text_buffer_get_iter_at_line(text_buffer, &start, 0);
-    gtk_text_buffer_get_iter_at_line(text_buffer, &end, 1);
-    line = gtk_text_buffer_get_text(text_buffer, &start, &end, FALSE);
-    if (strlen(line) == 0 && nline == 1){ // Text buffer is empty
-        g_free(line);
-        goto FIN;
-    }
-
-    params = g_variant_dict_new(NULL);
-    g_variant_dict_insert(params, "message", SUI_EVENT_PARAM_STRING, line);
-    ret = sui_buffer_event_hdr(buf, SUI_EVENT_SEND, params);
-    g_variant_dict_unref(params);
-    g_free(line);
-
-    if (!RET_IS_OK(ret)){
-        goto FIN;
-    }
-
-    // Delete the sent line
-    gtk_text_buffer_delete(text_buffer, &start, &end);
 
     return G_SOURCE_CONTINUE;
-
-FIN:
-    send_message_cancel(self);
-    return G_SOURCE_REMOVE;
 }
 
 static void window_stack_on_child_changed(GtkWidget *widget, GParamSpec *pspec,
