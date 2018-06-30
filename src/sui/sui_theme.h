@@ -16,12 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __THEME_H
-#define __THEME_H
+#ifndef __SUI_THEME_H
+#define __SUI_THEME_H
 
-#include <gtk/gtk.h>
+#include "ret.h"
 
-int theme_load(const char *theme);
-void theme_apply(GtkWidget *widget);
+typedef struct _SuiThemeManager SuiThemeManager;
 
-#endif /* __THEME_H */
+SuiThemeManager* sui_theme_manager_new();
+void sui_theme_manager_free(SuiThemeManager *self);
+SrnRet sui_theme_manager_apply(SuiThemeManager *self, const char *theme);
+
+#endif /* __SUI_THEME_H */

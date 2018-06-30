@@ -34,7 +34,6 @@
 
 #include "sui_common.h"
 #include "sui_event_hdr.h"
-#include "theme.h"
 #include "sui_buffer.h"
 #include "sui_recv_message.h"
 

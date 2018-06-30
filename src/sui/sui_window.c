@@ -36,7 +36,6 @@
 
 #include "sui_common.h"
 #include "sui_event_hdr.h"
-#include "theme.h"
 #include "tray_icon.h"
 #include "sui_window.h"
 #include "sui_connect_panel.h"
@@ -218,9 +217,6 @@ static void sui_window_init(SuiWindow *self){
 
     /* Popover init */
     self->connect_panel = g_object_ref(sui_connect_panel_new());
-
-    theme_apply(GTK_WIDGET(self));
-    theme_apply(GTK_WIDGET(self->tray_menu));
 
     tray_icon_set_callback(self->tray_icon, self, self->tray_menu);
 
@@ -409,8 +405,6 @@ void sui_window_add_buffer(SuiWindow *self, SuiBuffer *buf){
             sui_buffer_get_name(buf));
     gtk_stack_add_named(self->buffer_stack, GTK_WIDGET(buf), gstr->str);
     g_string_free(gstr, TRUE);
-
-    theme_apply(GTK_WIDGET(self));
 
     gtk_stack_set_visible_child(self->buffer_stack, GTK_WIDGET(buf));
 }

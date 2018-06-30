@@ -31,7 +31,7 @@
 #include "log.h"
 #include "i18n.h"
 
-#include "theme.h"
+#include "sui_theme.h"
 #include "sui_common.h"
 #include "sui_event_hdr.h"
 #include "sui_app.h"
@@ -42,6 +42,7 @@ struct _SuiApplication {
 
     SuiApplicationEvents *events;
     SuiApplicationConfig *cfg;
+    SuiThemeManager *theme;
     void *ctx;
 };
 
@@ -85,8 +86,6 @@ static int on_handle_local_options(SuiApplication *self, GVariantDict *options,
         gpointer user_data);
 static int on_command_line(SuiApplication *self,
         GApplicationCommandLine *cmdline, gpointer user_data);
-static void on_notify_prefer_dark_theme(GObject *object, GParamSpec *pspec,
-        gpointer data);
 
 /*****************************************************************************
  * GObject functions
@@ -148,6 +147,8 @@ static void sui_application_get_property(GObject *object, guint property_id,
 }
 
 static void sui_application_init(SuiApplication *self){
+    self->theme = sui_theme_manager_new();
+
     g_application_add_main_option_entries(G_APPLICATION(self), option_entries);
 
     g_signal_connect(self, "startup", G_CALLBACK(on_startup), NULL);
@@ -162,12 +163,23 @@ static void sui_application_constructed(GObject *object){
     G_OBJECT_CLASS(sui_application_parent_class)->constructed(object);
 }
 
+static void sui_application_finalize(GObject *object){
+    SuiApplication *self;
+
+    self = SUI_APPLICATION(object);
+
+    sui_theme_manager_free(self->theme);
+
+    G_OBJECT_CLASS(sui_application_parent_class)->finalize(object);
+}
+
 static void sui_application_class_init(SuiApplicationClass *class){
     GObjectClass *object_class;
 
     /* Overwrite callbacks */
     object_class = G_OBJECT_CLASS(class);
     object_class->constructed = sui_application_constructed;
+    object_class->finalize = sui_application_finalize;
     object_class->set_property = sui_application_set_property;
     object_class->get_property = sui_application_get_property;
 
@@ -216,15 +228,6 @@ SuiApplication* sui_application_new(const char *id, void *ctx,
 
 void sui_application_run(SuiApplication *self, int argc, char *argv[]){
     g_return_if_fail(SUI_IS_APPLICATION(self));
-
-    if (theme_load(self->cfg->theme) == SRN_ERR){
-        char *errmsg;
-
-        errmsg = g_strdup_printf(_("Failed to load theme \"%1$s\""),
-                self->cfg->theme);
-        sui_message_box(_("Error"), errmsg);
-        g_free(errmsg);
-    }
 
     g_application_run(G_APPLICATION(self), argc, argv);
 }
@@ -312,11 +315,12 @@ static void sui_application_set_events(SuiApplication *self,
 }
 
 static void on_startup(SuiApplication *self){
-    GtkSettings *settings;
+    SrnRet ret;
 
-    settings = gtk_settings_get_default();
-    g_signal_connect(settings, "notify::gtk-application-prefer-dark-theme",
-            G_CALLBACK(on_notify_prefer_dark_theme), self);
+    ret = sui_theme_manager_apply(self->theme, self->cfg->theme);
+    if (!RET_IS_OK(ret)){
+        sui_message_box(_("Error"), RET_MSG(ret));
+    }
 }
 
 static void on_activate(SuiApplication *self){
@@ -368,9 +372,4 @@ static int on_command_line(SuiApplication *self,
     }
 
     return 0;
-}
-
-static void on_notify_prefer_dark_theme(GObject *object, GParamSpec *pspec,
-        gpointer data) {
-    // Update theme blahblah
 }

@@ -33,7 +33,7 @@
 
 #include "sui_event_hdr.h"
 #include "sui_common.h"
-#include "theme.h"
+#include "sui_theme.h"
 #include "sui_app.h"
 #include "sui_chat_buffer.h"
 #include "sui_url_previewer.h"
@@ -140,7 +140,7 @@ GtkListBoxRow* gtk_list_box_add_unfocusable_row(GtkListBox *listbox, GtkWidget *
     gtk_widget_show(GTK_WIDGET(row));
     gtk_widget_show(widget);
 
-    theme_apply(GTK_WIDGET(row));
+    // theme_apply(GTK_WIDGET(row));
 
     return row;
 }
