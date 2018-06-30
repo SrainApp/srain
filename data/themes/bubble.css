@@ -1,0 +1,157 @@
+/**
+* @file bubble.css
+* @brief Style for message bubble.
+* @author Shengyu Zhang <i@silverrainz.me>
+* @version 1.0
+* @date 2018-05-01
+*/
+
+/* Message {{{1 */
+
+.sui-message .sui-message-box {
+    box-shadow: @sui_message_shadow_color 2px 2px;
+}
+
+.sui-message-head .sui-message-box {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    margin-top: 4px;
+}
+
+.sui-message-tail .sui-message-box {
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    margin-bottom: 4px;
+}
+
+.sui-message .sui-message-label {
+    color: @sui_message_text_color;
+}
+
+/* Misc Message {{{1 */
+
+.sui-misc-message .sui-message-box {
+    box-shadow: 0px 0px;
+}
+
+.sui-misc-message .sui-message-box,
+.sui-misc-message-normal .sui-message-box{
+    background-color: @sui_misc_message_normal_bg_color;
+}
+
+.sui-misc-message-error .sui-message-box{
+    background-color: @sui_misc_message_error_bg_color;
+}
+
+.sui-misc-message-action .sui-message-box {
+    background-color: @sui_misc_message_action_bg_color;
+}
+
+.sui-misc-message-action.highlighted .sui-message-box {
+    background-color: @sui_highlighted_misc_message_action_bg_color;
+}
+
+.sui-misc-message .sui-message-box {
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+.sui-misc-message.sui-message-head .sui-message-box {
+    padding-top: 4px;
+}
+
+.sui-misc-message.sui-message-tail .sui-message-box {
+    padding-bottom: 4px;
+}
+
+.sui-misc-message .sui-message-label,
+.sui-misc-message .sui-message-label link,
+.sui-misc-message .sui-message-label link:visited {
+    color: @sui_misc_message_text_color;
+}
+
+/* Send/Recv Message {{{1 */
+
+.sui-send-message .sui-message-box,
+.sui-recv-message .sui-message-box{
+    background-color: @sui_message_bg_color;
+}
+
+.sui-send-message.highlighted .sui-message-box,
+.sui-recv-message.highlighted .sui-message-box{
+    background-color: @sui_highlighted_message_bg_color;
+}
+
+.sui-send-message .sui-message-box,
+.sui-recv-message .sui-message-box {
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+.sui-send-message.sui-message-head .sui-message-box,
+.sui-recv-message.sui-message-head .sui-message-box {
+    padding-top: 6px;
+}
+
+.sui-send-message.sui-message-tail .sui-message-box,
+.sui-recv-message.sui-message-tail .sui-message-box {
+    padding-right: 4px;
+    padding-bottom: 2px;
+}
+
+.sui-send-message.sui-message-tail .sui-message-label,
+.sui-recv-message.sui-message-tail .sui-message-label {
+    padding-bottom: 2px;
+}
+
+.sui-send-message .sui-message-time-label,
+.sui-recv-message .sui-message-time-label {
+    opacity: 0.5;
+    font-size: smaller;
+    margin-left: 4px;
+}
+
+.sui-send-message .sui-message-label {
+    /*    
+    margin-bottom: 4px;
+     */
+}
+
+.sui-recv-message .sui-message-label {
+    /* 
+    margin-top: 4px;    
+    margin-bottom: 4px;    
+    */
+}
+
+.sui-recv-message .sui-user-box{
+    margin-bottom: 4px;
+}
+
+/* Message list {{{1 */
+
+.sui-message-list row {
+    padding: 0px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    padding-left: 10px;
+    padding-right: 10px;
+ }
+
+.sui-message-list row:hover {
+    background-color: transparent;
+}
+
+.sui-message-list list,
+.sui-message-list GtkListBox { /* For GTK early than 3.22 */
+    background-color: transparent;
+}
+
+.sui-message-list {
+    background-image: -gtk-gradient(linear,
+    left top, right bottom,
+    from(@sui_message_list_bg_color1),
+    to(@sui_message_list_bg_color2 ));
+}
+
+/* vim: se fdm=marker: */

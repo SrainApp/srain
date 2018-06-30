@@ -1,0 +1,20 @@
+@define-color sui_message_list_bg_color1 @bg_color;
+@define-color sui_message_list_bg_color2 @bg_color;
+
+@define-color sui_message_text_color @text_color;
+@define-color sui_message_bg_color darker(@bg_color);
+@define-color sui_highlighted_message_bg_color darker(@sui_message_bg_color);
+@define-color sui_message_shadow_color transparent;
+
+@define-color sui_misc_message_text_color @text_color;
+@define-color sui_misc_message_normal_bg_color alpha(darker(@bg_color), 0.7);
+@define-color sui_misc_message_error_bg_color alpha(#e05868, 0.7);
+@define-color sui_misc_message_action_bg_color alpha(#82abe5, 0.7);
+@define-color sui_highlighted_misc_message_action_bg_color alpha(#82abe5, 1);
+
+@define-color sui_message_counter_text_color alpha(@text_color, 0.7);
+@define-color sui_message_counter_bg_color darker(darker(@bg_color));
+@define-color sui_highlighted_message_counter_bg_color alpha(#e05868, 0.7);
+
+@import url("./default-min.css");
+@import url("bubble.css");

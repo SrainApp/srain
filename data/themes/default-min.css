@@ -1,0 +1,53 @@
+/**
+ * @file app-min.css
+ * @brief Application minimal style, GTK+ >= 3.19 required
+ * @author Shengyu Zhang <i@silverrainz.me>
+ * @version 0.06.2
+ * @date 2016-05-24
+ */
+
+/* Side bar {{{1 */
+.sui-side-bar-item > * {
+    margin-bottom: 6px
+}
+
+.sui-side-bar-item > *:last-child {
+    margin-bottom: 0px
+}
+
+.sui-side-bar-item > * > *{
+    margin-left: 6px
+}
+
+.sui-side-bar-item > * > *:last-child {
+    margin-left: 0px
+}
+
+.sui-side-bar-item {
+    padding: 10px;
+}
+
+.sui-message-count-label {
+    color: @sui_message_counter_text_color;
+    background-color: @sui_message_counter_bg_color;
+    font-weight: bold;
+    font-size: 0.8em;
+    border-radius: 10px;
+    min-width: 10px;
+    padding: 2px 5px 1px;
+}
+
+.sui-message-count-label.highlighted {
+    background-color: @sui_highlighted_message_counter_bg_color;
+}
+
+/* Buffer {{{1 */
+.sui-title {}
+
+.sui-subtitle {
+    opacity: 0.5
+}
+
+.sui-buffer-topic {
+    margin: 6px;
+}
