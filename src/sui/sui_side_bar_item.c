@@ -139,7 +139,7 @@ void sui_side_bar_item_inc_count(SuiSideBarItem *self){
     g_free(buf);
 
     ctx = gtk_widget_get_style_context(GTK_WIDGET(self->unread_count_label));
-    gtk_style_context_add_class(ctx, "message-count-label");
+    gtk_style_context_add_class(ctx, "sui-message-count-label");
 }
 
 void sui_side_bar_item_clear_count(SuiSideBarItem *self){
@@ -148,7 +148,7 @@ void sui_side_bar_item_clear_count(SuiSideBarItem *self){
     gtk_label_set_text(self->unread_count_label, "");
 
     ctx = gtk_widget_get_style_context(GTK_WIDGET(self->unread_count_label));
-    gtk_style_context_remove_class(ctx, "message-count-label");
+    gtk_style_context_remove_class(ctx, "sui-message-count-label");
     gtk_style_context_remove_class(ctx, "highlighted");
 }
 
