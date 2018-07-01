@@ -94,9 +94,11 @@ int sirc_cmd_nick(SircSession *sirc, const char *nick){
 
 // sirc_cmd_quit: For quitting IRC
 int sirc_cmd_quit(SircSession *sirc, const char *reason){
-    g_return_val_if_fail(!str_is_empty(reason), SRN_ERR);
-
-    return sirc_cmd_raw(sirc, "QUIT :%s\r\n", reason);
+    if (reason){
+        return sirc_cmd_raw(sirc, "QUIT :%s\r\n", reason);
+    } else {
+        return sirc_cmd_raw(sirc, "QUIT\r\n");
+    }
 }
 
 
