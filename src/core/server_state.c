@@ -148,7 +148,7 @@ SrnRet srn_server_state_transfrom(SrnServer *srv, SrnServerAction action){
                     ret = RET_ERR(unallowed, _("Server is disconnecting"));
                     break;
                 case SRN_SERVER_ACTION_CONNECT_FAIL:
-                    next_state = SRN_SERVER_STATE_DISCONNECTED;
+                    ret = RET_ERR(unallowed, _("Server is disconnecting"));
                     break;
                  case SRN_SERVER_ACTION_DISCONNECT:
                      sirc_cancel_connect(srv->irc); // Force disconnect
@@ -238,7 +238,10 @@ SrnRet srn_server_state_transfrom(SrnServer *srv, SrnServerAction action){
     }
 
     if (free){ // The server should be free now, be careful
-        srn_server_free(srv);
+        SrnApplication *app;
+
+        app = srn_application_get_default();
+        return srn_application_rm_server(app, srv);
     }
 
     return ret;

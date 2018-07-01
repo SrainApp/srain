@@ -131,6 +131,7 @@ static void irc_event_connect(SircSession *sirc, const char *event){
     g_return_if_fail(srn_server_is_valid(srv));
     ret = srn_server_state_transfrom(srv, SRN_SERVER_ACTION_CONNECT_FINISH);
     g_return_if_fail(RET_IS_OK(ret));
+    g_return_if_fail(srn_server_is_valid(srv));
 
     /* Default state */
     srv->registered = FALSE;
@@ -411,6 +412,7 @@ static void irc_event_quit(SircSession *sirc, const char *event,
     /* You quit */
     if (srv_user->is_me){
         srn_server_state_transfrom(srv, SRN_SERVER_ACTION_QUIT);
+        g_return_if_fail(!srn_server_is_valid(srv));
     }
 }
 
@@ -1727,10 +1729,13 @@ static gboolean irc_period_ping(gpointer user_data){
 
     /* Check whether ping time out */
     if (time - srv->last_pong > SRN_SERVER_PING_TIMEOUT){
+        SrnRet ret;
         WARN_FR("Server %s ping time out, %lums", srv->name, time - srv->last_pong);
 
         srv->ping_timer = 0;
-        srn_server_state_transfrom(srv, SRN_SERVER_ACTION_RECONNECT);
+        ret = srn_server_state_transfrom(srv, SRN_SERVER_ACTION_RECONNECT);
+        g_warn_if_fail(RET_IS_OK(ret));
+        g_warn_if_fail(srn_server_is_valid(srv));
 
         return G_SOURCE_REMOVE;
     }

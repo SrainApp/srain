@@ -95,7 +95,7 @@ bad:
  * @param srv
  */
 void srn_server_free(SrnServer *srv){
-    g_return_if_fail(srn_server_is_valid(srv));
+    g_return_if_fail(!srn_server_is_valid(srv));
     g_return_if_fail(srv->state == SRN_SERVER_STATE_DISCONNECTED);
 
     sirc_free_session(srv->irc);
