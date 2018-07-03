@@ -42,7 +42,7 @@
 #include "utils.h"
 
 static GtkListStore* real_completion_func(SuiBuffer *self, const char *context);
-static void push_input_history(SuiBuffer *self, char *msg);
+static bool push_input_history(SuiBuffer *self, char *msg);
 static void start_browse_input(SuiBuffer *self);
 static void reset_browse_input(SuiBuffer *self);
 
@@ -330,8 +330,11 @@ bool sui_buffer_send_input(SuiBuffer *self){
     ret = sui_buffer_event_hdr(self, SUI_EVENT_SEND, params);
     g_variant_dict_unref(params);
 
-    // Push history, ownership of line transfered into it
-    push_input_history(self, line);
+    // Push history. Ownership of line will transferred into input history list
+    // if this function call successes.
+    if (!push_input_history(self, line)){
+        g_free(line);
+    }
     // Delete the sent line from text buffer
     gtk_text_buffer_delete(buf, &start, &end);
 
@@ -529,8 +532,17 @@ static GtkListStore* real_completion_func(SuiBuffer *self, const char *context){
     return store;
 }
 
-static void push_input_history(SuiBuffer *self, char *msg){
+static bool push_input_history(SuiBuffer *self, char *msg){
+    reset_browse_input(self);
+
     DBG_FR("Push input history");
+
+    if (self->input_history_iter){ // Iter should be the newest history
+        if (g_strcmp0(self->input_history_iter->data, msg) == 0) {
+            DBG_FR("Duplicated input history");
+            return FALSE;
+        }
+    }
 
     self->input_history = g_list_append(self->input_history, msg);
     if (g_list_length(self->input_history) > 10){
@@ -540,8 +552,9 @@ static void push_input_history(SuiBuffer *self, char *msg){
         g_free(head->data);
         self->input_history = g_list_delete_link(self->input_history, head);
     }
+    self->input_history_iter = g_list_last(self->input_history);
 
-    reset_browse_input(self);
+    return TRUE;
 }
 
 static void start_browse_input(SuiBuffer *self){
