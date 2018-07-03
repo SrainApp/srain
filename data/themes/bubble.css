@@ -25,7 +25,6 @@
 }
 
 .sui-message .sui-message-label {
-    color: @sui_message_text_color;
 }
 
 /* Misc Message {{{1 */
