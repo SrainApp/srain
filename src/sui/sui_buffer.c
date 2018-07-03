@@ -330,17 +330,12 @@ bool sui_buffer_send_input(SuiBuffer *self){
     ret = sui_buffer_event_hdr(self, SUI_EVENT_SEND, params);
     g_variant_dict_unref(params);
 
-    if (!RET_IS_OK(ret)){
-        g_free(line);
-        return FALSE;
-    }
-
     // Push history, ownership of line transfered into it
     push_input_history(self, line);
     // Delete the sent line from text buffer
     gtk_text_buffer_delete(buf, &start, &end);
 
-    return TRUE;
+    return RET_IS_OK(ret);
 }
 
 void sui_buffer_browse_prev_input(SuiBuffer *self){
