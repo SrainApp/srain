@@ -711,7 +711,7 @@ static SrnRet on_command_quit(SrnCommand *cmd, void *user_data){
     reason = srn_command_get_arg(cmd, 0);
     if (!reason) reason = PACKAGE_NAME " " PACKAGE_VERSION " " "quit.";
 
-    return sirc_cmd_quit(srv->irc, reason);
+    return srn_server_quit(srv, reason);
 }
 
 static SrnRet on_command_topic(SrnCommand *cmd, void *user_data){

@@ -289,6 +289,7 @@ struct _SrnServerCap {
 
 SrnServer* srn_server_new(const char *name, SrnServerConfig *cfg);
 void srn_server_free(SrnServer *srv);
+SrnRet srn_server_quit(SrnServer *srv, const char *reason);
 void srn_server_set_config(SrnServer *srv, SrnServerConfig *cfg);
 SrnRet srn_server_reload_config(SrnServer *srv);
 bool srn_server_is_valid(SrnServer *srv);

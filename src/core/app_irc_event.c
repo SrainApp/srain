@@ -408,12 +408,6 @@ static void irc_event_quit(SircSession *sirc, const char *event,
     }
 
     srn_server_user_set_is_online(srv_user, FALSE);
-
-    /* You quit */
-    if (srv_user->is_me){
-        srn_server_state_transfrom(srv, SRN_SERVER_ACTION_QUIT);
-        g_return_if_fail(!srn_server_is_valid(srv));
-    }
 }
 
 static void irc_event_join(SircSession *sirc, const char *event,

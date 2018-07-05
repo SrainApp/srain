@@ -165,18 +165,11 @@ static SrnRet ui_event_quit(SuiBuffer *sui, SuiEvent event, GVariantDict *params
     chat = ctx_get_chat(sui);
     g_return_val_if_fail(srn_server_is_valid(srv), SRN_ERR);
 
-    if (srn_server_is_registered(srv)) {
-        ret = sirc_cmd_quit(srv->irc, srv->cfg->user->quit_message);;
-    } else {
-        ret = srn_server_state_transfrom(srv, SRN_SERVER_ACTION_QUIT);
-        if (!srn_server_is_valid(srv)){
-            return SRN_OK;
-        }
-    }
-
+    ret = srn_server_quit(srv, srv->cfg->user->quit_message);
     if (!RET_IS_OK(ret)){
-        srn_chat_add_error_message(chat, chat->_user,
-                _("Failed to quit from server, try again please"));
+        g_return_val_if_fail(srn_server_is_valid(srv), SRN_ERR);
+        srn_chat_add_error_message_fmt(chat, chat->_user,
+                _("Failed to quit from server: %s"), RET_MSG(ret));
     }
 
     return ret;
@@ -268,7 +261,7 @@ static SrnRet ui_event_query(SuiBuffer *sui, SuiEvent event, GVariantDict *param
 
     g_variant_dict_lookup(params, "nick", SUI_EVENT_PARAM_STRING, &nick);
 
-    return srn_server_add_chat(srv, nick);;
+    return srn_server_add_chat(srv, nick);
 }
 
 static SrnRet ui_event_unquery(SuiBuffer *sui, SuiEvent event, GVariantDict *params){

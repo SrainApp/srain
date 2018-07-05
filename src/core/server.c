@@ -188,6 +188,11 @@ SrnRet srn_server_disconnect(SrnServer *srv){
     return srn_server_state_transfrom(srv, SRN_SERVER_ACTION_DISCONNECT);
 }
 
+SrnRet srn_server_quit(SrnServer *srv, const char *reason){
+    // FIXME: reason is ignored
+    return srn_server_state_transfrom(srv, SRN_SERVER_ACTION_QUIT);
+}
+
 /**
  * @brief server_is_registered Whether this server registered
  *
