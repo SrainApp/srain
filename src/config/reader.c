@@ -145,9 +145,11 @@ SrnRet srn_config_manager_read_server_config_by_addr(SrnConfigManager *mgr,
     GSList *lst;
     GSList *cfg_lst;
     SrnRet ret;
+    SrnServerConfig *tmp;
 
     cfg_lst = NULL;
     ret = srn_config_manager_read_server_config_list(mgr, &cfg_lst);
+    tmp = NULL;
     if (!RET_IS_OK(ret)){
         goto FIN;
     }
@@ -156,19 +158,24 @@ SrnRet srn_config_manager_read_server_config_by_addr(SrnConfigManager *mgr,
     while (lst) {
         GSList *addr_lst;
 
-        ret = srn_config_manager_read_server_config(mgr, cfg, lst->data);
+        tmp = srn_server_config_new();
+        // Do not read config to cfg until the address is found
+        ret = srn_config_manager_read_server_config(mgr, tmp, lst->data);
         if (!RET_IS_OK(ret)){
             goto FIN;
         }
 
-        addr_lst = cfg->addrs;
+        addr_lst = tmp->addrs;
         while (addr_lst){
             if (srn_server_addr_equal(addr, addr_lst->data)){
-                ret = SRN_OK;
+                ret = srn_config_manager_read_server_config(mgr, cfg, lst->data);
                 goto FIN;
             }
             addr_lst = g_slist_next(addr_lst);
         }
+
+        srn_server_config_free(tmp);
+        tmp = NULL;
         lst = g_slist_next(lst);
     }
 
@@ -176,6 +183,9 @@ SrnRet srn_config_manager_read_server_config_by_addr(SrnConfigManager *mgr,
 FIN:
     if (cfg_lst) {
         g_slist_free_full(cfg_lst, g_free);
+    }
+    if (tmp) {
+        srn_server_config_free(tmp);
     }
     return ret;
 }
