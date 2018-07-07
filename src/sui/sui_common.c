@@ -113,42 +113,7 @@ void sui_common_scale_size(int src_width, int src_height,
  * @return
  */
 gboolean sui_common_activate_gtk_label_link(GtkLabel *label, const char *url, gpointer user_data){
-    GdkEvent *event;
-    SuiBuffer *buf;
-    SuiBufferConfig *cfg;
-    SuiUrlPreviewer *previewer;
-
-    buf = sui_common_get_cur_buffer();
-    if (!SUI_IS_BUFFER(buf)){
-        return RET_IS_OK(sui_common_open_url(url));
-    }
-
-    cfg = sui_buffer_get_config(buf);
-    cfg->click_to_preview_url = TRUE;
-    if (!cfg->click_to_preview_url){
-        return RET_IS_OK(sui_common_open_url(url));
-    }
-
-    previewer = sui_url_previewer_new_from_cache(url);
-    event = gtk_get_current_event();
-    if (event->type == GDK_BUTTON_RELEASE){
-        int x, y;
-        GtkAllocation allocation;
-
-        // FIXME: I am not understand this code yet, copied from gtk3-demo/popover
-        gdk_window_coords_to_parent(event->button.window,
-                event->button.x, event->button.y,
-                &event->button.x, &event->button.y);
-        gtk_widget_get_allocation(GTK_WIDGET(label), &allocation);
-        x = event->button.x - allocation.x;
-        y = event->button.y - allocation.y;
-        sui_common_popup_panel_at_point(GTK_WIDGET(label), GTK_WIDGET(previewer), x, y);
-    } else {
-        sui_common_popup_panel(GTK_WIDGET(label), GTK_WIDGET(previewer));
-    }
-    gdk_event_free(event);
-
-    return TRUE;
+    return RET_IS_OK(sui_common_open_url(url));
 }
 
 SrnRet sui_common_open_url(const char *url){
@@ -176,7 +141,10 @@ SrnRet sui_common_open_url(const char *url){
     gtk_show_uri(NULL, url, event_time, &err);
 #endif
     if (err) {
-        ret = RET_ERR(_("Failed to open URL \"%s\": %s"), url, err->message);
+        ret = RET_ERR(_("Failed to open URL \"%1$s\": %2$s"), url, err->message);
+        sui_message_box(_("Error"), RET_MSG(ret));
+    } else {
+        ret = SRN_OK;
     }
 
 FIN:
