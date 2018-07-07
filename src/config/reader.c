@@ -309,6 +309,7 @@ static SrnRet read_server_config_list_from_cfg(config_t *cfg,
 static SrnRet read_server_config_from_server(config_setting_t *server,
         SrnServerConfig *cfg){
     /* Read server meta info */
+    config_setting_lookup_string_ex(server, "name", &cfg->name);
     config_setting_lookup_string_ex(server, "password", &cfg->passwd);
     config_setting_lookup_bool_ex(server, "tls", &cfg->irc->tls);
     config_setting_lookup_bool_ex(server, "tls-noverify", &cfg->irc->tls_noverify);

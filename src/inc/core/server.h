@@ -251,6 +251,7 @@ struct _SrnServerAddr {
 };
 
 struct _SrnServerConfig {
+    char *name;
     GSList *addrs; // List of SrnServerAddr
     char *passwd;
 
