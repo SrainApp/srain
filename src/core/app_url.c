@@ -80,14 +80,14 @@ SrnRet srn_application_open_url(SrnApplication *app, const char *url){
     srv = srn_application_get_server_by_addr(app, addr);
     if (!srv) {
         const char *name;
-
         // Try looking for server config with the same address in config
         cfg = srn_server_config_new();
         ret = srn_config_manager_read_server_config_by_addr(
                 app->cfg_mgr, cfg, addr);
+
         if (!RET_IS_OK(ret)){
             // If not found, just load a default server config from config
-            ret = srn_config_manager_read_server_config(app->cfg_mgr, cfg, NULL);
+            ret = srn_config_manager_read_server_config(app->cfg_mgr, cfg, "");
             if (!RET_IS_OK(ret)){
                 goto FIN;
             }
@@ -103,9 +103,6 @@ SrnRet srn_application_open_url(SrnApplication *app, const char *url){
             g_warn_if_reached();
             goto FIN;
         }
-        // Use first address of config address list as server name
-        name = ((SrnServerAddr*)cfg->addrs->data)->host;
-
         if (!str_is_empty(passwd)){
             str_assign(&cfg->passwd, passwd);
         }
@@ -115,21 +112,25 @@ SrnRet srn_application_open_url(SrnApplication *app, const char *url){
         if (g_ascii_strcasecmp(scheme, "ircs") == 0){
             cfg->irc->tls = TRUE;
         }
+
+        name = cfg->name ? cfg->name : host;
         ret = srn_application_add_server_with_config(app, name, cfg);
         if (!RET_IS_OK(ret)) {
-            ret = RET_ERR(_("Failed to instantiate server \"%1$s\": %2$s"),
+            ret = RET_ERR(_("Failed to add server \"%1$s\": %2$s"),
                     name, RET_MSG(ret));
             goto FIN;
         }
         cfg = NULL; // Ownership changed to server
+
+        srv = srn_application_get_server(app, name);
+        ret = srn_server_connect(srv);
+        if (!RET_IS_OK(ret)){
+            goto FIN;
+        }
+
+        srn_server_wait_until_registered(srv);
     }
 
-    ret = srn_server_connect(srv);
-    if (!RET_IS_OK(ret)){
-        goto FIN;
-    }
-
-    srn_server_wait_until_registered(srv);
     if (!srn_server_is_registered(srv)){
         ret =  RET_ERR(_("Failed to register on server \"%1$s\""), srv->name);
         goto FIN;
@@ -168,7 +169,7 @@ FIN:
         srn_server_config_free(cfg);
     }
     if (!RET_IS_OK(ret) && srv){
-        srn_application_rm_server(app, srv);
+        // Do not remove server, let the user handle the failure
     }
 
     return ret;
