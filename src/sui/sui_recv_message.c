@@ -28,6 +28,7 @@
 #include <gtk/gtk.h>
 
 #include "sui_common.h"
+#include "nick_menu.h"
 #include "sui_recv_message.h"
 
 #include "i18n.h"
@@ -109,24 +110,20 @@ static void sui_recv_message_update(SuiMessage *msg){
 
 static void sui_recv_message_compose_prev(SuiMessage *_self, SuiMessage *_prev){
     SuiRecvMessage *self;
-    SuiRecvMessage *prev;
 
     self = SUI_RECV_MESSAGE(_self);
-    prev = SUI_RECV_MESSAGE(_prev);
 
-    gtk_widget_hide(self->user_box);
+    gtk_widget_hide(GTK_WIDGET(self->user_box));
 
     SUI_MESSAGE_CLASS(sui_recv_message_parent_class)->compose_prev(_self, _prev);
 }
 
 static void sui_recv_message_compose_next(SuiMessage *_self, SuiMessage *_next){
     SuiRecvMessage *self;
-    SuiRecvMessage *next;
 
     self = SUI_RECV_MESSAGE(_self);
-    next = SUI_RECV_MESSAGE(_next);
 
-    gtk_widget_hide(self->time_label);
+    gtk_widget_hide(GTK_WIDGET(self->time_label));
 
     SUI_MESSAGE_CLASS(sui_recv_message_parent_class)->compose_next(_self, _next);
 }
@@ -136,7 +133,6 @@ static void sui_recv_message_compose_next(SuiMessage *_self, SuiMessage *_next){
  *****************************************************************************/
 
 SuiRecvMessage *sui_recv_message_new(void *ctx){
-    // TODO
     return g_object_new(SUI_TYPE_RECV_MESSAGE,
             "context", ctx,
             NULL);

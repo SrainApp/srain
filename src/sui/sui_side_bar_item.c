@@ -116,9 +116,9 @@ void sui_side_bar_item_update(SuiSideBarItem *self,
     self->update_time = get_time_since_first_call_ms();
 
     /* Mark as chagned */
-    row = gtk_widget_get_parent(self);
+    row = gtk_widget_get_parent(GTK_WIDGET(self));
     g_return_if_fail(GTK_IS_LIST_BOX_ROW(row));
-    gtk_list_box_row_changed(row);
+    gtk_list_box_row_changed(GTK_LIST_BOX_ROW(row));
 }
 
 void sui_side_bar_item_highlight(SuiSideBarItem *self){
