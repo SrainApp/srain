@@ -75,10 +75,6 @@ SuiMessage *sui_new_recv_message(void *ctx);
 void sui_update_message(SuiMessage *msg);
 void sui_notify_message(SuiMessage *msg);
 
-/* Completion */
-void sui_add_completion(SuiBuffer *sui, const char *word);
-void sui_rm_completion(SuiBuffer *sui, const char *word);
-
 /* User */
 SuiUser* sui_new_user(void *ctx);
 void sui_free_user(SuiUser *user);
@@ -94,6 +90,5 @@ void sui_message_box(const char *title, const char *msg);
 void sui_chan_list_start(SuiBuffer *sui);
 void sui_chan_list_add(SuiBuffer *sui, const char *chan, int users, const char *topic);
 void sui_chan_list_end(SuiBuffer *sui);
-void sui_server_list_add(const char *server);
 
 #endif /* __SUI_H */

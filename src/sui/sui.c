@@ -226,7 +226,6 @@ void sui_update_user(SuiUser *user){
 void sui_add_user(SuiBuffer *buf, SuiUser *user){
     SuiChatBuffer *chat_buf;
     SuiUserList *list;
-    SuiCompletion *comp;
 
     g_return_if_fail(SUI_IS_CHAT_BUFFER(buf));
     g_return_if_fail(user);
@@ -235,15 +234,11 @@ void sui_add_user(SuiBuffer *buf, SuiUser *user){
     list = sui_chat_buffer_get_user_list(chat_buf);
 
     sui_user_list_add_user(list, user);
-    // FIXME
-    // comp = sui_buffer_get_entry_completion(buf);
-    // sui_completion_add_keyword(comp, nick, KEYWORD_NORMAL);
 }
 
 void sui_rm_user(SuiBuffer *buf, SuiUser *user){
     SuiChatBuffer *chat_buf;
     SuiUserList *list;
-    SuiCompletion *comp;
 
     g_return_if_fail(SUI_IS_CHAT_BUFFER(buf));
     g_return_if_fail(user);
@@ -252,9 +247,6 @@ void sui_rm_user(SuiBuffer *buf, SuiUser *user){
     list = sui_chat_buffer_get_user_list(chat_buf);
 
     sui_user_list_rm_user(list, user);
-    // FIXME
-    // comp = sui_buffer_get_entry_completion(SUI_BUFFER(buf));
-    // sui_completion_rm_keyword(comp, nick);
 }
 
 void sui_set_topic(SuiBuffer *buf, const char *topic){
@@ -282,31 +274,6 @@ void sui_set_topic_setter(SuiBuffer *buf, const char *setter){
 }
 
 void sui_message_append_message(SuiBuffer *buf, SuiMessage *smsg, const char *msg){
-}
-
-void sui_add_completion(SuiBuffer *buf, const char *keyword){
-    SuiCompletion *comp;
-
-    g_return_if_fail(SUI_IS_BUFFER(buf));
-    g_return_if_fail(keyword);
-
-    // comp = sui_buffer_get_entry_completion(buffer);
-
-    // sui_completion_add_keyword(comp, keyword, KEYWORD_NORMAL);
-}
-
-void sui_rm_completion(SuiBuffer *buf, const char *keyword){
-    SuiBuffer *buffer;
-    SuiCompletion *comp;
-
-    g_return_if_fail(buf);
-    g_return_if_fail(SUI_IS_BUFFER(buf));
-    g_return_if_fail(keyword);
-
-    buffer = buf;
-    // FIXME
-    // comp = sui_buffer_get_entry_completion(buffer);
-    // sui_completion_rm_keyword(comp, keyword);
 }
 
 void sui_message_box(const char *title, const char *msg){
@@ -376,8 +343,4 @@ void sui_chan_list_end(SuiBuffer *buf){
     g_return_if_fail(sui_join_panel_get_is_adding(panel));
 
     sui_join_panel_set_is_adding(panel, FALSE);
-}
-
-void sui_server_list_add(const char *server){
-    // NOTE: deprecated
 }

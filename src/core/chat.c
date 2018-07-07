@@ -67,11 +67,6 @@ SrnChat* srn_chat_new(SrnServer *srv, const char *name, SrnChatType type,
             g_warn_if_reached();
     }
 
-    sui_add_completion(self->ui, self->name);
-    for (int i = 0; cmd_binds[i].name != NULL; i++){
-        sui_add_completion(self->ui, cmd_binds[i].name);
-    }
-
     return self;
 }
 
