@@ -345,7 +345,7 @@ static void preview_image(SuiUrlPreviewer *self, GdkPixbuf *pixbuf){
     self->previewed = TRUE;
     gtk_stack_set_visible_child_name(self->stack, STACK_PAGE_IMAGE);
 
-    scale_size_to(gdk_pixbuf_get_width(pixbuf), gdk_pixbuf_get_height(pixbuf),
+    sui_common_scale_size(gdk_pixbuf_get_width(pixbuf), gdk_pixbuf_get_height(pixbuf),
             THUMBNAIL_SIZE, THUMBNAIL_SIZE, &width, &height);
     scaled_pixbuf = gdk_pixbuf_scale_simple(pixbuf, width, height,
                         GDK_INTERP_BILINEAR);
@@ -394,8 +394,8 @@ static void open_button_on_clicked(GtkWidget *widget, gpointer user_data){
     SuiUrlPreviewer *self;
 
     self = SUI_URL_PREVIEWER(user_data);
-    sui_open_url(self->url);
-    sui_panel_popdown(GTK_WIDGET(self));
+    sui_common_open_url(self->url);
+    sui_common_popdown_panel(GTK_WIDGET(self));
 }
 
 static void cancel_button_on_clicked(GtkWidget *widget, gpointer user_data){
@@ -403,7 +403,7 @@ static void cancel_button_on_clicked(GtkWidget *widget, gpointer user_data){
 
     self = SUI_URL_PREVIEWER(user_data);
     cancel_preview(self);
-    sui_panel_popdown(GTK_WIDGET(self));
+    sui_common_popdown_panel(GTK_WIDGET(self));
 }
 
 static void image_event_box_on_button_release(GtkWidget *widget,
@@ -437,12 +437,12 @@ static void image_event_box_on_button_release(GtkWidget *widget,
 
 #if GTK_CHECK_VERSION(3, 22, 0)
     display = gdk_display_get_default();
-    gdkwin = gtk_widget_get_window(GTK_WIDGET(sui_get_cur_window()));
+    gdkwin = gtk_widget_get_window(GTK_WIDGET(sui_common_get_cur_window()));
     monitor = gdk_display_get_monitor_at_window(display, gdkwin);
     gdk_monitor_get_geometry(monitor, &rect);
 #else
     screen = gdk_screen_get_default();
-    gdkwin = gtk_widget_get_window(GTK_WIDGET(sui_get_cur_window()));
+    gdkwin = gtk_widget_get_window(GTK_WIDGET(sui_common_get_cur_window()));
     monitor = gdk_screen_get_monitor_at_window(screen, gdkwin);
     gdk_screen_get_monitor_geometry(screen, monitor, &rect);
 #endif
@@ -453,7 +453,7 @@ static void image_event_box_on_button_release(GtkWidget *widget,
     pixbuf = self->pixbuf;
     width = gdk_pixbuf_get_width(pixbuf);
     height = gdk_pixbuf_get_height(pixbuf);
-    scale_size_to(gdk_pixbuf_get_width(pixbuf), gdk_pixbuf_get_height(pixbuf),
+    sui_common_scale_size(gdk_pixbuf_get_width(pixbuf), gdk_pixbuf_get_height(pixbuf),
             rect.width, rect.height, &width, &height);
     scaled_pixbuf = gdk_pixbuf_scale_simple(pixbuf, width, height,
             GDK_INTERP_BILINEAR);

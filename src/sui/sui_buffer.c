@@ -142,7 +142,7 @@ static void sui_buffer_init(SuiBuffer *self){
     self->completion = sui_completion_new(self->input_text_buffer);
 
     g_signal_connect(self->topic_label, "activate-link",
-            G_CALLBACK(activate_link), self);
+            G_CALLBACK(sui_common_activate_gtk_label_link), self);
     g_signal_connect(self->topic_menu_item, "toggled",
             G_CALLBACK(topic_menu_item_on_toggled), self);
 }

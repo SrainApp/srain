@@ -506,7 +506,7 @@ FIN:
         srn_server_config_free(srv_cfg);
     }
     if (RET_IS_OK(ret)){
-        sui_panel_popdown(GTK_WIDGET(self));
+        sui_common_popdown_panel(GTK_WIDGET(self));
         update(self, NULL);
     } else {
         if (srv){
@@ -521,6 +521,6 @@ static void cancel_button_on_click(gpointer user_data){
 
     self = user_data;
 
-    sui_panel_popdown(GTK_WIDGET(self));
+    sui_common_popdown_panel(GTK_WIDGET(self));
     update(self, NULL);
 }

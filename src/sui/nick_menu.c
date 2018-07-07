@@ -31,7 +31,7 @@ static void nick_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
     GVariantDict *params;
     SuiBuffer *buf;
 
-    buf = sui_get_cur_buffer();
+    buf = sui_common_get_cur_buffer();
     nick = user_data;
 
     params = g_variant_dict_new(NULL);
@@ -93,7 +93,7 @@ void nick_menu_popup(GtkWidget *widget, GdkEventButton *event, const char *nick)
             G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
 
     /* Create subitem of invite_menu_item */
-    buf = sui_get_cur_buffer();
+    buf = sui_common_get_cur_buffer();
     buf = NULL;
     goto FIN;
 

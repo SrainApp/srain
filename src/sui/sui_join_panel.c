@@ -274,7 +274,7 @@ static void join_button_on_click(gpointer user_data){
     SuiBuffer *buf;
 
     self = user_data;
-    buf = sui_get_cur_buffer(); // FIXME
+    buf = sui_common_get_cur_buffer(); // FIXME
     if (!SUI_IS_BUFFER(buf)){
        sui_message_box(_("Error"),
                _("Please connect to server before joining any channel"));
@@ -327,7 +327,7 @@ static void cancel_button_on_click(gpointer user_data){
 
     self = user_data;
 
-    sui_panel_popdown(GTK_WIDGET(self));
+    sui_common_popdown_panel(GTK_WIDGET(self));
     sui_join_panel_clear(self);
 }
 
@@ -355,7 +355,7 @@ static void refresh_button_on_clicked(gpointer user_data){
     SrnRet ret;
     SuiBuffer *buf;
 
-    buf = sui_get_cur_buffer(); // FIXME:
+    buf = sui_common_get_cur_buffer(); // FIXME:
     if (!SUI_IS_BUFFER(buf)){
        sui_message_box(_("Error"), _("Please connect to server before searching any channel"));
        return;

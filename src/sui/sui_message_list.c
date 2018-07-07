@@ -137,7 +137,7 @@ void sui_message_list_append_message(SuiMessageList *self, SuiMessage *msg,
     box = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0));
     gtk_box_pack_start(box, GTK_WIDGET(msg), TRUE, TRUE, 0);
     gtk_widget_set_halign(GTK_WIDGET(msg), halign);
-    gtk_list_box_add_unfocusable_row(self->list_box, GTK_WIDGET(box));
+    sui_common_add_gtk_list_box_unfocusable_row(self->list_box, GTK_WIDGET(box));
 
     smart_scroll(self);
 }
@@ -256,7 +256,7 @@ static void smart_scroll(SuiMessageList *self){
     SuiWindow *win;
     SuiBuffer *buf;
 
-    win = sui_get_cur_window();
+    win = sui_common_get_cur_window();
     g_return_if_fail(SUI_IS_WINDOW(win));
     buf = sui_window_get_cur_buffer(win);
     g_return_if_fail(SUI_IS_BUFFER(buf));

@@ -270,7 +270,7 @@ void sui_application_send_notification(SuiApplication *self,
     g_notification_set_body(gnotif, notif->body);
     g_notification_set_icon(gnotif, icon);
 
-    sui_window_tray_icon_stress(sui_get_cur_window(), 1); // FIXME
+    sui_window_tray_icon_stress(sui_common_get_cur_window(), 1); // FIXME
     g_application_send_notification(G_APPLICATION(self), notif->id, gnotif);
 
     g_object_unref(gnotif);

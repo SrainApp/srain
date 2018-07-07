@@ -99,14 +99,14 @@ SuiBuffer* sui_new_buffer(void *ctx, SuiBufferEvents *events, SuiBufferConfig *c
         default:
             g_return_val_if_reached(NULL);
     }
-    sui_window_add_buffer(sui_get_cur_window(), buf);
+    sui_window_add_buffer(sui_common_get_cur_window(), buf);
 
     return buf;
 }
 
 void sui_free_buffer(SuiBuffer *buf){
     g_return_if_fail(SUI_IS_BUFFER(buf));
-    sui_window_rm_buffer(sui_get_cur_window(), buf);
+    sui_window_rm_buffer(sui_common_get_cur_window(), buf);
 }
 
 void sui_buffer_add_message(SuiBuffer *buf, SuiMessage *msg){
@@ -142,7 +142,7 @@ void sui_buffer_add_message(SuiBuffer *buf, SuiMessage *msg){
     item = sui_side_bar_get_item(sidebar, buf);
     sui_message_update_side_bar_item(msg, item);
 
-    if (buf == sui_get_cur_buffer()){
+    if (buf == sui_common_get_cur_buffer()){
         // Don't show counter while buffer is active
         sui_side_bar_item_clear_count(item);
     }
@@ -283,7 +283,7 @@ void sui_message_box(const char *title, const char *msg){
     gtk_init(0, NULL); // FIXME: config
 
     dia = GTK_MESSAGE_DIALOG(
-            gtk_message_dialog_new(GTK_WINDOW(sui_get_cur_window()),
+            gtk_message_dialog_new(GTK_WINDOW(sui_common_get_cur_window()),
                 GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
                 GTK_MESSAGE_INFO,
                 GTK_BUTTONS_OK,

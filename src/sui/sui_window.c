@@ -618,18 +618,18 @@ static void popover_button_on_click(GtkButton *button, gpointer user_data){
     GtkWidget *panel;
 
     panel = GTK_WIDGET(user_data);
-    sui_panel_popup(GTK_WIDGET(button), panel);
+    sui_common_popup_panel(GTK_WIDGET(button), panel);
 }
 
 static void join_button_on_click(GtkButton *button, gpointer user_data){
     SuiServerBuffer *buf;
     SuiJoinPanel *panel;
 
-    buf = sui_get_cur_server_buffer();
+    buf = sui_common_get_cur_server_buffer();
     g_return_if_fail(buf);
 
     panel = sui_server_buffer_get_join_panel(buf);
-    sui_panel_popup(GTK_WIDGET(button), GTK_WIDGET(panel));
+    sui_common_popup_panel(GTK_WIDGET(button), GTK_WIDGET(panel));
 }
 
 static void quit_menu_item_on_activate(){
