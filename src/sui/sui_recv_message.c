@@ -27,6 +27,7 @@
 
 #include <gtk/gtk.h>
 
+#include "sui_common.h"
 #include "sui_recv_message.h"
 
 #include "i18n.h"
@@ -49,6 +50,8 @@ G_DEFINE_TYPE(SuiRecvMessage, sui_recv_message, SUI_TYPE_MESSAGE);
 static void sui_recv_message_init(SuiRecvMessage *self){
     gtk_widget_init_template(GTK_WIDGET(self));
 
+    g_signal_connect(SUI_MESSAGE(self)->message_label, "activate-link",
+            G_CALLBACK(sui_common_activate_gtk_label_link), self);
     g_signal_connect(SUI_MESSAGE(self)->message_label, "populate-popup",
             G_CALLBACK(sui_message_label_on_popup), self);
     g_signal_connect(self->user_event_box, "button-press-event",

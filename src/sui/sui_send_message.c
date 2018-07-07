@@ -26,6 +26,7 @@
 
 #include <gtk/gtk.h>
 
+#include "sui_common.h"
 #include "sui_send_message.h"
 
 static void sui_send_message_update(SuiMessage *msg);
@@ -41,6 +42,8 @@ G_DEFINE_TYPE(SuiSendMessage, sui_send_message, SUI_TYPE_MESSAGE);
 static void sui_send_message_init(SuiSendMessage *self){
     gtk_widget_init_template(GTK_WIDGET(self));
 
+    g_signal_connect(SUI_MESSAGE(self)->message_label, "activate-link",
+            G_CALLBACK(sui_common_activate_gtk_label_link), self);
     g_signal_connect(SUI_MESSAGE(self)->message_label, "populate-popup",
             G_CALLBACK(sui_message_label_on_popup), self);
 }
