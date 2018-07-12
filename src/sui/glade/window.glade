@@ -372,6 +372,7 @@
                       <object class="GtkStack" id="buffer_stack">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="resize_mode">queue</property>
                         <child>
                           <placeholder/>
                         </child>
