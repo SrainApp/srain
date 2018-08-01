@@ -44,7 +44,8 @@ struct _SuiBufferConfig {
     bool show_topic;
     bool show_avatar;
     bool show_user_list;
-    bool click_to_preview_url;
+    bool preview_url;
+    bool auto_preview_url;
 };
 
 SuiApplicationConfig *sui_application_config_new(void);
