@@ -8,17 +8,17 @@
 
 /* Message {{{1 */
 
-.sui-message .sui-message-box {
+.sui-message .sui-message-frame {
     box-shadow: @sui_message_shadow_color 2px 2px;
 }
 
-.sui-message-head .sui-message-box {
+.sui-message-head .sui-message-frame {
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
     margin-top: 4px;
 }
 
-.sui-message-tail .sui-message-box {
+.sui-message-tail .sui-message-frame {
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
     margin-bottom: 4px;
@@ -29,37 +29,37 @@
 
 /* Misc Message {{{1 */
 
-.sui-misc-message .sui-message-box {
+.sui-misc-message .sui-message-frame {
     box-shadow: 0px 0px;
 }
 
-.sui-misc-message .sui-message-box,
-.sui-misc-message-normal .sui-message-box{
+.sui-misc-message .sui-message-frame,
+.sui-misc-message-normal .sui-message-frame{
     background-color: @sui_misc_message_normal_bg_color;
 }
 
-.sui-misc-message-error .sui-message-box{
+.sui-misc-message-error .sui-message-frame{
     background-color: @sui_misc_message_error_bg_color;
 }
 
-.sui-misc-message-action .sui-message-box {
+.sui-misc-message-action .sui-message-frame {
     background-color: @sui_misc_message_action_bg_color;
 }
 
-.sui-misc-message-action.highlighted .sui-message-box {
+.sui-misc-message-action.highlighted .sui-message-frame {
     background-color: @sui_highlighted_misc_message_action_bg_color;
 }
 
-.sui-misc-message .sui-message-box {
+.sui-misc-message .sui-message-frame {
     padding-left: 4px;
     padding-right: 4px;
 }
 
-.sui-misc-message.sui-message-head .sui-message-box {
+.sui-misc-message.sui-message-head .sui-message-frame {
     padding-top: 4px;
 }
 
-.sui-misc-message.sui-message-tail .sui-message-box {
+.sui-misc-message.sui-message-tail .sui-message-frame {
     padding-bottom: 4px;
 }
 
@@ -71,29 +71,29 @@
 
 /* Send/Recv Message {{{1 */
 
-.sui-send-message .sui-message-box,
-.sui-recv-message .sui-message-box{
+.sui-send-message .sui-message-frame,
+.sui-recv-message .sui-message-frame{
     background-color: @sui_message_bg_color;
 }
 
-.sui-send-message.highlighted .sui-message-box,
-.sui-recv-message.highlighted .sui-message-box{
+.sui-send-message.highlighted .sui-message-frame,
+.sui-recv-message.highlighted .sui-message-frame{
     background-color: @sui_highlighted_message_bg_color;
 }
 
-.sui-send-message .sui-message-box,
-.sui-recv-message .sui-message-box {
+.sui-send-message .sui-message-frame,
+.sui-recv-message .sui-message-frame {
     padding-left: 6px;
     padding-right: 6px;
 }
 
-.sui-send-message.sui-message-head .sui-message-box,
-.sui-recv-message.sui-message-head .sui-message-box {
+.sui-send-message.sui-message-head .sui-message-frame,
+.sui-recv-message.sui-message-head .sui-message-frame {
     padding-top: 6px;
 }
 
-.sui-send-message.sui-message-tail .sui-message-box,
-.sui-recv-message.sui-message-tail .sui-message-box {
+.sui-send-message.sui-message-tail .sui-message-frame,
+.sui-recv-message.sui-message-tail .sui-message-frame {
     padding-right: 4px;
     padding-bottom: 2px;
 }
