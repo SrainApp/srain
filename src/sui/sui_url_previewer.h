@@ -29,8 +29,20 @@ typedef enum _SuiUrlContentType SuiUrlContentType;
 typedef struct _SuiUrlPreviewer SuiUrlPreviewer;
 typedef struct _SuiUrlPreviewerClass SuiUrlPreviewerClass;
 
+enum _SuiUrlContentType {
+    SUI_URL_CONTENT_TYPE_UNSUPPORTED,
+    SUI_URL_CONTENT_TYPE_TEXT,
+    SUI_URL_CONTENT_TYPE_IMAGE,
+    SUI_URL_CONTENT_TYPE_UNKNOWN,
+};
+
 GType sui_url_previewer_get_type(void);
 SuiUrlPreviewer* sui_url_previewer_new(const char *url);
 SuiUrlPreviewer* sui_url_previewer_new_from_cache(const char *url);
+
+void sui_url_previewer_preview(SuiUrlPreviewer *self);
+
+const char* sui_url_previewer_get_url(SuiUrlPreviewer *self);
+SuiUrlContentType sui_url_previewer_get_content_type(SuiUrlPreviewer *self);
 
 #endif /* __SUI_URL_PREVIEWER_H */

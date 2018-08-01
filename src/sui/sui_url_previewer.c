@@ -36,6 +36,7 @@
 #include "utils.h"
 #include "i18n.h"
 
+#define STACK_PAGE_PRELOAD  "preload"
 #define STACK_PAGE_LOADING  "loading"
 #define STACK_PAGE_TEXT     "text"
 #define STACK_PAGE_IMAGE    "image"
@@ -43,13 +44,6 @@
 #define THUMBNAIL_SIZE      300
 #define MAX_CONTENT_LENGTH  10485760 // 10Mb
 #define MAX_INSTANCE_COUNT  20
-
-enum _SuiUrlContentType {
-    SUI_URL_CONTENT_TYPE_UNSUPPORTED,
-    SUI_URL_CONTENT_TYPE_TEXT,
-    SUI_URL_CONTENT_TYPE_IMAGE,
-    SUI_URL_CONTENT_TYPE_UNKNOWN,
-};
 
 struct _SuiUrlPreviewer {
     GtkBox parent;
@@ -61,8 +55,11 @@ struct _SuiUrlPreviewer {
     SoupMessage *msg;
     GCancellable *cancel;
 
-    GtkButton *open_button;
+    GtkExpander *expander;
+    GtkLabel *expander_label;
     GtkStack *stack;
+    /* Page load */
+    GtkButton *preview_button;
     /* Page loading */
     GtkSpinner *spinner;
     GtkButton *cancel_button;
@@ -81,18 +78,15 @@ struct _SuiUrlPreviewerClass {
 static SoupSession *default_session = NULL;
 
 static void sui_url_previewer_set_url(SuiUrlPreviewer *self, const char *url);
-static const char* sui_url_previewer_get_url(SuiUrlPreviewer *self);
 
-static void preview(SuiUrlPreviewer *self);
 static void cancel_preview(SuiUrlPreviewer *self);
 static void preview_text(SuiUrlPreviewer *self, const char *text);
 static void preview_error_text(SuiUrlPreviewer *self,
         const char *text);
 static void preview_image(SuiUrlPreviewer *self, GdkPixbuf *pixbuf);
-static SuiUrlContentType get_url_content_type(SuiUrlPreviewer *self);
 
 static void on_notify_visible(GObject *object, GParamSpec *pspec, gpointer data);
-static void open_button_on_clicked(GtkWidget *widget, gpointer user_data);
+static void preview_button_on_clicked(GtkWidget *widget, gpointer user_data);
 static void cancel_button_on_clicked(GtkWidget *widget, gpointer user_data);
 static void image_event_box_on_button_release(GtkWidget *widget,
         GdkEventButton *event, gpointer user_data);
@@ -107,9 +101,9 @@ static void buffered_stream_fill_ready(GObject *object, GAsyncResult *result,
 
 enum
 {
-  // 0 for PROP_NOME
-  PROP_URL = 1,
-  N_PROPERTIES
+    // 0 for PROP_NOME
+    PROP_URL = 1,
+    N_PROPERTIES
 };
 
 static GParamSpec *obj_properties[N_PROPERTIES] = { NULL, };
@@ -167,8 +161,8 @@ static void sui_url_previewer_init(SuiUrlPreviewer *self){
 
     g_signal_connect(self, "notify::visible",
             G_CALLBACK(on_notify_visible), NULL);
-    g_signal_connect(self->open_button, "clicked",
-            G_CALLBACK(open_button_on_clicked), self);
+    g_signal_connect(self->preview_button, "clicked",
+            G_CALLBACK(preview_button_on_clicked), self);
     g_signal_connect(self->cancel_button, "clicked",
             G_CALLBACK(cancel_button_on_clicked), self);
     g_signal_connect(self->image_event_box, "button-release-event",
@@ -181,6 +175,9 @@ static void sui_url_previewer_constructed(GObject *object){
     G_OBJECT_CLASS(sui_url_previewer_parent_class)->constructed(object);
 
     self = SUI_URL_PREVIEWER(object);
+    gtk_expander_set_label_widget(self->expander,
+            GTK_WIDGET(self->expander_label));
+    gtk_label_set_label(self->expander_label, self->url);
     gtk_widget_set_tooltip_text(GTK_WIDGET(self), self->url);
 }
 
@@ -189,7 +186,9 @@ static void sui_url_previewer_finalize(GObject *object){
 
     self = SUI_URL_PREVIEWER(object);
     str_assign(&self->url, NULL);
-    soup_uri_free(self->uri);
+    if (self->uri) {
+        soup_uri_free(self->uri);
+    }
     g_object_unref(self->cancel);
     if (SOUP_IS_MESSAGE(self->msg)){
         g_object_unref(self->msg);
@@ -226,9 +225,11 @@ static void sui_url_previewer_class_init(SuiUrlPreviewerClass *class){
     gtk_widget_class_set_template_from_resource(widget_class,
             "/im/srain/Srain/url_previewer.glade");
 
-    gtk_widget_class_bind_template_child(widget_class, SuiUrlPreviewer, open_button);
+    gtk_widget_class_bind_template_child(widget_class, SuiUrlPreviewer, expander);
+    gtk_widget_class_bind_template_child(widget_class, SuiUrlPreviewer, expander_label);
     gtk_widget_class_bind_template_child(widget_class, SuiUrlPreviewer, stack);
     gtk_widget_class_bind_template_child(widget_class, SuiUrlPreviewer, spinner);
+    gtk_widget_class_bind_template_child(widget_class, SuiUrlPreviewer, preview_button);
     gtk_widget_class_bind_template_child(widget_class, SuiUrlPreviewer, cancel_button);
     gtk_widget_class_bind_template_child(widget_class, SuiUrlPreviewer, text_label);
     gtk_widget_class_bind_template_child(widget_class, SuiUrlPreviewer, image_event_box);
@@ -283,24 +284,17 @@ SuiUrlPreviewer* sui_url_previewer_new(const char *url){
             NULL);
 }
 
-/*****************************************************************************
- * Static functions
- *****************************************************************************/
-
-static void sui_url_previewer_set_url(SuiUrlPreviewer *self, const char *url){
-    /* Only allow called for once */
-    str_assign(&self->url, url);
-    self->uri = soup_uri_new(url);
-}
-
-static const char* sui_url_previewer_get_url(SuiUrlPreviewer *self){
-    return self->url;
-}
-
-static void preview(SuiUrlPreviewer *self){
+/**
+ * @brief sui_url_previewer_preview asynchronously previews the content of URL.
+ *
+ * @param self
+ */
+void sui_url_previewer_preview(SuiUrlPreviewer *self){
     g_return_if_fail(!SOUP_IS_MESSAGE(self->msg));
 
-    if (get_url_content_type(self) == SUI_URL_CONTENT_TYPE_UNSUPPORTED){
+    gtk_expander_set_expanded(self->expander, TRUE);
+
+    if (sui_url_previewer_get_content_type(self) == SUI_URL_CONTENT_TYPE_UNSUPPORTED){
         preview_error_text(self, _("Unsupported URL content type"));
         return;
     }
@@ -316,10 +310,56 @@ static void preview(SuiUrlPreviewer *self){
             session_send_ready, self);
 }
 
+const char* sui_url_previewer_get_url(SuiUrlPreviewer *self){
+    return self->url;
+}
+
+SuiUrlContentType sui_url_previewer_get_content_type(SuiUrlPreviewer *self){
+    const char *scheme;
+    const char *content_type;
+    SoupMessageHeaders *headers;
+
+    if (!self->uri){
+        return SUI_URL_CONTENT_TYPE_UNSUPPORTED;
+    }
+
+    scheme = soup_uri_get_scheme(self->uri);
+    if (g_ascii_strcasecmp(scheme, "http") != 0
+            && g_ascii_strcasecmp(scheme, "https") != 0){
+        // Unsupported protocol
+        return SUI_URL_CONTENT_TYPE_UNSUPPORTED;
+    }
+
+    if (!SOUP_IS_MESSAGE(self->msg)){
+        return SUI_URL_CONTENT_TYPE_UNKNOWN;
+    }
+
+    headers = self->msg->response_headers;
+    content_type = soup_message_headers_get_content_type(headers, NULL);
+    if (g_str_has_prefix(content_type, "image/")){
+        return SUI_URL_CONTENT_TYPE_IMAGE;
+    }
+
+    return SUI_URL_CONTENT_TYPE_UNSUPPORTED;
+}
+
+/*****************************************************************************
+ * Static functions
+ *****************************************************************************/
+
+static void sui_url_previewer_set_url(SuiUrlPreviewer *self, const char *url){
+    /* Only allow called for once */
+    str_assign(&self->url, url);
+    self->uri = soup_uri_new(url);
+}
+
 static void cancel_preview(SuiUrlPreviewer *self){
-    if (!self->previewed){
+    if (self->previewed){
         return;
     }
+
+    gtk_stack_set_visible_child_name(self->stack, STACK_PAGE_PRELOAD);
+
     g_cancellable_cancel(self->cancel);
 }
 
@@ -355,31 +395,6 @@ static void preview_image(SuiUrlPreviewer *self, GdkPixbuf *pixbuf){
     g_object_unref(scaled_pixbuf);
 }
 
-static SuiUrlContentType get_url_content_type(SuiUrlPreviewer *self){
-    const char *scheme;
-    const char *content_type;
-    SoupMessageHeaders *headers;
-
-    scheme = soup_uri_get_scheme(self->uri);
-    if (g_ascii_strcasecmp(scheme, "http") != 0
-            && g_ascii_strcasecmp(scheme, "https") != 0){
-        // Unsupported protocol
-        return SUI_URL_CONTENT_TYPE_UNSUPPORTED;
-    }
-
-    if (!SOUP_IS_MESSAGE(self->msg)){
-        return SUI_URL_CONTENT_TYPE_UNKNOWN;
-    }
-
-    headers = self->msg->response_headers;
-    content_type = soup_message_headers_get_content_type(headers, NULL);
-    if (g_str_has_prefix(content_type, "image/")){
-        return SUI_URL_CONTENT_TYPE_IMAGE;
-    }
-
-    return SUI_URL_CONTENT_TYPE_UNSUPPORTED;
-}
-
 static void on_notify_visible(GObject *object, GParamSpec *pspec, gpointer data){
     SuiUrlPreviewer *self;
 
@@ -387,15 +402,14 @@ static void on_notify_visible(GObject *object, GParamSpec *pspec, gpointer data)
     if (!gtk_widget_is_visible(GTK_WIDGET(self))){
         return;
     }
-    preview(self);
+    // Nothing to do for now
 }
 
-static void open_button_on_clicked(GtkWidget *widget, gpointer user_data){
+static void preview_button_on_clicked(GtkWidget *widget, gpointer user_data){
     SuiUrlPreviewer *self;
 
     self = SUI_URL_PREVIEWER(user_data);
-    sui_common_open_url(self->url);
-    sui_common_popdown_panel(GTK_WIDGET(self));
+    sui_url_previewer_preview(self);
 }
 
 static void cancel_button_on_clicked(GtkWidget *widget, gpointer user_data){
@@ -403,7 +417,6 @@ static void cancel_button_on_clicked(GtkWidget *widget, gpointer user_data){
 
     self = SUI_URL_PREVIEWER(user_data);
     cancel_preview(self);
-    sui_common_popdown_panel(GTK_WIDGET(self));
 }
 
 static void image_event_box_on_button_release(GtkWidget *widget,
@@ -499,7 +512,7 @@ static void session_send_ready(GObject *object, GAsyncResult *result,
         goto ERR;
     }
 
-    switch (get_url_content_type(self)){
+    switch (sui_url_previewer_get_content_type(self)){
         case SUI_URL_CONTENT_TYPE_UNKNOWN:
             g_warn_if_reached();
             goto ERR;
@@ -559,7 +572,7 @@ static void buffered_stream_fill_ready(GObject *object, GAsyncResult *result,
 
     buf = g_buffered_input_stream_peek_buffer(buffered_stream, &len);
 
-    switch (get_url_content_type(self)){
+    switch (sui_url_previewer_get_content_type(self)){
         case SUI_URL_CONTENT_TYPE_IMAGE:
             {
                 GdkPixbuf *pixbuf;
