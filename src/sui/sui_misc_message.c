@@ -125,7 +125,7 @@ static void sui_misc_message_class_init(SuiMiscMessageClass *class){
     widget_class = GTK_WIDGET_CLASS(class);
     gtk_widget_class_set_template_from_resource(widget_class,
             "/im/srain/Srain/misc_message.glade");
-    gtk_widget_class_bind_template_child(widget_class, SuiMessage, message_box);
+    gtk_widget_class_bind_template_child(widget_class, SuiMessage, content_box);
     gtk_widget_class_bind_template_child(widget_class, SuiMessage, message_label);
 
     message_class = SUI_MESSAGE_CLASS(class);

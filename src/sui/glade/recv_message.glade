@@ -7,7 +7,7 @@
     <property name="can_focus">False</property>
     <property name="orientation">vertical</property>
     <child>
-      <object class="GtkBox" id="message_box">
+      <object class="GtkBox" id="frame_box">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
@@ -24,7 +24,7 @@
                   <object class="GtkLabel" id="user_name_label">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">nickname</property>
+                    <property name="label" translatable="yes">Unable to display nickname</property>
                     <property name="wrap">True</property>
                     <property name="lines">0</property>
                     <attributes>
@@ -71,25 +71,40 @@
           </packing>
         </child>
         <child>
-          <object class="GtkBox" id="content_box">
+          <object class="GtkBox">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <object class="GtkLabel" id="message_label">
+              <object class="GtkBox" id="content_box">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="halign">start</property>
-                <property name="label" translatable="yes">うれしぃこと 悲しいことも / 全部まるめて</property>
-                <property name="use_markup">True</property>
-                <property name="wrap">True</property>
-                <property name="wrap_mode">word-char</property>
-                <property name="selectable">True</property>
-                <property name="max_width_chars">80</property>
-                <attributes>
-                  <attribute name="stretch" value="normal"/>
-                </attributes>
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkLabel" id="message_label">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="label" translatable="yes">&lt;span color="red"&gt;Unable to display message content &lt;sup&gt;ERROR&lt;/sup&gt;&lt;/span&gt;</property>
+                    <property name="use_markup">True</property>
+                    <property name="wrap">True</property>
+                    <property name="wrap_mode">word-char</property>
+                    <property name="selectable">True</property>
+                    <property name="max_width_chars">80</property>
+                    <attributes>
+                      <attribute name="stretch" value="normal"/>
+                    </attributes>
+                    <style>
+                      <class name="sui-message-label"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
                 <style>
-                  <class name="sui-message-label"/>
+                  <class name="sui-message-content"/>
                 </style>
               </object>
               <packing>
@@ -125,7 +140,7 @@
           </packing>
         </child>
         <style>
-          <class name="sui-message-box"/>
+          <class name="sui-message-frame"/>
         </style>
       </object>
       <packing>

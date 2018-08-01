@@ -44,7 +44,7 @@ struct _SuiMessage {
     GtkBox parent;
     SrnMessage *ctx;
     SuiBuffer *buf;
-    GtkLabel *message_box;
+    GtkBox *content_box;
     GtkLabel *message_label;
 
     /* SuiMessage's style is varies with whether it has previous and next message.
