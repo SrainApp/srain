@@ -34,6 +34,7 @@
 #include "nick_menu.h"
 #include "sui_buffer.h"
 #include "sui_message.h"
+#include "sui_url_previewer.h"
 
 #include "log.h"
 #include "i18n.h"
@@ -292,11 +293,56 @@ void sui_message_label_on_popup(GtkLabel *label, GtkMenu *menu, gpointer user_da
 static void sui_message_real_update(SuiMessage *self){
     GtkStyleContext *style_context;
 
+    // Update message content
     gtk_label_set_markup(self->message_label, self->ctx->dcontent);
 
+    // Set mentioned style class
     style_context = gtk_widget_get_style_context(GTK_WIDGET(self));
     if (self->ctx->mentioned){
         gtk_style_context_add_class(style_context, "highlighted");
+    }
+
+    // Show url previewer if needed
+    if (self->buf->cfg->preview_url) {
+        GList *children;
+        GSList *urls;
+        children = gtk_container_get_children(GTK_CONTAINER(self->content_box));
+        urls = self->ctx->urls;
+
+        for (GSList *url = urls; url; url = g_slist_next(url)) {
+            bool found;
+
+            found = FALSE;
+            for (GList *child = children; child; child = g_list_next(child)) {
+                if (SUI_IS_URL_PREVIEWER(child->data)) {
+                    SuiUrlPreviewer *pvr;
+
+                    pvr = SUI_URL_PREVIEWER(child->data);
+                    if (g_strcmp0(url->data, sui_url_previewer_get_url(pvr)) == 0){
+                        found = TRUE;
+                    }
+                }
+            }
+            if (!found) { // Create one if not found
+                SuiUrlPreviewer *pvr;
+
+                pvr = sui_url_previewer_new(url->data);
+                if (sui_url_previewer_get_content_type(pvr) ==
+                        SUI_URL_CONTENT_TYPE_UNSUPPORTED) {
+                    g_object_ref_sink(pvr);
+                    g_object_unref(pvr);
+                } else {
+                    // Start preview if needed
+                    if (self->buf->cfg->auto_preview_url){
+                        sui_url_previewer_preview(pvr);
+                    }
+
+                    gtk_box_pack_start(self->content_box, GTK_WIDGET(pvr),
+                            TRUE, FALSE, 4);
+                }
+
+            }
+        }
     }
 }
 

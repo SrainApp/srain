@@ -120,8 +120,8 @@ void sui_buffer_add_message(SuiBuffer *buf, SuiMessage *msg){
     g_return_if_fail(SUI_IS_MESSAGE(msg));
 
     /* Add message */
-    sui_message_update(msg);
     sui_message_set_buffer(msg, buf);
+    sui_message_update(msg);
     list = sui_buffer_get_message_list(buf);
     type = G_OBJECT_TYPE(msg);
     if (type == SUI_TYPE_MISC_MESSAGE){
