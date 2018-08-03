@@ -416,6 +416,7 @@ static SrnRet read_chat_config_from_chat(config_setting_t *chat, SrnChatConfig *
     config_setting_lookup_bool_ex(chat, "render-mirc-color", &cfg->render_mirc_color);
     config_setting_lookup_bool_ex(chat, "preview-url", &cfg->ui->preview_url);
     config_setting_lookup_bool_ex(chat, "auto-preview-url", &cfg->ui->auto_preview_url);
+    config_setting_lookup_string_ex(chat, "nick-completion-suffix", &cfg->ui->nick_completion_suffix);
 
     return SRN_OK;
 }
