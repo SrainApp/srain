@@ -6,6 +6,7 @@ build/
 *.*~
 resources.c
 compile_commands.json
+.vscode/
 
 # Object files
 *.o
