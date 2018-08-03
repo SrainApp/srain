@@ -1418,8 +1418,9 @@ static void irc_event_numeric(SircSession *sirc, int event,
                 realname = params[4];
 
                 // TODO: dont show WHOIS message in message list
-                // srn_chat_add_misc_message_fmt(srv->cur_chat, user, "%s <%s@%s> %s",
-                // nickname, username, hostname, realname);
+                srn_chat_add_misc_message_fmt(srv->cur_chat, srv->cur_chat->_user,
+                        _("%1$s <%2$s@%3$s> %4$s"),
+                        nickname, username, hostname, realname);
                 break;
             }
         case SIRC_RFC_RPL_WHOISCHANNELS:
@@ -1429,7 +1430,9 @@ static void irc_event_numeric(SircSession *sirc, int event,
                 g_return_if_fail(count >= 3);
                 msg = params[2];
 
-                // srn_chat_add_misc_message_fmt(srv->cur_chat, user, _("%1$s is member of %2$s"), params[1], msg);
+                // TODO: dont show WHOIS message in message list
+                srn_chat_add_misc_message_fmt(srv->cur_chat, srv->cur_chat->_user,
+                        _("%1$s is member of %2$s"), params[1], msg);
                 break;
             }
         case SIRC_RFC_RPL_WHOISSERVER:
@@ -1439,8 +1442,10 @@ static void irc_event_numeric(SircSession *sirc, int event,
                 g_return_if_fail(count >= 4);
                 msg = params[3];
 
-                // srn_chat_add_misc_message_fmt(srv->cur_chat, user, _("%1$s is attached to %2$s at \"%3$s\""),
-                // params[1], params[2], msg);
+                // TODO: dont show WHOIS message in message list
+                srn_chat_add_misc_message_fmt(srv->cur_chat, srv->cur_chat->_user,
+                        _("%1$s is attached to %2$s at \"%3$s\""),
+                        params[1], params[2], msg);
                 break;
             }
         case SIRC_RFC_RPL_WHOISIDLE:
@@ -1455,9 +1460,11 @@ static void irc_event_numeric(SircSession *sirc, int event,
                 sec = params[2];
                 since = strtoul(params[3], NULL, 10);
 
-                // time_to_str(since, timestr, sizeof(timestr), _("%Y-%m-%d %T"));
-                // srn_chat_add_misc_message_fmt(srv->cur_chat, user, _("%1$s is idle for %2$s seconds since %3$s"),
-                        // who, sec, timestr);
+                // TODO: dont show WHOIS message in message list
+                time_to_str(since, timestr, sizeof(timestr), _("%Y-%m-%d %T"));
+                srn_chat_add_misc_message_fmt(srv->cur_chat, srv->cur_chat->_user,
+                        _("%1$s is idle for %2$s seconds since %3$s"),
+                        who, sec, timestr);
                 break;
             }
         case SIRC_RFC_RPL_WHOWAS_TIME:
@@ -1467,8 +1474,9 @@ static void irc_event_numeric(SircSession *sirc, int event,
                 g_return_if_fail(count >= 4);
                 msg = params[3];
 
-                // srn_chat_add_misc_message_fmt(srv->cur_chat, user, _("%1$s %2$s %3$s"),
-                        // params[1], msg, params[2]);
+                // TODO: dont show WHOIS message in message list
+                srn_chat_add_misc_message_fmt(srv->cur_chat, srv->cur_chat->_user,
+                        _("%1$s %2$s %3$s"), params[1], msg, params[2]);
                 break;
             }
         case SIRC_RFC_RPL_WHOISHOST:
@@ -1479,7 +1487,9 @@ static void irc_event_numeric(SircSession *sirc, int event,
                 g_return_if_fail(count >= 3);
                 msg = params[2];
 
-                // srn_chat_add_misc_message_fmt(srv->cur_chat, user, _("%1$s %2$s"), params[1], msg);
+                // TODO: dont show WHOIS message in message list
+                srn_chat_add_misc_message_fmt(srv->cur_chat, srv->cur_chat->_user,
+                        _("%1$s %2$s"), params[1], msg);
                 break;
             }
         case SIRC_RFC_RPL_ENDOFWHOIS:
@@ -1489,7 +1499,8 @@ static void irc_event_numeric(SircSession *sirc, int event,
                 g_return_if_fail(count >= 3);
                 msg = params[2];
 
-                // srn_chat_add_misc_message(srv->cur_chat, user, msg);
+                // TODO: dont show WHOIS message in message list
+                srn_chat_add_misc_message(srv->cur_chat, srv->cur_chat->_user, msg);
                 break;
             }
 
