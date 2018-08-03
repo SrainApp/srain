@@ -110,19 +110,6 @@
     margin-left: 4px;
 }
 
-.sui-send-message .sui-message-label {
-    /*    
-    margin-bottom: 4px;
-     */
-}
-
-.sui-recv-message .sui-message-label {
-    /* 
-    margin-top: 4px;    
-    margin-bottom: 4px;    
-    */
-}
-
 .sui-recv-message .sui-user-box{
     margin-bottom: 4px;
 }
