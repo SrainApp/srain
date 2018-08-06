@@ -266,6 +266,9 @@ static SrnRet read_application_config_from_cfg(config_t *cfg,
         SrnApplicationConfig *app_cfg){
     config_lookup_string_ex(cfg, "id", &app_cfg->id);
     config_lookup_string_ex(cfg, "theme", &app_cfg->ui->theme);
+    config_lookup_bool_ex(cfg, "csd", &app_cfg->ui->window.csd);
+    config_lookup_bool_ex(cfg, "send-on-ctrl-enter",
+            &app_cfg->ui->window.send_on_ctrl_enter);
 
     return SRN_OK;
 }
@@ -320,7 +323,7 @@ static SrnRet read_server_config_from_server(config_setting_t *server,
 
     /* Read server.addrs */
     config_setting_t *addrs;
-    addrs = config_setting_lookup(server, "addrs");
+    addrs = config_setting_lookup(server, "addresses");
     if (addrs){
         for (int i = 0, count = config_setting_length(addrs); i < count; i++){
             char *addr;
@@ -525,7 +528,7 @@ static SrnRet read_user_config_from_user(config_setting_t *user, SrnUserConfig *
         config_setting_lookup_string_ex(login, "sasl-plain-password", &cfg->login->sasl_plain_password);
     }
 
-    config_setting_lookup_string_ex(user, "nick", &cfg->nick);
+    config_setting_lookup_string_ex(user, "nickname", &cfg->nick);
     config_setting_lookup_string_ex(user, "username", &cfg->username);
     config_setting_lookup_string_ex(user, "realname", &cfg->realname);
 
