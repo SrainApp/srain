@@ -30,13 +30,15 @@ typedef struct _SuiApplicationConfig SuiApplicationConfig;
 typedef struct _SuiWindowConfig SuiWindowConfig;
 typedef struct _SuiBufferConfig SuiBufferConfig;
 
-struct _SuiApplicationConfig {
-    char *theme;
-};
-
 struct _SuiWindowConfig {
     bool csd;
     bool send_on_ctrl_enter;
+};
+
+struct _SuiApplicationConfig {
+    char *theme;
+
+    SuiWindowConfig window;
 };
 
 struct _SuiBufferConfig {

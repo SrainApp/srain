@@ -65,9 +65,14 @@ void sui_run_application(SuiApplication *app, int argc, char *argv[]){
     sui_application_run(app, argc, argv);
 }
 
-SuiWindow* sui_new_window(SuiApplication *app, SuiWindowEvents *events,
-    SuiWindowConfig *cfg){
+SuiWindow* sui_new_window(SuiApplication *app, SuiWindowEvents *events){
     SuiWindow *win;
+    SuiWindowConfig *cfg;
+    SuiApplicationConfig *app_cfg;
+
+    cfg = sui_window_config_new();
+    app_cfg = sui_application_get_config(app);
+    *cfg = app_cfg->window; // Copy window config
 
     win = sui_window_new(app, events, cfg);
     gtk_window_present(GTK_WINDOW(win));

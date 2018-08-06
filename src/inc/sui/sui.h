@@ -56,7 +56,7 @@ void sui_application_set_config(SuiApplication *app, SuiApplicationConfig *cfg);
 SuiApplicationConfig* sui_application_get_config(SuiApplication *app);
 
 /* SuiWindow */
-SuiWindow* sui_new_window(SuiApplication *app, SuiWindowEvents *events, SuiWindowConfig *cfg);
+SuiWindow* sui_new_window(SuiApplication *app, SuiWindowEvents *events);
 void sui_free_window(SuiWindow *win);
 
 /* SuiBuffer */

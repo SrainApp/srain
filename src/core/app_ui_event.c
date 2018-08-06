@@ -115,7 +115,7 @@ static SrnRet ui_event_activate(SuiApplication *app, SuiEvent event, GVariantDic
 
     activated = TRUE;
     srn_app = sui_application_get_ctx(app);
-    sui_new_window(app, &srn_app->ui_win_events, sui_window_config_new());
+    sui_new_window(app, &srn_app->ui_win_events);
 
     return rc_read(); // Read rc file
 }

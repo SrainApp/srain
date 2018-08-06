@@ -381,7 +381,6 @@ SuiWindow* sui_window_new(SuiApplication *app, SuiWindowEvents *events,
         SuiWindowConfig *cfg){
     SuiWindow *self;
 
-    cfg->csd = TRUE;
     self = g_object_new(SUI_TYPE_WINDOW,
             "application", app,
             "events", events,
