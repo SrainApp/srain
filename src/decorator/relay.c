@@ -130,18 +130,21 @@ static char* do_relay(GSList *lst, SrnMessage *msg, const char *frag){
 
             if (g_match_info_matches(match_info)){
                 char *tmp;
+                char *escape_dnick;
 
                 dnick = g_match_info_fetch_named(match_info, "nick");
+                escape_dnick = g_markup_escape_text(dnick, -1);
                 tmp = g_match_info_fetch_named(match_info, "text");
 
                 str_assign(&msg->role, msg->dname);
-                str_assign(&msg->dname, dnick);
+                str_assign(&msg->dname, escape_dnick);
                 dcontent = g_markup_escape_text(tmp, -1);
 
                 LOG_FR("Relay message matched, nick: %s, content: %s", dnick, dcontent);
 
                 g_free(tmp);
                 g_free(dnick);
+                g_free(escape_dnick);
                 g_match_info_free(match_info);
                 break;
             }
