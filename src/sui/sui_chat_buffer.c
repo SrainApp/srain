@@ -143,6 +143,7 @@ static GtkListStore* sui_chat_buffer_completion_func(SuiBuffer *_self,
     GSList *users;
     GtkListStore *store;
     SuiChatBuffer *self;
+    SuiBufferConfig *cfg;
 
     self = SUI_CHAT_BUFFER(_self);
     store = SUI_BUFFER_CLASS(sui_chat_buffer_parent_class)->completion_func(_self, context);
@@ -163,17 +164,23 @@ static GtkListStore* sui_chat_buffer_completion_func(SuiBuffer *_self,
         return store;
     }
 
+    cfg = sui_buffer_get_config(_self);
     users = sui_user_list_get_users_by_prefix(self->user_list, prefix);
     for (GSList *lst = users; lst; lst = g_slist_next(lst)){
         SuiUser *user;
         GtkTreeIter iter;
+        char *suffix;
 
         user = lst->data;
+        suffix = cfg->nick_completion_suffix;
+        gchar *nick_with_suffix = g_strconcat(sui_user_get_nickname(user), 
+                suffix, NULL);
         gtk_list_store_append(store, &iter);
         gtk_list_store_set(store, &iter,
                 SUI_COMPLETION_COLUMN_PREFIX, prefix,
-                SUI_COMPLETION_COLUMN_SUFFIX, sui_user_get_nickname(user) + strlen(prefix),
+                SUI_COMPLETION_COLUMN_SUFFIX, nick_with_suffix + strlen(prefix),
                 -1);
+        g_free(nick_with_suffix);
     }
     g_slist_free_full(users, (GDestroyNotify)sui_user_free);
 

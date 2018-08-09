@@ -48,6 +48,7 @@ struct _SuiBufferConfig {
     bool show_user_list;
     bool preview_url;
     bool auto_preview_url;
+    char *nick_completion_suffix;
 };
 
 SuiApplicationConfig *sui_application_config_new(void);

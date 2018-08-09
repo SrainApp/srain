@@ -81,5 +81,6 @@ SrnRet sui_buffer_config_check(SuiBufferConfig *cfg){
 void sui_buffer_config_free(SuiBufferConfig *cfg){
     g_return_if_fail(cfg);
 
+    g_free(cfg->nick_completion_suffix);
     g_free(cfg);
 }
