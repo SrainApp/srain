@@ -34,32 +34,13 @@
 #include "utils.h"
 #include "i18n.h"
 
-SrnServerConfig* srn_server_config_new(const char *name){
+SrnServerConfig* srn_server_config_new(){
     SrnServerConfig *cfg;
-    SircConfig *irc_cfg;
 
     cfg = g_malloc0(sizeof(SrnServerConfig));
-    irc_cfg = sirc_config_new();
 
-    cfg->predefined = FALSE;
-    cfg->name = g_strdup(name);
-    cfg->irc = irc_cfg;
-    cfg->srv = NULL;
-
-    return cfg;
-}
-
-SrnServerConfig* srn_server_config_new_from_basename(const char *basename){
-    int i = 0;
-    SrnServerConfig *cfg;
-
-    cfg = srn_server_config_new(basename);
-    while (!cfg && i < 10){
-        /* If the name repeats, generates a name for it */
-        char *name = g_strdup_printf("%s#%d", basename, ++i);
-        cfg = srn_server_config_new(name);
-        g_free(name);
-    }
+    cfg->irc = sirc_config_new();;
+    cfg->user = srn_user_config_new();
 
     return cfg;
 }
@@ -67,6 +48,7 @@ SrnServerConfig* srn_server_config_new_from_basename(const char *basename){
 SrnRet srn_server_config_check(SrnServerConfig *cfg){
     const char *missing = _("Missing field in server config: %1$s");
     const char *invalid = _("Invalid value in server config: %1$s");
+    SrnRet ret;
 
     if (!cfg){
         return RET_ERR(_("Invalid server config instance"));
@@ -88,206 +70,49 @@ SrnRet srn_server_config_check(SrnServerConfig *cfg){
         }
     }
 
-    if (str_is_empty(cfg->name)) {
-        return RET_ERR(missing, "name");
-    }
-    if (str_is_empty(cfg->nickname)) {
-        return RET_ERR(missing, "nickname");
-    }
-    if (str_is_empty(cfg->username)) {
-        str_assign(&cfg->username, cfg->nickname);
-    }
-    if (str_is_empty(cfg->realname)) {
-        str_assign(&cfg->realname, cfg->nickname);
+    ret = srn_user_config_check(cfg->user);
+    if (!RET_IS_OK(ret)) {
+        return ret;
     }
 
-    switch (cfg->login_method) {
-        case SRN_LOGIN_METHOD_NONE:
-            break;
-        case SRN_LOGIN_METHOD_PASS:
-            if (str_is_empty(cfg->passwd)) {
-                return RET_ERR(missing, "passwd");
-            }
-            break;
-        case SRN_LOGIN_METHOD_NICKSERV:
-        case SRN_LOGIN_METHOD_MSG_NICKSERV:
-        case SRN_LOGIN_METHOD_SASL_PLAIN:
-            if (str_is_empty(cfg->user_passwd)) {
-                return RET_ERR(missing, "user.passwd");
-            }
-            break;
-        case SRN_LOGIN_METHOD_UNKNOWN:
-        default:
-            return RET_ERR(invalid, "login_method");
+    ret = sirc_config_check(cfg->irc);
+    if (!RET_IS_OK(ret)) {
+        return ret;
     }
-
-    if (str_is_empty(cfg->part_message)) {
-        str_assign(&cfg->part_message, "Leaving");
-    }
-    if (str_is_empty(cfg->kick_message)) {
-        str_assign(&cfg->kick_message, "Kick");
-    }
-    if (str_is_empty(cfg->away_message)) {
-        str_assign(&cfg->away_message, "Away");
-    }
-    if (str_is_empty(cfg->quit_message)) {
-        str_assign(&cfg->quit_message, "El Psy Congroo.");
-    }
-
-    if (!cfg->irc) {
-        return RET_ERR(missing, "irc");
-    }
-
-    return sirc_config_check(cfg->irc);
-}
-
-void srn_server_config_free(SrnServerConfig *cfg){
-    g_return_if_fail(!cfg->srv);
-
-    str_assign(&cfg->name, NULL);
-    g_slist_free_full(cfg->addrs, (GDestroyNotify)srn_server_addr_free);
-    str_assign(&cfg->passwd, NULL);
-    str_assign(&cfg->nickname, NULL);
-    str_assign(&cfg->username, NULL);
-    str_assign(&cfg->realname, NULL);
-    str_assign(&cfg->user_passwd, NULL);
-    str_assign(&cfg->part_message, NULL);
-    str_assign(&cfg->kick_message, NULL);
-    str_assign(&cfg->away_message, NULL);
-    str_assign(&cfg->quit_message, NULL);
-
-    sirc_config_free(cfg->irc);
-}
-
-SrnRet srn_server_config_add_addr(SrnServerConfig *cfg, const char *addr){
-    int port;
-    char *tmp;
-    const char *host;
-
-    tmp = g_strdup(addr);
-    host = tmp;
-    port = 0;
-    tmp = strchr(tmp, ':');
-    if (tmp) {
-        *tmp++ = '\0';
-        port = g_ascii_strtoull(tmp, NULL, 10);
-    }
-    if (port == 0) {
-        port = cfg->irc->tls ? 6697 : 6667;
-    }
-    cfg->addrs = g_slist_append(cfg->addrs, srn_server_addr_new(host, port));
-    g_free(tmp);
 
     return SRN_OK;
 }
 
+void srn_server_config_free(SrnServerConfig *cfg){
+    str_assign(&cfg->name, NULL);
+    g_slist_free_full(cfg->addrs, (GDestroyNotify)srn_server_addr_free);
+    str_assign(&cfg->passwd, NULL);
+
+    srn_user_config_free(cfg->user);
+    sirc_config_free(cfg->irc);
+
+    g_free(cfg);
+}
+
+SrnRet srn_server_config_add_addr(SrnServerConfig *cfg, SrnServerAddr *addr){
+    cfg->addrs = g_slist_append(cfg->addrs, addr);
+    return SRN_OK;
+}
+
 /**
- * @brief Every time you set address of a server config, the previous
- *      address list will be cleared.
+ * @brief srn_server_config_clear_addr`` clears all addresses of server config.
  *
  * @param cfg
  * @param addr
- *
- * @return
  */
-SrnRet srn_server_config_set_addr(SrnServerConfig *cfg, const char *addr){
+void srn_server_config_clear_addr(SrnServerConfig *cfg){
     g_slist_free_full(cfg->addrs, (GDestroyNotify)srn_server_addr_free);
-    return srn_server_config_add_addr(cfg, addr);
+    cfg->addrs = NULL;
 }
 
 char* srn_server_config_dump(SrnServerConfig *cfg){
-    char *passwd;
-    char *user_passwd;
-    char *login_method;
-    char *dump;
-    char *irc_dump;
-    GString *str;
-
-    g_return_val_if_fail(cfg, NULL);
-
-    if (!str_is_empty(cfg->passwd)){
-        passwd = "********";
-    } else {
-        passwd = _("None");
-    }
-
-    if (!str_is_empty(cfg->user_passwd)){
-        user_passwd = "********";
-    } else {
-        user_passwd = _("None");
-    }
-
-    login_method = srn_login_method_to_string(cfg->login_method);
-    irc_dump = sirc_config_dump(cfg->irc);
-
-    str = g_string_new("");
-    g_string_append_printf(str,
-            _("*** Server name: %s, Instance: %p\n"
-                "\tAddresses: %s, Password: %s\n"
-                "\tNickname: %s, Username: %s, Realname: %s\n"
-                "\tLogin method: %s, User password: %s\n"
-                "\tPart: %s, Kick: %s, Away: %s, Quit: %s\n"
-                "\tIRC configuration: %s"),
-            cfg->name, cfg->srv,
-            /* TODO: cfg->addrs */ "TODO", passwd,
-            cfg->nickname, cfg->username, cfg->realname,
-            login_method, user_passwd,
-            cfg->part_message, cfg->kick_message, cfg->away_message, cfg->quit_message,
-            irc_dump);
-
-    g_free(login_method);
-    g_free(irc_dump);
-    dump = str->str;
-    g_string_free(str, FALSE);
-
-    return dump;
-}
-
-char* srn_login_method_to_string(SrnLoginMethod lm){
-    const char *str;
-
-    switch (lm) {
-        case SRN_LOGIN_METHOD_NONE:
-            str = "none";
-            break;
-        case SRN_LOGIN_METHOD_PASS:
-            str = "pass";
-            break;
-        case SRN_LOGIN_METHOD_NICKSERV:
-            str = "nickserv";
-            break;
-        case SRN_LOGIN_METHOD_MSG_NICKSERV:
-            str = "msg-nickserv";
-            break;
-        case SRN_LOGIN_METHOD_SASL_PLAIN:
-            str = "sasl-plain";
-            break;
-        case SRN_LOGIN_METHOD_UNKNOWN:
-        default:
-            str = "unknown";
-    }
-
-    return g_strdup(str);
-}
-
-SrnLoginMethod srn_login_method_from_string(const char *str){
-    SrnLoginMethod login;
-
-    if (str == NULL || g_ascii_strcasecmp(str, "none") == 0){
-        login = SRN_LOGIN_METHOD_NONE;
-    } else if (g_ascii_strcasecmp(str, "pass") == 0){
-        login = SRN_LOGIN_METHOD_PASS;
-    } else if (g_ascii_strcasecmp(str, "nickserv") == 0){
-        login = SRN_LOGIN_METHOD_NICKSERV;
-    } else if (g_ascii_strcasecmp(str, "msg-nickserv") == 0){
-        login = SRN_LOGIN_METHOD_MSG_NICKSERV;
-    } else if (g_ascii_strcasecmp(str, "sasl-plain") == 0){
-        login = SRN_LOGIN_METHOD_SASL_PLAIN;
-    } else {
-        login = SRN_LOGIN_METHOD_UNKNOWN;
-    }
-
-    return login;
+    // TODO
+    return NULL;
 }
 
 SrnServerAddr* srn_server_addr_new(const char *host, int port) {
@@ -300,7 +125,41 @@ SrnServerAddr* srn_server_addr_new(const char *host, int port) {
     return addr;
 }
 
-void  srn_server_addr_free(SrnServerAddr *addr) {
+SrnServerAddr* srn_server_addr_new_from_string(const char *str) {
+    int port;
+    char *host;
+    char *tmp;
+    SrnServerAddr *addr;
+
+    host = g_strdup(str);
+    tmp = host;
+    port = 0;
+    tmp = strchr(host, ':');
+    if (tmp) {
+        *tmp = '\0';
+        port = g_ascii_strtoull(tmp+1, NULL, 10);
+    }
+    addr = srn_server_addr_new(host, port);
+    g_free(host);
+
+    return addr;
+}
+
+void srn_server_addr_free(SrnServerAddr *addr) {
     str_assign(&addr->host, NULL);
     g_free(addr);
+}
+
+/**
+ * @brief ``srn_server_addr_equal`` determines if two addresses are equal.
+ * Note that ``port == 0`` is used as a wildcard here.
+ *
+ * @param addr1
+ * @param addr2
+ *
+ * @return TRUE if equal.
+ */
+bool srn_server_addr_equal(SrnServerAddr *addr1, SrnServerAddr *addr2) {
+    return g_ascii_strcasecmp(addr1->host, addr2->host) == 0
+        && (addr1->port == addr2->port || addr1->port == 0 || addr2->port == 0);
 }

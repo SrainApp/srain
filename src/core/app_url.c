@@ -44,11 +44,16 @@ SrnRet srn_application_open_url(SrnApplication *app, const char *url){
     int port;
     const char *path;
     const char *fragment;
-    bool new_cfg = FALSE;
-    SoupURI *suri = NULL;
-    SrnRet ret = SRN_ERR;
-    SrnServerConfig *cfg = NULL;
-    SrnServer *srv = NULL;
+    SoupURI *suri;
+    SrnRet ret;
+    SrnServer *srv;
+    SrnServerConfig *cfg;
+    SrnServerAddr *addr;
+
+    ret = SRN_ERR;
+    srv = NULL;
+    cfg = NULL;
+    addr = NULL;
 
     suri = soup_uri_new(url);
     if (!suri){
@@ -70,58 +75,65 @@ SrnRet srn_application_open_url(SrnApplication *app, const char *url){
     path = soup_uri_get_path(suri);
     fragment = soup_uri_get_fragment(suri);
 
-    if (str_is_empty(host)){
-        ret = RET_ERR(_("Host is empty in URL \"%1$s\""), url);
-        goto FIN;
-    }
+    addr = srn_server_addr_new(host, port);
+    // Try looking for server with the same address in server list
+    srv = srn_application_get_server_by_addr(app, addr);
+    if (!srv) {
+        const char *name;
+        // Try looking for server config with the same address in config
+        cfg = srn_server_config_new();
+        ret = srn_config_manager_read_server_config_by_addr(
+                app->cfg_mgr, cfg, addr);
 
-    /* Get server config */
-    cfg = srn_application_get_server_config_by_host_port(app, host, port);
-    if (!cfg){
-        // If no such SrnServerConfig, create one
-        cfg = srn_application_add_and_get_server_config_from_basename(app, host);
-        if (!cfg){
-            ret = RET_ERR(_("Failed to create server config \"%1$s\""), host);
-            goto FIN;
+        if (!RET_IS_OK(ret)){
+            // If not found, just load a default server config from config
+            ret = srn_config_manager_read_server_config(app->cfg_mgr, cfg, "");
+            if (!RET_IS_OK(ret)){
+                goto FIN;
+            }
+
+            // Add address for default server config
+            (void)srn_server_config_add_addr(cfg, addr);
+            addr = NULL; // Ownership changed to server config
         }
-        new_cfg = TRUE;
-    }
 
-    /* Instantiate SrnServer */
-    srv = cfg->srv;
-    if (!srv){
-        if (!str_is_empty(host)){
-            str_assign(&cfg->passwd, passwd);
+        if (!cfg->addrs){
+            // This should not happend
+            ret = SRN_ERR;
+            g_warn_if_reached();
+            goto FIN;
         }
         if (!str_is_empty(passwd)){
             str_assign(&cfg->passwd, passwd);
         }
         if (!str_is_empty(nick)){
-            str_assign(&cfg->nickname, nick);
+            str_assign(&cfg->user->nick, nick);
         }
         if (g_ascii_strcasecmp(scheme, "ircs") == 0){
             cfg->irc->tls = TRUE;
         }
 
-        ret = srn_server_config_check(cfg);
+        name = cfg->name ? cfg->name : host;
+        ret = srn_application_add_server_with_config(app, name, cfg);
+        if (!RET_IS_OK(ret)) {
+            ret = RET_ERR(_("Failed to add server \"%1$s\": %2$s"),
+                    name, RET_MSG(ret));
+            goto FIN;
+        }
+        cfg = NULL; // Ownership changed to server
+
+        srv = srn_application_get_server(app, name);
+        ret = srn_server_connect(srv);
         if (!RET_IS_OK(ret)){
             goto FIN;
         }
 
-        ret = srn_application_add_server(app, cfg);
-        if (!RET_IS_OK(ret)) {
-            ret =  RET_ERR(_("Failed to instantiate server \"%1$s\": %2$s"),
-                    cfg->name, RET_MSG(ret));
-            goto FIN;
-        }
-        srv = cfg->srv;
-
-        srn_server_connect(srv);
         srn_server_wait_until_registered(srv);
-        if (!srn_server_is_registered(srv)){
-            ret =  RET_ERR(_("Failed to register on server \"%1$s\""), cfg->name);
-            goto FIN;
-        }
+    }
+
+    if (!srn_server_is_registered(srv)){
+        ret =  RET_ERR(_("Failed to register on server \"%1$s\""), srv->name);
+        goto FIN;
     }
 
     /*  Join channels in URL */
@@ -132,7 +144,7 @@ SrnRet srn_application_open_url(SrnApplication *app, const char *url){
         ret = join_comma_separated_chans(srv, path);
         if (!RET_IS_OK(ret)) {
             ret = RET_ERR(_("Failed to join channel on server \"%1$s\": %2$s"),
-                    srv->cfg->name, RET_MSG(ret));
+                    srv->name, RET_MSG(ret));
             goto FIN;
         }
     }
@@ -140,7 +152,7 @@ SrnRet srn_application_open_url(SrnApplication *app, const char *url){
         ret = join_comma_separated_chans(srv, fragment);
         if (!RET_IS_OK(ret)) {
             ret = RET_ERR(_("Failed to join channel on server \"%1$s\": %2$s"),
-                    srv->cfg->name, RET_MSG(ret));
+                    srv->name, RET_MSG(ret));
             goto FIN;
         }
     }
@@ -150,11 +162,14 @@ FIN:
     if (suri){
         soup_uri_free(suri);
     }
-    if (!RET_IS_OK(ret) && new_cfg && cfg){
-        srn_application_rm_server_config(app, cfg);
+    if (addr){
+        srn_server_addr_free(addr);
     }
-    if (!RET_IS_OK(ret) && new_cfg && srv){
-        srn_application_rm_server(app, srv);
+    if (cfg){
+        srn_server_config_free(cfg);
+    }
+    if (!RET_IS_OK(ret) && srv){
+        // Do not remove server, let the user handle the failure
     }
 
     return ret;

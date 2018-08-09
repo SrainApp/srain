@@ -26,41 +26,17 @@ typedef struct _SuiApplication SuiApplication;
 typedef struct _SuiWindow SuiWindow;
 typedef struct _SuiBuffer SuiBuffer;
 typedef int SuiBufferFlag;
+typedef struct _SuiUser SuiUser;
 typedef struct _SuiMessage SuiMessage;
-typedef enum _UserType UserType;
-typedef enum _SrnChatUserType SrnChatUserType;
+typedef enum _SuiMiscMessageStyle SuiMiscMessageStyle;
 
-// TODO Rename type
-typedef enum {
-    SYS_MSG_NORMAL,
-    SYS_MSG_ERROR,
-    SYS_MSG_ACTION
-} SysMsgType;
-
-
-enum _SrnChatUserType {
-    SRN_SERVER_USER_OWNER,     // ~ mode +q
-    SRN_SERVER_USER_ADMIN,     // & mode +a
-    SRN_SERVER_USER_FULL_OP,   // @ mode +o
-    SRN_SERVER_USER_HALF_OP,   // % mode +h
-    SRN_SERVER_USER_VOICED,    // + mode +v
-    SRN_SERVER_USER_CHIGUA,    // No prefix
-    /* ... */
-    SRN_SERVER_USER_TYPE_MAX
+enum _SuiMiscMessageStyle {
+    SUI_MISC_MESSAGE_STYLE_NONE = 0,
+    SUI_MISC_MESSAGE_STYLE_NORMAL,
+    SUI_MISC_MESSAGE_STYLE_ERROR,
+    SUI_MISC_MESSAGE_STYLE_ACTION,
+    SUI_MISC_MESSAGE_STYLE_UNKNOWN,
 };
-
-enum _UserType {
-    USER_OWNER,     // ~ mode +q
-    USER_ADMIN,     // & mode +a
-    USER_FULL_OP,   // @ mode +o
-    USER_HALF_OP,   // % mode +h
-    USER_VOICED,    // + mode +v
-    USER_CHIGUA,    // No prefix
-    /* ... */
-    USER_TYPE_MAX
-};
-
-#define SRAIN_MSG_MENTIONED 0x1
 
 #define __IN_SUI_H
 #include "sui_event.h"
@@ -70,51 +46,41 @@ enum _UserType {
 void sui_proc_pending_event(void);
 
 /* SuiAppliaction */
-SuiApplication* sui_new_application(const char *id, SuiApplicationEvents *events, SuiApplicationConfig *cfg);
+SuiApplication* sui_new_application(const char *id, void *ctx, SuiApplicationEvents *events, SuiApplicationConfig *cfg);
 void sui_free_application(SuiApplication *app);
 void sui_run_application(SuiApplication *app, int argc, char *argv[]);
 
-void sui_application_set_config(SuiApplication *self, SuiApplicationConfig *cfg);
 void* sui_application_get_ctx(SuiApplication *app);
-void sui_application_set_ctx(SuiApplication *app, void *ctx);
+
+void sui_application_set_config(SuiApplication *app, SuiApplicationConfig *cfg);
+SuiApplicationConfig* sui_application_get_config(SuiApplication *app);
 
 /* SuiWindow */
-SuiWindow* sui_new_window(SuiApplication *app, SuiWindowEvents *events, SuiWindowConfig *cfg);
+SuiWindow* sui_new_window(SuiApplication *app, SuiWindowEvents *events);
 void sui_free_window(SuiWindow *win);
 
 /* SuiBuffer */
-SuiBuffer* sui_new_server_buffer(const char *srv, void *ctx, SuiBufferEvents *events, SuiBufferConfig *cfg);
-SuiBuffer* sui_new_channel_buffer(SuiBuffer *srv_buf, const char *chan, void *ctx, SuiBufferEvents *events, SuiBufferConfig *cfg);
-SuiBuffer* sui_new_private_buffer(SuiBuffer *srv_buf, const char *nick, void *ctx, SuiBufferEvents *events, SuiBufferConfig *cfg);
-void sui_free_buffer(SuiBuffer *sui);
-void sui_buffer_set_config(SuiBuffer *self, SuiBufferConfig *cfg);
+SuiBuffer* sui_new_buffer(void *ctx, SuiBufferEvents *events, SuiBufferConfig *cfg);
+void sui_free_buffer(SuiBuffer *buf);
 
-void* sui_buffer_get_ctx(SuiBuffer *sui);
-
+void* sui_buffer_get_ctx(SuiBuffer *buf);
+void sui_buffer_set_config(SuiBuffer *buf, SuiBufferConfig *cfg);
+void sui_buffer_add_message(SuiBuffer *buf, SuiMessage *msg);
 
 /* SuiMessage */
+SuiMessage *sui_new_misc_message(void *ctx, SuiMiscMessageStyle style);
+SuiMessage *sui_new_send_message(void *ctx);
+SuiMessage *sui_new_recv_message(void *ctx);
 
-void sui_message_set_ctx(SuiMessage *smsg, void *ctx);
-void *sui_message_get_ctx(SuiMessage *smsg);
-// TODO: pass a image file path
-void sui_message_set_time(SuiMessage *smsg, time_t time);
-void sui_message_append_image(SuiMessage *smsg, const char *url);
-void sui_message_mentioned(SuiMessage *smsg);
-void sui_message_notify(SuiMessage *smsg);
-
-SuiMessage *sui_add_sys_msg(SuiBuffer *sui, const char *msg, SysMsgType type);
-SuiMessage *sui_add_sent_msg(SuiBuffer *sui, const char *msg);
-SuiMessage *sui_add_recv_msg(SuiBuffer *sui, const char *nick, const char *id, const char *msg);
-void sui_message_append_message(SuiBuffer *sui, SuiMessage *smsg, const char *msg);
-
-/* Completion */
-void sui_add_completion(SuiBuffer *sui, const char *word);
-void sui_rm_completion(SuiBuffer *sui, const char *word);
+void sui_update_message(SuiMessage *msg);
+void sui_notify_message(SuiMessage *msg);
 
 /* User */
-SrnRet sui_add_user(SuiBuffer *sui, const char *nick, UserType type);
-SrnRet sui_rm_user(SuiBuffer *sui, const char *nick);
-SrnRet sui_ren_user(SuiBuffer *sui, const char *old_nick, const char *new_nick, UserType type);
+SuiUser* sui_new_user(void *ctx);
+void sui_free_user(SuiUser *user);
+void sui_update_user(SuiUser *user);
+void sui_add_user(SuiBuffer *buf, SuiUser *user);
+void sui_rm_user(SuiBuffer *buf, SuiUser *user);
 
 /* Misc */
 void sui_set_topic(SuiBuffer *sui, const char *topic);
@@ -124,6 +90,5 @@ void sui_message_box(const char *title, const char *msg);
 void sui_chan_list_start(SuiBuffer *sui);
 void sui_chan_list_add(SuiBuffer *sui, const char *chan, int users, const char *topic);
 void sui_chan_list_end(SuiBuffer *sui);
-void sui_server_list_add(const char *server);
 
 #endif /* __SUI_H */

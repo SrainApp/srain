@@ -28,7 +28,7 @@ SrnRet srn_config_manager_read_log_config(SrnConfigManager *mgr, SrnLoggerConfig
 SrnRet srn_config_manager_read_application_config(SrnConfigManager *mgr, SrnApplicationConfig *cfg);
 SrnRet srn_config_manager_read_server_config_list(SrnConfigManager *mgr, GSList **srv_cfg_list);
 SrnRet srn_config_manager_read_server_config(SrnConfigManager *mgr, SrnServerConfig *cfg, const char *srv_name);
+SrnRet srn_config_manager_read_server_config_by_addr(SrnConfigManager *mgr, SrnServerConfig *cfg, SrnServerAddr *addr);
 SrnRet srn_config_manager_read_chat_config(SrnConfigManager *mgr, SrnChatConfig *cfg, const char *srv_name, const char *chat_name);
 
 #endif /* __READER_H */
-

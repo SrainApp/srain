@@ -23,18 +23,15 @@
 
 #include "sui_common.h"
 #include "sui_event_hdr.h"
-#include "srain_window.h"
-#include "srain_buffer.h"
-#include "srain_server_buffer.h"
-#include "srain_chat_buffer.h"
-#include "srain_channel_buffer.h"
+#include "sui_window.h"
+#include "sui_buffer.h"
 
 static void nick_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
     const char *nick;
     GVariantDict *params;
     SuiBuffer *buf;
 
-    buf = sui_get_cur_buffer();
+    buf = sui_common_get_cur_buffer();
     nick = user_data;
 
     params = g_variant_dict_new(NULL);
@@ -77,7 +74,7 @@ void nick_menu_popup(GtkWidget *widget, GdkEventButton *event, const char *nick)
 
     LOG_FR("%s", nick);
 
-    builder = gtk_builder_new_from_resource ("/org/gtk/srain/nick_menu.glade");
+    builder = gtk_builder_new_from_resource ("/im/srain/Srain/nick_menu.glade");
 
     nick_menu = (GtkMenu *)gtk_builder_get_object(builder, "nick_menu");
     whois_menu_item = (GtkMenuItem *)gtk_builder_get_object(builder, "whois_menu_item");
@@ -96,25 +93,17 @@ void nick_menu_popup(GtkWidget *widget, GdkEventButton *event, const char *nick)
             G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
 
     /* Create subitem of invite_menu_item */
-    buf = sui_get_cur_buffer();
-    if (SRAIN_IS_CHAT_BUFFER(buf)){
-        buf = SUI_BUFFER(srain_chat_buffer_get_server_buffer(
-                    SRAIN_CHAT_BUFFER(buf)));
-    }
-    if (!SRAIN_IS_SERVER_BUFFER(buf)){
-        goto FIN;
-    }
+    buf = sui_common_get_cur_buffer();
+    buf = NULL;
+    goto FIN;
 
     n = 0;
     invite_submenu = GTK_MENU(gtk_menu_new());
-    lst = srain_server_buffer_get_buffer_list(SRAIN_SERVER_BUFFER(buf));
+    lst = NULL;
+    // FIXME
     while (lst){
         GtkMenuItem *item;
 
-        if (!SRAIN_IS_CHANNEL_BUFFER(lst->data)){
-            lst = g_slist_next(lst);
-            continue;
-        }
         item = GTK_MENU_ITEM(gtk_menu_item_new_with_label(
                     sui_buffer_get_name(lst->data)));
         gtk_widget_show(GTK_WIDGET(item));

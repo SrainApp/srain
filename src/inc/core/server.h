@@ -35,49 +35,54 @@
 #define SRN_SERVER_RECONN_INTERVAL  (5 * 1000)
 #define SRN_SERVER_RECONN_STEP      SRN_SERVER_RECONN_INTERVAL
 
-/* In seconds */
-#define SRN_MESSAGE_MERGE_INTERVAL  60
-
 typedef enum   _SrnMessageType SrnMessageType;
 typedef struct _SrnMessage SrnMessage;
-// typedef struct _UserType UserType;
 typedef struct _SrnServerUser SrnServerUser;
 typedef struct _SrnChatUser SrnChatUser;
+typedef enum   _SrnChatUserType SrnChatUserType;
 typedef struct _SrnChat SrnChat;
+typedef enum   _SrnChatType SrnChatType;
 typedef struct _SrnChatConfig SrnChatConfig;
 typedef struct _SrnServerAddr SrnServerAddr;
 typedef enum   _SrnServerState SrnServerState;
 typedef enum   _SrnServerAction SrnServerAction;
 typedef struct _SrnServer SrnServer;
 typedef enum   _SrnLoginMethod SrnLoginMethod;
+typedef struct _SrnLoginConfig SrnLoginConfig;
+typedef struct _SrnUserConfig SrnUserConfig;
 typedef struct _SrnServerConfig SrnServerConfig;
 typedef struct _EnabledCap EnabledCap;
 typedef struct _SrnServerCap SrnServerCap;
 
+enum _SrnChatType {
+    SRN_CHAT_TYPE_SERVER,
+    SRN_CHAT_TYPE_CHANNEL,
+    SRN_CHAT_TYPE_DIALOG,
+};
 
-/*enum _UserType {
-    SRN_SERVER_USER_CHIGUA,    // No prefix
-    SRN_SERVER_USER_OWNER,     // ~ mode +q
-    SRN_SERVER_USER_ADMIN,     // & mode +a
-    SRN_SERVER_USER_FULL_OP,   // @ mode +o
-    SRN_SERVER_USER_HALF_OP,   // % mode +h
-    SRN_SERVER_USER_VOICED,    // + mode +v
+enum _SrnChatUserType {
+    SRN_CHAT_USER_TYPE_OWNER,     // ~ mode +q
+    SRN_CHAT_USER_TYPE_ADMIN,     // & mode +a
+    SRN_CHAT_USER_TYPE_FULL_OP,   // @ mode +o
+    SRN_CHAT_USER_TYPE_HALF_OP,   // % mode +h
+    SRN_CHAT_USER_TYPE_VOICED,    // + mode +v
+    SRN_CHAT_USER_TYPE_CHIGUA,    // No prefix
+    /* ... */
     SRN_SERVER_USER_TYPE_MAX
-}; */
+};
 
 typedef struct _SrnUserContext SrnUserContext;
 
 struct _SrnChatUser{
     SrnChat *chat;
 
+    bool is_joined;
+
     SrnChatUserType type;
-
-    bool is_join;
-
     SrnServerUser *srv_user;
-    // SuiUser *ui;
-
     GList *msg_list;    // TODO: List of SrnMessage
+
+    SuiUser *ui;
 };
 
 struct _SrnServerUser {
@@ -100,13 +105,13 @@ struct _SrnServerUser {
 };
 
 enum _SrnMessageType {
-    SRN_MESSAGE_UNKNOWN,
-    SRN_MESSAGE_RECV,
-    SRN_MESSAGE_SENT,
-    SRN_MESSAGE_ACTION,
-    SRN_MESSAGE_NOTICE,
-    SRN_MESSAGE_MISC,
-    SRN_MESSAGE_ERROR,
+    SRN_MESSAGE_TYPE_UNKNOWN,
+    SRN_MESSAGE_TYPE_RECV,
+    SRN_MESSAGE_TYPE_SENT,
+    SRN_MESSAGE_TYPE_ACTION,
+    SRN_MESSAGE_TYPE_NOTICE,
+    SRN_MESSAGE_TYPE_MISC,
+    SRN_MESSAGE_TYPE_ERROR,
 };
 
 struct _SrnMessage {
@@ -117,7 +122,7 @@ struct _SrnMessage {
 
     char *content;
     char *dcontent; // Decorated message content
-    time_t time;
+    GDateTime *time;
     bool mentioned;
     SrnMessageType type;
 
@@ -128,11 +133,13 @@ struct _SrnMessage {
 /* Represent a channel or dialog or a server session */
 struct _SrnChat {
     char *name;
-    bool joined;
+    SrnChatType type;
+    bool is_joined;
+
     SrnChatUser *user;  // Yourself
     SrnChatUser *_user; // Hold all messages that do not belong other any user
-
     GSList *user_list;  // List of SrnChatUser
+
     GList *msg_list;
     SrnMessage *last_msg;
 
@@ -173,6 +180,11 @@ enum _SrnServerAction {
 };
 
 struct _SrnServer {
+    /* Meta info */
+    char *name;
+    SrnServerConfig *cfg;    // All required static informations
+    SrnServerAddr *addr;     // Current server addr, is a element of
+                             // SrnServerConfig->addrs
     /* Status */
     SrnServerState state;
     SrnServerAction last_action;
@@ -187,10 +199,7 @@ struct _SrnServer {
     int ping_timer;
     int reconn_timer;
 
-    SrnServerAddr *addr;    // Current server addr, is a element of
-                            // SrnServerConfig->addrs
     SrnServerCap *cap;      // Server capabilities
-    SrnServerConfig *cfg;   // All required static informations
 
     SrnServerUser *user;    // Used to store your nick, username, realname
     SrnServerUser *_user;   // Hold all messages that do not belong other any user
@@ -199,7 +208,7 @@ struct _SrnServer {
     GSList *chat_list;      // List of SrnChat
     GHashTable *user_table; // Hash table of SrnServerUser
 
-    SircSession *irc;
+    SircSession *irc; // IRC session
 };
 
 enum _SrnLoginMethod {
@@ -211,38 +220,44 @@ enum _SrnLoginMethod {
     SRN_LOGIN_METHOD_UNKNOWN,
 };
 
+struct _SrnLoginConfig {
+    SrnLoginMethod method;
+
+    // Union?
+    char *pass_password;
+    char *nickserv_password;
+    char *msg_nickserv_password;
+    char *sasl_plain_identify;
+    char *sasl_plain_password;
+    // ...
+};
+
+struct _SrnUserConfig {
+    char *nick;
+    char *username;
+    char *realname;
+
+    char *away_message;
+    char *part_message;
+    char *kick_message;
+    char *quit_message;
+
+    SrnLoginConfig *login;
+};
+
 struct _SrnServerAddr {
     char *host;
     int port;
 };
 
 struct _SrnServerConfig {
-    /* For specificed server */
-    bool predefined;  /* A SrnServerConfig is predefined when it is loaded from
-                         configuration file, a predefined SrnServerConfig will
-                         appeared in predefined server list and *CAN NOT* be
-                         directly freed by ``srn_server_config_free()``. */
     char *name;
     GSList *addrs; // List of SrnServerAddr
     char *passwd;
 
     /* SrnServerUser */
-    char *nickname;
-    char *username;
-    char *realname;
-    char *user_passwd;
-    SrnLoginMethod login_method;
-
-    /* Default message */
-    char *part_message;
-    char *kick_message;
-    char *away_message;
-    char *quit_message;
-
+    SrnUserConfig *user;
     SircConfig *irc;
-
-    // ...
-    SrnServer *srv;
 };
 
 struct _EnabledCap {
@@ -273,8 +288,9 @@ struct _SrnServerCap {
     SrnServer *srv;
 };
 
-SrnServer* srn_server_new(SrnServerConfig *cfg);
+SrnServer* srn_server_new(const char *name, SrnServerConfig *cfg);
 void srn_server_free(SrnServer *srv);
+SrnRet srn_server_quit(SrnServer *srv, const char *reason);
 void srn_server_set_config(SrnServer *srv, SrnServerConfig *cfg);
 SrnRet srn_server_reload_config(SrnServer *srv);
 bool srn_server_is_valid(SrnServer *srv);
@@ -294,9 +310,10 @@ SrnServerUser* srn_server_get_user(SrnServer *srv, const char *nick);
 SrnServerUser* srn_server_add_and_get_user(SrnServer *srv, const char *nick);
 SrnRet srn_server_rename_user(SrnServer *srv, SrnServerUser *user, const char *nick);
 
-SrnChat* srn_chat_new(SrnServer *srv, const char *name, SrnChatConfig *cfg);
+SrnChat* srn_chat_new(SrnServer *srv, const char *name, SrnChatType type, SrnChatConfig *cfg);
 void srn_chat_free(SrnChat *chat);
 void srn_chat_set_config(SrnChat *chat, SrnChatConfig *cfg);
+void srn_chat_set_is_joined(SrnChat *chat, bool joined);
 SrnRet srn_chat_add_user(SrnChat *chat, SrnServerUser *srv_user);
 SrnRet srn_chat_rm_user(SrnChat *chat, SrnChatUser *user);
 SrnChatUser* srn_chat_get_user(SrnChat *chat, const char *nick);
@@ -332,23 +349,33 @@ SrnChatUser *srn_chat_user_new(SrnChat *chat, SrnServerUser *srv_user);
 void srn_chat_user_free(SrnChatUser *self);
 void srn_chat_user_update(SrnChatUser *self);
 void srn_chat_user_set_type(SrnChatUser *self, SrnChatUserType type);
-void srn_chat_user_set_is_join(SrnChatUser *self, bool join);
+void srn_chat_user_set_is_joined(SrnChatUser *self, bool joined);
 
 SrnMessage* srn_message_new(SrnChat *chat, SrnChatUser *user, const char *content, SrnMessageType type);
 void srn_message_free(SrnMessage *msg);
+char* srn_message_to_string(SrnMessage *self);
 
-SrnServerConfig* srn_server_config_new(const char *name);
-SrnRet srn_server_config_add_addr(SrnServerConfig *cfg, const char *addr);
-SrnRet srn_server_config_set_addr(SrnServerConfig *cfg, const char *addr);
+SrnServerConfig* srn_server_config_new();
 SrnRet srn_server_config_check(SrnServerConfig *cfg);
 char* srn_server_config_dump(SrnServerConfig *cfg);
 void srn_server_config_free(SrnServerConfig *cfg);
+SrnRet srn_server_config_add_addr(SrnServerConfig *cfg, SrnServerAddr *addr);
+void srn_server_config_clear_addr(SrnServerConfig *cfg);
 
-char* srn_login_method_to_string(SrnLoginMethod login);
+SrnUserConfig* srn_user_config_new(void);
+void srn_user_config_free(SrnUserConfig *self);
+SrnRet srn_user_config_check(SrnUserConfig *self);
+
+SrnLoginConfig* srn_login_config_new(void);
+void srn_login_config_free(SrnLoginConfig *self);
+SrnRet srn_login_config_check(SrnLoginConfig *self);
+const char* srn_login_method_to_string(SrnLoginMethod login);
 SrnLoginMethod srn_login_method_from_string(const char *str);
 
 SrnServerAddr* srn_server_addr_new(const char *host, int port);
+SrnServerAddr* srn_server_addr_new_from_string(const char *str);
 void  srn_server_addr_free(SrnServerAddr *addr);
+bool srn_server_addr_equal(SrnServerAddr *addr1, SrnServerAddr *addr2);
 
 SrnServerCap* srn_server_cap_new();
 void srn_server_cap_free(SrnServerCap *scap);

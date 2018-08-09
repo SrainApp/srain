@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.22.1 -->
+<interface>
+  <requires lib="gtk+" version="3.16"/>
+  <template class="SuiMessageList" parent="GtkScrolledWindow">
+    <property name="visible">True</property>
+    <property name="can_focus">True</property>
+    <property name="hscrollbar_policy">never</property>
+    <child>
+      <object class="GtkViewport" id="viewport">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="shadow_type">none</property>
+        <child>
+          <object class="GtkListBox" id="list_box">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="selection_mode">none</property>
+            <property name="activate_on_single_click">False</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <style>
+      <class name="sui-message-list"/>
+    </style>
+  </template>
+</interface>

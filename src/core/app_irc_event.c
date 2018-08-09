@@ -131,6 +131,7 @@ static void irc_event_connect(SircSession *sirc, const char *event){
     g_return_if_fail(srn_server_is_valid(srv));
     ret = srn_server_state_transfrom(srv, SRN_SERVER_ACTION_CONNECT_FINISH);
     g_return_if_fail(RET_IS_OK(ret));
+    g_return_if_fail(srn_server_is_valid(srv));
 
     /* Default state */
     srv->registered = FALSE;
@@ -139,13 +140,13 @@ static void irc_event_connect(SircSession *sirc, const char *event){
 
     srn_chat_add_misc_message_fmt(srv->chat, srv->chat->_user,
             _("Connected to %1$s(%2$s:%3$d)"),
-            srv->cfg->name, srv->addr->host, srv->addr->port);
+            srv->name, srv->addr->host, srv->addr->port);
     list = srv->chat_list;
     while (list){
         chat = list->data;
         srn_chat_add_misc_message_fmt(chat, chat->_user,
                 _("Connected to %1$s(%2$s:%3$d)"),
-                srv->cfg->name, srv->addr->host, srv->addr->port);
+                srv->name, srv->addr->host, srv->addr->port);
         list = g_slist_next(list);
     }
 
@@ -192,11 +193,11 @@ static void irc_event_connect_fail(SircSession *sirc, const char *event,
         chat = list->data;
         srn_chat_add_misc_message_fmt(chat, chat->_user,
                 _("Failed to connect to %1$s(%2$s:%3$d): %4$s"),
-                srv->cfg->name, srv->addr->host, srv->addr->port, msg);
+                srv->name, srv->addr->host, srv->addr->port, msg);
         if (srv->state == SRN_SERVER_STATE_RECONNECTING){
             srn_chat_add_misc_message_fmt(chat, chat->_user,
                     _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
-                    srv->cfg->name,
+                    srv->name,
                     srv->addr->host,
                     srv->addr->port,
                     (srv->reconn_interval * 1.0) / 1000);
@@ -207,7 +208,7 @@ static void irc_event_connect_fail(SircSession *sirc, const char *event,
 
     srn_chat_add_error_message_fmt(srv->chat, srv->chat->_user,
             _("Failed to connect to %1$s(%2$s:%3$d): %4$s"),
-            srv->cfg->name, srv->addr->host, srv->addr->port, msg);
+            srv->name, srv->addr->host, srv->addr->port, msg);
     /* If user trying connect to a TLS port via non-TLS connection, it will
      * be reset, give user some hints. */
     if (!srv->cfg->irc->tls
@@ -219,7 +220,7 @@ static void irc_event_connect_fail(SircSession *sirc, const char *event,
     if (srv->state == SRN_SERVER_STATE_RECONNECTING){
         srn_chat_add_misc_message_fmt(srv->chat, srv->chat->_user,
                 _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
-                srv->cfg->name,
+                srv->name,
                 srv->addr->host,
                 srv->addr->port,
                 (srv->reconn_interval * 1.0) / 1000);
@@ -271,17 +272,16 @@ static void irc_event_disconnect(SircSession *sirc, const char *event,
         SrnChat *chat;
 
         chat = list->data;
-        if (sirc_target_is_channel(srv->irc, chat->name)){
-            chat->joined = FALSE;
-        }
+        // Mark all chats as unjoined
+        srn_chat_set_is_joined(chat, FALSE);
         // Only report error message to server chat
         srn_chat_add_misc_message_fmt(chat, chat->_user,
                 _("Disconnected from %1$s(%2$s:%3$d): %4$s"),
-                srv->cfg->name, srv->addr->host, srv->addr->port, msg);
+                srv->name, srv->addr->host, srv->addr->port, msg);
         if (srv->state == SRN_SERVER_STATE_RECONNECTING){
             srn_chat_add_misc_message_fmt(chat, chat->_user,
                     _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
-                    srv->cfg->name,
+                    srv->name,
                     srv->addr->host,
                     srv->addr->port,
                     (srv->reconn_interval * 1.0) / 1000);
@@ -292,11 +292,11 @@ static void irc_event_disconnect(SircSession *sirc, const char *event,
 
     srn_chat_add_error_message_fmt(srv->chat, srv->chat->_user,
             _("Disconnected from %1$s(%2$s:%3$d): %4$s"),
-            srv->cfg->name, srv->addr->host, srv->addr->port, msg);
+            srv->name, srv->addr->host, srv->addr->port, msg);
     if (srv->state == SRN_SERVER_STATE_RECONNECTING){
         srn_chat_add_misc_message_fmt(srv->chat, srv->chat->_user,
                 _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
-                srv->cfg->name,
+                srv->name,
                 srv->addr->host,
                 srv->addr->port,
                 (srv->reconn_interval * 1.0) / 1000);
@@ -408,11 +408,6 @@ static void irc_event_quit(SircSession *sirc, const char *event,
     }
 
     srn_server_user_set_is_online(srv_user, FALSE);
-
-    /* You quit */
-    if (srv_user->is_me){
-        srn_server_state_transfrom(srv, SRN_SERVER_ACTION_QUIT);
-    }
 }
 
 static void irc_event_join(SircSession *sirc, const char *event,
@@ -442,15 +437,15 @@ static void irc_event_join(SircSession *sirc, const char *event,
 
     if (srv_user->is_me) {
         snprintf(buf, sizeof(buf), _("You have joined"));
-        chat->joined = TRUE;
+        srn_chat_set_is_joined(chat, TRUE);
         chat_user = chat->user;
     } else {
         snprintf(buf, sizeof(buf), _("%1$s has joined"), origin);
         chat_user = srn_chat_add_and_get_user(chat, srv_user);
     }
 
-    g_return_if_fail(!chat_user->is_join);
-    srn_chat_user_set_is_join(chat_user, TRUE);
+    g_return_if_fail(!chat_user->is_joined);
+    srn_chat_user_set_is_joined(chat_user, TRUE);
 
     srn_chat_add_misc_message(chat, chat_user, buf);
 }
@@ -474,7 +469,7 @@ static void irc_event_part(SircSession *sirc, const char *event,
     g_return_if_fail(chat);
     chat_user = srn_chat_get_user(chat, origin);
     g_return_if_fail(chat_user);
-    g_return_if_fail(chat_user->is_join);
+    g_return_if_fail(chat_user->is_joined);
 
     if (reason){
         snprintf(buf, sizeof(buf), _("%1$s has left: %2$s"), origin, reason);
@@ -483,11 +478,11 @@ static void irc_event_part(SircSession *sirc, const char *event,
     }
 
     srn_chat_add_misc_message(chat, chat_user, buf);
-    srn_chat_user_set_is_join(chat_user, FALSE);
+    srn_chat_user_set_is_joined(chat_user, FALSE);
 
     /* You has left a channel */
     if (chat_user->srv_user->is_me){
-        chat->joined = FALSE;
+        srn_chat_set_is_joined(chat, FALSE);
         srn_server_rm_chat(srv, chat);
     }
 }
@@ -542,25 +537,25 @@ static void irc_event_mode(SircSession *sirc, const char *event,
         chat_user = srn_chat_add_and_get_user(chat, srv_user);
         g_return_if_fail(chat_user);
 
-        type = SRN_SERVER_USER_CHIGUA;
+        type = SRN_CHAT_USER_TYPE_CHIGUA;
         if (mode[0] == '-'){
-            type = SRN_SERVER_USER_CHIGUA;
+            type = SRN_CHAT_USER_TYPE_CHIGUA;
         } else if (mode[0] == '+'){
             switch (mode[1]){
                 case 'q':
-                    type = SRN_SERVER_USER_OWNER;
+                    type = SRN_CHAT_USER_TYPE_OWNER;
                     break;
                 case 'a':
-                    type = SRN_SERVER_USER_ADMIN;
+                    type = SRN_CHAT_USER_TYPE_ADMIN;
                     break;
                 case 'o':
-                    type = SRN_SERVER_USER_FULL_OP;
+                    type = SRN_CHAT_USER_TYPE_FULL_OP;
                     break;
                 case 'h':
-                    type = SRN_SERVER_USER_HALF_OP;
+                    type = SRN_CHAT_USER_TYPE_HALF_OP;
                     break;
                 case 'v':
-                    type = SRN_SERVER_USER_VOICED;
+                    type = SRN_CHAT_USER_TYPE_VOICED;
                     break;
                 default:
                     break;
@@ -667,7 +662,7 @@ static void irc_event_kick(SircSession *sirc, const char *event,
             snprintf(buf, sizeof(buf), _("You are kicked by %1$s"),
                     origin);
         }
-        chat->joined = FALSE;
+        srn_chat_set_is_joined(chat, FALSE);
     } else {
         if (reason){
             snprintf(buf, sizeof(buf), _("%1$s are kicked by %2$s: %3$s"),
@@ -678,7 +673,7 @@ static void irc_event_kick(SircSession *sirc, const char *event,
         }
     }
 
-    srn_chat_user_set_is_join(kicked_chat_user, FALSE);
+    srn_chat_user_set_is_joined(kicked_chat_user, FALSE);
     srn_chat_add_error_message(chat, kick_chat_user, buf);
 }
 
@@ -828,7 +823,16 @@ static void irc_event_ctcp_req(SircSession *sirc, const char *event,
 
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srn_server_is_valid(srv));
-    chat = srn_server_get_chat_fallback(srv, origin);
+    if (sirc_target_is_channel(sirc, target)){
+        chat = srn_server_get_chat(srv, target);
+    } else {
+        if (strcmp(event, "ACTION") == 0) {
+            // Only create chat for ACTION message
+            chat = srn_server_add_and_get_chat(srv, origin);
+        } else {
+            chat = srn_server_get_chat_fallback(srv, origin);
+        }
+    }
     g_return_if_fail(chat);
     srv_user = srn_server_add_and_get_user(srv, origin);
     g_return_if_fail(srv_user);
@@ -1104,7 +1108,7 @@ static void irc_event_cap(SircSession *sirc, const char *event,
     if (!srv->negotiated && cap_end){
         sirc_cmd_cap_list(sirc);
 
-        if (srv->cfg->login_method == SRN_LOGIN_METHOD_SASL_PLAIN){
+        if (srv->cfg->user->login->method == SRN_LOGIN_METHOD_SASL_PLAIN){
             if (srv->cap->client_enabled.sasl){
                 // Negotiation should end after sasl authentication end
             } else {
@@ -1129,34 +1133,30 @@ static void irc_event_authenticate(SircSession *sirc, const char *event,
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srn_server_is_valid(srv));
 
-    switch (srv->cfg->login_method){
+    switch (srv->cfg->user->login->method){
         case SRN_LOGIN_METHOD_SASL_PLAIN:
             {
                 char *base64;
-                char *login_method;
+                const char *method;
                 GString *str;
-
-                g_return_if_fail(!str_is_empty(srv->cfg->username));
-                g_return_if_fail(!str_is_empty(srv->cfg->user_passwd));
 
                 /* ref: https://ircv3.net/specs/extensions/sasl-3.1.html */
                 str = g_string_new(NULL);
-                str = g_string_append(str, srv->cfg->username);
+                str = g_string_append(str, srv->cfg->user->login->sasl_plain_identify);
                 str = g_string_append_unichar(str, g_utf8_get_char("\0")); // Unicode null char
-                str = g_string_append(str, srv->cfg->username);
+                str = g_string_append(str, srv->cfg->user->login->sasl_plain_identify);
                 str = g_string_append_unichar(str, g_utf8_get_char("\0")); // Unicode null char
-                str = g_string_append(str, srv->cfg->user_passwd);
+                str = g_string_append(str, srv->cfg->user->login->sasl_plain_password);
 
                 // TODO: 400 bytes limit
                 base64 = g_base64_encode((const guchar *)str->str, str->len);
                 sirc_cmd_authenticate(sirc, base64);
 
-                login_method = srn_login_method_to_string(srv->cfg->login_method);
+                method = srn_login_method_to_string(srv->cfg->user->login->method);
                 srn_chat_add_misc_message_fmt(srv->chat, srv->chat->_user,
                         _("Logging in with %1$s as %2$s..."),
-                        login_method, srv->cfg->username);
+                        method, srv->cfg->user->login->sasl_plain_identify);
 
-                g_free(login_method);
                 g_free(base64);
                 g_string_free(str, TRUE);
                 break;
@@ -1304,26 +1304,26 @@ static void irc_event_numeric(SircSession *sirc, int event,
                     switch (nickptr[0]){
                         case '~':
                             nickptr++;
-                            type = SRN_SERVER_USER_OWNER;
+                            type = SRN_CHAT_USER_TYPE_OWNER;
                             break;
                         case '&':
                             nickptr++;
-                            type = SRN_SERVER_USER_ADMIN;
+                            type = SRN_CHAT_USER_TYPE_ADMIN;
                             break;
                         case '@':
                             nickptr++;
-                            type = SRN_SERVER_USER_FULL_OP;
+                            type = SRN_CHAT_USER_TYPE_FULL_OP;
                             break;
                         case '%':
                             nickptr++;
-                            type = SRN_SERVER_USER_HALF_OP;
+                            type = SRN_CHAT_USER_TYPE_HALF_OP;
                             break;
                         case '+':
                             nickptr++;
-                            type = SRN_SERVER_USER_VOICED;
+                            type = SRN_CHAT_USER_TYPE_VOICED;
                             break;
                         default:
-                            type = SRN_SERVER_USER_CHIGUA;
+                            type = SRN_CHAT_USER_TYPE_CHIGUA;
                     }
                     srv_user = srn_server_add_and_get_user(srv, nickptr);
                     g_warn_if_fail(srv_user);
@@ -1333,7 +1333,7 @@ static void irc_event_numeric(SircSession *sirc, int event,
                     chat_user = srn_chat_add_and_get_user(chat, srv_user);
                     g_warn_if_fail(chat_user);
                     if (!chat_user) continue;
-                    srn_chat_user_set_is_join(chat_user, TRUE);
+                    srn_chat_user_set_is_joined(chat_user, TRUE);
                     srn_chat_user_set_type(chat_user, type);
                 }
                 g_free(dup_names);
@@ -1418,8 +1418,9 @@ static void irc_event_numeric(SircSession *sirc, int event,
                 realname = params[4];
 
                 // TODO: dont show WHOIS message in message list
-                // srn_chat_add_misc_message_fmt(srv->cur_chat, user, "%s <%s@%s> %s",
-                // nickname, username, hostname, realname);
+                srn_chat_add_misc_message_fmt(srv->cur_chat, srv->cur_chat->_user,
+                        _("%1$s <%2$s@%3$s> %4$s"),
+                        nickname, username, hostname, realname);
                 break;
             }
         case SIRC_RFC_RPL_WHOISCHANNELS:
@@ -1429,7 +1430,9 @@ static void irc_event_numeric(SircSession *sirc, int event,
                 g_return_if_fail(count >= 3);
                 msg = params[2];
 
-                // srn_chat_add_misc_message_fmt(srv->cur_chat, user, _("%1$s is member of %2$s"), params[1], msg);
+                // TODO: dont show WHOIS message in message list
+                srn_chat_add_misc_message_fmt(srv->cur_chat, srv->cur_chat->_user,
+                        _("%1$s is member of %2$s"), params[1], msg);
                 break;
             }
         case SIRC_RFC_RPL_WHOISSERVER:
@@ -1439,8 +1442,10 @@ static void irc_event_numeric(SircSession *sirc, int event,
                 g_return_if_fail(count >= 4);
                 msg = params[3];
 
-                // srn_chat_add_misc_message_fmt(srv->cur_chat, user, _("%1$s is attached to %2$s at \"%3$s\""),
-                // params[1], params[2], msg);
+                // TODO: dont show WHOIS message in message list
+                srn_chat_add_misc_message_fmt(srv->cur_chat, srv->cur_chat->_user,
+                        _("%1$s is attached to %2$s at \"%3$s\""),
+                        params[1], params[2], msg);
                 break;
             }
         case SIRC_RFC_RPL_WHOISIDLE:
@@ -1455,9 +1460,11 @@ static void irc_event_numeric(SircSession *sirc, int event,
                 sec = params[2];
                 since = strtoul(params[3], NULL, 10);
 
-                // time_to_str(since, timestr, sizeof(timestr), _("%Y-%m-%d %T"));
-                // srn_chat_add_misc_message_fmt(srv->cur_chat, user, _("%1$s is idle for %2$s seconds since %3$s"),
-                        // who, sec, timestr);
+                // TODO: dont show WHOIS message in message list
+                time_to_str(since, timestr, sizeof(timestr), _("%Y-%m-%d %T"));
+                srn_chat_add_misc_message_fmt(srv->cur_chat, srv->cur_chat->_user,
+                        _("%1$s is idle for %2$s seconds since %3$s"),
+                        who, sec, timestr);
                 break;
             }
         case SIRC_RFC_RPL_WHOWAS_TIME:
@@ -1467,8 +1474,9 @@ static void irc_event_numeric(SircSession *sirc, int event,
                 g_return_if_fail(count >= 4);
                 msg = params[3];
 
-                // srn_chat_add_misc_message_fmt(srv->cur_chat, user, _("%1$s %2$s %3$s"),
-                        // params[1], msg, params[2]);
+                // TODO: dont show WHOIS message in message list
+                srn_chat_add_misc_message_fmt(srv->cur_chat, srv->cur_chat->_user,
+                        _("%1$s %2$s %3$s"), params[1], msg, params[2]);
                 break;
             }
         case SIRC_RFC_RPL_WHOISHOST:
@@ -1479,7 +1487,9 @@ static void irc_event_numeric(SircSession *sirc, int event,
                 g_return_if_fail(count >= 3);
                 msg = params[2];
 
-                // srn_chat_add_misc_message_fmt(srv->cur_chat, user, _("%1$s %2$s"), params[1], msg);
+                // TODO: dont show WHOIS message in message list
+                srn_chat_add_misc_message_fmt(srv->cur_chat, srv->cur_chat->_user,
+                        _("%1$s %2$s"), params[1], msg);
                 break;
             }
         case SIRC_RFC_RPL_ENDOFWHOIS:
@@ -1489,7 +1499,8 @@ static void irc_event_numeric(SircSession *sirc, int event,
                 g_return_if_fail(count >= 3);
                 msg = params[2];
 
-                // srn_chat_add_misc_message(srv->cur_chat, user, msg);
+                // TODO: dont show WHOIS message in message list
+                srn_chat_add_misc_message(srv->cur_chat, srv->cur_chat->_user, msg);
                 break;
             }
 
@@ -1675,7 +1686,7 @@ static void irc_event_numeric(SircSession *sirc, int event,
 
                     WARN_FR("Unspported message, You can report it at " PACKAGE_WEBSITE);
                     WARN_FR("server: %s, event: %d, origin: %s, count: %u, params: [%s]",
-                            srv->cfg->name, event, origin, count, buf->str);
+                            srv->name, event, origin, count, buf->str);
 
                     g_string_free(buf, TRUE);
                 }
@@ -1719,14 +1730,17 @@ static gboolean irc_period_ping(gpointer user_data){
     snprintf(timestr, sizeof(timestr), "%lu", time);
 
     DBG_FR("Server %s, %lu ms since last pong, time out: %d ms",
-            srv->cfg->name, time - srv->last_pong, SRN_SERVER_PING_TIMEOUT);
+            srv->name, time - srv->last_pong, SRN_SERVER_PING_TIMEOUT);
 
     /* Check whether ping time out */
     if (time - srv->last_pong > SRN_SERVER_PING_TIMEOUT){
-        WARN_FR("Server %s ping time out, %lums", srv->cfg->name, time - srv->last_pong);
+        SrnRet ret;
+        WARN_FR("Server %s ping time out, %lums", srv->name, time - srv->last_pong);
 
         srv->ping_timer = 0;
-        srn_server_state_transfrom(srv, SRN_SERVER_ACTION_RECONNECT);
+        ret = srn_server_state_transfrom(srv, SRN_SERVER_ACTION_RECONNECT);
+        g_warn_if_fail(RET_IS_OK(ret));
+        g_warn_if_fail(srn_server_is_valid(srv));
 
         return G_SOURCE_REMOVE;
     }

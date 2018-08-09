@@ -34,7 +34,7 @@
 #include "i18n.h"
 #include "version.h"
 
-static SrnRet read_config(SrnConfigManager *mgr, config_t *cfg, const char *file);
+static SrnRet load_config(SrnConfigManager *mgr, config_t *cfg, const char *file);
 
 SrnConfigManager *srn_config_manager_new(SrnVersion *ver){
     SrnConfigManager *mgr;
@@ -53,11 +53,11 @@ void srn_config_manager_free(SrnConfigManager *mgr){
     g_free(mgr);
 }
 
-SrnRet srn_config_manager_read_system_config(SrnConfigManager *mgr,
+SrnRet srn_config_manager_load_system_config(SrnConfigManager *mgr,
         const char *file){
     SrnRet ret;
 
-    ret = read_config(mgr, &mgr->system_cfg, file);
+    ret = load_config(mgr, &mgr->system_cfg, file);
     if (!RET_IS_OK(ret)){
         return RET_ERR(_("Failed to read system configuration file: %1$s"),
                 RET_MSG(ret));
@@ -65,11 +65,11 @@ SrnRet srn_config_manager_read_system_config(SrnConfigManager *mgr,
     return SRN_OK;
 }
 
-SrnRet srn_config_manager_read_user_config(SrnConfigManager *mgr,
+SrnRet srn_config_manager_load_user_config(SrnConfigManager *mgr,
         const char *file){
     SrnRet ret;
 
-    ret = read_config(mgr, &mgr->user_cfg, file);
+    ret = load_config(mgr, &mgr->user_cfg, file);
     if (!RET_IS_OK(ret)){
         return RET_ERR(_("Failed to read user configuration file: %1$s"),
                 RET_MSG(ret));
@@ -77,7 +77,7 @@ SrnRet srn_config_manager_read_user_config(SrnConfigManager *mgr,
     return SRN_OK;
 }
 
-static SrnRet read_config(SrnConfigManager *mgr, config_t *cfg, const char *file){
+static SrnRet load_config(SrnConfigManager *mgr, config_t *cfg, const char *file){
     char *dir;
     const char *rawver;
     SrnVersion *ver;

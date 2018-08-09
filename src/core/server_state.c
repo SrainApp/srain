@@ -104,7 +104,7 @@ SrnRet srn_server_state_transfrom(SrnServer *srv, SrnServerAction action){
                     sirc_cancel_connect(srv->irc);
                     next_state = SRN_SERVER_STATE_DISCONNECTING;
                     break;
-                case SRN_SERVER_ACTION_QUIT:
+                case SRN_SERVER_ACTION_QUIT: // Force quit
                     sirc_cancel_connect(srv->irc);
                     next_state = SRN_SERVER_STATE_QUITING;
                     break;
@@ -127,8 +127,8 @@ SrnRet srn_server_state_transfrom(SrnServer *srv, SrnServerAction action){
                     sirc_disconnect(srv->irc);
                     next_state = SRN_SERVER_STATE_CONNECTED; // Keep state
                     break;
-                case SRN_SERVER_ACTION_QUIT: // SrnServerUser received a QUIT command sent by self
-                    sirc_disconnect(srv->irc);
+                case SRN_SERVER_ACTION_QUIT:
+                    sirc_cmd_quit(srv->irc, NULL);
                     next_state = SRN_SERVER_STATE_QUITING;
                     break;
                 case SRN_SERVER_ACTION_DISCONNECT_FINISH:
@@ -148,16 +148,14 @@ SrnRet srn_server_state_transfrom(SrnServer *srv, SrnServerAction action){
                     ret = RET_ERR(unallowed, _("Server is disconnecting"));
                     break;
                 case SRN_SERVER_ACTION_CONNECT_FAIL:
-                    next_state = SRN_SERVER_STATE_DISCONNECTED;
+                    ret = RET_ERR(unallowed, _("Server is disconnecting"));
                     break;
-                 case SRN_SERVER_ACTION_DISCONNECT:
-                     sirc_cancel_connect(srv->irc); // Force disconnect
-                     next_state = SRN_SERVER_STATE_DISCONNECTING; // Keep state
-                     break;
-                 case SRN_SERVER_ACTION_QUIT:
-                     sirc_cancel_connect(srv->irc); // Force quit
-                     next_state = SRN_SERVER_STATE_QUITING;
-                     break;
+                case SRN_SERVER_ACTION_DISCONNECT:
+                    ret = RET_ERR(unallowed, _("Server is disconnecting"));
+                    break;
+                case SRN_SERVER_ACTION_QUIT:
+                    ret = RET_ERR(unallowed, _("Server is disconnecting"));
+                    break;
                 case SRN_SERVER_ACTION_DISCONNECT_FINISH:
                     next_state = SRN_SERVER_STATE_DISCONNECTED;
                     break;
@@ -223,7 +221,7 @@ SrnRet srn_server_state_transfrom(SrnServer *srv, SrnServerAction action){
 
     if (RET_IS_OK(ret)){
         LOG_FR("Server %s: %s + %s -> %s",
-                srv->cfg->name,
+                srv->name,
                 srn_server_state_to_string(cur_state),
                 srn_server_action_to_string(action),
                 srn_server_state_to_string(next_state));
@@ -231,14 +229,17 @@ SrnRet srn_server_state_transfrom(SrnServer *srv, SrnServerAction action){
         srv->last_action = action;
     } else {
         WARN_FR("Server %s: %s + %s -> error: %s",
-                srv->cfg->name,
+                srv->name,
                 srn_server_state_to_string(cur_state),
                 srn_server_action_to_string(action),
                 RET_MSG(ret));
     }
 
     if (free){ // The server should be free now, be careful
-        srn_server_free(srv);
+        SrnApplication *app;
+
+        app = srn_application_get_default();
+        return srn_application_rm_server(app, srv);
     }
 
     return ret;

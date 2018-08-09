@@ -21,15 +21,24 @@
 
 #include <gtk/gtk.h>
 
-#include "srain_window.h"
+#include "sui_window.h"
+#include "sui_buffer.h"
+#include "sui_server_buffer.h"
 
-GtkListBoxRow* gtk_list_box_get_row_by_name(GtkListBox *listbox, const char* name);
-GtkListBoxRow* gtk_list_box_add_unfocusable_row(GtkListBox *listbox, GtkWidget *widget);
-GtkPopover* create_popover(GtkWidget *parent, GtkWidget *child, GtkPositionType pos);
-char* show_open_filechosser(GtkWindow *parent);
-void scale_size_to( int src_width, int src_height, int max_width, int max_height, int *dst_width, int *dst_height);
-gboolean activate_link(GtkLabel *label, const char *uri, gpointer user_data);
-SuiWindow *sui_get_cur_window();
-SuiBuffer *sui_get_cur_buffer();
+/* Misc */
+GtkListBoxRow* sui_common_add_gtk_list_box_unfocusable_row(GtkListBox *listbox, GtkWidget *widget);
+void sui_common_scale_size(int src_width, int src_height, int max_width, int max_height, int *dst_width, int *dst_height);
+gboolean sui_common_activate_gtk_label_link(GtkLabel *label, const char *uri, gpointer user_data);
+SrnRet sui_common_open_url(const char *url);
+
+/* Window & buffer helper function */
+SuiWindow *sui_common_get_cur_window();
+SuiBuffer *sui_common_get_cur_buffer();
+SuiServerBuffer *sui_common_get_cur_server_buffer();
+
+/* Panel helper function */
+void sui_common_popup_panel(GtkWidget *relative_to, GtkWidget *child);
+void sui_common_popup_panel_at_point(GtkWidget *relative_to, GtkWidget *child, int x, int y);
+void sui_common_popdown_panel(GtkWidget *child);
 
 #endif /** __UI_COMMON_H **/

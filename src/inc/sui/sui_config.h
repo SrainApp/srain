@@ -30,11 +30,15 @@ typedef struct _SuiApplicationConfig SuiApplicationConfig;
 typedef struct _SuiWindowConfig SuiWindowConfig;
 typedef struct _SuiBufferConfig SuiBufferConfig;
 
-struct _SuiApplicationConfig {
-    char *theme;
+struct _SuiWindowConfig {
+    bool csd;
+    bool send_on_ctrl_enter;
 };
 
-struct _SuiWindowConfig {
+struct _SuiApplicationConfig {
+    char *theme;
+
+    SuiWindowConfig window;
 };
 
 struct _SuiBufferConfig {
@@ -42,7 +46,8 @@ struct _SuiBufferConfig {
     bool show_topic;
     bool show_avatar;
     bool show_user_list;
-    bool preview_image;
+    bool preview_url;
+    bool auto_preview_url;
 };
 
 SuiApplicationConfig *sui_application_config_new(void);

@@ -90,39 +90,23 @@ SrnCommandBind cmd_binds[] = {
     },
     {
         .name = "/server",
-        .subcmd = {"add", "rm", "list", "set", "connect", "disconnect", NULL},
+        .subcmd = {"connect", "disconnect", NULL},
         .argc = 1, // <name>
-        .opt = {
-            { .key = "-addr",           .val = SRN_COMMAND_OPT_NO_DEFAULT },
-            { .key = "-tls",            .val = SRN_COMMAND_OPT_NO_VAL },
-            { .key = "-tls-noverify",   .val = SRN_COMMAND_OPT_NO_VAL },
-            // Backward compatible
-            { .key = "-tls-not-verify", .val = SRN_COMMAND_OPT_NO_VAL },
-            { .key = "-pwd",            .val = SRN_COMMAND_OPT_NO_DEFAULT },
-            { .key = "-nick",           .val = SRN_COMMAND_OPT_NO_DEFAULT },
-            { .key = "-user",           .val = SRN_COMMAND_OPT_NO_DEFAULT },
-            { .key = "-real",           .val = SRN_COMMAND_OPT_NO_DEFAULT },
-            { .key = "-encode",         .val = SRN_COMMAND_OPT_NO_DEFAULT },
-            SRN_COMMAND_EMPTY_OPT,
-        },
-        .flag = SRN_COMMAND_FLAG_OMIT_ARG,
         .cb = on_command_server,
     },
     {
         .name = "/connect",
-        .argc = 2, // <addr> <nick>
+        .argc = 2, // <addr> [nick]
         .opt = {
-            { .key = "-tls",            .val = SRN_COMMAND_OPT_NO_VAL },
-            { .key = "-tls-noverify",   .val = SRN_COMMAND_OPT_NO_VAL },
-            // Backward compatible
-            { .key = "-tls-not-verify", .val = SRN_COMMAND_OPT_NO_VAL },
             { .key = "-pwd",            .val = SRN_COMMAND_OPT_NO_DEFAULT },
             { .key = "-user",           .val = SRN_COMMAND_OPT_NO_DEFAULT },
             { .key = "-real",           .val = SRN_COMMAND_OPT_NO_DEFAULT },
             { .key = "-encode",         .val = SRN_COMMAND_OPT_NO_DEFAULT },
+            { .key = "-tls",            .val = SRN_COMMAND_OPT_NO_VAL },
+            { .key = "-tls-noverify",   .val = SRN_COMMAND_OPT_NO_VAL },
             SRN_COMMAND_EMPTY_OPT,
         },
-        .flag = 0,
+        .flag = SRN_COMMAND_FLAG_OMIT_ARG,
         .cb = on_command_connect,
     },
     {
@@ -365,101 +349,27 @@ static SrnRet on_command_context(SrnCommand *cmd, void *user_data){
 static SrnRet on_command_server(SrnCommand *cmd, void *user_data){
     const char *subcmd;
     const char *name;
-    const char *addr;
-    const char *passwd;
-    const char *nick;
-    const char *user;
-    const char *real;
-    const char *encoding;
     SrnRet ret;
     SrnApplication *app;
     SrnServer *srv;
-    SrnServerConfig *cfg;
 
     app = ctx_get_app(user_data);
     subcmd = srn_command_get_subcmd(cmd);
     g_return_val_if_fail(subcmd, SRN_ERR);
 
-    if (g_ascii_strcasecmp(subcmd, "list") == 0){
-        char *dump;
-
-        dump = srn_application_dump_server_config_list(app);
-        ret = RET_OK("%s", dump);
-        g_free(dump);
-
-        return ret;
-    }
-
     name = srn_command_get_arg(cmd, 0);
-    // Get server config
-    if (g_ascii_strcasecmp(subcmd, "add") == 0){
-        ret = srn_application_add_server_config(app, name);
-        if (!RET_IS_OK(ret)){
-            return RET_ERR(_("Failed to create server config: %1$s"),
-                    RET_MSG(ret));
-        }
-    }
-
-    cfg = srn_application_get_server_config(app, name);
-    if (!cfg){
-        return RET_ERR(_("No such server: %1$s"), name);
-    }
-
-    if (g_ascii_strcasecmp(subcmd, "add") == 0
-            || g_ascii_strcasecmp(subcmd, "set") == 0){
-        if (srn_command_get_opt(cmd, "-pwd", &passwd)){
-            str_assign(&cfg->passwd, passwd);
-        }
-        if (srn_command_get_opt(cmd, "-nick", &nick)){
-            str_assign(&cfg->nickname, nick);
-        }
-        if (srn_command_get_opt(cmd, "-user", &user)){
-            str_assign(&cfg->username, user);
-        }
-        if (srn_command_get_opt(cmd, "-real", &real)){
-            str_assign(&cfg->realname, real);
-        }
-        if (srn_command_get_opt(cmd, "-encode", &encoding)){
-            str_assign(&cfg->irc->encoding, encoding);
-        }
-        if (srn_command_get_opt(cmd, "-tls", NULL)){
-            cfg->irc->tls = TRUE;
-        }
-        if (srn_command_get_opt(cmd, "-tls-noverify", NULL)){
-            cfg->irc->tls = TRUE;
-            cfg->irc->tls_noverify = TRUE;
-        } else if (srn_command_get_opt(cmd, "-tls-not-verify", NULL)){
-            // Backward compatible
-            cfg->irc->tls = TRUE;
-            cfg->irc->tls_noverify = TRUE;
-        }
-        if (srn_command_get_opt(cmd, "-addr", &addr)){
-            ret = srn_server_config_set_addr(cfg, addr);
-            if (!RET_IS_OK(ret)){
-                return RET_ERR(_("Failed to resolve server address: %s"),
-                        RET_MSG(ret));
-            }
-        }
-
-        if (g_ascii_strcasecmp(subcmd, "add") == 0){
-            return RET_OK(_("Server config \"%1$s\" is created"), name);
-        } else {
-            return RET_OK(_("Server config \"%1$s\" is motified"), name);
-        }
-    }
 
     if (g_ascii_strcasecmp(subcmd, "connect") == 0){
         srv = srn_application_get_server(app, name);
         if (!srv) { // Create one
-            ret = srn_server_config_check(cfg);
+            ret = srn_application_add_server(app, name);
             if (!RET_IS_OK(ret)){
                 return ret;
             }
-            ret = srn_application_add_server(app, cfg);
-            if (!RET_IS_OK(ret)){
-                return RET_ERR(_("Failed to instantiate server \"%1$s\""), name);
-            }
             srv = srn_application_get_server(app, name);
+        }
+        if (!srv){ // Still fail
+            return RET_ERR(_("Failed to instantiate server \"%1$s\""), name);
         }
 
         ret = srn_server_connect(srv);
@@ -469,7 +379,7 @@ static SrnRet on_command_server(SrnCommand *cmd, void *user_data){
 
         srn_server_wait_until_registered(srv); // FIXME: busy wait
         if (!srn_server_is_registered(srv)){
-            return RET_ERR(_("Failed to register on server \"%1$s\""), cfg->name);
+            return RET_ERR(_("Failed to register on server \"%1$s\""), name);
         }
 
         return SRN_OK;
@@ -494,92 +404,84 @@ static SrnRet on_command_server(SrnCommand *cmd, void *user_data){
         return ret;
     }
 
-    if (g_ascii_strcasecmp(subcmd, "rm") == 0){
-        srv = srn_application_get_server(app, name);
-        if (srv) {
-            return srn_server_state_transfrom(srv, SRN_SERVER_ACTION_QUIT);
-        }
-
-        cfg = srn_application_get_server_config(app, name);
-        if (!cfg){
-            return RET_ERR(_("No such server: %1$s"), name);
-        } else if (cfg->predefined){
-            return RET_ERR(_("Can not remove a predefined server: %1$s"), name);
-        } else {
-            srn_server_config_free(cfg);
-        }
-
-        return RET_OK(_("Server \"%1$s\" is removed"), name);
-    }
-
     return RET_ERR(_("Unknown sub command: %1$s"), subcmd);
 }
 
 static SrnRet on_command_connect(SrnCommand *cmd, void *user_data){
-    const char *addr;
+    const char *name;
+    const char *addr_str;
     const char *passwd;
     const char *nick;
     const char *user;
     const char *real;
     const char *encoding;
-    SrnApplication *app;
-    SrnServer *srv = NULL;
-    SrnServerConfig *cfg = NULL;
     SrnRet ret = SRN_OK;
+    SrnApplication *app;
+    SrnServer *srv;
+    SrnServerConfig *cfg;
+    SrnServerAddr *addr;
 
     app = ctx_get_app(user_data);
-    addr = srn_command_get_arg(cmd, 0);
+    addr_str = srn_command_get_arg(cmd, 0);
+    if (!addr_str) {
+        return RET_ERR(_("Missing argument <addr>"));
+    }
     nick = srn_command_get_arg(cmd, 1);
 
-    ret = srn_application_add_server_config(app, addr);
+    srv = NULL;
+    cfg = srn_server_config_new();
+    addr = srn_server_addr_new_from_string(addr_str);
+
+    // Try looking for server config with the same address in config
+    ret = srn_config_manager_read_server_config_by_addr(app->cfg_mgr, cfg, addr);
     if (!RET_IS_OK(ret)){
-        ret = RET_ERR(_("Failed to create server config: %s"), RET_MSG(ret));
+        // If not found, just load a default server config from config
+        ret = srn_config_manager_read_server_config(app->cfg_mgr, cfg, NULL);
+        if (!RET_IS_OK(ret)){
+            goto FIN;
+        }
+        // Add address for default server config
+        (void)srn_server_config_add_addr(cfg, addr);
+        addr = NULL; // Ownership changed to server config
+    }
+
+    if (!cfg->addrs){
+        // This should not happend
+        ret = SRN_ERR;
+        g_warn_if_reached();
         goto FIN;
     }
-    cfg = srn_application_get_server_config(app, addr);
+    // Use first address of config address list as server name
+    name = ((SrnServerAddr*)cfg->addrs->data)->host;
 
-    str_assign(&cfg->nickname, nick);
     if (srn_command_get_opt(cmd, "-pwd", &passwd)){
         str_assign(&cfg->passwd, passwd);
     }
+
+    if (nick){
+        str_assign(&cfg->user->nick, nick);
+    }
     if (srn_command_get_opt(cmd, "-user", &user)){
-        str_assign(&cfg->username, user);
+        str_assign(&cfg->user->username, user);
     }
     if (srn_command_get_opt(cmd, "-real", &real)){
-        str_assign(&cfg->realname, real);
+        str_assign(&cfg->user->realname, real);
     }
+
     if (srn_command_get_opt(cmd, "-encode", &encoding)){
         str_assign(&cfg->irc->encoding, encoding);
     }
-    cfg->irc->tls = srn_command_get_opt(cmd, "-tls", NULL);
     cfg->irc->tls_noverify = srn_command_get_opt(cmd, "-tls-noverify", NULL);
-    if (cfg->irc->tls_noverify){
-        cfg->irc->tls = TRUE;
-    }
-    // Backward compatible
-    if (!cfg->irc->tls_noverify){
-        cfg->irc->tls_noverify = srn_command_get_opt(cmd, "-tls-not-verify", NULL);
-        if (cfg->irc->tls_noverify){
-            cfg->irc->tls = TRUE;
-        }
-    }
+    cfg->irc->tls = srn_command_get_opt(cmd, "-tls", NULL)
+        || cfg->irc->tls_noverify;
 
-    ret = srn_server_config_set_addr(cfg, addr);
-    if (!RET_IS_OK(ret)){
-        ret = RET_ERR(_("Failed to resolve server address: %s"), RET_MSG(ret));
-        goto FIN;
-    }
-
-    ret = srn_server_config_check(cfg);
+    ret = srn_application_add_server_with_config(app, name, cfg);
     if (!RET_IS_OK(ret)) {
+        ret = RET_ERR(_("Failed to instantiate server \"%1$s\""), name);
         goto FIN;
     }
-    ret = srn_application_add_server(app, cfg);
-    if (!RET_IS_OK(ret)) {
-        ret = RET_ERR(_("Failed to instantiate server \"%1$s\""), cfg->name);
-        goto FIN;
-    }
-    srv = srn_application_get_server(app, cfg->name);
+    cfg = NULL; // Ownership changed to server
+    srv = srn_application_get_server(app, name);
 
     ret = srn_server_connect(srv);
     if (!RET_IS_OK(ret)){
@@ -588,17 +490,20 @@ static SrnRet on_command_connect(SrnCommand *cmd, void *user_data){
 
     srn_server_wait_until_registered(srv);
     if (!srn_server_is_registered(srv)){
-        ret = RET_ERR(_("Failed to register on server \"%1$s\""), cfg->name);
+        ret = RET_ERR(_("Failed to register on server \"%1$s\""), srv->name);
         goto FIN;
     }
 
-    return SRN_OK;
+    ret = SRN_OK;
 FIN:
-    if (srv){
-        srn_application_rm_server(app, srv);
+    if (addr){
+        srn_server_addr_free(addr);
     }
     if (cfg){
-        srn_application_rm_server_config(app, cfg);
+        srn_server_config_free(cfg);
+    }
+    if (!RET_IS_OK(ret) && srv){
+        srn_application_rm_server(app, srv);
     }
 
     return ret;
@@ -806,7 +711,7 @@ static SrnRet on_command_quit(SrnCommand *cmd, void *user_data){
     reason = srn_command_get_arg(cmd, 0);
     if (!reason) reason = PACKAGE_NAME " " PACKAGE_VERSION " " "quit.";
 
-    return sirc_cmd_quit(srv->irc, reason);
+    return srn_server_quit(srv, reason);
 }
 
 static SrnRet on_command_topic(SrnCommand *cmd, void *user_data){

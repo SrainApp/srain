@@ -34,7 +34,7 @@ struct _SrnConfigManager {
 
 SrnConfigManager* srn_config_manager_new(SrnVersion *ver);
 void srn_config_manager_free(SrnConfigManager *mgr);
-SrnRet srn_config_manager_read_user_config(SrnConfigManager *mgr, const char *file);
-SrnRet srn_config_manager_read_system_config(SrnConfigManager *mgr, const char *file);
+SrnRet srn_config_manager_load_user_config(SrnConfigManager *mgr, const char *file);
+SrnRet srn_config_manager_load_system_config(SrnConfigManager *mgr, const char *file);
 
 #endif /*__CONFIG_H */

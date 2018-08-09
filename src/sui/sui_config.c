@@ -19,8 +19,10 @@
 #include <glib.h>
 
 #include "sui/sui.h"
+
 #include "i18n.h"
 #include "utils.h"
+#include "log.h"
 
 SuiApplicationConfig *sui_application_config_new(void){
     return g_malloc0(sizeof(SuiApplicationConfig));

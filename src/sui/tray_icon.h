@@ -20,7 +20,7 @@
 #define __TRAY_ICON_H
 
 #include <gtk/gtk.h>
-#include "srain_window.h"
+#include "sui_window.h"
 
 void tray_icon_set_callback(GtkStatusIcon *status_icon, SuiWindow *win, GtkMenu *menu);
 
