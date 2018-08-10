@@ -336,10 +336,14 @@ static void refresh_login_method_list(SuiConnectPanel *self){
 
 static void server_combo_box_on_changed(GtkComboBox *combo_box,
         gpointer user_data){
+    const char *srv_name;
     SuiConnectPanel *self;
 
     self = SUI_CONNECT_PANEL(user_data);
-    update(self, gtk_combo_box_get_active_id(self->server_combo_box));
+    srv_name = gtk_combo_box_get_active_id(self->server_combo_box);
+    if (srv_name){
+        update(self, srv_name);
+    }
 }
 
 static void login_method_combo_box_on_changed(GtkComboBox *combo_box,
