@@ -87,6 +87,8 @@ void sui_message_update_side_bar_item(SuiMessage *self, SuiSideBarItem *item);
 void sui_message_compose_prev(SuiMessage *self, SuiMessage *prev);
 void sui_message_compose_next(SuiMessage *self, SuiMessage *next);
 SuiNotification* sui_message_new_notification(SuiMessage *self);
+char* sui_message_format_time(SuiMessage *self);
+char* sui_message_format_full_time(SuiMessage *self);
 
 void* sui_message_get_ctx(SuiMessage *self);
 void sui_message_set_buffer(SuiMessage *self, SuiBuffer *buf);

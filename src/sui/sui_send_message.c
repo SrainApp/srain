@@ -75,18 +75,18 @@ SuiSendMessage* sui_send_message_new(void *ctx){
             NULL);
 }
 
-static void sui_send_message_update(SuiMessage *msg){
+static void sui_send_message_update(SuiMessage *_self){
     char *time;
     char *full_time;
     SrnMessage *ctx;
     SuiSendMessage *self;
 
-    ctx = sui_message_get_ctx(msg);
+    ctx = sui_message_get_ctx(_self);
     g_return_if_fail(ctx);
-    self = SUI_SEND_MESSAGE(msg);
+    self = SUI_SEND_MESSAGE(_self);
 
-    time = g_date_time_format(ctx->time, "%R");
-    full_time = g_date_time_format(ctx->time, "%c");
+    time =  sui_message_format_time(_self);
+    full_time = sui_message_format_full_time(_self);
     g_return_if_fail(time);
     g_return_if_fail(full_time);
 
@@ -96,7 +96,7 @@ static void sui_send_message_update(SuiMessage *msg){
     g_free(full_time);
     g_free(time);
 
-    SUI_MESSAGE_CLASS(sui_send_message_parent_class)->update(msg);
+    SUI_MESSAGE_CLASS(sui_send_message_parent_class)->update(_self);
 }
 
 static void sui_send_message_compose_prev(SuiMessage *_self, SuiMessage *_prev){
