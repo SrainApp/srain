@@ -270,6 +270,24 @@ static SrnRet read_application_config_from_cfg(config_t *cfg,
     config_lookup_bool_ex(cfg, "send-on-ctrl-enter",
             &app_cfg->ui->window.send_on_ctrl_enter);
 
+    /* Read auto connect server list */
+    config_setting_t *auto_connect;
+    auto_connect = config_lookup(cfg, "auto-connect");
+    if (auto_connect){
+        for (int i = 0; i < config_setting_length(auto_connect); i++){
+            const char *val;
+            config_setting_t *server;
+
+            server = config_setting_get_elem(auto_connect, i);
+            if (!server) continue;
+            val = config_setting_get_string(server);
+            if (!val) continue;
+
+            app_cfg->auto_connect_srv_list = g_list_append(
+                    app_cfg->auto_connect_srv_list, g_strdup(val));
+        }
+    }
+
     return SRN_OK;
 }
 
@@ -353,6 +371,24 @@ static SrnRet read_server_config_from_server(config_setting_t *server,
         ret = read_user_config_from_user(user, cfg->user);
         if (!RET_IS_OK(ret)){
             return ret;
+        }
+    }
+
+    /* Read auto join chat list */
+    config_setting_t *auto_join;
+    auto_join = config_setting_lookup(server, "auto-join");
+    if (auto_join){
+        for (int i = 0; i < config_setting_length(auto_join); i++){
+            const char *val;
+            config_setting_t *chat;
+
+            chat = config_setting_get_elem(auto_join, i);
+            if (!chat) continue;
+            val = config_setting_get_string(chat);
+            if (!val) continue;
+
+            cfg->auto_join_chat_list = g_list_append(
+                    cfg->auto_join_chat_list, g_strdup(val));
         }
     }
 

@@ -254,6 +254,7 @@ struct _SrnServerConfig {
     char *name;
     GSList *addrs; // List of SrnServerAddr
     char *passwd;
+    GList *auto_join_chat_list;
 
     /* SrnServerUser */
     SrnUserConfig *user;

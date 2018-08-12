@@ -10,6 +10,7 @@ SrnApplicationConfig *srn_application_config_new(void){
 }
 
 void srn_application_config_free(SrnApplicationConfig *cfg){
+    g_list_free_full(cfg->auto_connect_srv_list, g_free);
     sui_application_config_free(cfg->ui);
     g_free(cfg);
 }

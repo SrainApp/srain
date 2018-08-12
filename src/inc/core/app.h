@@ -59,9 +59,9 @@ struct _SrnApplicationConfig {
     bool prompt_on_quit; // TODO
     bool create_user_file; // TODO
     char *id;
+    GList *auto_connect_srv_list;
 
     SuiApplicationConfig *ui;
-    GSList *srv_list; // Predefined server config from config file
 };
 
 GType srn_application_get_type(void);
@@ -73,6 +73,7 @@ SrnRet srn_application_run_command(SrnApplication *app, const char *cmd);
 SrnRet srn_application_open_url(SrnApplication *app, const char *url);
 void srn_application_set_config(SrnApplication *app, SrnApplicationConfig *cfg);
 SrnRet srn_application_reload_config(SrnApplication *app);
+void srn_application_auto_connect_server(SrnApplication *app);
 
 // Server
 SrnRet srn_application_add_server(SrnApplication *app, const char *name);
