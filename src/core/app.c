@@ -33,7 +33,6 @@
 #include "log.h"
 #include "i18n.h"
 #include "file_helper.h"
-#include "rc.h"
 #include "utils.h"
 
 #include "app_event.h"
@@ -279,6 +278,23 @@ SrnRet srn_application_add_server_with_config(SrnApplication *app,
         return ret;
     }
 
+    // Auto join chat
+    // FIXME: This should be done in server.c?
+    for (GList *lst = srv->cfg->auto_join_chat_list;
+            lst;
+            lst = g_list_next(lst)){
+        const char *name;
+
+        name = lst->data;
+        ret = srn_server_add_chat(srv, name);
+        if (!RET_IS_OK(ret)){
+            ret = RET_ERR(_("Failed to add chat \"%1$s\": %2$s"),
+                    name, RET_MSG(ret));
+            sui_message_box(_("Error"), RET_MSG(ret));
+            continue;
+        }
+    }
+
     return SRN_OK;
 }
 
@@ -345,6 +361,27 @@ SrnServer* srn_application_get_server_by_addr(SrnApplication *app,
 
 bool srn_application_is_server_valid(SrnApplication *app, SrnServer *srv) {
     return g_slist_find(app->srv_list, srv) != NULL;
+}
+
+void srn_application_auto_connect_server(SrnApplication *app) {
+    SrnRet ret;
+
+    for (GList *lst = app->cfg->auto_connect_srv_list;
+            lst;
+            lst = g_list_next(lst)){
+        const char *name;
+        SrnServer *srv;
+
+        name = lst->data;
+        ret = srn_application_add_server(app, name);
+        if (!RET_IS_OK(ret)){
+            ret = RET_ERR(_("Failed to add server \"%1$s\": %2$s"),
+                    name, RET_MSG(ret));
+            sui_message_box(_("Error"), RET_MSG(ret));
+            continue;
+        }
+        srn_server_connect(srn_application_get_server(app, name));
+    }
 }
 
 /*****************************************************************************
