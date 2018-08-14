@@ -93,12 +93,16 @@ static void sui_recv_message_update(SuiMessage *msg){
     g_return_if_fail(ctx);
     self = SUI_RECV_MESSAGE(msg);
 
+    gtk_label_set_markup(self->user_name_label, ctx->dname);
+    if (ctx->role) {
+        gtk_label_set_text(self->user_subname_label, ctx->role);
+    }
+
     time = g_date_time_format(ctx->time, "%R");
     full_time = g_date_time_format(ctx->time, "%c");
     g_return_if_fail(time);
     g_return_if_fail(full_time);
 
-    gtk_label_set_markup(self->user_name_label, ctx->dname);
     gtk_label_set_text(self->time_label, time);
     gtk_widget_set_tooltip_text(GTK_WIDGET(self->time_label), full_time);
 

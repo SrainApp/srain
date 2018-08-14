@@ -52,6 +52,7 @@
                 </attributes>
                 <style>
                   <class name="sui-message-subnick-label"/>
+                  <class name="dim-label"/>
                 </style>
               </object>
               <packing>
