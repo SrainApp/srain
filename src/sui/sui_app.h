@@ -35,10 +35,11 @@ GType sui_application_get_type(void);
 SuiApplication* sui_application_get_instance();
 SuiApplication* sui_application_new(const char *id, void *ctx, SuiApplicationEvents *events, SuiApplicationConfig *cfg);
 void sui_application_run(SuiApplication *self, int argc, char *argv[]);
-void sui_application_quit(SuiApplication *self);
+void sui_application_exit(SuiApplication *self);
 void sui_application_send_notification(SuiApplication *self, SuiNotification *notif);
 
 SuiWindow* sui_application_get_cur_window(SuiApplication *self);
+GtkPopover* sui_application_get_popover_menu(SuiApplication *self);
 
 void* sui_application_get_ctx(SuiApplication *self);
 SuiApplicationEvents* sui_application_get_events(SuiApplication *self);

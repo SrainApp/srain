@@ -36,7 +36,6 @@
 
 #include "sui_common.h"
 #include "sui_event_hdr.h"
-#include "tray_icon.h"
 #include "sui_window.h"
 #include "sui_connect_panel.h"
 #include "sui_join_panel.h"
@@ -54,12 +53,6 @@ struct _SuiWindow {
     SuiWindowEvents *events;
     SuiWindowConfig *cfg;
 
-    /* Tray icon, TODO */
-    GtkStatusIcon *tray_icon;
-    GtkMenu *tray_menu;
-    GtkMenuItem *about_menu_item;
-    GtkMenuItem *quit_menu_item;
-
     /* Top level container */
     GtkPaned *title_paned;
     GtkBox *window_box;
@@ -73,7 +66,7 @@ struct _SuiWindow {
     GtkBox *side_header_box;
     GtkBox *side_left_header_box;
     GtkBox *side_right_header_box;
-    GtkButton *start_button;
+    GtkMenuButton *start_menu_button;
     GtkButton *connect_button;
     GtkButton *join_button;
 
@@ -110,7 +103,6 @@ static void sui_window_set_events(SuiWindow *self, SuiWindowEvents *events);
 
 static void update_header(SuiWindow *self);
 static void update_title(SuiWindow *self);
-static void show_about_dialog(gpointer user_data);
 static int get_buffer_count(SuiWindow *self);
 static void send_message_cancel(SuiWindow *self);
 static void send_message(SuiWindow *self);
@@ -123,7 +115,6 @@ static void window_stack_on_child_changed(GtkWidget *widget, GParamSpec *pspec,
         gpointer user_data);
 static void buffer_stack_on_child_changed(GtkWidget *widget, GParamSpec *pspec,
         gpointer user_data);
-static void quit_menu_item_on_activate();
 static void popover_button_on_click(GtkButton *button, gpointer user_data);
 static void join_button_on_click(GtkButton *button, gpointer user_data);
 static gboolean CTRL_J_K_on_press(GtkAccelGroup *group, GObject *obj,
@@ -215,24 +206,20 @@ static void sui_window_init(SuiWindow *self){
     sui_side_bar_set_stack(self->side_bar, self->buffer_stack);
     gtk_widget_show(GTK_WIDGET(self->side_bar));
 
+    // Setup menu button
+    gtk_menu_button_set_popover(
+            self->start_menu_button,
+            sui_application_get_popover_menu(sui_application_get_instance()));
+
     /* Popover init */
     self->connect_panel = g_object_ref(sui_connect_panel_new());
-
-    tray_icon_set_callback(self->tray_icon, self, self->tray_menu);
 
     g_signal_connect(self, "destroy",
             G_CALLBACK(on_destroy), NULL);
     g_signal_connect(self, "notify::is-active",
             G_CALLBACK(on_notify_is_active), NULL);
 
-    g_signal_connect_swapped(self->quit_menu_item, "activate",
-            G_CALLBACK(quit_menu_item_on_activate), NULL);
-    g_signal_connect_swapped(self->about_menu_item, "activate",
-            G_CALLBACK(show_about_dialog), self);
-
     // Click to show/hide GtkPopover
-    g_signal_connect_swapped(self->start_button, "clicked",
-            G_CALLBACK(show_about_dialog), self);
     g_signal_connect(self->connect_button, "clicked",
             G_CALLBACK(popover_button_on_click), self->connect_panel);
     g_signal_connect(self->join_button, "clicked",
@@ -336,11 +323,6 @@ static void sui_window_class_init(SuiWindowClass *class){
     widget_class = GTK_WIDGET_CLASS(class);
     gtk_widget_class_set_template_from_resource(widget_class, "/im/srain/Srain/window.glade");
 
-    gtk_widget_class_bind_template_child(widget_class, SuiWindow, tray_icon);
-    gtk_widget_class_bind_template_child(widget_class, SuiWindow, tray_menu);
-    gtk_widget_class_bind_template_child(widget_class, SuiWindow, about_menu_item);
-    gtk_widget_class_bind_template_child(widget_class, SuiWindow, quit_menu_item);
-
     gtk_widget_class_bind_template_child(widget_class, SuiWindow, title_paned);
     gtk_widget_class_bind_template_child(widget_class, SuiWindow, window_box);
     gtk_widget_class_bind_template_child(widget_class, SuiWindow, header_separator);
@@ -352,7 +334,7 @@ static void sui_window_class_init(SuiWindowClass *class){
     gtk_widget_class_bind_template_child(widget_class, SuiWindow, side_header_box);
     gtk_widget_class_bind_template_child(widget_class, SuiWindow, side_left_header_box);
     gtk_widget_class_bind_template_child(widget_class, SuiWindow, side_right_header_box);
-    gtk_widget_class_bind_template_child(widget_class, SuiWindow, start_button);
+    gtk_widget_class_bind_template_child(widget_class, SuiWindow, start_menu_button);
     gtk_widget_class_bind_template_child(widget_class, SuiWindow, connect_button);
     gtk_widget_class_bind_template_child(widget_class, SuiWindow, join_button);
 
@@ -441,11 +423,6 @@ SuiSideBar* sui_window_get_side_bar(SuiWindow *self){
     return self->side_bar;
 }
 
-void sui_window_tray_icon_stress(SuiWindow *self, int stress){
-    gtk_status_icon_set_from_icon_name(self->tray_icon,
-            stress ? "srain-red": "im.srain.Srain");
-}
-
 int sui_window_is_active(SuiWindow *self){
     int active;
 
@@ -481,31 +458,6 @@ void sui_window_set_subtitle(SuiWindow *self, const char *subtitle){
 
 static void sui_window_set_events(SuiWindow *self, SuiWindowEvents *events) {
     self->events = events;
-}
-
-static void show_about_dialog(gpointer user_data){
-    GtkWidget *window = user_data;
-    const gchar *authors[] = { PACKAGE_AUTHOR " <" PACKAGE_EMAIL ">", NULL };
-    const gchar **documentors = authors;
-    const gchar *version = g_strdup_printf(_("%1$s%2$s\nRunning against GTK+ %3$d.%4$d.%5$d"),
-            PACKAGE_VERSION,
-            PACKAGE_BUILD,
-            gtk_get_major_version(),
-            gtk_get_minor_version(),
-            gtk_get_micro_version());
-
-    gtk_show_about_dialog(GTK_WINDOW(window),
-            "program-name", PACKAGE_NAME,
-            "version", version,
-            "copyright", "(C) " PACKAGE_COPYRIGHT_DATES " " PACKAGE_AUTHOR,
-            "license-type", GTK_LICENSE_GPL_3_0,
-            "website", PACKAGE_WEBSITE,
-            "comments", PACKAGE_DESC,
-            "authors", authors,
-            "documenters", documentors,
-            "logo-icon-name", "im.srain.Srain",
-            "title", _("About Srain"),
-            NULL);
 }
 
 static void update_header(SuiWindow *self){
@@ -607,7 +559,6 @@ static void on_notify_is_active(GObject *object, GParamSpec *pspec,
         gpointer data){
    if (sui_window_is_active(SUI_WINDOW(object))){
        /* Stop stress the icon */
-       sui_window_tray_icon_stress(SUI_WINDOW(object), 0);
    } else {
 
    }
@@ -629,11 +580,6 @@ static void join_button_on_click(GtkButton *button, gpointer user_data){
 
     panel = sui_server_buffer_get_join_panel(buf);
     sui_common_popup_panel(GTK_WIDGET(button), GTK_WIDGET(panel));
-}
-
-static void quit_menu_item_on_activate(){
-    // sui_application_quit(srain_app);
-    // FIXME
 }
 
 static gboolean CTRL_J_K_on_press(GtkAccelGroup *group, GObject *obj,

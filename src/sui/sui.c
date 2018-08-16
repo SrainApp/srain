@@ -58,7 +58,7 @@ SuiApplication* sui_new_application(const char *id, void *ctx,
 }
 
 void sui_free_application(SuiApplication *app){
-    sui_application_quit(app);
+    sui_application_exit(app);
 }
 
 void sui_run_application(SuiApplication *app, int argc, char *argv[]){

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
     <gresource prefix="/im/srain/Srain">
+      <file preprocess="xml-stripblanks">app.glade</file>
       <file preprocess="xml-stripblanks">window.glade</file>
       <file preprocess="xml-stripblanks">buffer.glade</file>
       <file preprocess="xml-stripblanks">buffer_menu.glade</file>

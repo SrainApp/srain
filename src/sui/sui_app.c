@@ -40,6 +40,12 @@
 struct _SuiApplication {
     GtkApplication parent;
 
+    GtkStatusIcon *tray_icon;
+    // GtkPopover can not shown at outside of GtkWindow on X11,
+    // so we need another traditional menu as tray icon menu.
+    GtkMenu *menu;
+    GtkPopoverMenu *popover_menu;
+
     SuiApplicationEvents *events;
     SuiApplicationConfig *cfg;
     SuiThemeManager *theme;
@@ -53,7 +59,47 @@ struct _SuiApplicationClass {
 /* Only one SuiApplication instance in one application */
 static SuiApplication *app_instance = NULL;
 
-static GOptionEntry option_entries[] = {
+static void sui_application_set_ctx(SuiApplication *self, void *ctx);
+static void sui_application_set_events(SuiApplication *self,
+        SuiApplicationEvents *events);
+
+static void show_about_dialog(SuiApplication *self);
+
+static void on_startup(SuiApplication *self);
+static void on_activate(SuiApplication *self);
+static void on_shutdown(SuiApplication *self);
+static int on_handle_local_options(SuiApplication *self, GVariantDict *options,
+        gpointer user_data);
+static int on_command_line(SuiApplication *self,
+        GApplicationCommandLine *cmdline, gpointer user_data);
+static void on_activate_about(GSimpleAction *action, GVariant  *parameter,
+        gpointer user_data);
+static void on_activate_setting(GSimpleAction *action, GVariant  *parameter,
+        gpointer user_data);
+static void on_activate_exit(GSimpleAction *action, GVariant  *parameter,
+        gpointer user_data);
+static void tray_icon_on_click(GtkStatusIcon *status_icon, gpointer user_data);
+static void tray_icon_on_popup_menu(GtkStatusIcon *status_icon, guint button,
+       guint activate_time, gpointer user_data);
+
+/*****************************************************************************
+ * GObject functions
+ *****************************************************************************/
+
+enum
+{
+  // 0 for PROP_NOME
+  PROP_CTX = 1,
+  PROP_EVENTS,
+  PROP_CONFIG,
+  N_PROPERTIES
+};
+
+G_DEFINE_TYPE(SuiApplication, sui_application, GTK_TYPE_APPLICATION);
+
+static GParamSpec *obj_properties[N_PROPERTIES] = { NULL, };
+
+static const GOptionEntry option_entries[] = {
     {
         .long_name = "version",
         .short_name = 'v',
@@ -75,34 +121,21 @@ static GOptionEntry option_entries[] = {
     {NULL}
 };
 
-static void sui_application_set_ctx(SuiApplication *self, void *ctx);
-static void sui_application_set_events(SuiApplication *self,
-        SuiApplicationEvents *events);
-
-static void on_startup(SuiApplication *self);
-static void on_activate(SuiApplication *self);
-static void on_shutdown(SuiApplication *self);
-static int on_handle_local_options(SuiApplication *self, GVariantDict *options,
-        gpointer user_data);
-static int on_command_line(SuiApplication *self,
-        GApplicationCommandLine *cmdline, gpointer user_data);
-
-/*****************************************************************************
- * GObject functions
- *****************************************************************************/
-
-enum
-{
-  // 0 for PROP_NOME
-  PROP_CTX = 1,
-  PROP_EVENTS,
-  PROP_CONFIG,
-  N_PROPERTIES
+static const GActionEntry action_entries[] = {
+    {
+        .name = "about",
+        .activate = on_activate_about,
+    },
+    {
+        .name = "setting",
+        .activate = on_activate_setting,
+    },
+    {
+        .name = "exit",
+        .activate = on_activate_exit,
+    },
+    {NULL}
 };
-
-G_DEFINE_TYPE(SuiApplication, sui_application, GTK_TYPE_APPLICATION);
-
-static GParamSpec *obj_properties[N_PROPERTIES] = { NULL, };
 
 static void sui_application_set_property(GObject *object, guint property_id,
         const GValue *value, GParamSpec *pspec){
@@ -151,12 +184,16 @@ static void sui_application_init(SuiApplication *self){
 
     g_application_add_main_option_entries(G_APPLICATION(self), option_entries);
 
+    g_action_map_add_action_entries(G_ACTION_MAP(self), action_entries,
+            -1, self);
+
     g_signal_connect(self, "startup", G_CALLBACK(on_startup), NULL);
     g_signal_connect(self, "activate", G_CALLBACK(on_activate), NULL);
     g_signal_connect(self, "shutdown", G_CALLBACK(on_shutdown), NULL);
     g_signal_connect(self, "command-line", G_CALLBACK(on_command_line), NULL);
     g_signal_connect(self, "handle-local-options",
             G_CALLBACK(on_handle_local_options), NULL);
+
 }
 
 static void sui_application_constructed(GObject *object){
@@ -232,7 +269,7 @@ void sui_application_run(SuiApplication *self, int argc, char *argv[]){
     g_application_run(G_APPLICATION(self), argc, argv);
 }
 
-void sui_application_quit(SuiApplication *self){
+void sui_application_exit(SuiApplication *self){
     g_return_if_fail(SUI_IS_APPLICATION(self));
     /*
     GtkWidget *win;
@@ -270,7 +307,6 @@ void sui_application_send_notification(SuiApplication *self,
     g_notification_set_body(gnotif, notif->body);
     g_notification_set_icon(gnotif, icon);
 
-    sui_window_tray_icon_stress(sui_common_get_cur_window(), 1); // FIXME
     g_application_send_notification(G_APPLICATION(self), notif->id, gnotif);
 
     g_object_unref(gnotif);
@@ -283,6 +319,10 @@ SuiApplication* sui_application_get_instance(){
 
 SuiWindow* sui_application_get_cur_window(SuiApplication *self){
     return SUI_WINDOW(gtk_application_get_active_window(GTK_APPLICATION(self)));
+}
+
+GtkPopover* sui_application_get_popover_menu(SuiApplication *self){
+    return GTK_POPOVER(self->popover_menu);
 }
 
 void* sui_application_get_ctx(SuiApplication *self){
@@ -314,8 +354,49 @@ static void sui_application_set_events(SuiApplication *self,
     self->events = events;
 }
 
+static void show_about_dialog(SuiApplication *self){
+    GtkWindow *window = gtk_application_get_active_window(
+            GTK_APPLICATION(self));
+    const gchar *authors[] = { PACKAGE_AUTHOR " <" PACKAGE_EMAIL ">", NULL };
+    const gchar **documentors = authors;
+    const gchar *version = g_strdup_printf(_("%1$s%2$s\nRunning against GTK+ %3$d.%4$d.%5$d"),
+            PACKAGE_VERSION,
+            PACKAGE_BUILD,
+            gtk_get_major_version(),
+            gtk_get_minor_version(),
+            gtk_get_micro_version());
+
+    gtk_show_about_dialog(window,
+            "program-name", PACKAGE_NAME,
+            "version", version,
+            "copyright", "(C) " PACKAGE_COPYRIGHT_DATES " " PACKAGE_AUTHOR,
+            "license-type", GTK_LICENSE_GPL_3_0,
+            "website", PACKAGE_WEBSITE,
+            "comments", PACKAGE_DESC,
+            "authors", authors,
+            "documenters", documentors,
+            "logo-icon-name", "im.srain.Srain",
+            "title", _("About Srain"),
+            NULL);
+}
+
 static void on_startup(SuiApplication *self){
     SrnRet ret;
+    GtkBuilder *builder;
+
+    builder = gtk_builder_new_from_resource("/im/srain/Srain/app.glade");
+    self->tray_icon = GTK_STATUS_ICON(gtk_builder_get_object(
+                builder, "tray_icon"));
+    self->menu = GTK_MENU(gtk_builder_get_object(builder, "menu"));
+    self->popover_menu = GTK_POPOVER_MENU(gtk_builder_get_object(
+                builder, "popover_menu"));
+    // Attach to any widget to connect to action
+    gtk_menu_attach_to_widget(self->menu, GTK_WIDGET(self->popover_menu), NULL);
+
+    g_signal_connect(self->tray_icon, "activate",
+            G_CALLBACK(tray_icon_on_click), self);
+    g_signal_connect(self->tray_icon, "popup-menu",
+            G_CALLBACK(tray_icon_on_popup_menu), self);
 
     ret = sui_theme_manager_apply(self->theme, self->cfg->theme);
     if (!RET_IS_OK(ret)){
@@ -372,4 +453,52 @@ static int on_command_line(SuiApplication *self,
     }
 
     return 0;
+}
+
+static void on_activate_about(GSimpleAction *action, GVariant  *parameter,
+        gpointer user_data){
+    SuiApplication *self;
+
+    self = user_data;
+    show_about_dialog(self);
+}
+
+static void on_activate_setting(GSimpleAction *action, GVariant  *parameter,
+        gpointer user_data){
+    SuiApplication *self;
+
+    self = user_data;
+    // TODO
+}
+
+static void on_activate_exit(GSimpleAction *action, GVariant  *parameter,
+        gpointer user_data){
+    SuiApplication *self;
+
+    self = user_data;
+    sui_application_exit(self);
+}
+
+static void tray_icon_on_click(GtkStatusIcon *status_icon, gpointer user_data){
+    GList *wins;
+    SuiApplication *self;
+
+    self = user_data;
+    wins = gtk_application_get_windows(GTK_APPLICATION(self));
+
+    for (GList *lst = wins; lst; lst = g_list_next(lst)){
+        GtkWidget *win;
+
+        win = lst->data;
+        gtk_widget_set_visible(win, !gtk_widget_get_visible(win));
+    }
+}
+
+static void tray_icon_on_popup_menu(GtkStatusIcon *status_icon, guint button,
+       guint activate_time, gpointer user_data){
+    SuiApplication *self;
+
+    self = user_data;
+
+    gtk_menu_popup(self->menu, NULL, NULL, NULL, NULL, button, activate_time);
 }

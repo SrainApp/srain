@@ -26,12 +26,6 @@
     <property name="icon_name">dialog-ok</property>
     <property name="use_fallback">True</property>
   </object>
-  <object class="GtkImage" id="start_image">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="icon_name">im.srain.Srain</property>
-    <property name="use_fallback">True</property>
-  </object>
   <template class="SuiWindow" parent="GtkApplicationWindow">
     <property name="can_focus">False</property>
     <property name="window_position">center</property>
@@ -54,15 +48,19 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkButton" id="start_button">
-                    <property name="name">about_button</property>
+                  <object class="GtkMenuButton" id="start_menu_button">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="focus_on_click">False</property>
+                    <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="tooltip_text" translatable="yes">About</property>
-                    <property name="image">start_image</property>
                     <property name="relief">none</property>
+                    <child>
+                      <object class="GtkImage" id="start_image">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="icon_name">im.srain.Srain</property>
+                        <property name="use_fallback">True</property>
+                      </object>
+                    </child>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -484,29 +482,4 @@
       </object>
     </child>
   </template>
-  <object class="GtkStatusIcon" id="tray_icon">
-    <property name="icon_name">im.srain.Srain</property>
-    <property name="has_tooltip">True</property>
-    <property name="tooltip_text" translatable="yes">Srain</property>
-  </object>
-  <object class="GtkMenu" id="tray_menu">
-    <property name="name">tray_menu</property>
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <child>
-      <object class="GtkMenuItem" id="about_menu_item">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label" translatable="yes">About</property>
-        <property name="use_underline">True</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="quit_menu_item">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Quit</property>
-      </object>
-    </child>
-  </object>
 </interface>
