@@ -60,4 +60,10 @@
     border-left-color: @sui_message_list_bg_color1;
 }
 
+/* Misc {{{1 */
+
+.sui-panel {
+    padding: 6px;
+}
+
 /* vim: se fdm=marker: */

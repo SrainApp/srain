@@ -83,8 +83,12 @@
       </object>
       <packing>
         <property name="submenu">main</property>
+        <property name="position">1</property>
       </packing>
     </child>
+    <style>
+      <class name="sui-panel"/>
+    </style>
   </object>
   <object class="GtkStatusIcon" id="tray_icon">
     <property name="icon_name">im.srain.Srain</property>
