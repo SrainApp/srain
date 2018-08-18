@@ -205,6 +205,10 @@ static void sui_application_finalize(GObject *object){
 
     self = SUI_APPLICATION(object);
 
+    g_object_unref(self->tray_icon);
+    g_object_unref(self->menu);
+    g_object_unref(self->popover_menu);
+
     sui_theme_manager_free(self->theme);
 
     G_OBJECT_CLASS(sui_application_parent_class)->finalize(object);
@@ -385,11 +389,14 @@ static void on_startup(SuiApplication *self){
     GtkBuilder *builder;
 
     builder = gtk_builder_new_from_resource("/im/srain/Srain/app.glade");
-    self->tray_icon = GTK_STATUS_ICON(gtk_builder_get_object(
-                builder, "tray_icon"));
-    self->menu = GTK_MENU(gtk_builder_get_object(builder, "menu"));
-    self->popover_menu = GTK_POPOVER_MENU(gtk_builder_get_object(
-                builder, "popover_menu"));
+    self->tray_icon = GTK_STATUS_ICON(g_object_ref_sink(
+                gtk_builder_get_object(builder, "tray_icon")));
+    self->menu = GTK_MENU(g_object_ref_sink(
+            gtk_builder_get_object(builder, "menu")));
+    self->popover_menu = GTK_POPOVER_MENU(g_object_ref_sink(
+        gtk_builder_get_object(builder, "popover_menu")));
+    g_object_unref(builder);
+
     // Attach to any widget to connect to action
     gtk_menu_attach_to_widget(self->menu, GTK_WIDGET(self->popover_menu), NULL);
 
