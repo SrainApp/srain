@@ -59,7 +59,6 @@ run:
 	$(MAKE) PREFIX=$(BUILD_DIR)
 	$(MAKE) install-bin
 	$(MAKE) install-po
-	$(INSTALL) -Dm644 srainrc.example $(BUILD_DIR)/srain/srainrc
 	export XDG_CONFIG_HOME=$(FAKE_XDG_CONFIG_HOME); \
 	export XDG_DATA_DIRS=$(FAKE_XDG_DATA_DIR); \
 	$(BUILD_DIR)/bin/srain

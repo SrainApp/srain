@@ -183,7 +183,6 @@ char *create_log_file(const char *srv_name, const char *fname){
 /**
  * @brief Create directories and config files if no exist
  *          - $XDG_CONFIG_HOME/srain/
- *          - $XDG_CONFIG_HOME/srain/srainrc
  *          - $XDG_CACHE_HOME/srain/
  *          - $XDG_CACHE_HOME/srain/avatars
  *          - $XDG_DATA_HOME/srain/logs
@@ -195,7 +194,6 @@ int create_user_file(){
     FILE *fp;
     char *congif_dir;
     char *cache_dir;
-    char *rc_file;
     char *data_dir;
     char *logs_dir;
 
@@ -209,18 +207,6 @@ int create_user_file(){
     }
     g_free(congif_dir);
     congif_dir = NULL;
-
-    rc_file = g_build_filename(g_get_user_config_dir(), "srain", "srainrc", NULL);
-    fp = fopen(rc_file, "r");
-    if (!fp){
-        fp = fopen(rc_file, "w");
-        if (!fp){
-            ERR_FR("Failed to create file '%s', errno %d", rc_file, errno);
-            exit(errno);
-        }
-    }
-    g_free(rc_file);
-    rc_file = NULL;
 
     cache_dir = g_build_filename(g_get_user_cache_dir(), "srain", NULL);
     res = g_mkdir_with_parents(cache_dir, 0700);

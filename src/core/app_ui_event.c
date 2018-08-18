@@ -32,7 +32,6 @@
 #include "srain.h"
 #include "i18n.h"
 #include "log.h"
-#include "rc.h"
 #include "filter.h"
 #include "ret.h"
 #include "utils.h"
@@ -119,7 +118,6 @@ static SrnRet ui_event_activate(SuiApplication *app, SuiEvent event, GVariantDic
 
     srn_application_auto_connect_server(srn_app);
 
-    // return rc_read(); // Read rc file
     return SRN_OK;
 }
 
