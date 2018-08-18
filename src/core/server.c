@@ -166,6 +166,15 @@ bool srn_server_is_valid(SrnServer *srv){
     return srn_application_is_server_valid(app, srv);
 }
 
+bool srn_server_is_chat_valid(SrnServer *srv, SrnChat *chat){
+    SrnApplication *app;
+
+    if (!srn_server_is_valid(srv)){
+        return FALSE;
+    }
+    return srv->chat == chat || g_slist_find(srv->chat_list, chat) != NULL;
+}
+
 /**
  * @brief server_connect Just an intuitive alias of a connect action
  *
@@ -257,6 +266,30 @@ SrnRet srn_server_add_chat(SrnServer *srv, const char *name){
                 SRN_CHAT_TYPE_CHANNEL : SRN_CHAT_TYPE_DIALOG,
                 chat_cfg);
         srv->chat_list = g_slist_append(srv->chat_list, chat);
+    }
+
+    /* Run chat auto run commands */
+    for (GList *lst = chat->cfg->auto_run_cmd_list; lst; lst = g_list_next(lst)){
+        SrnRet ret;
+        const char *cmd;
+
+        cmd = lst->data;
+        ret = srn_chat_run_command(chat, cmd);
+
+        // NOTE: The server and chat may be invlid after running command
+        if (!srn_server_is_valid(srv) || !srn_server_is_chat_valid(srv, chat)){
+            return ret;
+        }
+
+        if (RET_IS_OK(ret)){
+            if (ret != SRN_OK) { // Has OK message
+                srn_chat_add_misc_message_fmt(chat, chat->_user,
+                       _("Chat autorun command: %1$s"), RET_MSG(ret));
+            }
+        } else {
+            srn_chat_add_error_message_fmt(chat, chat->_user,
+                       _("Chat autorun command: %1$s"), RET_MSG(ret));
+        }
     }
 
     return SRN_OK;

@@ -192,10 +192,10 @@ static SrnRet ui_event_send(SuiBuffer *sui, SuiEvent event, GVariantDict *params
 
     // Command or message?
     if (msg[0] == '/'){
-        ret = srn_application_run_command(srn_application_get_default(), msg);
-        // FIXME: chat may be invalid now
-        if (!srn_server_is_valid(srv)){
-            return SRN_ERR;
+        ret = srn_chat_run_command(chat, msg);
+        // NOTE: The server and chat may be invlid after running command
+        if (!srn_server_is_valid(srv) || !srn_server_is_chat_valid(srv, chat)){
+            return ret;
         }
         if (RET_IS_OK(ret)){
             if (ret != SRN_OK) { // Has OK message

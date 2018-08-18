@@ -17,8 +17,8 @@
  */
 
 /**
- * @file app_command.c
- * @brief Application command definitions and callbacks
+ * @file chat_command.c
+ * @brief Command definitions and callbacks
  * @author Shengyu Zhang <i@silverrainz.me>
  * @version 0.06.2
  * @date 2016-07-26
@@ -45,6 +45,8 @@
 
 typedef struct _CommandContext {
     SrnApplication *app;
+    SrnServer *srv;
+    SrnChat *chat;
 } CommandContext;
 
 static SrnApplication* ctx_get_app(CommandContext *ctx);
@@ -283,20 +285,23 @@ static SrnCommandContext cmd_ctx = {
  ******************************************************************************/
 
 /**
- * @brief Run a command in context of SrnApplication
+ * @brief Run a command in context of SrnChat
  *
- * @param chat A SrnApplication instance
+ * @param chat A SrnChat instance
  * @param cmd
  *
  * @return SRN_OK or SRN_ERR or other error
  */
-SrnRet srn_application_run_command(SrnApplication *app, const char *cmd){
+SrnRet srn_chat_run_command(SrnChat *chat, const char *cmd){
     CommandContext ctx;
 
-    g_return_val_if_fail(app, SRN_ERR);
+    g_return_val_if_fail(chat, SRN_ERR);
     g_return_val_if_fail(cmd, SRN_ERR);
 
-    ctx.app = app;
+    ctx.app = srn_application_get_default();
+    ctx.srv = chat->srv;
+    ctx.chat = chat;
+
     return srn_command_proc(&cmd_ctx, cmd, &ctx);
 }
 
@@ -906,23 +911,20 @@ static SrnRet on_command_ctcp(SrnCommand *cmd, void *user_data){
 static SrnApplication* ctx_get_app(CommandContext *ctx){
     g_return_val_if_fail(ctx, NULL);
     g_return_val_if_fail(ctx->app, NULL);
+
     return ctx->app;
 }
 
 static SrnServer* ctx_get_server(CommandContext *ctx){
-    SrnApplication *app;
+    g_return_val_if_fail(ctx, NULL);
+    g_return_val_if_fail(ctx->srv, NULL);
 
-    app = ctx_get_app(ctx);
-    g_return_val_if_fail(app, NULL);
-
-    return app->cur_srv;
+    return ctx->srv;
 }
 
 static SrnChat* ctx_get_chat(CommandContext *ctx){
-    SrnServer *srv;
+    g_return_val_if_fail(ctx, NULL);
+    g_return_val_if_fail(ctx->chat, NULL);
 
-    srv = ctx_get_server(ctx);
-    g_return_val_if_fail(srv, NULL);
-
-    return srv->cur_chat;
+    return ctx->chat;
 }

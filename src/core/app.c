@@ -278,7 +278,7 @@ SrnRet srn_application_add_server_with_config(SrnApplication *app,
         return ret;
     }
 
-    // Auto join chat
+    /* Auto join chat */
     // FIXME: This should be done in server.c?
     for (GList *lst = srv->cfg->auto_join_chat_list;
             lst;
@@ -292,6 +292,32 @@ SrnRet srn_application_add_server_with_config(SrnApplication *app,
                     name, RET_MSG(ret));
             sui_message_box(_("Error"), RET_MSG(ret));
             continue;
+        }
+    }
+
+    /* Run server autorun commands */
+    for (GList *lst = srv->cfg->auto_run_cmd_list; lst; lst = g_list_next(lst)){
+        const char *cmd;
+        SrnRet ret;
+        SrnChat *chat;
+
+        cmd = lst->data;
+        chat = srv->chat;
+        ret = srn_chat_run_command(chat, cmd);
+
+        // NOTE: The server and chat may be invlid after running command
+        if (!srn_server_is_valid(srv) || !srn_server_is_chat_valid(srv, chat)){
+            return ret;
+        }
+
+        if (RET_IS_OK(ret)){
+            if (ret != SRN_OK) { // Has OK message
+                srn_chat_add_misc_message_fmt(chat, chat->_user,
+                       _("Server autorun command: %1$s"), RET_MSG(ret));
+            }
+        } else {
+            srn_chat_add_error_message_fmt(chat, chat->_user,
+                       _("Server autorun command: %1$s"), RET_MSG(ret));
         }
     }
 

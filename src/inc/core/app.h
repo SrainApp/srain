@@ -69,7 +69,6 @@ SrnApplication *srn_application_new(void);
 SrnApplication* srn_application_get_default(void);
 void srn_application_run(SrnApplication *app, int argc, char *argv[]);
 void srn_application_quit(SrnApplication *app);
-SrnRet srn_application_run_command(SrnApplication *app, const char *cmd);
 SrnRet srn_application_open_url(SrnApplication *app, const char *url);
 void srn_application_set_config(SrnApplication *app, SrnApplicationConfig *cfg);
 SrnRet srn_application_reload_config(SrnApplication *app);

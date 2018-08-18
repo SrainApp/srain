@@ -297,6 +297,7 @@ SrnRet srn_server_quit(SrnServer *srv, const char *reason);
 void srn_server_set_config(SrnServer *srv, SrnServerConfig *cfg);
 SrnRet srn_server_reload_config(SrnServer *srv);
 bool srn_server_is_valid(SrnServer *srv);
+bool srn_server_is_chat_valid(SrnServer *srv, SrnChat *chat);
 SrnRet srn_server_connect(SrnServer *srv);
 SrnRet srn_server_disconnect(SrnServer *srv);
 SrnRet srn_server_state_transfrom(SrnServer *srv, SrnServerAction act);
@@ -317,6 +318,7 @@ SrnChat* srn_chat_new(SrnServer *srv, const char *name, SrnChatType type, SrnCha
 void srn_chat_free(SrnChat *chat);
 void srn_chat_set_config(SrnChat *chat, SrnChatConfig *cfg);
 void srn_chat_set_is_joined(SrnChat *chat, bool joined);
+SrnRet srn_chat_run_command(SrnChat *chat, const char *cmd);
 SrnRet srn_chat_add_user(SrnChat *chat, SrnServerUser *srv_user);
 SrnRet srn_chat_rm_user(SrnChat *chat, SrnChatUser *user);
 SrnChatUser* srn_chat_get_user(SrnChat *chat, const char *nick);
