@@ -53,31 +53,32 @@ void srn_login_config_free(SrnLoginConfig *self){
 SrnRet srn_login_config_check(SrnLoginConfig *self){
     const char *missing = _("Login method %1$s is set while field %2$s is unset");
     const char *unknown = _("Unknown login method");
+    const char *method_str = srn_login_method_to_string(self->method);
 
     switch (self->method) {
         case SRN_LOGIN_METHOD_NONE:
             break;
         case SRN_LOGIN_METHOD_PASS:
             if (str_is_empty(self->pass_password)){
-                return RET_ERR(missing, self->method, "pass-password");
+                return RET_ERR(missing, method_str, "pass-password");
             }
             break;
         case SRN_LOGIN_METHOD_NICKSERV:
             if (str_is_empty(self->nickserv_password)){
-                return RET_ERR(missing, self->method, "nickserv-password");
+                return RET_ERR(missing, method_str, "nickserv-password");
             }
             break;
         case SRN_LOGIN_METHOD_MSG_NICKSERV:
             if (str_is_empty(self->msg_nickserv_password)){
-                return RET_ERR(missing, self->method, "msg-nickserv-password");
+                return RET_ERR(missing, method_str, "msg-nickserv-password");
             }
             break;
         case SRN_LOGIN_METHOD_SASL_PLAIN:
-            if (str_is_empty(self-> sasl_plain_identify)){
-                return RET_ERR(missing, self->method, "sasl-plain-identify");
+            if (str_is_empty(self->sasl_plain_identify)){
+                return RET_ERR(missing, method_str, "sasl-plain-identify");
             }
-            if (str_is_empty(self-> sasl_plain_password)){
-                return RET_ERR(missing, self->method, "sasl-plain-password");
+            if (str_is_empty(self->sasl_plain_password)){
+                return RET_ERR(missing, method_str, "sasl-plain-password");
             }
             break;
         case SRN_LOGIN_METHOD_UNKNOWN:
