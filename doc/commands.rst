@@ -7,31 +7,17 @@ Commands Manual
     :depth: 3
     :backlinks: none
 
-.. _commands-context:
+.. _commands-playground:
 
-Context
-=======
+Playground
+==========
 
 User can run commands in two ways, the one way is typing them into the input
 entry of chat buffer.
 
-The another way is using rc(**r**\ un **c**\ ommand) file. Srain allows you to
-save commands in rc file and run them at each time Srain starts.
-The location of rc file is ``$XDG_CONFIG_HOME/srain``, usually it is
-``~/.config/srain/srainrc``.
-Every line in rc file should be a valid command, empty line or line prefixed
-with ``#`` will be ignored.
-
-Here is an example of rc file:
-
-.. literalinclude:: ../srainrc.example
-
-In both ways, when you run a command, Srain needs to know which server and
-which chat you want to operate on - this is the **"context"** of command.
-When you run commands by typing them into the input entry, the context is
-obvious.
-But **when you run commands in rc file, you should tell Srain the
-context via** :ref:`commands-usage-context`.
+The another way is writing the commands to the ``server.auto-run`` and
+``chat.auto-run`` configuration items. For more details, please refer to
+:doc:`config`.
 
 .. _commands-syntax:
 
@@ -82,6 +68,8 @@ Usage
 
 /context
 --------
+
+.. warning:: This command is **deprecated**.
 
 Usage::
 

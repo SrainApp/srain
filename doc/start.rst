@@ -75,7 +75,7 @@ Using Command
 Refer to :ref:`commands-server` and :ref:`commands-connect`.
 
 If you want to automatically execute commands at each time Srain starts, please
-refer to :ref:`commands-context`.
+refer to :ref:`commands-playground`.
 
 Join Channel
 ============
