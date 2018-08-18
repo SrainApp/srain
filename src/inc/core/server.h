@@ -156,6 +156,7 @@ struct _SrnChat {
 struct _SrnChatConfig {
     bool log; // TODO
     bool render_mirc_color;
+    GList *auto_run_cmd_list;
 
     SuiBufferConfig *ui;
 };
@@ -255,6 +256,7 @@ struct _SrnServerConfig {
     GSList *addrs; // List of SrnServerAddr
     char *passwd;
     GList *auto_join_chat_list;
+    GList *auto_run_cmd_list; // List of autorun commands
 
     /* SrnServerUser */
     SrnUserConfig *user;

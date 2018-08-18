@@ -392,6 +392,24 @@ static SrnRet read_server_config_from_server(config_setting_t *server,
         }
     }
 
+    /* Read autorun command list */
+    config_setting_t *cmds;
+    cmds = config_setting_lookup(server, "auto-run");
+    if (cmds){
+        for (int i = 0; i < config_setting_length(cmds); i++){
+            const char *val;
+            config_setting_t *cmd;
+
+            cmd = config_setting_get_elem(cmds, i);
+            if (!cmd) continue;
+            val = config_setting_get_string(cmd);
+            if (!val) continue;
+
+            cfg->auto_run_cmd_list = g_list_append(cfg->auto_run_cmd_list,
+                    g_strdup(val));
+        }
+    }
+
     return SRN_OK;
 }
 
@@ -453,6 +471,24 @@ static SrnRet read_chat_config_from_chat(config_setting_t *chat, SrnChatConfig *
     config_setting_lookup_bool_ex(chat, "preview-url", &cfg->ui->preview_url);
     config_setting_lookup_bool_ex(chat, "auto-preview-url", &cfg->ui->auto_preview_url);
     config_setting_lookup_string_ex(chat, "nick-completion-suffix", &cfg->ui->nick_completion_suffix);
+
+    /* Read autorun command list */
+    config_setting_t *cmds;
+    cmds = config_setting_lookup(chat, "auto-run");
+    if (cmds){
+        for (int i = 0; i < config_setting_length(cmds); i++){
+            const char *val;
+            config_setting_t *cmd;
+
+            cmd = config_setting_get_elem(cmds, i);
+            if (!cmd) continue;
+            val = config_setting_get_string(cmd);
+            if (!val) continue;
+
+            cfg->auto_run_cmd_list = g_list_append(cfg->auto_run_cmd_list,
+                    g_strdup(val));
+        }
+    }
 
     return SRN_OK;
 }

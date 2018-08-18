@@ -88,6 +88,7 @@ void srn_server_config_free(SrnServerConfig *cfg){
     g_slist_free_full(cfg->addrs, (GDestroyNotify)srn_server_addr_free);
     str_assign(&cfg->passwd, NULL);
     g_list_free_full(cfg->auto_join_chat_list, g_free);
+    g_list_free_full(cfg->auto_run_cmd_list, g_free);
 
     srn_user_config_free(cfg->user);
     sirc_config_free(cfg->irc);
