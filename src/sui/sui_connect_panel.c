@@ -145,6 +145,10 @@ static void sui_connect_panel_init(SuiConnectPanel *self){
             G_CALLBACK(connect_button_on_click), self);
     g_signal_connect_swapped(self->cancel_button, "clicked",
             G_CALLBACK(cancel_button_on_click), self);
+    g_signal_connect_swapped(self->quick_nick_entry, "activate",
+            G_CALLBACK(connect_button_on_click), self);
+    g_signal_connect_swapped(self->nick_entry, "activate",
+            G_CALLBACK(connect_button_on_click), self);
 
     refresh_server_list(self);
     refresh_login_method_list(self);
