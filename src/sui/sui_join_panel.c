@@ -125,13 +125,14 @@ static void sui_join_panel_init(SuiJoinPanel *self){
     self->match = MATCH_CHANNEL;
     match_combo_box_set_model(self);
 
+    /* Press enter to connect */
     g_signal_connect_swapped(self->chan_entry, "activate",
             G_CALLBACK(join_button_on_click), self);
     g_signal_connect_swapped(self->password_entry, "activate",
             G_CALLBACK(join_button_on_click), self);
-
     g_signal_connect_swapped(self->search_entry, "activate",
             G_CALLBACK(join_button_on_click), self);
+
     g_signal_connect_swapped(self->refresh_button, "clicked",
             G_CALLBACK(refresh_button_on_clicked), self);
     g_signal_connect(self->match_combo_box, "changed",
