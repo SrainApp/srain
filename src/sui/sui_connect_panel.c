@@ -146,6 +146,28 @@ static void sui_connect_panel_init(SuiConnectPanel *self){
     g_signal_connect_swapped(self->cancel_button, "clicked",
             G_CALLBACK(cancel_button_on_click), self);
 
+    /* Press enter to connect */
+    g_signal_connect_swapped(self->quick_nick_entry, "activate",
+            G_CALLBACK(connect_button_on_click), self);
+    g_signal_connect_swapped(self->host_entry, "activate",
+            G_CALLBACK(connect_button_on_click), self);
+    g_signal_connect_swapped(self->port_entry, "activate",
+            G_CALLBACK(connect_button_on_click), self);
+    g_signal_connect_swapped(self->password_entry, "activate",
+            G_CALLBACK(connect_button_on_click), self);
+    g_signal_connect_swapped(self->nick_entry, "activate",
+            G_CALLBACK(connect_button_on_click), self);
+    g_signal_connect_swapped(self->pass_password_entry, "activate",
+            G_CALLBACK(connect_button_on_click), self);
+    g_signal_connect_swapped(self->nickserv_password_entry, "activate",
+            G_CALLBACK(connect_button_on_click), self);
+    g_signal_connect_swapped(self->msg_nickserv_password_entry, "activate",
+            G_CALLBACK(connect_button_on_click), self);
+    g_signal_connect_swapped(self->sasl_plain_identify_entry, "activate",
+            G_CALLBACK(connect_button_on_click), self);
+    g_signal_connect_swapped(self->sasl_plain_password_entry, "activate",
+            G_CALLBACK(connect_button_on_click), self);
+
     refresh_server_list(self);
     refresh_login_method_list(self);
 }
