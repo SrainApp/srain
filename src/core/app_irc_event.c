@@ -1299,8 +1299,9 @@ static void irc_event_numeric(SircSession *sirc, int event,
                 g_return_if_fail(chat);
 
                 dup_names = g_strdup(names);
-                nickptr = strtok(dup_names, " ");
-                for (; nickptr = strtok(NULL, " "); nickptr){
+                for (nickptr = strtok(dup_names, " ");
+                        nickptr;
+                        nickptr = strtok(NULL, " ")){
                     switch (nickptr[0]){
                         case '~':
                             nickptr++;
