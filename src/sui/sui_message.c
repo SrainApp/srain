@@ -24,7 +24,6 @@
  * @date 2018-04-06
  */
 
-#include <time.h>
 #include <gtk/gtk.h>
 #include <assert.h>
 #include <string.h>
@@ -284,6 +283,27 @@ void sui_message_label_on_popup(GtkLabel *label, GtkMenu *menu, gpointer user_da
         g_object_ref_sink(forward_submenu); // remove the floating reference
         g_object_unref(forward_submenu);
     }
+}
+
+char* sui_message_format_time(SuiMessage *self){
+    SrnMessage *ctx;
+
+    ctx = sui_message_get_ctx(self);
+
+    return g_date_time_format(ctx->time, "%R");
+}
+
+char* sui_message_format_full_time(SuiMessage *self){
+    SrnMessage *ctx;
+
+    ctx = sui_message_get_ctx(self);
+
+#ifdef G_OS_WIN32
+    // FIXME: g_date_time_to_unix(xxx, "%c") does not work on MS Windows
+    return g_date_time_format(ctx->time, "%F %R");
+#else
+    return g_date_time_format(ctx->time, "%c");
+#endif
 }
 
 /*****************************************************************************

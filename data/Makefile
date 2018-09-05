@@ -40,10 +40,7 @@ themes:
 	done
 
 plugins:
-	cd plugins; \
-	for i in *.py; do \
-		$(INSTALL) -Dm644 "$$i" "$(DESTDIR)$(PACKAGE_DATA_DIR)/share/srain/plugins/$$i"; \
-	done
+	# TODO
 
 config: builtin.cfg
 	$(INSTALL) -Dm644 "builtin.cfg" "$(DESTDIR)$(PACKAGE_CONFIG_DIR)/srain/builtin.cfg"

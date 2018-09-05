@@ -145,7 +145,7 @@ static void sui_misc_message_update(SuiMessage *_self){
     g_return_if_fail(ctx);
     self = SUI_MISC_MESSAGE(_self);
 
-    full_time = g_date_time_format(ctx->time, "%c");
+    full_time = sui_message_format_full_time(_self);
     g_return_if_fail(full_time);
     gtk_widget_set_tooltip_text(GTK_WIDGET(_self->message_label), full_time);
     g_free(full_time);
