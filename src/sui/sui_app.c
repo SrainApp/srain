@@ -317,6 +317,11 @@ void sui_application_send_notification(SuiApplication *self,
     g_object_unref(icon);
 }
 
+void sui_application_highlight_tray_icon(SuiApplication *self, bool highlight){
+    gtk_status_icon_set_from_icon_name(self->tray_icon,
+            highlight ? "srain-red": "im.srain.Srain");
+}
+
 SuiApplication* sui_application_get_instance(){
     return app_instance;
 }

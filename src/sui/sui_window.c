@@ -209,7 +209,8 @@ static void sui_window_init(SuiWindow *self){
     // Setup menu button
     gtk_menu_button_set_popover(
             self->start_menu_button,
-            sui_application_get_popover_menu(sui_application_get_instance()));
+            GTK_WIDGET(sui_application_get_popover_menu(
+                    sui_application_get_instance())));
 
     /* Popover init */
     self->connect_panel = g_object_ref(sui_connect_panel_new());
@@ -557,11 +558,11 @@ static void on_destroy(SuiWindow *self){
 
 static void on_notify_is_active(GObject *object, GParamSpec *pspec,
         gpointer data){
-   if (sui_window_is_active(SUI_WINDOW(object))){
-       /* Stop stress the icon */
-   } else {
-
-   }
+    if (sui_window_is_active(SUI_WINDOW(object))){
+        /* Stop stress the icon */
+        sui_application_highlight_tray_icon(
+                sui_application_get_instance(), FALSE);
+    }
 }
 
 static void popover_button_on_click(GtkButton *button, gpointer user_data){

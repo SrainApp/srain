@@ -198,6 +198,7 @@ void sui_notify_message(SuiMessage *msg){
     if (in_app) {
         // TODO: In-app notification support
     } else {
+        sui_application_highlight_tray_icon(app, TRUE);
         sui_application_send_notification(app, notif);
     }
 

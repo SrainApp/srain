@@ -37,6 +37,7 @@ SuiApplication* sui_application_new(const char *id, void *ctx, SuiApplicationEve
 void sui_application_run(SuiApplication *self, int argc, char *argv[]);
 void sui_application_exit(SuiApplication *self);
 void sui_application_send_notification(SuiApplication *self, SuiNotification *notif);
+void sui_application_highlight_tray_icon(SuiApplication *self, bool highlight);
 
 SuiWindow* sui_application_get_cur_window(SuiApplication *self);
 GtkPopover* sui_application_get_popover_menu(SuiApplication *self);
