@@ -242,9 +242,4 @@ static void user_list_menu_item_on_toggled(GtkWidget* widget, gpointer user_data
 
     active = gtk_check_menu_item_get_active(item);
     gtk_revealer_set_reveal_child(self->parent.user_list_revealer, active);
-    if (active){
-        gtk_widget_show(GTK_WIDGET(self->user_list));
-    } else {
-        gtk_widget_hide(GTK_WIDGET(self->user_list));
-    }
 }

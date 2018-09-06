@@ -476,7 +476,7 @@ static void topic_menu_item_on_toggled(GtkWidget* widget, gpointer user_data){
     gtk_revealer_set_reveal_child(self->topic_revealer, active);
 
     // If topic is empty, do not show it anyway
-    if (active && strlen(gtk_label_get_text(self->topic_label)) != 0){
+    if (strlen(gtk_label_get_text(self->topic_label)) != 0){
         gtk_widget_show(GTK_WIDGET(self->topic_label));
     } else {
         gtk_widget_hide(GTK_WIDGET(self->topic_label));
