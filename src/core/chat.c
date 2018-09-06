@@ -220,7 +220,32 @@ cleanup:
 }
 
 void srn_chat_add_notice_message(SrnChat *self, SrnChatUser *user, const char *content){
-    srn_chat_add_recv_message(self, user, content);
+    SrnMessage *msg;
+    DecoratorFlag dflag;
+    FilterFlag fflag;
+
+    dflag = DECORATOR_PANGO_MARKUP | DECORATOR_RELAY | DECORATOR_MENTION;
+    if (self->cfg->render_mirc_color) {
+        dflag |= DECORATOR_MIRC_COLORIZE;
+    } else {
+        dflag |= DECORATOR_MIRC_STRIP;
+    }
+    fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
+
+    msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_NOTICE);
+    if (decorate_message(msg, dflag, NULL) != SRN_OK){
+        goto cleanup;
+    }
+    if (!filter_message(msg, fflag, NULL)){
+        goto cleanup;
+    }
+
+    add_message(self, msg);
+
+    return;
+
+cleanup:
+    srn_message_free(msg);
 }
 
 void srn_chat_add_action_message(SrnChat *self, SrnChatUser *user, const char *content){
@@ -355,7 +380,9 @@ static void add_message(SrnChat *self, SrnMessage *msg){
 
     sui_buffer_add_message(self->ui, msg->ui);
     if (msg->mentioned
-            || self->type == SRN_CHAT_TYPE_DIALOG){
+            || self->type == SRN_CHAT_TYPE_DIALOG
+            || msg->type == SRN_MESSAGE_TYPE_NOTICE
+            || msg->type == SRN_MESSAGE_TYPE_ERROR){
         sui_notify_message(msg->ui);
     }
 }

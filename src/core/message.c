@@ -55,6 +55,9 @@ SrnMessage* srn_message_new(SrnChat *chat, SrnChatUser *user,
         case SRN_MESSAGE_TYPE_RECV:
             self->ui = sui_new_recv_message(self);
             break;
+        case SRN_MESSAGE_TYPE_NOTICE:
+            self->ui = sui_new_recv_message(self);
+            break;
         case SRN_MESSAGE_TYPE_MISC:
             self->ui = sui_new_misc_message(self, SUI_MISC_MESSAGE_STYLE_NORMAL);
             break;
