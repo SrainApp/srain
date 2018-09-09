@@ -1,7 +1,8 @@
 #!/bin/sh
 
 prefix=/usr/local
-config_dir=/etc
+sysconfdir=$prefix/etc
+datadir=$prefix/share
 debugsym=true
 
 for arg in "$@"; do
@@ -11,7 +12,15 @@ for arg in "$@"; do
         ;;
 
     --config-dir=*)
-        config_dir=`echo $arg | sed 's/--config-dir=//'`
+        echo "Option --config-dir is deprecated, use --sysconfdir instead."
+        sysconfdir=`echo $arg | sed 's/--config-dir=//'`
+        ;;
+    --sysconfdir=*)
+        sysconfdir=`echo $arg | sed 's/--sysconfdir=//'`
+        ;;
+
+    --datadir=*)
+        datadir=`echo $arg | sed 's/--datadir=//'`
         ;;
 
     --enable-debug)
@@ -23,7 +32,9 @@ for arg in "$@"; do
         echo 'Usage: ./configure [options]'
         echo 'Options:'
         echo '  --prefix=<path>: Installation prefix'
-        echo '  --config-dir=<path>: Configure file location'
+        echo '  --config-dir=<path>: Deprecated, use --sysconfdir instead'
+        echo '  --sysconfdir=<path>: System wide configure file location'
+        echo '  --datadir=<path>: Application data location'
         echo '  --enable-debug: Include debug symbols'
         echo '  --disable-debug: Do not include debug symbols'
         echo 'All invalid options are silently ignored'
@@ -35,7 +46,8 @@ done
 echo 'Generating makefile ...'
 echo '' > Makefile
 echo "PREFIX = $prefix" | tee -a Makefile
-echo "CONFIG_DIR = $config_dir" | tee -a Makefile
+echo "SYSCONFDIR = $sysconfdir" | tee -a Makefile
+echo "DATADIR = $datadir" | tee -a Makefile
 if $debugsym; then
     echo 'DBGFLAGS = -ggdb' | tee -a Makefile
 fi

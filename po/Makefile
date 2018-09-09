@@ -10,13 +10,13 @@ XGETTEXTFLAG = --sort-output --from-code=UTF-8 \
 
 # Cover SRCS
 SRCS = $(wildcard ../src/*.c ../src/*/*.c $(BUILD_DIR)/resources.c)
-UIS = $(wildcard ../src/sui/glade/*.glade)
+GLADES = $(wildcard ../data/ui/*.glade)
 LANGS = $(shell cat LANGS)
 
 default: mo
 
-srain.pot: $(SRCS) $(UIS)
-	xgettext $(XGETTEXTFLAG) -LGlade -ktranslatable -o $@ $(UIS)
+srain.pot: $(SRCS) $(GLADES)
+	xgettext $(XGETTEXTFLAG) -LGlade -ktranslatable -o $@ $(GLADES)
 	xgettext $(XGETTEXTFLAG) -LC -k_ -kN_ -o $@ $(SRCS) -j
 
 po: srain.pot LANGS

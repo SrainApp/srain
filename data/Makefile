@@ -1,46 +1,39 @@
 # Makefile
 #
-# Install data files including icons, configure files, pixmaps and etc.
+# Install data files or gererate resources including icons, configure files
+# and etc.
 
-.PHONY: icons pixmaps themes plugins
+.PHONY: resources config icons themes misc plugins 
 
-SIZE = 14x14 16x16 22x22 24x24 32x32 36x36 48x48 64x64 72x72 96x96 128x128 192x192 256x256 512x512
+GLIB_COMPILE_RESOURCES = glib-compile-resources
 
-default: im.srain.Srain.desktop icons themes plugins config
-	$(INSTALL) -Dm644 "im.srain.Srain.desktop" "$(DESTDIR)$(PACKAGE_DATA_DIR)/share/applications/im.srain.Srain.desktop"
-	$(INSTALL) -Dm644 "im.srain.Srain.appdata.xml" "$(DESTDIR)$(PACKAGE_DATA_DIR)/share/metainfo/im.srain.Srain.appdata.xml"
+RES = $(BUILD_DIR)/resources.c
 
-icons:
-	cd icons; \
-	for size in $(SIZE); do \
-		if [ -d "$$size" ]; then \
-			cd $$size; \
-			for i in *.png; do \
-				$(INSTALL) -Dm644 "$$i" \
-					"$(DESTDIR)$(PACKAGE_DATA_DIR)/share/icons/hicolor/$$size/apps/$$i"; \
-			done; \
-			cd ..; \
-		fi; \
-	done
-	# Convert raw image to specified size
-	cd icons/raw; \
-	for i in *.png; do \
-		for size in $(SIZE); do \
-			convert "$$i" -resize $$size "/tmp/srain-tmp.png"; \
-			$(INSTALL) -Dm644 "/tmp/srain-tmp.png" \
-				"$(DESTDIR)$(PACKAGE_DATA_DIR)/share/icons/hicolor/$$size/apps/$$i"; \
-		done; \
-	done; \
-	rm "/tmp/srain-tmp.png"
+GLADES = $(wildcard ui/*.glade) themes
+ICONS = $(wildcard icons/*.*)
+THEMESSRC = $(wildcard themes/*.css)
+THEMESDST = $(patsubst %, $(DESTDIR)$(PACKAGE_DATA_DIR)/$(PACKAGE)/themes/%, $(notdir $(THEMESSRC)))
 
-themes:
-	cd themes; \
-	for i in *.css; do \
-		$(INSTALL) -Dm644 "$$i" "$(DESTDIR)$(PACKAGE_DATA_DIR)/share/srain/themes/$$i"; \
-	done
+default: config icons themes misc plugins
+
+resources: $(RES)
+
+$(RES): srain.gresource.xml $(GLADES) $(ICONS)
+	$(GLIB_COMPILE_RESOURCES) $< --target=$@ --sourcedir=. --generate-source
+
+config: builtin.cfg
+	$(INSTALL) -Dm644 $< "$(DESTDIR)$(PACKAGE_CONFIG_DIR)/$(PACKAGE)/$<"
+
+icons: icons/scalable/srain.png 
+	$(INSTALL) -Dm644 "$<" "$(DESTDIR)$(PACKAGE_DATA_DIR)/icons/hicolor/scalable/apps/$(PACKAGE_APPID).png"
+
+themes: $(THEMESDST)
+$(DESTDIR)$(PACKAGE_DATA_DIR)/$(PACKAGE)/themes/%.css: themes/%.css
+	$(INSTALL) -Dm644 "$^" "$@"
+
+misc: srain.desktop srain.appdata.xml
+	$(INSTALL) -Dm644 "srain.desktop" "$(DESTDIR)$(PACKAGE_DATA_DIR)/applications/$(PACKAGE_APPID).desktop"
+	$(INSTALL) -Dm644 "srain.appdata.xml" "$(DESTDIR)$(PACKAGE_DATA_DIR)/metainfo/$(PACKAGE_APPID).appdata.xml"
 
 plugins:
 	# TODO
-
-config: builtin.cfg
-	$(INSTALL) -Dm644 "builtin.cfg" "$(DESTDIR)$(PACKAGE_CONFIG_DIR)/srain/builtin.cfg"
