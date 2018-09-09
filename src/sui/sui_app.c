@@ -405,6 +405,10 @@ static void on_startup(SuiApplication *self){
     // Attach to any widget to connect to action
     gtk_menu_attach_to_widget(self->menu, GTK_WIDGET(self->popover_menu), NULL);
 
+    // Add resource to icon search path
+    gtk_icon_theme_add_resource_path(gtk_icon_theme_get_default(),
+            "/im/srain/Srain/icons");
+
     g_signal_connect(self->tray_icon, "activate",
             G_CALLBACK(tray_icon_on_click), self);
     g_signal_connect(self->tray_icon, "popup-menu",

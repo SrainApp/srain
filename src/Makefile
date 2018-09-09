@@ -32,8 +32,7 @@ LDFLAGS += $(GTK3LIBS) $(LIBIRCCLINETLIBS) \
 SRCS = $(wildcard *.c */*.c $(BUILD_DIR)/resources.c)
 OBJS = $(patsubst %.c, $(BUILD_DIR)/%.o, $(notdir $(SRCS)))
 
-default: sui/glade/Makefile
-	$(MAKE) -C sui/glade
+default:
 	$(MAKE) $(TARGET)
 
 $(BUILD_DIR)/%.o: %.c

@@ -43,7 +43,7 @@
 char *get_theme_file(const char *fname){
     char *path;
 
-    path = g_build_filename(PACKAGE_DATA_DIR, "share",
+    path = g_build_filename(PACKAGE_DATA_DIR,
             PACKAGE, "themes", fname, NULL);
 
     if (g_file_test(path, G_FILE_TEST_EXISTS)){
@@ -65,7 +65,7 @@ char *get_theme_file(const char *fname){
 char *get_pixmap_file(const char *fname){
     char *path;
 
-    path = g_build_filename(PACKAGE_DATA_DIR, "share",
+    path = g_build_filename(PACKAGE_DATA_DIR,
             PACKAGE, "pixmaps", fname, NULL);
 
     if (g_file_test(path, G_FILE_TEST_EXISTS)){
@@ -87,7 +87,7 @@ char *get_pixmap_file(const char *fname){
 char *get_plugin_file(const char *fname){
     char *path;
 
-    path = g_build_filename(PACKAGE_DATA_DIR, "share",
+    path = g_build_filename(PACKAGE_DATA_DIR,
             PACKAGE, "plugins", fname, NULL);
 
     if (g_file_test(path, G_FILE_TEST_EXISTS)){

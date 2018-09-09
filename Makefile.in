@@ -8,6 +8,7 @@ export
 # Package meta message
 PACKAGE = srain
 PACKAGE_NAME = Srain
+PACKAGE_APPID = im.srain.Srain
 PACKAGE_BUILD = $(shell [ -d .git ] && \
 				git rev-parse --git-dir > /dev/null 2>&1 && \
 				echo -n -git@0.`git rev-list --count HEAD`.`git describe --always`)
@@ -17,8 +18,8 @@ PACKAGE_EMAIL = i@silverrainz.me
 PACKAGE_DESC = Modern, beautiful IRC client written in GTK+ 3.
 PACKAGE_WEBSITE = https://srain.im
 PACKAGE_COPYRIGHT_DATES = 2016 - 2018
-PACKAGE_DATA_DIR = $(PREFIX)
-PACKAGE_CONFIG_DIR = $(CONFIG_DIR)
+PACKAGE_DATA_DIR = $(DATADIR)
+PACKAGE_CONFIG_DIR = $(SYSCONFDIR)
 
 MAKE = make
 DEL = rm -rf
@@ -32,6 +33,7 @@ FAKE_XDG_DATA_DIR = $(BUILD_DIR)/share:/usr/share:/usr/local/share
 
 default: src/Makefile
 	mkdir -p $(BUILD_DIR) | true
+	$(MAKE) -C data resources
 	$(MAKE) -C src
 
 install: install-bin install-data install-po
