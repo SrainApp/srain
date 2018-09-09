@@ -112,7 +112,7 @@ static SrnRet load_config(SrnConfigManager *mgr, config_t *cfg, const char *file
     LOG_FR("Configuration file version: %d.%d.%d", ver->major, ver->minor, ver->micro);
 
     if (mgr->ver->major > ver->major){
-        ret = RET_ERR(_("Configuration file version: %1$s, application version: %2$s, "
+        ret = RET_ERR(_("Configuration file version: %1$d, application version: %2$d, "
                     "Please migrate your profile to new version"),
                 ver->major,
                 mgr->ver->major);
