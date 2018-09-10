@@ -319,6 +319,7 @@ void srn_chat_free(SrnChat *chat);
 void srn_chat_set_config(SrnChat *chat, SrnChatConfig *cfg);
 void srn_chat_set_is_joined(SrnChat *chat, bool joined);
 SrnRet srn_chat_run_command(SrnChat *chat, const char *cmd);
+GList* srn_chat_complete_command(SrnChat *chat, const char *cmd);
 SrnRet srn_chat_add_user(SrnChat *chat, SrnServerUser *srv_user);
 SrnRet srn_chat_rm_user(SrnChat *chat, SrnChatUser *user);
 SrnChatUser* srn_chat_get_user(SrnChat *chat, const char *nick);

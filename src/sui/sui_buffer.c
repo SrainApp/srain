@@ -487,16 +487,35 @@ static GtkListStore* real_completion_func(SuiBuffer *self, const char *context){
     const char *prev;
     const char *prefix;
     GSList *msgs;
+    GList *cmds;
     GtkListStore *store;
+    SrnChat *ctx;
 
     store = gtk_list_store_new(SUI_COMPLETION_N_COLUMNS,
             G_TYPE_STRING,
             G_TYPE_STRING,
             G_TYPE_STRING);
 
-    /* Get longest valid prefix */
+    /* Get command completions */
+    ctx = sui_buffer_get_ctx(self);
+    cmds = srn_chat_complete_command(ctx, context);
+    for (GList *lst = cmds; lst; lst = g_list_next(lst)){
+        const char *cmd;
+        GtkTreeIter iter;
+
+        cmd = lst->data;
+        gtk_list_store_append(store, &iter);
+        gtk_list_store_set(store, &iter,
+                SUI_COMPLETION_COLUMN_PREFIX, context,
+                SUI_COMPLETION_COLUMN_SUFFIX, cmd + strlen(context),
+                -1);
+    }
+    g_list_free_full(cmds, g_free);
+
+    /* Get most recent message senders */
     prev = context + strlen(context);
     do {
+        /* Get longest valid prefix */
         prefix = prev;
         prev = g_utf8_find_prev_char(context, prefix);
         if (!prev) {

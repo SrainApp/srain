@@ -305,6 +305,38 @@ SrnRet srn_chat_run_command(SrnChat *chat, const char *cmd){
     return srn_command_proc(&cmd_ctx, cmd, &ctx);
 }
 
+
+/**
+ * @brief Simplest commmand complete function
+ *
+ * @param chat
+ * @param cmd
+ *
+ * @return A list of completed commands
+ *
+ * TODO: improve it.
+ *
+ */
+GList* srn_chat_complete_command(SrnChat *chat, const char *cmd){
+    int i;
+    GList *lst;
+
+    if (!g_str_has_prefix(cmd, "/")){
+        return NULL;
+    }
+
+    i = 0;
+    lst = NULL;
+    while (cmd_binds[i].name){
+        if (g_str_has_prefix(cmd_binds[i].name, cmd)){
+            lst = g_list_append(lst, g_strdup(cmd_binds[i].name));
+        }
+        i++;
+    }
+
+    return lst;
+}
+
 /*******************************************************************************
  * SrnCommand callbacks
  ******************************************************************************/
