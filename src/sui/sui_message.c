@@ -444,7 +444,7 @@ static SuiNotification* sui_message_real_new_notification(SuiMessage *self){
     }
 
     str_assign(&notif->id, "sui-message");
-    str_assign(&notif->icon, "im.srain.Srain");
+    str_assign(&notif->icon, PACKAGE_APPID);
     notif->title = title; // No need to copy
     str_assign(&notif->body, self->ctx->dcontent);
 

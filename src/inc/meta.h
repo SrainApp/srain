@@ -39,6 +39,10 @@
 #define PACKAGE_BUILD "Undefined"
 #endif
 
+#ifndef PACKAGE_APPID
+#define PACKAGE_APPID "Undefined"
+#endif
+
 #ifndef PACKAGE_AUTHOR
 #define PACKAGE_AUTHOR "Undefined"
 #endif

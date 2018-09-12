@@ -96,7 +96,8 @@ SrnApplication* srn_application_new(void){
     srn_application_init_ui_event(app);
     srn_application_init_irc_event(app);
 
-    app->ui = sui_new_application(cfg->id, app, &app->ui_app_events, cfg->ui);
+    app->ui = sui_new_application(cfg->id ? cfg->id : PACKAGE_APPID,
+            app, &app->ui_app_events, cfg->ui);
 
     filter_init(); // FIXME
     decorator_init();
