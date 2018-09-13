@@ -1,2 +1,5 @@
-./configure --prefix=/usr/local --config-dir=/usr/local/etc
-make
+$ ./configure                     \
+      --prefix=/usr/local         \
+      --datadir=/usr/local/share  \
+      --sysconfdir=/etc
+$ make

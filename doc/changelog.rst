@@ -30,10 +30,10 @@ Change Log
     inspried by https://ircv3.net/software/clients.html
   - Added a semantic version parser, not yet used
   - Added appdata file which requier by application store, thanks to @cpba
-  - openSUSE package is available, please refer to :ref:`package-opensuse` for
-    details, thanks to @alois
-  - Flatpak package is available, please refer to :ref:`package-flatpak` for
-    details, thanks to @cpba
+  - openSUSE package is available, please refer to
+    :ref:`install-packages-opensuse` for details, thanks to @alois
+  - Flatpak package is available, please refer to
+    :ref:`install-packages-flatpak` for details, thanks to @cpba
 
 - Improved:
 
