@@ -1,5 +1,6 @@
 #!/bin/sh
 
+builddir=build
 prefix=/usr/local
 sysconfdir=$prefix/etc
 datadir=$prefix/share
@@ -7,6 +8,13 @@ debugsym=true
 
 for arg in "$@"; do
     case "$arg" in
+    --builddir=*)
+        builddir=`echo $arg | sed 's/--builddir=//'`
+        echo "$builddir" | grep " " &&
+            echo "Whitespace is not allowed in build directory" &&
+            exit 1
+        ;;
+
     --prefix=*)
         prefix=`echo $arg | sed 's/--prefix=//'`
         ;;
@@ -31,6 +39,7 @@ for arg in "$@"; do
     --help)
         echo 'Usage: ./configure [options]'
         echo 'Options:'
+        echo '  --builddir=<path>: Build output directory, CANNOT contain whitespace'
         echo '  --prefix=<path>: Installation prefix'
         echo '  --config-dir=<path>: Deprecated, use --sysconfdir instead'
         echo '  --sysconfdir=<path>: System wide configure file location'
@@ -45,6 +54,7 @@ done
 
 echo 'Generating makefile ...'
 echo '' > Makefile
+echo "BUILDDIR = $builddir" | tee -a Makefile
 echo "PREFIX = $prefix" | tee -a Makefile
 echo "SYSCONFDIR = $sysconfdir" | tee -a Makefile
 echo "DATADIR = $datadir" | tee -a Makefile

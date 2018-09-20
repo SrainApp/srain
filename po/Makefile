@@ -33,5 +33,5 @@ mo: LANGS po
 	for i in $(LANGS); do \
 		msgfmt $$i.po -o "$(BUILD_DIR)/srain.mo"; \
 		$(INSTALL) -Dm644 "$(BUILD_DIR)/srain.mo" \
-			"$(DESTDIR)$(PREFIX)/share/locale/$$i/LC_MESSAGES/srain.mo"; \
+			"$(DESTDIR)$(PACKAGE_DATA_DIR)/locale/$$i/LC_MESSAGES/srain.mo"; \
 	done

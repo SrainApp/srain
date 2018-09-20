@@ -26,15 +26,15 @@ DEL = rm -rf
 INSTALL = install -v
 DB = gdb
 
-BUILD_DIR = $(CURDIR)/build
+BUILD_DIR = $(BUILDDIR)
 TARGET = $(BUILD_DIR)/srain.out
 FAKE_XDG_CONFIG_HOME = $(BUILD_DIR)
 FAKE_XDG_DATA_DIR = $(BUILD_DIR)/share:/usr/share:/usr/local/share
 
 default: src/Makefile
-	mkdir -p $(BUILD_DIR) | true
-	$(MAKE) -C data resources
-	$(MAKE) -C src
+	- mkdir -p $(BUILD_DIR)
+	$(MAKE) BUILD_DIR=../$(BUILD_DIR) -C data resources
+	$(MAKE) BUILD_DIR=../$(BUILD_DIR) TARGET=../$(TARGET) -C src
 
 install: install-bin install-data install-po
 
@@ -42,33 +42,33 @@ install-bin:
 	$(INSTALL) -Dm755 "$(TARGET)" "$(DESTDIR)$(PREFIX)/bin/srain"
 
 install-data: data/Makefile
-	$(MAKE) -C data
+	$(MAKE) BUILD_DIR=../$(BUILD_DIR) -C data
 
 install-po: po/Makefile
-	$(MAKE) -C po
+	$(MAKE) BUILD_DIR=../$(BUILD_DIR) -C po
 
 install-doc: doc/Makefile
-	$(MAKE) -C doc install
+	$(MAKE) BUILD_DIR=../$(BUILD_DIR) -C doc install
 
 doc: doc/Makefile
-	$(MAKE) -C doc
+	$(MAKE) BUILD_DIR=../$(BUILD_DIR) -C doc
 
 view-doc: doc/Makefile
-	$(MAKE) -C doc view
+	$(MAKE) BUILD_DIR=../$(BUILD_DIR) -C doc view
 
 run:
-	$(MAKE) -C data config
+	$(MAKE) BUILD_DIR=../$(BUILD_DIR) -C data config
 	$(MAKE) PREFIX=$(BUILD_DIR)
 	$(MAKE) install-bin
 	$(MAKE) install-po
 	export XDG_CONFIG_HOME=$(FAKE_XDG_CONFIG_HOME); \
 	export XDG_DATA_DIRS=$(FAKE_XDG_DATA_DIR); \
-	$(BUILD_DIR)/bin/srain
+	"$(DESTDIR)$(PREFIX)/bin/srain"
 
 bt:
 	export XDG_CONFIG_HOME=$(FAKE_XDG_CONFIG_HOME); \
 	export XDG_DATA_DIRS=$(FAKE_XDG_DATA_DIR); \
-	$(DB) $(BUILD_DIR)/bin/srain -ex 'r' -ex 'bt' -ex 'q'
+	$(DB) "$(DESTDIR)$(PREFIX)/bin/srain" -ex 'r' -ex 'bt' -ex 'q'
 
 gtk_dbg:
 	GTK_DEBUG=interactive \
