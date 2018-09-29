@@ -77,6 +77,7 @@ struct _SrnChatUser{
     SrnChat *chat;
 
     bool is_joined;
+    bool is_ignored;            // TODO: New implementation of ignore list
 
     SrnChatUserType type;
     SrnServerUser *srv_user;
@@ -98,6 +99,7 @@ struct _SrnServerUser {
     bool is_me;
     bool is_server;
     bool is_online;
+    bool is_ignored;            // TODO: New implementation of ignore list
     bool is_away;
     bool is_secure;
 
@@ -144,7 +146,6 @@ struct _SrnChat {
     SrnMessage *last_msg;
 
     /* Used by Filters & Decorators */
-    GSList *ignore_nick_list;
     GSList *ignore_regex_list;
     GSList *relaybot_list;
 
@@ -348,6 +349,7 @@ void srn_server_user_set_hostname(SrnServerUser *user, const char *hostname);
 void srn_server_user_set_realname(SrnServerUser *user, const char *realname);
 void srn_server_user_set_is_me(SrnServerUser *user, bool me);
 void srn_server_user_set_is_online(SrnServerUser *user, bool online);
+void srn_server_user_set_is_ignored(SrnServerUser *user, bool ignored);
 SrnRet srn_server_user_attach_chat_user(SrnServerUser *user, SrnChatUser *chat_user);
 SrnRet srn_server_user_detach_chat_user(SrnServerUser *user, SrnChatUser *chat_user);
 
@@ -356,6 +358,7 @@ void srn_chat_user_free(SrnChatUser *self);
 void srn_chat_user_update(SrnChatUser *self);
 void srn_chat_user_set_type(SrnChatUser *self, SrnChatUserType type);
 void srn_chat_user_set_is_joined(SrnChatUser *self, bool joined);
+void srn_chat_user_set_is_ignored(SrnChatUser *self, bool ignored);
 
 SrnMessage* srn_message_new(SrnChat *chat, SrnChatUser *user, const char *content, SrnMessageType type);
 void srn_message_free(SrnMessage *msg);
