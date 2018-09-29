@@ -328,7 +328,18 @@ static SrnRet ui_event_ignore(SuiBuffer *sui, SuiEvent event, GVariantDict *para
 
     g_variant_dict_lookup(params, "nick", SUI_EVENT_PARAM_STRING, &nick);
 
-    return nick_filter_add_nick(chat, nick);
+    SrnServerUser *user = srn_server_get_user(chat->srv, nick);
+    srn_server_user_set_is_ignored(user, !user->is_ignored);
+
+    if(user->is_ignored){
+        srn_chat_add_misc_message_fmt(chat, chat->user,
+                _("\"%1$s\" has ignored"), nick);
+    } else {
+        srn_chat_add_misc_message_fmt(chat, chat->user,
+                _("\"%1$s\" has unignored"), nick);
+    }
+
+    return SRN_OK;
 }
 
 static SrnRet ui_event_cutover(SuiBuffer *sui, SuiEvent event, GVariantDict *params){

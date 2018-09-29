@@ -48,10 +48,6 @@ typedef struct _Filter {
 void filter_init();
 bool filter_message(const SrnMessage *msg, FilterFlag flag, void *user_data);
 
-int nick_filter_add_nick(SrnChat *chat, const char *nick);
-int nick_filter_rm_nick(SrnChat *chat, const char *nick);
-void nick_filter_free_list(SrnChat *chat);
-
 int regex_filter_add_pattern(SrnChat *chat, const char *name, const char *pattern);
 int regex_filter_rm_pattern(SrnChat *chat, const char *name);
 void regex_filter_free_list(SrnChat *chat);

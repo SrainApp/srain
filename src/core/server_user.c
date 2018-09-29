@@ -31,6 +31,7 @@ SrnServerUser *srn_server_user_new(SrnServer *srv, const char *nick){
 
     self = g_malloc0(sizeof(SrnServerUser));
     self->srv = srv;
+    self->is_ignored = FALSE;
     str_assign(&self->nick, nick);
 
     return self;
@@ -120,6 +121,12 @@ void srn_server_user_set_is_online(SrnServerUser *self, bool online){
     }
 }
 
+void srn_server_user_set_is_ignored(SrnServerUser *self, bool is_ignored){
+    if (self->is_ignored == is_ignored) {
+        return;
+    }
+    self->is_ignored = is_ignored;
+}
 
 static void srn_server_user_update_chat_user(SrnServerUser *self){
     GSList *lst;

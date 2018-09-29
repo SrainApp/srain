@@ -75,7 +75,6 @@ void srn_chat_free(SrnChat *self){
 
     /* Free extra list: TODO: a better way? */
     relay_decroator_free_list(self);
-    nick_filter_free_list(self);
     regex_filter_free_list(self);
 
     // Free user list, self->user and self->_user also in this list
