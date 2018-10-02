@@ -28,6 +28,7 @@ SrnChatUser *srn_chat_user_new(SrnChat *chat, SrnServerUser *srv_user){
     self->type = SRN_CHAT_USER_TYPE_CHIGUA;
     self->chat = chat;
     self->srv_user = srv_user;
+    self->is_ignored = FALSE;
     srn_server_user_attach_chat_user(srv_user, self);
     self->ui = sui_new_user(self);
 
@@ -64,4 +65,11 @@ void srn_chat_user_set_is_joined(SrnChatUser *self, bool joined){
     } else {
         sui_rm_user(self->chat->ui, self->ui);
     }
+}
+
+void srn_chat_user_set_is_ignored(SrnChatUser *self, bool ignored){
+    if (self->is_ignored == ignored){
+        return;
+    }
+    self->is_ignored = ignored;
 }
