@@ -279,9 +279,6 @@ void sui_set_topic_setter(SuiBuffer *buf, const char *setter){
     sui_buffer_set_topic_setter(buffer, setter);
 }
 
-void sui_message_append_message(SuiBuffer *buf, SuiMessage *smsg, const char *msg){
-}
-
 void sui_message_box(const char *title, const char *msg){
     GtkMessageDialog *dia;
     char *markuped_msg;
