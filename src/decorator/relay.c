@@ -30,14 +30,14 @@
 #include "utils.h"
 
 static char* relay(SrnMessage *msg, int index, const char *frag);
-static char* do_relay(GSList *lst, SrnMessage *msg, const char *frag);
+static char* do_relay(GList *lst, SrnMessage *msg, const char *frag);
 
 Decorator relay_decroator = {
     .name = "relay",
     .func = relay,
 };
 int relay_decroator_add_nick(SrnChat *chat, const char *nick){
-    GSList *lst;
+    GList *lst;
 
     lst = chat->relaybot_list;
 
@@ -48,10 +48,10 @@ int relay_decroator_add_nick(SrnChat *chat, const char *nick){
                     nick, chat->name);
             return SRN_ERR;
         }
-        lst = g_slist_next(lst);
+        lst = g_list_next(lst);
     }
 
-    chat->relaybot_list = g_slist_append(chat->relaybot_list, g_strdup(nick));
+    chat->relaybot_list = g_list_append(chat->relaybot_list, g_strdup(nick));
 
     srn_chat_add_misc_message_fmt(chat->srv->cur_chat, chat->user,
             _("\"%1$s\" has added to %2$s 's relaybot list"), nick, chat->name);
@@ -60,7 +60,7 @@ int relay_decroator_add_nick(SrnChat *chat, const char *nick){
 }
 
 int relay_decroator_rm_nick(SrnChat *chat, const char *nick){
-    GSList *lst;
+    GList *lst;
 
     lst = chat->relaybot_list;
 
@@ -68,7 +68,7 @@ int relay_decroator_rm_nick(SrnChat *chat, const char *nick){
         if (lst->data){
             if (sirc_target_equal(lst->data, nick)){
                 g_free(lst->data);
-                chat->relaybot_list = g_slist_delete_link(chat->relaybot_list, lst);
+                chat->relaybot_list = g_list_delete_link(chat->relaybot_list, lst);
 
                 srn_chat_add_misc_message_fmt(chat->srv->cur_chat, chat->user,
                         _("\"%1$s\" is removed from %2$s 's relaybot list"),
@@ -77,7 +77,7 @@ int relay_decroator_rm_nick(SrnChat *chat, const char *nick){
                 return SRN_OK;
             }
         }
-        lst = g_slist_next(lst);
+        lst = g_list_next(lst);
     }
 
     srn_chat_add_error_message_fmt(chat->srv->cur_chat, chat->user,
@@ -88,7 +88,7 @@ int relay_decroator_rm_nick(SrnChat *chat, const char *nick){
 }
 
 void relay_decroator_free_list(SrnChat *chat){
-    g_slist_free_full(chat->relaybot_list, g_free);
+    g_list_free_full(chat->relaybot_list, g_free);
     chat->relaybot_list = NULL;
 }
 
@@ -108,7 +108,7 @@ static char* relay(SrnMessage *msg, int index, const char *frag){
     return dcontent;
 }
 
-static char* do_relay(GSList *lst, SrnMessage *msg, const char *frag){
+static char* do_relay(GList *lst, SrnMessage *msg, const char *frag){
     char *dnick;
     char *dcontent = NULL;
     GError *err;
@@ -150,7 +150,7 @@ static char* do_relay(GSList *lst, SrnMessage *msg, const char *frag){
             }
             g_match_info_free(match_info);
         }
-        lst = g_slist_next(lst);
+        lst = g_list_next(lst);
     }
 
     g_regex_unref(regex);

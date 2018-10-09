@@ -126,7 +126,7 @@ void srn_application_set_config(SrnApplication *app, SrnApplicationConfig  *cfg)
 
 SrnRet srn_application_reload_config(SrnApplication *app){
     char *path;
-    GSList *lst;
+    GList *lst;
     SrnRet ret;
     SrnLoggerConfig *logger_cfg;
     SrnLoggerConfig *old_logger_cfg;
@@ -203,7 +203,7 @@ SrnRet srn_application_reload_config(SrnApplication *app){
             goto ERR_RELOAD_SERVER;
         }
 
-        lst = g_slist_next(lst);
+        lst = g_list_next(lst);
         continue;
 
 ERR_RELOAD_SERVER:
@@ -251,7 +251,7 @@ ERR:
 
 SrnRet srn_application_add_server_with_config(SrnApplication *app,
         const char *name, SrnServerConfig *srv_cfg) {
-    GSList *lst;
+    GList *lst;
     SrnRet ret;
     SrnServer *srv;
 
@@ -261,7 +261,7 @@ SrnRet srn_application_add_server_with_config(SrnApplication *app,
         if (g_ascii_strcasecmp(srv->name, name) == 0){
             return SRN_ERR;
         }
-        lst = g_slist_next(lst);
+        lst = g_list_next(lst);
     }
 
     ret = srn_server_config_check(srv_cfg);
@@ -271,7 +271,7 @@ SrnRet srn_application_add_server_with_config(SrnApplication *app,
 
     srv = srn_server_new(name, srv_cfg);
     app->cur_srv = srv;
-    app->srv_list = g_slist_append(app->srv_list, srv);
+    app->srv_list = g_list_append(app->srv_list, srv);
 
     // Create server chat
     ret = srn_server_add_chat(srv, srv->name);
@@ -326,17 +326,17 @@ SrnRet srn_application_add_server_with_config(SrnApplication *app,
 }
 
 SrnRet srn_application_rm_server(SrnApplication *app, SrnServer *srv) {
-    GSList *lst;
+    GList *lst;
     SrnServerConfig *srv_cfg;
 
-    lst = g_slist_find(app->srv_list, srv);
+    lst = g_list_find(app->srv_list, srv);
     if (!lst){
         return SRN_ERR;
     }
     if (app->cur_srv == srv) {
         app->cur_srv = NULL;
     }
-    app->srv_list = g_slist_delete_link(app->srv_list, lst);
+    app->srv_list = g_list_delete_link(app->srv_list, lst);
 
     srv_cfg = srv->cfg;
     srn_server_free(srv);
@@ -346,7 +346,7 @@ SrnRet srn_application_rm_server(SrnApplication *app, SrnServer *srv) {
 }
 
 SrnServer* srn_application_get_server(SrnApplication *app, const char *name){
-    GSList *lst;
+    GList *lst;
 
     lst = app->srv_list;
     while (lst) {
@@ -356,7 +356,7 @@ SrnServer* srn_application_get_server(SrnApplication *app, const char *name){
         if (g_ascii_strcasecmp(srv->name, name) == 0){
             return srv;
         }
-        lst = g_slist_next(lst);
+        lst = g_list_next(lst);
     }
 
     return NULL;
@@ -364,12 +364,12 @@ SrnServer* srn_application_get_server(SrnApplication *app, const char *name){
 
 SrnServer* srn_application_get_server_by_addr(SrnApplication *app,
         SrnServerAddr *addr){
-    GSList *lst;
+    GList *lst;
     SrnRet ret;
 
     lst = app->srv_list;
     while (lst) {
-        GSList *addr_lst;
+        GList *addr_lst;
         SrnServer *srv;
 
         srv = lst->data;
@@ -378,16 +378,16 @@ SrnServer* srn_application_get_server_by_addr(SrnApplication *app,
             if (srn_server_addr_equal(addr, addr_lst->data)){
                 return srv;
             }
-            addr_lst = g_slist_next(addr_lst);
+            addr_lst = g_list_next(addr_lst);
         }
-        lst = g_slist_next(lst);
+        lst = g_list_next(lst);
     }
 
     return NULL;
 }
 
 bool srn_application_is_server_valid(SrnApplication *app, SrnServer *srv) {
-    return g_slist_find(app->srv_list, srv) != NULL;
+    return g_list_find(app->srv_list, srv) != NULL;
 }
 
 void srn_application_auto_connect_server(SrnApplication *app) {

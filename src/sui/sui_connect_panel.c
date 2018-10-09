@@ -300,8 +300,8 @@ static void update(SuiConnectPanel *self, const char *srv_name){
 }
 
 static void refresh_server_list(SuiConnectPanel *self){
-    GSList *lst;
-    GSList *srv_cfg_lst;
+    GList *lst;
+    GList *srv_cfg_lst;
     GtkTreeIter iter;
     GtkListStore *store;
     SrnRet ret;
@@ -325,10 +325,10 @@ static void refresh_server_list(SuiConnectPanel *self){
         gtk_list_store_set(store, &iter,
                 SERVER_LIST_STORE_COL_NAME, lst->data,
                 -1);
-        lst = g_slist_next(lst);
+        lst = g_list_next(lst);
     }
 
-    g_slist_free_full(srv_cfg_lst, g_free);
+    g_list_free_full(srv_cfg_lst, g_free);
 }
 
 static void refresh_login_method_list(SuiConnectPanel *self){

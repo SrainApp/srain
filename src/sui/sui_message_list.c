@@ -166,10 +166,10 @@ void sui_message_list_add_message(SuiMessageList *self, SuiMessage *msg,
     sui_message_list_append_message(self, msg, halign);
 }
 
-GSList *sui_message_list_get_recent_messages(SuiMessageList *self, int limit){
+GList *sui_message_list_get_recent_messages(SuiMessageList *self, int limit){
     GList *rows;
     GList *lst;
-    GSList *msgs;
+    GList *msgs;
 
     rows = gtk_container_get_children(GTK_CONTAINER(self->list_box));
     lst = g_list_last(rows);
@@ -187,7 +187,7 @@ GSList *sui_message_list_get_recent_messages(SuiMessageList *self, int limit){
         g_return_val_if_fail(box_child, NULL);
 
         msg = SUI_MESSAGE(box_child->data);
-        msgs = g_slist_append(msgs, msg);
+        msgs = g_list_append(msgs, msg);
 
         g_list_free(box_child);
 

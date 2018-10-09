@@ -42,10 +42,10 @@ struct _SrnLoggerConfig {
     bool prompt_function;
     bool prompt_line;
 
-    GSList *debug_targets;
-    GSList *info_targets;
-    GSList *warn_targets;
-    GSList *error_targets;
+    GList *debug_targets;
+    GList *info_targets;
+    GList *warn_targets;
+    GList *error_targets;
 };
 
 /* Debug output */

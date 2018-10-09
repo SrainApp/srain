@@ -120,6 +120,6 @@ void srn_message_free(SrnMessage *self){
     str_assign(&self->content, NULL);
     str_assign(&self->dcontent, NULL);
     g_date_time_unref(self->time);
-    g_slist_free_full(self->urls, g_free);
+    g_list_free_full(self->urls, g_free);
     g_free(self);
 }

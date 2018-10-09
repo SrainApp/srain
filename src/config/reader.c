@@ -41,11 +41,11 @@ static int config_setting_lookup_bool_ex(const config_setting_t *config, const c
 
 /* Configuration readers for various config structures */
 static SrnRet read_log_config_from_cfg(config_t *cfg, SrnLoggerConfig *log_cfg);
-static SrnRet read_log_targets_from_log(config_setting_t *log, const char *name, GSList **lst);
+static SrnRet read_log_targets_from_log(config_setting_t *log, const char *name, GList **lst);
 
 static SrnRet read_application_config_from_cfg(config_t *cfg, SrnApplicationConfig *app_cfg);
 
-static SrnRet read_server_config_list_from_cfg(config_t *cfg, GSList **srv_cfg_list);
+static SrnRet read_server_config_list_from_cfg(config_t *cfg, GList **srv_cfg_list);
 static SrnRet read_server_config_from_server(config_setting_t *server, SrnServerConfig *cfg);
 static SrnRet read_server_config_from_server_list(config_setting_t *server_list, SrnServerConfig *cfg, const char *srv_name);
 static SrnRet read_server_config_from_cfg(config_t *cfg, SrnServerConfig *srv_cfg, const char *srv_name);
@@ -101,7 +101,7 @@ SrnRet srn_config_manager_read_application_config(SrnConfigManager *mgr,
 }
 
 SrnRet srn_config_manager_read_server_config_list(SrnConfigManager *mgr,
-        GSList **srv_cfg_list){
+        GList **srv_cfg_list){
     SrnRet ret;
 
     ret = read_server_config_list_from_cfg(&mgr->system_cfg, srv_cfg_list);
@@ -142,8 +142,8 @@ SrnRet srn_config_manager_read_server_config(SrnConfigManager *mgr,
 
 SrnRet srn_config_manager_read_server_config_by_addr(SrnConfigManager *mgr,
         SrnServerConfig *cfg, SrnServerAddr *addr){
-    GSList *lst;
-    GSList *cfg_lst;
+    GList *lst;
+    GList *cfg_lst;
     SrnRet ret;
     SrnServerConfig *tmp;
 
@@ -156,7 +156,7 @@ SrnRet srn_config_manager_read_server_config_by_addr(SrnConfigManager *mgr,
 
     lst = cfg_lst;
     while (lst) {
-        GSList *addr_lst;
+        GList *addr_lst;
 
         tmp = srn_server_config_new();
         // Do not read config to cfg until the address is found
@@ -171,18 +171,18 @@ SrnRet srn_config_manager_read_server_config_by_addr(SrnConfigManager *mgr,
                 ret = srn_config_manager_read_server_config(mgr, cfg, lst->data);
                 goto FIN;
             }
-            addr_lst = g_slist_next(addr_lst);
+            addr_lst = g_list_next(addr_lst);
         }
 
         srn_server_config_free(tmp);
         tmp = NULL;
-        lst = g_slist_next(lst);
+        lst = g_list_next(lst);
     }
 
     ret = SRN_ERR;
 FIN:
     if (cfg_lst) {
-        g_slist_free_full(cfg_lst, g_free);
+        g_list_free_full(cfg_lst, g_free);
     }
     if (tmp) {
         srn_server_config_free(tmp);
@@ -240,7 +240,7 @@ static SrnRet read_log_config_from_cfg(config_t *cfg, SrnLoggerConfig *log_cfg){
 }
 
 static SrnRet read_log_targets_from_log(config_setting_t *log, const char *name,
-        GSList **lst){
+        GList **lst){
     config_setting_t *targets;
 
     targets = config_setting_lookup(log, name);
@@ -257,7 +257,7 @@ static SrnRet read_log_targets_from_log(config_setting_t *log, const char *name,
         val = config_setting_get_string(target);
         if (!val) continue;
 
-        *lst = g_slist_append(*lst, g_strdup(val));
+        *lst = g_list_append(*lst, g_strdup(val));
     }
 
     return SRN_OK;
@@ -292,7 +292,7 @@ static SrnRet read_application_config_from_cfg(config_t *cfg,
 }
 
 static SrnRet read_server_config_list_from_cfg(config_t *cfg,
-        GSList **srv_cfg_list){
+        GList **srv_cfg_list){
     config_setting_t *server_list;
 
     server_list = config_lookup(cfg, "server-list");
@@ -308,17 +308,17 @@ static SrnRet read_server_config_list_from_cfg(config_t *cfg,
                 return RET_ERR(_("server-list[%1$d] doesn't have a name"), i);
             }
             if (name) {
-                GSList *lst;
+                GList *lst;
 
                 lst = *srv_cfg_list;
                 while (lst) {
                     if (g_ascii_strcasecmp(name, lst->data) == 0){
                         break;
                     }
-                    lst = g_slist_next(lst);
+                    lst = g_list_next(lst);
                 }
                 if (!lst){
-                    *srv_cfg_list = g_slist_append(*srv_cfg_list, name);
+                    *srv_cfg_list = g_list_append(*srv_cfg_list, name);
                 }
             }
         }

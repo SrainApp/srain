@@ -238,7 +238,7 @@ SuiNotification* sui_message_new_notification(SuiMessage *self){
 
 void sui_message_label_on_popup(GtkLabel *label, GtkMenu *menu, gpointer user_data){
     int n;
-    GSList *lst;
+    GList *lst;
     GtkMenuItem *copy_menu_item;
     GtkMenuItem *forward_menu_item;
     GtkMenu *forward_submenu;
@@ -274,7 +274,7 @@ void sui_message_label_on_popup(GtkLabel *label, GtkMenu *menu, gpointer user_da
         gtk_menu_shell_append(GTK_MENU_SHELL(forward_submenu), GTK_WIDGET(item));
 
         n++;
-        lst = g_slist_next(lst);
+        lst = g_list_next(lst);
     }
 
     if (n > 0) {
@@ -325,11 +325,11 @@ static void sui_message_real_update(SuiMessage *self){
     // Show url previewer if needed
     if (self->buf->cfg->preview_url) {
         GList *children;
-        GSList *urls;
+        GList *urls;
         children = gtk_container_get_children(GTK_CONTAINER(self->content_box));
         urls = self->ctx->urls;
 
-        for (GSList *url = urls; url; url = g_slist_next(url)) {
+        for (GList *url = urls; url; url = g_list_next(url)) {
             bool found;
 
             found = FALSE;

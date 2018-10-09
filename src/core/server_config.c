@@ -54,10 +54,10 @@ SrnRet srn_server_config_check(SrnServerConfig *cfg){
         return RET_ERR(_("Invalid server config instance"));
     }
 
-    if (g_slist_length(cfg->addrs) == 0) {
+    if (g_list_length(cfg->addrs) == 0) {
         return RET_ERR(missing, "addrs");
     }
-    for (GSList *lst = cfg->addrs; lst; lst = g_slist_next(lst)){
+    for (GList *lst = cfg->addrs; lst; lst = g_list_next(lst)){
         SrnServerAddr *addr;
 
         addr = lst->data;
@@ -85,7 +85,7 @@ SrnRet srn_server_config_check(SrnServerConfig *cfg){
 
 void srn_server_config_free(SrnServerConfig *cfg){
     str_assign(&cfg->name, NULL);
-    g_slist_free_full(cfg->addrs, (GDestroyNotify)srn_server_addr_free);
+    g_list_free_full(cfg->addrs, (GDestroyNotify)srn_server_addr_free);
     str_assign(&cfg->passwd, NULL);
     g_list_free_full(cfg->auto_join_chat_list, g_free);
     g_list_free_full(cfg->auto_run_cmd_list, g_free);
@@ -97,7 +97,7 @@ void srn_server_config_free(SrnServerConfig *cfg){
 }
 
 SrnRet srn_server_config_add_addr(SrnServerConfig *cfg, SrnServerAddr *addr){
-    cfg->addrs = g_slist_append(cfg->addrs, addr);
+    cfg->addrs = g_list_append(cfg->addrs, addr);
     return SRN_OK;
 }
 
@@ -108,7 +108,7 @@ SrnRet srn_server_config_add_addr(SrnServerConfig *cfg, SrnServerAddr *addr){
  * @param addr
  */
 void srn_server_config_clear_addr(SrnServerConfig *cfg){
-    g_slist_free_full(cfg->addrs, (GDestroyNotify)srn_server_addr_free);
+    g_list_free_full(cfg->addrs, (GDestroyNotify)srn_server_addr_free);
     cfg->addrs = NULL;
 }
 

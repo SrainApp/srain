@@ -61,7 +61,7 @@ static void nick_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
 
 void nick_menu_popup(GtkWidget *widget, GdkEventButton *event, const char *nick){
     int n;
-    GSList *lst;
+    GList *lst;
     GtkBuilder *builder;
     GtkMenu *nick_menu;
     GtkMenuItem *whois_menu_item;
@@ -113,7 +113,7 @@ void nick_menu_popup(GtkWidget *widget, GdkEventButton *event, const char *nick)
         gtk_menu_shell_append(GTK_MENU_SHELL(invite_submenu), GTK_WIDGET(item));
 
         n++;
-        lst = g_slist_next(lst);
+        lst = g_list_next(lst);
     }
 
     if (n > 0) {

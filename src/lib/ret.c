@@ -41,7 +41,7 @@ struct _SrnRetMessage {
 };
 
 static SrnRet msgid = 0;
-static GSList *msg_list = NULL;
+static GList *msg_list = NULL;
 static GMutex mutex;
 
 static SrnRetMessage* srn_ret_message_new(SrnRet id, int no, const char *msg);
@@ -53,7 +53,7 @@ void ret_init(){
 }
 
 void ret_finalize(){
-    g_slist_free_full(msg_list, (GDestroyNotify)srn_ret_message_free);
+    g_list_free_full(msg_list, (GDestroyNotify)srn_ret_message_free);
 }
 
 SrnRet ret_err(const char *fmt, ...){
@@ -80,7 +80,7 @@ SrnRet ret_ok(const char *fmt, ...){
 
 const char *ret_get_message(SrnRet id){
     const char *msg;
-    GSList *lst;
+    GList *lst;
     SrnRetMessage *err;
 
     g_mutex_lock(&mutex);
@@ -103,7 +103,7 @@ const char *ret_get_message(SrnRet id){
             msg = err->msg;
             break;
         }
-        lst = g_slist_next(lst);
+        lst = g_list_next(lst);
     }
 
 fin:
@@ -117,7 +117,7 @@ fin:
 
 int ret_get_no(SrnRet id){
     int no;
-    GSList *lst;
+    GList *lst;
     SrnRetMessage *rmsg;
 
     no = SRN_ERR;
@@ -136,7 +136,7 @@ int ret_get_no(SrnRet id){
             no = rmsg->no;
             break;
         }
-        lst = g_slist_next(lst);
+        lst = g_list_next(lst);
     }
 
 fin:
@@ -150,12 +150,12 @@ static SrnRet ret_with_message(int no, const char *fmt, va_list ap){
 
     g_mutex_lock(&mutex);
 
-    if (g_slist_length(msg_list) > SRN_RET_MESSAGE_COUNT){
+    if (g_list_length(msg_list) > SRN_RET_MESSAGE_COUNT){
         // If msg_list full
-        GSList *last;
-        last = g_slist_last(msg_list);
+        GList *last;
+        last = g_list_last(msg_list);
         srn_ret_message_free((SrnRetMessage *)last->data);
-        msg_list = g_slist_delete_link(msg_list, last);
+        msg_list = g_list_delete_link(msg_list, last);
     }
 
     msg = g_string_new(NULL);
@@ -164,7 +164,7 @@ static SrnRet ret_with_message(int no, const char *fmt, va_list ap){
     rmsg = srn_ret_message_new(++msgid, no, msg->str);
     g_string_free(msg, TRUE);
 
-    msg_list = g_slist_prepend(msg_list, rmsg);
+    msg_list = g_list_prepend(msg_list, rmsg);
 
     g_mutex_unlock(&mutex);
 

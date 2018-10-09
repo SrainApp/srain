@@ -35,6 +35,6 @@ SuiUserList *sui_user_list_new(void);
 void sui_user_list_add_user(SuiUserList *list, SuiUser *user);
 void sui_user_list_rm_user(SuiUserList *list, SuiUser *user);
 void sui_user_list_clear(SuiUserList *list);
-GSList* sui_user_list_get_users_by_prefix(SuiUserList *self, const char *prefix);
+GList* sui_user_list_get_users_by_prefix(SuiUserList *self, const char *prefix);
 
 #endif /* __SUI_USER_LIST_H */

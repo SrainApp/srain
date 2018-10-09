@@ -52,7 +52,7 @@ static char *prompts[2][LOG_MAX] = {
     },
 };
 
-static bool is_exist(GSList *files, const char *file);
+static bool is_exist(GList *files, const char *file);
 static bool is_enabled(SrnLoggerConfig *cfg, SrnLogLevel lv, const char *file);
 
 /**
@@ -159,16 +159,16 @@ SrnLoggerConfig *srn_logger_config_new(void){
 
 void srn_logger_config_free(SrnLoggerConfig *cfg){
     if (cfg->debug_targets){
-        g_slist_free_full(cfg->debug_targets, g_free);
+        g_list_free_full(cfg->debug_targets, g_free);
     }
     if (cfg->info_targets){
-        g_slist_free_full(cfg->info_targets, g_free);
+        g_list_free_full(cfg->info_targets, g_free);
     }
     if (cfg->warn_targets){
-        g_slist_free_full(cfg->warn_targets, g_free);
+        g_list_free_full(cfg->warn_targets, g_free);
     }
     if (cfg->error_targets){
-        g_slist_free_full(cfg->error_targets, g_free);
+        g_list_free_full(cfg->error_targets, g_free);
     }
 
     g_free(cfg);
@@ -178,8 +178,8 @@ SrnRet srn_logger_config_check(SrnLoggerConfig *cfg){
     return SRN_OK;
 }
 
-static bool is_exist(GSList *targets, const char *file){
-    GSList *lst;
+static bool is_exist(GList *targets, const char *file){
+    GList *lst;
 
     lst = targets;
     while (lst){
@@ -187,7 +187,7 @@ static bool is_exist(GSList *targets, const char *file){
         if (g_str_has_prefix(file, lst->data)){
             return TRUE;
         }
-        lst = g_slist_next(lst);
+        lst = g_list_next(lst);
     }
 
     return FALSE;

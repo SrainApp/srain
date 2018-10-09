@@ -49,7 +49,7 @@ Filter regex_filter = {
 };
 
 int regex_filter_add_pattern(SrnChat *chat, const char *name, const char *pattern){
-    GSList *lst;
+    GList *lst;
     GError *err;
     GRegex *regex;
     NamedPattern *np;
@@ -66,7 +66,7 @@ int regex_filter_add_pattern(SrnChat *chat, const char *name, const char *patter
                 return SRN_ERR;
             }
         }
-        lst = g_slist_next(lst);
+        lst = g_list_next(lst);
     }
 
     err = NULL;
@@ -83,7 +83,7 @@ int regex_filter_add_pattern(SrnChat *chat, const char *name, const char *patter
     np->name = g_strdup(name);
     np->pattern = g_strdup(pattern);
 
-    chat->ignore_regex_list = g_slist_append(chat->ignore_regex_list, np);
+    chat->ignore_regex_list = g_list_append(chat->ignore_regex_list, np);
 
     srn_chat_add_misc_message_fmt(chat->srv->cur_chat, chat->user,
             _("\"%1$s\" has added to %2$s 's regex list"), np->name, chat->name);
@@ -92,7 +92,7 @@ int regex_filter_add_pattern(SrnChat *chat, const char *name, const char *patter
 }
 
 int regex_filter_rm_pattern(SrnChat *chat, const char *name){
-    GSList *lst;
+    GList *lst;
     NamedPattern *np;
 
     lst = chat->ignore_regex_list;
@@ -106,12 +106,12 @@ int regex_filter_rm_pattern(SrnChat *chat, const char *name){
                         name, chat->name);
 
                 named_pattern_free(np);
-                chat->ignore_regex_list = g_slist_delete_link(chat->ignore_regex_list, lst);
+                chat->ignore_regex_list = g_list_delete_link(chat->ignore_regex_list, lst);
 
                 return SRN_OK;
             }
         }
-        lst = g_slist_next(lst);
+        lst = g_list_next(lst);
     }
 
     srn_chat_add_error_message_fmt(chat->srv->cur_chat, chat->user,
@@ -122,13 +122,13 @@ int regex_filter_rm_pattern(SrnChat *chat, const char *name){
 }
 
 void regex_filter_free_list(SrnChat *chat){
-    g_slist_free_full(chat->ignore_regex_list,
+    g_list_free_full(chat->ignore_regex_list,
             (GDestroyNotify)named_pattern_free);
     chat->ignore_regex_list = NULL;
 }
 
 static bool regex(const SrnMessage *msg, const char *content){
-    GSList *lst;
+    GList *lst;
     NamedPattern *np;
 
     g_return_val_if_fail(msg->chat, TRUE);
@@ -143,7 +143,7 @@ static bool regex(const SrnMessage *msg, const char *content){
                 return FALSE;
             }
         }
-        lst = g_slist_next(lst);
+        lst = g_list_next(lst);
     }
 
     lst = msg->chat->srv->chat->ignore_regex_list;
@@ -154,7 +154,7 @@ static bool regex(const SrnMessage *msg, const char *content){
                 return FALSE;
             }
         }
-        lst = g_slist_next(lst);
+        lst = g_list_next(lst);
     }
 
     return TRUE;

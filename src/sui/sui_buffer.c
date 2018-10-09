@@ -486,7 +486,7 @@ static void topic_menu_item_on_toggled(GtkWidget* widget, gpointer user_data){
 static GtkListStore* real_completion_func(SuiBuffer *self, const char *context){
     const char *prev;
     const char *prefix;
-    GSList *msgs;
+    GList *msgs;
     GList *cmds;
     GtkListStore *store;
     SrnChat *ctx;
@@ -528,7 +528,7 @@ static GtkListStore* real_completion_func(SuiBuffer *self, const char *context){
     }
 
     msgs = sui_message_list_get_recent_messages(self->msg_list, 10);
-    for (GSList *lst = msgs; lst; lst = g_slist_next(lst)){
+    for (GList *lst = msgs; lst; lst = g_list_next(lst)){
         const char *user;
         GtkTreeIter iter;
         SuiRecvMessage *rmsg;
@@ -546,7 +546,7 @@ static GtkListStore* real_completion_func(SuiBuffer *self, const char *context){
                     -1);
         }
     }
-    g_slist_free(msgs);
+    g_list_free(msgs);
 
     return store;
 }

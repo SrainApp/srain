@@ -36,7 +36,7 @@
 struct _SuiServerBuffer {
     SuiBuffer parent;
 
-    GSList *buffer_list;
+    GList *buffer_list;
 
     GtkMenuItem *disconn_menu_item;
     GtkMenuItem *quit_menu_item;
@@ -122,7 +122,7 @@ static void sui_server_buffer_init(SuiServerBuffer *self){
 static void sui_server_buffer_finalize(GObject *object){
     SuiServerBuffer *self = SUI_SERVER_BUFFER(object);
 
-    g_warn_if_fail(g_slist_length(self->buffer_list) == 0);
+    g_warn_if_fail(g_list_length(self->buffer_list) == 0);
 
     g_object_unref(self->chan_list_store);
     g_object_unref(self->join_panel);
@@ -158,37 +158,37 @@ SuiServerBuffer* sui_server_buffer_new(void *ctx, SuiBufferEvents *events,
 }
 
 void sui_server_buffer_add_buffer(SuiServerBuffer *self, SuiBuffer *buf){
-    GSList *lst;
+    GList *lst;
 
     g_return_if_fail(!SUI_IS_SERVER_BUFFER(buf));
 
     lst = self->buffer_list;
     while (lst){
         g_return_if_fail(lst->data != buf);
-        lst = g_slist_next(lst);
+        lst = g_list_next(lst);
     }
 
-    self->buffer_list = g_slist_append(self->buffer_list, buf);
+    self->buffer_list = g_list_append(self->buffer_list, buf);
 }
 
 void sui_server_buffer_rm_buffer(SuiServerBuffer *self, SuiBuffer *buf){
-    GSList *lst;
+    GList *lst;
 
     g_return_if_fail(!SUI_IS_SERVER_BUFFER(buf));
 
     lst = self->buffer_list;
     while (lst){
         if (lst->data == buf){
-            self->buffer_list = g_slist_delete_link(self->buffer_list, lst);
+            self->buffer_list = g_list_delete_link(self->buffer_list, lst);
             return;
         }
-        lst = g_slist_next(lst);
+        lst = g_list_next(lst);
     }
 
     g_return_if_reached();
 }
 
-GSList* sui_server_buffer_get_buffer_list(SuiServerBuffer *self){
+GList* sui_server_buffer_get_buffer_list(SuiServerBuffer *self){
     return self->buffer_list;
 }
 

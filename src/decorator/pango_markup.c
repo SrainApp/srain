@@ -189,7 +189,7 @@ static char* pango_markup(SrnMessage *msg, int index, const char *frag){
                     break;
             }
 
-            msg->urls = g_slist_append(msg->urls, url);
+            msg->urls = g_list_append(msg->urls, url);
             dcontent = g_string_append(dcontent, markuped_url);
 
             DBG_FR("Appended url: %s", url);

@@ -78,7 +78,7 @@ void srn_chat_free(SrnChat *self){
     regex_filter_free_list(self);
 
     // Free user list, self->user and self->_user also in this list
-    g_slist_free_full(self->user_list, (GDestroyNotify)srn_chat_user_free);
+    g_list_free_full(self->user_list, (GDestroyNotify)srn_chat_user_free);
 
     sui_free_buffer(self->ui);
     g_free(self);
@@ -90,7 +90,7 @@ void srn_chat_set_config(SrnChat *self, SrnChatConfig *cfg){
 }
 
 void srn_chat_set_is_joined(SrnChat *self, bool joined){
-    GSList *lst;
+    GList *lst;
 
     if (self->is_joined == joined){
         return;
@@ -104,13 +104,13 @@ void srn_chat_set_is_joined(SrnChat *self, bool joined){
 
             user = lst->data;
             srn_chat_user_set_is_joined(user, FALSE);
-            lst = g_slist_next(lst);
+            lst = g_list_next(lst);
         }
     }
 }
 
 SrnRet srn_chat_add_user(SrnChat *self, SrnServerUser *srv_user){
-    GSList *lst;
+    GList *lst;
     SrnChatUser *user;
 
     lst = self->user_list;
@@ -119,11 +119,11 @@ SrnRet srn_chat_add_user(SrnChat *self, SrnServerUser *srv_user){
         if (user->srv_user == srv_user){
             return SRN_ERR;
         }
-        lst = g_slist_next(lst);
+        lst = g_list_next(lst);
     }
 
     user = srn_chat_user_new(self, srv_user);
-    self->user_list = g_slist_append(self->user_list, user);
+    self->user_list = g_list_append(self->user_list, user);
 
     return SRN_OK;
 }
@@ -134,20 +134,20 @@ SrnChatUser* srn_chat_add_and_get_user(SrnChat *self, SrnServerUser *srv_user){
 }
 
 SrnRet srn_chat_rm_user(SrnChat *self, SrnChatUser *user){
-    GSList *lst;
+    GList *lst;
 
-    lst = g_slist_find(self->user_list, user);
+    lst = g_list_find(self->user_list, user);
     if (!lst) {
         return SRN_ERR;
     }
-    self->user_list = g_slist_delete_link(self->user_list, lst);
+    self->user_list = g_list_delete_link(self->user_list, lst);
 
     return SRN_OK;
 }
 
 
 SrnChatUser* srn_chat_get_user(SrnChat *self, const char *nick){
-    GSList *lst;
+    GList *lst;
     SrnChatUser *user;
 
     lst = self->user_list;
@@ -156,7 +156,7 @@ SrnChatUser* srn_chat_get_user(SrnChat *self, const char *nick){
         if (sirc_target_equal(user->srv_user->nick, nick)){
             return user;
         }
-        lst = g_slist_next(lst);
+        lst = g_list_next(lst);
     }
 
     return NULL;

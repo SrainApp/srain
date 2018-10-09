@@ -51,8 +51,8 @@ struct _SrnApplication {
     SuiWindowConfig *win_cfg;
 
     SrnServer *cur_srv;
-    GSList *srv_list;
-    GSList *srv_cfg_list;
+    GList *srv_list;
+    GList *srv_cfg_list;
 };
 
 struct _SrnApplicationConfig {

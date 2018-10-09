@@ -103,7 +103,7 @@ struct _SrnServerUser {
     bool is_away;
     bool is_secure;
 
-    GSList *chat_user_list;  // List of SrnChatUser
+    GList *chat_user_list;  // List of SrnChatUser
 };
 
 enum _SrnMessageType {
@@ -128,7 +128,7 @@ struct _SrnMessage {
     bool mentioned;
     SrnMessageType type;
 
-    GSList *urls;   // URLs contains in message, like "http://xxx", "irc://xxx"
+    GList *urls;   // URLs contains in message, like "http://xxx", "irc://xxx"
     SuiMessage *ui;
 };
 
@@ -140,14 +140,14 @@ struct _SrnChat {
 
     SrnChatUser *user;  // Yourself
     SrnChatUser *_user; // Hold all messages that do not belong other any user
-    GSList *user_list;  // List of SrnChatUser
+    GList *user_list;  // List of SrnChatUser
 
     GList *msg_list;
     SrnMessage *last_msg;
 
     /* Used by Filters & Decorators */
-    GSList *ignore_regex_list;
-    GSList *relaybot_list;
+    GList *ignore_regex_list;
+    GList *relaybot_list;
 
     SrnServer *srv;
     SuiBuffer *ui;
@@ -207,7 +207,7 @@ struct _SrnServer {
     SrnServerUser *_user;   // Hold all messages that do not belong other any user
     SrnChat *chat;          // Hold all messages that do not belong to any other SrnChat
     SrnChat *cur_chat;
-    GSList *chat_list;      // List of SrnChat
+    GList *chat_list;      // List of SrnChat
     GHashTable *user_table; // Hash table of SrnServerUser
 
     SircSession *irc; // IRC session
@@ -254,7 +254,7 @@ struct _SrnServerAddr {
 
 struct _SrnServerConfig {
     char *name;
-    GSList *addrs; // List of SrnServerAddr
+    GList *addrs; // List of SrnServerAddr
     char *passwd;
     GList *auto_join_chat_list;
     GList *auto_run_cmd_list; // List of autorun commands

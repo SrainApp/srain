@@ -100,7 +100,7 @@ void srn_server_free(SrnServer *srv){
 
     sirc_free_session(srv->irc);
 
-    g_slist_free_full(srv->chat_list, (GDestroyNotify)srn_chat_free);
+    g_list_free_full(srv->chat_list, (GDestroyNotify)srn_chat_free);
     // Server's chat should be freed after all chat in chat list are freed
     srn_chat_free(srv->chat);
 
@@ -122,7 +122,7 @@ void srn_server_set_config(SrnServer *srv, SrnServerConfig *cfg){
 }
 
 SrnRet srn_server_reload_config(SrnServer *srv){
-    GSList *lst;
+    GList *lst;
     SrnRet ret;
     SrnApplication *app;
 
@@ -148,7 +148,7 @@ SrnRet srn_server_reload_config(SrnServer *srv){
         srn_chat_set_config(chat, chat_cfg);
         srn_chat_config_free(old_chat_cfg);
 
-        lst = g_slist_next(lst);
+        lst = g_list_next(lst);
         continue;
 ERR:
         srn_chat_config_free(chat_cfg);
@@ -172,7 +172,7 @@ bool srn_server_is_chat_valid(SrnServer *srv, SrnChat *chat){
     if (!srn_server_is_valid(srv)){
         return FALSE;
     }
-    return srv->chat == chat || g_slist_find(srv->chat_list, chat) != NULL;
+    return srv->chat == chat || g_list_find(srv->chat_list, chat) != NULL;
 }
 
 /**
@@ -226,7 +226,7 @@ void srn_server_wait_until_registered(SrnServer *srv){
 }
 
 SrnRet srn_server_add_chat(SrnServer *srv, const char *name){
-    GSList *lst;
+    GList *lst;
     SrnRet ret;
     SrnChat *chat;
     SrnChatConfig *chat_cfg;
@@ -239,7 +239,7 @@ SrnRet srn_server_add_chat(SrnServer *srv, const char *name){
         if (g_ascii_strcasecmp(chat->name, name) == 0){
             return SRN_ERR;
         }
-        lst = g_slist_next(lst);
+        lst = g_list_next(lst);
     }
 
     chat_cfg = srn_chat_config_new();
@@ -265,7 +265,7 @@ SrnRet srn_server_add_chat(SrnServer *srv, const char *name){
                 sirc_target_is_channel(srv->irc, name) ?
                 SRN_CHAT_TYPE_CHANNEL : SRN_CHAT_TYPE_DIALOG,
                 chat_cfg);
-        srv->chat_list = g_slist_append(srv->chat_list, chat);
+        srv->chat_list = g_list_append(srv->chat_list, chat);
     }
 
     /* Run chat auto run commands */
@@ -296,13 +296,13 @@ SrnRet srn_server_add_chat(SrnServer *srv, const char *name){
 }
 
 SrnRet srn_server_rm_chat(SrnServer *srv, SrnChat *chat){
-    GSList *lst;
+    GList *lst;
     SrnChatConfig *chat_cfg;
 
     g_return_val_if_fail(srn_server_is_valid(srv), SRN_ERR);
     g_return_val_if_fail(!chat->is_joined, SRN_ERR);
 
-    lst = g_slist_find(srv->chat_list, chat);
+    lst = g_list_find(srv->chat_list, chat);
     if (!lst) {
         return SRN_ERR;
     }
@@ -313,13 +313,13 @@ SrnRet srn_server_rm_chat(SrnServer *srv, SrnChat *chat){
     chat_cfg = chat->cfg;
     srn_chat_free(chat);
     srn_chat_config_free(chat_cfg);
-    srv->chat_list = g_slist_delete_link(srv->chat_list, lst);
+    srv->chat_list = g_list_delete_link(srv->chat_list, lst);
 
     return SRN_OK;
 }
 
 SrnChat* srn_server_get_chat(SrnServer *srv, const char *name) {
-    GSList *lst;
+    GList *lst;
     SrnChat *chat;
 
     g_return_val_if_fail(srn_server_is_valid(srv), NULL);
@@ -330,7 +330,7 @@ SrnChat* srn_server_get_chat(SrnServer *srv, const char *name) {
         if (g_ascii_strcasecmp(chat->name, name) == 0){
             return chat;
         }
-        lst = g_slist_next(lst);
+        lst = g_list_next(lst);
     }
 
     return NULL;

@@ -122,7 +122,7 @@ void srn_application_init_irc_event(SrnApplication *app) {
 }
 
 static void irc_event_connect(SircSession *sirc, const char *event){
-    GSList *list;
+    GList *list;
     SrnRet ret;
     SrnServer *srv;
     SrnChat *chat;
@@ -147,7 +147,7 @@ static void irc_event_connect(SircSession *sirc, const char *event){
         srn_chat_add_misc_message_fmt(chat, chat->_user,
                 _("Connected to %1$s(%2$s:%3$d)"),
                 srv->name, srv->addr->host, srv->addr->port);
-        list = g_slist_next(list);
+        list = g_list_next(list);
     }
 
     /* Start client capability negotiation */
@@ -165,7 +165,7 @@ static void irc_event_connect(SircSession *sirc, const char *event){
 
 static void irc_event_connect_fail(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
-    GSList *list;
+    GList *list;
     const char *msg;
     SrnRet ret;
     SrnServer *srv;
@@ -203,7 +203,7 @@ static void irc_event_connect_fail(SircSession *sirc, const char *event,
                     (srv->reconn_interval * 1.0) / 1000);
         }
 
-        list = g_slist_next(list);
+        list = g_list_next(list);
     }
 
     srn_chat_add_error_message_fmt(srv->chat, srv->chat->_user,
@@ -230,7 +230,7 @@ static void irc_event_connect_fail(SircSession *sirc, const char *event,
 static void irc_event_disconnect(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
     const char *msg;
-    GSList *list;
+    GList *list;
     SrnRet ret;
     SrnServer *srv;
 
@@ -287,7 +287,7 @@ static void irc_event_disconnect(SircSession *sirc, const char *event,
                     (srv->reconn_interval * 1.0) / 1000);
         }
 
-        list = g_slist_next(list);
+        list = g_list_next(list);
     }
 
     srn_chat_add_error_message_fmt(srv->chat, srv->chat->_user,
@@ -306,7 +306,7 @@ static void irc_event_disconnect(SircSession *sirc, const char *event,
 static void irc_event_welcome(SircSession *sirc, int event,
         const char *origin, const char **params, int count){
     const char *nick ;
-    GSList *list;
+    GList *list;
     SrnServer *srv;
 
     g_return_if_fail(count >= 1);
@@ -333,7 +333,7 @@ static void irc_event_welcome(SircSession *sirc, int event,
         if (sirc_target_is_channel(srv->irc, chat->name)){
             sirc_cmd_join(srv->irc, chat->name, NULL);
         }
-        list = g_slist_next(list);
+        list = g_list_next(list);
     }
 }
 
@@ -341,7 +341,7 @@ static void irc_event_nick(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
     const char *old_nick;
     const char *new_nick;
-    GSList *lst;
+    GList *lst;
     SrnRet ret;
     SrnServer *srv;
     SrnServerUser *srv_user;
@@ -364,7 +364,7 @@ static void irc_event_nick(SircSession *sirc, const char *event,
         // TODO: dialog nick track support
         srn_chat_add_misc_message_fmt(chat_user->chat, chat_user,
                 _("%1$s is now known as %2$s"), old_nick, new_nick);
-        lst = g_slist_next(lst);
+        lst = g_list_next(lst);
     }
     if (srv_user->is_me){
         srn_chat_add_misc_message_fmt(srv->chat, srv->chat->user,
@@ -378,7 +378,7 @@ static void irc_event_quit(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
     char buf[512];
     const char *reason;
-    GSList *lst;
+    GList *lst;
     SrnServer *srv;
     SrnServerUser *srv_user;
 
@@ -404,7 +404,7 @@ static void irc_event_quit(SircSession *sirc, const char *event,
         // TODO: dialog support
         chat_user = lst->data;
         srn_chat_add_misc_message(chat_user->chat, chat_user, buf);
-        lst = g_slist_next(lst);
+        lst = g_list_next(lst);
     }
 
     srn_server_user_set_is_online(srv_user, FALSE);

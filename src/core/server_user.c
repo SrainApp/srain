@@ -38,7 +38,7 @@ SrnServerUser *srn_server_user_new(SrnServer *srv, const char *nick){
 }
 
 void srn_server_user_free(SrnServerUser *self){
-    g_return_if_fail(g_slist_length(self->chat_user_list) == 0);
+    g_return_if_fail(g_list_length(self->chat_user_list) == 0);
 
     str_assign(&self->nick, NULL);
     str_assign(&self->username, NULL);
@@ -48,7 +48,7 @@ void srn_server_user_free(SrnServerUser *self){
 }
 
 SrnRet srn_server_user_attach_chat_user(SrnServerUser *self, SrnChatUser *chat_user){
-    GSList *lst;
+    GList *lst;
 
     lst = self->chat_user_list;
     while (lst){
@@ -58,19 +58,19 @@ SrnRet srn_server_user_attach_chat_user(SrnServerUser *self, SrnChatUser *chat_u
         if (chat_user2->chat == chat_user->chat){
             return SRN_ERR;
         }
-        lst = g_slist_next(lst);
+        lst = g_list_next(lst);
     }
-    self->chat_user_list = g_slist_append(self->chat_user_list, chat_user);
+    self->chat_user_list = g_list_append(self->chat_user_list, chat_user);
 
     return SRN_OK;
 }
 
 SrnRet srn_server_user_detach_chat_user(SrnServerUser *self, SrnChatUser *chat_user){
-    GSList *lst;
+    GList *lst;
 
-    lst = g_slist_find(self->chat_user_list, chat_user);
+    lst = g_list_find(self->chat_user_list, chat_user);
     if (lst){
-        self->chat_user_list = g_slist_delete_link(self->chat_user_list, lst);
+        self->chat_user_list = g_list_delete_link(self->chat_user_list, lst);
         return SRN_OK;
     }
 
@@ -108,7 +108,7 @@ void srn_server_user_set_is_online(SrnServerUser *self, bool online){
     self->is_online = online;
 
     if (!self->is_online){
-        GSList *lst;
+        GList *lst;
 
         lst = self->chat_user_list;
         while (lst) {
@@ -116,7 +116,7 @@ void srn_server_user_set_is_online(SrnServerUser *self, bool online){
 
             chat_user = lst->data;
             srn_chat_user_set_is_joined(chat_user, FALSE);
-            lst = g_slist_next(lst);
+            lst = g_list_next(lst);
         }
     }
 }
@@ -129,7 +129,7 @@ void srn_server_user_set_is_ignored(SrnServerUser *self, bool is_ignored){
 }
 
 static void srn_server_user_update_chat_user(SrnServerUser *self){
-    GSList *lst;
+    GList *lst;
 
     lst = self->chat_user_list;
     while (lst) {
@@ -137,6 +137,6 @@ static void srn_server_user_update_chat_user(SrnServerUser *self){
 
         chat_user = lst->data;
         srn_chat_user_update(chat_user);
-        lst = g_slist_next(lst);
+        lst = g_list_next(lst);
     }
 }

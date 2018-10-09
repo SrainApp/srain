@@ -43,7 +43,7 @@ void sui_server_buffer_rm_buffer(SuiServerBuffer *self, SuiBuffer *buf);
 void sui_server_buffer_add_channel(SuiServerBuffer *self, const char *chan, int users, const char *topic);
 void sui_server_buffer_clear_channel(SuiServerBuffer *self);
 
-GSList* sui_server_buffer_get_buffer_list(SuiServerBuffer *self);
+GList* sui_server_buffer_get_buffer_list(SuiServerBuffer *self);
 SuiJoinPanel* sui_server_buffer_get_join_panel(SuiServerBuffer *self);
 
 #endif /* __SUI_SERVER_BUFFER_H */
