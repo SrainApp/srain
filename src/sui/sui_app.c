@@ -422,6 +422,16 @@ static void on_startup(SuiApplication *self){
 
 static void on_activate(SuiApplication *self){
     SrnRet ret;
+    GList *wins;
+
+    /* Always show window when application activated */
+    wins = gtk_application_get_windows(GTK_APPLICATION(self));
+    for (GList *lst = wins; lst; lst = g_list_next(lst)){
+        GtkWidget *win;
+
+        win = lst->data;
+        gtk_widget_set_visible(win, TRUE);
+    }
 
     ret = sui_application_event_hdr(self, SUI_EVENT_ACTIVATE, NULL);
     if (!RET_IS_OK(ret)){

@@ -110,6 +110,8 @@ static void send_message(SuiWindow *self);
 static void on_destroy(SuiWindow *self);
 static void on_notify_is_active(GObject *object, GParamSpec *pspec,
         gpointer data);
+static gboolean on_delete_event(GtkWidget *widget, GdkEvent *event,
+            gpointer user_data);
 
 static void window_stack_on_child_changed(GtkWidget *widget, GParamSpec *pspec,
         gpointer user_data);
@@ -219,6 +221,8 @@ static void sui_window_init(SuiWindow *self){
             G_CALLBACK(on_destroy), NULL);
     g_signal_connect(self, "notify::is-active",
             G_CALLBACK(on_notify_is_active), NULL);
+    g_signal_connect(self, "delete-event",
+            G_CALLBACK(on_delete_event), NULL);
 
     // Click to show/hide GtkPopover
     g_signal_connect(self->connect_button, "clicked",
@@ -563,6 +567,14 @@ static void on_notify_is_active(GObject *object, GParamSpec *pspec,
         sui_application_highlight_tray_icon(
                 sui_application_get_instance(), FALSE);
     }
+}
+
+static gboolean on_delete_event(GtkWidget *widget, GdkEvent *event,
+            gpointer user_data){
+    // TODO: Make it configurable
+    gtk_widget_set_visible(widget, FALSE);
+
+    return TRUE;
 }
 
 static void popover_button_on_click(GtkButton *button, gpointer user_data){
