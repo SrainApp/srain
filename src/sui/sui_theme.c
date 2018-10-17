@@ -40,9 +40,13 @@ struct _SuiThemeManager {
     GtkSettings *settings;
 };
 
+static void update_setting(SuiThemeManager *self);
+
 static void disconnect_gtk_settings(SuiThemeManager *self);
 static void connect_gtk_settings(SuiThemeManager *self);
 static void on_notify_prefer_dark_theme(GObject *object, GParamSpec *pspec,
+        gpointer user_data);
+static void on_notify_gtk_theme_name(GObject *object, GParamSpec *pspec,
         gpointer user_data);
 
 /*****************************************************************************
@@ -80,6 +84,7 @@ SrnRet sui_theme_manager_apply(SuiThemeManager *self, const char *theme){
     if (!self->settings) {
         connect_gtk_settings(self);
     }
+    update_setting(self);
 
     ret = SRN_ERR;
     name = g_strdup_printf("%s%s.css", theme, self->dark ? "-dark" : "");
@@ -127,17 +132,42 @@ FIN:
  * Static functions
  *****************************************************************************/
 
+static void update_setting(SuiThemeManager *self){
+    bool prefer_dark;
+    char *sys_theme_name;
+
+    prefer_dark = FALSE;
+    sys_theme_name = NULL;
+    g_object_get(self->settings,
+            "gtk-application-prefer-dark-theme", &prefer_dark,
+            "gtk-theme-name", &sys_theme_name,
+            NULL);
+
+    self->dark = prefer_dark;
+    if (sys_theme_name){
+        char *lowercase;
+
+        lowercase = g_utf8_strdown(sys_theme_name, -1);
+        // Guess if the current theme is dark
+        self->dark |= g_strstr_len(lowercase, -1, "dark") != NULL
+            || g_strstr_len(lowercase, -1, "nokto") != NULL
+            || g_strstr_len(lowercase, -1, "inverse") != NULL;
+
+        g_free(lowercase);
+        g_free(sys_theme_name);
+    }
+}
+
 static void connect_gtk_settings(SuiThemeManager *self){
     self->settings = gtk_settings_get_default();
     g_return_if_fail(self->settings);
 
-    g_object_get(self->settings,
-            "gtk-application-prefer-dark-theme", &self->dark,
-            NULL);
-
     g_signal_connect(self->settings,
             "notify::gtk-application-prefer-dark-theme",
             G_CALLBACK(on_notify_prefer_dark_theme), self);
+    g_signal_connect(self->settings,
+            "notify::gtk-theme-name",
+            G_CALLBACK(on_notify_gtk_theme_name), self);
 }
 
 static void disconnect_gtk_settings(SuiThemeManager *self){
@@ -146,6 +176,10 @@ static void disconnect_gtk_settings(SuiThemeManager *self){
     g_signal_handlers_disconnect_by_func(
             self->settings,
             on_notify_prefer_dark_theme,
+            self);
+    g_signal_handlers_disconnect_by_func(
+            self->settings,
+            on_notify_gtk_theme_name,
             self);
 }
 
@@ -157,16 +191,28 @@ static void on_notify_prefer_dark_theme(GObject *object, GParamSpec *pspec,
 
     self = user_data;
 
-    g_object_get(self->settings,
-            "gtk-application-prefer-dark-theme", &self->dark,
-            NULL);
+    theme = g_strdup(self->theme);
+    ret = sui_theme_manager_apply(self, theme);
+    g_free(theme);
+
+    if (!RET_IS_OK(ret)) {
+        WARN_FR("Failed to change theme: %s", RET_MSG(ret));
+    }
+}
+
+static void on_notify_gtk_theme_name(GObject *object, GParamSpec *pspec,
+        gpointer user_data) {
+    char *theme;
+    SrnRet ret;
+    SuiThemeManager *self;
+
+    self = user_data;
 
     theme = g_strdup(self->theme);
     ret = sui_theme_manager_apply(self, theme);
     g_free(theme);
 
     if (!RET_IS_OK(ret)) {
-        WARN_FR("Failed to change to dark theme: %s", RET_MSG(ret));
+        WARN_FR("Failed to change theme: %s", RET_MSG(ret));
     }
 }
-
