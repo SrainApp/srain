@@ -305,6 +305,7 @@ static void irc_event_disconnect(SircSession *sirc, const char *event,
 
 static void irc_event_welcome(SircSession *sirc, int event,
         const char *origin, const char **params, int count){
+    bool try_login;
     const char *nick ;
     GList *list;
     SrnServer *srv;
@@ -325,6 +326,41 @@ static void irc_event_welcome(SircSession *sirc, int event,
 
     // Set your actually nick
     srn_server_rename_user(srv, srv->user, nick);
+
+    /* Try login */
+    try_login = FALSE;
+    switch (srv->cfg->user->login->method){
+        case SRN_LOGIN_METHOD_MSG_NICKSERV:
+            {
+                char *msg;
+
+                g_return_if_fail(srv->cfg->user->login->msg_nickserv_password);
+
+                try_login = TRUE;
+                msg = g_strdup_printf("IDENTIFY %s",
+                        srv->cfg->user->login->msg_nickserv_password);
+                sirc_cmd_msg(sirc, "NickServ", msg);
+                g_free(msg);
+                break;
+            }
+        case SRN_LOGIN_METHOD_NICKSERV:
+            {
+                g_return_if_fail(srv->cfg->user->login->nickserv_password);
+
+                try_login = TRUE;
+                sirc_cmd_raw(sirc, "NICKSERV IDENTIFY %s\r\n",
+                        srv->cfg->user->login->nickserv_password);
+                break;
+            }
+        default:
+            break;
+    };
+    if (try_login){
+        srn_chat_add_misc_message_fmt(srv->chat, srv->chat->_user,
+                _("Logging in with %1$s..."),
+                srn_login_method_to_string(srv->cfg->user->login->method));
+    }
+
 
     /* Join all channels already exists */
     list = srv->chat_list;
