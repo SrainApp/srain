@@ -594,7 +594,6 @@ static SrnRet read_user_config_from_user(config_setting_t *user, SrnUserConfig *
         config_setting_lookup_string(login, "method", &method);
         cfg->login->method = srn_login_method_from_string(method);
 
-        config_setting_lookup_string_ex(login, "pass-password", &cfg->login->pass_password);
         config_setting_lookup_string_ex(login, "nickserv-password", &cfg->login->nickserv_password);
         config_setting_lookup_string_ex(login, "msg-nickserv-password", &cfg->login->msg_nickserv_password);
         config_setting_lookup_string_ex(login, "sasl-plain-identify", &cfg->login->sasl_plain_identify);

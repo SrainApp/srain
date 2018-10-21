@@ -215,7 +215,6 @@ struct _SrnServer {
 
 enum _SrnLoginMethod {
     SRN_LOGIN_METHOD_NONE,
-    SRN_LOGIN_METHOD_PASS,
     SRN_LOGIN_METHOD_NICKSERV,
     SRN_LOGIN_METHOD_MSG_NICKSERV,
     SRN_LOGIN_METHOD_SASL_PLAIN,
@@ -226,7 +225,6 @@ struct _SrnLoginConfig {
     SrnLoginMethod method;
 
     // Union?
-    char *pass_password;
     char *nickserv_password;
     char *msg_nickserv_password;
     char *sasl_plain_identify;
