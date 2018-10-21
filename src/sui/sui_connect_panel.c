@@ -66,7 +66,6 @@ struct _SuiConnectPanel {
     GtkEntry *nick_entry;
     GtkComboBox *login_method_combo_box;
     GtkStack *login_method_stack;
-    GtkEntry *pass_password_entry;
     GtkEntry *nickserv_password_entry;
     GtkEntry *msg_nickserv_password_entry;
     GtkEntry *sasl_plain_identify_entry;
@@ -157,8 +156,6 @@ static void sui_connect_panel_init(SuiConnectPanel *self){
             G_CALLBACK(connect_button_on_click), self);
     g_signal_connect_swapped(self->nick_entry, "activate",
             G_CALLBACK(connect_button_on_click), self);
-    g_signal_connect_swapped(self->pass_password_entry, "activate",
-            G_CALLBACK(connect_button_on_click), self);
     g_signal_connect_swapped(self->nickserv_password_entry, "activate",
             G_CALLBACK(connect_button_on_click), self);
     g_signal_connect_swapped(self->msg_nickserv_password_entry, "activate",
@@ -196,7 +193,6 @@ static void sui_connect_panel_class_init(SuiConnectPanelClass *class){
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, nick_entry);
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, login_method_combo_box);
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, login_method_stack);
-    gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, pass_password_entry);
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, nickserv_password_entry);
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, msg_nickserv_password_entry);
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, sasl_plain_identify_entry);
@@ -233,7 +229,6 @@ static void update(SuiConnectPanel *self, const char *srv_name){
         gtk_entry_set_text(self->nick_entry, "");
         gtk_combo_box_set_active_iter(self->login_method_combo_box, NULL);
         gtk_entry_set_text(self->nick_entry, "");
-        gtk_entry_set_text(self->pass_password_entry, "");
         gtk_entry_set_text(self->nickserv_password_entry, "");
         gtk_entry_set_text(self->msg_nickserv_password_entry, "");
         gtk_entry_set_text(self->sasl_plain_identify_entry, "");
@@ -279,9 +274,6 @@ static void update(SuiConnectPanel *self, const char *srv_name){
 
         gtk_combo_box_set_active_id(self->login_method_combo_box,
                 srn_login_method_to_string(srv_cfg->user->login->method));
-        gtk_entry_set_text(self->pass_password_entry,
-                srv_cfg->user->login->pass_password ?
-                srv_cfg->user->login->pass_password : "");
         gtk_entry_set_text(self->nickserv_password_entry,
                 srv_cfg->user->login->nickserv_password ?
                 srv_cfg->user->login->nickserv_password : "");
@@ -338,7 +330,6 @@ static void refresh_login_method_list(SuiConnectPanel *self){
     // Supported login methods
     static SrnLoginMethod lms[] = {
         SRN_LOGIN_METHOD_NONE,
-        SRN_LOGIN_METHOD_PASS,
         SRN_LOGIN_METHOD_NICKSERV,
         SRN_LOGIN_METHOD_MSG_NICKSERV,
         SRN_LOGIN_METHOD_SASL_PLAIN,
@@ -436,7 +427,6 @@ static void connect_button_on_click(gpointer user_data){
         bool tls_noverify;
         const char *nick;
         const char *method_str;
-        const char *pass_password;
         const char *nickserv_password;
         const char *msg_nickserv_password;
         const char *sasl_plain_identify;
@@ -466,7 +456,6 @@ static void connect_button_on_click(gpointer user_data){
         method_str = gtk_combo_box_get_active_id(self->login_method_combo_box);
         method = srn_login_method_from_string(method_str);
 
-        pass_password = gtk_entry_get_text(self->pass_password_entry);
         nickserv_password = gtk_entry_get_text(self->nickserv_password_entry);
         msg_nickserv_password = gtk_entry_get_text(self->msg_nickserv_password_entry);
         sasl_plain_identify = gtk_entry_get_text(self->sasl_plain_identify_entry);
@@ -487,9 +476,6 @@ static void connect_button_on_click(gpointer user_data){
         }
         srv_cfg->user->login->method = method;
 
-        if (!str_is_empty(pass_password)) {
-            str_assign(&srv_cfg->user->login->pass_password, pass_password);
-        }
         if (!str_is_empty(nickserv_password)) {
             str_assign(&srv_cfg->user->login->nickserv_password,
                     nickserv_password);

@@ -344,45 +344,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkGrid" id="pass_grid">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="row_spacing">5</property>
-                    <property name="column_spacing">4</property>
-                    <child>
-                      <object class="GtkLabel" id="pass_password_label">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="valign">baseline</property>
-                        <property name="hexpand">True</property>
-                        <property name="label" translatable="yes">Password:</property>
-                      </object>
-                      <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkEntry" id="pass_password_entry">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="halign">end</property>
-                        <property name="valign">baseline</property>
-                        <property name="visibility">False</property>
-                        <property name="input_purpose">password</property>
-                      </object>
-                      <packing>
-                        <property name="left_attach">1</property>
-                        <property name="top_attach">0</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="name">pass</property>
-                    <property name="title" translatable="yes">PASS</property>
-                    <property name="position">1</property>
-                  </packing>
+                  <placeholder/>
                 </child>
                 <child>
                   <object class="GtkGrid" id="nickserv_grid">
@@ -644,7 +606,6 @@
       <widget name="addr_box"/>
       <widget name="server_combo_box"/>
       <widget name="nick_entry"/>
-      <widget name="pass_password_entry"/>
       <widget name="nickserv_password_entry"/>
       <widget name="msg_nickserv_password_entry"/>
       <widget name="sasl_plain_identify_entry"/>
