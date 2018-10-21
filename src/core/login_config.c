@@ -59,17 +59,17 @@ SrnRet srn_login_config_check(SrnLoginConfig *self){
         case SRN_LOGIN_METHOD_NONE:
             break;
         case SRN_LOGIN_METHOD_PASS:
-            if (str_is_empty(self->pass_password)){
+            if (!self->pass_password){
                 return RET_ERR(missing, method_str, "pass-password");
             }
             break;
         case SRN_LOGIN_METHOD_NICKSERV:
-            if (str_is_empty(self->nickserv_password)){
+            if (!self->nickserv_password){
                 return RET_ERR(missing, method_str, "nickserv-password");
             }
             break;
         case SRN_LOGIN_METHOD_MSG_NICKSERV:
-            if (str_is_empty(self->msg_nickserv_password)){
+            if (!self->msg_nickserv_password){
                 return RET_ERR(missing, method_str, "msg-nickserv-password");
             }
             break;
@@ -77,7 +77,7 @@ SrnRet srn_login_config_check(SrnLoginConfig *self){
             if (str_is_empty(self->sasl_plain_identify)){
                 return RET_ERR(missing, method_str, "sasl-plain-identify");
             }
-            if (str_is_empty(self->sasl_plain_password)){
+            if (!self->sasl_plain_password){
                 return RET_ERR(missing, method_str, "sasl-plain-password");
             }
             break;
