@@ -48,8 +48,10 @@
 struct _SuiUrlPreviewer {
     GtkBox parent;
 
-    bool previewed;
     char *url;
+    SuiUrlContentType content_type;
+
+    bool previewed;
     SoupURI *uri;
     SoupSession *session;
     SoupMessage *msg;
@@ -78,6 +80,8 @@ struct _SuiUrlPreviewerClass {
 static SoupSession *default_session = NULL;
 
 static void sui_url_previewer_set_url(SuiUrlPreviewer *self, const char *url);
+static void sui_url_previewer_set_content_type(SuiUrlPreviewer *self,
+        SuiUrlContentType content_type);
 
 static void cancel_preview(SuiUrlPreviewer *self);
 static void preview_text(SuiUrlPreviewer *self, const char *text);
@@ -103,6 +107,7 @@ enum
 {
     // 0 for PROP_NOME
     PROP_URL = 1,
+    PROP_CONTENT_TYPE,
     N_PROPERTIES
 };
 
@@ -120,6 +125,9 @@ static void sui_url_previewer_set_property(GObject *object, guint property_id,
     case PROP_URL:
       sui_url_previewer_set_url(self, g_value_get_string(value));
       break;
+    case PROP_CONTENT_TYPE:
+      sui_url_previewer_set_content_type(self, g_value_get_int(value));
+      break;
     default:
       /* We don't have any other property... */
       G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
@@ -136,6 +144,9 @@ static void sui_url_previewer_get_property(GObject *object, guint property_id,
   switch (property_id){
     case PROP_URL:
       g_value_set_string(value, sui_url_previewer_get_url(self));
+      break;
+    case PROP_CONTENT_TYPE:
+      g_value_set_int(value, sui_url_previewer_get_content_type(self));
       break;
     default:
       /* We don't have any other property... */
@@ -217,6 +228,15 @@ static void sui_url_previewer_class_init(SuiUrlPreviewerClass *class){
                 "URL of URL previewer.",
                 NULL, // Default value
                 G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
+
+    obj_properties[PROP_CONTENT_TYPE] =
+        g_param_spec_int("content-type",
+                "Content Type",
+                "The content type pointed to by the URL.",
+                SUI_URL_CONTENT_TYPE_UNSUPPORTED, //Minimum value
+                SUI_URL_CONTENT_TYPE_UNKNOWN,  // Maximum value
+                SUI_URL_CONTENT_TYPE_UNSUPPORTED, // Default value
+                G_PARAM_READABLE);
 
     g_object_class_install_properties(object_class, N_PROPERTIES,
             obj_properties);
@@ -315,42 +335,45 @@ const char* sui_url_previewer_get_url(SuiUrlPreviewer *self){
 }
 
 SuiUrlContentType sui_url_previewer_get_content_type(SuiUrlPreviewer *self){
-    const char *scheme;
-    const char *content_type;
-    SoupMessageHeaders *headers;
-
-    if (!self->uri){
-        return SUI_URL_CONTENT_TYPE_UNSUPPORTED;
-    }
-
-    scheme = soup_uri_get_scheme(self->uri);
-    if (g_ascii_strcasecmp(scheme, "http") != 0
-            && g_ascii_strcasecmp(scheme, "https") != 0){
-        // Unsupported protocol
-        return SUI_URL_CONTENT_TYPE_UNSUPPORTED;
-    }
-
-    if (!SOUP_IS_MESSAGE(self->msg)){
-        return SUI_URL_CONTENT_TYPE_UNKNOWN;
-    }
-
-    headers = self->msg->response_headers;
-    content_type = soup_message_headers_get_content_type(headers, NULL);
-    if (g_str_has_prefix(content_type, "image/")){
-        return SUI_URL_CONTENT_TYPE_IMAGE;
-    }
-
-    return SUI_URL_CONTENT_TYPE_UNSUPPORTED;
+    return self->content_type;
 }
 
 /*****************************************************************************
  * Static functions
  *****************************************************************************/
 
+/* NOTE: Only allow called for once */
 static void sui_url_previewer_set_url(SuiUrlPreviewer *self, const char *url){
-    /* Only allow called for once */
+    const char *scheme;
+
     str_assign(&self->url, url);
     self->uri = soup_uri_new(url);
+
+    if (!self->uri){
+        sui_url_previewer_set_content_type(self, SUI_URL_CONTENT_TYPE_UNSUPPORTED);
+        return;
+    }
+
+    scheme = soup_uri_get_scheme(self->uri);
+    if (g_ascii_strcasecmp(scheme, "http") != 0
+            && g_ascii_strcasecmp(scheme, "https") != 0){
+        // Unsupported protocol
+        sui_url_previewer_set_content_type(self, SUI_URL_CONTENT_TYPE_UNSUPPORTED);
+        return;
+    }
+
+    sui_url_previewer_set_content_type(self, SUI_URL_CONTENT_TYPE_UNKNOWN);
+}
+
+static void sui_url_previewer_set_content_type(SuiUrlPreviewer *self,
+        SuiUrlContentType content_type){
+    g_object_freeze_notify(G_OBJECT(self));
+
+    self->content_type = content_type;
+    g_object_notify_by_pspec(G_OBJECT(self), obj_properties[PROP_CONTENT_TYPE]);
+
+    g_object_thaw_notify(G_OBJECT(self));
+
 }
 
 static void cancel_preview(SuiUrlPreviewer *self){
@@ -487,7 +510,8 @@ static void image_event_box_on_button_release(GtkWidget *widget,
 static void session_send_ready(GObject *object, GAsyncResult *result,
         gpointer user_data){
     int len;
-	GError *err;
+    const char *content_type;
+    GError *err;
     GInputStream *input_stream;
     GBufferedInputStream *buffered_stream;
     SoupSession *session;
@@ -498,7 +522,7 @@ static void session_send_ready(GObject *object, GAsyncResult *result,
     self = SUI_URL_PREVIEWER(user_data);
 
     err = NULL;
-	input_stream = soup_session_send_finish(session, result, &err);
+    input_stream = soup_session_send_finish(session, result, &err);
     if (err) {
         preview_error_text(self, err->message);
         goto ERR;
@@ -510,6 +534,13 @@ static void session_send_ready(GObject *object, GAsyncResult *result,
     if (len > MAX_CONTENT_LENGTH) {
         preview_error_text(self, _("Exceed max content length"));
         goto ERR;
+    }
+
+    content_type = soup_message_headers_get_content_type(headers, NULL);
+    if (g_str_has_prefix(content_type, "image/")){
+        sui_url_previewer_set_content_type(self, SUI_URL_CONTENT_TYPE_IMAGE);
+    } else {
+        sui_url_previewer_set_content_type(self, SUI_URL_CONTENT_TYPE_UNSUPPORTED);
     }
 
     switch (sui_url_previewer_get_content_type(self)){

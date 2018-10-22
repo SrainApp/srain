@@ -52,6 +52,8 @@ static void sui_message_set_ctx(SuiMessage *self, void *ctx);
 static char* label_get_selection(GtkLabel *label);
 static void copy_menu_item_on_activate(GtkWidget* widget, gpointer user_data);
 static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_data);
+static void url_previewer_on_notify_content_type(GObject *object,
+        GParamSpec *pspec, gpointer data);
 
 /*****************************************************************************
  * GObject functions
@@ -352,13 +354,24 @@ static void sui_message_real_update(SuiMessage *self){
                     g_object_ref_sink(pvr);
                     g_object_unref(pvr);
                 } else {
-                    // Start preview if needed
+                    // Add previewer on to message
+                    gtk_box_pack_start(self->content_box, GTK_WIDGET(pvr),
+                            TRUE, FALSE, 4);
+
+                    // Auto preview if needed
                     if (self->buf->cfg->auto_preview_url){
+                        // Hide previewer to prevent many loading previewers
+                        // from appearing in the message.
+                        gtk_widget_hide(GTK_WIDGET(pvr));
+                        // Previewer will be shown via this callback when
+                        // previewer's content type is supported
+                        g_signal_connect(pvr, "notify::content-type",
+                                G_CALLBACK(url_previewer_on_notify_content_type),
+                                self->content_box);
+
                         sui_url_previewer_preview(pvr);
                     }
 
-                    gtk_box_pack_start(self->content_box, GTK_WIDGET(pvr),
-                            TRUE, FALSE, 4);
                 }
 
             }
@@ -502,6 +515,25 @@ static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_da
     }
 
     g_free(sel_msg);
+}
+
+static void url_previewer_on_notify_content_type(GObject *object,
+        GParamSpec *pspec, gpointer data){
+    GtkContainer *container;
+    SuiUrlPreviewer *pvr;
+
+    pvr = SUI_URL_PREVIEWER(object);
+    container = GTK_CONTAINER(data);
+
+    switch (sui_url_previewer_get_content_type(pvr)){
+        case SUI_URL_CONTENT_TYPE_UNSUPPORTED:
+        case SUI_URL_CONTENT_TYPE_UNKNOWN:
+            gtk_container_remove(container, GTK_WIDGET(pvr));
+            break;
+        default:
+            gtk_widget_show(GTK_WIDGET(pvr));
+            break;
+    }
 }
 
 /**
