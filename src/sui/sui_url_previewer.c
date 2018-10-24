@@ -518,8 +518,12 @@ static void session_send_ready(GObject *object, GAsyncResult *result,
     SoupMessageHeaders *headers;
     SuiUrlPreviewer *self;
 
+
     session = SOUP_SESSION(object);
     self = SUI_URL_PREVIEWER(user_data);
+
+    // Freeze notify because PROP_CONTENT_TYPE may be modified here
+    g_object_freeze_notify(G_OBJECT(self));
 
     err = NULL;
     input_stream = soup_session_send_finish(session, result, &err);
@@ -547,19 +551,19 @@ static void session_send_ready(GObject *object, GAsyncResult *result,
         case SUI_URL_CONTENT_TYPE_UNKNOWN:
             g_warn_if_reached();
             goto ERR;
-            break;
         case SUI_URL_CONTENT_TYPE_UNSUPPORTED:
             preview_error_text(self, _("Unsupported content type"));
             goto ERR;
-            break;
         default:
             buffered_stream = G_BUFFERED_INPUT_STREAM(
                     g_buffered_input_stream_new(input_stream));
             g_object_unref(input_stream);
-            g_buffered_input_stream_set_buffer_size(buffered_stream, len); // 10Mb
-            g_buffered_input_stream_fill_async(buffered_stream, -1,
+            g_buffered_input_stream_set_buffer_size(buffered_stream, len);
+            g_buffered_input_stream_fill_async(buffered_stream, len,
                     G_PRIORITY_LOW, self->cancel, buffered_stream_fill_ready, self);
     }
+
+    g_object_thaw_notify(G_OBJECT(self));
 
     return;
 ERR:
@@ -568,6 +572,8 @@ ERR:
     }
     g_object_unref(self->msg);
     self->msg = NULL;
+
+    g_object_thaw_notify(G_OBJECT(self));
 }
 
 static void buffered_stream_fill_ready(GObject *object, GAsyncResult *result,
@@ -595,7 +601,7 @@ static void buffered_stream_fill_ready(GObject *object, GAsyncResult *result,
         avail = g_buffered_input_stream_get_available(buffered_stream);
         size = g_buffered_input_stream_get_buffer_size(buffered_stream);
         if (avail != size){
-            g_buffered_input_stream_fill_async(buffered_stream, -1,
+            g_buffered_input_stream_fill_async(buffered_stream, avail,
                     G_PRIORITY_LOW, self->cancel, buffered_stream_fill_ready, self);
             return;
         }
