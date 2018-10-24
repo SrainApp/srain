@@ -23,7 +23,7 @@
   <object class="GtkImage" id="send_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="icon_name">dialog-ok</property>
+    <property name="icon_name">document-send</property>
     <property name="use_fallback">True</property>
   </object>
   <template class="SuiWindow" parent="GtkApplicationWindow">
