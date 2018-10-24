@@ -553,7 +553,7 @@ static void send_message_cancel(SuiWindow *self){
 
     gtk_image_set_from_icon_name(
             GTK_IMAGE(gtk_button_get_image(self->send_button)),
-            "dialog-ok", GTK_ICON_SIZE_BUTTON);
+            "document-send", GTK_ICON_SIZE_BUTTON);
 }
 
 static void on_destroy(SuiWindow *self){
