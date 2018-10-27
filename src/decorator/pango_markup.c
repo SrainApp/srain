@@ -48,9 +48,9 @@
 #define IP_PATTERN          "[0-9]{1,3}(\\.[0-9]{1,3}){3}"
 
 #define PORT_PATTERN        "(:[1-9][0-9]{0,4})"
-#define HOST_PATTERN        "(" DOMAIN_PATTERN TLD_PATTERN "|" IP_PATTERN ")" PORT_PATTERN "?"
+#define HOST_PATTERN        "(" DOMAIN_PATTERN TLD_PATTERN "|" IP_PATTERN "|" "localhost" ")" PORT_PATTERN "?"
 /* Only match popular tld name for signal */
-#define SINGLY_HOST_PATTERN "(" DOMAIN_PATTERN POP_TLD_PATTERN "|" IP_PATTERN ")" PORT_PATTERN "?" "\\b"
+#define SINGLY_HOST_PATTERN "(" DOMAIN_PATTERN POP_TLD_PATTERN "|" IP_PATTERN "|" "localhost" ")" PORT_PATTERN "?" "\\b"
 
 /* For convenience, last character of URL is limited */
 #define URL_PATH_PATTERN    "(/[A-Za-z0-9-_.~:/?#\\[\\]@!&'()*+,;=%|]*[A-Za-z0-9-_/])?/?"
