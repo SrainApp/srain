@@ -51,6 +51,7 @@ typedef enum {
     SUI_EVENT_CUTOVER,
     SUI_EVENT_SERVER_LIST,
     SUI_EVENT_CHAN_LIST,
+    SUI_EVENT_RECONNECT,
     SUI_EVENT_UNKNOWN,
 } SuiEvent;
 
@@ -73,6 +74,7 @@ typedef struct {
 
 typedef struct {
     SuiEventCallback disconnect;
+    SuiEventCallback reconnect;
     SuiEventCallback quit;
     SuiEventCallback send;
     SuiEventCallback join;

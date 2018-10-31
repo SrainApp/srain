@@ -68,6 +68,7 @@ SrnRet srn_server_state_transfrom(SrnServer *srv, SrnServerAction action){
     switch (srv->state) {
         case SRN_SERVER_STATE_DISCONNECTED:
             switch (action) {
+                case SRN_SERVER_ACTION_RECONNECT:
                 case SRN_SERVER_ACTION_CONNECT:
                     sirc_connect(srv->irc, srv->addr->host, srv->addr->port);
                     next_state = SRN_SERVER_STATE_CONNECTING;

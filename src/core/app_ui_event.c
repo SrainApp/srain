@@ -47,6 +47,7 @@ static SrnRet ui_event_connect(SuiWindow *win, SuiEvent event, GVariantDict *par
 static SrnRet ui_event_server_list(SuiWindow *win, SuiEvent event, GVariantDict *params);
 
 static SrnRet ui_event_disconnect(SuiBuffer *sui, SuiEvent event, GVariantDict *params);
+static SrnRet ui_event_reconnect(SuiBuffer *sui, SuiEvent event, GVariantDict *params);
 static SrnRet ui_event_quit(SuiBuffer *sui, SuiEvent event, GVariantDict *params);
 static SrnRet ui_event_send(SuiBuffer *sui, SuiEvent event, GVariantDict *params);
 static SrnRet ui_event_join(SuiBuffer *sui, SuiEvent event, GVariantDict *params);
@@ -69,6 +70,7 @@ void srn_application_init_ui_event(SrnApplication *app){
     app->ui_win_events.server_list = ui_event_server_list;
 
     app->ui_events.disconnect = ui_event_disconnect;
+    app->ui_events.reconnect = ui_event_reconnect;
     app->ui_events.quit = ui_event_quit;
     app->ui_events.send = ui_event_send;
     app->ui_events.join = ui_event_join;
@@ -152,6 +154,31 @@ static SrnRet ui_event_disconnect(SuiBuffer *sui, SuiEvent event, GVariantDict *
 
     if (prev_state == SRN_SERVER_STATE_RECONNECTING){
         srn_chat_add_misc_message(chat, chat->_user, _("Reconnection stopped"));
+    }
+
+    return SRN_OK;
+}
+
+static SrnRet ui_event_reconnect(SuiBuffer *sui, SuiEvent event, GVariantDict *params) {
+    SrnRet ret;
+    SrnServer *srv;
+    SrnServerState prev_state;
+    SrnChat *chat;
+    
+    srv = ctx_get_server(sui);
+    chat = ctx_get_chat(sui);
+    g_return_val_if_fail(srn_server_is_valid(srv), SRN_ERR);
+
+    prev_state = srv->state;
+    if (prev_state == SRN_SERVER_STATE_RECONNECTING) {
+        // ignore the duplicated reconnect request
+        srn_chat_add_misc_message(chat, chat->_user, _("Already reconnecting"));
+        return SRN_OK;
+    }
+
+    ret = srn_server_reconnect(srv);
+    if (!RET_IS_OK(ret)){
+        srn_chat_add_error_message(chat, chat->_user, RET_MSG(ret));
     }
 
     return SRN_OK;

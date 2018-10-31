@@ -59,6 +59,9 @@ static SuiEventParamFormat formats[SUI_EVENT_UNKNOWN][SUI_EVENT_MAX_PARAM] = {
     [SUI_EVENT_DISCONNECT] = {
         { .key = NULL, .fmt = NULL, },
     },
+    [SUI_EVENT_RECONNECT] = {
+        { .key = NULL, .fmt = NULL, },
+    },
     [SUI_EVENT_QUIT] = {
         { .key = NULL, .fmt = NULL, },
     },
@@ -185,6 +188,9 @@ SrnRet sui_buffer_event_hdr(SuiBuffer *buf, SuiEvent event, GVariantDict *params
         case SUI_EVENT_DISCONNECT:
             g_return_val_if_fail(events->disconnect, SRN_ERR);
             return events->disconnect(buf, event, params);
+        case SUI_EVENT_RECONNECT:
+            g_return_val_if_fail(events->reconnect, SRN_ERR);
+            return events->reconnect(buf, event, params);
         case SUI_EVENT_QUIT:
             g_return_val_if_fail(events->quit, SRN_ERR);
             return events->quit(buf, event, params);
