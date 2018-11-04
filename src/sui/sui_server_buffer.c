@@ -40,6 +40,7 @@ struct _SuiServerBuffer {
 
     GtkMenuItem *disconn_menu_item;
     GtkMenuItem *quit_menu_item;
+    GtkMenuItem *reconn_menu_item;
 
     GtkListStore *chan_list_store;
     SuiJoinPanel *join_panel;
@@ -51,6 +52,7 @@ struct _SuiServerBufferClass {
 
 static void disconn_menu_item_on_activate(GtkWidget* widget, gpointer user_data);
 static void quit_menu_item_on_activate(GtkWidget* widget, gpointer user_data);
+static void reconn_menu_item_on_activate(GtkWidget* widget, gpointer user_data);
 
 /*****************************************************************************
  * GObject functions
@@ -100,6 +102,11 @@ static void sui_server_buffer_init(SuiServerBuffer *self){
     gtk_menu_shell_append(
             GTK_MENU_SHELL(sui_buffer_get_menu(SUI_BUFFER(self))),
             GTK_WIDGET(self->quit_menu_item));
+    self->reconn_menu_item =
+        (GtkMenuItem *)gtk_builder_get_object(builder, "reconn_menu_item");
+    gtk_menu_shell_append(
+            GTK_MENU_SHELL(sui_buffer_get_menu(SUI_BUFFER(self))),
+            GTK_WIDGET(self->reconn_menu_item));
     g_object_unref(builder);
 
     self->buffer_list = NULL;
@@ -117,6 +124,8 @@ static void sui_server_buffer_init(SuiServerBuffer *self){
             G_CALLBACK(disconn_menu_item_on_activate),self);
     g_signal_connect(self->quit_menu_item, "activate",
             G_CALLBACK(quit_menu_item_on_activate),self);
+    g_signal_connect(self->reconn_menu_item, "activate",
+            G_CALLBACK(reconn_menu_item_on_activate),self);
 }
 
 static void sui_server_buffer_finalize(GObject *object){
@@ -232,4 +241,10 @@ static void quit_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
     self = user_data;
 
     sui_buffer_event_hdr(SUI_BUFFER(self), SUI_EVENT_QUIT, NULL);
+}
+
+static void reconn_menu_item_on_activate(GtkWidget *widget, gpointer user_data){
+    SuiServerBuffer *self;
+    self = user_data;
+    sui_buffer_event_hdr(SUI_BUFFER(self), SUI_EVENT_RECONNECT, NULL);
 }

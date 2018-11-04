@@ -186,6 +186,10 @@ SrnRet srn_server_connect(SrnServer *srv){
     return srn_server_state_transfrom(srv, SRN_SERVER_ACTION_CONNECT);
 }
 
+SrnRet srn_server_reconnect(SrnServer *srv) {
+    return srn_server_state_transfrom(srv, SRN_SERVER_ACTION_RECONNECT);
+}
+
 /**
  * @brief server_disconnect Just an intuitive alias of a disconnect action
  *

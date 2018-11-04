@@ -299,6 +299,7 @@ bool srn_server_is_valid(SrnServer *srv);
 bool srn_server_is_chat_valid(SrnServer *srv, SrnChat *chat);
 SrnRet srn_server_connect(SrnServer *srv);
 SrnRet srn_server_disconnect(SrnServer *srv);
+SrnRet srn_server_reconnect(SrnServer *srv);
 SrnRet srn_server_state_transfrom(SrnServer *srv, SrnServerAction act);
 bool srn_server_is_registered(SrnServer *srv);
 void srn_server_wait_until_registered(SrnServer *srv);

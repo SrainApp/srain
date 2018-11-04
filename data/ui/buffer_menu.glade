@@ -14,6 +14,12 @@
     <property name="label" translatable="yes">_Disconnect</property>
     <property name="use_underline">True</property>
   </object>
+  <object class="GtkMenuItem" id="reconn_menu_item">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="label" translatable="yes">_Reconnect</property>
+    <property name="use_underline">True</property>
+  </object>
   <object class="GtkMenuItem" id="leave_menu_item">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
