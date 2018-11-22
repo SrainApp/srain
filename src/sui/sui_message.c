@@ -32,6 +32,8 @@
 #include "sui_event_hdr.h"
 #include "nick_menu.h"
 #include "sui_buffer.h"
+#include "sui_server_buffer.h"
+#include "sui_chat_buffer.h"
 #include "sui_message.h"
 #include "sui_url_previewer.h"
 
@@ -263,8 +265,15 @@ void sui_message_label_on_popup(GtkLabel *label, GtkMenu *menu, gpointer user_da
     /* Create submenu of forward_menu_item */
     n = 0;
     forward_submenu = GTK_MENU(gtk_menu_new());
-    lst = NULL;
-    // FIXME
+    if (SUI_IS_SERVER_BUFFER(self->buf)){
+        lst = sui_server_buffer_get_buffer_list(SUI_SERVER_BUFFER(self->buf));
+    } else if (SUI_IS_CHAT_BUFFER(self->buf)){
+        lst = sui_server_buffer_get_buffer_list(
+                sui_chat_buffer_get_server_buffer(SUI_CHAT_BUFFER(self->buf)));
+    } else {
+        lst = NULL;
+        g_warn_if_reached();
+    }
     while (lst){
         GtkMenuItem *item;
 
@@ -483,38 +492,62 @@ static void copy_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
 }
 
 static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_data){
-    char *sel_msg;
-    char *line;
-    SuiBuffer *buf;
+    const char *target;
+    char *sel;
+    GList *msg_lst;
+    GList *buf_lst;
     SuiMessage *self;
 
     self = SUI_MESSAGE(user_data);
-    buf = self->buf;
+    target = gtk_menu_item_get_label(GTK_MENU_ITEM(widget));
 
-    sel_msg = label_get_selection(self->message_label);
-    if (!sel_msg){
+    sel = label_get_selection(self->message_label);
+    if (!sel){
         return;
     }
 
-    line = strtok(sel_msg, "\n");
-    while (line){
-        char *fwd;
-        GVariantDict *params;
+    msg_lst = NULL;
+    for (char *line =  strtok(sel, "\n"); line; line = strtok(NULL, "\n")){
+        char *msg;
 
-        fwd = g_strdup_printf(_("%1$s <fwd %2$s@%3$s>"), line,
+        msg = g_strdup_printf(_("%1$s <fwd %2$s@%3$s>"), line,
                 self->ctx->user->srv_user->nick, self->ctx->chat->name);
-        line = strtok(NULL, "\n");
-
-        params = g_variant_dict_new(NULL);
-        g_variant_dict_insert(params, "message", SUI_EVENT_PARAM_STRING, fwd);
-
-        sui_buffer_event_hdr(buf, SUI_EVENT_SEND, params);
-
-        g_variant_dict_unref(params);
-        g_free(fwd);
+        msg_lst = g_list_append(msg_lst, msg);
     }
 
-    g_free(sel_msg);
+    /* Get buffer list */
+    if (SUI_IS_SERVER_BUFFER(self->buf)){
+        buf_lst = sui_server_buffer_get_buffer_list(SUI_SERVER_BUFFER(self->buf));
+    } else if (SUI_IS_CHAT_BUFFER(self->buf)){
+        buf_lst = sui_server_buffer_get_buffer_list(
+                sui_chat_buffer_get_server_buffer(SUI_CHAT_BUFFER(self->buf)));
+    } else {
+        buf_lst = NULL;
+        g_warn_if_reached();
+    }
+
+    /* Find target buffer */
+    for (GList *lst = buf_lst; lst; lst = g_list_next(lst)){
+        SuiBuffer *buf;
+
+        buf = lst->data;
+        if (g_strcmp0(sui_buffer_get_name(buf), target) != 0) {
+            continue;
+        }
+
+        for (GList *mlst = msg_lst; mlst; mlst = g_list_next(mlst)) {
+            GVariantDict *params;
+
+            params = g_variant_dict_new(NULL);
+            g_variant_dict_insert(params, "message", SUI_EVENT_PARAM_STRING, mlst->data);
+            sui_buffer_event_hdr(buf, SUI_EVENT_SEND, params);
+            g_variant_dict_unref(params);
+        }
+        break;
+    }
+
+    g_list_free_full(msg_lst, g_free);
+    g_free(sel);
 }
 
 static void url_previewer_on_notify_content_type(GObject *object,
