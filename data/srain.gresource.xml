@@ -17,6 +17,7 @@
         <file alias="nick_menu.glade" preprocess="xml-stripblanks">ui/nick_menu.glade</file>
         <file alias="connect_panel.glade" preprocess="xml-stripblanks">ui/connect_panel.glade</file>
         <file alias="join_panel.glade" preprocess="xml-stripblanks">ui/join_panel.glade</file>
+        <file alias="prefs_dialog.glade" preprocess="xml-stripblanks">ui/prefs_dialog.glade</file>
     </gresource>
 
     <!-- Icons files, TODO: SVG -->

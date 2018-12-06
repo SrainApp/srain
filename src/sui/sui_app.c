@@ -36,6 +36,7 @@
 #include "sui_event_hdr.h"
 #include "sui_app.h"
 #include "sui_window.h"
+#include "sui_prefs_dialog.h"
 
 struct _SuiApplication {
     GtkApplication parent;
@@ -74,7 +75,7 @@ static int on_command_line(SuiApplication *self,
         GApplicationCommandLine *cmdline, gpointer user_data);
 static void on_activate_about(GSimpleAction *action, GVariant  *parameter,
         gpointer user_data);
-static void on_activate_setting(GSimpleAction *action, GVariant  *parameter,
+static void on_activate_prefs(GSimpleAction *action, GVariant  *parameter,
         gpointer user_data);
 static void on_activate_exit(GSimpleAction *action, GVariant  *parameter,
         gpointer user_data);
@@ -127,8 +128,8 @@ static const GActionEntry action_entries[] = {
         .activate = on_activate_about,
     },
     {
-        .name = "setting",
-        .activate = on_activate_setting,
+        .name = "preferences",
+        .activate = on_activate_prefs,
     },
     {
         .name = "exit",
@@ -489,12 +490,21 @@ static void on_activate_about(GSimpleAction *action, GVariant  *parameter,
     show_about_dialog(self);
 }
 
-static void on_activate_setting(GSimpleAction *action, GVariant  *parameter,
+static void on_activate_prefs(GSimpleAction *action, GVariant  *parameter,
         gpointer user_data){
     SuiApplication *self;
+    SuiPrefsDialog *dialog;
 
-    self = user_data;
-    // TODO
+    self = SUI_APPLICATION(user_data);
+
+    dialog = sui_prefs_dialog_new(self, sui_application_get_cur_window(self));
+    switch (gtk_dialog_run(GTK_DIALOG(dialog))){
+        // TODO(SilverRainZ): Determine whether to write the configuration
+        // back to the file based on the GTK response.
+        default:
+            break;
+    }
+    gtk_widget_destroy(GTK_WIDGET(dialog));
 }
 
 static void on_activate_exit(GSimpleAction *action, GVariant  *parameter,
