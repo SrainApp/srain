@@ -28,7 +28,7 @@
 
 #include "sui_theme.h"
 
-#include "file_helper.h"
+#include "path.h"
 #include "log.h"
 #include "utils.h"
 #include "i18n.h"
@@ -89,7 +89,7 @@ SrnRet sui_theme_manager_apply(SuiThemeManager *self, const char *theme){
     ret = SRN_ERR;
     name = g_strdup_printf("%s%s.css", theme, self->dark ? "-dark" : "");
 
-    file = get_theme_file(name);
+    file = srn_get_theme_file(name);
     if (!file) {
         ret = RET_ERR("File \"%s\" not found", name);
         goto FIN;

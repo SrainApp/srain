@@ -16,16 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __FILE_HELPER_H
-#define __FILE_HELPER_H
+#ifndef __PATH_H
+#define __PATH_H
 
-char *get_theme_file(const char *fname);
-char *get_pixmap_file(const char *fname);
-char *get_plugin_file(const char *fname);
-char *get_config_file(const char *fname);
-char *get_system_config_file(const char *fname);
-char *get_avatar_file(const char *fname);
-char *create_log_file(const char *srv_name, const char *fname);
-int create_user_file();
+#include "ret.h"
+
+char *srn_get_theme_file(const char *fname);
+char *srn_get_user_config_file();
+char *srn_get_system_config_file();
+char *srn_create_log_file(const char *srv_name, const char *fname);
+SrnRet srn_create_user_file();
 
 #endif /* __FILE_HELPER_H */

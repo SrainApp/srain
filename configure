@@ -1,11 +1,5 @@
 #!/bin/sh
 
-builddir=build
-prefix=/usr/local
-sysconfdir=$prefix/etc
-datadir=$prefix/share
-debugsym=true
-
 for arg in "$@"; do
     case "$arg" in
     --builddir=*)
@@ -39,7 +33,9 @@ for arg in "$@"; do
     --help)
         echo 'Usage: ./configure [options]'
         echo 'Options:'
-        echo '  --builddir=<path>: Build output directory, CANNOT contain whitespace'
+        echo '  --builddir=<path>: Build output directory'
+        echo '                     MUST be an absolute path and CANNOT contain'
+        echo '                     whitespace'
         echo '  --prefix=<path>: Installation prefix'
         echo '  --config-dir=<path>: Deprecated, use --sysconfdir instead'
         echo '  --sysconfdir=<path>: System wide configure file location'
@@ -51,6 +47,26 @@ for arg in "$@"; do
         ;;
     esac
 done
+
+if [ -z $builddir ]; then
+   builddir=$PWD/build
+fi
+
+if [ -z $prefix ]; then
+   prefix=/usr/local
+fi
+
+if [ -z $sysconfdir ]; then
+   sysconfdir=$prefix/etc
+fi
+
+if [ -z $datadir ]; then
+   datadir=$prefix/share
+fi
+
+if [ -z $debugsym ]; then
+    debugsym=true
+fi
 
 echo 'Generating makefile ...'
 echo '' > Makefile

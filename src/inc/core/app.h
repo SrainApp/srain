@@ -57,7 +57,6 @@ struct _SrnApplication {
 
 struct _SrnApplicationConfig {
     bool prompt_on_quit; // TODO
-    bool create_user_file; // TODO
     char *id;
     GList *auto_connect_srv_list;
 

@@ -54,11 +54,12 @@
           </packing>
         </child>
         <child>
-          <object class="GtkModelButton" id="setting_model_button">
+          <object class="GtkModelButton" id="prefs_model_button">
+            <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <property name="action_name">app.setting</property>
-            <property name="text" translatable="yes">Setting</property>
+            <property name="action_name">app.preferences</property>
+            <property name="text" translatable="yes">_Preferences</property>
           </object>
           <packing>
             <property name="expand">False</property>

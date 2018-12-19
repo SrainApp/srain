@@ -31,7 +31,7 @@
 #include "ret.h"
 #include "i18n.h"
 #include "config/config.h"
-#include "file_helper.h"
+#include "path.h"
 
 int main(int argc, char *argv[]){
     SrnLogger *logger;
