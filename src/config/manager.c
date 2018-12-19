@@ -79,7 +79,7 @@ SrnRet srn_config_manager_load_user_config(SrnConfigManager *mgr,
 
 static SrnRet load_config(SrnConfigManager *mgr, config_t *cfg, const char *file){
     char *dir;
-    const char *rawver;
+    // const char *rawver;
     SrnVersion *ver;
     SrnRet ret;
 
@@ -99,17 +99,17 @@ static SrnRet load_config(SrnConfigManager *mgr, config_t *cfg, const char *file
     }
 
     /* Verify configure version */
-    if (!config_lookup_string(cfg, "version", &rawver)){
-        ret = RET_ERR(_("No version found in configuration file: %1$s"), file);
-        goto FIN;
-    }
-    ver = srn_version_new(rawver);
-    ret = srn_version_parse(ver);
-    if (!RET_IS_OK(ret)){
-        ret = RET_ERR(_("Failed to parse version: %s"), RET_MSG(ret));
-        goto FIN;
-    }
-    LOG_FR("Configuration file version: %d.%d.%d", ver->major, ver->minor, ver->micro);
+    // if (!config_lookup_string(cfg, "version", &rawver)){
+    //     ret = RET_ERR(_("No version found in configuration file: %1$s"), file);
+    //     goto FIN;
+    // }
+    // ver = srn_version_new(rawver);
+    // ret = srn_version_parse(ver);
+    // if (!RET_IS_OK(ret)){
+    //     ret = RET_ERR(_("Failed to parse version: %s"), RET_MSG(ret));
+    //     goto FIN;
+    // }
+    // LOG_FR("Configuration file version: %d.%d.%d", ver->major, ver->minor, ver->micro);
 
     /*
     if (mgr->ver->major > ver->major){
