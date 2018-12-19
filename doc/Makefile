@@ -20,16 +20,16 @@ install-rst:
 	for rst in *.rst; do \
 		echo $$rst; \
 		$(INSTALL) -Dm644 $$rst \
-		"$(DESTDIR)$(PACKAGE_DATA_DIR)/share/doc/$(PACKAGE)/rst/$$rst"; \
+		"$(DESTDIR)$(PACKAGE_DATA_DIR)/doc/$(PACKAGE)/rst/$$rst"; \
 	done;
 
 install-html:
 	cd $(BUILDDIR)/html; \
 	for html in *.html; do \
 		$(INSTALL) -Dm644 $$html \
-		"$(DESTDIR)$(PACKAGE_DATA_DIR)/share/doc/$(PACKAGE)/html/$$html"; \
+		"$(DESTDIR)$(PACKAGE_DATA_DIR)/doc/$(PACKAGE)/html/$$html"; \
 	done; \
-	cp -r _static "$(DESTDIR)$(PACKAGE_DATA_DIR)/share/doc/$(PACKAGE)/html";
+	cp -r _static "$(DESTDIR)$(PACKAGE_DATA_DIR)/doc/$(PACKAGE)/html";
 
 # Put it first so that "make" without argument is like "make help".
 help:
