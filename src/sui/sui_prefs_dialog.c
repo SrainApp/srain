@@ -34,7 +34,7 @@
 #include "sui_common.h"
 #include "sui_prefs_dialog.h"
 #include "i18n.h"
-#include "file_helper.h"
+#include "path.h"
 
 struct _SuiPrefsDialog {
     GtkDialog parent;
@@ -77,7 +77,7 @@ static void sui_prefs_dialog_init(SuiPrefsDialog *self){
     char *user_cfg_path;
     char *markup;
 
-    user_cfg_path = get_config_file("srain.cfg");
+    user_cfg_path = srn_get_user_config_file();
     markup = g_markup_printf_escaped(
             "  Srain has no available configuration panel for now, \
 The only way of changing the configuration is editing the \

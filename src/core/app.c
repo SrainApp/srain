@@ -32,7 +32,7 @@
 #include "meta.h"
 #include "log.h"
 #include "i18n.h"
-#include "file_helper.h"
+#include "path.h"
 #include "utils.h"
 
 #include "app_event.h"
@@ -68,7 +68,7 @@ SrnApplication* srn_application_new(void){
 
     // Init config
     cfg_mgr = srn_config_manager_new(ver);
-    path = get_system_config_file("builtin.cfg");
+    path = srn_get_system_config_file();
     if (path){
         ret = srn_config_manager_load_system_config(cfg_mgr, path);
         g_free(path);
@@ -76,7 +76,7 @@ SrnApplication* srn_application_new(void){
             sui_message_box(_("Error"), RET_MSG(ret));
         }
     }
-    path = get_config_file("srain.cfg");
+    path = srn_get_user_config_file();
     if (path){
         ret = srn_config_manager_load_user_config(cfg_mgr, path);
         g_free(path);
@@ -137,7 +137,7 @@ SrnRet srn_application_reload_config(SrnApplication *app){
     cfg_mgr = app->cfg_mgr;
 
     /* Read newest user config: TODO: Read should not be done here */
-    path = get_config_file("srain.cfg");
+    path = srn_get_user_config_file();
     if (!path){
         return RET_ERR(_("User config not found"));
     }

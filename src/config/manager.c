@@ -30,7 +30,7 @@
 
 #include "config/config.h"
 #include "log.h"
-#include "file_helper.h"
+#include "path.h"
 #include "i18n.h"
 #include "version.h"
 

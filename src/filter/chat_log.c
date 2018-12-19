@@ -37,7 +37,7 @@
 #include "srain.h"
 #include "log.h"
 #include "i18n.h"
-#include "file_helper.h"
+#include "path.h"
 
 static bool chat_log(const SrnMessage *msg, const char *content);
 
@@ -58,7 +58,7 @@ static bool chat_log(const SrnMessage *msg, const char *content){
 
     basename = g_string_new("");
     g_string_append_printf(basename, "%s.%s.log", date_str, msg->chat->name);
-    file = create_log_file(msg->chat->srv->name, basename->str);
+    file = srn_create_log_file(msg->chat->srv->name, basename->str);
 
     if (!file){
         ERR_FR("Failed to create log file");
