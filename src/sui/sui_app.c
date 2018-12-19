@@ -328,7 +328,15 @@ SuiApplication* sui_application_get_instance(){
 }
 
 SuiWindow* sui_application_get_cur_window(SuiApplication *self){
-    return SUI_WINDOW(gtk_application_get_active_window(GTK_APPLICATION(self)));
+    GtkWindow *win;
+
+    win = gtk_application_get_active_window(GTK_APPLICATION(self));
+    while (win && !SUI_IS_WINDOW(win)) {
+        // If active window is not a SuiWindow, try its transient parent
+        win = gtk_window_get_transient_for(win);
+    }
+
+    return SUI_WINDOW(win);
 }
 
 GtkPopover* sui_application_get_popover_menu(SuiApplication *self){
