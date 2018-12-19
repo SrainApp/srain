@@ -33,7 +33,9 @@ for arg in "$@"; do
     --help)
         echo 'Usage: ./configure [options]'
         echo 'Options:'
-        echo '  --builddir=<path>: Build output directory, CANNOT contain whitespace'
+        echo '  --builddir=<path>: Build output directory'
+        echo '                     MUST be an absolute path and CANNOT contain'
+        echo '                     whitespace'
         echo '  --prefix=<path>: Installation prefix'
         echo '  --config-dir=<path>: Deprecated, use --sysconfdir instead'
         echo '  --sysconfdir=<path>: System wide configure file location'

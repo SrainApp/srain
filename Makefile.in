@@ -1,6 +1,6 @@
 # Makefile
 .PHONY: install run bt clean cleanobj todo install-bin install-po install-data \
-		install-doc view-doc doc bt gtk_dbg
+		install-doc view-doc doc bt gtk-dbg
 
 # Export all variables
 export
@@ -24,53 +24,51 @@ PACKAGE_CONFIG_DIR = $(SYSCONFDIR)
 MAKE = make
 DEL = rm -rf
 INSTALL = install -v
-DB = gdb
+DBG = gdb
 
 BUILD_DIR = $(BUILDDIR)
-TARGET = $(BUILD_DIR)/srain.out
-FAKE_XDG_CONFIG_HOME = $(BUILD_DIR)
-FAKE_XDG_DATA_DIR = $(BUILD_DIR)/share:/usr/share:/usr/local/share
+TARGET = $(BUILD_DIR)/$(PACKAGE).out
+FAKE_HOME = $(BUILD_DIR)/home/$(PACKAGE)
+FAKE_XDG_DATA_DIR = $(PREFIX)/share:/usr/share:/usr/local/share
 
 default: src/Makefile
 	- mkdir -p $(BUILD_DIR)
-	$(MAKE) BUILD_DIR=../$(BUILD_DIR) -C data resources
-	$(MAKE) BUILD_DIR=../$(BUILD_DIR) TARGET=../$(TARGET) -C src
+	$(MAKE) -C data resources
+	$(MAKE) -C src
 
 install: install-bin install-data install-po
 
 install-bin:
-	$(INSTALL) -Dm755 "$(TARGET)" "$(DESTDIR)$(PREFIX)/bin/srain"
+	$(INSTALL) -Dm755 "$(TARGET)" "$(DESTDIR)$(PREFIX)/bin/$(PACKAGE)"
 
 install-data: data/Makefile
-	$(MAKE) BUILD_DIR=../$(BUILD_DIR) -C data
+	$(MAKE) -C data
 
 install-po: po/Makefile
-	$(MAKE) BUILD_DIR=../$(BUILD_DIR) -C po
+	$(MAKE) -C po
 
 install-doc: doc/Makefile
-	$(MAKE) BUILD_DIR=../$(BUILD_DIR) -C doc install
+	$(MAKE) -C doc install
 
 doc: doc/Makefile
-	$(MAKE) BUILD_DIR=../$(BUILD_DIR) -C doc
+	$(MAKE) -C doc
 
 view-doc: doc/Makefile
-	$(MAKE) BUILD_DIR=../$(BUILD_DIR) -C doc view
+	$(MAKE) -C doc view
 
 run:
-	$(MAKE) BUILD_DIR=../$(BUILD_DIR) -C data config
-	$(MAKE) PREFIX=$(BUILD_DIR)
-	$(MAKE) install-bin
-	$(MAKE) install-po
-	export XDG_CONFIG_HOME=$(FAKE_XDG_CONFIG_HOME); \
+	unset XDG_CONFIG_HOME XDG_DATA_HOME XDG_CACHE_HOME; \
+	export HOME=$(FAKE_HOME); \
 	export XDG_DATA_DIRS=$(FAKE_XDG_DATA_DIR); \
-	"$(DESTDIR)$(PREFIX)/bin/srain"
+	"$(DESTDIR)$(PREFIX)/bin/$(PACKAGE)"
 
 bt:
-	export XDG_CONFIG_HOME=$(FAKE_XDG_CONFIG_HOME); \
+	unset XDG_CONFIG_HOME XDG_DATA_HOME XDG_CACHE_HOME; \
+	export HOME=$(FAKE_HOME); \
 	export XDG_DATA_DIRS=$(FAKE_XDG_DATA_DIR); \
-	$(DB) "$(DESTDIR)$(PREFIX)/bin/srain" -ex 'r' -ex 'bt' -ex 'q'
+	$(DBG) "$(DESTDIR)$(PREFIX)/bin/$(PACKAGE)" -ex 'r' -ex 'bt' -ex 'q'
 
-gtk_dbg:
+gtk-dbg:
 	GTK_DEBUG=interactive \
 	GOBJECT_DEBUG=instance-countcd \
 	$(MAKE) run
