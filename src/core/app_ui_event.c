@@ -356,6 +356,8 @@ static SrnRet ui_event_ignore(SuiBuffer *sui, SuiEvent event, GVariantDict *para
     g_variant_dict_lookup(params, "nick", SUI_EVENT_PARAM_STRING, &nick);
 
     SrnServerUser *user = srn_server_get_user(chat->srv, nick);
+    g_return_val_if_fail(user, SRN_ERR);
+
     srn_server_user_set_is_ignored(user, !user->is_ignored);
 
     if(user->is_ignored){
