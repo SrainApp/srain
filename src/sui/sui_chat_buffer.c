@@ -31,6 +31,8 @@
 
 #include "log.h"
 
+#define MIN_NICK_COMPLETION_LEN     1
+
 static void user_list_menu_item_on_toggled(GtkWidget* widget, gpointer user_data);
 
 /*****************************************************************************
@@ -159,7 +161,7 @@ static GtkListStore* sui_chat_buffer_completion_func(SuiBuffer *_self,
 
     DBG_FR("Get prefix: '%s'", prefix);
 
-    if (strlen(prefix) < 3) {
+    if (strlen(prefix) < MIN_NICK_COMPLETION_LEN) {
         DBG_FR("Prefix too short");
         return store;
     }
