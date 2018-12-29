@@ -304,7 +304,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="opacity">0.80000000000000004</property>
-                        <property name="label" translatable="yes">&lt;big&gt;Welcom to Srain!&lt;/big&gt;</property>
+                        <property name="label" translatable="yes">&lt;big&gt;Welcome to Srain!&lt;/big&gt;</property>
                         <property name="use_markup">True</property>
                         <property name="track_visited_links">False</property>
                       </object>
