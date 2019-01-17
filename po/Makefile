@@ -1,7 +1,5 @@
 # Makefile
 
-.PHONY: po mo
-
 INSTALL = install -v
 XGETTEXTFLAG = --sort-output --from-code=UTF-8 \
 			   --package-name=$(PACKAGE_NAME) \
@@ -19,6 +17,7 @@ srain.pot: $(SRCS) $(GLADES)
 	xgettext $(XGETTEXTFLAG) -LGlade -ktranslatable -o $@ $(GLADES)
 	xgettext $(XGETTEXTFLAG) -LC -k_ -kN_ -o $@ $(SRCS) -j
 
+.PHONY: po
 po: srain.pot LANGS
 	for i in $(LANGS); do \
 		if test -f $$i.po; then \
@@ -29,6 +28,7 @@ po: srain.pot LANGS
 		fi; \
 	done
 
+.PHONY: mo
 mo: LANGS po
 	for i in $(LANGS); do \
 		msgfmt $$i.po -o "$(BUILD_DIR)/srain.mo"; \

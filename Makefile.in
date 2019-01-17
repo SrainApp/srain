@@ -1,6 +1,4 @@
 # Makefile
-.PHONY: install run bt clean cleanobj todo install-bin install-po install-data \
-		install-doc view-doc doc bt gtk-dbg
 
 # Export all variables
 export
@@ -36,50 +34,63 @@ default: src/Makefile
 	$(MAKE) -C data resources
 	$(MAKE) -C src
 
+.PHONY: install
 install: install-bin install-data install-po
 
+.PHONY: install-bin
 install-bin:
 	$(INSTALL) -Dm755 "$(TARGET)" "$(DESTDIR)$(PREFIX)/bin/$(PACKAGE)"
 
+.PHONY: install-data
 install-data: data/Makefile
 	$(MAKE) -C data
 
+.PHONY: install-po
 install-po: po/Makefile
 	$(MAKE) -C po
 
+.PHONY: install-doc
 install-doc: doc/Makefile
 	$(MAKE) -C doc install
 
+.PHONY: doc
 doc: doc/Makefile
 	$(MAKE) -C doc
 
+.PHONY: view-doc
 view-doc: doc/Makefile
 	$(MAKE) -C doc view
 
+.PHONY: run
 run:
 	unset XDG_CONFIG_HOME XDG_DATA_HOME XDG_CACHE_HOME; \
 	export HOME=$(FAKE_HOME); \
 	export XDG_DATA_DIRS=$(FAKE_XDG_DATA_DIR); \
 	"$(DESTDIR)$(PREFIX)/bin/$(PACKAGE)"
 
+.PHONY: bt
 bt:
 	unset XDG_CONFIG_HOME XDG_DATA_HOME XDG_CACHE_HOME; \
 	export HOME=$(FAKE_HOME); \
 	export XDG_DATA_DIRS=$(FAKE_XDG_DATA_DIR); \
 	$(DBG) "$(DESTDIR)$(PREFIX)/bin/$(PACKAGE)" -ex 'r' -ex 'bt' -ex 'q'
 
+.PHONY: gtk-dbg
 gtk-dbg:
 	GTK_DEBUG=interactive \
 	GOBJECT_DEBUG=instance-countcd \
 	$(MAKE) run
 
+.PHONY: clean
 clean:
 	$(DEL) $(BUILD_DIR)/*
 
+.PHONY: cleanobj
 cleanobj:
 	$(DEL) $(BUILD_DIR)/*.c
 	$(DEL) $(BUILD_DIR)/*.o
 	$(DEL) $(TARGET)
 
+.PHONY: todo
 todo:
 	grep --color=auto -r -E "TODO|FIXME" src/
