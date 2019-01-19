@@ -571,10 +571,16 @@ static void on_notify_is_active(GObject *object, GParamSpec *pspec,
 
 static gboolean on_delete_event(GtkWidget *widget, GdkEvent *event,
             gpointer user_data){
-    // TODO: Make it configurable
-    gtk_widget_set_visible(widget, FALSE);
+    SuiWindow *self;
 
-    return TRUE;
+    self = SUI_WINDOW(widget);
+
+    if (self->cfg->exit_on_close) {
+        return FALSE;
+    } else {
+        gtk_widget_set_visible(widget, FALSE);
+        return TRUE;
+    }
 }
 
 static void popover_button_on_click(GtkButton *button, gpointer user_data){
