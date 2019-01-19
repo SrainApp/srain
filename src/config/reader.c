@@ -269,6 +269,8 @@ static SrnRet read_application_config_from_cfg(config_t *cfg,
     config_lookup_bool_ex(cfg, "csd", &app_cfg->ui->window.csd);
     config_lookup_bool_ex(cfg, "send-on-ctrl-enter",
             &app_cfg->ui->window.send_on_ctrl_enter);
+    config_lookup_bool_ex(cfg, "exit-on-close",
+            &app_cfg->ui->window.exit_on_close);
 
     /* Read auto connect server list */
     config_setting_t *auto_connect;

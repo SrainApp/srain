@@ -33,6 +33,7 @@ typedef struct _SuiBufferConfig SuiBufferConfig;
 struct _SuiWindowConfig {
     bool csd;
     bool send_on_ctrl_enter;
+    bool exit_on_close;
 };
 
 struct _SuiApplicationConfig {
