@@ -352,7 +352,21 @@ SuiApplicationEvents* sui_application_get_events(SuiApplication *self){
 }
 
 void sui_application_set_config(SuiApplication *self, SuiApplicationConfig *cfg){
+    GList *wins;
+
     self->cfg = cfg;
+
+    /* Update config of all SuiWindow */
+    wins = gtk_application_get_windows(GTK_APPLICATION(self));
+    for (GList *lst = wins; lst; lst = g_list_next(lst)){
+        SuiWindow *win;
+
+        if (!SUI_IS_WINDOW(lst->data)) {
+            continue;
+        }
+        win = SUI_WINDOW(lst->data);
+        sui_window_set_config(win, &cfg->window);
+    }
 }
 
 SuiApplicationConfig* sui_application_get_config(SuiApplication *self){
