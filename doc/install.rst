@@ -46,7 +46,7 @@ you can get source code of latest release:
    The development of 1.0 release is working in progress.
 
 ..
-    $ wget https://github.com/SilverRainZ/srain/archive/0.06.4.tar.gz
+    $ wget https://github.com/SrainApp/srain/archive/0.06.4.tar.gz
     $ tar -xvzf 0.06.4.tar.gz
     $ cd srain-0.06.4
 
@@ -54,7 +54,7 @@ Or get git version:
 
 .. code-block:: console
 
-    $ git clone https://github.com/SilverRainZ/srain.git
+    $ git clone https://github.com/SrainApp/srain.git
     $ cd srain
 
 Setup build options and start building:
@@ -124,7 +124,7 @@ Debian
 **out of date**, I will be glad if anyone can fix it.
 
 .. _dfceaef: https://github.com/yangfl
-.. _Debian package script for Srain: https://github.com/SilverRainZ/srain/tree/debian/debian
+.. _Debian package script for Srain: https://github.com/SrainApp/srain/tree/debian/debian
 
 .. _install-packages-flatpak:
 
@@ -141,7 +141,7 @@ you already have flatpak installed:
     $ flatpak install flathub im.srain.Srain
 
 .. _cpba: https://github.com/cpba
-.. _Flatpak manifest for Srain: https://github.com/SilverRainZ/srain-contrib/tree/master/pack/flatpak
+.. _Flatpak manifest for Srain: https://github.com/SrainApp/srain-contrib/tree/master/pack/flatpak
 .. _Flathub: https://flathub.org
 
 Gentoo
@@ -151,7 +151,7 @@ Gentoo
 for more details.
 
 .. _rtlanceroad: https://github.com/rtlanceroad
-.. _Gentoo ebuilds for Srain: https://github.com/SilverRainZ/srain-contrib/tree/master/pack/gentoo
+.. _Gentoo ebuilds for Srain: https://github.com/SrainApp/srain-contrib/tree/master/pack/gentoo
 
 .. _install-packages-opensuse:
 
@@ -203,7 +203,7 @@ If everything goes well, Srain is installed under your MinGW prefix.
 
 
 .. _MSYS2 project: http://www.msys2.org/
-.. _MinGW PKGBUILD for Srain: https://github.com/SilverRainZ/srain-contrib/tree/master/pack/mingw
+.. _MinGW PKGBUILD for Srain: https://github.com/SrainApp/srain-contrib/tree/master/pack/mingw
 .. [#Alexpux-MINGW-packages-issue-3939] https://github.com/Alexpux/MINGW-packages/issues/3939#issuecomment-397988379
 
 .. _install-packages-macos:

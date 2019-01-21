@@ -50,8 +50,8 @@ Change Log
   - Fixed grammer of join message, thanks to @raindev
   - Re-enable CI for Srain: |ci-status|
 
-.. |ci-status| image:: https://travis-ci.org/SilverRainZ/srain.svg?branch=master
-    :target: https://travis-ci.org/SilverRainZ/srain
+.. |ci-status| image:: https://travis-ci.org/SrainApp/srain.svg?branch=master
+    :target: https://travis-ci.org/SrainApp/srain
 
 2017-12-22 Version 0.06.3
 =========================
