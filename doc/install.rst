@@ -46,9 +46,9 @@ you can get source code of latest release:
    The development of 1.0 release is working in progress.
 
 ..
-    $ wget https://github.com/SrainApp/srain/archive/0.06.4.tar.gz
-    $ tar -xvzf 0.06.4.tar.gz
-    $ cd srain-0.06.4
+    $ wget https://github.com/SrainApp/srain/archive/1.0.0rc2.tar.gz
+    $ tar -xvzf 1.0.0rc2.tar.gz
+    $ cd srain-1.0.0rc2
 
 Or get git version:
 
