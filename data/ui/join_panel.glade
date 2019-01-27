@@ -304,9 +304,6 @@
                         <property name="resizable">True</property>
                         <property name="title" translatable="yes">Topic</property>
                         <property name="clickable">True</property>
-                        <property name="reorderable">True</property>
-                        <property name="sort_indicator">True</property>
-                        <property name="sort_column_id">2</property>
                         <child>
                           <object class="GtkCellRendererText"/>
                           <attributes>
