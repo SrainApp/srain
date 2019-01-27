@@ -76,6 +76,10 @@ struct _SuiJoinPanel {
     GtkTreeViewColumn *chan_tree_view_column;
     GtkTreeViewColumn *users_tree_view_column;
     GtkTreeViewColumn *topic_tree_view_column;
+    /* Channel list models */
+    GtkTreeModel *chan_tree_model;
+    GtkTreeModelFilter *chan_tree_model_filter;
+    GtkTreeModelSort *chan_tree_model_sorter;
     /* Status */
     GtkLabel *status_label;
     GtkSpinner *status_spinner;
@@ -208,18 +212,30 @@ void sui_join_panel_clear(SuiJoinPanel *self){
 }
 
 void sui_join_panel_set_model(SuiJoinPanel *self, GtkTreeModel *model){
-    GtkTreeModelFilter *filter;
+    g_return_if_fail(!self->chan_tree_model
+            && !self->chan_tree_model_filter
+            && !self->chan_tree_model_sorter);
 
-    filter = GTK_TREE_MODEL_FILTER(gtk_tree_model_filter_new(model, NULL));
+    /* Init model */
+    self->chan_tree_model = model;
+    g_signal_connect(self->chan_tree_model, "row-inserted",
+            G_CALLBACK(chan_tree_model_on_row_changed), self);
+    g_signal_connect(self->chan_tree_model, "row-changed",
+            G_CALLBACK(chan_tree_model_on_row_changed), self);
 
-    gtk_tree_model_filter_set_visible_func(filter,
+    /* Init filter */
+    self->chan_tree_model_filter =
+        GTK_TREE_MODEL_FILTER(gtk_tree_model_filter_new(model, NULL));
+    gtk_tree_model_filter_set_visible_func(self->chan_tree_model_filter,
             chan_tree_visible_func, self, NULL);
-    gtk_tree_view_set_model(self->chan_tree_view, GTK_TREE_MODEL(filter));
 
-    g_signal_connect(model, "row-inserted",
-            G_CALLBACK(chan_tree_model_on_row_changed), self);
-    g_signal_connect(model, "row-changed",
-            G_CALLBACK(chan_tree_model_on_row_changed), self);
+    /* Init sorter */
+    self->chan_tree_model_sorter =
+        GTK_TREE_MODEL_SORT(gtk_tree_model_sort_new_with_model(
+                    GTK_TREE_MODEL(self->chan_tree_model_filter)));
+
+    gtk_tree_view_set_model(self->chan_tree_view,
+            GTK_TREE_MODEL(self->chan_tree_model_sorter));
 }
 
 void sui_join_panel_set_is_adding(SuiJoinPanel *self, bool is_adding) {
@@ -403,8 +419,8 @@ static void chan_tree_model_filter_refilter(gpointer user_data){
     SuiJoinPanel *self;
 
     self = user_data;
-    filter = GTK_TREE_MODEL_FILTER(gtk_tree_view_get_model(self->chan_tree_view));
-    model = gtk_tree_model_filter_get_model(filter);
+    filter = self->chan_tree_model_filter;
+    model = self->chan_tree_model;
 
     gtk_tree_model_filter_refilter(GTK_TREE_MODEL_FILTER(filter));
 
@@ -498,14 +514,9 @@ static void update_status(SuiJoinPanel *self){
     }
 
     if (gtk_tree_view_get_model(self->chan_tree_view)) {
-        GtkTreeModel *model;
-        GtkTreeModelFilter *filter;
-
-        filter = GTK_TREE_MODEL_FILTER(
-                gtk_tree_view_get_model(self->chan_tree_view));
-        model = gtk_tree_model_filter_get_model(filter);
-        cur = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(filter), NULL);
-        max = gtk_tree_model_iter_n_children(model, NULL);
+        cur = gtk_tree_model_iter_n_children(
+                GTK_TREE_MODEL(self->chan_tree_model_filter), NULL);
+        max = gtk_tree_model_iter_n_children(self->chan_tree_model, NULL);
     } else {
         cur = 0;
         max = 0;
