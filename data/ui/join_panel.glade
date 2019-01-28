@@ -266,6 +266,10 @@
                       <object class="GtkTreeViewColumn" id="chan_tree_view_column">
                         <property name="resizable">True</property>
                         <property name="title" translatable="yes">Channel</property>
+                        <property name="clickable">True</property>
+                        <property name="reorderable">True</property>
+                        <property name="sort_indicator">True</property>
+                        <property name="sort_column_id">0</property>
                         <child>
                           <object class="GtkCellRendererText">
                             <property name="ellipsize">end</property>
@@ -281,6 +285,10 @@
                       <object class="GtkTreeViewColumn" id="users_tree_view_column">
                         <property name="resizable">True</property>
                         <property name="title" translatable="yes">Users</property>
+                        <property name="clickable">True</property>
+                        <property name="reorderable">True</property>
+                        <property name="sort_indicator">True</property>
+                        <property name="sort_column_id">1</property>
                         <child>
                           <object class="GtkCellRendererText">
                             <property name="width_chars">5</property>
@@ -295,6 +303,7 @@
                       <object class="GtkTreeViewColumn" id="topic_tree_view_column">
                         <property name="resizable">True</property>
                         <property name="title" translatable="yes">Topic</property>
+                        <property name="clickable">True</property>
                         <child>
                           <object class="GtkCellRendererText"/>
                           <attributes>
