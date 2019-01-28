@@ -298,6 +298,7 @@ SrnRet srn_application_add_server_with_config(SrnApplication *app,
 
     /* Run server autorun commands */
     for (GList *lst = srv->cfg->auto_run_cmd_list; lst; lst = g_list_next(lst)){
+        ERR_FR("Auto run commands");
         const char *cmd;
         SrnRet ret;
         SrnChat *chat;

@@ -243,6 +243,7 @@ int sirc_cmd_authenticate(SircSession *sirc, const char *msg){
 int sirc_cmd_raw(SircSession *sirc, const char *fmt, ...){
     char buf[SIRC_BUF_LEN];
     int len = 0;
+    int msgid = sirc_get_msgid(sirc);
     va_list args;
     GIOStream *stream;
 
@@ -256,7 +257,7 @@ int sirc_cmd_raw(SircSession *sirc, const char *fmt, ...){
         len = vsnprintf(buf, sizeof(buf), fmt, args);
         va_end(args);
     }
-    DBG_FR("Send raw: %s", buf);
+    DBG_FR("[#%d] Send raw: %s", msgid, buf);
 
     if (len > 512){
         WARN_FR("Raw command too long");
@@ -264,6 +265,8 @@ int sirc_cmd_raw(SircSession *sirc, const char *fmt, ...){
     }
 
     // TODO send it totally
+    msgid++;
+    sirc_set_msgid(sirc, msgid);
     return (io_stream_write(stream, buf, len) < 0) ?
         SRN_ERR : SRN_OK;
 }

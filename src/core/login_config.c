@@ -45,6 +45,7 @@ void srn_login_config_free(SrnLoginConfig *self){
     str_assign(&self->msg_nickserv_password, NULL);
     str_assign(&self->sasl_plain_identify, NULL);
     str_assign(&self->sasl_plain_password, NULL);
+    str_assign(&self->sasl_certificate_file, NULL);
 
     g_free(self);
 }
@@ -75,6 +76,11 @@ SrnRet srn_login_config_check(SrnLoginConfig *self){
                 return RET_ERR(missing, method_str, "sasl-plain-password");
             }
             break;
+        case SRN_LOGIN_METHOD_SASL_ECDSA_NIST256P_CHALLENGE:
+            if (str_is_empty(self->sasl_certificate_file)){
+                return RET_ERR(missing, method_str, "sasl-cerficiate-file");
+            }
+            break;
         case SRN_LOGIN_METHOD_UNKNOWN:
         default:
             return RET_ERR(unknown);
@@ -99,6 +105,9 @@ const char* srn_login_method_to_string(SrnLoginMethod lm){
         case SRN_LOGIN_METHOD_SASL_PLAIN:
             str = "sasl-plain";
             break;
+        case SRN_LOGIN_METHOD_SASL_ECDSA_NIST256P_CHALLENGE:
+            str = "sasl-ecdsa-nist256p-challenge";
+            break;
         case SRN_LOGIN_METHOD_UNKNOWN:
         default:
             str = "unknown";
@@ -118,6 +127,8 @@ SrnLoginMethod srn_login_method_from_string(const char *str){
         login = SRN_LOGIN_METHOD_MSG_NICKSERV;
     } else if (g_ascii_strcasecmp(str, "sasl-plain") == 0){
         login = SRN_LOGIN_METHOD_SASL_PLAIN;
+    } else if (g_ascii_strcasecmp(str, "sasl-ecdsa-nist256p-challenge") == 0){
+        login = SRN_LOGIN_METHOD_SASL_ECDSA_NIST256P_CHALLENGE;
     } else {
         login = SRN_LOGIN_METHOD_UNKNOWN;
     }

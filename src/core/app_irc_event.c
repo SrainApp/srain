@@ -32,6 +32,8 @@
 
 #include "core/core.h"
 #include "sui/sui.h"
+#include "libecdsaauth/op.h"
+#include "libecdsaauth/keypair.h"
 #include "sirc/sirc.h"
 #include "srain.h"
 #include "i18n.h"
@@ -1144,7 +1146,9 @@ static void irc_event_cap(SircSession *sirc, const char *event,
     if (!srv->negotiated && cap_end){
         sirc_cmd_cap_list(sirc);
 
-        if (srv->cfg->user->login->method == SRN_LOGIN_METHOD_SASL_PLAIN){
+        SrnLoginMethod method = srv->cfg->user->login->method;
+
+        if (method == SRN_LOGIN_METHOD_SASL_PLAIN || method == SRN_LOGIN_METHOD_SASL_ECDSA_NIST256P_CHALLENGE) {
             if (srv->cap->client_enabled.sasl){
                 // Negotiation should end after sasl authentication end
             } else {
@@ -1195,6 +1199,58 @@ static void irc_event_authenticate(SircSession *sirc, const char *event,
 
                 g_free(base64);
                 g_string_free(str, TRUE);
+                break;
+            }
+        case SRN_LOGIN_METHOD_SASL_ECDSA_NIST256P_CHALLENGE:
+            {
+                char *base64;
+                const char *method;
+                GString *str;
+
+                // Get the first parameter
+                if (!count) {
+                    ERR_FR("unexpected authenticate response recieved");
+                    break;
+                }
+
+                method = srn_login_method_to_string(srv->cfg->user->login->method);
+                srn_chat_add_misc_message_fmt(srv->chat, srv->chat->_user,
+                        _("Logging in with %1$s as %2$s..."),
+                        method, srv->cfg->user->nick);
+
+                if(!g_strcmp0(params[0], "+")) {
+                    // This is the first phase to authenticate
+                    // TODO: Change identity to custom identity, instead of username
+                    str = g_string_new(NULL);
+                    str = g_string_append(str, srv->cfg->user->nick);
+                    str = g_string_append_unichar(str, g_utf8_get_char("\0")); // Unicode null char
+                    str = g_string_append(str, srv->cfg->user->nick);
+
+                    base64 = g_base64_encode((const guchar *)str->str, str->len);
+                    sirc_cmd_authenticate(sirc, base64);
+                    ERR_FR("AUTHENTICATE %s (%s)", base64, str->str);
+
+                    g_free(base64);
+                    g_string_free(str, TRUE);
+                    break;
+                }
+
+                // This is the second phase to authenticate, we need to sign the message from server and reply it
+                const unsigned char *challenge = params[0];
+                ERR_FR("CHALLENGE IS %s", challenge);
+                const char *certfile = srv->cfg->user->login->sasl_certificate_file;
+                char *output;
+                size_t outlen;
+                libecdsaauth_key_t *keypair = libecdsaauth_key_load(certfile);
+                if(keypair == NULL) {
+                    ERR_FR("File %s not found, or it is not a valid ecdsa certificate file.", certfile);
+                    return ;
+                }
+                libecdsaauth_sign_base64(keypair, challenge, strlen(challenge), &output, &outlen);
+                ERR_FR("Response is %s", output);
+                libecdsaauth_key_free(keypair);
+                sirc_cmd_authenticate(sirc, output);
+
                 break;
             }
         default:

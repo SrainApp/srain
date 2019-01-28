@@ -218,6 +218,7 @@ enum _SrnLoginMethod {
     SRN_LOGIN_METHOD_NICKSERV,
     SRN_LOGIN_METHOD_MSG_NICKSERV,
     SRN_LOGIN_METHOD_SASL_PLAIN,
+    SRN_LOGIN_METHOD_SASL_ECDSA_NIST256P_CHALLENGE,
     SRN_LOGIN_METHOD_UNKNOWN,
 };
 
@@ -229,6 +230,7 @@ struct _SrnLoginConfig {
     char *msg_nickserv_password;
     char *sasl_plain_identify;
     char *sasl_plain_password;
+    char *sasl_certificate_file;
     // ...
 };
 
