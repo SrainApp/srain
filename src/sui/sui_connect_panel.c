@@ -71,9 +71,11 @@ struct _SuiConnectPanel {
     GtkEntry *sasl_plain_identify_entry;
     GtkEntry *sasl_plain_password_entry;
 
+
     /* Buttons */
     GtkButton *connect_button;
     GtkButton *cancel_button;
+    GtkFileChooserButton *certificate_file_chooser_button;
 
     /* Data model */
     GtkListStore *server_list_store;
@@ -197,6 +199,7 @@ static void sui_connect_panel_class_init(SuiConnectPanelClass *class){
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, msg_nickserv_password_entry);
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, sasl_plain_identify_entry);
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, sasl_plain_password_entry);
+    gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, certificate_file_chooser_button);
 
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, connect_button);
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, cancel_button);
@@ -432,7 +435,7 @@ static void connect_button_on_click(gpointer user_data){
         const char *msg_nickserv_password;
         const char *sasl_plain_identify;
         const char *sasl_plain_password;
-        const char *sasl_certificate_file = "/tmp/test-cert.pem";
+        const char *sasl_certificate_file = "";
 
         GtkEntry *entry;
         SrnLoginMethod method;
@@ -465,7 +468,12 @@ static void connect_button_on_click(gpointer user_data){
         sasl_plain_password = gtk_entry_get_text(self->sasl_plain_password_entry);
 
         if (method == SRN_LOGIN_METHOD_SASL_ECDSA_NIST256P_CHALLENGE) {
-            ERR_FR("Server connect start");
+            // Get the file path
+            sasl_certificate_file = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(self->certificate_file_chooser_button));
+            if (!sasl_certificate_file) {
+                ERR_FR("CANNOT GET FILE"); 
+            }
+            ERR_FR("X509 Cert Path: %s", sasl_certificate_file);
             str_assign(&srv_cfg->user->login->sasl_certificate_file,
                     sasl_certificate_file);
         }
