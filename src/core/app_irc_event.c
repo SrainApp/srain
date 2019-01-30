@@ -1213,14 +1213,16 @@ static void irc_event_authenticate(SircSession *sirc, const char *event,
                     break;
                 }
 
-                method = srn_login_method_to_string(srv->cfg->user->login->method);
-                srn_chat_add_misc_message_fmt(srv->chat, srv->chat->_user,
-                        _("Logging in with %1$s as %2$s..."),
-                        method, srv->cfg->user->nick);
 
                 if(!g_strcmp0(params[0], "+")) {
                     // This is the first phase to authenticate
                     // TODO: Change identity to custom identity, instead of username
+
+                    method = srn_login_method_to_string(srv->cfg->user->login->method);
+                    srn_chat_add_misc_message_fmt(srv->chat, srv->chat->_user,
+                            _("Logging in with %1$s as %2$s..."),
+                            method, srv->cfg->user->nick);
+
                     str = g_string_new(NULL);
                     str = g_string_append(str, srv->cfg->user->nick);
                     str = g_string_append_unichar(str, g_utf8_get_char("\0")); // Unicode null char
@@ -1228,7 +1230,7 @@ static void irc_event_authenticate(SircSession *sirc, const char *event,
 
                     base64 = g_base64_encode((const guchar *)str->str, str->len);
                     sirc_cmd_authenticate(sirc, base64);
-                    ERR_FR("AUTHENTICATE %s (%s)", base64, str->str);
+                    DBG_FR("AUTHENTICATE %s (%s)", base64, str->str);
 
                     g_free(base64);
                     g_string_free(str, TRUE);
@@ -1237,7 +1239,7 @@ static void irc_event_authenticate(SircSession *sirc, const char *event,
 
                 // This is the second phase to authenticate, we need to sign the message from server and reply it
                 const unsigned char *challenge = params[0];
-                ERR_FR("CHALLENGE IS %s", challenge);
+                DBG_FR("CHALLENGE IS %s", challenge);
                 const char *certfile = srv->cfg->user->login->sasl_certificate_file;
                 char *output;
                 size_t outlen;
@@ -1247,10 +1249,11 @@ static void irc_event_authenticate(SircSession *sirc, const char *event,
                     return ;
                 }
                 libecdsaauth_sign_base64(keypair, challenge, strlen(challenge), &output, &outlen);
-                ERR_FR("Response is %s", output);
+                DBG_FR("RESPONSE is %s", output);
                 libecdsaauth_key_free(keypair);
                 sirc_cmd_authenticate(sirc, output);
 
+                free(output);
                 break;
             }
         default:

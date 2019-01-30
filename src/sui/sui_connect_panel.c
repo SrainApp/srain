@@ -471,9 +471,9 @@ static void connect_button_on_click(gpointer user_data){
             // Get the file path
             sasl_certificate_file = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(self->certificate_file_chooser_button));
             if (!sasl_certificate_file) {
-                ERR_FR("CANNOT GET FILE"); 
+                // TODO: use the config from srain.cfg if not provided
             }
-            ERR_FR("X509 Cert Path: %s", sasl_certificate_file);
+            DBG_FR("X509 Cert Path: %s", sasl_certificate_file);
             str_assign(&srv_cfg->user->login->sasl_certificate_file,
                     sasl_certificate_file);
         }
@@ -507,7 +507,7 @@ static void connect_button_on_click(gpointer user_data){
         if (!str_is_empty(sasl_plain_password)) {
             str_assign(&srv_cfg->user->login->sasl_plain_password, sasl_plain_password);
         }
-        ERR_FR("Server connect start with method %s", method_str);
+        LOG_FR("Server connect start with method %s", method_str);
     } else {
         g_warn_if_reached();
         goto FIN;
