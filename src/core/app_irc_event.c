@@ -752,7 +752,10 @@ static void irc_event_privmsg(SircSession *sirc, const char *event,
     g_return_if_fail(srv_user);
     if (sirc_target_is_servername(sirc, origin)
             || sirc_target_is_service(sirc, origin)){
-        chat = srv->chat;
+        chat = srn_server_get_chat(srv, origin);
+        if (!chat) {
+            chat = srv->chat;
+        }
     } else {
         chat = srn_server_add_and_get_chat(srv, origin);
     }
@@ -780,7 +783,10 @@ static void irc_event_notice(SircSession *sirc, const char *event,
     g_return_if_fail(srv_user);
     if (sirc_target_is_servername(sirc, origin)
             || sirc_target_is_service(sirc, origin)){
-        chat = srv->chat;
+        chat = srn_server_get_chat(srv, origin);
+        if (!chat) {
+            chat = srv->chat;
+        }
     } else {
         chat = srn_server_add_and_get_chat(srv, origin);
     }
