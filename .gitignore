@@ -7,6 +7,9 @@ build/
 resources.c
 compile_commands.json
 .vscode/
+GTAGS
+GRTAGS
+GPATH
 
 # Object files
 *.o

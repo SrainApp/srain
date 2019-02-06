@@ -225,7 +225,7 @@ char* srn_server_cap_dump(SrnServerCap *scap){
 static bool sasl_is_support(const char *value){
     bool supported;
     char **mechs;
-    const char *supported_mechs[] = { "PLAIN", NULL};
+    const char *supported_mechs[] = { "PLAIN", "ECDSA-NIST256P-CHALLENGE", NULL};
 
     if (!value) return TRUE;
 
@@ -253,6 +253,7 @@ static void sasl_on_enable(SrnServerCap *scap, const char *name){
 
     switch (srv->cfg->user->login->method){
         case SRN_LOGIN_METHOD_SASL_PLAIN:
+        case SRN_LOGIN_METHOD_SASL_ECDSA_NIST256P_CHALLENGE:
             break;
         default:
             return;
@@ -267,6 +268,9 @@ static void sasl_on_enable(SrnServerCap *scap, const char *name){
     switch (srv->cfg->user->login->method){
         case SRN_LOGIN_METHOD_SASL_PLAIN:
             sirc_cmd_authenticate(srv->irc, "PLAIN");
+            break;
+        case SRN_LOGIN_METHOD_SASL_ECDSA_NIST256P_CHALLENGE:
+            sirc_cmd_authenticate(srv->irc, "ECDSA-NIST256P-CHALLENGE");
             break;
         default:
             g_warn_if_reached();

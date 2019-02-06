@@ -11,6 +11,7 @@ EOF
         apt update -q
         apt-get install make gcc pkg-config gettext libgtk-3-dev libsoup2.4-dev libconfig-dev
         apt-get install glib-networking libgtk3.0 libsoup2.4 libconfig9
+        apt-get install libssl-dev
         ;;
     *)
         echo "Unsupported platfrom ${PLATFORM}"

@@ -22,15 +22,17 @@ LIBCONFIGFLAGS = $(shell pkg-config --cflags libconfig)
 LIBCONFIGLIBS = $(shell pkg-config --libs libconfig)
 LIBSOUPFLAGS = $(shell pkg-config --cflags libsoup-2.4)
 LIBSOUPLIBS = $(shell pkg-config --libs libsoup-2.4)
+LIBSSLFLAGS = $(shell pkg-config --cflags openssl)
+LIBSSLLIBS = $(shell pkg-config --libs openssl)
 
 CFLAGS += -std=gnu99 -O2 -Wall -Iinc -Wno-deprecated-declarations \
 		  $(DEFS) $(GTK3FLAGS) $(LIBIRCCLINETFLAGS) \
-		  $(LIBCONFIGFLAGS) $(LIBSOUPFLAGS) $(DBGFLAGS)
+		  $(LIBCONFIGFLAGS) $(LIBSOUPFLAGS) $(LIBSSLFLAGS) $(DBGFLAGS)
 
 LDFLAGS += $(GTK3LIBS) $(LIBIRCCLINETLIBS) \
-		   $(LIBCONFIGLIBS) $(LIBSOUPLIBS) $(DBGFLAGS)
+		   $(LIBCONFIGLIBS) $(LIBSOUPLIBS) $(LIBSSLLIBS) $(DBGFLAGS)
 
-SRCS = $(wildcard *.c */*.c $(BUILD_DIR)/resources.c)
+SRCS = $(wildcard *.c */*.c */*/*.c $(BUILD_DIR)/resources.c)
 OBJS = $(patsubst %.c, $(BUILD_DIR)/%.o, $(notdir $(SRCS)))
 
 default:
@@ -41,6 +43,10 @@ $(BUILD_DIR)/%.o: %.c
 
 $(BUILD_DIR)/%.o: */%.c
 	$(CC) $(CFLAGS) -c $^ -o $@
+
+$(BUILD_DIR)/%.o: */*/%.c
+	$(CC) $(CFLAGS) -c $^ -o $@
+
 
 $(TARGET): $(OBJS)
 	$(CC) $^ -o $@ $(LDFLAGS)

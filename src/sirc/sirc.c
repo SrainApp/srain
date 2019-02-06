@@ -48,6 +48,9 @@ struct _SircSession {
     SircEvents *events; // Event callbacks
     SircConfig *cfg;
     void *ctx;
+
+    // ONLY FOR DEBUG
+    int msgid;          // Message ID
 };
 
 static void sirc_recv(SircSession *sirc);
@@ -71,6 +74,7 @@ SircSession* sirc_new_session(SircEvents *events, SircConfig *cfg){
 
     sirc->events = events;
     sirc->cfg = cfg;
+    sirc->msgid = 0;
     /* sirc->bufptr = 0; // via g_malloc0() */
     /* sirc->stream = NULL; // via g_malloc0() */
     sirc->client = g_socket_client_new();
@@ -99,6 +103,18 @@ void sirc_free_session(SircSession *sirc){
 
 void sirc_set_config(SircSession *sirc, SircConfig *cfg){
     sirc->cfg = cfg;
+}
+
+int sirc_get_msgid(SircSession *sirc) {
+    g_return_val_if_fail(sirc, -1);
+
+    return sirc->msgid;
+}
+
+void sirc_set_msgid(SircSession *sirc, int msgid) {
+    g_return_if_fail(sirc);
+
+    sirc->msgid = msgid;
 }
 
 GIOStream* sirc_get_stream(SircSession *sirc){

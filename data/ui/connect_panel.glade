@@ -2,6 +2,15 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.16"/>
+  <object class="GtkFileFilter" id="X509 Certificate">
+    <mime-types>
+      <mime-type>application/x-x509-ca-cert</mime-type>
+    </mime-types>
+    <patterns>
+      <pattern>*.pem</pattern>
+      <pattern>*.crt</pattern>
+    </patterns>
+  </object>
   <template class="SuiConnectPanel" parent="GtkBox">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -344,9 +353,6 @@
                   </packing>
                 </child>
                 <child>
-                  <placeholder/>
-                </child>
-                <child>
                   <object class="GtkGrid" id="nickserv_grid">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
@@ -384,7 +390,7 @@
                   <packing>
                     <property name="name">nickserv</property>
                     <property name="title" translatable="yes">NickServ</property>
-                    <property name="position">2</property>
+                    <property name="position">1</property>
                   </packing>
                 </child>
                 <child>
@@ -425,7 +431,7 @@
                   <packing>
                     <property name="name">msg-nickserv</property>
                     <property name="title" translatable="yes">Message NickServ</property>
-                    <property name="position">3</property>
+                    <property name="position">2</property>
                   </packing>
                 </child>
                 <child>
@@ -493,6 +499,40 @@
                   <packing>
                     <property name="name">sasl-plain</property>
                     <property name="title" translatable="yes">SASL PLAIN</property>
+                    <property name="position">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkGrid" id="sasl_ecdsa_grid">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkLabel" id="label1">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">SASL Certificate:</property>
+                      </object>
+                      <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkFileChooserButton" id="certificate_file_chooser_button">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="filter">X509 Certificate</property>
+                        <property name="title" translatable="yes"/>
+                      </object>
+                      <packing>
+                        <property name="left_attach">1</property>
+                        <property name="top_attach">0</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="name">sasl-ecdsa-nist256p-challenge</property>
+                    <property name="title" translatable="yes">page0</property>
                     <property name="position">4</property>
                   </packing>
                 </child>
@@ -610,6 +650,7 @@
       <widget name="msg_nickserv_password_entry"/>
       <widget name="sasl_plain_identify_entry"/>
       <widget name="sasl_plain_password_entry"/>
+      <widget name="certificate_file_chooser_button"/>
       <widget name="login_method_combo_box"/>
     </widgets>
   </object>
