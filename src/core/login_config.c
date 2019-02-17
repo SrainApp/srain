@@ -51,7 +51,8 @@ void srn_login_config_free(SrnLoginConfig *self){
 }
 
 SrnRet srn_login_config_check(SrnLoginConfig *self){
-    const char *missing = _("Login method %1$s is set while field %2$s is unset");
+    const char *missing =
+        _("You need to set the field %2$s in order to use login method %1$s");
     const char *unknown = _("Unknown login method");
     const char *method_str = srn_login_method_to_string(self->method);
 
