@@ -240,6 +240,16 @@ int sirc_cmd_authenticate(SircSession *sirc, const char *msg){
     return sirc_cmd_raw(sirc, "AUTHENTICATE %s\r\n", msg);
 }
 
+int sirc_cmd_away(SircSession *sirc, const char *msg){
+    if (msg) {
+        // Set an AWAY message
+        return sirc_cmd_raw(sirc, "AWAY %s\r\n", msg);
+    } else {
+        // Remove the AWAY message
+        return sirc_cmd_raw(sirc, "AWAY\r\n");
+    }
+}
+
 int sirc_cmd_raw(SircSession *sirc, const char *fmt, ...){
     char buf[SIRC_BUF_LEN];
     int len = 0;
