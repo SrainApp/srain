@@ -375,7 +375,6 @@ static void login_method_combo_box_on_changed(GtkComboBox *combo_box,
 
     if (!gtk_combo_box_get_active_iter(combo_box, &iter)){
         lm = SRN_LOGIN_METHOD_NONE;
-        return;
     } else {
         // Set the login_method_stack to the corresponding page
         gtk_tree_model_get(model, &iter,
