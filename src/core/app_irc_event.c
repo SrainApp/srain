@@ -1746,6 +1746,53 @@ static void irc_event_numeric(SircSession *sirc, int event,
             {
                 goto ERRMSG;
             }
+            /************************ AWAY message ************************/
+        case SIRC_RFC_RPL_AWAY:
+            {
+                const char *nick;
+                const char *msg;
+                SrnServerUser *srv_user;
+                SrnChat *chat;
+                SrnChatUser *chat_user;
+
+                g_return_if_fail(count >= 3);
+                nick = params[1];
+                msg = params[2];
+
+                srv_user = srn_server_add_and_get_user(srv, nick);
+                g_return_if_fail(srv_user);
+                chat = srn_server_get_chat(srv, nick);
+                if (!chat) {
+                    chat = srv->chat;
+                }
+                g_return_if_fail(chat);
+                chat_user = srn_chat_add_and_get_user(chat, srv_user);
+                g_return_if_fail(chat_user);
+
+                srn_chat_add_error_message_fmt(chat, chat_user,
+                        _("%1$s is away: %2$s"), nick, msg);
+                break;
+            }
+        case SIRC_RFC_RPL_NOWAWAY:
+            {
+                const char *msg;
+
+                g_return_if_fail(count >= 2);
+                msg = params[1];
+
+                srn_chat_add_misc_message(srv->chat, srv->chat->_user, msg);
+                break;
+            }
+        case SIRC_RFC_RPL_UNAWAY:
+            {
+                const char *msg;
+
+                g_return_if_fail(count >= 2);
+                msg = params[1];
+
+                srn_chat_add_misc_message(srv->chat, srv->chat->_user, msg);
+                break;
+            }
             /************************ MISC message ************************/
         case SIRC_RFC_RPL_CHANNEL_URL:
             {
