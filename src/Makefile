@@ -26,11 +26,18 @@ LIBSSLFLAGS = $(shell pkg-config --cflags openssl)
 LIBSSLLIBS = $(shell pkg-config --libs openssl)
 
 CFLAGS += -std=gnu99 -O2 -Wall -Iinc -Wno-deprecated-declarations \
-		  $(DEFS) $(GTK3FLAGS) $(LIBIRCCLINETFLAGS) \
-		  $(LIBCONFIGFLAGS) $(LIBSOUPFLAGS) $(LIBSSLFLAGS) $(DBGFLAGS)
+		  $(DEFS) \
+		  $(DBGFLAGS) \
+		  $(GTK3FLAGS) \
+		  $(LIBCONFIGFLAGS) \
+		  $(LIBSOUPFLAGS) \
+		  $(LIBSSLFLAGS)
 
-LDFLAGS += $(GTK3LIBS) $(LIBIRCCLINETLIBS) \
-		   $(LIBCONFIGLIBS) $(LIBSOUPLIBS) $(LIBSSLLIBS) $(DBGFLAGS)
+LDFLAGS += $(DBGFLAGS) \
+		   $(GTK3LIBS) \
+		   $(LIBCONFIGLIBS) \
+		   $(LIBSOUPLIBS) \
+		   $(LIBSSLLIBS)
 
 SRCS = $(wildcard *.c */*.c */*/*.c $(BUILD_DIR)/resources.c)
 OBJS = $(patsubst %.c, $(BUILD_DIR)/%.o, $(notdir $(SRCS)))
