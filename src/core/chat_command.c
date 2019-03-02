@@ -77,6 +77,7 @@ static SrnRet on_command_invite(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_kick(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_mode(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_ctcp(SrnCommand *cmd, void *user_data);
+static SrnRet on_command_away(SrnCommand *cmd, void *user_data);
 
 SrnCommandBind cmd_binds[] = {
     {
@@ -272,6 +273,13 @@ SrnCommandBind cmd_binds[] = {
         .opt = { SRN_COMMAND_EMPTY_OPT },
         .flag = SRN_COMMAND_FLAG_OMIT_ARG,
         .cb = on_command_ctcp,
+    },
+    {
+        .name = "/away",
+        .argc = 1, // [msg]
+        .opt = { SRN_COMMAND_EMPTY_OPT },
+        .flag = SRN_COMMAND_FLAG_OMIT_ARG,
+        .cb = on_command_away,
     },
     SRN_COMMAND_EMPTY,
 };
@@ -957,6 +965,18 @@ static SrnRet on_command_ctcp(SrnCommand *cmd, void *user_data){
     }
 
     return sirc_cmd_ctcp_req(srv->irc, nick, ctcp_cmd, msg);
+}
+
+static SrnRet on_command_away(SrnCommand *cmd, void *user_data){
+    const char *msg;
+    SrnServer *srv;
+
+    srv = ctx_get_server(user_data);
+    g_return_val_if_fail(srv, SRN_ERR);
+
+    msg = srn_command_get_arg(cmd, 0);
+
+    return sirc_cmd_away(srv->irc, msg);
 }
 
 /*******************************************************************************
