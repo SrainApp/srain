@@ -894,7 +894,7 @@ static SrnRet on_command_invite(SrnCommand *cmd, void *user_data){
     }
     g_return_val_if_fail(chan, SRN_ERR);
 
-    return sirc_cmd_invite(srv->irc, chan, nick);
+    return sirc_cmd_invite(srv->irc, nick, chan);
 }
 
 static SrnRet on_command_kick(SrnCommand *cmd, void *user_data){
