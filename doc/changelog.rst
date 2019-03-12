@@ -7,6 +7,22 @@ Change Log
     :depth: 1
     :backlinks: none
 
+.. _version-latest:
+
+2019-01-24 Version 1.0.0rc2
+===========================
+
+.. note:: TODO.
+
+.. _version-1.0.0rc1:
+
+2018-09-10 Version 1.0.0rc1
+===========================
+
+.. note:: TODO.
+
+.. _version-0.06.4:
+
 2018-02-28 Version 0.06.4
 =========================
 
@@ -79,6 +95,8 @@ Change Log
   - Improved the performance and extensibility of user list
   - Improved compatibility with older versions of GTK(> 3.16)
   - Refactor the code of chat panel, helpful for the next development
+
+.. _version-0.06.2:
 
 2017-09-12 Version 0.06.2
 =========================

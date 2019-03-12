@@ -15,7 +15,7 @@ Configuration File
 ==================
 
 The path of system wide configuration file ``builtin.cfg`` depends on the
-compile flag ``--config-dir``, default to be ``/etc/srain``.
+compile flag ``--sysconfdir``, default to be ``/etc/srain``.
 
 The path of user wide configuration file ``srain.cfg`` is ``$XDG_CONFIG_HOME/srain``,
 usually it is ``~/.config/srain``.
@@ -45,8 +45,6 @@ have different priority.
 
 .. code-block:: default
 
-    log: {}
-    application: {}
     server: { # A top level ``server`` group
 
         # ...

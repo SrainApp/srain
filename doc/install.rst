@@ -131,6 +131,10 @@ Debian
 Flatpak
 ~~~~~~~
 
+.. image:: https://flathub.org/assets/badges/flathub-badge-i-en.svg
+   :width: 240
+   :target: https://flathub.org/apps/details/im.srain.Srain
+
 `cpba`_ is maintaining `Flatpak manifest for Srain`_ and The built package is
 available on `Flathub`_, just execute the following commands to install if
 you already have flatpak installed:

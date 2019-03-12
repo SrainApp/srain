@@ -10,9 +10,9 @@ Support Tables
 Basic IRC Client Support
 ========================
 
-======================= ========
+======================= ===========
 Function                Support
-======================= ========
+======================= ===========
 Auto reconnect          Yes
 Multiple connection     Yes
 TLS connection          Yes
@@ -22,8 +22,8 @@ Chat log                Yes
 Configuration file      Yes
 Command                 Yes
 mIRC color              Yes
-Plugin                  Unstable
-======================= ========
+Plugin                  Unavailable
+======================= ===========
 
 Client-to-Client Protocol (CTCP) Support
 ========================================
@@ -45,9 +45,9 @@ USERINFO    Yes
 IRCv3 Client Support
 ====================
 
-=================== =======
+=================== ==============================
 Feature             Support
-=================== =======
+=================== ==============================
 CAP v3.1            Yes
 CAP v3.2            Yes
 cap-notify          Yes
@@ -61,10 +61,10 @@ extended-join       No
 invite-notify       No
 Monitor             No
 multi-prefix        No
-SASL v3.1           PLAIN
-SASL v3.2           PLAIN
+SASL v3.1           PLAIN,ECDSA-NIST256P-CHALLENGE
+SASL v3.2           PLAIN,ECDSA-NIST256P-CHALLENGE
 server-time         No
 starttls            No
 sts                 No
 userhost-in-names   No
-=================== =======
+=================== ==============================

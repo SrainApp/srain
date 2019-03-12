@@ -10,13 +10,15 @@ Frequently Asked Questions
 Does Srain support Windows?
 ===========================
 
-Not yet, Windows support is in the plan.
+Yes, please refer to :ref:`install-packages-windows`.
 
 Why does the image upload button not work?
 ==========================================
 
 This function is implemented by a python plugin, therefore you should install
 ``python3-urllib3`` and ``python3-request`` to let it work.
+
+.. warning:: Image upload function is unavailable after :ref:`version-1.0.0rc1`.
 
 Why can't I see people's avatar?
 ================================
@@ -29,6 +31,8 @@ implemented by a python plugin, therefore you should install
 Besides, you should set ``show_avatar`` to ``true`` in your configuration.
 
 .. _IRCv3: http://ircv3.net/
+
+.. warning:: Avatar function is unavailable after :ref:`version-1.0.0rc1`.
 
 .. _faq-relay-message-transform:
 

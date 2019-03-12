@@ -9,9 +9,15 @@ Quick Start
 
 .. note::
 
-    If you are using version 0.06.2 and earlier, please refer to:
+    If you are using :ref:`version-0.06.2` and earlier version, please refer to:
     http://doc.srain.im/en/0.06.2/start.html .
     Although using earlier version is not recommended.
+
+.. note::
+
+   This page is for :ref:`version-0.06.4`, and the latest version of Srain is
+   :ref:`version-latest`, some of sections may out-of-date, feel free to file
+   issue on https://github.com/SrainApp/srain/issues if you have any questions.
 
 Start Srain
 ===========
