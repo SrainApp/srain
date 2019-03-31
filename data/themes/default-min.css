@@ -60,6 +60,10 @@
     border-left-color: @sui_message_list_bg_color1;
 }
 
+.sui-go-bottom {
+    margin: 4px;
+}
+
 /* Misc {{{1 */
 
 .sui-panel {

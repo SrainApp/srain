@@ -37,41 +37,60 @@
 #include "log.h"
 
 struct _SuiMessageList {
-    GtkScrolledWindow parent;
+    GtkBox parent;
 
     int scroll_timer;
+    GtkScrolledWindow *scrolled_window;
+    GtkViewport *viewport;
     GtkListBox *list_box;
+    GtkButton *go_bottom_button;
     SuiMessage *first_msg;
     SuiMessage *last_msg;
 };
 
 struct _SuiMessageListClass {
-    GtkScrolledWindowClass parent_class;
+    GtkBoxClass parent_class;
 };
 
 static int get_list_box_length(GtkListBox *list_box);
 static void scroll_to_bottom(SuiMessageList *self);
 static gboolean scroll_to_bottom_timeout(gpointer user_data);
 static void smart_scroll(SuiMessageList *self);
+static double get_page_count_to_bottom(SuiMessageList *self);
 
 static void scrolled_window_on_edge_reached(GtkScrolledWindow *swin,
                GtkPositionType pos, gpointer user_data);
 static void scrolled_window_on_edge_overshot(GtkScrolledWindow *swin,
         GtkPositionType pos, gpointer user_data);
+static void scrolled_window_vadjustment_on_value_changed(
+        GtkAdjustment *adjustment, gpointer user_data);
 
 /*****************************************************************************
  * GObject functions
  *****************************************************************************/
 
-G_DEFINE_TYPE(SuiMessageList, sui_message_list, GTK_TYPE_SCROLLED_WINDOW);
+G_DEFINE_TYPE(SuiMessageList, sui_message_list, GTK_TYPE_BOX);
 
 static void sui_message_list_init(SuiMessageList *self){
     gtk_widget_init_template(GTK_WIDGET(self));
 
-    g_signal_connect(self, "edge-overshot",
+    g_signal_connect(self->scrolled_window, "edge-overshot",
             G_CALLBACK(scrolled_window_on_edge_overshot), self);
-    g_signal_connect(self, "edge-reached",
+    g_signal_connect(self->scrolled_window, "edge-reached",
             G_CALLBACK(scrolled_window_on_edge_reached), self);
+    g_signal_connect_swapped(self->go_bottom_button, "clicked",
+            G_CALLBACK(scroll_to_bottom), self);
+    g_signal_connect(
+            gtk_scrolled_window_get_vadjustment(self->scrolled_window),
+            "value-changed",
+            G_CALLBACK(scrolled_window_vadjustment_on_value_changed), self);
+
+    g_object_bind_property(
+            gtk_scrolled_window_get_vscrollbar(self->scrolled_window),
+            "opacity",
+            self->go_bottom_button,
+            "opacity",
+            0);
 }
 
 static void sui_message_list_finalize(GObject *object){
@@ -97,7 +116,10 @@ static void sui_message_list_class_init(SuiMessageListClass *class){
     gtk_widget_class_set_template_from_resource(widget_class,
             "/im/srain/Srain/message_list.glade");
 
+    gtk_widget_class_bind_template_child(widget_class, SuiMessageList, scrolled_window);
+    gtk_widget_class_bind_template_child(widget_class, SuiMessageList, viewport);
     gtk_widget_class_bind_template_child(widget_class, SuiMessageList, list_box);
+    gtk_widget_class_bind_template_child(widget_class, SuiMessageList, go_bottom_button);
 }
 
 
@@ -112,14 +134,14 @@ SuiMessageList* sui_message_list_new(void){
 void sui_message_list_scroll_up(SuiMessageList *self, double step){
     GtkAdjustment *adj;
 
-    adj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(self));
+    adj = gtk_scrolled_window_get_vadjustment(self->scrolled_window);
     gtk_adjustment_set_value(adj, gtk_adjustment_get_value(adj) - step);
 }
 
 void sui_message_list_scroll_down(SuiMessageList *self, double step){
     GtkAdjustment *adj;
 
-    adj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(self));
+    adj = gtk_scrolled_window_get_vadjustment(self->scrolled_window);
     gtk_adjustment_set_value(adj, gtk_adjustment_get_value(adj) + step);
 }
 
@@ -224,7 +246,7 @@ static gboolean scroll_to_bottom_timeout(gpointer user_data){
     self = SUI_MESSAGE_LIST(user_data);
 
     /* Scroll to bottom */
-    adj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(self));
+    adj = gtk_scrolled_window_get_vadjustment(self->scrolled_window);
     gtk_adjustment_set_value(adj, gtk_adjustment_get_upper(adj) -
             gtk_adjustment_get_page_size(adj));
 
@@ -249,10 +271,6 @@ static gboolean scroll_to_bottom_timeout(gpointer user_data){
  *
  */
 static void smart_scroll(SuiMessageList *self){
-    double val;
-    double max_val;
-    double page_size;
-    GtkAdjustment *adj;
     SuiWindow *win;
     SuiBuffer *buf;
 
@@ -268,13 +286,9 @@ static void smart_scroll(SuiMessageList *self){
         return;
     }
 
-    adj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(self));
-    val = gtk_adjustment_get_value(adj);
-    page_size = gtk_adjustment_get_page_size(adj);
-    max_val = gtk_adjustment_get_upper(adj) - page_size;
-    // 10 is the threshold for judging whether
-    // "the scroll bar is near the bottom of the list"
-    if (max_val - val >= 10){
+    // 0.15 page is the threshold for judging whether "the scroll bar is very
+    // near to the bottom of the list"
+    if (get_page_count_to_bottom(self) > 0.15){
         return;
     }
 
@@ -286,20 +300,60 @@ static void smart_scroll(SuiMessageList *self){
 
 static void scrolled_window_on_edge_overshot(GtkScrolledWindow *swin,
         GtkPositionType pos, gpointer user_data){
-    if (pos != GTK_POS_TOP){
-        return;
+    switch (pos) {
+        case GTK_POS_TOP:
+            // TODO: Dynamic load
+            break;
+        case GTK_POS_BOTTOM:
+            break;
+        default:
+            break;
     }
-    DBG_FR("Top edge overshot");
-
-    // TODO: Dynamic load
 }
 
 static void scrolled_window_on_edge_reached(GtkScrolledWindow *swin,
                GtkPositionType pos, gpointer user_data){
-    if (pos != GTK_POS_BOTTOM){
-        return;
-    }
-    DBG_FR("Bottom edge reached");
+    SuiMessageList *self;
 
-    // TODO: Dynamic free
+    self = SUI_MESSAGE_LIST(user_data);
+
+    switch (pos) {
+        case GTK_POS_TOP:
+            break;
+        case GTK_POS_BOTTOM:
+            // TODO: Dynamic free
+            gtk_widget_hide(GTK_WIDGET(self->go_bottom_button));
+            break;
+        default:
+            break;
+    }
+}
+
+// Get the count of pages from current position to the bottom of message list.
+static double get_page_count_to_bottom(SuiMessageList *self) {
+    double val;
+    double max_val;
+    double page_size;
+    GtkAdjustment *adj;
+
+    adj = gtk_scrolled_window_get_vadjustment(self->scrolled_window);
+    page_size = gtk_adjustment_get_page_size(adj);
+    val = gtk_adjustment_get_value(adj);
+    max_val = gtk_adjustment_get_upper(adj) - page_size;
+
+    g_return_val_if_fail(page_size != 0, 0);
+    return (max_val - val) / page_size;
+}
+
+static void scrolled_window_vadjustment_on_value_changed(
+        GtkAdjustment *adj, gpointer user_data){
+    SuiMessageList *self;
+
+    self = SUI_MESSAGE_LIST((user_data));
+
+    // The go bottom button appears each time the distance from current
+    // position to bottom is greater than 0.5 page (we think user is browsing
+    // message now).
+    gtk_widget_set_visible(GTK_WIDGET(self->go_bottom_button),
+            get_page_count_to_bottom(self) > 0.5);
 }
