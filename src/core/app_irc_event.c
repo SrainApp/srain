@@ -1733,10 +1733,6 @@ static void irc_event_numeric(SircSession *sirc, int event,
         case SIRC_RFC_ERR_SASLFAIL:
         case SIRC_RFC_ERR_SASLTOOLONG:
         case SIRC_RFC_RPL_SASLMECHS:
-            {
-                sirc_cmd_authenticate(sirc, "*"); // Abort the authentication
-                goto ERRMSG;
-            }
         case SIRC_RFC_ERR_SASLABORTED:
             {
                 sirc_cmd_cap_end(sirc); // End negotiation
