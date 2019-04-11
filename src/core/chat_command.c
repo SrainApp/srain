@@ -181,7 +181,7 @@ SrnCommandBind cmd_binds[] = {
     },
     {
         .name = "/unquery",
-        .argc = 1, // <nick>
+        .argc = 1, // [nick]
         .opt = { SRN_COMMAND_EMPTY_OPT },
         .flag = SRN_COMMAND_FLAG_OMIT_ARG,
         .cb = on_command_unquery,
@@ -195,7 +195,7 @@ SrnCommandBind cmd_binds[] = {
     },
     {
         .name = "/part",
-        .argc = 2, // <channel> [reason]
+        .argc = 2, // [channel] [reason]
         .opt = { SRN_COMMAND_EMPTY_OPT },
         .flag = SRN_COMMAND_FLAG_OMIT_ARG,
         .cb = on_command_part,
@@ -722,12 +722,14 @@ static SrnRet on_command_unquery(SrnCommand *cmd, void *user_data){
 
     srv = ctx_get_server(user_data);
     g_return_val_if_fail(srv, SRN_ERR);
+    chat = ctx_get_chat(user_data);
 
     nick = srn_command_get_arg(cmd, 0);
-    chat = srn_server_get_chat(srv, nick);
-    if (!chat){
-        chat = srv->cur_chat;
+    if (nick) {
+        chat = srn_server_get_chat(srv, nick);
     }
+    g_return_val_if_fail(chat, SRN_ERR);
+    g_return_val_if_fail(chat->type == SRN_CHAT_TYPE_DIALOG, SRN_ERR);
 
     return srn_server_rm_chat(srv, chat);
 }
