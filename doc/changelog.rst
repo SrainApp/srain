@@ -8,6 +8,14 @@ Change Log
     :backlinks: none
 
 .. _version-latest:
+.. _version-1.0.0rc3:
+
+2019-04-14 Version 1.0.0rc3
+===========================
+
+.. note:: TODO.
+
+.. _version-1.0.0rc2:
 
 2019-01-24 Version 1.0.0rc2
 ===========================
