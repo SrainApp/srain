@@ -27,7 +27,7 @@ void i18n_init(){
      * will be found in DIRNAME rather than in
      * the system locale data base
      */
-    bindtextdomain (GETTEXT_PACKAGE,  PACKAGE_DATA_DIR "/share/locale");
+    bindtextdomain (GETTEXT_PACKAGE,  PACKAGE_DATA_DIR "/locale");
     bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 
     // Set the current default message catalog to DOMAINNAME.
