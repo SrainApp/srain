@@ -205,6 +205,7 @@ static SrnRet ui_event_quit(SuiBuffer *sui, SuiEvent event, GVariantDict *params
 
 static SrnRet ui_event_send(SuiBuffer *sui, SuiEvent event, GVariantDict *params){
     const char *msg = NULL;
+    bool is_cmd;
     SrnRet ret = SRN_ERR;
     SrnServer *srv;
     SrnChat *chat;
@@ -217,8 +218,19 @@ static SrnRet ui_event_send(SuiBuffer *sui, SuiEvent event, GVariantDict *params
     g_variant_dict_lookup(params, "message", SUI_EVENT_PARAM_STRING, &msg);
     g_return_val_if_fail(!str_is_empty(msg), SRN_ERR);
 
-    // Command or message?
+    // Is message a command?
+    is_cmd = FALSE;
     if (msg[0] == '/'){
+        if (msg[1] != '/') {
+            // If the message starts with single slash, regard it as command
+            is_cmd = TRUE;
+        } else {
+            // If the message starts with double slash, skip the first slash
+            msg++;
+        }
+    }
+
+    if (is_cmd){
         ret = srn_chat_run_command(chat, msg);
         // NOTE: The server and chat may be invlid after running command
         if (!srn_server_is_valid(srv) || !srn_server_is_chat_valid(srv, chat)){
