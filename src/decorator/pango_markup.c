@@ -171,13 +171,13 @@ static char* pango_markup(SrnMessage *msg, int index, const char *frag){
                         markuped_url = g_markup_printf_escaped("<a href=\"ircs://%s:%d/%s\">%s</a>",
                                 msg->chat->srv->addr->host,
                                 msg->chat->srv->addr->port,
-                                url + 1,
+                                url,
                                 url);
                     } else {
                         markuped_url = g_markup_printf_escaped("<a href=\"irc://%s:%d/%s\">%s</a>",
                                 msg->chat->srv->addr->host,
                                 msg->chat->srv->addr->port,
-                                url + 1,
+                                url,
                                 url);
                     }
                     break;
