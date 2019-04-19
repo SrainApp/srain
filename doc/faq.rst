@@ -53,3 +53,10 @@ Where are the log files?
 ========================
 
 Refer to :ref:`misc-chat-logs`.
+
+How can I send message which has a slash("/") prefixed?
+=======================================================
+
+Please prepend another slash to the message.
+
+Refer to :ref:`commands-syntax`.

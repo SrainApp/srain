@@ -32,6 +32,13 @@ are separated by whitespace::
 The command's ``name`` starts with a slash ``/`` and doesn't contain any
 whitespace, such as: ``/join``.
 
+.. note::
+
+   When you want to send a message starts with a slash, please prepend
+   another slash to the message.
+   For example, you want to send "/this is a slash prefixed message", you need
+   to type "//this is a slash prefixed message".
+
 A ``subcommand`` is a instruction behind the command name, it is optional.
 
 An ``option``, as its name, is optional too, starts with a hyphen ``-`` and may
