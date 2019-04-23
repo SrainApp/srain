@@ -552,7 +552,7 @@ static void session_send_ready(GObject *object, GAsyncResult *result,
             g_warn_if_reached();
             goto ERR;
         case SUI_URL_CONTENT_TYPE_UNSUPPORTED:
-            preview_error_text(self, _("Unsupported content type"));
+            preview_error_text(self, _("Unsupported URL content type"));
             goto ERR;
         default:
             buffered_stream = G_BUFFERED_INPUT_STREAM(

@@ -67,13 +67,13 @@ SrnRet srn_config_manager_read_log_config(SrnConfigManager *mgr,
 
     ret = read_log_config_from_cfg(&mgr->system_cfg, cfg);
     if (!RET_IS_OK(ret)){
-        return RET_ERR(_("Error occurred while read log config in %1$s: %2$s"),
+        return RET_ERR(_("Error occurred while reading log config in %1$s: %2$s"),
                 config_setting_source_file(config_root_setting(&mgr->system_cfg)),
                 RET_MSG(ret));
     }
     ret = read_log_config_from_cfg(&mgr->user_cfg, cfg);
     if (!RET_IS_OK(ret)){
-        return RET_ERR(_("Error occurred while read log config in %1$s: %2$s"),
+        return RET_ERR(_("Error occurred while reading log config in %1$s: %2$s"),
                 config_setting_source_file(config_root_setting(&mgr->user_cfg)),
                 RET_MSG(ret));
     }
@@ -87,13 +87,13 @@ SrnRet srn_config_manager_read_application_config(SrnConfigManager *mgr,
 
     ret = read_application_config_from_cfg(&mgr->system_cfg, cfg);
     if (!RET_IS_OK(ret)){
-        return RET_ERR(_("Error occurred while read application config in %1$s: %2$s"),
+        return RET_ERR(_("Error occurred while reading application config in %1$s: %2$s"),
                 config_setting_source_file(config_root_setting(&mgr->system_cfg)),
                 RET_MSG(ret));
     }
     ret = read_application_config_from_cfg(&mgr->user_cfg, cfg);
     if (!RET_IS_OK(ret)){
-        return RET_ERR(_("Error occurred while read application config in %1$s: %2$s"),
+        return RET_ERR(_("Error occurred while reading application config in %1$s: %2$s"),
                 config_setting_source_file(config_root_setting(&mgr->user_cfg)),
                 RET_MSG(ret));
     }
@@ -107,13 +107,13 @@ SrnRet srn_config_manager_read_server_config_list(SrnConfigManager *mgr,
 
     ret = read_server_config_list_from_cfg(&mgr->system_cfg, srv_cfg_list);
     if (!RET_IS_OK(ret)){
-        return RET_ERR(_("Error occurred while read server list config in %1$s: %2$s"),
+        return RET_ERR(_("Error occurred while reading server list config in %1$s: %2$s"),
                 config_setting_source_file(config_root_setting(&mgr->system_cfg)),
                 RET_MSG(ret));
     }
     ret = read_server_config_list_from_cfg(&mgr->user_cfg, srv_cfg_list);
     if (!RET_IS_OK(ret)){
-        return RET_ERR(_("Error occurred while read server list config in %1$s: %2$s"),
+        return RET_ERR(_("Error occurred while reading server list config in %1$s: %2$s"),
                 config_setting_source_file(config_root_setting(&mgr->user_cfg)),
                 RET_MSG(ret));
     }
@@ -127,13 +127,13 @@ SrnRet srn_config_manager_read_server_config(SrnConfigManager *mgr,
 
     ret = read_server_config_from_cfg(&mgr->system_cfg, cfg, srv_name);
     if (!RET_IS_OK(ret)){
-        return RET_ERR(_("Error occurred while read server config in %1$s: %2$s"),
+        return RET_ERR(_("Error occurred while reading server config in %1$s: %2$s"),
                 config_setting_source_file(config_root_setting(&mgr->system_cfg)),
                 RET_MSG(ret));
     }
     ret = read_server_config_from_cfg(&mgr->user_cfg, cfg, srv_name);
     if (!RET_IS_OK(ret)){
-        return RET_ERR(_("Error occurred while read server config in %1$s: %2$s"),
+        return RET_ERR(_("Error occurred while reading server config in %1$s: %2$s"),
                 config_setting_source_file(config_root_setting(&mgr->user_cfg)),
                 RET_MSG(ret));
     }
@@ -208,14 +208,14 @@ SrnRet srn_config_manager_read_chat_config(SrnConfigManager *mgr,
 
     ret = read_chat_config_from_cfg(&mgr->system_cfg, cfg, srv_name, chat_name);
     if (!RET_IS_OK(ret)){
-        return RET_ERR(_("Error occurred while read chat config in %1$s: %2$s"),
+        return RET_ERR(_("Error occurred while reading chat config in %1$s: %2$s"),
                 config_setting_source_file(config_root_setting(&mgr->system_cfg)),
                 RET_MSG(ret));
     }
 
     ret = read_chat_config_from_cfg(&mgr->user_cfg, cfg, srv_name, chat_name);
     if (!RET_IS_OK(ret)){
-        return RET_ERR(_("Error occurred while read chat config in %1$s: %2$s"),
+        return RET_ERR(_("Error occurred while reading chat config in %1$s: %2$s"),
                 config_setting_source_file(config_root_setting(&mgr->user_cfg)),
                 RET_MSG(ret));
     }

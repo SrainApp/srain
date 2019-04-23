@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 0.06.2\n"
 "Report-Msgid-Bugs-To: i@silverrainz.me\n"
-"POT-Creation-Date: 2019-04-12 18:41+0800\n"
+"POT-Creation-Date: 2019-04-29 17:38+0800\n"
 "PO-Revision-Date: 2016-12-18 01:44+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -42,19 +42,16 @@ msgid "\"%1$s\" has added to %2$s 's relaybot list"
 msgstr "\"%1$s\" 已加入到 %2$s 的中继机器人列表"
 
 #: ../src/core/chat_command.c:628 ../src/core/app_ui_event.c:365
-#, fuzzy, c-format
 msgid "\"%1$s\" has ignored"
-msgstr "%1$s 加入了频道"
+msgstr "已经忽略 %1$s "
 
 #: ../src/core/chat_command.c:653 ../src/core/app_ui_event.c:368
-#, fuzzy, c-format
 msgid "\"%1$s\" has unignored"
-msgstr "%1$s 加入了频道"
+msgstr "已经接触对 %1$s 的忽略"
 
 #: ../src/core/chat_command.c:623
-#, fuzzy, c-format
 msgid "\"%1$s\" is already ignored"
-msgstr "服务器 \"%1$s\" 已创建"
+msgstr "\"%1$s\" 已被忽略，无需再次执行"
 
 #: ../src/filter/regex.c:105
 #, c-format
@@ -64,20 +61,19 @@ msgstr "\"%1$s\" 已从 %2$s 的屏蔽列表中移除"
 #: ../src/decorator/relay.c:74
 #, c-format
 msgid "\"%1$s\" is removed from %2$s 's relaybot list"
-msgstr "\"%1$s\" 已从 %2$s 的中继机器人列表中移除"
+msgstr "已从 %2$s 的中继机器人列表中移除 \"%1$s\""
 
 #: ../src/filter/regex.c:118
 #, c-format
 msgid "\"%1$s\" not found in %2$s 's ignore list"
-msgstr "\"%1$s\" 无法在 %2$s 的屏蔽列表中被找到"
+msgstr "无法在 %2$s 的屏蔽列表中找到 \"%1$s\""
 
 #: ../src/decorator/relay.c:84
 #, c-format
 msgid "\"%1$s\" not found in %2$s 's relaybot list"
-msgstr "\"%1$s\" 无法在 %2$s 的转发机器人列表中被找到"
+msgstr "无法在 %2$s 的转发机器人列表中找到 \"%1$s\" "
 
 #: ../data/ui/window.glade:136 ../data/ui/side_bar_item.glade:31
-#, fuzzy
 msgid "#srain"
 msgstr "Srain"
 
@@ -92,12 +88,10 @@ msgid "%1$s %2$s %3$s"
 msgstr "%1$s %2$s %3$s"
 
 #: ../src/sui/sui_message.c:458
-#, fuzzy, c-format
 msgid "%1$s %2$s @ %3$s"
 msgstr "%1$s %2$s %3$s"
 
 #: ../src/core/app_irc_event.c:1524
-#, fuzzy, c-format
 msgid "%1$s <%2$s@%3$s> %4$s"
 msgstr "%1$s <fwd %2$s@%3$s>"
 
@@ -107,7 +101,6 @@ msgid "%1$s <fwd %2$s@%3$s>"
 msgstr "%1$s <fwd %2$s@%3$s>"
 
 #: ../src/sui/sui_message.c:453
-#, fuzzy, c-format
 msgid "%1$s @ %2$s"
 msgstr "%1$s %2$s"
 
@@ -133,7 +126,7 @@ msgstr ""
 #: ../src/core/app_irc_event.c:661
 #, c-format
 msgid "%1$s cleared topic"
-msgstr "%1$s 清除了主题"
+msgstr "%1$s 清除了频道公告"
 
 #: ../src/core/app_irc_event.c:481
 #, c-format
@@ -165,25 +158,24 @@ msgstr "%1$s 退出了聊天室：%2$s"
 msgid "%1$s invites you into %2$s"
 msgstr "%1$s 邀请你加入频道 %2$s"
 
+#: ../src/core/app_irc_event.c:1537
+#, c-format
+msgid "%1$s is a member of %2$s"
+msgstr "%1$s 是频道 %2$s 的成员"
+
 #: ../src/core/app_irc_event.c:1549
 #, c-format
 msgid "%1$s is attached to %2$s at \"%3$s\""
 msgstr "%1$s 接入了位于 \"%3$s\" 的 %2$s"
 
 #: ../src/core/app_irc_event.c:1769
-#, fuzzy, c-format
 msgid "%1$s is away: %2$s"
-msgstr "%1$s: %2$s"
+msgstr "%1$s 暂时离开了聊天: %2$s"
 
 #: ../src/core/app_irc_event.c:1568
 #, c-format
 msgid "%1$s is idle for %2$s seconds since %3$s"
 msgstr "%1$s 自 %3$s 以来待机了 %2$s 秒"
-
-#: ../src/core/app_irc_event.c:1537
-#, c-format
-msgid "%1$s is member of %2$s"
-msgstr "%1$s 是频道 %2$s 的成员"
 
 #: ../src/core/app_irc_event.c:404 ../src/core/app_irc_event.c:409
 #, c-format
@@ -223,13 +215,14 @@ msgstr ""
 
 #: ../data/ui/window.glade:307
 msgid "<big>Welcome to Srain!</big>"
-msgstr ""
+msgstr "<big>欢迎使用 Srain！</big>"
 
-#: ../data/ui/recv_message.glade:88 ../data/ui/send_message.glade:22
-#: ../data/ui/misc_message.glade:23
+#: ../data/ui/recv_message.glade:88 ../data/ui/misc_message.glade:23
+#: ../data/ui/send_message.glade:22
 msgid ""
 "<span color=\"red\">Unable to display message content <sup>ERROR</sup></span>"
 msgstr ""
+"<span color=\"red\">无法显示此消息<sup>错误</sup></span>"
 
 #: ../src/core/chat_command.c:821
 #, c-format
@@ -251,25 +244,23 @@ msgstr "已确认的扩展能力：%1$s"
 
 #: ../data/ui/connect_panel.glade:589
 msgid "Advanced Mode"
-msgstr ""
+msgstr "高级模式"
 
 #: ../src/core/app.c:216
 msgid "All config reloaded"
-msgstr ""
+msgstr "成功重新加载所有配置"
 
 #: ../src/core/app_ui_event.c:175
-#, fuzzy
 msgid "Already reconnecting"
-msgstr "使用安全连接"
+msgstr "已在重连中"
 
 #: ../data/ui/config_panel.glade:122
 msgid "Appearance"
-msgstr ""
+msgstr "外观"
 
 #: ../data/ui/config_panel.glade:141
-#, fuzzy
 msgid "Application"
-msgstr "动作"
+msgstr "应用"
 
 #: ../src/config/manager.c:95
 #, c-format
@@ -281,17 +272,17 @@ msgstr "在第 %1$d 行：%2$s"
 msgid "By %1$s at %2$s"
 msgstr "%1$s 于 %2$s 设置"
 
+#: ../data/ui/connect_panel.glade:608 ../data/ui/join_panel.glade:379
+msgid "Cancel"
+msgstr "取消"
+
 #: ../src/core/chat_command.c:439
-msgid "Can not disconnect from a unconnected server"
+msgid "Cannot disconnect from a unconnected server"
 msgstr "无法从未连接的服务器断开连接"
 
 #: ../src/core/chat_command.c:841 ../src/core/app_ui_event.c:236
-msgid "Can not send message to a server"
+msgid "Cannot send message directly to a server"
 msgstr "不允许直接向服务器发送消息"
-
-#: ../data/ui/join_panel.glade:379 ../data/ui/connect_panel.glade:608
-msgid "Cancel"
-msgstr "取消"
 
 #: ../data/ui/join_panel.glade:268
 msgid "Channel"
@@ -302,13 +293,12 @@ msgid "Channel:"
 msgstr "频道："
 
 #: ../src/core/server.c:291 ../src/core/server.c:295
-#, fuzzy, c-format
 msgid "Chat autorun command: %1$s"
-msgstr "没有这个命令：%1$s"
+msgstr "无效的 autorun 命令：%1$s"
 
 #: ../src/sui/sui_prefs_dialog.c:165
 msgid "Configuration is reloaded"
-msgstr ""
+msgstr "已重新加载配置"
 
 #: ../data/ui/window.glade:84 ../data/ui/connect_panel.glade:622
 msgid "Connect"
@@ -320,7 +310,6 @@ msgid "Connected to %1$s(%2$s:%3$d)"
 msgstr "已连接到 %1$s(%2$s:%3$d)"
 
 #: ../src/core/chat_command.c:382
-#, fuzzy, c-format
 msgid "Context switched to server \"%1$s\""
 msgstr "无法在服务器 \"%1$s\" 上注册"
 
@@ -354,78 +343,69 @@ msgstr "错误[%1$3d] %2$s"
 
 #: ../data/ui/config_panel.glade:81
 msgid "Enable CSD:"
-msgstr ""
+msgstr "开启 CSD(Client Side Decoration)"
 
 #: ../data/ui/config_panel.glade:77
 msgid "Enable Client-Side Decorations, this will take effect after restart."
-msgstr ""
+msgstr "已开启 CSD(Client Side Decoration), 下次重启后生效"
 
 #: ../src/core/server_cap.c:211
 msgid "Enabled capabilities:"
-msgstr "已激活的扩展能力：%1$s"
+msgstr "已启用的扩展能力：%1$s"
 
 #: ../src/core/app.c:76 ../src/core/app.c:84 ../src/core/app.c:294
 #: ../src/core/app.c:407 ../src/sui/sui_app.c:442 ../src/sui/sui_app.c:461
 #: ../src/sui/sui_app.c:497 ../src/sui/sui_misc_message.c:189
-#: ../src/sui/sui_common.c:145 ../src/sui/sui_prefs_dialog.c:162
-#: ../src/sui/sui_connect_panel.c:545 ../src/sui/sui_join_panel.c:296
-#: ../src/sui/sui_join_panel.c:338 ../src/sui/sui_join_panel.c:377
-#: ../src/sui/sui_join_panel.c:383
+#: ../src/sui/sui_common.c:145 ../src/sui/sui_connect_panel.c:545
+#: ../src/sui/sui_join_panel.c:296 ../src/sui/sui_join_panel.c:338
+#: ../src/sui/sui_join_panel.c:377 ../src/sui/sui_join_panel.c:383
+#: ../src/sui/sui_prefs_dialog.c:162
 msgid "Error"
 msgstr "错误"
 
 #: ../src/config/reader.c:89 ../src/config/reader.c:95
-#, fuzzy, c-format
-msgid "Error occurred while read application config in %1$s: %2$s"
-msgstr "读取 IRC 配置时发生错误 %1$s：%2$s"
+msgid "Error occurred while reading application config in %1$s: %2$s"
+msgstr "读取应用配置时发生错误 %1$s：%2$s"
 
 #: ../src/config/reader.c:199 ../src/config/reader.c:206
-#, fuzzy, c-format
-msgid "Error occurred while read chat config in %1$s: %2$s"
-msgstr "读取 IRC 配置时发生错误 %1$s：%2$s"
+msgid "Error occurred while reading chat config in %1$s: %2$s"
+msgstr "读取聊天配置时发生错误 %1$s：%2$s"
 
 #: ../src/config/reader.c:69 ../src/config/reader.c:75
-#, fuzzy, c-format
-msgid "Error occurred while read log config in %1$s: %2$s"
+msgid "Error occurred while reading log config in %1$s: %2$s"
 msgstr "读取日志配置时发生错误 %1$s：%2$s"
 
 #: ../src/config/reader.c:129 ../src/config/reader.c:135
-#, fuzzy, c-format
-msgid "Error occurred while read server config in %1$s: %2$s"
+msgid "Error occurred while reading server config in %1$s: %2$s"
 msgstr "读取服务器配置时发生错误 %1$s：%2$s"
 
 #: ../src/config/reader.c:109 ../src/config/reader.c:115
-#, fuzzy, c-format
-msgid "Error occurred while read server list config in %1$s: %2$s"
+msgid "Error occurred while reading server list config in %1$s: %2$s"
 msgstr "读取服务器配置列表时发生错误 %1$s：%2$s"
 
 #: ../src/sui/sui_url_previewer.c:539
 msgid "Exceed max content length"
-msgstr ""
+msgstr "内容超出最大长度"
 
 #: ../data/ui/app.glade:94
 msgid "Exit"
-msgstr ""
+msgstr "退出"
 
 #: ../data/ui/config_panel.glade:107
-#, fuzzy
 msgid "Expand message:"
-msgstr "复制消息"
+msgstr "展开消息"
 
 #: ../src/core/app.c:292
-#, fuzzy, c-format
 msgid "Failed to add chat \"%1$s\": %2$s"
-msgstr "无法加载主题 \"%1$s\""
+msgstr "无法添加聊天 \"%1$s\", 原因为: %2$s"
 
 #: ../src/core/app_url.c:119 ../src/core/app.c:405
-#, fuzzy, c-format
 msgid "Failed to add server \"%1$s\": %2$s"
-msgstr "无法创建服务器 \"%1$s\""
+msgstr "无法添加服务器 \"%1$s\""
 
 #: ../src/sui/sui_theme.c:102
-#, fuzzy, c-format
 msgid "Failed to apply theme from file \"%1$s\": %2$s"
-msgstr "无法加载主题 \"%1$s\""
+msgstr "无法加载主题 \"%1$s\", 原因为: %2$s"
 
 #: ../src/core/server.c:155
 #, c-format
@@ -438,29 +418,24 @@ msgid "Failed to connect to %1$s(%2$s:%3$d): %4$s"
 msgstr "无法连接到 %1$s(%2$s:%3$d)：%4$s"
 
 #: ../src/lib/path.c:184
-#, fuzzy, c-format
 msgid "Failed to create chat logs directory: %s"
-msgstr "无法创建服务器 \"%1$s\""
+msgstr "无法创建聊天日志文件夹 \"%1$s\""
 
 #: ../src/lib/path.c:164
-#, fuzzy, c-format
 msgid "Failed to create user cache directory: %s"
-msgstr "无法创建服务器 \"%1$s\""
+msgstr "无法创建用户缓存文件夹 \"%1$s\""
 
 #: ../src/lib/path.c:144
-#, fuzzy, c-format
 msgid "Failed to create user configuration directory: %s"
-msgstr "无法创建服务器 \"%1$s\""
+msgstr "无法创建用户配置文件夹 \"%1$s\""
 
 #: ../src/lib/path.c:154
-#, fuzzy, c-format
 msgid "Failed to create user configuration file: %s"
-msgstr "无法创建服务器 \"%1$s\""
+msgstr "无法创建用户配置文件 \"%1$s\""
 
 #: ../src/lib/path.c:174
-#, fuzzy, c-format
 msgid "Failed to create user data directory: %s"
-msgstr "无法创建服务器 \"%1$s\""
+msgstr "无法创建用户数据文件夹 \"%1$s\""
 
 #: ../src/core/chat_command.c:417 ../src/core/chat_command.c:525
 #, c-format
@@ -468,34 +443,28 @@ msgid "Failed to instantiate server \"%1$s\""
 msgstr "无法实例化服务器 \"%1$s\""
 
 #: ../src/core/app_url.c:146 ../src/core/app_url.c:154
-#, fuzzy, c-format
 msgid "Failed to join channel on server \"%1$s\": %2$s"
-msgstr "无法在服务器 \"%1$s\" 上注册"
+msgstr "无法加入在 \"%1$s\" 服务器上的频道， 原因为: %2$s"
 
 #: ../src/sui/sui_common.c:144
-#, fuzzy, c-format
 msgid "Failed to open URL \"%1$s\": %2$s"
-msgstr "无法将 \"%1$s\" 解析为 URL"
+msgstr "无法打开 URL: \"%1$s\""
 
 #: ../src/core/app_url.c:60
-#, fuzzy, c-format
 msgid "Failed to parse \"%1$s\" as URL"
 msgstr "无法将 \"%1$s\" 解析为 URL"
 
 #: ../src/core/app_ui_event.c:200
-#, fuzzy, c-format
 msgid "Failed to quit from server: %s"
 msgstr "无法从服务器退出，请重试"
 
 #: ../src/config/manager.c:62
-#, fuzzy, c-format
 msgid "Failed to read system configuration file: %1$s"
-msgstr "无法发送动作消息：%1$s"
+msgstr "无法读取系统配置：%1$s"
 
 #: ../src/config/manager.c:74
-#, fuzzy, c-format
 msgid "Failed to read user configuration file: %1$s"
-msgstr "无法发送动作消息：%1$s"
+msgstr "无法读取用户配置：%1$s"
 
 #: ../src/core/chat_command.c:427 ../src/core/chat_command.c:538
 #: ../src/core/app_url.c:135
@@ -504,19 +473,16 @@ msgid "Failed to register on server \"%1$s\""
 msgstr "无法在服务器 \"%1$s\" 上注册"
 
 #: ../src/core/app.c:225
-#, fuzzy, c-format
 msgid "Failed to reload application config: %1$s"
-msgstr "无法发送动作消息：%1$s"
+msgstr "重新加载应用配置失败：%1$s"
 
 #: ../src/sui/sui_prefs_dialog.c:160
-#, fuzzy, c-format
 msgid "Failed to reload configuration: %s"
-msgstr "无法解析版本号：%1$s"
+msgstr "重新加载配置失败：%1$s"
 
 #: ../src/core/app.c:220
-#, fuzzy, c-format
 msgid "Failed to reload logger config: %1$s"
-msgstr "无法加载主题 \"%1$s\""
+msgstr "重新加载日志配置失败 \"%1$s\""
 
 #: ../src/core/chat_command.c:846
 #, c-format
@@ -536,32 +502,33 @@ msgstr "禁用"
 msgid "Forward to..."
 msgstr "转发到……"
 
+#: ../src/core/server_state.c:92
+msgid ""
+"Hold on, srain is connecting to the server, please do not repeat the action"
+msgstr "请稍等，正在连接服务器，请勿重复连接"
+
 #: ../data/ui/connect_panel.glade:450
 msgid "Identity"
 msgstr ""
 
 #: ../src/filter/regex.c:76
 #, c-format
-msgid "Invail pattern: %1$s"
+msgid "Invaild regex pattern: %1$s"
 msgstr "无效的正则表达式：%1$s"
 
 #: ../src/sirc/sirc_config.c:37
-#, fuzzy
 msgid "Invalid IRC config instance"
 msgstr "无效的聊天配置"
 
 #: ../src/sui/sui_config.c:76
-#, fuzzy
 msgid "Invalid SuiBufferConfig instance"
 msgstr "无效的面板配置"
 
 #: ../src/core/chat_config.c:37
-#, fuzzy
 msgid "Invalid chat config instance"
 msgstr "无效的聊天配置"
 
 #: ../src/sirc/sirc_config.c:53
-#, fuzzy, c-format
 msgid "Invalid encoding in IRC config: %1$s"
 msgstr "IRC 配置中的编码无效：%1$s"
 
@@ -570,12 +537,10 @@ msgid "Invalid error id, maybe this error is removed because out of date"
 msgstr "无效的错误 ID，该错误可能因为过期而被移除"
 
 #: ../src/core/server_config.c:54
-#, fuzzy
 msgid "Invalid server config instance"
 msgstr "无效的服务器配置"
 
 #: ../src/core/server_config.c:50
-#, fuzzy, c-format
 msgid "Invalid value in server config: %1$s"
 msgstr "服务器配置中出现了无效的值：%1$s"
 
@@ -592,7 +557,7 @@ msgstr ""
 "看起来你似乎对一个 TLS 端口(%1$d) 使用了非 TLS 加密的连接，请尝试启用 TLS 并"
 "重新连接"
 
-#: ../data/ui/join_panel.glade:394 ../data/ui/window.glade:100
+#: ../data/ui/window.glade:100 ../data/ui/join_panel.glade:394
 msgid "Join"
 msgstr "加入"
 
@@ -607,7 +572,7 @@ msgstr "到 %1$s 的延迟为 %2$lu 毫秒"
 
 #: ../src/sirc/sirc.c:186
 msgid "Local connection closed"
-msgstr ""
+msgstr "本地链接已关闭"
 
 #: ../src/core/app_irc_event.c:1203 ../src/core/app_irc_event.c:1229
 #, c-format
@@ -615,7 +580,6 @@ msgid "Logging in with %1$s as %2$s..."
 msgstr "正在通过 %1$s 以 %2$s 的身份登录……"
 
 #: ../src/core/app_irc_event.c:362
-#, fuzzy, c-format
 msgid "Logging in with %1$s..."
 msgstr "正在通过 %1$s 以 %2$s 的身份登录……"
 
@@ -629,43 +593,38 @@ msgstr "最多用户数"
 
 #: ../data/ui/connect_panel.glade:433
 msgid "Message NickServ"
-msgstr ""
+msgstr "来自 NickServ 的消息"
 
 #: ../src/sui/sui_message.c:464
 msgid "Message from unknown chat"
-msgstr ""
+msgstr "来自未知聊天的消息"
 
 #: ../data/ui/join_panel.glade:215
 msgid "Min users"
 msgstr "最少用户数"
 
 #: ../src/core/chat_command.c:472
-#, fuzzy
 msgid "Missing argument <addr>"
-msgstr "缺少参数 <服务器名称>"
+msgstr "缺少参数 <服务器地址>"
 
 #: ../src/core/chat_command.c:371
-#, fuzzy
 msgid "Missing argument <server>"
 msgstr "缺少参数 <服务器名称>"
 
 #: ../src/lib/command.c:409
 #, c-format
 msgid "Missing argument, expect %1$d, actually %2$d"
-msgstr "缺少参数，期望 %1$d 个，实际上只有 %2$d 个"
+msgstr "缺少参数，%1$d 个参数中，只提供了 %2$d 个"
 
 #: ../src/sui/sui_config.c:32
-#, fuzzy, c-format
 msgid "Missing field in SuiApplicationConfig: %1$s"
-msgstr "主界面配置中缺少了如下选项：%1$s"
+msgstr "主界面配置中缺少了如下字段：%1$s"
 
 #: ../src/core/server_config.c:49
-#, fuzzy, c-format
 msgid "Missing field in server config: %1$s"
-msgstr "服务器配置中缺少了以下选项：%1$s"
+msgstr "服务器配置中缺少了以下字段：%1$s"
 
 #: ../src/core/user_config.c:71
-#, fuzzy, c-format
 msgid "Missing field in user config: %1$s"
 msgstr "服务器配置中缺少了以下选项：%1$s"
 
@@ -676,10 +635,9 @@ msgstr "可选参数 %1$s 缺少参数值"
 
 #: ../data/ui/connect_panel.glade:392
 msgid "NickServ"
-msgstr ""
+msgstr "NickServ"
 
 #: ../data/ui/connect_panel.glade:84
-#, fuzzy
 msgid "Nickname:"
 msgstr "昵称："
 
@@ -696,18 +654,17 @@ msgid "No new capability to be requested"
 msgstr "没有需要请求的新的扩展能力"
 
 #: ../src/core/chat_command.c:386
-#, fuzzy, c-format
 msgid "No such chat: %1$s"
-msgstr "没有这个服务器：%1$s"
+msgstr "找不到聊天：%1$s"
 
 #: ../src/core/chat_command.c:375
 #, c-format
 msgid "No such server: %1$s"
-msgstr "没有这个服务器：%1$s"
+msgstr "找不到服务器：%1$s"
 
 #: ../src/core/app_irc_event.c:1460
 msgid "No topic is set"
-msgstr "没有设置任何主题"
+msgstr "该频道没有设置主题"
 
 #: ../data/ui/connect_panel.glade:352
 msgid "None"
@@ -715,44 +672,48 @@ msgstr "无"
 
 #: ../src/lib/path.c:199
 msgid "Not a directory"
-msgstr ""
+msgstr "不是一个文件夹"
 
 #: ../src/lib/path.c:218
 msgid "Not a regular file"
-msgstr ""
+msgstr "不是一个常规文件"
 
 #: ../src/sui/sui_prefs_dialog.c:165
 msgid "OK"
-msgstr ""
+msgstr "确定"
 
 #: ../src/sui/sui_app.c:119
 msgid "Open one or more IRC URLs"
-msgstr "打开一个或多个 IRC URL"
+msgstr "打开一个或多个 IRC 链接"
 
-#: ../data/ui/join_panel.glade:100 ../data/ui/connect_panel.glade:186
+#: ../data/ui/connect_panel.glade:186 ../data/ui/join_panel.glade:100
 msgid "Optional"
 msgstr "可选"
 
-#: ../data/ui/join_panel.glade:88 ../data/ui/connect_panel.glade:368
-#: ../data/ui/connect_panel.glade:409 ../data/ui/connect_panel.glade:464
+#: ../data/ui/connect_panel.glade:368 ../data/ui/connect_panel.glade:409
+#: ../data/ui/connect_panel.glade:464 ../data/ui/join_panel.glade:88
 msgid "Password:"
 msgstr "密码："
 
 #: ../src/core/app_irc_event.c:246
 msgid "Ping time out"
-msgstr "超时"
+msgstr "响应超时"
 
 #: ../src/sui/sui_join_panel.c:297
-msgid "Please connect to server before joining any channel"
+msgid "Please connect to a server before joining any channel"
 msgstr "在加入频道之前请先连接到服务器"
 
 #: ../src/sui/sui_join_panel.c:377
-msgid "Please connect to server before searching any channel"
+msgid "Please connect to a server before searching any channel"
 msgstr "在搜索频道之前请先连接到服务器"
 
 #: ../data/ui/connect_panel.glade:106
 msgid "Quick Mode"
-msgstr ""
+msgstr "简易模式"
+
+#: ../src/core/server_state.c:172 ../src/core/server_state.c:179
+msgid "Quitting the server"
+msgstr "正在退出服务器"
 
 #: ../src/core/app_irc_event.c:927
 #, c-format
@@ -780,7 +741,7 @@ msgstr "已停止重新连接"
 
 #: ../data/ui/prefs_dialog.glade:107
 msgid "Reload Configuration"
-msgstr ""
+msgstr "重新加载配置"
 
 #: ../src/sirc/sirc.c:198
 msgid "Remote connection closed"
@@ -798,7 +759,7 @@ msgstr "正在请求新的扩展能力：%1$s"
 
 #: ../data/ui/connect_panel.glade:513
 msgid "SASL Certificate:"
-msgstr ""
+msgstr "SASL 证书:"
 
 #: ../data/ui/connect_panel.glade:501
 msgid "SASL PLAIN"
@@ -813,14 +774,12 @@ msgid "Search Channel"
 msgstr "搜索频道"
 
 #: ../data/ui/config_panel.glade:166
-#, fuzzy
 msgid "Server"
 msgstr "服务器："
 
 #: ../src/core/app.c:317 ../src/core/app.c:321
-#, fuzzy, c-format
 msgid "Server autorun command: %1$s"
-msgstr "没有这个命令：%1$s"
+msgstr "无效的 autorun 命令：%1$s"
 
 #: ../src/core/app_irc_event.c:1040
 #, c-format
@@ -845,18 +804,10 @@ msgstr "服务器已连接"
 msgid "Server is already disconnected"
 msgstr "服务器已断开"
 
-#: ../src/core/server_state.c:92
-msgid "Server is connecting, please don't repeat connect"
-msgstr "正在连接服务器，请勿重复连接"
-
 #: ../src/core/server_state.c:149 ../src/core/server_state.c:152
 #: ../src/core/server_state.c:155 ../src/core/server_state.c:158
 msgid "Server is disconnecting"
-msgstr "正在断开到服务器的连接"
-
-#: ../src/core/server_state.c:172 ../src/core/server_state.c:179
-msgid "Server is quiting"
-msgstr "正在退出服务器"
+msgstr "正在断开与服务器的连接"
 
 #: ../data/ui/connect_panel.glade:52
 msgid "Server:"
@@ -881,14 +832,14 @@ msgstr "正在显示 %2$d 个频道中的 %1$d 个"
 
 #: ../data/ui/side_bar_item.glade:77
 msgid "SilverRainZ: Welcome!"
-msgstr ""
+msgstr "SilverRainZ: 欢迎!"
 
 #: ../src/lib/ret.c:94
 msgid "Some error occurred"
 msgstr "发生未知错误"
 
 #: ../src/lib/command.c:79
-msgid "Sorry, command parse failed, please report a bug to <"
+msgid "Sorry, command parsing failed, please report a bug to <"
 msgstr "抱歉，命令解析失败，请提交 bug 报告到 <"
 
 #: ../data/ui/app.glade:115 ../data/ui/app.glade:116
@@ -896,8 +847,8 @@ msgid "Srain"
 msgstr "Srain"
 
 #: ../data/ui/prefs_dialog.glade:9
-msgid "Srain Perferences"
-msgstr ""
+msgid "Srain Preferences"
+msgstr "Srain 首选项"
 
 #: ../src/sirc/sirc_config.c:72
 #, c-format
@@ -915,16 +866,16 @@ msgstr ""
 
 #: ../data/ui/config_panel.glade:42
 msgid "Theme:"
-msgstr ""
+msgstr "Srain 主题文件"
 
 #: ../src/lib/command.c:427
 #, c-format
 msgid "Too many arguments, expect %1$d"
-msgstr "参数太多，只需要 %1$d 个"
+msgstr "参数过多，需要 %1$d 个"
 
 #: ../src/lib/command.c:415
 #, c-format
-msgid "Too many options, options count limit to %1$d"
+msgid "Too many optional arguments (maximum allowed: %1$d)"
 msgstr "可选参数最多为 %1$d 个"
 
 #: ../data/ui/join_panel.glade:305
@@ -953,12 +904,12 @@ msgstr "%1$s 的 URL 是：%2$s"
 
 #: ../data/ui/recv_message.glade:27
 msgid "Unable to display nickname"
-msgstr ""
+msgstr "无法显示昵称"
 
 #: ../src/core/server_state.c:63
 #, c-format
 msgid "Unallowed action: %1$s"
-msgstr "不允许的动作：%1$s"
+msgstr "不允许的行为：%1$s"
 
 #: ../src/lib/command.c:260
 msgid "Unclosed single quotation"
@@ -967,31 +918,25 @@ msgstr "没有闭合的单引号"
 #: ../src/lib/command.c:86
 #, c-format
 msgid "Unknown command: %1$s"
-msgstr "没有这个命令：%1$s"
+msgstr "未知命令：%1$s"
 
 #: ../src/core/login_config.c:56
-#, fuzzy
 msgid "Unknown login method"
-msgstr "没有这个选项：%1$s"
+msgstr "未知登陆方式：%1$s"
 
 #: ../src/lib/command.c:412
 #, c-format
 msgid "Unknown option %1$s"
-msgstr "没有这个选项：%1$s"
+msgstr "未知选项：%1$s"
 
 #: ../src/lib/command.c:421 ../src/core/chat_command.c:452
 #, c-format
 msgid "Unknown sub command: %1$s"
-msgstr "没有这个子命令：%1$s"
+msgstr "未知子命令：%1$s"
 
-#: ../src/sui/sui_url_previewer.c:318
+#: ../src/sui/sui_url_previewer.c:318 ../src/sui/sui_url_previewer.c:555
 msgid "Unsupported URL content type"
-msgstr ""
-
-#: ../src/sui/sui_url_previewer.c:555
-#, fuzzy
-msgid "Unsupported content type"
-msgstr "不支持的协议：%1$s"
+msgstr "不支持的 URL metadata 类型"
 
 #: ../src/core/app_url.c:67
 #, c-format
@@ -1003,12 +948,10 @@ msgid "Use secure connection"
 msgstr "使用安全连接"
 
 #: ../data/ui/config_panel.glade:180
-#, fuzzy
 msgid "User"
 msgstr "用户数"
 
 #: ../src/core/app.c:142
-#, fuzzy
 msgid "User config not found"
 msgstr "用户文件 %1$s 未找到"
 
@@ -1037,34 +980,31 @@ msgstr "你被 %1$s 踢出了频道：%2$s"
 
 #: ../src/core/app_irc_event.c:477
 #, c-format
-msgid "You have joined"
+msgid "You have joined the channel"
 msgstr "你加入了频道"
 
 #: ../src/core/login_config.c:55
 #, c-format
 msgid "You need to set the field %2$s in order to use login method %1$s"
-msgstr ""
+msgstr "使用 %1$s 登陆方式需要填写 %2$s 选项"
 
 #: ../src/sui/sui_app.c:120
 msgid "[URL…]"
 msgstr "[URL…]"
 
 #: ../data/ui/app.glade:22
-#, fuzzy
 msgid "_About"
 msgstr "关于"
 
 #: ../data/ui/connect_panel.glade:169
-#, fuzzy
 msgid "_Address:"
 msgstr "地址："
 
 #: ../data/ui/config_panel.glade:217
 msgid "_Apply"
-msgstr ""
+msgstr "应用"
 
-#: ../data/ui/prefs_dialog.glade:29 ../data/ui/config_panel.glade:203
-#, fuzzy
+#: ../data/ui/config_panel.glade:203 ../data/ui/prefs_dialog.glade:29
 msgid "_Cancel"
 msgstr "取消"
 
@@ -1082,7 +1022,7 @@ msgstr "断开连接 (_C)"
 
 #: ../data/ui/app.glade:37
 msgid "_Exit"
-msgstr ""
+msgstr "退出 (_E)"
 
 #: ../data/ui/nick_menu.glade:23
 msgid "_Ignore"
@@ -1098,45 +1038,41 @@ msgstr "离开 (_C)"
 
 #: ../data/ui/connect_panel.glade:553
 msgid "_Login method:"
-msgstr ""
+msgstr "登陆方式："
 
 #: ../data/ui/connect_panel.glade:292
-#, fuzzy
 msgid "_Nickname:"
 msgstr "昵称："
 
-#: ../data/ui/prefs_dialog.glade:43 ../data/ui/config_panel.glade:231
+#: ../data/ui/config_panel.glade:231 ../data/ui/prefs_dialog.glade:43
 msgid "_OK"
-msgstr ""
+msgstr "确定"
 
 #: ../data/ui/connect_panel.glade:153
-#, fuzzy
 msgid "_Password:"
 msgstr "密码："
 
 #: ../data/ui/app.glade:13 ../data/ui/app.glade:55
 msgid "_Preferences"
-msgstr ""
+msgstr "首选项："
 
 #: ../data/ui/url_previewer.glade:26
 msgid "_Preview"
-msgstr ""
+msgstr "预览:"
 
 #: ../data/ui/buffer_menu.glade:32
 msgid "_Quit"
 msgstr "退出"
 
 #: ../data/ui/buffer_menu.glade:20
-#, fuzzy
 msgid "_Reconnect"
-msgstr "断开连接 (_C)"
+msgstr "重新连接 (_C)"
 
 #: ../data/ui/prefs_dialog.glade:88
 msgid "_Reload"
-msgstr ""
+msgstr "重新加载"
 
 #: ../data/ui/connect_panel.glade:201
-#, fuzzy
 msgid "_Server:"
 msgstr "服务器："
 
@@ -1149,18 +1085,16 @@ msgid "freenode"
 msgstr ""
 
 #: ../data/ui/url_previewer.glade:136
-#, fuzzy
 msgid "image"
-msgstr "加载图片"
+msgstr "图片"
 
 #: ../data/ui/url_previewer.glade:78
-#, fuzzy
 msgid "loading"
 msgstr "上传图片"
 
 #: ../data/ui/window.glade:471
 msgid "main"
-msgstr ""
+msgstr "主窗口"
 
 #: ../src/core/app_irc_event.c:552 ../src/core/app_irc_event.c:627
 #, c-format
@@ -1176,22 +1110,23 @@ msgid "preload"
 msgstr ""
 
 #: ../src/config/reader.c:310
-#, fuzzy, c-format
 msgid "server-list[%1$d] doesn't have a name"
 msgstr "server_list 中的第 %1$d 个服务器没有名字"
 
 #: ../data/ui/url_previewer.glade:106
 msgid "text"
-msgstr ""
+msgstr "文本"
 
 #: ../src/core/chat_command.c:658
-#, fuzzy, c-format
 msgid "user \"%1$s\" not found"
 msgstr "用户文件 %1$s 未找到"
 
 #: ../data/ui/window.glade:340
 msgid "welcome"
-msgstr ""
+msgstr "欢迎"
+
+#~ msgid "Unsupported content type"
+#~ msgstr "不支持的协议：%1$s"
 
 #~ msgid "\"%1$s\" already exists in %2$s 's ignore list"
 #~ msgstr "\"%1$s\" 已存在于 %2$s 的屏蔽列表中"

@@ -490,7 +490,7 @@ static void irc_event_join(SircSession *sirc, const char *event,
     g_return_if_fail(chat);
 
     if (srv_user->is_me) {
-        snprintf(buf, sizeof(buf), _("You have joined"));
+        snprintf(buf, sizeof(buf), _("You have joined the channel"));
         srn_chat_set_is_joined(chat, TRUE);
         chat_user = chat->user;
     } else {
@@ -1550,7 +1550,7 @@ static void irc_event_numeric(SircSession *sirc, int event,
 
                 // TODO: dont show WHOIS message in message list
                 srn_chat_add_misc_message_fmt(srv->cur_chat, srv->cur_chat->_user,
-                        _("%1$s is member of %2$s"), params[1], msg);
+                        _("%1$s is a member of %2$s"), params[1], msg);
                 break;
             }
         case SIRC_RFC_RPL_WHOISSERVER:

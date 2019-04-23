@@ -89,7 +89,7 @@ SrnRet srn_server_state_transfrom(SrnServer *srv, SrnServerAction action){
         case SRN_SERVER_STATE_CONNECTING:
             switch (action) {
                 case SRN_SERVER_ACTION_CONNECT:
-                    ret = RET_ERR(unallowed, _("Server is connecting, please don't repeat connect"));
+                    ret = RET_ERR(unallowed, _("Hold on, srain is connecting to the server, please do not repeat the action"));
                     break;
                 case SRN_SERVER_ACTION_CONNECT_FAIL:
                     srv->reconn_timer = g_timeout_add(srv->reconn_interval,
@@ -169,14 +169,14 @@ SrnRet srn_server_state_transfrom(SrnServer *srv, SrnServerAction action){
         case SRN_SERVER_STATE_QUITING:
             switch (action) {
                 case SRN_SERVER_ACTION_CONNECT:
-                    ret = RET_ERR(unallowed, _("Server is quiting"));
+                    ret = RET_ERR(unallowed, _("Quitting the server"));
                     break;
                 case SRN_SERVER_ACTION_CONNECT_FAIL:
                     free = TRUE;
                     next_state = SRN_SERVER_STATE_DISCONNECTED;
                     break;
                 case SRN_SERVER_ACTION_DISCONNECT:
-                    ret = RET_ERR(unallowed, _("Server is quiting"));
+                    ret = RET_ERR(unallowed, _("Quitting the server"));
                     break;
                 case SRN_SERVER_ACTION_QUIT: // Force quit
                     sirc_cancel_connect(srv->irc);

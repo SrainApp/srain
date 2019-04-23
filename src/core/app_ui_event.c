@@ -249,7 +249,7 @@ static SrnRet ui_event_send(SuiBuffer *sui, SuiEvent event, GVariantDict *params
         }
     } else {
         if (chat == chat->srv->chat) {
-            ret = RET_ERR(_("Can not send message to a server"));
+            ret = RET_ERR(_("Cannot send message directly to a server"));
             srn_chat_add_error_message(chat, chat->_user, RET_MSG(ret));
             return ret;
         }

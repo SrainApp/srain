@@ -73,7 +73,7 @@ int regex_filter_add_pattern(SrnChat *chat, const char *name, const char *patter
     regex = g_regex_new(pattern, 0, 0, &err);
     if (!regex){
         srn_chat_add_error_message_fmt(chat->srv->cur_chat, chat->user,
-                _("Invail pattern: %1$s"), err->message);
+                _("Invaild regex pattern: %1$s"), err->message);
         return SRN_ERR;
     }
 

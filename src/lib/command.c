@@ -76,7 +76,7 @@ SrnRet srn_command_proc(SrnCommandContext *ctx, const char *rawcmd, void *user_d
                 ret = cmd->bind->cb(cmd, user_data);
             } else if (ret == SRN_ERR) {
                 // TODO: decorate
-                ret = RET_ERR(_("Sorry, command parse failed, please report a bug to <" PACKAGE_WEBSITE "/issues> ."));
+                ret = RET_ERR(_("Sorry, command parsing failed, please report a bug to <" PACKAGE_WEBSITE "/issues> ."));
             }
             srn_command_free(cmd);
             return ret;
@@ -412,7 +412,7 @@ unknown_opt:
     return RET_ERR(_("Unknown option %1$s"), cmd->opt_key[nopt]);
 
 too_many_opt:
-    return RET_ERR(_("Too many options, options count limit to %1$d"), SRN_COMMAND_MAX_OPTS);
+    return RET_ERR(_("Too many optional arguments (maximum allowed: %1$d)"), SRN_COMMAND_MAX_OPTS);
 
 missing_opt_val:
     return RET_ERR(_("Missing vaule for option %1$s"), cmd->opt_key[nopt]);

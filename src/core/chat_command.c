@@ -436,7 +436,7 @@ static SrnRet on_command_server(SrnCommand *cmd, void *user_data){
         srv = srn_application_get_server(app, name);
         if (!srv) {
             // FIXME: better errmsg?
-            return RET_ERR(_("Can not disconnect from a unconnected server"));
+            return RET_ERR(_("Cannot disconnect from a unconnected server"));
         }
 
         // FIXME: looks tricky
@@ -838,7 +838,7 @@ static SrnRet on_command_me(SrnCommand *cmd, void *user_data){
     g_return_val_if_fail(msg, SRN_ERR);
 
     if (chat == chat->srv->chat) {
-        return RET_ERR(_("Can not send message to a server"));
+        return RET_ERR(_("Cannot send message directly to a server"));
     }
 
     ret = sirc_cmd_action(chat->srv->irc, chat->name, msg);

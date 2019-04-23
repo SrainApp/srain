@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Srain 1.0.0rc2\n"
+"Project-Id-Version: Srain 1.0.0rc1\n"
 "Report-Msgid-Bugs-To: i@silverrainz.me\n"
-"POT-Creation-Date: 2019-04-12 18:41+0800\n"
+"POT-Creation-Date: 2019-04-29 17:38+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -162,6 +162,11 @@ msgstr ""
 msgid "%1$s invites you into %2$s"
 msgstr ""
 
+#: ../src/core/app_irc_event.c:1537
+#, c-format
+msgid "%1$s is a member of %2$s"
+msgstr ""
+
 #: ../src/core/app_irc_event.c:1549
 #, c-format
 msgid "%1$s is attached to %2$s at \"%3$s\""
@@ -175,11 +180,6 @@ msgstr ""
 #: ../src/core/app_irc_event.c:1568
 #, c-format
 msgid "%1$s is idle for %2$s seconds since %3$s"
-msgstr ""
-
-#: ../src/core/app_irc_event.c:1537
-#, c-format
-msgid "%1$s is member of %2$s"
 msgstr ""
 
 #: ../src/core/app_irc_event.c:404 ../src/core/app_irc_event.c:409
@@ -220,8 +220,8 @@ msgstr ""
 msgid "<big>Welcome to Srain!</big>"
 msgstr ""
 
-#: ../data/ui/recv_message.glade:88 ../data/ui/send_message.glade:22
-#: ../data/ui/misc_message.glade:23
+#: ../data/ui/recv_message.glade:88 ../data/ui/misc_message.glade:23
+#: ../data/ui/send_message.glade:22
 msgid ""
 "<span color=\"red\">Unable to display message content <sup>ERROR</sup></span>"
 msgstr ""
@@ -274,16 +274,16 @@ msgstr ""
 msgid "By %1$s at %2$s"
 msgstr ""
 
+#: ../data/ui/connect_panel.glade:608 ../data/ui/join_panel.glade:379
+msgid "Cancel"
+msgstr ""
+
 #: ../src/core/chat_command.c:439
-msgid "Can not disconnect from a unconnected server"
+msgid "Cannot disconnect from a unconnected server"
 msgstr ""
 
 #: ../src/core/chat_command.c:841 ../src/core/app_ui_event.c:236
-msgid "Can not send message to a server"
-msgstr ""
-
-#: ../data/ui/join_panel.glade:379 ../data/ui/connect_panel.glade:608
-msgid "Cancel"
+msgid "Cannot send message directly to a server"
 msgstr ""
 
 #: ../data/ui/join_panel.glade:268
@@ -360,36 +360,36 @@ msgstr ""
 #: ../src/core/app.c:76 ../src/core/app.c:84 ../src/core/app.c:294
 #: ../src/core/app.c:407 ../src/sui/sui_app.c:442 ../src/sui/sui_app.c:461
 #: ../src/sui/sui_app.c:497 ../src/sui/sui_misc_message.c:189
-#: ../src/sui/sui_common.c:145 ../src/sui/sui_prefs_dialog.c:162
-#: ../src/sui/sui_connect_panel.c:545 ../src/sui/sui_join_panel.c:296
-#: ../src/sui/sui_join_panel.c:338 ../src/sui/sui_join_panel.c:377
-#: ../src/sui/sui_join_panel.c:383
+#: ../src/sui/sui_common.c:145 ../src/sui/sui_connect_panel.c:545
+#: ../src/sui/sui_join_panel.c:296 ../src/sui/sui_join_panel.c:338
+#: ../src/sui/sui_join_panel.c:377 ../src/sui/sui_join_panel.c:383
+#: ../src/sui/sui_prefs_dialog.c:162
 msgid "Error"
 msgstr ""
 
 #: ../src/config/reader.c:89 ../src/config/reader.c:95
 #, c-format
-msgid "Error occurred while read application config in %1$s: %2$s"
+msgid "Error occurred while reading application config in %1$s: %2$s"
 msgstr ""
 
 #: ../src/config/reader.c:199 ../src/config/reader.c:206
 #, c-format
-msgid "Error occurred while read chat config in %1$s: %2$s"
+msgid "Error occurred while reading chat config in %1$s: %2$s"
 msgstr ""
 
 #: ../src/config/reader.c:69 ../src/config/reader.c:75
 #, c-format
-msgid "Error occurred while read log config in %1$s: %2$s"
+msgid "Error occurred while reading log config in %1$s: %2$s"
 msgstr ""
 
 #: ../src/config/reader.c:129 ../src/config/reader.c:135
 #, c-format
-msgid "Error occurred while read server config in %1$s: %2$s"
+msgid "Error occurred while reading server config in %1$s: %2$s"
 msgstr ""
 
 #: ../src/config/reader.c:109 ../src/config/reader.c:115
 #, c-format
-msgid "Error occurred while read server list config in %1$s: %2$s"
+msgid "Error occurred while reading server list config in %1$s: %2$s"
 msgstr ""
 
 #: ../src/sui/sui_url_previewer.c:539
@@ -528,13 +528,18 @@ msgstr ""
 msgid "Forward to..."
 msgstr ""
 
+#: ../src/core/server_state.c:92
+msgid ""
+"Hold on, srain is connecting to the server, please do not repeat the action"
+msgstr ""
+
 #: ../data/ui/connect_panel.glade:450
 msgid "Identity"
 msgstr ""
 
 #: ../src/filter/regex.c:76
 #, c-format
-msgid "Invail pattern: %1$s"
+msgid "Invaild regex pattern: %1$s"
 msgstr ""
 
 #: ../src/sirc/sirc_config.c:37
@@ -578,7 +583,7 @@ msgid ""
 "try to enable it and reconnect"
 msgstr ""
 
-#: ../data/ui/join_panel.glade:394 ../data/ui/window.glade:100
+#: ../data/ui/window.glade:100 ../data/ui/join_panel.glade:394
 msgid "Join"
 msgstr ""
 
@@ -712,12 +717,12 @@ msgstr ""
 msgid "Open one or more IRC URLs"
 msgstr ""
 
-#: ../data/ui/join_panel.glade:100 ../data/ui/connect_panel.glade:186
+#: ../data/ui/connect_panel.glade:186 ../data/ui/join_panel.glade:100
 msgid "Optional"
 msgstr ""
 
-#: ../data/ui/join_panel.glade:88 ../data/ui/connect_panel.glade:368
-#: ../data/ui/connect_panel.glade:409 ../data/ui/connect_panel.glade:464
+#: ../data/ui/connect_panel.glade:368 ../data/ui/connect_panel.glade:409
+#: ../data/ui/connect_panel.glade:464 ../data/ui/join_panel.glade:88
 msgid "Password:"
 msgstr ""
 
@@ -726,15 +731,19 @@ msgid "Ping time out"
 msgstr ""
 
 #: ../src/sui/sui_join_panel.c:297
-msgid "Please connect to server before joining any channel"
+msgid "Please connect to a server before joining any channel"
 msgstr ""
 
 #: ../src/sui/sui_join_panel.c:377
-msgid "Please connect to server before searching any channel"
+msgid "Please connect to a server before searching any channel"
 msgstr ""
 
 #: ../data/ui/connect_panel.glade:106
 msgid "Quick Mode"
+msgstr ""
+
+#: ../src/core/server_state.c:172 ../src/core/server_state.c:179
+msgid "Quitting the server"
 msgstr ""
 
 #: ../src/core/app_irc_event.c:927
@@ -827,17 +836,9 @@ msgstr ""
 msgid "Server is already disconnected"
 msgstr ""
 
-#: ../src/core/server_state.c:92
-msgid "Server is connecting, please don't repeat connect"
-msgstr ""
-
 #: ../src/core/server_state.c:149 ../src/core/server_state.c:152
 #: ../src/core/server_state.c:155 ../src/core/server_state.c:158
 msgid "Server is disconnecting"
-msgstr ""
-
-#: ../src/core/server_state.c:172 ../src/core/server_state.c:179
-msgid "Server is quiting"
 msgstr ""
 
 #: ../data/ui/connect_panel.glade:52
@@ -870,7 +871,7 @@ msgid "Some error occurred"
 msgstr ""
 
 #: ../src/lib/command.c:79
-msgid "Sorry, command parse failed, please report a bug to <"
+msgid "Sorry, command parsing failed, please report a bug to <"
 msgstr ""
 
 #: ../data/ui/app.glade:115 ../data/ui/app.glade:116
@@ -878,7 +879,7 @@ msgid "Srain"
 msgstr ""
 
 #: ../data/ui/prefs_dialog.glade:9
-msgid "Srain Perferences"
+msgid "Srain Preferences"
 msgstr ""
 
 #: ../src/sirc/sirc_config.c:72
@@ -904,7 +905,7 @@ msgstr ""
 
 #: ../src/lib/command.c:415
 #, c-format
-msgid "Too many options, options count limit to %1$d"
+msgid "Too many optional arguments (maximum allowed: %1$d)"
 msgstr ""
 
 #: ../data/ui/join_panel.glade:305
@@ -963,12 +964,8 @@ msgstr ""
 msgid "Unknown sub command: %1$s"
 msgstr ""
 
-#: ../src/sui/sui_url_previewer.c:318
+#: ../src/sui/sui_url_previewer.c:318 ../src/sui/sui_url_previewer.c:555
 msgid "Unsupported URL content type"
-msgstr ""
-
-#: ../src/sui/sui_url_previewer.c:555
-msgid "Unsupported content type"
 msgstr ""
 
 #: ../src/core/app_url.c:67
@@ -1011,7 +1008,7 @@ msgstr ""
 
 #: ../src/core/app_irc_event.c:477
 #, c-format
-msgid "You have joined"
+msgid "You have joined the channel"
 msgstr ""
 
 #: ../src/core/login_config.c:55
@@ -1035,7 +1032,7 @@ msgstr ""
 msgid "_Apply"
 msgstr ""
 
-#: ../data/ui/prefs_dialog.glade:29 ../data/ui/config_panel.glade:203
+#: ../data/ui/config_panel.glade:203 ../data/ui/prefs_dialog.glade:29
 msgid "_Cancel"
 msgstr ""
 
@@ -1075,7 +1072,7 @@ msgstr ""
 msgid "_Nickname:"
 msgstr ""
 
-#: ../data/ui/prefs_dialog.glade:43 ../data/ui/config_panel.glade:231
+#: ../data/ui/config_panel.glade:231 ../data/ui/prefs_dialog.glade:43
 msgid "_OK"
 msgstr ""
 

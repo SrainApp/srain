@@ -306,7 +306,7 @@ static void join_button_on_click(gpointer user_data){
     buf = sui_common_get_cur_buffer(); // FIXME
     if (!SUI_IS_BUFFER(buf)){
        sui_message_box(_("Error"),
-               _("Please connect to server before joining any channel"));
+               _("Please connect to a server before joining any channel"));
        return;
     }
 
@@ -427,7 +427,7 @@ static void refresh_button_on_clicked(gpointer user_data){
 
     buf = sui_common_get_cur_buffer(); // FIXME:
     if (!SUI_IS_BUFFER(buf)){
-       sui_message_box(_("Error"), _("Please connect to server before searching any channel"));
+       sui_message_box(_("Error"), _("Please connect to a server before searching any channel"));
        return;
     }
 
