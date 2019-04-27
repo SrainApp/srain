@@ -108,38 +108,16 @@ Reload user configuration.
 
 Usage::
 
-    /server [add|rm|list|set|connect|disconnect]
-        [-host <host>] [-port <port>] [-pwd <password>] [-tls] [-tls-noverify]
-        [-nick <nickname>] [-user <username>] [-real <realname>] <name>
+    /server [connect|disconnect] <name>
 
-IRC server management.
+Predefined IRC server management.
 
 .. note:: This command may changes context.
 
 Sub commands:
 
-* ``add``: create a server with unique name, you can set server information via
-  options
-* ``rm``: remove a server, all options will be ignored, you can only remove a
-  server which is unconnected
-* ``list``: list all available servers
-* ``set``: set server information via options
-* ``connect``: connect to specified server, all options will be ignored
-* ``disconnect``: disconnect from specified server, all options will be ignored
-
-Create a server and connect to it immediately. It will become the
-default server automaticly.
-
-Options:
-
-* ``-host``: server host
-* ``-port``: server port, default ``6667``
-* ``-pwd``: connection password, default empty
-* ``-tls``: use secure connections with TLS
-* ``-tls-noverify``: use TLS connection without certificate verification
-* ``-nick``: specify nickname
-* ``-user``: specify username, default same as nickname
-* ``-real``: specify realname, default same as nickname
+* ``connect``: connect to specified predefined server
+* ``disconnect``: disconnect from specified predefined server
 
 Arguments:
 
