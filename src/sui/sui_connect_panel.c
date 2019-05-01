@@ -75,7 +75,7 @@ struct _SuiConnectPanel {
     /* Buttons */
     GtkButton *connect_button;
     GtkButton *cancel_button;
-    GtkFileChooserButton *certificate_file_chooser_button;
+    GtkFileChooserButton *cert_file_chooser_button;
 
     /* Data model */
     GtkListStore *server_list_store;
@@ -199,7 +199,7 @@ static void sui_connect_panel_class_init(SuiConnectPanelClass *class){
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, msg_nickserv_password_entry);
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, sasl_plain_identify_entry);
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, sasl_plain_password_entry);
-    gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, certificate_file_chooser_button);
+    gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, cert_file_chooser_button);
 
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, connect_button);
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, cancel_button);
@@ -278,17 +278,17 @@ static void update(SuiConnectPanel *self, const char *srv_name){
         gtk_combo_box_set_active_id(self->login_method_combo_box,
                 srn_login_method_to_string(srv_cfg->user->login->method));
         gtk_entry_set_text(self->nickserv_password_entry,
-                srv_cfg->user->login->nickserv_password ?
-                srv_cfg->user->login->nickserv_password : "");
+                srv_cfg->user->login->password ?
+                srv_cfg->user->login->password : "");
         gtk_entry_set_text(self->msg_nickserv_password_entry,
-                srv_cfg->user->login->msg_nickserv_password ?
-                srv_cfg->user->login->msg_nickserv_password : "");
+                srv_cfg->user->login->password ?
+                srv_cfg->user->login->password : "");
         gtk_entry_set_text(self->sasl_plain_identify_entry,
-                srv_cfg->user->login->sasl_plain_identify ?
-                srv_cfg->user->login->sasl_plain_identify : "");
+                srv_cfg->user->login->password ?
+                srv_cfg->user->login->password : "");
         gtk_entry_set_text(self->sasl_plain_password_entry,
-                srv_cfg->user->login->sasl_plain_password ?
-                srv_cfg->user->login->sasl_plain_password : "");
+                srv_cfg->user->login->password ?
+                srv_cfg->user->login->password : "");
 
         srn_server_config_free(srv_cfg);
     }
@@ -434,7 +434,7 @@ static void connect_button_on_click(gpointer user_data){
         const char *msg_nickserv_password;
         const char *sasl_plain_identify;
         const char *sasl_plain_password;
-        const char *sasl_certificate_file = "";
+        const char *sasl_cert_file = "";
 
         GtkEntry *entry;
         SrnLoginMethod method;
@@ -468,13 +468,13 @@ static void connect_button_on_click(gpointer user_data){
 
         if (method == SRN_LOGIN_METHOD_SASL_ECDSA_NIST256P_CHALLENGE) {
             // Get the file path
-            sasl_certificate_file = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(self->certificate_file_chooser_button));
-            if (!sasl_certificate_file) {
+            sasl_cert_file = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(self->cert_file_chooser_button));
+            if (!sasl_cert_file) {
                 // TODO: use the config from srain.cfg if not provided
             }
-            DBG_FR("X509 Cert Path: %s", sasl_certificate_file);
-            str_assign(&srv_cfg->user->login->sasl_certificate_file,
-                    sasl_certificate_file);
+            DBG_FR("X509 Cert Path: %s", sasl_cert_file);
+            str_assign(&srv_cfg->user->login->cert_file,
+                    sasl_cert_file);
         }
 
         if (!str_is_empty(host)) {
@@ -493,18 +493,18 @@ static void connect_button_on_click(gpointer user_data){
         srv_cfg->user->login->method = method;
 
         if (!str_is_empty(nickserv_password)) {
-            str_assign(&srv_cfg->user->login->nickserv_password,
+            str_assign(&srv_cfg->user->login->password,
                     nickserv_password);
         }
         if (!str_is_empty(msg_nickserv_password)) {
-            str_assign(&srv_cfg->user->login->msg_nickserv_password,
+            str_assign(&srv_cfg->user->login->password,
                     msg_nickserv_password);
         }
         if (!str_is_empty(sasl_plain_identify)) {
-            str_assign(&srv_cfg->user->login->sasl_plain_identify, sasl_plain_identify);
+            str_assign(&srv_cfg->user->login->password, sasl_plain_identify);
         }
         if (!str_is_empty(sasl_plain_password)) {
-            str_assign(&srv_cfg->user->login->sasl_plain_password, sasl_plain_password);
+            str_assign(&srv_cfg->user->login->password, sasl_plain_password);
         }
         LOG_FR("Server connect start with method %s", method_str);
     } else {

@@ -225,12 +225,8 @@ enum _SrnLoginMethod {
 struct _SrnLoginConfig {
     SrnLoginMethod method;
 
-    // Union?
-    char *nickserv_password;
-    char *msg_nickserv_password;
-    char *sasl_plain_identify;
-    char *sasl_plain_password;
-    char *sasl_certificate_file;
+    char *password;
+    char *cert_file;
     // ...
 };
 

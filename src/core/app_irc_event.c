@@ -336,22 +336,22 @@ static void irc_event_welcome(SircSession *sirc, int event,
             {
                 char *msg;
 
-                g_return_if_fail(srv->cfg->user->login->msg_nickserv_password);
+                g_return_if_fail(srv->cfg->user->login->password);
 
                 try_login = TRUE;
                 msg = g_strdup_printf("IDENTIFY %s",
-                        srv->cfg->user->login->msg_nickserv_password);
+                        srv->cfg->user->login->password);
                 sirc_cmd_msg(sirc, "NickServ", msg);
                 g_free(msg);
                 break;
             }
         case SRN_LOGIN_METHOD_NICKSERV:
             {
-                g_return_if_fail(srv->cfg->user->login->nickserv_password);
+                g_return_if_fail(srv->cfg->user->login->password);
 
                 try_login = TRUE;
                 sirc_cmd_raw(sirc, "NICKSERV IDENTIFY %s\r\n",
-                        srv->cfg->user->login->nickserv_password);
+                        srv->cfg->user->login->password);
                 break;
             }
         default:
@@ -1188,11 +1188,11 @@ static void irc_event_authenticate(SircSession *sirc, const char *event,
 
                 /* ref: https://ircv3.net/specs/extensions/sasl-3.1.html */
                 str = g_string_new(NULL);
-                str = g_string_append(str, srv->cfg->user->login->sasl_plain_identify);
+                str = g_string_append(str, srv->cfg->user->nick);
                 str = g_string_append_unichar(str, g_utf8_get_char("\0")); // Unicode null char
-                str = g_string_append(str, srv->cfg->user->login->sasl_plain_identify);
+                str = g_string_append(str, srv->cfg->user->nick);
                 str = g_string_append_unichar(str, g_utf8_get_char("\0")); // Unicode null char
-                str = g_string_append(str, srv->cfg->user->login->sasl_plain_password);
+                str = g_string_append(str, srv->cfg->user->login->password);
 
                 // TODO: 400 bytes limit
                 base64 = g_base64_encode((const guchar *)str->str, str->len);
@@ -1201,7 +1201,7 @@ static void irc_event_authenticate(SircSession *sirc, const char *event,
                 method = srn_login_method_to_string(srv->cfg->user->login->method);
                 srn_chat_add_misc_message_fmt(srv->chat, srv->chat->_user,
                         _("Logging in with %1$s as %2$s..."),
-                        method, srv->cfg->user->login->sasl_plain_identify);
+                        method, srv->cfg->user->nick);
 
                 g_free(base64);
                 g_string_free(str, TRUE);
@@ -1246,12 +1246,12 @@ static void irc_event_authenticate(SircSession *sirc, const char *event,
                 // This is the second phase to authenticate, we need to sign the message from server and reply it
                 const unsigned char *challenge = params[0];
                 DBG_FR("CHALLENGE IS %s", challenge);
-                const char *certfile = srv->cfg->user->login->sasl_certificate_file;
+                const char *cert = srv->cfg->user->login->cert_file;
                 char *output;
                 size_t outlen;
-                libecdsaauth_key_t *keypair = libecdsaauth_key_load(certfile);
+                libecdsaauth_key_t *keypair = libecdsaauth_key_load(cert);
                 if(keypair == NULL) {
-                    ERR_FR("File %s not found, or it is not a valid ecdsa certificate file.", certfile);
+                    ERR_FR("File %s not found, or it is not a valid ecdsa certificate file.", cert);
                     return ;
                 }
                 libecdsaauth_sign_base64(keypair, challenge, strlen(challenge), &output, &outlen);
