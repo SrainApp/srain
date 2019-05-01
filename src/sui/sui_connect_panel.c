@@ -46,6 +46,10 @@
 #define PAGE_QUICK_MODE     "quick_mode_page"
 #define PAGE_ADVANCED_MODE  "advanced_mode_page"
 
+#define LOGIN_PAGE_NONE     "none"
+#define LOGIN_PAGE_PASSWORD "password"
+#define LOGIN_PAGE_CERT     "certificate"
+
 struct _SuiConnectPanel {
     GtkBox parent;
 
@@ -60,22 +64,21 @@ struct _SuiConnectPanel {
     GtkEntry *host_entry;
     GtkEntry *port_entry;
     GtkEntry *password_entry;
+    GtkCheckButton *remember_password_check_button;
     GtkCheckButton *tls_check_button;
     GtkCheckButton *tls_noverify_check_button;
 
     GtkEntry *nick_entry;
     GtkComboBox *login_method_combo_box;
     GtkStack *login_method_stack;
-    GtkEntry *nickserv_password_entry;
-    GtkEntry *msg_nickserv_password_entry;
-    GtkEntry *sasl_plain_identify_entry;
-    GtkEntry *sasl_plain_password_entry;
+    GtkEntry *login_password_entry;
+    GtkCheckButton *remember_login_password_check_button;
+    GtkFileChooserButton *login_cert_file_chooser_button;
 
 
     /* Buttons */
     GtkButton *connect_button;
     GtkButton *cancel_button;
-    GtkFileChooserButton *cert_file_chooser_button;
 
     /* Data model */
     GtkListStore *server_list_store;
@@ -158,13 +161,7 @@ static void sui_connect_panel_init(SuiConnectPanel *self){
             G_CALLBACK(connect_button_on_click), self);
     g_signal_connect_swapped(self->nick_entry, "activate",
             G_CALLBACK(connect_button_on_click), self);
-    g_signal_connect_swapped(self->nickserv_password_entry, "activate",
-            G_CALLBACK(connect_button_on_click), self);
-    g_signal_connect_swapped(self->msg_nickserv_password_entry, "activate",
-            G_CALLBACK(connect_button_on_click), self);
-    g_signal_connect_swapped(self->sasl_plain_identify_entry, "activate",
-            G_CALLBACK(connect_button_on_click), self);
-    g_signal_connect_swapped(self->sasl_plain_password_entry, "activate",
+    g_signal_connect_swapped(self->login_password_entry, "activate",
             G_CALLBACK(connect_button_on_click), self);
 
     refresh_server_list(self);
@@ -189,17 +186,16 @@ static void sui_connect_panel_class_init(SuiConnectPanelClass *class){
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, host_entry);
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, port_entry);
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, password_entry);
+    gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, remember_password_check_button);
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, tls_check_button);
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, tls_noverify_check_button);
 
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, nick_entry);
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, login_method_combo_box);
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, login_method_stack);
-    gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, nickserv_password_entry);
-    gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, msg_nickserv_password_entry);
-    gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, sasl_plain_identify_entry);
-    gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, sasl_plain_password_entry);
-    gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, cert_file_chooser_button);
+    gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, login_password_entry);
+    gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, remember_login_password_check_button);
+    gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, login_cert_file_chooser_button);
 
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, connect_button);
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, cancel_button);
@@ -225,17 +221,19 @@ static void update(SuiConnectPanel *self, const char *srv_name){
         gtk_entry_set_text(self->port_entry, "");
         gtk_entry_set_text(self->password_entry, "");
         gtk_toggle_button_set_active(
+                GTK_TOGGLE_BUTTON(self->remember_password_check_button), FALSE);
+        gtk_toggle_button_set_active(
                 GTK_TOGGLE_BUTTON(self->tls_check_button), FALSE);
         gtk_toggle_button_set_active(
                 GTK_TOGGLE_BUTTON(self->tls_noverify_check_button), FALSE);
 
         gtk_entry_set_text(self->nick_entry, "");
         gtk_combo_box_set_active_iter(self->login_method_combo_box, NULL);
-        gtk_entry_set_text(self->nick_entry, "");
-        gtk_entry_set_text(self->nickserv_password_entry, "");
-        gtk_entry_set_text(self->msg_nickserv_password_entry, "");
-        gtk_entry_set_text(self->sasl_plain_identify_entry, "");
-        gtk_entry_set_text(self->sasl_plain_password_entry, "");
+        gtk_entry_set_text(self->login_password_entry, "");
+        gtk_toggle_button_set_active(
+                GTK_TOGGLE_BUTTON(self->remember_login_password_check_button), FALSE);
+        gtk_file_chooser_set_filename(
+                GTK_FILE_CHOOSER(self->login_cert_file_chooser_button), "");
     } else {
         SrnRet ret;
         SrnApplication *app_model;
@@ -277,18 +275,13 @@ static void update(SuiConnectPanel *self, const char *srv_name){
 
         gtk_combo_box_set_active_id(self->login_method_combo_box,
                 srn_login_method_to_string(srv_cfg->user->login->method));
-        gtk_entry_set_text(self->nickserv_password_entry,
+        gtk_entry_set_text(self->login_password_entry,
                 srv_cfg->user->login->password ?
                 srv_cfg->user->login->password : "");
-        gtk_entry_set_text(self->msg_nickserv_password_entry,
-                srv_cfg->user->login->password ?
-                srv_cfg->user->login->password : "");
-        gtk_entry_set_text(self->sasl_plain_identify_entry,
-                srv_cfg->user->login->password ?
-                srv_cfg->user->login->password : "");
-        gtk_entry_set_text(self->sasl_plain_password_entry,
-                srv_cfg->user->login->password ?
-                srv_cfg->user->login->password : "");
+        gtk_file_chooser_set_filename(
+                GTK_FILE_CHOOSER(self->login_cert_file_chooser_button),
+                srv_cfg->user->login->cert_file ?
+                srv_cfg->user->login->cert_file : "");
 
         srn_server_config_free(srv_cfg);
     }
@@ -365,6 +358,7 @@ static void server_combo_box_on_changed(GtkComboBox *combo_box,
 
 static void login_method_combo_box_on_changed(GtkComboBox *combo_box,
         gpointer user_data){
+    const char *page;
     SrnLoginMethod lm;
     GtkTreeModel *model;
     GtkTreeIter iter;
@@ -382,8 +376,21 @@ static void login_method_combo_box_on_changed(GtkComboBox *combo_box,
                 -1);
     }
 
-    gtk_stack_set_visible_child_name(self->login_method_stack,
-            srn_login_method_to_string(lm));
+    switch (lm) {
+        case SRN_LOGIN_METHOD_NICKSERV:
+        case SRN_LOGIN_METHOD_MSG_NICKSERV:
+        case SRN_LOGIN_METHOD_SASL_PLAIN:
+            page = LOGIN_PAGE_PASSWORD;
+            break;
+        case SRN_LOGIN_METHOD_SASL_ECDSA_NIST256P_CHALLENGE:
+            page = LOGIN_PAGE_CERT;
+            break;
+        case SRN_LOGIN_METHOD_NONE:
+        default:
+            page = LOGIN_PAGE_NONE;
+            break;
+    }
+    gtk_stack_set_visible_child_name(self->login_method_stack, page);
 }
 
 static void connect_button_on_click(gpointer user_data){
@@ -430,11 +437,8 @@ static void connect_button_on_click(gpointer user_data){
         bool tls_noverify;
         const char *nick;
         const char *method_str;
-        const char *nickserv_password;
-        const char *msg_nickserv_password;
-        const char *sasl_plain_identify;
-        const char *sasl_plain_password;
-        const char *sasl_cert_file = "";
+        const char *login_password;
+        const char *login_cert_file;
 
         GtkEntry *entry;
         SrnLoginMethod method;
@@ -460,28 +464,15 @@ static void connect_button_on_click(gpointer user_data){
         nick = gtk_entry_get_text(self->nick_entry);
         method_str = gtk_combo_box_get_active_id(self->login_method_combo_box);
         method = srn_login_method_from_string(method_str);
-
-        nickserv_password = gtk_entry_get_text(self->nickserv_password_entry);
-        msg_nickserv_password = gtk_entry_get_text(self->msg_nickserv_password_entry);
-        sasl_plain_identify = gtk_entry_get_text(self->sasl_plain_identify_entry);
-        sasl_plain_password = gtk_entry_get_text(self->sasl_plain_password_entry);
-
-        if (method == SRN_LOGIN_METHOD_SASL_ECDSA_NIST256P_CHALLENGE) {
-            // Get the file path
-            sasl_cert_file = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(self->cert_file_chooser_button));
-            if (!sasl_cert_file) {
-                // TODO: use the config from srain.cfg if not provided
-            }
-            DBG_FR("X509 Cert Path: %s", sasl_cert_file);
-            str_assign(&srv_cfg->user->login->cert_file,
-                    sasl_cert_file);
-        }
+        login_password = gtk_entry_get_text(self->login_password_entry);
+        login_cert_file = gtk_file_chooser_get_filename(
+                GTK_FILE_CHOOSER(self->login_cert_file_chooser_button));
 
         if (!str_is_empty(host)) {
             srn_server_config_clear_addr(srv_cfg);
             srn_server_config_add_addr(srv_cfg, srn_server_addr_new(host, port));
         }
-        if (!str_is_empty(passwd)) {
+        if (strlen(passwd)) { // Password can be empty
             str_assign(&srv_cfg->passwd, passwd);
         }
         srv_cfg->irc->tls = tls || tls_noverify;
@@ -490,23 +481,14 @@ static void connect_button_on_click(gpointer user_data){
         if (!str_is_empty(nick)) {
             str_assign(&srv_cfg->user->nick, nick);
         }
-        srv_cfg->user->login->method = method;
 
-        if (!str_is_empty(nickserv_password)) {
-            str_assign(&srv_cfg->user->login->password,
-                    nickserv_password);
+        srv_cfg->user->login->method = method;
+        if (strlen(login_password)) { // Password can be empty
+            str_assign(&srv_cfg->user->login->password, login_password);
         }
-        if (!str_is_empty(msg_nickserv_password)) {
-            str_assign(&srv_cfg->user->login->password,
-                    msg_nickserv_password);
+        if (!str_is_empty(login_cert_file)) {
+            str_assign(&srv_cfg->user->login->cert_file, login_cert_file);
         }
-        if (!str_is_empty(sasl_plain_identify)) {
-            str_assign(&srv_cfg->user->login->password, sasl_plain_identify);
-        }
-        if (!str_is_empty(sasl_plain_password)) {
-            str_assign(&srv_cfg->user->login->password, sasl_plain_password);
-        }
-        LOG_FR("Server connect start with method %s", method_str);
     } else {
         g_warn_if_reached();
         goto FIN;
