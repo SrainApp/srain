@@ -362,6 +362,7 @@
                         <property name="halign">end</property>
                         <property name="valign">baseline</property>
                         <property name="visibility">False</property>
+                        <property name="invisible_char">●</property>
                         <property name="input_purpose">password</property>
                       </object>
                       <packing>

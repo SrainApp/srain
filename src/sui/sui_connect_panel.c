@@ -472,11 +472,11 @@ static void connect_button_on_click(gpointer user_data){
         }
 
         passwd = gtk_entry_get_text(self->password_entry);
+        // Always overwrite password
+        str_assign(&srv_cfg->password, passwd);
+
         rmb_passwd = gtk_toggle_button_get_active(
                 GTK_TOGGLE_BUTTON(self->remember_password_check_button));
-        if (strlen(passwd)) { // Password can be empty
-            str_assign(&srv_cfg->password, passwd);
-        }
         if (rmb_passwd) {
             if (strlen(passwd)) {  // Reqeust to store password
                 ret = srn_config_manager_store_server_password(
@@ -519,15 +519,15 @@ static void connect_button_on_click(gpointer user_data){
         srv_cfg->user->login->method = method;
 
         login_passwd = gtk_entry_get_text(self->login_password_entry);
+        // Always overwrite password
+        str_assign(&srv_cfg->user->login->password, login_passwd);
+
         rmb_login_passwd = gtk_toggle_button_get_active(
                 GTK_TOGGLE_BUTTON(self->remember_login_password_check_button));
-        if (strlen(login_passwd)) { // Password can be empty
-            str_assign(&srv_cfg->user->login->password, login_passwd);
-        }
         if (rmb_login_passwd) {
             if (strlen(login_passwd)) { // Reqeust to store password
                 ret = srn_config_manager_store_user_password(
-                        app_model->cfg_mgr, passwd, srv_name, nick);
+                        app_model->cfg_mgr, login_passwd, srv_name, nick);
                 if (!RET_IS_OK(ret)) {
                     ret = RET_ERR(_("Failed to store user password: %s"),
                             RET_MSG(ret));
