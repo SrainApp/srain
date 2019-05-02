@@ -46,5 +46,7 @@ void* sui_application_get_ctx(SuiApplication *self);
 SuiApplicationEvents* sui_application_get_events(SuiApplication *self);
 void sui_application_set_config(SuiApplication *self, SuiApplicationConfig *cfg);
 SuiApplicationConfig* sui_application_get_config(SuiApplication *self);
+SuiApplicationOptions* sui_application_get_options(SuiApplication *self);
+
 
 #endif /* __SUI_APP_H */

@@ -54,6 +54,7 @@ void* sui_application_get_ctx(SuiApplication *app);
 
 void sui_application_set_config(SuiApplication *app, SuiApplicationConfig *cfg);
 SuiApplicationConfig* sui_application_get_config(SuiApplication *app);
+SuiApplicationOptions* sui_application_get_options(SuiApplication *app);
 
 /* SuiWindow */
 SuiWindow* sui_new_window(SuiApplication *app, SuiWindowEvents *events);
