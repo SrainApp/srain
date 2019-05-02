@@ -50,8 +50,8 @@
           <object class="GtkGrid">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="row_spacing">2</property>
-            <property name="column_spacing">2</property>
+            <property name="row_spacing">4</property>
+            <property name="column_spacing">4</property>
             <child>
               <object class="GtkLabel">
                 <property name="visible">True</property>
@@ -96,7 +96,10 @@
               <object class="GtkEntry" id="password_entry">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="halign">end</property>
                 <property name="valign">baseline</property>
+                <property name="visibility">False</property>
+                <property name="invisible_char">●</property>
                 <property name="placeholder_text" translatable="yes">Optional</property>
                 <property name="input_purpose">password</property>
               </object>
@@ -104,6 +107,25 @@
                 <property name="left_attach">1</property>
                 <property name="top_attach">1</property>
               </packing>
+            </child>
+            <child>
+              <object class="GtkCheckButton" id="remember_password_check_button">
+                <property name="label" translatable="yes">Remember password</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="focus_on_click">False</property>
+                <property name="receives_default">False</property>
+                <property name="halign">end</property>
+                <property name="valign">baseline</property>
+                <property name="draw_indicator">True</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <placeholder/>
             </child>
           </object>
           <packing>
@@ -414,6 +436,7 @@
     <widgets>
       <widget name="chan_entry"/>
       <widget name="password_entry"/>
+      <widget name="remember_password_check_button"/>
     </widgets>
   </object>
 </interface>

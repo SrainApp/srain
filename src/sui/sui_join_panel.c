@@ -27,6 +27,7 @@
 #include <gtk/gtk.h>
 
 #include "sui/sui.h"
+#include "config/password.h"
 #include "srain.h"
 #include "i18n.h"
 #include "log.h"
@@ -36,6 +37,7 @@
 #include "sui_event_hdr.h"
 #include "sui_window.h"
 #include "sui_buffer.h"
+#include "sui_chat_buffer.h"
 #include "sui_join_panel.h"
 
 #define PAGE_JOIN_CHANNEL           "join_channel_page"
@@ -63,6 +65,7 @@ struct _SuiJoinPanel {
     /* Join channel page */
     GtkEntry *chan_entry;
     GtkEntry *password_entry;
+    GtkCheckButton *remember_password_check_button;
 
     /* Search channel page */
     GtkEntry *search_entry;
@@ -112,6 +115,9 @@ gboolean chan_tree_visible_func(GtkTreeModel *model, GtkTreeIter *iter,
 static void chan_tree_model_filter_refilter(gpointer user_data);
 static void chan_tree_model_on_row_changed(GtkTreeModel *tree_model,
         GtkTreePath *path, GtkTreeIter *iter, gpointer user_data);
+static void chan_entry_on_changed(GtkEditable *editable, gpointer user_data);
+static void on_password_lookup(GObject *source, GAsyncResult *result,
+        gpointer user_data);
 
 static void update_status(SuiJoinPanel *self);
 
@@ -143,6 +149,8 @@ static void sui_join_panel_init(SuiJoinPanel *self){
             G_CALLBACK(match_combo_box_on_changed), self);
     g_signal_connect(self->chan_tree_view, "row-activated",
             G_CALLBACK(chan_tree_view_on_row_activate), self);
+    g_signal_connect(self->chan_entry, "changed",
+            G_CALLBACK(chan_entry_on_changed), self);
 
     /* Filter condition changed */
     g_signal_connect_swapped(self->search_entry, "changed",
@@ -172,7 +180,8 @@ static void sui_join_panel_class_init(SuiJoinPanelClass *class){
     gtk_widget_class_bind_template_child(widget_class, SuiJoinPanel, stack);
 
     gtk_widget_class_bind_template_child(widget_class, SuiJoinPanel, chan_entry);
-    gtk_widget_class_bind_template_child(widget_class, SuiJoinPanel, password_entry );
+    gtk_widget_class_bind_template_child(widget_class, SuiJoinPanel, password_entry);
+    gtk_widget_class_bind_template_child(widget_class, SuiJoinPanel, remember_password_check_button);
 
     gtk_widget_class_bind_template_child(widget_class, SuiJoinPanel, search_entry);
     gtk_widget_class_bind_template_child(widget_class, SuiJoinPanel, refresh_button);
@@ -204,6 +213,8 @@ void sui_join_panel_clear(SuiJoinPanel *self){
     /* Clear join channel page input */
     gtk_entry_set_text(self->chan_entry, "");
     gtk_entry_set_text(self->password_entry, "");
+    gtk_toggle_button_set_active(
+            GTK_TOGGLE_BUTTON(self->remember_password_check_button), FALSE);
 
     /* Clear search channel page input */
     gtk_entry_set_text(self->search_entry, "");
@@ -284,6 +295,7 @@ static void join_button_on_click(gpointer user_data){
     const char *page;
     const char *chan;
     const char *passwd;
+    bool rmb_passwd;
     GVariantDict *params;
     g_autofree char *_chan = NULL;
     SrnRet ret;
@@ -302,6 +314,8 @@ static void join_button_on_click(gpointer user_data){
     if (g_strcmp0(page, PAGE_JOIN_CHANNEL) == 0){
         chan = gtk_entry_get_text(self->chan_entry);
         passwd = gtk_entry_get_text(self->password_entry);
+        rmb_passwd = gtk_toggle_button_get_active(
+                GTK_TOGGLE_BUTTON(self->remember_password_check_button));
     } else if (g_strcmp0(page, PAGE_SEARCH_CHANNEL) == 0){
         GtkTreeIter       iter;
         GtkTreeModel     *model;
@@ -320,11 +334,50 @@ static void join_button_on_click(gpointer user_data){
             chan = gtk_entry_get_text(self->search_entry);
         }
         passwd = "";
+        rmb_passwd = FALSE;
     } else {
-        ERR_FR("Unknown stack page: %s", page);
-        return;
+        g_return_if_reached();
     }
 
+    if (rmb_passwd) {
+        const char *srv_name;
+        SrnApplication *app_model;
+        SrnConfigManager *cfg_mgr;
+        SrnChat *chat;
+
+        app_model = sui_application_get_ctx(sui_application_get_instance());
+        cfg_mgr = app_model->cfg_mgr;
+
+        // TODO: Better way to get server name?
+        chat = sui_buffer_get_ctx(sui_common_get_cur_buffer());
+        srv_name = chat->srv->name;
+
+        if (strlen(passwd)) { // Reqeust to store password
+            SrnRet ret;
+
+            ret = srn_config_manager_store_channel_password(cfg_mgr, passwd,
+                    srv_name, chan);
+            if (!RET_IS_OK(ret)) {
+                ret = RET_ERR(_("Failed to store channel password: %s"),
+                        RET_MSG(ret));
+                sui_message_box(_("Error"), RET_MSG(ret) );
+                // No need to return
+            }
+        } else { // Reqeust to remove password
+            SrnRet ret;
+
+            ret = srn_config_manager_clear_channel_password(cfg_mgr,
+                    chat->srv->name, chan);
+            if (!RET_IS_OK(ret)) {
+                ret = RET_ERR(_("Failed to clear channel password: %s"),
+                        RET_MSG(ret));
+                sui_message_box(_("Error"), RET_MSG(ret) );
+                // No need to return
+            }
+        }
+    }
+
+    // TODO: Deprecate SUI_EVENT_JOIN, use srn_server_add_chat_with_config
     params = g_variant_dict_new(NULL);
     g_variant_dict_insert(params, "channel", SUI_EVENT_PARAM_STRING, chan);
     g_variant_dict_insert(params, "password", SUI_EVENT_PARAM_STRING, passwd);
@@ -525,4 +578,54 @@ static void update_status(SuiJoinPanel *self){
     status  = g_strdup_printf(_("Showing %1$d of %2$d channnels"), cur, max);
     gtk_label_set_text(self->status_label, status);
     g_free(status);
+}
+
+static void chan_entry_on_changed(GtkEditable *editable, gpointer user_data) {
+    const char *srv_name;
+    const char *chan_name;
+    GtkEntry *entry;
+    SuiJoinPanel *self;
+    SrnApplication *app_model;
+    SrnConfigManager *cfg_mgr;
+    SrnChat *chat;
+
+    entry = GTK_ENTRY(editable);
+    self = SUI_JOIN_PANEL(user_data);
+    app_model = sui_application_get_ctx(sui_application_get_instance());
+    cfg_mgr = app_model->cfg_mgr;
+
+    // TODO: Better way to get server name?
+    chat = sui_buffer_get_ctx(sui_common_get_cur_buffer());
+    srv_name = chat->srv->name;
+
+    chan_name = gtk_entry_get_text(entry);
+
+    // Clear channel password when channel name is not valid
+    if (str_is_empty(chan_name)) {
+        gtk_entry_set_text(self->password_entry, "");
+        return;
+    }
+
+    // Lookup channel password asynchronously
+    secret_password_lookup(srn_config_manager_get_channel_secret_schema(cfg_mgr),
+            NULL, on_password_lookup, self->password_entry,
+            SRN_CONFIG_SECRET_SCHEMA_ATTR_SERVER, srv_name,
+            SRN_CONFIG_SECRET_SCHEMA_ATTR_CHANNEL, chan_name,
+            NULL);
+}
+
+static void on_password_lookup(GObject *source, GAsyncResult *result,
+        gpointer user_data) {
+    char *passwd;
+    GtkEntry *entry;
+
+    entry = GTK_ENTRY(user_data);
+
+    passwd = secret_password_lookup_finish(result, NULL);
+    if (!passwd) {
+        return;
+    }
+
+    gtk_entry_set_text(entry, passwd);
+    secret_password_free(passwd);
 }
