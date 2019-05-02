@@ -22,6 +22,7 @@
 #include "sui/sui.h"
 #include "ret.h"
 #include "i18n.h"
+#include "utils.h"
 
 SrnChatConfig* srn_chat_config_new(){
     SrnChatConfig *cfg;
@@ -42,6 +43,7 @@ SrnRet srn_chat_config_check(SrnChatConfig *cfg){
 void srn_chat_config_free(SrnChatConfig *cfg){
     g_return_if_fail(cfg);
 
+    str_assign(&cfg->password, NULL);
     g_list_free_full(cfg->auto_run_cmd_list, g_free);
     sui_buffer_config_free(cfg->ui);
     g_free(cfg);

@@ -157,6 +157,7 @@ struct _SrnChat {
 struct _SrnChatConfig {
     bool log; // TODO
     bool render_mirc_color;
+    char *password;
     GList *auto_run_cmd_list;
 
     SuiBufferConfig *ui;

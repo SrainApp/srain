@@ -369,7 +369,7 @@ static void irc_event_welcome(SircSession *sirc, int event,
     while (list){
         SrnChat *chat = list->data;
         if (sirc_target_is_channel(srv->irc, chat->name)){
-            sirc_cmd_join(srv->irc, chat->name, NULL);
+            sirc_cmd_join(srv->irc, chat->name, chat->cfg->password);
         }
         list = g_list_next(list);
     }

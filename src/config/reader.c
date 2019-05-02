@@ -220,7 +220,13 @@ SrnRet srn_config_manager_read_chat_config(SrnConfigManager *mgr,
                 RET_MSG(ret));
     }
 
-    // TODO: support channel password
+    // In fact we don't known whether this chat is channel
+    ret = srn_config_manager_lookup_channel_password(mgr,
+            &cfg->password, srv_name, chat_name);
+    if (!RET_IS_OK(ret)){
+        return RET_ERR(_("Error occurred while looking up channel password: %1$s"),
+                RET_MSG(ret));
+    }
 
     return SRN_OK;
 }
