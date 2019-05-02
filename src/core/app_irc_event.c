@@ -308,6 +308,7 @@ static void irc_event_disconnect(SircSession *sirc, const char *event,
 static void irc_event_welcome(SircSession *sirc, int event,
         const char *origin, const char **params, int count){
     bool try_login;
+    bool nick_match;
     const char *nick ;
     GList *list;
     SrnServer *srv;
@@ -328,6 +329,8 @@ static void irc_event_welcome(SircSession *sirc, int event,
 
     // Set your actually nick
     srn_server_rename_user(srv, srv->user, nick);
+    // Whether the assigned nick match the requested nick,
+    nick_match = !g_strcasecmp(srv->cfg->user->nick, nick);
 
     /* Try login */
     try_login = FALSE;
@@ -339,6 +342,10 @@ static void irc_event_welcome(SircSession *sirc, int event,
                 g_return_if_fail(srv->cfg->user->login->password);
 
                 try_login = TRUE;
+                if (!nick_match) {
+                    break;
+                }
+
                 msg = g_strdup_printf("IDENTIFY %s",
                         srv->cfg->user->login->password);
                 sirc_cmd_msg(sirc, "NickServ", msg);
@@ -350,6 +357,10 @@ static void irc_event_welcome(SircSession *sirc, int event,
                 g_return_if_fail(srv->cfg->user->login->password);
 
                 try_login = TRUE;
+                if (!nick_match) {
+                    break;
+                }
+
                 sirc_cmd_raw(sirc, "NICKSERV IDENTIFY %s\r\n",
                         srv->cfg->user->login->password);
                 break;
@@ -357,12 +368,17 @@ static void irc_event_welcome(SircSession *sirc, int event,
         default:
             break;
     };
-    if (try_login){
-        srn_chat_add_misc_message_fmt(srv->chat, srv->chat->_user,
-                _("Logging in with %1$s..."),
-                srn_login_method_to_string(srv->cfg->user->login->method));
-    }
 
+    if (try_login){
+        if (nick_match) {
+            srn_chat_add_misc_message_fmt(srv->chat, srv->chat->_user,
+                    _("Logging in with %1$s..."),
+                    srn_login_method_to_string(srv->cfg->user->login->method));
+        } else {
+            srn_chat_add_error_message(srv->chat, srv->chat->_user,
+                    _("The assigned nickname does not match the requested nickname, login skipped"));
+        }
+    }
 
     /* Join all channels already exists */
     list = srv->chat_list;
