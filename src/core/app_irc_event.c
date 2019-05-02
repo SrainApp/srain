@@ -155,10 +155,10 @@ static void irc_event_connect(SircSession *sirc, const char *event){
     /* Start client capability negotiation */
     sirc_cmd_cap_ls(srv->irc, "302");
 
-    if (srv->cfg->passwd){
+    if (srv->cfg->password){
         /* Send connection password, you should send it command before sending
          * the NICK/USER combination. */
-        sirc_cmd_pass(srv->irc, srv->cfg->passwd);
+        sirc_cmd_pass(srv->irc, srv->cfg->password);
     }
     sirc_cmd_nick(srv->irc, srv->user->nick);
     sirc_cmd_user(srv->irc, srv->user->username, "hostname", "servername",
@@ -308,6 +308,7 @@ static void irc_event_disconnect(SircSession *sirc, const char *event,
 static void irc_event_welcome(SircSession *sirc, int event,
         const char *origin, const char **params, int count){
     bool try_login;
+    bool nick_match;
     const char *nick ;
     GList *list;
     SrnServer *srv;
@@ -328,6 +329,8 @@ static void irc_event_welcome(SircSession *sirc, int event,
 
     // Set your actually nick
     srn_server_rename_user(srv, srv->user, nick);
+    // Whether the assigned nick match the requested nick,
+    nick_match = !g_strcasecmp(srv->cfg->user->nick, nick);
 
     /* Try login */
     try_login = FALSE;
@@ -336,40 +339,53 @@ static void irc_event_welcome(SircSession *sirc, int event,
             {
                 char *msg;
 
-                g_return_if_fail(srv->cfg->user->login->msg_nickserv_password);
+                g_return_if_fail(srv->cfg->user->login->password);
 
                 try_login = TRUE;
+                if (!nick_match) {
+                    break;
+                }
+
                 msg = g_strdup_printf("IDENTIFY %s",
-                        srv->cfg->user->login->msg_nickserv_password);
+                        srv->cfg->user->login->password);
                 sirc_cmd_msg(sirc, "NickServ", msg);
                 g_free(msg);
                 break;
             }
         case SRN_LOGIN_METHOD_NICKSERV:
             {
-                g_return_if_fail(srv->cfg->user->login->nickserv_password);
+                g_return_if_fail(srv->cfg->user->login->password);
 
                 try_login = TRUE;
+                if (!nick_match) {
+                    break;
+                }
+
                 sirc_cmd_raw(sirc, "NICKSERV IDENTIFY %s\r\n",
-                        srv->cfg->user->login->nickserv_password);
+                        srv->cfg->user->login->password);
                 break;
             }
         default:
             break;
     };
-    if (try_login){
-        srn_chat_add_misc_message_fmt(srv->chat, srv->chat->_user,
-                _("Logging in with %1$s..."),
-                srn_login_method_to_string(srv->cfg->user->login->method));
-    }
 
+    if (try_login){
+        if (nick_match) {
+            srn_chat_add_misc_message_fmt(srv->chat, srv->chat->_user,
+                    _("Logging in with %1$s..."),
+                    srn_login_method_to_string(srv->cfg->user->login->method));
+        } else {
+            srn_chat_add_error_message(srv->chat, srv->chat->_user,
+                    _("The assigned nickname does not match the requested nickname, login skipped"));
+        }
+    }
 
     /* Join all channels already exists */
     list = srv->chat_list;
     while (list){
         SrnChat *chat = list->data;
         if (sirc_target_is_channel(srv->irc, chat->name)){
-            sirc_cmd_join(srv->irc, chat->name, NULL);
+            sirc_cmd_join(srv->irc, chat->name, chat->cfg->password);
         }
         list = g_list_next(list);
     }
@@ -1188,11 +1204,11 @@ static void irc_event_authenticate(SircSession *sirc, const char *event,
 
                 /* ref: https://ircv3.net/specs/extensions/sasl-3.1.html */
                 str = g_string_new(NULL);
-                str = g_string_append(str, srv->cfg->user->login->sasl_plain_identify);
+                str = g_string_append(str, srv->cfg->user->nick);
                 str = g_string_append_unichar(str, g_utf8_get_char("\0")); // Unicode null char
-                str = g_string_append(str, srv->cfg->user->login->sasl_plain_identify);
+                str = g_string_append(str, srv->cfg->user->nick);
                 str = g_string_append_unichar(str, g_utf8_get_char("\0")); // Unicode null char
-                str = g_string_append(str, srv->cfg->user->login->sasl_plain_password);
+                str = g_string_append(str, srv->cfg->user->login->password);
 
                 // TODO: 400 bytes limit
                 base64 = g_base64_encode((const guchar *)str->str, str->len);
@@ -1201,7 +1217,7 @@ static void irc_event_authenticate(SircSession *sirc, const char *event,
                 method = srn_login_method_to_string(srv->cfg->user->login->method);
                 srn_chat_add_misc_message_fmt(srv->chat, srv->chat->_user,
                         _("Logging in with %1$s as %2$s..."),
-                        method, srv->cfg->user->login->sasl_plain_identify);
+                        method, srv->cfg->user->nick);
 
                 g_free(base64);
                 g_string_free(str, TRUE);
@@ -1246,12 +1262,12 @@ static void irc_event_authenticate(SircSession *sirc, const char *event,
                 // This is the second phase to authenticate, we need to sign the message from server and reply it
                 const unsigned char *challenge = params[0];
                 DBG_FR("CHALLENGE IS %s", challenge);
-                const char *certfile = srv->cfg->user->login->sasl_certificate_file;
+                const char *cert = srv->cfg->user->login->cert_file;
                 char *output;
                 size_t outlen;
-                libecdsaauth_key_t *keypair = libecdsaauth_key_load(certfile);
+                libecdsaauth_key_t *keypair = libecdsaauth_key_load(cert);
                 if(keypair == NULL) {
-                    ERR_FR("File %s not found, or it is not a valid ecdsa certificate file.", certfile);
+                    ERR_FR("File %s not found, or it is not a valid ecdsa certificate file.", cert);
                     return ;
                 }
                 libecdsaauth_sign_base64(keypair, challenge, strlen(challenge), &output, &outlen);

@@ -124,7 +124,7 @@
               </object>
               <packing>
                 <property name="left_attach">1</property>
-                <property name="top_attach">4</property>
+                <property name="top_attach">5</property>
               </packing>
             </child>
             <child>
@@ -140,7 +140,7 @@
               </object>
               <packing>
                 <property name="left_attach">1</property>
-                <property name="top_attach">3</property>
+                <property name="top_attach">4</property>
               </packing>
             </child>
             <child>
@@ -173,22 +173,6 @@
               <packing>
                 <property name="left_attach">0</property>
                 <property name="top_attach">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkEntry" id="password_entry">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="halign">end</property>
-                <property name="valign">baseline</property>
-                <property name="visibility">False</property>
-                <property name="invisible_char">●</property>
-                <property name="placeholder_text" translatable="yes">Optional</property>
-                <property name="input_purpose">password</property>
-              </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">2</property>
               </packing>
             </child>
             <child>
@@ -294,7 +278,7 @@
               </object>
               <packing>
                 <property name="left_attach">0</property>
-                <property name="top_attach">5</property>
+                <property name="top_attach">6</property>
               </packing>
             </child>
             <child>
@@ -306,7 +290,7 @@
               </object>
               <packing>
                 <property name="left_attach">1</property>
-                <property name="top_attach">5</property>
+                <property name="top_attach">6</property>
               </packing>
             </child>
             <child>
@@ -316,7 +300,7 @@
                 <property name="vhomogeneous">False</property>
                 <property name="transition_type">slide-up-down</property>
                 <child>
-                  <object class="GtkGrid" id="none_grid">
+                  <object class="GtkGrid" id="login_none_grid">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <child>
@@ -349,105 +333,22 @@
                   </object>
                   <packing>
                     <property name="name">none</property>
-                    <property name="title" translatable="yes">None</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkGrid" id="nickserv_grid">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="row_spacing">5</property>
-                    <property name="column_spacing">4</property>
-                    <child>
-                      <object class="GtkLabel" id="nickserv_password_label">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="valign">baseline</property>
-                        <property name="hexpand">True</property>
-                        <property name="label" translatable="yes">Password:</property>
-                      </object>
-                      <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkEntry" id="nickserv_password_entry">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="halign">end</property>
-                        <property name="valign">baseline</property>
-                        <property name="visibility">False</property>
-                        <property name="input_purpose">password</property>
-                      </object>
-                      <packing>
-                        <property name="left_attach">1</property>
-                        <property name="top_attach">0</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="name">nickserv</property>
-                    <property name="title" translatable="yes">NickServ</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkGrid" id="msg_nickserv_grid">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="row_spacing">5</property>
-                    <property name="column_spacing">4</property>
-                    <child>
-                      <object class="GtkLabel" id="msg_nickserv_password_label">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="valign">baseline</property>
-                        <property name="hexpand">True</property>
-                        <property name="label" translatable="yes">Password:</property>
-                      </object>
-                      <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkEntry" id="msg_nickserv_password_entry">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="halign">end</property>
-                        <property name="valign">baseline</property>
-                        <property name="visibility">False</property>
-                        <property name="input_purpose">password</property>
-                      </object>
-                      <packing>
-                        <property name="left_attach">1</property>
-                        <property name="top_attach">0</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="name">msg-nickserv</property>
-                    <property name="title" translatable="yes">Message NickServ</property>
-                    <property name="position">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkGrid" id="sasl_plain_grid">
+                  <object class="GtkGrid" id="login_password_grid">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="row_spacing">4</property>
                     <property name="column_spacing">4</property>
                     <child>
-                      <object class="GtkLabel" id="sasl_plain_identify_label">
+                      <object class="GtkLabel" id="login_password_label">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="halign">start</property>
                         <property name="valign">baseline</property>
                         <property name="hexpand">True</property>
-                        <property name="label" translatable="yes">Identity</property>
+                        <property name="label" translatable="yes">Login password:</property>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
@@ -455,91 +356,87 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkLabel" id="sasl_plain_password_label">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="valign">baseline</property>
-                        <property name="hexpand">True</property>
-                        <property name="label" translatable="yes">Password:</property>
-                      </object>
-                      <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">1</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkEntry" id="sasl_plain_identify_entry">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="halign">end</property>
-                        <property name="valign">baseline</property>
-                        <property name="hexpand">True</property>
-                      </object>
-                      <packing>
-                        <property name="left_attach">1</property>
-                        <property name="top_attach">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkEntry" id="sasl_plain_password_entry">
+                      <object class="GtkEntry" id="login_password_entry">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="halign">end</property>
                         <property name="valign">baseline</property>
                         <property name="visibility">False</property>
+                        <property name="invisible_char">●</property>
                         <property name="input_purpose">password</property>
+                      </object>
+                      <packing>
+                        <property name="left_attach">1</property>
+                        <property name="top_attach">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkCheckButton" id="remember_login_password_check_button">
+                        <property name="label" translatable="yes">Remember login password</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="draw_indicator">True</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
                         <property name="top_attach">1</property>
                       </packing>
                     </child>
+                    <child>
+                      <placeholder/>
+                    </child>
                   </object>
                   <packing>
-                    <property name="name">sasl-plain</property>
-                    <property name="title" translatable="yes">SASL PLAIN</property>
-                    <property name="position">3</property>
+                    <property name="name">password</property>
+                    <property name="position">1</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkGrid" id="sasl_ecdsa_grid">
+                  <object class="GtkGrid" id="login_cert_grid">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="row_spacing">4</property>
+                    <property name="column_spacing">4</property>
                     <child>
-                      <object class="GtkLabel" id="label1">
+                      <object class="GtkFileChooserButton" id="login_cert_file_chooser_button">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">SASL Certificate:</property>
-                      </object>
-                      <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkFileChooserButton" id="certificate_file_chooser_button">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="halign">end</property>
+                        <property name="valign">baseline</property>
+                        <property name="create_folders">False</property>
                         <property name="filter">X509 Certificate</property>
-                        <property name="title" translatable="yes"/>
+                        <property name="title" translatable="yes">Select a certificate file</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
                         <property name="top_attach">0</property>
                       </packing>
                     </child>
+                    <child>
+                      <object class="GtkLabel" id="login_cert_label">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="halign">start</property>
+                        <property name="valign">baseline</property>
+                        <property name="hexpand">True</property>
+                        <property name="label" translatable="yes">Login certificate:</property>
+                      </object>
+                      <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">0</property>
+                      </packing>
+                    </child>
                   </object>
                   <packing>
-                    <property name="name">sasl-ecdsa-nist256p-challenge</property>
-                    <property name="title" translatable="yes">page0</property>
-                    <property name="position">4</property>
+                    <property name="name">certificate</property>
+                    <property name="position">2</property>
                   </packing>
                 </child>
               </object>
               <packing>
                 <property name="left_attach">0</property>
-                <property name="top_attach">7</property>
+                <property name="top_attach">8</property>
                 <property name="width">2</property>
               </packing>
             </child>
@@ -555,7 +452,7 @@
               </object>
               <packing>
                 <property name="left_attach">0</property>
-                <property name="top_attach">6</property>
+                <property name="top_attach">7</property>
               </packing>
             </child>
             <child>
@@ -574,8 +471,43 @@
               </object>
               <packing>
                 <property name="left_attach">1</property>
-                <property name="top_attach">6</property>
+                <property name="top_attach">7</property>
               </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="password_entry">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="halign">end</property>
+                <property name="valign">baseline</property>
+                <property name="visibility">False</property>
+                <property name="invisible_char">●</property>
+                <property name="placeholder_text" translatable="yes">Optional</property>
+                <property name="input_purpose">password</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkCheckButton" id="remember_password_check_button">
+                <property name="label" translatable="yes">Remeber password</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="focus_on_click">False</property>
+                <property name="receives_default">False</property>
+                <property name="halign">end</property>
+                <property name="valign">baseline</property>
+                <property name="draw_indicator">True</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">3</property>
+              </packing>
+            </child>
+            <child>
+              <placeholder/>
             </child>
             <child>
               <placeholder/>
@@ -642,16 +574,15 @@
     <widgets>
       <widget name="tls_noverify_check_button"/>
       <widget name="tls_check_button"/>
-      <widget name="password_entry"/>
       <widget name="addr_box"/>
       <widget name="server_combo_box"/>
       <widget name="nick_entry"/>
-      <widget name="nickserv_password_entry"/>
-      <widget name="msg_nickserv_password_entry"/>
-      <widget name="sasl_plain_identify_entry"/>
-      <widget name="sasl_plain_password_entry"/>
-      <widget name="certificate_file_chooser_button"/>
+      <widget name="login_password_entry"/>
+      <widget name="remember_login_password_check_button"/>
+      <widget name="login_cert_file_chooser_button"/>
       <widget name="login_method_combo_box"/>
+      <widget name="password_entry"/>
+      <widget name="remember_password_check_button"/>
     </widgets>
   </object>
   <object class="GtkSizeGroup" id="quick_mode_size_group">

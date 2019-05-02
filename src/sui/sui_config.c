@@ -43,6 +43,14 @@ void sui_application_config_free(SuiApplicationConfig *cfg){
     g_free(cfg);
 }
 
+SuiApplicationOptions *sui_application_options_new(void){
+    return g_malloc0(sizeof(SuiApplicationOptions));
+}
+
+void sui_application_options_free(SuiApplicationOptions *opts){
+    g_free(opts);
+}
+
 SuiWindowConfig *sui_window_config_new(){
     SuiWindowConfig *cfg;
 

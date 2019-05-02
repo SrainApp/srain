@@ -157,6 +157,7 @@ struct _SrnChat {
 struct _SrnChatConfig {
     bool log; // TODO
     bool render_mirc_color;
+    char *password;
     GList *auto_run_cmd_list;
 
     SuiBufferConfig *ui;
@@ -225,12 +226,8 @@ enum _SrnLoginMethod {
 struct _SrnLoginConfig {
     SrnLoginMethod method;
 
-    // Union?
-    char *nickserv_password;
-    char *msg_nickserv_password;
-    char *sasl_plain_identify;
-    char *sasl_plain_password;
-    char *sasl_certificate_file;
+    char *password;
+    char *cert_file;
     // ...
 };
 
@@ -255,7 +252,7 @@ struct _SrnServerAddr {
 struct _SrnServerConfig {
     char *name;
     GList *addrs; // List of SrnServerAddr
-    char *passwd;
+    char *password;
     GList *auto_join_chat_list;
     GList *auto_run_cmd_list; // List of autorun commands
 

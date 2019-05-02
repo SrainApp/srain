@@ -104,7 +104,7 @@ SrnRet srn_application_open_url(SrnApplication *app, const char *url){
             goto FIN;
         }
         if (!str_is_empty(passwd)){
-            str_assign(&cfg->passwd, passwd);
+            str_assign(&cfg->password, passwd);
         }
         if (!str_is_empty(nick)){
             str_assign(&cfg->user->nick, nick);

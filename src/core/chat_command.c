@@ -500,7 +500,7 @@ static SrnRet on_command_connect(SrnCommand *cmd, void *user_data){
     name = ((SrnServerAddr*)cfg->addrs->data)->host;
 
     if (srn_command_get_opt(cmd, "-pwd", &passwd)){
-        str_assign(&cfg->passwd, passwd);
+        str_assign(&cfg->password, passwd);
     }
 
     if (nick){

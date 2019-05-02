@@ -46,9 +46,12 @@ struct _SuiApplication {
     // so we need another traditional menu as tray icon menu.
     GtkMenu *menu;
     GtkPopoverMenu *popover_menu;
+    // The parsed startup commandline options, should be valid after
+    // "handle-local-options" signal.
 
     SuiApplicationEvents *events;
     SuiApplicationConfig *cfg;
+    SuiApplicationOptions *opts;
     SuiThemeManager *theme;
     void *ctx;
 };
@@ -108,6 +111,15 @@ static const GOptionEntry option_entries[] = {
         .arg = G_OPTION_ARG_NONE,
         .arg_data = NULL,
         .description = N_("Show version information"),
+        .arg_description = NULL,
+    },
+    {
+        .long_name = "no-auto",
+        .short_name = 'a',
+        .flags = 0,
+        .arg = G_OPTION_ARG_NONE,
+        .arg_data = NULL,
+        .description = N_("Don't auto connect to servers"),
         .arg_description = NULL,
     },
     {
@@ -181,6 +193,7 @@ static void sui_application_get_property(GObject *object, guint property_id,
 }
 
 static void sui_application_init(SuiApplication *self){
+    self->opts = sui_application_options_new();
     self->theme = sui_theme_manager_new();
 
     g_application_add_main_option_entries(G_APPLICATION(self), option_entries);
@@ -210,6 +223,10 @@ static void sui_application_finalize(GObject *object){
     g_object_unref(self->menu);
     g_object_unref(self->popover_menu);
 
+    // NOTE: SuiApplicationConfig is hold via SrnApplicationConfig so
+    // should not be freed here.
+    // sui_application_config_free(self->opts);
+    sui_application_options_free(self->opts);
     sui_theme_manager_free(self->theme);
 
     G_OBJECT_CLASS(sui_application_parent_class)->finalize(object);
@@ -373,6 +390,10 @@ SuiApplicationConfig* sui_application_get_config(SuiApplication *self){
     return self->cfg;
 }
 
+SuiApplicationOptions* sui_application_get_options(SuiApplication *self){
+    return self->opts;
+}
+
 /*****************************************************************************
  * Static functions
  *****************************************************************************/
@@ -472,6 +493,9 @@ static int on_handle_local_options(SuiApplication *self, GVariantDict *options,
         g_print("%s %s%s\n", PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_BUILD);
         return 0; // Exit
     }
+
+    self->opts->no_auto_connect =
+        g_variant_dict_lookup(options, "no-auto", "b", NULL);
 
     return -1; // Return -1 to let the default option processing continue.
 }

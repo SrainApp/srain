@@ -27,6 +27,7 @@
 #include "ret.h"
 
 typedef struct _SuiApplicationConfig SuiApplicationConfig;
+typedef struct _SuiApplicationOptions SuiApplicationOptions;
 typedef struct _SuiWindowConfig SuiWindowConfig;
 typedef struct _SuiBufferConfig SuiBufferConfig;
 
@@ -42,6 +43,13 @@ struct _SuiApplicationConfig {
     SuiWindowConfig window;
 };
 
+// NOTE: SuiApplicationOptions is different from SuiApplicationConfig,
+// SuiApplicationOptions contains options which are specified via commandline.
+struct _SuiApplicationOptions {
+    // Whether auto connect to servers
+    bool no_auto_connect;
+};
+
 struct _SuiBufferConfig {
     bool notify;
     bool show_topic;
@@ -55,6 +63,9 @@ struct _SuiBufferConfig {
 SuiApplicationConfig *sui_application_config_new(void);
 SrnRet sui_application_config_check(SuiApplicationConfig *cfg);
 void sui_application_config_free(SuiApplicationConfig *cfg);
+
+SuiApplicationOptions *sui_application_options_new(void);
+void sui_application_options_free(SuiApplicationOptions *opts);
 
 SuiWindowConfig *sui_window_config_new(void);
 SrnRet sui_window_config_check(SuiWindowConfig *cfg);

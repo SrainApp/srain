@@ -109,6 +109,7 @@ static SrnRet ui_event_open(SuiApplication *app, SuiEvent event, GVariantDict *p
 static SrnRet ui_event_activate(SuiApplication *app, SuiEvent event, GVariantDict *params){
     static bool activated = FALSE; // FIXME
     SrnApplication *srn_app;
+    SuiApplicationOptions *opts;
 
     if (activated) {
         return SRN_OK;
@@ -116,9 +117,12 @@ static SrnRet ui_event_activate(SuiApplication *app, SuiEvent event, GVariantDic
 
     activated = TRUE;
     srn_app = sui_application_get_ctx(app);
+    opts = sui_application_get_options(app);
     sui_new_window(app, &srn_app->ui_win_events);
 
-    srn_application_auto_connect_server(srn_app);
+    if (!opts->no_auto_connect) {
+        srn_application_auto_connect_server(srn_app);
+    }
 
     return SRN_OK;
 }
