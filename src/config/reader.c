@@ -137,7 +137,7 @@ SrnRet srn_config_manager_read_server_config(SrnConfigManager *mgr,
                 config_setting_source_file(config_root_setting(&mgr->user_cfg)),
                 RET_MSG(ret));
     }
-    ret = srn_config_manager_lookup_server_password(mgr, &cfg->passwd, srv_name);
+    ret = srn_config_manager_lookup_server_password(mgr, &cfg->password, srv_name);
     if (!RET_IS_OK(ret)){
         return RET_ERR(_("Error occurred while looking up server password: %1$s"),
                 RET_MSG(ret));

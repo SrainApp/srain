@@ -155,10 +155,10 @@ static void irc_event_connect(SircSession *sirc, const char *event){
     /* Start client capability negotiation */
     sirc_cmd_cap_ls(srv->irc, "302");
 
-    if (srv->cfg->passwd){
+    if (srv->cfg->password){
         /* Send connection password, you should send it command before sending
          * the NICK/USER combination. */
-        sirc_cmd_pass(srv->irc, srv->cfg->passwd);
+        sirc_cmd_pass(srv->irc, srv->cfg->password);
     }
     sirc_cmd_nick(srv->irc, srv->user->nick);
     sirc_cmd_user(srv->irc, srv->user->username, "hostname", "servername",

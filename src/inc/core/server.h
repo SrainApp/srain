@@ -251,7 +251,7 @@ struct _SrnServerAddr {
 struct _SrnServerConfig {
     char *name;
     GList *addrs; // List of SrnServerAddr
-    char *passwd;
+    char *password;
     GList *auto_join_chat_list;
     GList *auto_run_cmd_list; // List of autorun commands
 

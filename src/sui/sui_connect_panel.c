@@ -269,8 +269,8 @@ static void update(SuiConnectPanel *self, const char *srv_name){
             gtk_entry_set_text(self->port_entry, port);
             g_free(port);
         }
-        if (srv_cfg->passwd) {
-            gtk_entry_set_text(self->password_entry, srv_cfg->passwd);
+        if (srv_cfg->password) {
+            gtk_entry_set_text(self->password_entry, srv_cfg->password);
         }
         gtk_toggle_button_set_active(
                 GTK_TOGGLE_BUTTON(self->tls_check_button),
@@ -475,7 +475,7 @@ static void connect_button_on_click(gpointer user_data){
         rmb_passwd = gtk_toggle_button_get_active(
                 GTK_TOGGLE_BUTTON(self->remember_password_check_button));
         if (strlen(passwd)) { // Password can be empty
-            str_assign(&srv_cfg->passwd, passwd);
+            str_assign(&srv_cfg->password, passwd);
         }
         if (rmb_passwd) {
             if (strlen(passwd)) {  // Reqeust to store password
