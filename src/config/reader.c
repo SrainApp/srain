@@ -29,6 +29,7 @@
 
 #include "core/core.h"
 #include "config/config.h"
+#include "config/password.h"
 #include "i18n.h"
 #include "utils.h"
 
@@ -136,6 +137,17 @@ SrnRet srn_config_manager_read_server_config(SrnConfigManager *mgr,
                 config_setting_source_file(config_root_setting(&mgr->user_cfg)),
                 RET_MSG(ret));
     }
+    ret = srn_config_manager_lookup_server_password(mgr, &cfg->passwd, srv_name);
+    if (!RET_IS_OK(ret)){
+        return RET_ERR(_("Error occurred while looking up server password: %1$s"),
+                RET_MSG(ret));
+    }
+    ret = srn_config_manager_lookup_user_password(mgr,
+            &cfg->user->login->password, srv_name, cfg->user->nick);
+    if (!RET_IS_OK(ret)){
+        return RET_ERR(_("Error occurred while looking up user password: %1$s"),
+                RET_MSG(ret));
+    }
 
     return SRN_OK;
 }
@@ -207,6 +219,8 @@ SrnRet srn_config_manager_read_chat_config(SrnConfigManager *mgr,
                 config_setting_source_file(config_root_setting(&mgr->user_cfg)),
                 RET_MSG(ret));
     }
+
+    // TODO: support channel password
 
     return SRN_OK;
 }
@@ -331,9 +345,9 @@ static SrnRet read_server_config_list_from_cfg(config_t *cfg,
 
 static SrnRet read_server_config_from_server(config_setting_t *server,
         SrnServerConfig *cfg){
-    /* Read server meta info */
+    /* Read server meta info,
+     * NOTE: Server password is not stored in configuration file */
     config_setting_lookup_string_ex(server, "name", &cfg->name);
-    config_setting_lookup_string_ex(server, "password", &cfg->passwd);
     config_setting_lookup_bool_ex(server, "tls", &cfg->irc->tls);
     config_setting_lookup_bool_ex(server, "tls-noverify", &cfg->irc->tls_noverify);
     config_setting_lookup_string_ex(server, "encoding", &cfg->irc->encoding);
@@ -589,6 +603,7 @@ static SrnRet read_user_config_from_user(config_setting_t *user, SrnUserConfig *
     config_setting_t *login;
 
     // Read user.login
+    // NOTE: Login password is not stored in configuration file
     login = config_setting_lookup(user, "login");
     if (login) {
         const char *method = NULL;
@@ -596,7 +611,6 @@ static SrnRet read_user_config_from_user(config_setting_t *user, SrnUserConfig *
         config_setting_lookup_string(login, "method", &method);
         cfg->login->method = srn_login_method_from_string(method);
 
-        config_setting_lookup_string_ex(login, "password", &cfg->login->password);
         config_setting_lookup_string_ex(login, "certificate", &cfg->login->cert_file);
     }
 

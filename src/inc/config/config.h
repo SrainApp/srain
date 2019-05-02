@@ -20,6 +20,7 @@
 #define __CONFIG_H
 
 #include <libconfig.h>
+#include <libsecret/secret.h>
 
 #include "ret.h"
 #include "version.h"
@@ -30,6 +31,9 @@ struct _SrnConfigManager {
     SrnVersion *ver; // Compatible version
     config_t user_cfg;
     config_t system_cfg;
+    SecretSchema *srv_secret_schema;
+    SecretSchema *chan_secret_schema;
+    SecretSchema *user_secret_schema;
 };
 
 SrnConfigManager* srn_config_manager_new(SrnVersion *ver);

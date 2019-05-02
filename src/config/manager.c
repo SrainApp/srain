@@ -29,10 +29,12 @@
 #include <string.h>
 
 #include "config/config.h"
+#include "password.h"
 #include "log.h"
 #include "path.h"
 #include "i18n.h"
 #include "version.h"
+
 
 static SrnRet load_config(SrnConfigManager *mgr, config_t *cfg, const char *file);
 
@@ -43,6 +45,7 @@ SrnConfigManager *srn_config_manager_new(SrnVersion *ver){
     mgr->ver = ver;
     config_init(&mgr->user_cfg);
     config_init(&mgr->system_cfg);
+    srn_config_manager_init_secret_schema(mgr);
 
     return mgr;
 }
