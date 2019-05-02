@@ -28,6 +28,7 @@ glib-networking     Optional, For TLS connection support
 gtk+3                                                                   >= 3.18
 libsoup
 libconfig                                                               >= 1.5
+libsecret
 =================== =================================================== =======
 
 .. _install-building:

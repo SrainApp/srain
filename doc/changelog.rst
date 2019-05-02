@@ -7,6 +7,22 @@ Change Log
     :depth: 1
     :backlinks: none
 
+.. _version-1.0.0rc4:
+
+XXXX-XX-XX Version 1.0.0rc4
+===========================
+
+- Added:
+
+   - New dependency `libsecret`
+   - Add password storage support
+   - Add command line options "--no-auto", used to require Srain not to
+     automatically connect to servers
+
+- Removed:
+
+  - Drop all password fields in configuration file
+
 .. _version-latest:
 .. _version-1.0.0rc3:
 

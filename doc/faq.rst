@@ -60,3 +60,15 @@ How can I send message which has a slash("/") prefixed?
 Please prepend another slash to the message.
 
 Refer to :ref:`commands-syntax`.
+
+How can I remove my stored password?
+====================================
+
+Since :ref:`version-1.0.0rc4`, Srain supports password storage.
+
+Just leave the password entry empty and check the "Remember password" checkbox
+before connect to server or join channel, the corresponding password will be
+removed.
+
+Or you can use `secret-tool` (provided by libsecret) to manage all your stored
+passwords.
