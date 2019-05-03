@@ -341,7 +341,9 @@ static double get_page_count_to_bottom(SuiMessageList *self) {
     val = gtk_adjustment_get_value(adj);
     max_val = gtk_adjustment_get_upper(adj) - page_size;
 
-    g_return_val_if_fail(page_size != 0, 0);
+    if (page_size == 0) {
+        return 0;
+    }
     return (max_val - val) / page_size;
 }
 
