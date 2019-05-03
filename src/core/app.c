@@ -28,7 +28,7 @@
 #include "sui/sui.h"
 #include "config/reader.h"
 #include "filter.h"
-#include "decorator.h"
+#include "render/render.h"
 #include "meta.h"
 #include "log.h"
 #include "i18n.h"
@@ -100,7 +100,7 @@ SrnApplication* srn_application_new(void){
             app, &app->ui_app_events, cfg->ui);
 
     filter_init(); // FIXME
-    decorator_init();
+    srn_render_init();
     app_instance = app;
 
     return app;

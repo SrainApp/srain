@@ -16,25 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file mirc_colorize.c
- * @brief mIRC colorize decorator
- * @author Shengyu Zhang <i@silverrainz.me>
- * @version 0.06.2
- * @date 2017-08-27
- *
- * ref: https://en.wikichip.org/wiki/irc/colors
- */
-
 #include <stdlib.h>
 #include <glib.h>
 #include <string.h>
 
-#include "decorator.h"
-#include "mirc.h"
-
 #include "srain.h"
 #include "log.h"
+#include "i18n.h"
+#include "markup_renderer.h"
+
+#include "render/render.h"
+#include "./renderer.h"
+#include "./mirc.h"
 
 #define MAX_CTX_STACK_SIZE 128
 
@@ -45,6 +38,26 @@ typedef struct _ColorlizeContext {
     unsigned bg_color;
     GString *str;
 } ColorlizeContext;
+
+static void init(void);
+static void finalize(void);
+static SrnRet render(SrnMessage *msg);
+static void text(GMarkupParseContext *context, const gchar *text,
+        gsize text_len, gpointer user_data, GError **error);
+static void do_colorize(ColorlizeContext *ctx, char ch);
+
+/**
+ * @brief mirc_strip_renderer is a render moduele for rendering mIRC color in
+ * message.
+ *
+ * ref: https://en.wikichip.org/wiki/irc/colors
+ */
+SrnMessageRenderer mirc_colorize_renderer = {
+    .name = "mirc_colorize",
+    .init = init,
+    .finalize = finalize,
+    .render = render,
+};
 
 // TODO: define in theme CSS?
 static const char *color_map[] = {
@@ -67,34 +80,56 @@ static const char *color_map[] = {
     [MIRC_COLOR_UNKNOWN]        = "", // Preventing out of bound
 };
 
-static char *mirc_colorize(SrnMessage *msg, int index, const char *frag);
-static void do_colorize(ColorlizeContext *ctx, char ch);
+static SrnMarkupRenderer *markup_renderer;
 
-Decorator mirc_colorize_decroator = {
-    .name = "mirc_colorize",
-    .func = mirc_colorize,
-};
+void init(void) {
+    GMarkupParser *parser;
 
-static char *mirc_colorize(SrnMessage *msg, int index, const char *frag){
-    int len;
-    char *dfrag;
+    markup_renderer = srn_markup_renderer_new();
+    parser = srn_markup_renderer_get_markup_parser(markup_renderer);
+    parser->text = text;
+}
+
+void finalize(void) {
+    srn_markup_renderer_free(markup_renderer);
+}
+
+SrnRet render(SrnMessage *msg) {
+    char *rendered_content;
+    SrnRet ret;
+
+    rendered_content = NULL;
+    ret = srn_markup_renderer_render(markup_renderer,
+            msg->rendered_content, &rendered_content, msg);
+    if (!RET_IS_OK(ret)){
+        return RET_ERR(_("Failed to render markup text: %1$s"), RET_MSG(ret));
+    }
+    if (rendered_content) {
+        g_free(msg->rendered_content);
+        msg->rendered_content = rendered_content;
+    }
+
+    return SRN_OK;
+}
+
+void text(GMarkupParseContext *context, const gchar *text,
+        gsize text_len, gpointer user_data, GError **error) {
     GString *str;
     ColorlizeContext *ctx;
 
-    len = strlen(frag);
     str = g_string_new(NULL);
     ctx = g_malloc0(sizeof(ColorlizeContext));
     ctx->fg_color = MIRC_COLOR_UNKNOWN;
     ctx->bg_color = MIRC_COLOR_UNKNOWN;
-    ctx->str = str;
+    ctx->str = srn_markup_renderer_get_markup(user_data);
 
-    for (int i = 0; i < len; i++){
-        switch (frag[i]){
+    for (int i = 0; i < text_len; i++){
+        switch (text[i]){
             case MIRC_COLOR:
                 {
                     /* Format: "\30[fg_color],[bg_color]",
                      * 0 <= length of fg_color or bg_color <= 2*/
-                    const char *startptr = &frag[i] + 1;
+                    const char *startptr = &text[i] + 1;
                     char *endptr = NULL;
                     bool has_fg_color = FALSE;
                     bool has_bg_color = FALSE;
@@ -138,16 +173,16 @@ static char *mirc_colorize(SrnMessage *msg, int index, const char *frag){
             case MIRC_BLINK:
             case MIRC_REVERSE:
             case MIRC_PLAIN:
-                do_colorize(ctx, frag[i]);
+                do_colorize(ctx, text[i]);
                 break;
             default:
                 {
                     // No control character, it is a utf-8 sequence
-                    const char *next = g_utf8_next_char(&frag[i]);
-                    char *escape = g_markup_escape_text(&frag[i], next - &frag[i]);
+                    const char *next = g_utf8_next_char(&text[i]);
+                    char *escape = g_markup_escape_text(&text[i], next - &text[i]);
                     str = g_string_append(str, escape);
                     g_free(escape);
-                    i += next - &frag[i] - 1;
+                    i += next - &text[i] - 1;
                     break;
                 }
         }
@@ -155,18 +190,12 @@ static char *mirc_colorize(SrnMessage *msg, int index, const char *frag){
 
     // Close all unclosed tags
     do_colorize(ctx, MIRC_PLAIN);
-
-    dfrag = ctx->str->str;
-    g_string_free(ctx->str, FALSE);
     g_free(ctx);
-
-    return dfrag;
 }
 
 static void do_colorize(ColorlizeContext *ctx, char ch){
     int ptr;
     bool open_tag = TRUE;
-
 
     ptr = ctx->ptr - 1;
 
@@ -202,13 +231,13 @@ static void do_colorize(ColorlizeContext *ctx, char ch){
 
         switch (ch){
             case MIRC_BOLD:
-                ctx->str = g_string_append(ctx->str, "<b>");
+                g_string_append(ctx->str, "<b>");
                 break;
             case MIRC_ITALICS:
-                ctx->str = g_string_append(ctx->str, "<i>");
+                g_string_append(ctx->str, "<i>");
                 break;
             case MIRC_UNDERLINE:
-                ctx->str = g_string_append(ctx->str, "<u>");
+                g_string_append(ctx->str, "<u>");
                 break;
             case MIRC_REVERSE:
                 // TODO: Not supported yet
@@ -248,13 +277,13 @@ static void do_colorize(ColorlizeContext *ctx, char ch){
             DBG_FR("Tag: 0x%x will be closed because of 0x%x", ctx->stack[i], ch);
             switch (ctx->stack[i]){
                 case MIRC_BOLD:
-                    ctx->str = g_string_append(ctx->str, "</b>");
+                    g_string_append(ctx->str, "</b>");
                     break;
                 case MIRC_ITALICS:
-                    ctx->str = g_string_append(ctx->str, "</i>");
+                    g_string_append(ctx->str, "</i>");
                     break;
                 case MIRC_UNDERLINE:
-                    ctx->str = g_string_append(ctx->str, "</u>");
+                    g_string_append(ctx->str, "</u>");
                     break;
                 case MIRC_REVERSE:
                     // TODO: Not supported yet
@@ -263,7 +292,7 @@ static void do_colorize(ColorlizeContext *ctx, char ch){
                     // TODO: Not supported yet
                     break;
                 case MIRC_COLOR:
-                    ctx->str = g_string_append(ctx->str, "</span>");
+                    g_string_append(ctx->str, "</span>");
                     break;
             }
         }
