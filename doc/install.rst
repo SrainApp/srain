@@ -129,6 +129,17 @@ Debian
 
 .. _install-packages-flatpak:
 
+Fedora
+~~~~~~
+
+Srain now in `offical repository of fedora`_, use ``dnf`` to install it.
+
+.. code-block:: console
+
+   # dnf install srain
+
+.. _offical repository of fedora: https://apps.fedoraproject.org/packages/srain
+
 Flatpak
 ~~~~~~~
 
