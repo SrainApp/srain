@@ -122,7 +122,7 @@ SrnRet srn_config_manager_store_server_password(SrnConfigManager *mgr,
     ret = SRN_OK;
     err = NULL;
     secret_password_store_sync(mgr->srv_secret_schema,
-            SECRET_COLLECTION_SESSION,
+            SECRET_COLLECTION_DEFAULT,
             _("Server passowrd"), passwd, NULL, &err,
             SRN_CONFIG_SECRET_SCHEMA_ATTR_SERVER, srv_name,
             NULL);
@@ -186,7 +186,7 @@ SrnRet srn_config_manager_store_channel_password(SrnConfigManager *mgr,
     ret = SRN_OK;
     err = NULL;
     secret_password_store_sync(mgr->chan_secret_schema,
-            SECRET_COLLECTION_SESSION,
+            SECRET_COLLECTION_DEFAULT,
             _("Channel password"), passwd, NULL, &err,
             SRN_CONFIG_SECRET_SCHEMA_ATTR_SERVER, srv_name,
             SRN_CONFIG_SECRET_SCHEMA_ATTR_CHANNEL, chan_name,
@@ -253,7 +253,7 @@ SrnRet srn_config_manager_store_user_password(SrnConfigManager *mgr,
     ret = SRN_OK;
     err = NULL;
     secret_password_store_sync(mgr->user_secret_schema,
-            SECRET_COLLECTION_SESSION,
+            SECRET_COLLECTION_DEFAULT,
             _("User passowrd"), passwd, NULL, &err,
             SRN_CONFIG_SECRET_SCHEMA_ATTR_SERVER, srv_name,
             SRN_CONFIG_SECRET_SCHEMA_ATTR_USER, user_name,
