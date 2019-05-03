@@ -418,6 +418,10 @@ static void show_about_dialog(SuiApplication *self){
             gtk_get_major_version(),
             gtk_get_minor_version(),
             gtk_get_micro_version());
+    const char *translators =
+        "Artem Polishchuk (ru)\n" \
+        "Shengyu Zhang (zh_CN)\n" \
+        "Jianqiu Zhang (zh_CN)";
 
     gtk_show_about_dialog(window,
             "program-name", PACKAGE_NAME,
@@ -430,6 +434,7 @@ static void show_about_dialog(SuiApplication *self){
             "documenters", documentors,
             "logo-icon-name", PACKAGE_APPID,
             "title", _("About Srain"),
+            "translator-credits", translators,
             NULL);
 }
 
