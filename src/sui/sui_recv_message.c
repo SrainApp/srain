@@ -37,9 +37,9 @@ static void sui_recv_message_update(SuiMessage *msg);
 static void sui_recv_message_compose_prev(SuiMessage *_self, SuiMessage *_prev);
 static void sui_recv_message_compose_next(SuiMessage *_self, SuiMessage *_next);
 
-static void user_event_box_on_button_press(GtkWidget *widget,
+static void sender_event_box_on_button_press(GtkWidget *widget,
         GdkEventButton *event, gpointer user_data);
-static void user_event_box_on_button_release(GtkWidget *widget,
+static void sender_event_box_on_button_release(GtkWidget *widget,
         GdkEventButton *event, gpointer user_data);
 
 /*****************************************************************************
@@ -55,10 +55,10 @@ static void sui_recv_message_init(SuiRecvMessage *self){
             G_CALLBACK(sui_common_activate_gtk_label_link), self);
     g_signal_connect(SUI_MESSAGE(self)->message_label, "populate-popup",
             G_CALLBACK(sui_message_label_on_popup), self);
-    g_signal_connect(self->user_event_box, "button-press-event",
-            G_CALLBACK(user_event_box_on_button_press), self);
-    g_signal_connect(self->user_event_box, "button-release-event",
-            G_CALLBACK(user_event_box_on_button_release), self);
+    g_signal_connect(self->sender_event_box, "button-press-event",
+            G_CALLBACK(sender_event_box_on_button_press), self);
+    g_signal_connect(self->sender_event_box, "button-release-event",
+            G_CALLBACK(sender_event_box_on_button_release), self);
 
 }
 
@@ -72,10 +72,10 @@ static void sui_recv_message_class_init(SuiRecvMessageClass *class){
     gtk_widget_class_bind_template_child(widget_class, SuiMessage, content_box);
     gtk_widget_class_bind_template_child(widget_class, SuiMessage, message_label);
     gtk_widget_class_bind_template_child(widget_class, SuiRecvMessage, time_label);
-    gtk_widget_class_bind_template_child(widget_class, SuiRecvMessage, user_box);
-    gtk_widget_class_bind_template_child(widget_class, SuiRecvMessage, user_event_box);
-    gtk_widget_class_bind_template_child(widget_class, SuiRecvMessage, user_name_label);
-    gtk_widget_class_bind_template_child(widget_class, SuiRecvMessage, user_subname_label);
+    gtk_widget_class_bind_template_child(widget_class, SuiRecvMessage, sender_box);
+    gtk_widget_class_bind_template_child(widget_class, SuiRecvMessage, sender_event_box);
+    gtk_widget_class_bind_template_child(widget_class, SuiRecvMessage, sender_label);
+    gtk_widget_class_bind_template_child(widget_class, SuiRecvMessage, remark_label);
 
     message_class = SUI_MESSAGE_CLASS(class);
     message_class->update = sui_recv_message_update;
@@ -93,9 +93,9 @@ static void sui_recv_message_update(SuiMessage *_self){
     g_return_if_fail(ctx);
     self = SUI_RECV_MESSAGE(_self);
 
-    gtk_label_set_markup(self->user_name_label, ctx->dname);
-    if (ctx->role) {
-        gtk_label_set_text(self->user_subname_label, ctx->role);
+    gtk_label_set_markup(self->sender_label, ctx->rendered_sender);
+    if (ctx->rendered_remark) {
+        gtk_label_set_text(self->remark_label, ctx->rendered_remark);
     }
 
     time =  sui_message_format_time(_self);
@@ -117,7 +117,7 @@ static void sui_recv_message_compose_prev(SuiMessage *_self, SuiMessage *_prev){
 
     self = SUI_RECV_MESSAGE(_self);
 
-    gtk_widget_hide(GTK_WIDGET(self->user_box));
+    gtk_widget_hide(GTK_WIDGET(self->sender_box));
 
     SUI_MESSAGE_CLASS(sui_recv_message_parent_class)->compose_prev(_self, _prev);
 }
@@ -146,7 +146,7 @@ SuiRecvMessage *sui_recv_message_new(void *ctx){
  * Static functions
  *****************************************************************************/
 
-static void user_event_box_on_button_press(GtkWidget *widget,
+static void sender_event_box_on_button_press(GtkWidget *widget,
         GdkEventButton *event, gpointer user_data){
     SuiRecvMessage *self;
 
@@ -155,10 +155,10 @@ static void user_event_box_on_button_press(GtkWidget *widget,
     }
 
     self = SUI_RECV_MESSAGE(user_data);
-    nick_menu_popup(widget, event, gtk_label_get_text(self->user_name_label));
+    nick_menu_popup(widget, event, gtk_label_get_text(self->sender_label));
 }
 
-static void user_event_box_on_button_release(GtkWidget *widget,
+static void sender_event_box_on_button_release(GtkWidget *widget,
         GdkEventButton *event, gpointer user_data){
     char *insert_text;
     SuiBuffer *buf;
@@ -169,7 +169,7 @@ static void user_event_box_on_button_release(GtkWidget *widget,
     }
 
     self = SUI_RECV_MESSAGE(user_data);
-    insert_text = g_strdup_printf("%s: ", gtk_label_get_text(self->user_name_label));
+    insert_text = g_strdup_printf("%s: ", gtk_label_get_text(self->sender_label));
     buf = sui_message_get_buffer(SUI_MESSAGE(self));
     sui_buffer_insert_text(buf, insert_text, -1, 0);
     g_free(insert_text);

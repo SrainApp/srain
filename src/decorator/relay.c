@@ -124,7 +124,7 @@ static char* do_relay(GList *lst, SrnMessage *msg, const char *frag){
     }
 
     while (lst){
-        if (sirc_target_equal(msg->user->srv_user->nick, lst->data)){
+        if (sirc_target_equal(msg->sender->srv_user->nick, lst->data)){
             DBG_FR("Brige bot '%s' found", (char *)lst->data);
             g_regex_match(regex, frag, 0, &match_info);
 
@@ -136,8 +136,8 @@ static char* do_relay(GList *lst, SrnMessage *msg, const char *frag){
                 escape_dnick = g_markup_escape_text(dnick, -1);
                 tmp = g_match_info_fetch_named(match_info, "text");
 
-                str_assign(&msg->role, msg->dname);
-                str_assign(&msg->dname, escape_dnick);
+                str_assign(&msg->rendered_remark, msg->rendered_sender);
+                str_assign(&msg->rendered_sender, escape_dnick);
                 dcontent = g_markup_escape_text(tmp, -1);
 
                 LOG_FR("Relay message matched, nick: %s, content: %s", dnick, dcontent);

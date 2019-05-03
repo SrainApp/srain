@@ -88,10 +88,10 @@ void decorator_init(){
  *      text fragment(the text between XML tags) to decorator module.
  *      Decorator module returns the decorated fragment and this function
  *      combines the decorated fragment with the original tags. Finally the
- *      decorated message will be stored in ``msg->dcontent`` and may be passed
+ *      decorated message will be stored in ``msg->rendered_content`` and may be passed
  *      to the next decorator modules.
  *
- * @param msg A SrnMessage instance, ``msg->dcontent`` should be valid XML which
+ * @param msg A SrnMessage instance, ``msg->rendered_content`` should be valid XML which
  *      may without root tag
  * @param flag Indicates which decorator modules to use
  * @param user_data Deprecated
@@ -130,7 +130,7 @@ SrnRet decorate_message(SrnMessage *msg, DecoratorFlag flag, void *user_data){
         g_free(ctx);
     }
 
-    LOG_FR("Decorated message: %s", msg->dcontent);
+    LOG_FR("Decorated message: %s", msg->rendered_content);
 
     return SRN_OK;
 }
@@ -143,7 +143,7 @@ static SrnRet do_decorate(DecoratorContext *ctx){
     g_markup_parse_context_parse(parse_ctx, "<markup>", -1, NULL);
 
     err = NULL;
-    g_markup_parse_context_parse(parse_ctx, ctx->msg->dcontent, -1, &err);
+    g_markup_parse_context_parse(parse_ctx, ctx->msg->rendered_content, -1, &err);
     if (err){
         ERR_FR("Markup parse error: %s", err->message);
         return SRN_ERR;
@@ -153,10 +153,10 @@ static SrnRet do_decorate(DecoratorContext *ctx){
     g_markup_parse_context_end_parse(parse_ctx, NULL);
     g_markup_parse_context_free(parse_ctx);
 
-    str_assign(&ctx->msg->dcontent, ctx->str->str);
+    str_assign(&ctx->msg->rendered_content, ctx->str->str);
 
     DBG_FR("Decorator '%s' decorated message: %s",
-            ctx->decorator->name, ctx->msg->dcontent);
+            ctx->decorator->name, ctx->msg->rendered_content);
 
     return SRN_OK;
 }

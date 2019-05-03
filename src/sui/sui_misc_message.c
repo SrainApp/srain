@@ -156,7 +156,7 @@ static void sui_misc_message_update(SuiMessage *_self){
     if (self->style == SUI_MISC_MESSAGE_STYLE_ACTION) {
         char *action_msg;
 
-        action_msg = g_strdup_printf("<b>%s</b> %s", ctx->dname, ctx->dcontent);
+        action_msg = g_strdup_printf("<b>%s</b> %s", ctx->rendered_sender, ctx->rendered_content);
         gtk_label_set_markup(_self->message_label, action_msg);
         g_free(action_msg);
     }
@@ -177,7 +177,7 @@ static void sui_misc_message_update_side_bar_item(SuiMessage *_self,
             // Do not update
             break;
         case SUI_MISC_MESSAGE_STYLE_ACTION:
-            msg = g_strdup_printf("%1$s %2$s", ctx->dname, ctx->dcontent);
+            msg = g_strdup_printf("%1$s %2$s", ctx->rendered_sender, ctx->rendered_content);
             SUI_MESSAGE_CLASS(sui_misc_message_parent_class)->
                 update_side_bar_item(_self, item);
             sui_side_bar_item_update(item, NULL, msg);
@@ -186,7 +186,7 @@ static void sui_misc_message_update_side_bar_item(SuiMessage *_self,
         case SUI_MISC_MESSAGE_STYLE_ERROR:
             SUI_MESSAGE_CLASS(sui_misc_message_parent_class)->
                 update_side_bar_item(_self, item);
-            sui_side_bar_item_update(item, _("Error"), ctx->dcontent);
+            sui_side_bar_item_update(item, _("Error"), ctx->rendered_content);
             break;
         default:
             g_warn_if_reached();

@@ -364,7 +364,7 @@ void srn_chat_set_topic(SrnChat *self, SrnChatUser *user, const char *topic){
 
     msg = srn_message_new(self, user, topic, SRN_MESSAGE_TYPE_UNKNOWN);
     if (decorate_message(msg, dflag, NULL) == SRN_OK){
-        sui_set_topic(self->ui, msg->dcontent);
+        sui_set_topic(self->ui, msg->rendered_content);
     }
     srn_message_free(msg);
 }

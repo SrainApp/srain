@@ -32,9 +32,9 @@ typedef int FilterFlag;
  * @brief FilterFunc Any filter module should implement this function,
  *      accepts the plain text of XML message
  *
- * @param msg A SrnMessage instance, ``msg->dcontent`` should be valid XML which
+ * @param msg A SrnMessage instance, ``msg->rendered_content`` should be valid XML which
  *      may without root tag
- * @param content The plain text of ``msg->dcontent``
+ * @param content The plain text of ``msg->rendered_content``
  *
  * @return FALSE if filter thinks this message should be ignored
  */

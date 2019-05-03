@@ -34,10 +34,10 @@ typedef int DecoratorFlag;
  *      accepts the text fragment of XML message, decorates it then return
  *      the decorated fragment.
  *
- * @param msg A SrnMessage instance, ``msg->dcontent`` should be valid XML which
+ * @param msg A SrnMessage instance, ``msg->rendered_content`` should be valid XML which
  *      may without root tag
  * @param index The index of ``frag`` in the current ``msg``
- * @param frag Plain text fragment of ``msg->dcontent``
+ * @param frag Plain text fragment of ``msg->rendered_content``
  *
  * @return The decorated fragment, should be freed by ``g_free()``
  */

@@ -45,5 +45,5 @@ Filter nick_filter = {
 };
 
 static bool nick(const SrnMessage *msg, const char *content){
-    return !(msg->user->is_ignored || msg->user->srv_user->is_ignored);
+    return !(msg->sender->is_ignored || msg->sender->srv_user->is_ignored);
 }
