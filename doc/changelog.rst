@@ -18,6 +18,7 @@ XXXX-XX-XX Version 1.0.0rc4
    - Add password storage support
    - Add command line options "--no-auto", used to require Srain not to
      automatically connect to servers
+   - Add russian translation, thanks to @tim77
 
 - Removed:
 
