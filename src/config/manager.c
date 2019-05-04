@@ -29,7 +29,8 @@
 #include <string.h>
 
 #include "config/config.h"
-#include "password.h"
+#include "./password.h"
+
 #include "log.h"
 #include "path.h"
 #include "i18n.h"

@@ -16,11 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __PASSWORD_H
-#define __PASSWORD_H
+/* Internal header file */
+
+#ifndef __IN_PASSWORD_H
+#define __IN_PASSWORD_H
 
 #include "config/config.h"
 
 void srn_config_manager_init_secret_schema(SrnConfigManager *mgr);
 
-#endif /* __PASSWORD_H */
+#endif /* __IN_PASSWORD_H */
