@@ -201,7 +201,7 @@ static SrnRet ui_event_quit(SuiBuffer *sui, SuiEvent event, GVariantDict *params
     if (!RET_IS_OK(ret)){
         g_return_val_if_fail(srn_server_is_valid(srv), SRN_ERR);
         srn_chat_add_error_message_fmt(chat, chat->_user,
-                _("Failed to quit from server: %s"), RET_MSG(ret));
+                _("Failed to quit from server: %1$s"), RET_MSG(ret));
     }
 
     return ret;

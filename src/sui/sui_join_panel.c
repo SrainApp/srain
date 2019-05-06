@@ -358,7 +358,7 @@ static void join_button_on_click(gpointer user_data){
             ret = srn_config_manager_store_channel_password(cfg_mgr, passwd,
                     srv_name, chan);
             if (!RET_IS_OK(ret)) {
-                ret = RET_ERR(_("Failed to store channel password: %s"),
+                ret = RET_ERR(_("Failed to store channel password: %1$s"),
                         RET_MSG(ret));
                 sui_message_box(_("Error"), RET_MSG(ret) );
                 // No need to return
@@ -369,7 +369,7 @@ static void join_button_on_click(gpointer user_data){
             ret = srn_config_manager_clear_channel_password(cfg_mgr,
                     chat->srv->name, chan);
             if (!RET_IS_OK(ret)) {
-                ret = RET_ERR(_("Failed to clear channel password: %s"),
+                ret = RET_ERR(_("Failed to clear channel password: %1$s"),
                         RET_MSG(ret));
                 sui_message_box(_("Error"), RET_MSG(ret) );
                 // No need to return

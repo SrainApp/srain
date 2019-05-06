@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 0.06.2\n"
 "Report-Msgid-Bugs-To: i@silverrainz.me\n"
-"POT-Creation-Date: 2019-05-06 13:51+0800\n"
+"POT-Creation-Date: 2019-05-06 21:04+0800\n"
 "PO-Revision-Date: 2016-12-18 01:44+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -88,9 +88,9 @@ msgid "%1$s %2$s @ %3$s"
 msgstr "%1$s %2$s %3$s"
 
 #: ../src/core/app_irc_event.c:1540
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s <%2$s@%3$s> %4$s"
-msgstr "%1$s <fwd %2$s@%3$s>"
+msgstr ""
 
 #: ../src/sui/sui_message.c:513
 #, c-format
@@ -268,9 +268,8 @@ msgid "Channel"
 msgstr "频道"
 
 #: ../src/config/password.c:190
-#, fuzzy
 msgid "Channel password"
-msgstr "频道"
+msgstr "频道密码"
 
 #: ../data/ui/join_panel.glade:62
 msgid "Channel:"
@@ -319,7 +318,7 @@ msgstr "不校验服务器证书"
 
 #: ../src/sui/sui_app.c:122
 msgid "Don't auto connect to servers"
-msgstr ""
+msgstr "不要自动连接到服务器"
 
 #: ../src/core/app_irc_event.c:1329
 #, c-format
@@ -357,19 +356,19 @@ msgid "Error"
 msgstr "错误"
 
 #: ../src/config/reader.c:227
-#, fuzzy, c-format
+#, c-format
 msgid "Error occurred while looking up channel password: %1$s"
-msgstr "读取聊天配置时发生错误 %1$s：%2$s"
+msgstr "读取频道密码时发生错误：%1$s"
 
 #: ../src/config/reader.c:142
-#, fuzzy, c-format
+#, c-format
 msgid "Error occurred while looking up server password: %1$s"
-msgstr "读取服务器配置时发生错误 %1$s：%2$s"
+msgstr "读取服务器密码时发生错误：%1$s"
 
 #: ../src/config/reader.c:148
-#, fuzzy, c-format
+#, c-format
 msgid "Error occurred while looking up user password: %1$s"
-msgstr "读取 %1$s 时发生错误：%2$s"
+msgstr "读取用户密码时发生错误：%1$s"
 
 #: ../src/config/reader.c:90 ../src/config/reader.c:96
 #, c-format
@@ -414,9 +413,9 @@ msgid "Failed to add chat \"%1$s\": %2$s"
 msgstr "无法添加聊天 \"%1$s\", 原因为: %2$s"
 
 #: ../src/core/app_url.c:119 ../src/core/app.c:405
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to add server \"%1$s\": %2$s"
-msgstr "无法添加服务器 \"%1$s\""
+msgstr "无法添加服务器 \"%1$s\": %2$s"
 
 #: ../src/sui/sui_theme.c:102
 #, c-format
@@ -429,19 +428,19 @@ msgid "Failed to chat config \"%1$s\" of server config \"%2$s\": %3$s"
 msgstr ""
 
 #: ../src/sui/sui_join_panel.c:372
-#, fuzzy, c-format
-msgid "Failed to clear channel password: %s"
-msgstr "无法创建频道面板"
+#, c-format
+msgid "Failed to clear channel password: %1$s"
+msgstr "无法清除频道密码：%s"
 
 #: ../src/sui/sui_connect_panel.c:494
-#, fuzzy, c-format
-msgid "Failed to clear server password: %s"
-msgstr "无法获取服务器列表：%1$s"
+#, c-format
+msgid "Failed to clear server password: %1$s"
+msgstr "无法清除服务器密码：%1$s"
 
 #: ../src/sui/sui_connect_panel.c:541
-#, fuzzy, c-format
-msgid "Failed to clear user password: %s"
-msgstr "无法创建用户数据文件夹 \"%1$s\""
+#, c-format
+msgid "Failed to clear user password: 1$%s"
+msgstr "无法清除用户密码：%1$s"
 
 #: ../src/core/app_irc_event.c:197 ../src/core/app_irc_event.c:212
 #, c-format
@@ -450,27 +449,27 @@ msgstr "无法连接到 %1$s(%2$s:%3$d)：%4$s"
 
 #: ../src/lib/path.c:184
 #, c-format
-msgid "Failed to create chat logs directory: %s"
+msgid "Failed to create chat logs directory: %1$s"
 msgstr "无法创建聊天日志文件夹 \"%1$s\""
 
 #: ../src/lib/path.c:164
 #, c-format
-msgid "Failed to create user cache directory: %s"
+msgid "Failed to create user cache directory: %1$s"
 msgstr "无法创建用户缓存文件夹 \"%1$s\""
 
 #: ../src/lib/path.c:144
 #, c-format
-msgid "Failed to create user configuration directory: %s"
+msgid "Failed to create user configuration directory: %1$s"
 msgstr "无法创建用户配置文件夹 \"%1$s\""
 
 #: ../src/lib/path.c:154
 #, c-format
-msgid "Failed to create user configuration file: %s"
+msgid "Failed to create user configuration file: %1$s"
 msgstr "无法创建用户配置文件 \"%1$s\""
 
 #: ../src/lib/path.c:174
 #, c-format
-msgid "Failed to create user data directory: %s"
+msgid "Failed to create user data directory: %1$s"
 msgstr "无法创建用户数据文件夹 \"%1$s\""
 
 #: ../src/core/chat_command.c:417 ../src/core/chat_command.c:525
@@ -484,9 +483,9 @@ msgid "Failed to join channel on server \"%1$s\": %2$s"
 msgstr "无法加入在 \"%1$s\" 服务器上的频道， 原因为: %2$s"
 
 #: ../src/sui/sui_common.c:144
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open URL \"%1$s\": %2$s"
-msgstr "无法打开 URL: \"%1$s\""
+msgstr "无法打开 URL \"%1$s\"：%2$s"
 
 #: ../src/core/app_url.c:60
 #, c-format
@@ -494,9 +493,9 @@ msgid "Failed to parse \"%1$s\" as URL"
 msgstr "无法将 \"%1$s\" 解析为 URL"
 
 #: ../src/core/app_ui_event.c:204
-#, fuzzy, c-format
-msgid "Failed to quit from server: %s"
-msgstr "无法从服务器退出，请重试"
+#, c-format
+msgid "Failed to quit from server: %1$s"
+msgstr "无法从服务器退出：%1$s"
 
 #: ../src/config/manager.c:65
 #, c-format
@@ -540,19 +539,19 @@ msgid "Failed to send message: %1$s"
 msgstr "无法发送消息：%1$s"
 
 #: ../src/sui/sui_join_panel.c:361
-#, fuzzy, c-format
-msgid "Failed to store channel password: %s"
-msgstr "无法创建频道面板"
+#, c-format
+msgid "Failed to store channel password: %1$s"
+msgstr "无法储存频道密码：%1$s"
 
 #: ../src/sui/sui_connect_panel.c:485
-#, fuzzy, c-format
-msgid "Failed to store server password: %s"
-msgstr "无法获取服务器列表：%1$s"
+#, c-format
+msgid "Failed to store server password: %1$s"
+msgstr "无法储存服务器密码：%1$s"
 
 #: ../src/sui/sui_connect_panel.c:532
-#, fuzzy, c-format
-msgid "Failed to store user password: %s"
-msgstr "无法创建用户数据文件夹 \"%1$s\""
+#, c-format
+msgid "Failed to store user password: %1$s"
+msgstr "无法储存用户密码：%1$s"
 
 #: ../src/sirc/sirc_config.c:68
 msgid "False"
@@ -638,19 +637,17 @@ msgid "Logging in with %1$s as %2$s..."
 msgstr "正在通过 %1$s 以 %2$s 的身份登录……"
 
 #: ../src/core/app_irc_event.c:375
-#, fuzzy, c-format
+#, c-format
 msgid "Logging in with %1$s..."
-msgstr "正在通过 %1$s 以 %2$s 的身份登录……"
+msgstr "正在通过 %1$s 登录……"
 
 #: ../data/ui/connect_panel.glade:423
-#, fuzzy
 msgid "Login certificate:"
-msgstr "SASL 证书:"
+msgstr "登录证书:"
 
 #: ../data/ui/connect_panel.glade:351
-#, fuzzy
 msgid "Login password:"
-msgstr "密码："
+msgstr "登录密码："
 
 #: ../src/sui/sui_join_panel.c:280
 msgid "Match channel name"
@@ -805,11 +802,11 @@ msgstr "重新加载配置"
 
 #: ../data/ui/connect_panel.glade:375
 msgid "Remember login password"
-msgstr ""
+msgstr "记住登录密码"
 
 #: ../data/ui/connect_panel.glade:495 ../data/ui/join_panel.glade:113
 msgid "Remember password"
-msgstr ""
+msgstr "记住密码"
 
 #: ../src/sirc/sirc.c:198
 msgid "Remote connection closed"
@@ -835,7 +832,7 @@ msgstr "搜索频道"
 
 #: ../data/ui/connect_panel.glade:409
 msgid "Select a certificate file"
-msgstr ""
+msgstr "请选择一个证书"
 
 #: ../data/ui/config_panel.glade:166
 msgid "Server"
@@ -876,7 +873,7 @@ msgstr "正在断开与服务器的连接"
 
 #: ../src/config/password.c:126
 msgid "Server passowrd"
-msgstr ""
+msgstr "服务器密码"
 
 #: ../data/ui/connect_panel.glade:52
 msgid "Server:"
@@ -923,7 +920,7 @@ msgstr "TLS：%1$s，验证 TLS 证书：%2$s，编码：%3$s"
 #: ../src/core/app_irc_event.c:379
 msgid ""
 "The assigned nickname does not match the requested nickname, login skipped"
-msgstr ""
+msgstr "分配的昵称和请求的昵称不匹配，登录已跳过"
 
 #: ../src/core/app_irc_event.c:1497
 #, c-format
@@ -1023,7 +1020,7 @@ msgstr "用户文件 %1$s 未找到"
 
 #: ../src/config/password.c:257
 msgid "User passowrd"
-msgstr ""
+msgstr "用户密码"
 
 #: ../data/ui/join_panel.glade:309
 msgid "Users"
@@ -1124,11 +1121,11 @@ msgstr "密码："
 
 #: ../data/ui/app.glade:13 ../data/ui/app.glade:55
 msgid "_Preferences"
-msgstr "首选项："
+msgstr "首选项"
 
 #: ../data/ui/url_previewer.glade:26
 msgid "_Preview"
-msgstr "预览:"
+msgstr "预览"
 
 #: ../data/ui/buffer_menu.glade:32
 msgid "_Quit"

@@ -254,7 +254,7 @@ static void update(SuiConnectPanel *self, const char *srv_name){
         ret = srn_config_manager_read_server_config(
                 app_model->cfg_mgr, srv_cfg, srv_name);
         if (!RET_IS_OK(ret)) {
-            ERR_FR("Failed to read server config: %s", RET_MSG(ret));
+            ERR_FR("Failed to read server config: %1$s", RET_MSG(ret));
             srn_server_config_free(srv_cfg);
             return;
         }
@@ -482,7 +482,7 @@ static void connect_button_on_click(gpointer user_data){
                 ret = srn_config_manager_store_server_password(
                         app_model->cfg_mgr, passwd, srv_name);
                 if (!RET_IS_OK(ret)) {
-                    ret = RET_ERR(_("Failed to store server password: %s"),
+                    ret = RET_ERR(_("Failed to store server password: %1$s"),
                             RET_MSG(ret));
                     sui_message_box(_("Error"), RET_MSG(ret) );
                     // No need to return
@@ -491,7 +491,7 @@ static void connect_button_on_click(gpointer user_data){
                 ret = srn_config_manager_clear_server_password(
                         app_model->cfg_mgr, srv_name);
                 if (!RET_IS_OK(ret)) {
-                    ret = RET_ERR(_("Failed to clear server password: %s"),
+                    ret = RET_ERR(_("Failed to clear server password: %1$s"),
                             RET_MSG(ret));
                     sui_message_box(_("Error"), RET_MSG(ret) );
                     // No need to return
@@ -529,7 +529,7 @@ static void connect_button_on_click(gpointer user_data){
                 ret = srn_config_manager_store_user_password(
                         app_model->cfg_mgr, login_passwd, srv_name, nick);
                 if (!RET_IS_OK(ret)) {
-                    ret = RET_ERR(_("Failed to store user password: %s"),
+                    ret = RET_ERR(_("Failed to store user password: %1$s"),
                             RET_MSG(ret));
                     sui_message_box(_("Error"), RET_MSG(ret) );
                     // No need to return
@@ -538,7 +538,7 @@ static void connect_button_on_click(gpointer user_data){
                 ret = srn_config_manager_clear_user_password(
                         app_model->cfg_mgr, srv_name, nick);
                 if (!RET_IS_OK(ret)) {
-                    ret = RET_ERR(_("Failed to clear user password: %s"),
+                    ret = RET_ERR(_("Failed to clear user password: 1$%s"),
                             RET_MSG(ret));
                     sui_message_box(_("Error"), RET_MSG(ret) );
                     // No need to return

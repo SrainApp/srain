@@ -70,7 +70,7 @@ char *srn_get_user_config_file(){
 
     ret = create_file_if_not_exist(path);
     if (!RET_IS_OK(ret)){
-        WARN_FR("Failed to create user configuration file: %s", RET_MSG(ret));
+        WARN_FR("Failed to create user configuration file: %1$s", RET_MSG(ret));
 
         g_free(path);
         return NULL;
@@ -106,7 +106,7 @@ char *srn_create_log_file(const char *srv_name, const char *fname){
 
     ret = create_file_if_not_exist(path);
     if (!RET_IS_OK(ret)){
-        WARN_FR("Failed to create log file: %s", RET_MSG(ret));
+        WARN_FR("Failed to create log file: %1$s", RET_MSG(ret));
 
         g_free(path);
         return NULL;
@@ -141,7 +141,7 @@ SrnRet srn_create_user_files(){
     ret = create_dir_if_not_exist(path);
     g_free(path);
     if (!RET_IS_OK(ret)){
-        ret = RET_ERR(_("Failed to create user configuration directory: %s"),
+        ret = RET_ERR(_("Failed to create user configuration directory: %1$s"),
                 RET_MSG(ret));
         goto FIN;
     }
@@ -151,7 +151,7 @@ SrnRet srn_create_user_files(){
     ret = create_file_if_not_exist(path);
     g_free(path);
     if (!RET_IS_OK(ret)){
-        ret = RET_ERR(_("Failed to create user configuration file: %s"),
+        ret = RET_ERR(_("Failed to create user configuration file: %1$s"),
                 RET_MSG(ret));
         goto FIN;
     }
@@ -161,7 +161,7 @@ SrnRet srn_create_user_files(){
     ret = create_dir_if_not_exist(path);
     g_free(path);
     if (!RET_IS_OK(ret)){
-        ret = RET_ERR(_("Failed to create user cache directory: %s"),
+        ret = RET_ERR(_("Failed to create user cache directory: %1$s"),
                 RET_MSG(ret));
         goto FIN;
     }
@@ -171,7 +171,7 @@ SrnRet srn_create_user_files(){
     ret = create_dir_if_not_exist(path);
     g_free(path);
     if (!RET_IS_OK(ret)){
-        ret = RET_ERR(_("Failed to create user data directory: %s"),
+        ret = RET_ERR(_("Failed to create user data directory: %1$s"),
                 RET_MSG(ret));
         goto FIN;
     }
@@ -181,7 +181,7 @@ SrnRet srn_create_user_files(){
     ret = create_dir_if_not_exist(path);
     g_free(path);
     if (!RET_IS_OK(ret)){
-        ret = RET_ERR(_("Failed to create chat logs directory: %s"),
+        ret = RET_ERR(_("Failed to create chat logs directory: %1$s"),
                 RET_MSG(ret));
         goto FIN;
     }
