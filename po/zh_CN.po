@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 0.06.2\n"
 "Report-Msgid-Bugs-To: i@silverrainz.me\n"
-"POT-Creation-Date: 2019-05-06 13:50+0800\n"
+"POT-Creation-Date: 2019-05-06 13:51+0800\n"
 "PO-Revision-Date: 2016-12-18 01:44+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -803,15 +803,11 @@ msgstr "已停止重新连接"
 msgid "Reload Configuration"
 msgstr "重新加载配置"
 
-#: ../data/ui/connect_panel.glade:495
-msgid "Remeber password"
-msgstr ""
-
 #: ../data/ui/connect_panel.glade:375
 msgid "Remember login password"
 msgstr ""
 
-#: ../data/ui/join_panel.glade:113
+#: ../data/ui/connect_panel.glade:495 ../data/ui/join_panel.glade:113
 msgid "Remember password"
 msgstr ""
 
