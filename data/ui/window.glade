@@ -133,7 +133,7 @@
                   <object class="GtkLabel" id="buffer_title_label">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">#srain</property>
+                    <property name="label">&lt;title&gt;</property>
                     <attributes>
                       <attribute name="weight" value="bold"/>
                     </attributes>
@@ -148,7 +148,7 @@
                   <object class="GtkLabel" id="buffer_subtitle_label">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">freenode</property>
+                    <property name="label">&lt;subtitle&gt;</property>
                     <style>
                       <class name="dim-label"/>
                     </style>
@@ -337,7 +337,6 @@
               </object>
               <packing>
                 <property name="name">welcome</property>
-                <property name="title" translatable="yes">welcome</property>
               </packing>
             </child>
             <child>
@@ -468,7 +467,6 @@
               </object>
               <packing>
                 <property name="name">main</property>
-                <property name="title" translatable="yes">main</property>
                 <property name="position">1</property>
               </packing>
             </child>

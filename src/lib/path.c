@@ -200,7 +200,7 @@ SrnRet create_dir_if_not_exist(const char *path) {
     }
 
     if (g_mkdir_with_parents(path, DEFAULT_DIR_MODE) == -1) {
-        return RET_ERR(_("%s"), g_strerror(errno));
+        return RET_ERR("%s", g_strerror(errno));
     }
 
     return SRN_OK;
@@ -226,7 +226,7 @@ SrnRet create_file_if_not_exist(const char *path) {
     }
 
     if ((fd = g_creat(path, DEFAULT_FILE_MODE)) == -1) {
-        return RET_ERR(_("%s"), g_strerror(errno));
+        return RET_ERR("%s", g_strerror(errno));
     }
     g_close(fd, NULL);
 

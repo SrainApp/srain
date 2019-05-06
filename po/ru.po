@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 0.06.4\n"
 "Report-Msgid-Bugs-To: i@silverrainz.me\n"
-"POT-Creation-Date: 2019-04-12 18:41+0800\n"
+"POT-Creation-Date: 2019-05-06 13:50+0800\n"
 "PO-Revision-Date: 2019-04-17 16:14+0300\n"
 "Last-Translator: Artem Polishchuk <ego.cordatus@gmail.com>\n"
 "Language-Team: \n"
@@ -18,10 +18,6 @@ msgstr ""
 "X-Generator: Poedit 2.2.1\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
-
-#: ../data/ui/connect_panel.glade:233
-msgid " : "
-msgstr ""
 
 #: ../src/filter/regex.c:64
 #, c-format
@@ -43,12 +39,12 @@ msgstr "\"%1$s\" добавлен в %2$s список регулярных вы
 msgid "\"%1$s\" has added to %2$s 's relaybot list"
 msgstr "\"%1$s\" добавлен в %2$s список бота-ретранслятора"
 
-#: ../src/core/chat_command.c:628 ../src/core/app_ui_event.c:365
+#: ../src/core/chat_command.c:628 ../src/core/app_ui_event.c:381
 #, c-format
 msgid "\"%1$s\" has ignored"
 msgstr "\"%1$s\" игнорируется"
 
-#: ../src/core/chat_command.c:653 ../src/core/app_ui_event.c:368
+#: ../src/core/chat_command.c:653 ../src/core/app_ui_event.c:384
 #, c-format
 msgid "\"%1$s\" has unignored"
 msgstr "\"%1$s\" больше не игнорируется"
@@ -78,16 +74,12 @@ msgstr "\"%1$s\" не найден в %2$s черном списке"
 msgid "\"%1$s\" not found in %2$s 's relaybot list"
 msgstr "\"%1$s\" не найден в %2$s списке бота-ретранслятора"
 
-#: ../data/ui/window.glade:136 ../data/ui/side_bar_item.glade:31
-msgid "#srain"
-msgstr "#srain"
-
-#: ../src/core/app_irc_event.c:1594
+#: ../src/core/app_irc_event.c:1610
 #, c-format
 msgid "%1$s %2$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1581
+#: ../src/core/app_irc_event.c:1597
 #, c-format
 msgid "%1$s %2$s %3$s"
 msgstr ""
@@ -97,7 +89,7 @@ msgstr ""
 msgid "%1$s %2$s @ %3$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1524
+#: ../src/core/app_irc_event.c:1540
 #, c-format
 msgid "%1$s <%2$s@%3$s> %4$s"
 msgstr ""
@@ -112,17 +104,17 @@ msgstr ""
 msgid "%1$s @ %2$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:709
+#: ../src/core/app_irc_event.c:725
 #, c-format
 msgid "%1$s are kicked by %2$s"
 msgstr "%1$s был выгнан %2$s"
 
-#: ../src/core/app_irc_event.c:706
+#: ../src/core/app_irc_event.c:722
 #, c-format
 msgid "%1$s are kicked by %2$s: %3$s"
 msgstr "%1$s был выгнан %2$s: %3$s"
 
-#: ../src/core/app_irc_event.c:665
+#: ../src/core/app_irc_event.c:681
 #, c-format
 msgid ""
 "%1$s changed topic to:\n"
@@ -131,67 +123,67 @@ msgstr ""
 "%1$s изменил тему на:\n"
 "\t%2$s"
 
-#: ../src/core/app_irc_event.c:661
+#: ../src/core/app_irc_event.c:677
 #, c-format
 msgid "%1$s cleared topic"
 msgstr "%1$s очистил тему"
 
-#: ../src/core/app_irc_event.c:481
+#: ../src/core/app_irc_event.c:497
 #, c-format
 msgid "%1$s has joined"
 msgstr "%1$s присоединился"
 
-#: ../src/core/app_irc_event.c:515
+#: ../src/core/app_irc_event.c:531
 #, c-format
 msgid "%1$s has left"
 msgstr "%1$s покинул"
 
-#: ../src/core/app_irc_event.c:513
+#: ../src/core/app_irc_event.c:529
 #, c-format
 msgid "%1$s has left: %2$s"
 msgstr "%1$s покинул: %2$s"
 
-#: ../src/core/app_irc_event.c:435
+#: ../src/core/app_irc_event.c:451
 #, c-format
 msgid "%1$s has quit"
 msgstr "%1$s вышел"
 
-#: ../src/core/app_irc_event.c:433
+#: ../src/core/app_irc_event.c:449
 #, c-format
 msgid "%1$s has quit: %2$s"
 msgstr "%1$s вышел: %2$s"
 
-#: ../src/core/app_irc_event.c:852
+#: ../src/core/app_irc_event.c:868
 #, c-format
 msgid "%1$s invites you into %2$s"
 msgstr "%1$s приглашает вас в %2$s"
 
-#: ../src/core/app_irc_event.c:1549
+#: ../src/core/app_irc_event.c:1553
+#, fuzzy, c-format
+msgid "%1$s is a member of %2$s"
+msgstr "%1$s участник %2$s"
+
+#: ../src/core/app_irc_event.c:1565
 #, c-format
 msgid "%1$s is attached to %2$s at \"%3$s\""
 msgstr "%1$s прикреплён к %2$s а \"%3$s\""
 
-#: ../src/core/app_irc_event.c:1769
+#: ../src/core/app_irc_event.c:1785
 #, c-format
 msgid "%1$s is away: %2$s"
 msgstr "%1$s отошёл: %2$s"
 
-#: ../src/core/app_irc_event.c:1568
+#: ../src/core/app_irc_event.c:1584
 #, c-format
 msgid "%1$s is idle for %2$s seconds since %3$s"
 msgstr "%1$s простаивает %2$s секунд с %3$s"
 
-#: ../src/core/app_irc_event.c:1537
-#, c-format
-msgid "%1$s is member of %2$s"
-msgstr "%1$s участник %2$s"
-
-#: ../src/core/app_irc_event.c:404 ../src/core/app_irc_event.c:409
+#: ../src/core/app_irc_event.c:420 ../src/core/app_irc_event.c:425
 #, c-format
 msgid "%1$s is now known as %2$s"
 msgstr "%1$s теперь известен как %2$s"
 
-#: ../src/sui/sui_app.c:394
+#: ../src/sui/sui_app.c:415
 #, c-format
 msgid ""
 "%1$s%2$s\n"
@@ -200,39 +192,18 @@ msgstr ""
 "%1$s%2$s\n"
 "Running against GTK+ %3$d.%4$d.%5$d"
 
-#: ../src/core/app_irc_event.c:1645 ../src/core/app_irc_event.c:1665
+#: ../src/core/app_irc_event.c:1661 ../src/core/app_irc_event.c:1681
 #, c-format
 msgid "%1$s: %2$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1501 ../src/core/app_irc_event.c:1566
+#: ../src/core/app_irc_event.c:1517 ../src/core/app_irc_event.c:1582
 msgid "%Y-%m-%d %T"
-msgstr ""
-
-#: ../src/lib/path.c:203 ../src/lib/path.c:229
-#, c-format
-msgid "%s"
-msgstr ""
-
-#: ../data/ui/side_bar_item.glade:93
-msgid "0"
-msgstr ""
-
-#: ../data/ui/recv_message.glade:124 ../data/ui/send_message.glade:57
-msgid "19:51"
 msgstr ""
 
 #: ../data/ui/window.glade:307
 msgid "<big>Welcome to Srain!</big>"
 msgstr "<big>Добро пожаловать в Srain!</big>"
-
-#: ../data/ui/recv_message.glade:88 ../data/ui/send_message.glade:22
-#: ../data/ui/misc_message.glade:23
-msgid ""
-"<span color=\"red\">Unable to display message content <sup>ERROR</sup></span>"
-msgstr ""
-"<span color=\"red\">Невозможно отобразить содержимое сообщения <sup>ERROR</"
-"sup></span>"
 
 #: ../src/core/chat_command.c:821
 #, c-format
@@ -243,16 +214,16 @@ msgstr "Сообщение было отправлено \"%1$s\""
 msgid "About"
 msgstr "О приложении"
 
-#: ../src/sui/sui_app.c:411
+#: ../src/sui/sui_app.c:436
 msgid "About Srain"
 msgstr "О Srain"
 
-#: ../src/core/app_irc_event.c:1087
+#: ../src/core/app_irc_event.c:1103
 #, c-format
 msgid "Acknowledged capabilities: %1$s"
 msgstr "Подтвержденные возможности: %1$s"
 
-#: ../data/ui/connect_panel.glade:589
+#: ../data/ui/connect_panel.glade:521
 msgid "Advanced Mode"
 msgstr "Расширенный режим"
 
@@ -260,7 +231,7 @@ msgstr "Расширенный режим"
 msgid "All config reloaded"
 msgstr "Все настройки перезагружены"
 
-#: ../src/core/app_ui_event.c:175
+#: ../src/core/app_ui_event.c:179
 msgid "Already reconnecting"
 msgstr "Уже переподключается"
 
@@ -272,30 +243,37 @@ msgstr "Внешний вид"
 msgid "Application"
 msgstr "Приложения"
 
-#: ../src/config/manager.c:95
+#: ../src/config/manager.c:98
 #, c-format
 msgid "At line %1$d: %2$s"
 msgstr "На линии %1$d: %2$s"
 
-#: ../src/core/app_irc_event.c:1502
+#: ../src/core/app_irc_event.c:1518
 #, c-format
 msgid "By %1$s at %2$s"
 msgstr "%1$s в %2$s"
 
-#: ../src/core/chat_command.c:439
-msgid "Can not disconnect from a unconnected server"
-msgstr "Невозможно отключиться от неподключенного сервера"
-
-#: ../src/core/chat_command.c:841 ../src/core/app_ui_event.c:236
-msgid "Can not send message to a server"
-msgstr "Невозможно отправить сообщение на сервер"
-
-#: ../data/ui/join_panel.glade:379 ../data/ui/connect_panel.glade:608
+#: ../data/ui/connect_panel.glade:540 ../data/ui/join_panel.glade:401
 msgid "Cancel"
 msgstr "Отменить"
 
-#: ../data/ui/join_panel.glade:268
+#: ../src/core/chat_command.c:439
+#, fuzzy
+msgid "Cannot disconnect from a unconnected server"
+msgstr "Невозможно отключиться от неподключенного сервера"
+
+#: ../src/core/chat_command.c:841 ../src/core/app_ui_event.c:252
+#, fuzzy
+msgid "Cannot send message directly to a server"
+msgstr "Невозможно отправить сообщение на сервер"
+
+#: ../data/ui/join_panel.glade:290
 msgid "Channel"
+msgstr "Канал"
+
+#: ../src/config/password.c:190
+#, fuzzy
+msgid "Channel password"
 msgstr "Канал"
 
 #: ../data/ui/join_panel.glade:62
@@ -311,7 +289,7 @@ msgstr "Команда автозапуска чата: %1$s"
 msgid "Configuration is reloaded"
 msgstr "Конфигурация перезагружена"
 
-#: ../data/ui/window.glade:84 ../data/ui/connect_panel.glade:622
+#: ../data/ui/window.glade:84 ../data/ui/connect_panel.glade:554
 msgid "Connect"
 msgstr "Подключиться"
 
@@ -343,12 +321,16 @@ msgstr "Отключён от %1$s(%2$s:%3$d): %4$s"
 msgid "Do not verify certificate"
 msgstr "Не проверять сертификат"
 
-#: ../src/core/app_irc_event.c:1313
+#: ../src/sui/sui_app.c:122
+msgid "Don't auto connect to servers"
+msgstr ""
+
+#: ../src/core/app_irc_event.c:1329
 #, c-format
 msgid "ERROR: %1$s"
 msgstr "ОШИБКА: %1$s"
 
-#: ../src/core/app_irc_event.c:1859
+#: ../src/core/app_irc_event.c:1875
 #, c-format
 msgid "ERROR[%1$3d] %2$s"
 msgstr "ОШИБКА[%1$3d] %2$s"
@@ -367,38 +349,56 @@ msgid "Enabled capabilities:"
 msgstr "Включенные возможности:"
 
 #: ../src/core/app.c:76 ../src/core/app.c:84 ../src/core/app.c:294
-#: ../src/core/app.c:407 ../src/sui/sui_app.c:442 ../src/sui/sui_app.c:461
-#: ../src/sui/sui_app.c:497 ../src/sui/sui_misc_message.c:189
+#: ../src/core/app.c:407 ../src/sui/sui_app.c:468 ../src/sui/sui_app.c:487
+#: ../src/sui/sui_app.c:526 ../src/sui/sui_misc_message.c:189
 #: ../src/sui/sui_common.c:145 ../src/sui/sui_prefs_dialog.c:162
-#: ../src/sui/sui_connect_panel.c:545 ../src/sui/sui_join_panel.c:296
-#: ../src/sui/sui_join_panel.c:338 ../src/sui/sui_join_panel.c:377
-#: ../src/sui/sui_join_panel.c:383
+#: ../src/sui/sui_connect_panel.c:487 ../src/sui/sui_connect_panel.c:496
+#: ../src/sui/sui_connect_panel.c:534 ../src/sui/sui_connect_panel.c:543
+#: ../src/sui/sui_connect_panel.c:589 ../src/sui/sui_join_panel.c:308
+#: ../src/sui/sui_join_panel.c:363 ../src/sui/sui_join_panel.c:374
+#: ../src/sui/sui_join_panel.c:391 ../src/sui/sui_join_panel.c:430
+#: ../src/sui/sui_join_panel.c:436
 msgid "Error"
 msgstr "Ошибка"
 
-#: ../src/config/reader.c:89 ../src/config/reader.c:95
-#, c-format
-msgid "Error occurred while read application config in %1$s: %2$s"
-msgstr "Произошла ошибка при чтении конфигурации приложения в %1$s: %2$s"
-
-#: ../src/config/reader.c:199 ../src/config/reader.c:206
-#, c-format
-msgid "Error occurred while read chat config in %1$s: %2$s"
-msgstr "Произошла ошибка при чтении конфигурации чата в %1$s: %2$s"
-
-#: ../src/config/reader.c:69 ../src/config/reader.c:75
-#, c-format
-msgid "Error occurred while read log config in %1$s: %2$s"
+#: ../src/config/reader.c:227
+#, fuzzy, c-format
+msgid "Error occurred while looking up channel password: %1$s"
 msgstr "Произошла ошибка при чтении конфигурации журнала в %1$s: %2$s"
 
-#: ../src/config/reader.c:129 ../src/config/reader.c:135
-#, c-format
-msgid "Error occurred while read server config in %1$s: %2$s"
+#: ../src/config/reader.c:142
+#, fuzzy, c-format
+msgid "Error occurred while looking up server password: %1$s"
 msgstr "Произошла ошибка при чтении конфигурации сервера в %1$s: %2$s"
 
-#: ../src/config/reader.c:109 ../src/config/reader.c:115
-#, c-format
-msgid "Error occurred while read server list config in %1$s: %2$s"
+#: ../src/config/reader.c:148
+#, fuzzy, c-format
+msgid "Error occurred while looking up user password: %1$s"
+msgstr "Произошла ошибка при чтении конфигурации журнала в %1$s: %2$s"
+
+#: ../src/config/reader.c:90 ../src/config/reader.c:96
+#, fuzzy, c-format
+msgid "Error occurred while reading application config in %1$s: %2$s"
+msgstr "Произошла ошибка при чтении конфигурации приложения в %1$s: %2$s"
+
+#: ../src/config/reader.c:211 ../src/config/reader.c:218
+#, fuzzy, c-format
+msgid "Error occurred while reading chat config in %1$s: %2$s"
+msgstr "Произошла ошибка при чтении конфигурации чата в %1$s: %2$s"
+
+#: ../src/config/reader.c:70 ../src/config/reader.c:76
+#, fuzzy, c-format
+msgid "Error occurred while reading log config in %1$s: %2$s"
+msgstr "Произошла ошибка при чтении конфигурации журнала в %1$s: %2$s"
+
+#: ../src/config/reader.c:130 ../src/config/reader.c:136
+#, fuzzy, c-format
+msgid "Error occurred while reading server config in %1$s: %2$s"
+msgstr "Произошла ошибка при чтении конфигурации сервера в %1$s: %2$s"
+
+#: ../src/config/reader.c:110 ../src/config/reader.c:116
+#, fuzzy, c-format
+msgid "Error occurred while reading server list config in %1$s: %2$s"
 msgstr "Ошибка при чтении конфигурации списка серверов в %1$s: %2$s"
 
 #: ../src/sui/sui_url_previewer.c:539
@@ -434,6 +434,21 @@ msgid "Failed to chat config \"%1$s\" of server config \"%2$s\": %3$s"
 msgstr ""
 "Не удалось настроить конфигурацию чата \"%1$s\" конфигурации сервера \"%2$s"
 "\": %3$s"
+
+#: ../src/sui/sui_join_panel.c:372
+#, fuzzy, c-format
+msgid "Failed to clear channel password: %s"
+msgstr "Не удалось создать буфер канала"
+
+#: ../src/sui/sui_connect_panel.c:494
+#, fuzzy, c-format
+msgid "Failed to clear server password: %s"
+msgstr "Не удалось добавить сервер \"%1$s\": %2$s"
+
+#: ../src/sui/sui_connect_panel.c:541
+#, fuzzy, c-format
+msgid "Failed to clear user password: %s"
+msgstr "Не удалось создать каталог пользовательских данных: %s"
 
 #: ../src/core/app_irc_event.c:197 ../src/core/app_irc_event.c:212
 #, c-format
@@ -485,17 +500,17 @@ msgstr "Не удалось открыть URL \"%1$s\": %2$s"
 msgid "Failed to parse \"%1$s\" as URL"
 msgstr "Не удалось обработать \"%1$s\" как URL"
 
-#: ../src/core/app_ui_event.c:200
+#: ../src/core/app_ui_event.c:204
 #, c-format
 msgid "Failed to quit from server: %s"
 msgstr "Не удалось выйти с сервера: %s"
 
-#: ../src/config/manager.c:62
+#: ../src/config/manager.c:65
 #, c-format
 msgid "Failed to read system configuration file: %1$s"
 msgstr "Не удалось прочитать системный файл конфигурации: %1$s"
 
-#: ../src/config/manager.c:74
+#: ../src/config/manager.c:77
 #, c-format
 msgid "Failed to read user configuration file: %1$s"
 msgstr "Не удалось прочитать файл конфигурации пользователя: %1$s"
@@ -526,10 +541,25 @@ msgstr "Не удалось перезагрузить конфигурацию 
 msgid "Failed to send action message: %1$s"
 msgstr "Не удалось отправить сообщение действия: %1$s"
 
-#: ../src/core/app_ui_event.c:246
+#: ../src/core/app_ui_event.c:262
 #, c-format
 msgid "Failed to send message: %1$s"
 msgstr "Не удалось отправить сообщение: %1$s"
+
+#: ../src/sui/sui_join_panel.c:361
+#, fuzzy, c-format
+msgid "Failed to store channel password: %s"
+msgstr "Не удалось создать буфер канала"
+
+#: ../src/sui/sui_connect_panel.c:485
+#, fuzzy, c-format
+msgid "Failed to store server password: %s"
+msgstr "Не удалось выйти с сервера: %s"
+
+#: ../src/sui/sui_connect_panel.c:532
+#, fuzzy, c-format
+msgid "Failed to store user password: %s"
+msgstr "Не удалось создать каталог пользовательских данных: %s"
 
 #: ../src/sirc/sirc_config.c:68
 msgid "False"
@@ -539,24 +569,26 @@ msgstr ""
 msgid "Forward to..."
 msgstr "Переслать..."
 
-#: ../data/ui/connect_panel.glade:450
-msgid "Identity"
-msgstr ""
+#: ../src/core/server_state.c:92
+#, fuzzy
+msgid ""
+"Hold on, srain is connecting to the server, please do not repeat the action"
+msgstr "Сервер подключается, не повторяйте подключение"
 
 #: ../src/filter/regex.c:76
 #, c-format
-msgid "Invail pattern: %1$s"
+msgid "Invaild regex pattern: %1$s"
 msgstr ""
 
 #: ../src/sirc/sirc_config.c:37
 msgid "Invalid IRC config instance"
 msgstr "Неверный экземпляр конфигурации IRC"
 
-#: ../src/sui/sui_config.c:76
+#: ../src/sui/sui_config.c:84
 msgid "Invalid SuiBufferConfig instance"
 msgstr "Неверный экземпляр SuiBufferConfig"
 
-#: ../src/core/chat_config.c:37
+#: ../src/core/chat_config.c:38
 msgid "Invalid chat config instance"
 msgstr "Неверный экземпляр конфигурации чата"
 
@@ -593,15 +625,15 @@ msgstr ""
 "Похоже, что вы подключаетесь к порту TLS(%1$d) не включив предварительно TLS "
 "подключение. Попробуйте включить его и повторно подключиться."
 
-#: ../data/ui/join_panel.glade:394 ../data/ui/window.glade:100
+#: ../data/ui/window.glade:100 ../data/ui/join_panel.glade:416
 msgid "Join"
 msgstr "Войти"
 
-#: ../data/ui/join_panel.glade:111
+#: ../data/ui/join_panel.glade:133
 msgid "Join Channel"
 msgstr "Войти на канал"
 
-#: ../src/core/app_irc_event.c:981
+#: ../src/core/app_irc_event.c:997
 #, c-format
 msgid "Latency between %1$s: %2$lums"
 msgstr "Задержка между %1$s: %2$luмс"
@@ -610,33 +642,39 @@ msgstr "Задержка между %1$s: %2$luмс"
 msgid "Local connection closed"
 msgstr "Локальное соединение закрыто"
 
-#: ../src/core/app_irc_event.c:1203 ../src/core/app_irc_event.c:1229
+#: ../src/core/app_irc_event.c:1219 ../src/core/app_irc_event.c:1245
 #, c-format
 msgid "Logging in with %1$s as %2$s..."
 msgstr "Вход с %1$s как %2$s..."
 
-#: ../src/core/app_irc_event.c:362
+#: ../src/core/app_irc_event.c:375
 #, c-format
 msgid "Logging in with %1$s..."
 msgstr "Вход с %1$s..."
 
-#: ../src/sui/sui_join_panel.c:269
+#: ../data/ui/connect_panel.glade:423
+#, fuzzy
+msgid "Login certificate:"
+msgstr "Сертификат SASL:"
+
+#: ../data/ui/connect_panel.glade:351
+#, fuzzy
+msgid "Login password:"
+msgstr "Пароль:"
+
+#: ../src/sui/sui_join_panel.c:280
 msgid "Match channel name"
 msgstr "Соответствует имени канала"
 
-#: ../data/ui/join_panel.glade:186
+#: ../data/ui/join_panel.glade:208
 msgid "Max users"
 msgstr "Максимум пользователей"
-
-#: ../data/ui/connect_panel.glade:433
-msgid "Message NickServ"
-msgstr ""
 
 #: ../src/sui/sui_message.c:464
 msgid "Message from unknown chat"
 msgstr "Сообщение из неизвестного чата"
 
-#: ../data/ui/join_panel.glade:215
+#: ../data/ui/join_panel.glade:237
 msgid "Min users"
 msgstr "Минимум пользователей"
 
@@ -673,23 +711,19 @@ msgstr "Отсутствует поле в конфигурации пользо
 msgid "Missing vaule for option %1$s"
 msgstr "Отсутствует значение для опции %1$s"
 
-#: ../data/ui/connect_panel.glade:392
-msgid "NickServ"
-msgstr ""
-
 #: ../data/ui/connect_panel.glade:84
 msgid "Nickname:"
 msgstr "Ник:"
 
-#: ../src/core/app_irc_event.c:1090
+#: ../src/core/app_irc_event.c:1106
 msgid "No acknowledged capability"
 msgstr "Нет подтвержденных возможностей"
 
-#: ../src/core/app_irc_event.c:1047
+#: ../src/core/app_irc_event.c:1063
 msgid "No capability to be requested"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1080
+#: ../src/core/app_irc_event.c:1096
 msgid "No new capability to be requested"
 msgstr ""
 
@@ -703,13 +737,9 @@ msgstr "Нет такого чата: %1$s"
 msgid "No such server: %1$s"
 msgstr "Нет такого сервера: %1$s"
 
-#: ../src/core/app_irc_event.c:1460
+#: ../src/core/app_irc_event.c:1476
 msgid "No topic is set"
 msgstr "Тема не установлена"
-
-#: ../data/ui/connect_panel.glade:352
-msgid "None"
-msgstr ""
 
 #: ../src/lib/path.c:199
 msgid "Not a directory"
@@ -723,16 +753,15 @@ msgstr "Не обычный файл"
 msgid "OK"
 msgstr "OK"
 
-#: ../src/sui/sui_app.c:119
+#: ../src/sui/sui_app.c:131
 msgid "Open one or more IRC URLs"
 msgstr "Откройте один или несколько URL IRC"
 
-#: ../data/ui/join_panel.glade:100 ../data/ui/connect_panel.glade:186
+#: ../data/ui/connect_panel.glade:485 ../data/ui/join_panel.glade:103
 msgid "Optional"
 msgstr "Необязательно"
 
-#: ../data/ui/join_panel.glade:88 ../data/ui/connect_panel.glade:368
-#: ../data/ui/connect_panel.glade:409 ../data/ui/connect_panel.glade:464
+#: ../data/ui/join_panel.glade:88
 msgid "Password:"
 msgstr "Пароль:"
 
@@ -740,39 +769,45 @@ msgstr "Пароль:"
 msgid "Ping time out"
 msgstr "Истечение времени"
 
-#: ../src/sui/sui_join_panel.c:297
-msgid "Please connect to server before joining any channel"
+#: ../src/sui/sui_join_panel.c:309
+#, fuzzy
+msgid "Please connect to a server before joining any channel"
 msgstr "Подключитесь к серверу, прежде чем присоединяться к каналу"
 
-#: ../src/sui/sui_join_panel.c:377
-msgid "Please connect to server before searching any channel"
+#: ../src/sui/sui_join_panel.c:430
+#, fuzzy
+msgid "Please connect to a server before searching any channel"
 msgstr "Подключитесь к серверу перед поиском канала"
 
 #: ../data/ui/connect_panel.glade:106
 msgid "Quick Mode"
 msgstr "Быстрый режим"
 
-#: ../src/core/app_irc_event.c:927
+#: ../src/core/server_state.c:172 ../src/core/server_state.c:179
+msgid "Quitting the server"
+msgstr ""
+
+#: ../src/core/app_irc_event.c:943
 #, c-format
 msgid "Received CTCP %1$s request form %2$s"
 msgstr "Получен CTCP %1$s запрос от %2$s"
 
-#: ../src/core/app_irc_event.c:964 ../src/core/app_irc_event.c:984
+#: ../src/core/app_irc_event.c:980 ../src/core/app_irc_event.c:1000
 #, c-format
 msgid "Received CTCP %1$s response from %2$s: %3$s"
 msgstr "Получен CTCP %1$s ответ от %2$s: %3$s"
 
-#: ../src/core/app_irc_event.c:923
+#: ../src/core/app_irc_event.c:939
 #, c-format
 msgid "Received unsupported CTCP %1$s request form %2$s"
 msgstr "Получен неподдерживаемый CTCP %1$s запрос от %2$s"
 
-#: ../src/core/app_irc_event.c:969
+#: ../src/core/app_irc_event.c:985
 #, c-format
 msgid "Received unsupported CTCP %1$s response form %2$s"
 msgstr "Получен неподдерживаемый CTCP %1$s ответ от %2$s"
 
-#: ../src/core/chat_command.c:446 ../src/core/app_ui_event.c:156
+#: ../src/core/chat_command.c:446 ../src/core/app_ui_event.c:160
 msgid "Reconnection stopped"
 msgstr "Переподключение прекращено"
 
@@ -780,35 +815,43 @@ msgstr "Переподключение прекращено"
 msgid "Reload Configuration"
 msgstr "Перезагрузить конфигурацию"
 
+#: ../data/ui/connect_panel.glade:495
+msgid "Remeber password"
+msgstr ""
+
+#: ../data/ui/connect_panel.glade:375
+msgid "Remember login password"
+msgstr ""
+
+#: ../data/ui/join_panel.glade:113
+msgid "Remember password"
+msgstr ""
+
 #: ../src/sirc/sirc.c:198
 msgid "Remote connection closed"
 msgstr "Удаленное соединение закрыто"
 
-#: ../src/core/app_irc_event.c:1043
+#: ../src/core/app_irc_event.c:1059
 #, c-format
 msgid "Requesting capabilities: %1$s"
 msgstr "Запрос возможностей: %1$s"
 
-#: ../src/core/app_irc_event.c:1076
+#: ../src/core/app_irc_event.c:1092
 #, c-format
 msgid "Requesting new capabilities: %1$s"
 msgstr "Запрос новых возможностей: %1$s"
 
-#: ../data/ui/connect_panel.glade:513
-msgid "SASL Certificate:"
-msgstr "Сертификат SASL:"
-
-#: ../data/ui/connect_panel.glade:501
-msgid "SASL PLAIN"
-msgstr ""
-
-#: ../src/core/app_irc_event.c:1162
+#: ../src/core/app_irc_event.c:1178
 msgid "SASL authentication is not supported on this server, login skipped"
 msgstr "SASL аутентификация на этом сервере не поддерживается, вход отклонён"
 
-#: ../data/ui/join_panel.glade:361
+#: ../data/ui/join_panel.glade:383
 msgid "Search Channel"
 msgstr "Найти канал"
+
+#: ../data/ui/connect_panel.glade:409
+msgid "Select a certificate file"
+msgstr ""
 
 #: ../data/ui/config_panel.glade:166
 msgid "Server"
@@ -819,17 +862,17 @@ msgstr "Сервер"
 msgid "Server autorun command: %1$s"
 msgstr "Команда автозапуска сервера: %1$s"
 
-#: ../src/core/app_irc_event.c:1040
+#: ../src/core/app_irc_event.c:1056
 #, c-format
 msgid "Server capabilities: %1$s"
 msgstr "Возможности сервера: %1$s"
 
-#: ../src/core/app_irc_event.c:1144
+#: ../src/core/app_irc_event.c:1160
 #, c-format
 msgid "Server has deleted capabilities: %1$s"
 msgstr "Сервер удалил возможности: %1$s"
 
-#: ../src/core/app_irc_event.c:1073
+#: ../src/core/app_irc_event.c:1089
 #, c-format
 msgid "Server has new capabilities: %1$s"
 msgstr "Сервер имеет новые возможности: %1$s"
@@ -842,18 +885,14 @@ msgstr "Сервер уже подключен"
 msgid "Server is already disconnected"
 msgstr "Сервер уже отключен"
 
-#: ../src/core/server_state.c:92
-msgid "Server is connecting, please don't repeat connect"
-msgstr "Сервер подключается, не повторяйте подключение"
-
 #: ../src/core/server_state.c:149 ../src/core/server_state.c:152
 #: ../src/core/server_state.c:155 ../src/core/server_state.c:158
 msgid "Server is disconnecting"
 msgstr "Сервер отключается"
 
-#: ../src/core/server_state.c:172 ../src/core/server_state.c:179
-msgid "Server is quiting"
-msgstr "Сервер завершается"
+#: ../src/config/password.c:126
+msgid "Server passowrd"
+msgstr ""
 
 #: ../data/ui/connect_panel.glade:52
 msgid "Server:"
@@ -867,25 +906,22 @@ msgstr "Показать _тему"
 msgid "Show _User List"
 msgstr "Показать _список пользователей"
 
-#: ../src/sui/sui_app.c:110
+#: ../src/sui/sui_app.c:113
 msgid "Show version information"
 msgstr "Показать информацию о версии"
 
-#: ../src/sui/sui_join_panel.c:428 ../src/sui/sui_join_panel.c:525
+#: ../src/sui/sui_join_panel.c:481 ../src/sui/sui_join_panel.c:578
 #, c-format
 msgid "Showing %1$d of %2$d channnels"
 msgstr "Показ %1$d из %2$d каналов"
-
-#: ../data/ui/side_bar_item.glade:77
-msgid "SilverRainZ: Welcome!"
-msgstr ""
 
 #: ../src/lib/ret.c:94
 msgid "Some error occurred"
 msgstr "Возникли ошибки"
 
 #: ../src/lib/command.c:79
-msgid "Sorry, command parse failed, please report a bug to <"
+#, fuzzy
+msgid "Sorry, command parsing failed, please report a bug to <"
 msgstr "Обработка команды не выполнена, сообщите об ошибке <"
 
 #: ../data/ui/app.glade:115 ../data/ui/app.glade:116
@@ -893,7 +929,8 @@ msgid "Srain"
 msgstr "Srain"
 
 #: ../data/ui/prefs_dialog.glade:9
-msgid "Srain Perferences"
+#, fuzzy
+msgid "Srain Preferences"
 msgstr "Параметры Srain"
 
 #: ../src/sirc/sirc_config.c:72
@@ -901,7 +938,12 @@ msgstr "Параметры Srain"
 msgid "TLS: %1$s, TLS verify certificate: %2$s, Encoding: %3$s"
 msgstr "TLS: %1$s, сертификат проверки TLS: %2$s, кодировка: %3$s"
 
-#: ../src/core/app_irc_event.c:1481
+#: ../src/core/app_irc_event.c:379
+msgid ""
+"The assigned nickname does not match the requested nickname, login skipped"
+msgstr ""
+
+#: ../src/core/app_irc_event.c:1497
 #, c-format
 msgid ""
 "The topic of this channel is:\n"
@@ -920,11 +962,11 @@ msgid "Too many arguments, expect %1$d"
 msgstr "Слишком много аргументов, ожидается %1$d"
 
 #: ../src/lib/command.c:415
-#, c-format
-msgid "Too many options, options count limit to %1$d"
-msgstr "Слишком много опций, ограничение до %1$d"
+#, fuzzy, c-format
+msgid "Too many optional arguments (maximum allowed: %1$d)"
+msgstr "Слишком много аргументов, ожидается %1$d"
 
-#: ../data/ui/join_panel.glade:305
+#: ../data/ui/join_panel.glade:327
 msgid "Topic"
 msgstr "Тема"
 
@@ -932,7 +974,7 @@ msgstr "Тема"
 msgid "True"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1376
+#: ../src/core/app_irc_event.c:1392
 #, c-format
 msgid "Trying nickname: \"%1$s\"..."
 msgstr "Попытка задействовать ник: \"%1$s\"..."
@@ -943,14 +985,10 @@ msgstr "Попытка задействовать ник: \"%1$s\"..."
 msgid "Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."
 msgstr "Попытка переподключения к %1$s(%2$s:%3$d) после %4$.1lfs..."
 
-#: ../src/core/app_irc_event.c:1810
+#: ../src/core/app_irc_event.c:1826
 #, c-format
 msgid "URL of %1$s is: %2$s"
 msgstr "URL %1$s является: %2$s"
-
-#: ../data/ui/recv_message.glade:27
-msgid "Unable to display nickname"
-msgstr "Невозможно показать ник"
 
 #: ../src/core/server_state.c:63
 #, c-format
@@ -966,7 +1004,7 @@ msgstr "Незакрытая одинарная кавычка"
 msgid "Unknown command: %1$s"
 msgstr "Неизвестная команда: %1$s"
 
-#: ../src/core/login_config.c:56
+#: ../src/core/login_config.c:53
 msgid "Unknown login method"
 msgstr "Неизвестный метод входа"
 
@@ -980,13 +1018,9 @@ msgstr "Неизвестный параметр %1$s"
 msgid "Unknown sub command: %1$s"
 msgstr "Неизвестная подкоманда: %1$s"
 
-#: ../src/sui/sui_url_previewer.c:318
+#: ../src/sui/sui_url_previewer.c:318 ../src/sui/sui_url_previewer.c:555
 msgid "Unsupported URL content type"
 msgstr "Неподдерживаемый тип содержимого URL"
-
-#: ../src/sui/sui_url_previewer.c:555
-msgid "Unsupported content type"
-msgstr "Неподдерживаемый тип контента"
 
 #: ../src/core/app_url.c:67
 #, c-format
@@ -1005,7 +1039,11 @@ msgstr "Пользователь"
 msgid "User config not found"
 msgstr "Конфигурация пользователя не найдена"
 
-#: ../data/ui/join_panel.glade:287
+#: ../src/config/password.c:257
+msgid "User passowrd"
+msgstr ""
+
+#: ../data/ui/join_panel.glade:309
 msgid "Users"
 msgstr "Пользователи"
 
@@ -1018,27 +1056,27 @@ msgstr ""
 "Пользователи: %d, <span color=\"#157915\">%d@</span>,<span color=\"#856117\">"
 "%d%%</span>,<span color=\"#451984\">%d+</span>"
 
-#: ../src/core/app_irc_event.c:700
+#: ../src/core/app_irc_event.c:716
 #, c-format
 msgid "You are kicked by %1$s"
 msgstr "Вы были выгнаны %1$s"
 
-#: ../src/core/app_irc_event.c:697
+#: ../src/core/app_irc_event.c:713
 #, c-format
 msgid "You are kicked by %1$s: %2$s"
 msgstr "Вы были выгнаны %1$s: %2$s"
 
-#: ../src/core/app_irc_event.c:477
-#, c-format
-msgid "You have joined"
+#: ../src/core/app_irc_event.c:493
+#, fuzzy, c-format
+msgid "You have joined the channel"
 msgstr "Вы вошли"
 
-#: ../src/core/login_config.c:55
+#: ../src/core/login_config.c:52
 #, c-format
 msgid "You need to set the field %2$s in order to use login method %1$s"
 msgstr "Вам нужно установить поле %2$s, чтобы использовать метод входа %1$s"
 
-#: ../src/sui/sui_app.c:120
+#: ../src/sui/sui_app.c:132
 msgid "[URL…]"
 msgstr "[URL…]"
 
@@ -1054,7 +1092,7 @@ msgstr "_Адрес:"
 msgid "_Apply"
 msgstr "_Применить"
 
-#: ../data/ui/prefs_dialog.glade:29 ../data/ui/config_panel.glade:203
+#: ../data/ui/config_panel.glade:203 ../data/ui/prefs_dialog.glade:29
 msgid "_Cancel"
 msgstr "_Отменить"
 
@@ -1086,15 +1124,15 @@ msgstr "_Выгнать"
 msgid "_Leave"
 msgstr "_Покинуть"
 
-#: ../data/ui/connect_panel.glade:553
+#: ../data/ui/connect_panel.glade:450
 msgid "_Login method:"
 msgstr "_Способ входа:"
 
-#: ../data/ui/connect_panel.glade:292
+#: ../data/ui/connect_panel.glade:276
 msgid "_Nickname:"
 msgstr "_Ник:"
 
-#: ../data/ui/prefs_dialog.glade:43 ../data/ui/config_panel.glade:231
+#: ../data/ui/config_panel.glade:231 ../data/ui/prefs_dialog.glade:43
 msgid "_OK"
 msgstr "_OK"
 
@@ -1122,7 +1160,7 @@ msgstr "_Переподключиться"
 msgid "_Reload"
 msgstr "_Перезагрузить"
 
-#: ../data/ui/connect_panel.glade:201
+#: ../data/ui/connect_panel.glade:185
 msgid "_Server:"
 msgstr "_Сервер:"
 
@@ -1130,142 +1168,17 @@ msgstr "_Сервер:"
 msgid "_Whois"
 msgstr "_Whois"
 
-#: ../data/ui/window.glade:151 ../data/ui/side_bar_item.glade:49
-msgid "freenode"
-msgstr "freenode"
-
-#: ../data/ui/url_previewer.glade:136
-msgid "image"
-msgstr "изображение"
-
-#: ../data/ui/url_previewer.glade:78
-msgid "loading"
-msgstr "загрузка"
-
-#: ../data/ui/window.glade:471
-msgid "main"
-msgstr ""
-
-#: ../src/core/app_irc_event.c:552 ../src/core/app_irc_event.c:627
+#: ../src/core/app_irc_event.c:568 ../src/core/app_irc_event.c:643
 #, c-format
 msgid "mode %1$s %2$s by %3$s"
 msgstr "режим %1$s %2$s установлен %3$s"
 
-#: ../data/ui/connect_panel.glade:535
-msgid "page0"
-msgstr "страница0"
-
-#: ../data/ui/url_previewer.glade:43
-msgid "preload"
-msgstr "предварительная загрузка"
-
-#: ../src/config/reader.c:310
+#: ../src/config/reader.c:330
 #, c-format
 msgid "server-list[%1$d] doesn't have a name"
 msgstr "список серверов[%1$d] не имеет имени"
-
-#: ../data/ui/url_previewer.glade:106
-msgid "text"
-msgstr "текст"
 
 #: ../src/core/chat_command.c:658
 #, c-format
 msgid "user \"%1$s\" not found"
 msgstr "пользователь \"%1$s\" не найден"
-
-#: ../data/ui/window.glade:340
-msgid "welcome"
-msgstr "добро пожаловать"
-
-#~ msgid "\"%1$s\" already exists in %2$s 's ignore list"
-#~ msgstr "\"%1$s\" уже есть в %2$s черном списке"
-
-#~ msgid "\"%1$s\" has added to %2$s 's ignore list"
-#~ msgstr "\"%1$s\" добавлен в %2$s черный список"
-
-#~ msgid "(This message can not be showed correctly)."
-#~ msgstr "(Это сообщение не может быть корректно отображено)."
-
-#~ msgid ""
-#~ "*** Server name: %s, Instance: %p\n"
-#~ "\tHost: %s, Port: %d, Password: %s\n"
-#~ "\tNickname: %s, Username: %s, Realname: %s\n"
-#~ "\tLogin method: %s, User password: %s\n"
-#~ "\tPart: %s, Kick: %s, Away: %s, Quit: %s\n"
-#~ "\tIRC configuration: %s"
-#~ msgstr ""
-#~ "*** Server name: %s, Instance: %p\n"
-#~ "\tHost: %s, Port: %d, Password: %s\n"
-#~ "\tNickname: %s, Username: %s, Realname: %s\n"
-#~ "\tLogin method: %s, User password: %s\n"
-#~ "\tPart: %s, Kick: %s, Away: %s, Quit: %s\n"
-#~ "\tIRC configuration: %s"
-
-#~ msgid "Can not remove a predefined server: %1$s"
-#~ msgstr "Нельзя удалить преднастроенный сервер: %1$s"
-
-#~ msgid "Command failed at line %1$d: %2$s"
-#~ msgstr "Ошибка команды в строке %1$d: %2$s"
-
-#~ msgid "Custom Server"
-#~ msgstr "Свой сервер"
-
-#~ msgid "Failed to create channel buffer"
-#~ msgstr "Не удалось создать буфер канала"
-
-#~ msgid "Failed to create private buffer"
-#~ msgstr "Не удалось создать приватный буфер"
-
-#~ msgid "Failed to create server buffer"
-#~ msgstr "Не удалось создать буфер сервера"
-
-#~ msgid "Failed to upload image"
-#~ msgstr "Не удалось закачать изображение"
-
-#~ msgid "Invalid SuiAppPrefs instance"
-#~ msgstr "Неверный экземпляр SuiAppPrefs"
-
-#~ msgid "Loading channels..."
-#~ msgstr "Загрузка каналов..."
-
-#~ msgid "No server is selected"
-#~ msgstr "Не выбран сервер"
-
-#~ msgid "No version found"
-#~ msgstr "Версия не найдена"
-
-#~ msgid "Open"
-#~ msgstr "Открыть"
-
-#~ msgid "Open File"
-#~ msgstr "Открыть файл"
-
-#~ msgid "Predefined Server"
-#~ msgstr "Преднастроенный сервер"
-
-#~ msgid "Quit"
-#~ msgstr "Завершить"
-
-#~ msgid "Real name:"
-#~ msgstr "Настоящее имя:"
-
-#~ msgid "Server \"%1$s\" already exists"
-#~ msgstr "Сервер \"%1$s\" уже существует"
-
-#~ msgid "Server \"%1$s\" is motified"
-#~ msgstr "Сервер \"%1$s\" изменён"
-
-#~ msgid "Server \"%1$s\" is removed"
-#~ msgstr "Сервер \"%1$s\" удалён"
-
-#~ msgid "Server already exist: %1$s"
-#~ msgstr "Сервер уже существует: %1$s"
-
-#~ msgid "System config file %1$s not found"
-#~ msgstr "%1$s системный файл настроек не найден"
-
-#~ msgid "User name:"
-#~ msgstr "Имя пользователя:"
-
-#~ msgid "You"
-#~ msgstr "Вы"

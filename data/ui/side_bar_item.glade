@@ -28,7 +28,7 @@
           <object class="GtkLabel" id="title_label">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">#srain</property>
+            <property name="label">&lt;buffer&gt;</property>
             <property name="ellipsize">end</property>
             <property name="single_line_mode">True</property>
             <property name="max_width_chars">32</property>
@@ -46,7 +46,7 @@
           <object class="GtkLabel" id="subtitle_label">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">freenode</property>
+            <property name="label">&lt;server&gt;</property>
             <property name="ellipsize">end</property>
             <style>
               <class name="sui-subtitle"/>
@@ -74,7 +74,7 @@
           <object class="GtkLabel" id="recent_message_label">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">SilverRainZ: Welcome!</property>
+            <property name="label">&lt;user&gt;: &lt;message excerpt&gt;</property>
             <property name="ellipsize">end</property>
             <style>
               <class name="dim-label"/>
@@ -90,7 +90,7 @@
           <object class="GtkLabel" id="unread_count_label">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">0</property>
+            <property name="label">&lt;unread count&gt;</property>
             <property name="justify">right</property>
             <property name="ellipsize">end</property>
             <property name="width_chars">1</property>

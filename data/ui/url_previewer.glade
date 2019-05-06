@@ -40,7 +40,6 @@
               </object>
               <packing>
                 <property name="name">preload</property>
-                <property name="title" translatable="yes">preload</property>
               </packing>
             </child>
             <child>
@@ -75,7 +74,6 @@
               </object>
               <packing>
                 <property name="name">loading</property>
-                <property name="title" translatable="yes">loading</property>
                 <property name="position">1</property>
               </packing>
             </child>
@@ -103,7 +101,6 @@
               </object>
               <packing>
                 <property name="name">text</property>
-                <property name="title" translatable="yes">text</property>
                 <property name="position">2</property>
               </packing>
             </child>
@@ -133,7 +130,6 @@
               </object>
               <packing>
                 <property name="name">image</property>
-                <property name="title" translatable="yes">image</property>
                 <property name="position">3</property>
               </packing>
             </child>

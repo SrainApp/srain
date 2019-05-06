@@ -20,7 +20,7 @@
               <object class="GtkLabel" id="message_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">&lt;span color="red"&gt;Unable to display message content &lt;sup&gt;ERROR&lt;/sup&gt;&lt;/span&gt;</property>
+                <property name="label">&lt;span color="red"&gt;Unable to display message content &lt;sup&gt;ERROR&lt;/sup&gt;&lt;/span&gt;</property>
                 <property name="use_markup">True</property>
                 <property name="wrap">True</property>
                 <property name="wrap_mode">word-char</property>

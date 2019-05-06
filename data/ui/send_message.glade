@@ -19,7 +19,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="halign">start</property>
-                <property name="label" translatable="yes">&lt;span color="red"&gt;Unable to display message content &lt;sup&gt;ERROR&lt;/sup&gt;&lt;/span&gt;</property>
+                <property name="label">&lt;span color="red"&gt;Unable to display message content &lt;sup&gt;ERROR&lt;/sup&gt;&lt;/span&gt;</property>
                 <property name="use_markup">True</property>
                 <property name="wrap">True</property>
                 <property name="wrap_mode">word-char</property>
@@ -54,7 +54,7 @@
             <property name="can_focus">False</property>
             <property name="halign">end</property>
             <property name="valign">end</property>
-            <property name="label" translatable="yes">19:51</property>
+            <property name="label">19:51</property>
             <style>
               <class name="sui-message-time-label"/>
             </style>
