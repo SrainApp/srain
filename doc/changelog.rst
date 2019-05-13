@@ -7,9 +7,10 @@ Change Log
     :depth: 1
     :backlinks: none
 
+.. _version-latest:
 .. _version-1.0.0rc4:
 
-XXXX-XX-XX Version 1.0.0rc4
+2019-05-13 Version 1.0.0rc4
 ===========================
 
 - Added:
@@ -19,12 +20,17 @@ XXXX-XX-XX Version 1.0.0rc4
    - Add command line options "--no-auto", used to require Srain not to
      automatically connect to servers
    - Add russian translation, thanks to @tim77
+   - Allow user send slash(``/``) prefixed message
 
 - Removed:
 
   - Drop all password fields in configuration file
 
-.. _version-latest:
+- Changed:
+
+  - Enable CSD(Client-Side Decoration) by default
+  - Update chinese translation
+
 .. _version-1.0.0rc3:
 
 2019-04-14 Version 1.0.0rc3
