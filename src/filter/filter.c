@@ -83,7 +83,7 @@ void filter_init(){
  *      pass the plain text to each filter module, if a filter returns ``FALSE``,
  *      This message will not be passed to the next module.
  *
- * @param msg A SrnMessage instance, ``msg->dcontent`` should be valid XML which
+ * @param msg A SrnMessage instance, ``msg->rendered_content`` should be valid XML which
  *      may without root tag
  * @param flag Indicates which filter modules to use
  * @param user_data Deprecated
@@ -135,7 +135,7 @@ static bool do_filter(FilterContext *ctx){
     g_markup_parse_context_parse(parse_ctx, "<markup>", -1, NULL);
 
     err = NULL;
-    g_markup_parse_context_parse(parse_ctx, ctx->msg->dcontent, -1, &err);
+    g_markup_parse_context_parse(parse_ctx, ctx->msg->rendered_content, -1, &err);
     if (err){
         ERR_FR("Markup parse error: %s", err->message);
         return FALSE;

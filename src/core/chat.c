@@ -21,7 +21,7 @@
 #include "core/core.h"
 
 #include "meta.h"
-#include "decorator.h"
+#include "render/render.h"
 #include "filter.h"
 #include "i18n.h"
 #include "command.h"
@@ -74,7 +74,7 @@ void srn_chat_free(SrnChat *self){
     str_assign(&self->name, NULL);
 
     /* Free extra list: TODO: a better way? */
-    relay_decroator_free_list(self);
+    // FIXME
     regex_filter_free_list(self);
 
     // Free user list, self->user and self->_user also in this list
@@ -165,15 +165,15 @@ SrnChatUser* srn_chat_get_user(SrnChat *self, const char *nick){
 void srn_chat_add_sent_message(SrnChat *self, const char *content){
     SrnChatUser *user;
     SrnMessage *msg;
-    DecoratorFlag dflag;
+    SrnRenderFlags rflags;
     FilterFlag fflag;
 
     user = self->user;
-    dflag = DECORATOR_PANGO_MARKUP;
+    rflags = SRN_RENDER_FLAG_URL;
     fflag = FILTER_CHAT_LOG;
     msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_SENT);
 
-    if (decorate_message(msg, dflag, NULL) != SRN_OK){
+    if (srn_render_message(msg, rflags) != SRN_OK){
         goto cleanup;
     }
     if (!filter_message(msg, fflag, NULL)){
@@ -191,19 +191,19 @@ cleanup:
 
 void srn_chat_add_recv_message(SrnChat *self, SrnChatUser *user, const char *content){
     SrnMessage *msg;
-    DecoratorFlag dflag;
+    SrnRenderFlags rflags;
     FilterFlag fflag;
 
-    dflag = DECORATOR_PANGO_MARKUP | DECORATOR_RELAY | DECORATOR_MENTION;
+    rflags = SRN_RENDER_FLAG_URL | SRN_RENDER_FLAG_RELAY | SRN_RENDER_FLAG_MENTION;
     if (self->cfg->render_mirc_color) {
-        dflag |= DECORATOR_MIRC_COLORIZE;
+        rflags |= SRN_RENDER_FLAG_MIRC_COLORIZE;
     } else {
-        dflag |= DECORATOR_MIRC_STRIP;
+        rflags |= SRN_RENDER_FLAG_MIRC_STRIP;
     }
     fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
 
     msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_RECV);
-    if (decorate_message(msg, dflag, NULL) != SRN_OK){
+    if (srn_render_message(msg, rflags) != SRN_OK){
         goto cleanup;
     }
     if (!filter_message(msg, fflag, NULL)){
@@ -220,19 +220,19 @@ cleanup:
 
 void srn_chat_add_notice_message(SrnChat *self, SrnChatUser *user, const char *content){
     SrnMessage *msg;
-    DecoratorFlag dflag;
+    SrnRenderFlags rflags;
     FilterFlag fflag;
 
-    dflag = DECORATOR_PANGO_MARKUP | DECORATOR_RELAY | DECORATOR_MENTION;
+    rflags = SRN_RENDER_FLAG_URL | SRN_RENDER_FLAG_RELAY | SRN_RENDER_FLAG_MENTION;
     if (self->cfg->render_mirc_color) {
-        dflag |= DECORATOR_MIRC_COLORIZE;
+        rflags |= SRN_RENDER_FLAG_MIRC_COLORIZE;
     } else {
-        dflag |= DECORATOR_MIRC_STRIP;
+        rflags |= SRN_RENDER_FLAG_MIRC_STRIP;
     }
     fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
 
     msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_NOTICE);
-    if (decorate_message(msg, dflag, NULL) != SRN_OK){
+    if (srn_render_message(msg, rflags) != SRN_OK){
         goto cleanup;
     }
     if (!filter_message(msg, fflag, NULL)){
@@ -250,22 +250,22 @@ cleanup:
 void srn_chat_add_action_message(SrnChat *self, SrnChatUser *user, const char *content){
     SrnMessage *msg;
     FilterFlag fflag;
-    DecoratorFlag dflag;
+    SrnRenderFlags rflags;
 
-    dflag = DECORATOR_PANGO_MARKUP;
+    rflags = SRN_RENDER_FLAG_URL;
     if (self->cfg->render_mirc_color) {
-        dflag |= DECORATOR_MIRC_COLORIZE;
+        rflags |= SRN_RENDER_FLAG_MIRC_COLORIZE;
     } else {
-        dflag |= DECORATOR_MIRC_STRIP;
+        rflags |= SRN_RENDER_FLAG_MIRC_STRIP;
     }
     fflag = FILTER_CHAT_LOG;
 
     msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_ACTION);
     if (!user->srv_user->is_me){
         fflag |= FILTER_NICK | FILTER_REGEX;
-        dflag |= DECORATOR_RELAY | DECORATOR_MENTION;
+        rflags |= SRN_RENDER_FLAG_RELAY | SRN_RENDER_FLAG_MENTION;
     }
-    if (decorate_message(msg, dflag, NULL) != SRN_OK){
+    if (srn_render_message(msg, rflags) != SRN_OK){
         goto cleanup;
     }
     if (!filter_message(msg, fflag, NULL)){
@@ -286,13 +286,13 @@ cleanup:
 
 void srn_chat_add_misc_message(SrnChat *self, SrnChatUser *user, const char *content){
     SrnMessage *msg;
-    DecoratorFlag dflag;
+    SrnRenderFlags rflags;
     FilterFlag fflag;
 
-    dflag = DECORATOR_PANGO_MARKUP;
+    rflags = SRN_RENDER_FLAG_URL;
     fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
     msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_MISC);
-    if (decorate_message(msg, dflag, NULL) != SRN_OK){
+    if (srn_render_message(msg, rflags) != SRN_OK){
         goto cleanup;
     }
     if (!filter_message(msg, fflag, NULL)){
@@ -319,13 +319,13 @@ void srn_chat_add_misc_message_fmt(SrnChat *self, SrnChatUser *user, const char 
 
 void srn_chat_add_error_message(SrnChat *self, SrnChatUser *user, const char *content){
     SrnMessage *msg;
-    DecoratorFlag dflag;
+    SrnRenderFlags rflags;
     FilterFlag fflag;
 
-    dflag = DECORATOR_PANGO_MARKUP;
+    rflags = SRN_RENDER_FLAG_URL;
     fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
     msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_ERROR);
-    if (decorate_message(msg, dflag, NULL) != SRN_OK){
+    if (srn_render_message(msg, rflags) != SRN_OK){
         goto cleanup;
     }
     if (!filter_message(msg, fflag, NULL)){
@@ -353,18 +353,18 @@ void srn_chat_add_error_message_fmt(SrnChat *self, SrnChatUser *user, const char
 
 void srn_chat_set_topic(SrnChat *self, SrnChatUser *user, const char *topic){
     SrnMessage *msg;
-    DecoratorFlag dflag;
+    SrnRenderFlags rflags;
 
-    dflag = DECORATOR_PANGO_MARKUP;
+    rflags = SRN_RENDER_FLAG_URL;
     if (self->cfg->render_mirc_color) {
-        dflag |= DECORATOR_MIRC_COLORIZE;
+        rflags |= SRN_RENDER_FLAG_MIRC_COLORIZE;
     } else {
-        dflag |= DECORATOR_MIRC_STRIP;
+        rflags |= SRN_RENDER_FLAG_MIRC_STRIP;
     }
 
     msg = srn_message_new(self, user, topic, SRN_MESSAGE_TYPE_UNKNOWN);
-    if (decorate_message(msg, dflag, NULL) == SRN_OK){
-        sui_set_topic(self->ui, msg->dcontent);
+    if (srn_render_message(msg, rflags) == SRN_OK){
+        sui_set_topic(self->ui, msg->rendered_content);
     }
     srn_message_free(msg);
 }

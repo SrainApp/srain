@@ -16,34 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file nick.c
- * @brief Nick filter
- * @author Shengyu Zhang <i@silverrainz.me>
- * @version 0.06.2
- * @date 2017-04-19
- */
-
-#include <string.h>
 #include <glib.h>
 
-#include "sirc/sirc.h"
+#include "render/render.h"
+#include "./renderer.h"
 
-#include "core/core.h"
+static SrnRet render(SrnMessage *msg);
 
-#include "filter.h"
-
-#include "srain.h"
-#include "log.h"
-#include "i18n.h"
-
-static bool nick(const SrnMessage *msg, const char *content);
-
-Filter nick_filter = {
-    .name = "nick",
-    .func = nick,
+// TODO: drop relay renderer
+SrnMessageRenderer relay_renderer = {
+    .name = "relay",
+    .render = render,
 };
 
-static bool nick(const SrnMessage *msg, const char *content){
-    return !(msg->sender->is_ignored || msg->sender->srv_user->is_ignored);
+
+SrnRet render(SrnMessage *msg) {
+    return SRN_OK;
 }

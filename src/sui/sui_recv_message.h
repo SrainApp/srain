@@ -36,10 +36,10 @@ struct _SuiRecvMessage {
     GtkBox *message_box;
     GtkLabel *time_label;
 
-    GtkBox *user_box;
-    GtkEventBox *user_event_box;
-    GtkLabel *user_name_label;
-    GtkLabel *user_subname_label;
+    GtkBox *sender_box;
+    GtkEventBox *sender_event_box;
+    GtkLabel *sender_label;
+    GtkLabel *remark_label;
 };
 
 struct _SuiRecvMessageClass {

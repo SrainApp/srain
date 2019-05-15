@@ -537,7 +537,7 @@ static GtkListStore* real_completion_func(SuiBuffer *self, const char *context){
             continue;
         }
         rmsg = SUI_RECV_MESSAGE(lst->data);
-        user = gtk_label_get_text(rmsg->user_name_label);
+        user = gtk_label_get_text(rmsg->sender_label);
         if (g_str_has_prefix(user, prefix)){
             gtk_list_store_append(store, &iter);
             gtk_list_store_set(store, &iter,

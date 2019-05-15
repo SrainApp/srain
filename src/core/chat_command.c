@@ -40,7 +40,7 @@
 #include "i18n.h"
 #include "command.h"
 #include "filter.h"
-#include "decorator.h"
+#include "render/render.h"
 #include "utils.h"
 
 typedef struct _CommandContext {
@@ -572,7 +572,8 @@ static SrnRet on_command_relay(SrnCommand *cmd, void *user_data){
 
     g_return_val_if_fail(chat, SRN_ERR);
 
-    return relay_decroator_add_nick(chat, nick);
+    // FIXME
+    return SRN_OK;
 }
 
 static SrnRet on_command_unrelay(SrnCommand *cmd, void *user_data){
@@ -593,7 +594,8 @@ static SrnRet on_command_unrelay(SrnCommand *cmd, void *user_data){
 
     g_return_val_if_fail(chat, SRN_ERR);
 
-    return relay_decroator_rm_nick(chat, nick);
+    // FIXME
+    return SRN_OK;
 }
 
 static SrnRet on_command_ignore(SrnCommand *cmd, void *user_data){

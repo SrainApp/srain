@@ -118,17 +118,23 @@ enum _SrnMessageType {
 
 struct _SrnMessage {
     SrnChat *chat;
-    SrnChatUser *user;  // Originator of this message, often refers to an existing user
-    char *dname;    // Decorated name, maybe contains xml tags
-    char *role;     // The role of the message originator
-
-    char *content;
-    char *dcontent; // Decorated message content
-    GDateTime *time;
-    bool mentioned;
+    SrnChatUser *sender; // Sender of this message
     SrnMessageType type;
 
-    GList *urls;   // URLs contains in message, like "http://xxx", "irc://xxx"
+    /* Raw message */
+    char *content;  // Raw message content
+    GDateTime *time; // Local time when creating message
+
+    /* NOTE: All rendered_xxx fields MUST be valid XML and never be NULL */
+    char *rendered_sender; // Sender name
+    char *rendered_remark; // Message remark
+    char *rendered_content; // Rendered message content in
+    char *rendered_short_time; // Short format message time
+    char *rendered_full_time;  // Full format messsage time
+    GList *urls; // URLs in message, like "http://xxx", "irc://xxx"
+
+    bool mentioned; // Whether this message should be mentioned
+
     SuiMessage *ui;
 };
 
