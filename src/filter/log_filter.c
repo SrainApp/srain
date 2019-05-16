@@ -24,14 +24,9 @@
  * @date 2016-08-21
  */
 
-
-#include <stdio.h>
 #include <glib.h>
 
 #include "core/core.h"
-
-#include "filter.h"
-
 #include "meta.h"
 #include "log.h"
 #include "srain.h"
@@ -39,14 +34,19 @@
 #include "i18n.h"
 #include "path.h"
 
-static bool chat_log(const SrnMessage *msg, const char *content);
+#include "./filter.h"
 
-Filter chat_log_filter = {
-    .name = "chat_log",
-    .func = chat_log,
+static bool filter(const SrnMessage *msg);
+
+/**
+ * @brief log_filter is a filter module for recording chat log.
+ */
+SrnMessageFilter log_filter = {
+    .name = "log",
+    .filter = filter,
 };
 
-static bool chat_log(const SrnMessage *msg, const char *content){
+bool filter(const SrnMessage *msg) {
     char *date_str;
     char *msg_str;
     FILE *fp;

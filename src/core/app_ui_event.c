@@ -32,7 +32,6 @@
 #include "srain.h"
 #include "i18n.h"
 #include "log.h"
-#include "filter.h"
 #include "ret.h"
 #include "utils.h"
 

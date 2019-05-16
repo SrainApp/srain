@@ -39,8 +39,8 @@
 #include "meta.h"
 #include "i18n.h"
 #include "command.h"
-#include "filter.h"
 #include "render/render.h"
+#include "filter/filter.h"
 #include "utils.h"
 
 typedef struct _CommandContext {
@@ -682,7 +682,8 @@ static SrnRet on_command_rignore(SrnCommand *cmd, void *user_data){
 
     g_return_val_if_fail(chat, SRN_ERR);
 
-    return regex_filter_add_pattern(chat, name, pattern);
+    // FIXME
+    return SRN_OK;
 }
 
 static SrnRet on_command_unrignore(SrnCommand *cmd, void *user_data){
@@ -701,7 +702,8 @@ static SrnRet on_command_unrignore(SrnCommand *cmd, void *user_data){
         chat = srv->chat;
     }
 
-    return regex_filter_rm_pattern(chat, name);
+    // FIXME
+    return SRN_OK;
 }
 
 static SrnRet on_command_query(SrnCommand *cmd, void *user_data){

@@ -16,13 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-  /**
-  * @file render.h
-  * @brief This header provides a modular mechanism for rendering SrnMessage.
-  * @author Shengyu Zhang <i@silverrainz.me>
-  * @version 
-  * @date 2019-05-14
-  */
+/**
+* @file render.h
+* @brief This header provides a modular mechanism for rendering SrnMessage.
+* @author Shengyu Zhang <i@silverrainz.me>
+* @version 
+* @date 2019-05-14
+*/
 
 #ifndef __RENDER_H
 #define __RENDER_H
