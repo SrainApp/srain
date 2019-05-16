@@ -113,6 +113,8 @@ char* srn_message_to_string(SrnMessage *self){
             msg_str = g_strdup_printf("[%s] ! %s", time_str, self->content);
             break;
         case SRN_MESSAGE_TYPE_UNKNOWN:
+            msg_str = NULL;
+            break;
         default:
             g_warn_if_reached();
             msg_str = NULL;
