@@ -22,7 +22,7 @@
 
 #include "meta.h"
 #include "render/render.h"
-#include "filter.h"
+#include "filter/filter.h"
 #include "i18n.h"
 #include "command.h"
 #include "log.h"
@@ -74,8 +74,6 @@ void srn_chat_free(SrnChat *self){
     str_assign(&self->name, NULL);
 
     /* Free extra list: TODO: a better way? */
-    // FIXME
-    regex_filter_free_list(self);
 
     // Free user list, self->user and self->_user also in this list
     g_list_free_full(self->user_list, (GDestroyNotify)srn_chat_user_free);
@@ -166,17 +164,17 @@ void srn_chat_add_sent_message(SrnChat *self, const char *content){
     SrnChatUser *user;
     SrnMessage *msg;
     SrnRenderFlags rflags;
-    FilterFlag fflag;
+    SrnFilterFlags fflags;
 
     user = self->user;
     rflags = SRN_RENDER_FLAG_URL;
-    fflag = FILTER_CHAT_LOG;
+    fflags = SRN_FILTER_FLAG_LOG;
     msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_SENT);
 
     if (srn_render_message(msg, rflags) != SRN_OK){
         goto cleanup;
     }
-    if (!filter_message(msg, fflag, NULL)){
+    if (!srn_filter_message(msg, fflags)){
         /* Ignore this message */
         goto cleanup;
     }
@@ -192,7 +190,7 @@ cleanup:
 void srn_chat_add_recv_message(SrnChat *self, SrnChatUser *user, const char *content){
     SrnMessage *msg;
     SrnRenderFlags rflags;
-    FilterFlag fflag;
+    SrnFilterFlags fflags;
 
     rflags = SRN_RENDER_FLAG_URL | SRN_RENDER_FLAG_RELAY | SRN_RENDER_FLAG_MENTION;
     if (self->cfg->render_mirc_color) {
@@ -200,13 +198,13 @@ void srn_chat_add_recv_message(SrnChat *self, SrnChatUser *user, const char *con
     } else {
         rflags |= SRN_RENDER_FLAG_MIRC_STRIP;
     }
-    fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
+    fflags = SRN_FILTER_FLAG_USER | SRN_FILTER_FLAG_REGEX | SRN_FILTER_FLAG_LOG;
 
     msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_RECV);
     if (srn_render_message(msg, rflags) != SRN_OK){
         goto cleanup;
     }
-    if (!filter_message(msg, fflag, NULL)){
+    if (!srn_filter_message(msg, fflags)){
         goto cleanup;
     }
 
@@ -221,7 +219,7 @@ cleanup:
 void srn_chat_add_notice_message(SrnChat *self, SrnChatUser *user, const char *content){
     SrnMessage *msg;
     SrnRenderFlags rflags;
-    FilterFlag fflag;
+    SrnFilterFlags fflags;
 
     rflags = SRN_RENDER_FLAG_URL | SRN_RENDER_FLAG_RELAY | SRN_RENDER_FLAG_MENTION;
     if (self->cfg->render_mirc_color) {
@@ -229,13 +227,13 @@ void srn_chat_add_notice_message(SrnChat *self, SrnChatUser *user, const char *c
     } else {
         rflags |= SRN_RENDER_FLAG_MIRC_STRIP;
     }
-    fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
+    fflags = SRN_FILTER_FLAG_USER | SRN_FILTER_FLAG_REGEX | SRN_FILTER_FLAG_LOG;
 
     msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_NOTICE);
     if (srn_render_message(msg, rflags) != SRN_OK){
         goto cleanup;
     }
-    if (!filter_message(msg, fflag, NULL)){
+    if (!srn_filter_message(msg, fflags)){
         goto cleanup;
     }
 
@@ -249,7 +247,7 @@ cleanup:
 
 void srn_chat_add_action_message(SrnChat *self, SrnChatUser *user, const char *content){
     SrnMessage *msg;
-    FilterFlag fflag;
+    SrnFilterFlags fflags;
     SrnRenderFlags rflags;
 
     rflags = SRN_RENDER_FLAG_URL;
@@ -258,17 +256,17 @@ void srn_chat_add_action_message(SrnChat *self, SrnChatUser *user, const char *c
     } else {
         rflags |= SRN_RENDER_FLAG_MIRC_STRIP;
     }
-    fflag = FILTER_CHAT_LOG;
+    fflags = SRN_FILTER_FLAG_LOG;
 
     msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_ACTION);
     if (!user->srv_user->is_me){
-        fflag |= FILTER_NICK | FILTER_REGEX;
+        fflags |= SRN_FILTER_FLAG_USER | SRN_FILTER_FLAG_REGEX;
         rflags |= SRN_RENDER_FLAG_RELAY | SRN_RENDER_FLAG_MENTION;
     }
     if (srn_render_message(msg, rflags) != SRN_OK){
         goto cleanup;
     }
-    if (!filter_message(msg, fflag, NULL)){
+    if (!srn_filter_message(msg, fflags)){
         goto cleanup;
     }
 
@@ -287,15 +285,15 @@ cleanup:
 void srn_chat_add_misc_message(SrnChat *self, SrnChatUser *user, const char *content){
     SrnMessage *msg;
     SrnRenderFlags rflags;
-    FilterFlag fflag;
+    SrnFilterFlags fflags;
 
     rflags = SRN_RENDER_FLAG_URL;
-    fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
+    fflags = SRN_FILTER_FLAG_USER | SRN_FILTER_FLAG_REGEX | SRN_FILTER_FLAG_LOG;
     msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_MISC);
     if (srn_render_message(msg, rflags) != SRN_OK){
         goto cleanup;
     }
-    if (!filter_message(msg, fflag, NULL)){
+    if (!srn_filter_message(msg, fflags)){
         goto cleanup;
     }
 
@@ -320,15 +318,15 @@ void srn_chat_add_misc_message_fmt(SrnChat *self, SrnChatUser *user, const char 
 void srn_chat_add_error_message(SrnChat *self, SrnChatUser *user, const char *content){
     SrnMessage *msg;
     SrnRenderFlags rflags;
-    FilterFlag fflag;
+    SrnFilterFlags fflags;
 
     rflags = SRN_RENDER_FLAG_URL;
-    fflag = FILTER_NICK | FILTER_REGEX | FILTER_CHAT_LOG;
+    fflags = SRN_FILTER_FLAG_USER | SRN_FILTER_FLAG_REGEX | SRN_FILTER_FLAG_LOG;
     msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_ERROR);
     if (srn_render_message(msg, rflags) != SRN_OK){
         goto cleanup;
     }
-    if (!filter_message(msg, fflag, NULL)){
+    if (!srn_filter_message(msg, fflags)){
         goto cleanup;
     }
 

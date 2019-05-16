@@ -1,4 +1,5 @@
-/* Copyright (C) 2016-2017 Shengyu Zhang <i@silverrainz.me>
+/* Copyright (C) 2016-2017 Z.Wind.L <zwindl@protonmail.com>
+ * Copyright (C) 2016-2019 Shengyu Zhang <i@silverrainz.me>
  *
  * This file is part of Srain.
  *
@@ -16,34 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file nick.c
- * @brief Nick filter
- * @author Shengyu Zhang <i@silverrainz.me>
- * @version 0.06.2
- * @date 2017-04-19
- */
-
-#include <string.h>
-#include <glib.h>
-
-#include "sirc/sirc.h"
-
 #include "core/core.h"
 
-#include "filter.h"
+#include "./filter.h"
 
-#include "srain.h"
-#include "log.h"
-#include "i18n.h"
+static bool filter(const SrnMessage *msg);
 
-static bool nick(const SrnMessage *msg, const char *content);
-
-Filter nick_filter = {
-    .name = "nick",
-    .func = nick,
+/**
+ * @brief regex_filter is a filter module for filtering message which matches
+ * given regular expression.
+ */
+SrnMessageFilter regex_filter = {
+    .name = "regex",
+    .filter = filter,
 };
 
-static bool nick(const SrnMessage *msg, const char *content){
-    return !(msg->sender->is_ignored || msg->sender->srv_user->is_ignored);
+bool filter(const SrnMessage *msg) {
+    // TODO
+    return TRUE;
 }
