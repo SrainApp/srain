@@ -114,10 +114,8 @@ SrnRet render(SrnMessage *msg) {
 
 void text(GMarkupParseContext *context, const gchar *text,
         gsize text_len, gpointer user_data, GError **error) {
-    GString *str;
     ColorlizeContext *ctx;
 
-    str = g_string_new(NULL);
     ctx = g_malloc0(sizeof(ColorlizeContext));
     ctx->fg_color = MIRC_COLOR_UNKNOWN;
     ctx->bg_color = MIRC_COLOR_UNKNOWN;
@@ -180,7 +178,7 @@ void text(GMarkupParseContext *context, const gchar *text,
                     // No control character, it is a utf-8 sequence
                     const char *next = g_utf8_next_char(&text[i]);
                     char *escape = g_markup_escape_text(&text[i], next - &text[i]);
-                    str = g_string_append(str, escape);
+                    g_string_append(ctx->str, escape);
                     g_free(escape);
                     i += next - &text[i] - 1;
                     break;

@@ -78,7 +78,6 @@ SrnRet srn_render_message(SrnMessage *msg, SrnRenderFlags flags){
                 && renderers[i]->render, SRN_ERR);
 
         SrnRet ret;
-        // Set renderer context
         ret = renderers[i]->render(msg);
         if (!RET_IS_OK(ret)) {
             return RET_ERR("Renderer %s failed to render message %p: %s",
