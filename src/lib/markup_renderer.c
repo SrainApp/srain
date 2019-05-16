@@ -72,7 +72,7 @@ SrnRet srn_markup_renderer_render(SrnMarkupRenderer *self,
     GMarkupParseContext *parse_ctx;
     SrnRet ret;
 
-    g_return_val_if_fail(self->is_parsing, SRN_ERR);
+    g_return_val_if_fail(!self->is_parsing, SRN_ERR);
 
     self->str = g_string_new(NULL);
     self->user_data = user_data;
@@ -111,12 +111,12 @@ GMarkupParser* srn_markup_renderer_get_markup_parser(SrnMarkupRenderer *self) {
 }
 
 GString* srn_markup_renderer_get_markup(SrnMarkupRenderer *self) {
-    g_warn_if_fail(!self->is_parsing);
+    g_warn_if_fail(self->is_parsing);
     return self->str;
 }
 
 void* srn_markup_renderer_get_user_data(SrnMarkupRenderer *self) {
-    g_warn_if_fail(!self->is_parsing);
+    g_warn_if_fail(self->is_parsing);
     return self->user_data;
 }
 
