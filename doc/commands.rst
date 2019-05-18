@@ -191,6 +191,7 @@ Example::
 
     This command is unstable, it may be implemented as a plugin in the future.
 
+
 /ignore & /unignore
 -------------------
 
@@ -387,3 +388,32 @@ between the ``target``.
 .. note::
 
     DCC is not yet supported.
+
+.. _commands-pattern:
+
+/pattern
+--------
+
+Usage::
+
+    /pattern add <name> <pattern>
+    /pattern rm <name>
+    /pattern list
+
+Regular expression pattern management.
+The added pattern can be used elsewhere in the application.
+
+.. NOTE:: TODO: document elsewhere.
+
+Sub commands:
+
+* ``add``: add a pattern with given name
+* ``rm``: remove a pattern with given name
+* ``list``: list all availables patterns
+
+Arguments:
+
+* ``name``: unique name of pattern
+* ``pattern``: a valid `Perl-compatible Regular Expression`_
+
+.. _Perl-compatible Regular Expression: https://developer.gnome.org/glib/stable/glib-regex-syntax.html
