@@ -42,6 +42,7 @@
 #include "render/render.h"
 #include "filter/filter.h"
 #include "utils.h"
+#include "pattern.h"
 
 typedef struct _CommandContext {
     SrnApplication *app;
@@ -78,6 +79,7 @@ static SrnRet on_command_kick(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_mode(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_ctcp(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_away(SrnCommand *cmd, void *user_data);
+static SrnRet on_command_pattern(SrnCommand *cmd, void *user_data);
 
 SrnCommandBind cmd_binds[] = {
     {
@@ -280,6 +282,14 @@ SrnCommandBind cmd_binds[] = {
         .opt = { SRN_COMMAND_EMPTY_OPT },
         .flag = SRN_COMMAND_FLAG_OMIT_ARG,
         .cb = on_command_away,
+    },
+    {
+        .name = "/pattern",
+        .subcmd = {"add", "rm", "list", NULL},
+        .argc = 2, // <name> [pattern]
+        .opt = { SRN_COMMAND_EMPTY_OPT },
+        .flag = SRN_COMMAND_FLAG_OMIT_ARG,
+        .cb = on_command_pattern,
     },
     SRN_COMMAND_EMPTY,
 };
@@ -983,6 +993,73 @@ static SrnRet on_command_away(SrnCommand *cmd, void *user_data){
     msg = srn_command_get_arg(cmd, 0);
 
     return sirc_cmd_away(srv->irc, msg);
+}
+
+static SrnRet on_command_pattern(SrnCommand *cmd, void *user_data){
+    const char *subcmd;
+    SrnChat *chat;
+    SrnRet ret;
+
+    subcmd = srn_command_get_subcmd(cmd);
+    g_return_val_if_fail(subcmd, SRN_ERR);
+    chat = ctx_get_chat(user_data);
+    g_return_val_if_fail(chat, SRN_ERR);
+
+    if (g_ascii_strcasecmp(subcmd, "add") == 0){
+        const char *name;
+        const char *pattern;
+
+        name = srn_command_get_arg(cmd, 0);
+        g_return_val_if_fail(name, SRN_ERR);
+        pattern = srn_command_get_arg(cmd, 1);
+        g_return_val_if_fail(pattern, SRN_ERR);
+
+        ret = srn_pattern_add_pattern(name, pattern);
+        if (!RET_IS_OK(ret)) {
+            ret = RET_ERR(_("Failed to add regex pattern \"%1$s\": %2$s"),
+                    name, RET_MSG(ret));
+        } else {
+            ret = RET_OK(_("Regex pattern \"%1$s\" has added"), name);
+        }
+    } else if (g_ascii_strcasecmp(subcmd, "rm") == 0){
+        const char *name;
+
+        name = srn_command_get_arg(cmd, 0);
+        g_return_val_if_fail(name, SRN_ERR);
+
+        ret = srn_pattern_rm_pattern(name);
+        if (!RET_IS_OK(ret)) {
+            ret = RET_ERR(_("Failed to remove regex pattern \"%1$s\": %2$s"),
+                    name, RET_MSG(ret));
+        } else {
+            ret = RET_OK(_("Regex pattern \"%1$s\" has removed"), name);
+        }
+    } else if (g_ascii_strcasecmp(subcmd, "list") == 0){
+        GList *lst;
+        GString *str;
+
+        str = g_string_new(_("Available regex patterns:"));
+        lst = srn_pattern_list_pattern();
+        while (lst) {
+            const char *name;
+            GRegex *regex;
+
+            name = lst->data;
+            regex = srn_pattern_get_regex(name);
+            g_string_append_printf(str, "\n  * %s: %s",
+                    name, g_regex_get_pattern(regex));
+            lst = g_list_next(lst);
+        }
+        g_list_free(g_list_first(lst));
+
+        ret = RET_OK("%s", str->str);
+        g_string_free(str, TRUE);
+    } else {
+        g_warn_if_reached();
+        ret = SRN_ERR;
+    }
+
+    return ret;
 }
 
 /*******************************************************************************

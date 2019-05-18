@@ -32,6 +32,7 @@
 #include "i18n.h"
 #include "config/config.h"
 #include "path.h"
+#include "pattern.h"
 
 int main(int argc, char *argv[]){
     SrnLogger *logger;
@@ -40,6 +41,7 @@ int main(int argc, char *argv[]){
 
     ret_init();
     i18n_init();
+    srn_pattern_init();
 
     logger_cfg = srn_logger_config_new();
     logger_cfg->warn_targets = g_list_append(
@@ -52,6 +54,7 @@ int main(int argc, char *argv[]){
     srn_application_run(app, argc, argv);
 
     srn_logger_free(logger);
+    srn_pattern_finalize();
     ret_finalize();
 
     return 0;
