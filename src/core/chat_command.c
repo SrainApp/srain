@@ -40,7 +40,7 @@
 #include "i18n.h"
 #include "command.h"
 #include "render/render.h"
-#include "filter/filter.h"
+#include "filter/extra.h"
 #include "utils.h"
 #include "pattern.h"
 
@@ -156,7 +156,7 @@ SrnCommandBind cmd_binds[] = {
     },
     {
         .name = "/rignore",
-        .argc = 2, // <name> <pattern>
+        .argc = 1, // <pattern>
         .opt = {
             {.key = "-cur", .val = SRN_COMMAND_OPT_NO_VAL },
             SRN_COMMAND_EMPTY_OPT,
@@ -166,7 +166,7 @@ SrnCommandBind cmd_binds[] = {
     },
     {
         .name = "/unrignore",
-        .argc = 1, // <name>
+        .argc = 1, // <pattern>
         .opt = {
             {.key = "-cur", .val = SRN_COMMAND_OPT_NO_VAL },
             SRN_COMMAND_EMPTY_OPT,
@@ -672,48 +672,45 @@ static SrnRet on_command_unignore(SrnCommand *cmd, void *user_data){
 }
 
 static SrnRet on_command_rignore(SrnCommand *cmd, void *user_data){
-    const char *name;
     const char *pattern;
-    SrnServer *srv;
     SrnChat *chat;
 
-    name = srn_command_get_arg(cmd, 0);
-    pattern = srn_command_get_arg(cmd, 1);
-    g_return_val_if_fail(name, SRN_ERR);
+    pattern = srn_command_get_arg(cmd, 0);
     g_return_val_if_fail(pattern, SRN_ERR);
 
     if (srn_command_get_opt(cmd, "-cur", NULL)){
         chat = ctx_get_chat(user_data);
     } else {
+        SrnServer *srv;
+
         srv = ctx_get_server(user_data);
         g_return_val_if_fail(srv, SRN_ERR);
         chat = srv->chat;
     }
-
     g_return_val_if_fail(chat, SRN_ERR);
 
-    // FIXME
-    return SRN_OK;
+    return srn_pattern_filter_add_pattern(chat, pattern);
 }
 
 static SrnRet on_command_unrignore(SrnCommand *cmd, void *user_data){
-    const char *name;
-    SrnServer *srv;
+    const char *pattern;
     SrnChat *chat;
 
-    name = srn_command_get_arg(cmd, 0);
-    g_return_val_if_fail(name, SRN_ERR);
+    pattern = srn_command_get_arg(cmd, 0);
+    g_return_val_if_fail(pattern, SRN_ERR);
 
     if (srn_command_get_opt(cmd, "-cur", NULL)){
         chat = ctx_get_chat(user_data);
     } else {
+        SrnServer *srv;
+
         srv = ctx_get_server(user_data);
         g_return_val_if_fail(srv, SRN_ERR);
         chat = srv->chat;
     }
+    g_return_val_if_fail(chat, SRN_ERR);
 
-    // FIXME
-    return SRN_OK;
+    return srn_pattern_filter_rm_pattern(chat, pattern);
 }
 
 static SrnRet on_command_query(SrnCommand *cmd, void *user_data){
