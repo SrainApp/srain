@@ -213,10 +213,12 @@ Options:
 
 Usage::
 
-    /rignore [-cur] <name> <pattern>
-    /unignore [-cur] <name>
+    /rignore [-cur] <pattern>
+    /unrignore [-cur] <pattern>
 
-Ignore/unignore message which matches specified pattern.
+Ignore/unignore message whose content matches specified pattern.
+
+Pattern can be add via command :ref:`commands-pattern`.
 
 Options:
 
@@ -224,14 +226,22 @@ Options:
 
 Arguments:
 
-* ``name``: unique pattern name
-* ``pattern``: perl-compatible regex expression which is used to match the
-  incoming message, for regex syntax, refer to
-  https://developer.gnome.org/glib/stable/glib-regex-syntax.html
+* ``pattern``: name of regular expression pattern, use ``/pattern list`` to
+  get available name
+
+Example:
+
+This ignore message that content is "Why GTK and not Qt?"::
+
+    /pattern add troll ^Why GTK and not Qt\?$
+    /rignore troll
+
+To cancel the ignore of these kind of message, use::
+
+    /unrignore troll
 
 /query & /unquery
 -----------------
-
 Usage::
 
     /query <nick>
@@ -401,9 +411,8 @@ Usage::
     /pattern list
 
 Regular expression pattern management.
-The added pattern can be used elsewhere in the application.
-
-.. NOTE:: TODO: document elsewhere.
+The added pattern can be used elsewhere in the application, such as
+:ref:`commands-rignore`.
 
 Sub commands:
 
