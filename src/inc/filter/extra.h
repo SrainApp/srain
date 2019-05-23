@@ -1,5 +1,4 @@
-/* Copyright (C) 2016-2017 Z.Wind.L <zwindl@protonmail.com>
- * Copyright (C) 2016-2019 Shengyu Zhang <i@silverrainz.me>
+/* Copyright (C) 2016-2019 Shengyu Zhang <i@silverrainz.me>
  *
  * This file is part of Srain.
  *
@@ -17,22 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef __FILTER_EXTRA_H
+#define __FILTER_EXTRA_H
+
 #include "core/core.h"
 
-#include "./filter.h"
+SrnRet srn_pattern_filter_add_pattern(SrnChat *chat, const char *pattern);
+SrnRet srn_pattern_filter_rm_pattern(SrnChat *chat, const char *pattern);
 
-static bool filter(const SrnMessage *msg);
-
-/**
- * @brief regex_filter is a filter module for filtering message which matches
- * given regular expression.
- */
-SrnMessageFilter regex_filter = {
-    .name = "regex",
-    .filter = filter,
-};
-
-bool filter(const SrnMessage *msg) {
-    // TODO
-    return TRUE;
-}
+#endif /* __FILTER_EXTRA_H */

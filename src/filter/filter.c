@@ -28,7 +28,7 @@
 #define MAX_FILTER  sizeof(SrnFilterFlags) * 8
 
 extern SrnMessageFilter user_filter;
-extern SrnMessageFilter regex_filter;
+extern SrnMessageFilter pattern_filter;
 extern SrnMessageFilter log_filter;
 static SrnMessageFilter *filters[MAX_FILTER];
 
@@ -38,7 +38,7 @@ void srn_filter_init(void){
     /* NOTE: Do not change the order filterer . */
     i = 0;
     filters[i++] = &user_filter;
-    filters[i++] = &regex_filter;
+    filters[i++] = &pattern_filter;
     filters[i++] = &log_filter;
     g_warn_if_fail(i < MAX_FILTER);
 

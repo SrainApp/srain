@@ -203,7 +203,7 @@ void srn_chat_add_recv_message(SrnChat *self, SrnChatUser *user, const char *con
     } else {
         rflags |= SRN_RENDER_FLAG_MIRC_STRIP;
     }
-    fflags = SRN_FILTER_FLAG_USER | SRN_FILTER_FLAG_REGEX | SRN_FILTER_FLAG_LOG;
+    fflags = SRN_FILTER_FLAG_USER | SRN_FILTER_FLAG_PATTERN | SRN_FILTER_FLAG_LOG;
 
     msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_RECV);
     if (srn_render_message(msg, rflags) != SRN_OK){
@@ -232,7 +232,7 @@ void srn_chat_add_notice_message(SrnChat *self, SrnChatUser *user, const char *c
     } else {
         rflags |= SRN_RENDER_FLAG_MIRC_STRIP;
     }
-    fflags = SRN_FILTER_FLAG_USER | SRN_FILTER_FLAG_REGEX | SRN_FILTER_FLAG_LOG;
+    fflags = SRN_FILTER_FLAG_USER | SRN_FILTER_FLAG_PATTERN | SRN_FILTER_FLAG_LOG;
 
     msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_NOTICE);
     if (srn_render_message(msg, rflags) != SRN_OK){
@@ -265,7 +265,7 @@ void srn_chat_add_action_message(SrnChat *self, SrnChatUser *user, const char *c
 
     msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_ACTION);
     if (!user->srv_user->is_me){
-        fflags |= SRN_FILTER_FLAG_USER | SRN_FILTER_FLAG_REGEX;
+        fflags |= SRN_FILTER_FLAG_USER | SRN_FILTER_FLAG_PATTERN;
         rflags |= SRN_RENDER_FLAG_RELAY | SRN_RENDER_FLAG_MENTION;
     }
     if (srn_render_message(msg, rflags) != SRN_OK){
@@ -293,7 +293,7 @@ void srn_chat_add_misc_message(SrnChat *self, SrnChatUser *user, const char *con
     SrnFilterFlags fflags;
 
     rflags = SRN_RENDER_FLAG_URL;
-    fflags = SRN_FILTER_FLAG_USER | SRN_FILTER_FLAG_REGEX | SRN_FILTER_FLAG_LOG;
+    fflags = SRN_FILTER_FLAG_USER | SRN_FILTER_FLAG_PATTERN | SRN_FILTER_FLAG_LOG;
     msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_MISC);
     if (srn_render_message(msg, rflags) != SRN_OK){
         goto cleanup;
@@ -326,7 +326,7 @@ void srn_chat_add_error_message(SrnChat *self, SrnChatUser *user, const char *co
     SrnFilterFlags fflags;
 
     rflags = SRN_RENDER_FLAG_URL;
-    fflags = SRN_FILTER_FLAG_USER | SRN_FILTER_FLAG_REGEX | SRN_FILTER_FLAG_LOG;
+    fflags = SRN_FILTER_FLAG_USER | SRN_FILTER_FLAG_PATTERN | SRN_FILTER_FLAG_LOG;
     msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_ERROR);
     if (srn_render_message(msg, rflags) != SRN_OK){
         goto cleanup;

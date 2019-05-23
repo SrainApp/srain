@@ -31,9 +31,9 @@
 
 typedef int SrnFilterFlags;
 
-#define SRN_FILTER_FLAG_USER    1 << 0
-#define SRN_FILTER_FLAG_REGEX   1 << 1
-#define SRN_FILTER_FLAG_LOG     1 << 2
+#define SRN_FILTER_FLAG_USER        1 << 0
+#define SRN_FILTER_FLAG_PATTERN     1 << 1
+#define SRN_FILTER_FLAG_LOG         1 << 2
 
 void srn_filter_init(void);
 void srn_filter_finalize(void);
