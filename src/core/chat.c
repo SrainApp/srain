@@ -28,14 +28,13 @@
 #include "log.h"
 #include "utils.h"
 #include "config/config.h"
+#include "extra_data.h"
 
 #include "sirc/sirc.h"
 
 extern SrnCommandBind cmd_binds[];
 
 static void add_message(SrnChat *self, SrnMessage *msg);
-static void init_extra_data(SrnChat *self);
-static void finalize_extra_data(SrnChat *self);
 
 SrnChat* srn_chat_new(SrnServer *srv, const char *name, SrnChatType type,
         SrnChatConfig *cfg){
@@ -51,6 +50,7 @@ SrnChat* srn_chat_new(SrnServer *srv, const char *name, SrnChatType type,
     self->srv = srv;
     self->user = srn_chat_add_and_get_user(self, srv->user);
     self->_user = srn_chat_add_and_get_user(self, srv->_user);
+    self->extra_data = srn_extra_data_new();
 
     // Init self->ui
     events = &srn_application_get_default()->ui_events;
@@ -69,20 +69,18 @@ SrnChat* srn_chat_new(SrnServer *srv, const char *name, SrnChatType type,
             g_warn_if_reached();
     }
 
-    init_extra_data(self);
-
     return self;
 }
 
 void srn_chat_free(SrnChat *self){
     str_assign(&self->name, NULL);
 
+    srn_extra_data_free(self->extra_data);
+
     // Free user list, self->user and self->_user also in this list
     g_list_free_full(self->user_list, (GDestroyNotify)srn_chat_user_free);
 
     sui_free_buffer(self->ui);
-
-    finalize_extra_data(self);
 
     g_free(self);
 }
@@ -376,23 +374,6 @@ void srn_chat_set_topic_setter(SrnChat *self, const char *setter){
     sui_set_topic_setter(self->ui, setter);
 }
 
-void srn_chat_set_extra_data(SrnChat *self, const char *key, void *val,
-        GDestroyNotify val_destory_func) {
-    g_return_if_fail(key);
-    g_return_if_fail(val);
-
-    g_return_if_fail(!g_hash_table_contains(self->extra_data_table, key));
-    g_return_if_fail(!g_hash_table_contains(self->extra_destory_func_table, key));
-
-    g_hash_table_insert(self->extra_data_table, (gpointer)key, val);
-    g_hash_table_insert(self->extra_destory_func_table, (gpointer)key,
-            val_destory_func);
-}
-
-void* srn_chat_get_extra_data(SrnChat *self, const char *key) {
-    return g_hash_table_lookup(self->extra_data_table, key);
-}
-
 static void add_message(SrnChat *self, SrnMessage *msg){
     self->msg_list = g_list_append(self->msg_list, msg);
     self->last_msg = msg;
@@ -404,28 +385,4 @@ static void add_message(SrnChat *self, SrnMessage *msg){
             || msg->type == SRN_MESSAGE_TYPE_ERROR){
         sui_notify_message(msg->ui);
     }
-}
-
-static void init_extra_data(SrnChat *self) {
-    self->extra_data_table = g_hash_table_new(g_str_hash, g_str_equal);
-    self->extra_destory_func_table = g_hash_table_new(g_str_hash, g_str_equal);
-}
-
-static void finalize_extra_data(SrnChat *self) {
-    gpointer key, val;
-    GHashTableIter iter;
-
-    // Free all extra data via destory func
-    g_hash_table_iter_init(&iter, self->extra_data_table);
-    while (g_hash_table_iter_next(&iter, &key, &val)){
-        GDestroyNotify func;
-
-        func = g_hash_table_lookup(self->extra_data_table, key);
-        if (func) {
-            func(val);
-        }
-    }
-
-    g_hash_table_destroy(self->extra_data_table);
-    g_hash_table_destroy(self->extra_destory_func_table);
 }

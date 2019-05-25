@@ -24,6 +24,7 @@
 #include "sirc/sirc.h"
 #include "sui/sui.h"
 #include "ret.h"
+#include "extra_data.h"
 
 #ifndef __IN_CORE_H
 	#error This file should not be included directly, include just core.h
@@ -154,8 +155,7 @@ struct _SrnChat {
     /* Used by Filters & Decorators */
     GList *ignore_regex_list;
     GList *relaybot_list;
-    GHashTable *extra_data_table;
-    GHashTable *extra_destory_func_table;
+    SrnExtraData *extra_data;
 
     SrnServer *srv;
     SuiBuffer *ui;
@@ -341,9 +341,6 @@ void srn_chat_add_error_message(SrnChat *chat, SrnChatUser *user, const char *co
 void srn_chat_add_error_message_fmt(SrnChat *chat, SrnChatUser *user, const char *fmt, ...);
 void srn_chat_set_topic(SrnChat *chat, SrnChatUser *user, const char *topic);
 void srn_chat_set_topic_setter(SrnChat *chat, const char *setter);
-void srn_chat_set_extra_data(SrnChat *self, const char *key, void *val,
-        GDestroyNotify val_destory_func);
-void* srn_chat_get_extra_data(SrnChat *self, const char *key);
 
 SrnChatConfig *srn_chat_config_new();
 SrnRet srn_chat_config_check(SrnChatConfig *cfg);

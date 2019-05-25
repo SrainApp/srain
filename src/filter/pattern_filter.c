@@ -70,8 +70,9 @@ static bool filter(const SrnMessage *msg) {
     g_return_val_if_fail(msg->chat && msg->chat->srv, SRN_ERR);
 
     patterns = NULL;
-    patterns1 = srn_chat_get_extra_data(msg->chat, PATTERNS_KEY);
-    patterns2 = srn_chat_get_extra_data(msg->chat->srv->chat, PATTERNS_KEY);
+    patterns1 = srn_extra_data_get(msg->chat->extra_data, PATTERNS_KEY);
+    patterns2 = srn_extra_data_get(msg->chat->srv->chat->extra_data,
+            PATTERNS_KEY);
 
     if (patterns1 && *patterns1) {
         patterns = g_list_concat(patterns, g_list_copy(*patterns1));
@@ -112,10 +113,10 @@ SrnRet srn_pattern_filter_add_pattern(SrnChat *chat, const char *pattern){
     GList **patterns;
     GList *lst;
 
-    patterns = srn_chat_get_extra_data(chat, PATTERNS_KEY);
+    patterns = srn_extra_data_get(chat->extra_data, PATTERNS_KEY);
     if (!patterns) {
         patterns = alloc_patterns();
-        srn_chat_set_extra_data(chat, PATTERNS_KEY, patterns,
+        srn_extra_data_set(chat->extra_data, PATTERNS_KEY, patterns,
                 (GDestroyNotify)free_patterns);
     }
 
@@ -136,7 +137,7 @@ SrnRet srn_pattern_filter_rm_pattern(SrnChat *chat, const char *pattern){
     GList **patterns;
     GList *lst;
 
-    patterns = srn_chat_get_extra_data(chat, PATTERNS_KEY);
+    patterns = srn_extra_data_get(chat->extra_data, PATTERNS_KEY);
     g_return_val_if_fail(patterns, SRN_OK);
 
     lst = *patterns;
