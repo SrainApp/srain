@@ -42,7 +42,7 @@
 #include "render/render.h"
 #include "filter/extra.h"
 #include "utils.h"
-#include "pattern.h"
+#include "pattern_set.h"
 
 typedef struct _CommandContext {
     SrnApplication *app;
@@ -996,11 +996,14 @@ static SrnRet on_command_pattern(SrnCommand *cmd, void *user_data){
     const char *subcmd;
     SrnChat *chat;
     SrnRet ret;
+    SrnPatternSet *pattern_set;
 
     subcmd = srn_command_get_subcmd(cmd);
     g_return_val_if_fail(subcmd, SRN_ERR);
     chat = ctx_get_chat(user_data);
     g_return_val_if_fail(chat, SRN_ERR);
+    pattern_set = srn_application_get_default()->pattern_set;
+    g_return_val_if_fail(pattern_set, SRN_ERR);
 
     if (g_ascii_strcasecmp(subcmd, "add") == 0){
         const char *name;
@@ -1011,7 +1014,7 @@ static SrnRet on_command_pattern(SrnCommand *cmd, void *user_data){
         pattern = srn_command_get_arg(cmd, 1);
         g_return_val_if_fail(pattern, SRN_ERR);
 
-        ret = srn_pattern_add_pattern(name, pattern);
+        ret = srn_pattern_set_add(pattern_set, name, pattern);
         if (!RET_IS_OK(ret)) {
             ret = RET_ERR(_("Failed to add regex pattern \"%1$s\": %2$s"),
                     name, RET_MSG(ret));
@@ -1024,7 +1027,7 @@ static SrnRet on_command_pattern(SrnCommand *cmd, void *user_data){
         name = srn_command_get_arg(cmd, 0);
         g_return_val_if_fail(name, SRN_ERR);
 
-        ret = srn_pattern_rm_pattern(name);
+        ret = srn_pattern_set_rm(pattern_set, name);
         if (!RET_IS_OK(ret)) {
             ret = RET_ERR(_("Failed to remove regex pattern \"%1$s\": %2$s"),
                     name, RET_MSG(ret));
@@ -1036,13 +1039,13 @@ static SrnRet on_command_pattern(SrnCommand *cmd, void *user_data){
         GString *str;
 
         str = g_string_new(_("Available regex patterns:"));
-        lst = srn_pattern_list_pattern();
+        lst = srn_pattern_set_list(pattern_set);
         while (lst) {
             const char *name;
             GRegex *regex;
 
             name = lst->data;
-            regex = srn_pattern_get_regex(name);
+            regex = srn_pattern_set_get(pattern_set, name);
             g_string_append_printf(str, "\n  * %s: %s",
                     name, g_regex_get_pattern(regex));
             lst = g_list_next(lst);

@@ -27,13 +27,12 @@
 #include "core/core.h"
 #include "sui/sui.h"
 #include "config/reader.h"
-#include "render/render.h"
-#include "filter/filter.h"
 #include "meta.h"
 #include "log.h"
 #include "i18n.h"
 #include "path.h"
 #include "utils.h"
+#include "pattern_set.h"
 
 #include "app_event.h"
 
@@ -99,8 +98,8 @@ SrnApplication* srn_application_new(void){
     app->ui = sui_new_application(cfg->id ? cfg->id : PACKAGE_APPID,
             app, &app->ui_app_events, cfg->ui);
 
-    srn_filter_init();
-    srn_render_init();
+    app->pattern_set = srn_pattern_set_new();
+
     app_instance = app;
 
     return app;

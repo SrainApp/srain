@@ -18,7 +18,7 @@
 
 #include "core/core.h"
 #include "markup_renderer.h"
-#include "pattern.h"
+#include "pattern_set.h"
 
 #include "./filter.h"
 
@@ -66,8 +66,12 @@ static bool filter(const SrnMessage *msg) {
     GList **patterns2;
     GList *lst;
     SrnRet ret;
+    SrnPatternSet *pattern_set;
 
-    g_return_val_if_fail(msg->chat && msg->chat->srv, SRN_ERR);
+    g_return_val_if_fail(msg->chat && msg->chat->srv, TRUE);
+
+    pattern_set = srn_application_get_default()->pattern_set;
+    g_return_val_if_fail(pattern_set, TRUE);
 
     patterns = NULL;
     patterns1 = srn_extra_data_get(msg->chat->extra_data, PATTERNS_KEY);
@@ -94,7 +98,7 @@ static bool filter(const SrnMessage *msg) {
         const GRegex *regex;
 
         pattern = lst->data;
-        regex = srn_pattern_get_regex(pattern);
+        regex = srn_pattern_set_get(pattern_set, pattern);
         if (regex) {
              if (g_regex_match(regex, raw_content, 0, NULL)) {
                  return FALSE;

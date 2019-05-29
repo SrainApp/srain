@@ -16,25 +16,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * @file pattern.h
- * @brief Simple pattern management.
+ * @file pattern_set.h
+ * @brief Simple pattern set management.
  * @author Shengyu Zhang <i@silverrainz.me>
  * @version 
  * @date 2019-05-16
  */
 
-#ifndef __PATTERN_H
-#define __PATTERN_H
+#ifndef __PATTERN_SET_H
+#define __PATTERN_SET_H
 
 #include <glib.h>
 #include "ret.h"
 
-void srn_pattern_init(void);
-void srn_pattern_finalize(void);
+typedef struct _SrnPatternSet SrnPatternSet;
 
-SrnRet srn_pattern_add_pattern(const char *name, const char *pattern);
-SrnRet srn_pattern_rm_pattern(const char *name);
-GRegex* srn_pattern_get_regex(const char *name);
-GList* srn_pattern_list_pattern();
+SrnPatternSet* srn_pattern_set_new(void);
+void srn_pattern_set_free(SrnPatternSet *self);
 
-#endif /* __PATTERN_H */
+SrnRet srn_pattern_set_add(SrnPatternSet *self, const char *name, const char *pattern);
+SrnRet srn_pattern_set_rm(SrnPatternSet *self, const char *name);
+GRegex* srn_pattern_set_get(SrnPatternSet *self, const char *name);
+GList* srn_pattern_set_list(SrnPatternSet *self);
+
+#endif /* __PATTERN_SET_H */

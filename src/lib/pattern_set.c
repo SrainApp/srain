@@ -17,7 +17,7 @@
  */
 
 /**
- * @file pattern.c
+ * @file pattern_set.c
  * @brief This file provides convenient interface for regex pattern management.
  * Refer to https://developer.gnome.org/glib/stable/glib-regex-syntax.html
  * for pattern syntax.
@@ -30,19 +30,33 @@
 
 #include "ret.h"
 #include "i18n.h"
+#include "pattern_set.h"
 
-static GHashTable *pattern_table;
+struct _SrnPatternSet {
+    GHashTable *table;
+};
 
-void srn_pattern_init(void) {
-    pattern_table = g_hash_table_new_full(
+SrnPatternSet* srn_pattern_set_new(void) {
+    SrnPatternSet *self;
+
+    self = g_malloc0(sizeof(SrnPatternSet));
+    self->table = g_hash_table_new_full(
             g_str_hash, g_str_equal, g_free, (GDestroyNotify)g_regex_unref);
+
+    return self;
 }
 
-SrnRet srn_pattern_add_pattern(const char *name, const char *pattern) {
+void srn_pattern_set_free(SrnPatternSet *self) {
+    g_hash_table_destroy(self->table);
+    g_free(self);
+}
+
+SrnRet srn_pattern_set_add(SrnPatternSet *self, const char *name,
+        const char *pattern) {
     GError *err;
     GRegex *regex;
 
-    if (g_hash_table_contains(pattern_table, name)) {
+    if (g_hash_table_contains(self->table, name)) {
         return SRN_ERR;
     }
 
@@ -51,40 +65,38 @@ SrnRet srn_pattern_add_pattern(const char *name, const char *pattern) {
     if (err) {
         return RET_ERR("%s", err->message);
     }
-    g_hash_table_insert(pattern_table, g_strdup(name), regex);
+    g_hash_table_insert(self->table, g_strdup(name), regex);
 
     return SRN_OK;
 }
 
-GRegex *srn_pattern_get_regex(const char *name) {
-    return g_hash_table_lookup(pattern_table, name);
+GRegex *srn_pattern_set_get(SrnPatternSet *self, const char *name) {
+    return g_hash_table_lookup(self->table, name);
 }
 
-SrnRet srn_pattern_rm_pattern(const char *name) {
-    return g_hash_table_remove(pattern_table, name) ? SRN_OK : SRN_ERR;
+SrnRet srn_pattern_set_rm(SrnPatternSet *self, const char *name) {
+    return g_hash_table_remove(self->table, name) ? SRN_OK : SRN_ERR;
 }
 
 /**
- * @brief srn_pattern_list_pattern lists name of all available patterns.
+ * @brief srn_pattern_set_list lists name of all available patterns.
+ *
+ * @param self
  *
  * @return A GList which contains constant string.
  * The contained string MUST not be freed by user.
  * The GList itself should be freed by user via g_list_free().
  */
-GList* srn_pattern_list_pattern() {
+GList* srn_pattern_set_list(SrnPatternSet *self) {
     gpointer key;
     GList *lst;
     GHashTableIter iter;
 
     lst = NULL;
-    g_hash_table_iter_init(&iter, pattern_table);
+    g_hash_table_iter_init(&iter, self->table);
     while (g_hash_table_iter_next(&iter, &key, NULL)) {
         lst = g_list_append(lst, key);
     }
 
     return lst;
-}
-
-void srn_pattern_finalize(void) {
-    g_hash_table_destroy(pattern_table);
 }
