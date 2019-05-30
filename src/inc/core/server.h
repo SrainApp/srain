@@ -85,6 +85,8 @@ struct _SrnChatUser{
     GList *msg_list;    // TODO: List of SrnMessage
 
     SuiUser *ui;
+
+    SrnExtraData *extra_data;
 };
 
 struct _SrnServerUser {
@@ -105,6 +107,8 @@ struct _SrnServerUser {
     bool is_secure;
 
     GList *chat_user_list;  // List of SrnChatUser
+
+    SrnExtraData *extra_data;
 };
 
 enum _SrnMessageType {
@@ -155,11 +159,12 @@ struct _SrnChat {
     /* Used by Filters & Decorators */
     GList *ignore_regex_list;
     GList *relaybot_list;
-    SrnExtraData *extra_data;
 
     SrnServer *srv;
     SuiBuffer *ui;
     SrnChatConfig *cfg;
+
+    SrnExtraData *extra_data;
 };
 
 struct _SrnChatConfig {

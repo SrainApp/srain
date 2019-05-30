@@ -31,6 +31,7 @@ SrnChatUser *srn_chat_user_new(SrnChat *chat, SrnServerUser *srv_user){
     self->is_ignored = FALSE;
     srn_server_user_attach_chat_user(srv_user, self);
     self->ui = sui_new_user(self);
+    self->extra_data = srn_extra_data_new();
 
     return self;
 }
@@ -38,6 +39,7 @@ SrnChatUser *srn_chat_user_new(SrnChat *chat, SrnServerUser *srv_user){
 void srn_chat_user_free(SrnChatUser *self){
     sui_free_user(self->ui);
     srn_server_user_detach_chat_user(self->srv_user, self);
+    srn_extra_data_free(self->extra_data);
     g_free(self);
 }
 

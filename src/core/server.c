@@ -78,15 +78,9 @@ SrnServer* srn_server_new(const char *name, SrnServerConfig *cfg){
     srv->irc = sirc_new_session(
             &srn_application_get_default()->irc_events,
             cfg->irc);
-    if (!srv->irc) goto bad;
     sirc_set_ctx(srv->irc, srv);
 
     return srv;
-
-
-bad:
-    srn_server_free(srv);
-    return NULL;
 }
 
 /**
