@@ -58,8 +58,6 @@ static SrnRet on_command_reload(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_context(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_server(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_connect(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_relay(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_unrelay(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_ignore(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_unignore(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_rignore(SrnCommand *cmd, void *user_data);
@@ -113,26 +111,6 @@ SrnCommandBind cmd_binds[] = {
         },
         .flag = SRN_COMMAND_FLAG_OMIT_ARG,
         .cb = on_command_connect,
-    },
-    {
-        .name = "/relay",
-        .argc = 1, // <nick>
-        .opt = {
-            {.key = "-cur", .val = SRN_COMMAND_OPT_NO_VAL },
-            SRN_COMMAND_EMPTY_OPT,
-        },
-        .flag = 0,
-        .cb = on_command_relay,
-    },
-    {
-        .name = "/unrelay",
-        .argc = 1, // <nick>
-        .opt = {
-            {.key = "-cur", .val = SRN_COMMAND_OPT_NO_VAL },
-            SRN_COMMAND_EMPTY_OPT,
-        },
-        .flag = 0,
-        .cb = on_command_unrelay,
     },
     {
         .name = "/ignore",
@@ -562,50 +540,6 @@ FIN:
     }
 
     return ret;
-}
-
-static SrnRet on_command_relay(SrnCommand *cmd, void *user_data){
-    const char *nick;
-    SrnServer *srv;
-    SrnChat *chat;
-
-    nick = srn_command_get_arg(cmd, 0);
-    g_return_val_if_fail(nick, SRN_ERR);
-
-    if (srn_command_get_opt(cmd, "-cur", NULL)){
-        chat = ctx_get_chat(user_data);
-    } else {
-        srv = ctx_get_server(user_data);
-        g_return_val_if_fail(srv, SRN_ERR);
-        chat = srv->chat;
-    }
-
-    g_return_val_if_fail(chat, SRN_ERR);
-
-    // FIXME
-    return SRN_OK;
-}
-
-static SrnRet on_command_unrelay(SrnCommand *cmd, void *user_data){
-    const char *nick;
-    SrnServer *srv;
-    SrnChat *chat;
-
-    nick = srn_command_get_arg(cmd, 0);
-    g_return_val_if_fail(nick, SRN_ERR);
-
-    if (srn_command_get_opt(cmd, "-cur", NULL)){
-        chat = ctx_get_chat(user_data);
-    } else {
-        srv = ctx_get_server(user_data);
-        g_return_val_if_fail(srv, SRN_ERR);
-        chat = srv->chat;
-    }
-
-    g_return_val_if_fail(chat, SRN_ERR);
-
-    // FIXME
-    return SRN_OK;
 }
 
 static SrnRet on_command_ignore(SrnCommand *cmd, void *user_data){
