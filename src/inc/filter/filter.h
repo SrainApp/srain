@@ -49,4 +49,7 @@ void srn_filter_finalize(void);
  */
 bool srn_filter_message(const SrnMessage *msg, SrnFilterFlags flags);
 
+SrnRet srn_filter_attach_pattern(SrnExtraData *extra_data, const char *pattern);
+SrnRet srn_filter_detach_pattern(SrnExtraData *extra_data, const char *pattern);
+
 #endif /* __FILTER_H */

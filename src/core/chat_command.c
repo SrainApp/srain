@@ -40,7 +40,7 @@
 #include "i18n.h"
 #include "command.h"
 #include "render/render.h"
-#include "filter/extra.h"
+#include "filter/filter.h"
 #include "utils.h"
 #include "pattern_set.h"
 
@@ -689,7 +689,7 @@ static SrnRet on_command_rignore(SrnCommand *cmd, void *user_data){
     }
     g_return_val_if_fail(chat, SRN_ERR);
 
-    return srn_pattern_filter_add_pattern(chat, pattern);
+    return srn_filter_attach_pattern(chat->extra_data, pattern);
 }
 
 static SrnRet on_command_unrignore(SrnCommand *cmd, void *user_data){
@@ -710,7 +710,7 @@ static SrnRet on_command_unrignore(SrnCommand *cmd, void *user_data){
     }
     g_return_val_if_fail(chat, SRN_ERR);
 
-    return srn_pattern_filter_rm_pattern(chat, pattern);
+    return srn_filter_detach_pattern(chat->extra_data, pattern);
 }
 
 static SrnRet on_command_query(SrnCommand *cmd, void *user_data){

@@ -22,13 +22,14 @@
 
 #include "./filter.h"
 
-#define PATTERNS_KEY "pattern_filter_patterns"
+#define PATTERNS_KEY "pattern_filter_module_patterns"
 
 static void init(void);
 static void finalize(void);
 static bool filter(const SrnMessage *msg);
 static GList** alloc_patterns();
 static void free_patterns(GList **patterns);
+static GList* get_patterns(const SrnMessage *msg);
 static void text(GMarkupParseContext *context, const gchar *text,
         gsize text_len, gpointer user_data, GError **error);
 
@@ -62,28 +63,12 @@ void finalize(void) {
 static bool filter(const SrnMessage *msg) {
     char *raw_content;
     GList *patterns;
-    GList **patterns1;
-    GList **patterns2;
     GList *lst;
     SrnRet ret;
     SrnPatternSet *pattern_set;
 
-    g_return_val_if_fail(msg->chat && msg->chat->srv, TRUE);
-
     pattern_set = srn_application_get_default()->pattern_set;
     g_return_val_if_fail(pattern_set, TRUE);
-
-    patterns = NULL;
-    patterns1 = srn_extra_data_get(msg->chat->extra_data, PATTERNS_KEY);
-    patterns2 = srn_extra_data_get(msg->chat->srv->chat->extra_data,
-            PATTERNS_KEY);
-
-    if (patterns1 && *patterns1) {
-        patterns = g_list_concat(patterns, g_list_copy(*patterns1));
-    }
-    if (patterns2 && *patterns2) {
-        patterns = g_list_concat(patterns, g_list_copy(*patterns2));
-    }
 
     raw_content = NULL;
     ret = srn_markup_renderer_render(markup_renderer,
@@ -92,6 +77,8 @@ static bool filter(const SrnMessage *msg) {
         // ret = RET_ERR(_("Failed to render markup text: %1$s"), RET_MSG(ret));
         // return TRUE;
     }
+
+    patterns = get_patterns(msg);
     lst = patterns;
     while (lst) {
         const char *pattern;
@@ -113,14 +100,24 @@ static bool filter(const SrnMessage *msg) {
     return TRUE;
 }
 
-SrnRet srn_pattern_filter_add_pattern(SrnChat *chat, const char *pattern){
+/**
+ * @brief srn_filter_attach_pattern attach a pattern name to given SrnExtraData.
+ * The attached pattern name will be used to filter message.
+ *
+ * @param extra_data
+ * @param pattern is name of pattern which can be found i
+ * SrnApplication->pattern_set.
+ *
+ * @return
+ */
+SrnRet srn_filter_attach_pattern(SrnExtraData *extra_data, const char *pattern){
     GList **patterns;
     GList *lst;
 
-    patterns = srn_extra_data_get(chat->extra_data, PATTERNS_KEY);
+    patterns = srn_extra_data_get(extra_data, PATTERNS_KEY);
     if (!patterns) {
         patterns = alloc_patterns();
-        srn_extra_data_set(chat->extra_data, PATTERNS_KEY, patterns,
+        srn_extra_data_set(extra_data, PATTERNS_KEY, patterns,
                 (GDestroyNotify)free_patterns);
     }
 
@@ -137,11 +134,19 @@ SrnRet srn_pattern_filter_add_pattern(SrnChat *chat, const char *pattern){
     return SRN_OK;
 }
 
-SrnRet srn_pattern_filter_rm_pattern(SrnChat *chat, const char *pattern){
+/**
+ * @brief srn_filter_detach_pattern detach a pattern name from given SrnExtraData.
+ *
+ * @param extra_data
+ * @param pattern
+ *
+ * @return
+ */
+SrnRet srn_filter_detach_pattern(SrnExtraData *extra_data, const char *pattern){
     GList **patterns;
     GList *lst;
 
-    patterns = srn_extra_data_get(chat->extra_data, PATTERNS_KEY);
+    patterns = srn_extra_data_get(extra_data, PATTERNS_KEY);
     g_return_val_if_fail(patterns, SRN_OK);
 
     lst = *patterns;
@@ -172,6 +177,41 @@ static void free_patterns(GList **patterns){
         }
         g_free(patterns);
     }
+}
+
+/**
+ * @brief get_patterns
+ *
+ * @return a list which contains const string, should be freed by g_list_free();
+ */
+static GList* get_patterns(const SrnMessage *msg) {
+    GList *iter;
+    GList *datas; // List of SrnExtraData
+    GList *patterns;
+
+    datas = NULL;
+    datas = g_list_append(datas, msg->sender->extra_data);
+    datas = g_list_append(datas, msg->sender->srv_user->extra_data);
+    datas = g_list_append(datas, msg->chat->extra_data);
+    datas = g_list_append(datas, msg->chat->srv->chat->extra_data);
+
+    patterns = NULL;
+    iter = datas;
+    while (iter) {
+        SrnExtraData *data;
+        GList **lp;
+
+        data = iter->data;
+        lp = srn_extra_data_get(data, PATTERNS_KEY);
+        if (lp && *lp) {
+            patterns = g_list_concat(patterns, g_list_copy(*lp));
+        }
+        iter = g_list_next(iter);
+    }
+
+    g_list_free(g_list_first(datas));
+
+    return patterns;
 }
 
 static void text(GMarkupParseContext *context, const gchar *text,
