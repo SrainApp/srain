@@ -78,6 +78,8 @@ static SrnRet on_command_mode(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_ctcp(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_away(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_pattern(SrnCommand *cmd, void *user_data);
+static SrnRet on_command_render(SrnCommand *cmd, void *user_data);
+static SrnRet on_command_unrender(SrnCommand *cmd, void *user_data);
 
 SrnCommandBind cmd_binds[] = {
     {
@@ -268,6 +270,26 @@ SrnCommandBind cmd_binds[] = {
         .opt = { SRN_COMMAND_EMPTY_OPT },
         .flag = SRN_COMMAND_FLAG_OMIT_ARG,
         .cb = on_command_pattern,
+    },
+    {
+        .name = "/render",
+        .argc = 2, // <nick> <pattern>
+        .opt = {
+            {.key = "-cur", .val = SRN_COMMAND_OPT_NO_VAL },
+            SRN_COMMAND_EMPTY_OPT,
+        },
+        .flag = 0,
+        .cb = on_command_render,
+    },
+    {
+        .name = "/unrender",
+        .argc = 2, // <nick> <pattern>
+        .opt = {
+            {.key = "-cur", .val = SRN_COMMAND_OPT_NO_VAL },
+            SRN_COMMAND_EMPTY_OPT,
+        },
+        .flag = 0,
+        .cb = on_command_unrender,
     },
     SRN_COMMAND_EMPTY,
 };
@@ -994,6 +1016,76 @@ static SrnRet on_command_pattern(SrnCommand *cmd, void *user_data){
     }
 
     return ret;
+}
+
+static SrnRet on_command_render(SrnCommand *cmd, void *user_data){
+    const char *nick;
+    const char *pattern;
+    SrnServer *srv;
+    SrnServerUser *srv_user;
+    SrnExtraData *extra_data;
+
+    nick = srn_command_get_arg(cmd, 0);
+    g_return_val_if_fail(nick, SRN_ERR);
+    pattern = srn_command_get_arg(cmd, 1);
+    g_return_val_if_fail(pattern, SRN_ERR);
+
+    srv = ctx_get_server(user_data);
+    g_return_val_if_fail(srv, SRN_ERR);
+    srv_user = srn_server_add_and_get_user(srv, nick);
+    g_return_val_if_fail(srv_user, SRN_ERR);
+
+    if (srn_command_get_opt(cmd, "-cur", NULL)){
+        SrnChat *chat;
+        SrnChatUser *chat_user;
+
+        chat = ctx_get_chat(user_data);
+        g_return_val_if_fail(chat, SRN_ERR);
+        chat_user = srn_chat_add_and_get_user(chat, srv_user);
+        g_return_val_if_fail(chat_user, SRN_ERR);
+
+        extra_data = chat_user->extra_data;
+    } else {
+        extra_data = srv_user->extra_data;
+    }
+    g_return_val_if_fail(extra_data, SRN_ERR);
+
+    return srn_render_attach_pattern(extra_data, pattern);
+}
+
+static SrnRet on_command_unrender(SrnCommand *cmd, void *user_data){
+    const char *nick;
+    const char *pattern;
+    SrnServer *srv;
+    SrnServerUser *srv_user;
+    SrnExtraData *extra_data;
+
+    nick = srn_command_get_arg(cmd, 0);
+    g_return_val_if_fail(nick, SRN_ERR);
+    pattern = srn_command_get_arg(cmd, 1);
+    g_return_val_if_fail(pattern, SRN_ERR);
+
+    srv = ctx_get_server(user_data);
+    g_return_val_if_fail(srv, SRN_ERR);
+    srv_user = srn_server_add_and_get_user(srv, nick);
+    g_return_val_if_fail(srv_user, SRN_ERR);
+
+    if (srn_command_get_opt(cmd, "-cur", NULL)){
+        SrnChat *chat;
+        SrnChatUser *chat_user;
+
+        chat = ctx_get_chat(user_data);
+        g_return_val_if_fail(chat, SRN_ERR);
+        chat_user = srn_chat_add_and_get_user(chat, srv_user);
+        g_return_val_if_fail(chat_user, SRN_ERR);
+
+        extra_data = chat_user->extra_data;
+    } else {
+        extra_data = srv_user->extra_data;
+    }
+    g_return_val_if_fail(extra_data, SRN_ERR);
+
+    return srn_render_detach_pattern(extra_data, pattern);
 }
 
 /*******************************************************************************
