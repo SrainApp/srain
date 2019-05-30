@@ -195,7 +195,7 @@ void srn_chat_add_recv_message(SrnChat *self, SrnChatUser *user, const char *con
     SrnRenderFlags rflags;
     SrnFilterFlags fflags;
 
-    rflags = SRN_RENDER_FLAG_URL | SRN_RENDER_FLAG_RELAY | SRN_RENDER_FLAG_MENTION;
+    rflags = SRN_RENDER_FLAG_URL | SRN_RENDER_FLAG_PATTERN | SRN_RENDER_FLAG_MENTION;
     if (self->cfg->render_mirc_color) {
         rflags |= SRN_RENDER_FLAG_MIRC_COLORIZE;
     } else {
@@ -224,7 +224,7 @@ void srn_chat_add_notice_message(SrnChat *self, SrnChatUser *user, const char *c
     SrnRenderFlags rflags;
     SrnFilterFlags fflags;
 
-    rflags = SRN_RENDER_FLAG_URL | SRN_RENDER_FLAG_RELAY | SRN_RENDER_FLAG_MENTION;
+    rflags = SRN_RENDER_FLAG_URL | SRN_RENDER_FLAG_PATTERN | SRN_RENDER_FLAG_MENTION;
     if (self->cfg->render_mirc_color) {
         rflags |= SRN_RENDER_FLAG_MIRC_COLORIZE;
     } else {
@@ -264,7 +264,7 @@ void srn_chat_add_action_message(SrnChat *self, SrnChatUser *user, const char *c
     msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_ACTION);
     if (!user->srv_user->is_me){
         fflags |= SRN_FILTER_FLAG_USER | SRN_FILTER_FLAG_PATTERN;
-        rflags |= SRN_RENDER_FLAG_RELAY | SRN_RENDER_FLAG_MENTION;
+        rflags |= SRN_RENDER_FLAG_PATTERN | SRN_RENDER_FLAG_MENTION;
     }
     if (srn_render_message(msg, rflags) != SRN_OK){
         goto cleanup;

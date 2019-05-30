@@ -28,7 +28,7 @@
 // Bits of a SrnRenderFlags(int)
 #define MAX_RENDERER   sizeof(SrnRenderFlags) * 8
 
-extern SrnMessageRenderer relay_renderer;
+extern SrnMessageRenderer pattern_renderer;
 extern SrnMessageRenderer mirc_colorize_renderer;
 extern SrnMessageRenderer mirc_strip_renderer;
 extern SrnMessageRenderer url_renderer;
@@ -40,7 +40,7 @@ void srn_render_init(void){
 
     /* NOTE: Do not change the order renderer . */
     i = 0;
-    renderers[i++] = &relay_renderer;
+    renderers[i++] = &pattern_renderer;
     renderers[i++] = &mirc_strip_renderer;
     renderers[i++] = &mirc_colorize_renderer;
     renderers[i++] = &url_renderer;

@@ -31,7 +31,8 @@
 
 typedef int SrnRenderFlags;
 
-#define SRN_RENDER_FLAG_RELAY           1 << 0
+// NOTE: Make sure pattern_renderer is executed as first renderer
+#define SRN_RENDER_FLAG_PATTERN         1 << 0
 #define SRN_RENDER_FLAG_MIRC_STRIP      1 << 1
 #define SRN_RENDER_FLAG_MIRC_COLORIZE   1 << 2
 #define SRN_RENDER_FLAG_URL             1 << 3
@@ -50,5 +51,8 @@ void srn_render_finalize(void);
  * @return SRN_OK if render success.
  */
 SrnRet srn_render_message(SrnMessage *msg, SrnRenderFlags flags);
+
+SrnRet srn_render_attach_pattern(SrnExtraData *extra_data, const char *pattern);
+SrnRet srn_render_detach_pattern(SrnExtraData *extra_data, const char *pattern);
 
 #endif /* __RENDER_H */
