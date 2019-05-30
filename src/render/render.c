@@ -70,14 +70,18 @@ SrnRet srn_render_message(SrnMessage *msg, SrnRenderFlags flags){
     g_return_val_if_fail(msg, SRN_ERR);
 
     for (int i = 0; i < MAX_RENDERER; i++){
+        SrnRet ret;
+
         if (!(flags & (1 << i))) {
             continue;
         }
-        g_return_val_if_fail(renderers[i]
-                && renderers[i]->name
-                && renderers[i]->render, SRN_ERR);
 
-        SrnRet ret;
+        g_warn_if_fail(renderers[i]
+                && renderers[i]->name
+                && renderers[i]->render);
+        DBG_FR("Rendering message %p via render module %s",
+                msg, renderers[i]->name);
+
         ret = renderers[i]->render(msg);
         if (!RET_IS_OK(ret)) {
             return RET_ERR("Renderer %s failed to render message %p: %s",
