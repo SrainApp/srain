@@ -93,26 +93,19 @@ static SrnRet render(SrnMessage *msg) {
 
             match_info = NULL;
             g_regex_match(regex, raw_content, 0, &match_info);
-            if (!g_match_info_matches(match_info)) {
+            if (g_match_info_matches(match_info)) {
                 char *sender;
-                char *sender_remark;
                 char *content;
                 char *time;
-                char *time_hint;
 
                 sender = g_match_info_fetch_named(match_info, "sender");
-                sender_remark = g_match_info_fetch_named(match_info, "sender_remark");
                 content = g_match_info_fetch_named(match_info, "content");
                 time = g_match_info_fetch_named(match_info, "time");
-                time_hint = g_match_info_fetch_named(match_info, "time_hint");
 
                 if (sender) {
-                    g_free(msg->rendered_sender);
-                    msg->rendered_sender = g_markup_escape_text(sender, -1);
-                }
-                if (sender_remark) {
                     g_free(msg->rendered_remark);
-                    msg->rendered_sender = g_markup_escape_text(sender_remark, -1);
+                    msg->rendered_remark = msg->rendered_sender;
+                    msg->rendered_sender = g_markup_escape_text(sender, -1);
                 }
                 if (content) {
                     g_free(msg->rendered_content);
@@ -122,16 +115,10 @@ static SrnRet render(SrnMessage *msg) {
                     g_free(msg->rendered_short_time);
                     msg->rendered_short_time = g_markup_escape_text(time, -1);
                 }
-                if (time_hint) {
-                    g_free(msg->rendered_full_time);
-                    msg->rendered_short_time = g_markup_escape_text(time_hint, -1);
-                }
 
                 g_free(sender);
-                g_free(sender_remark);
                 g_free(content);
                 g_free(time);
-                g_free(time_hint);
                 g_match_info_free(match_info);
             }
         }
@@ -244,7 +231,7 @@ static GList* get_patterns(SrnMessage *msg) {
         iter = g_list_next(iter);
     }
 
-    g_list_free(g_list_first(datas));
+    g_list_free(datas);
 
     return patterns;
 }
