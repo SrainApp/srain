@@ -587,12 +587,12 @@ static SrnRet on_command_ignore(SrnCommand *cmd, void *user_data){
         user = srn_server_add_and_get_user(chat->srv, nick);
     }
     if(user->is_ignored){
-        srn_chat_add_error_message_fmt(chat->srv->cur_chat, chat->user,
+        srn_chat_add_error_message_with_user_fmt(chat->srv->cur_chat, chat->user,
                 _("\"%1$s\" is already ignored"), nick);
         return SRN_ERR;
     }
     srn_server_user_set_is_ignored(user, TRUE);
-    srn_chat_add_misc_message_fmt(chat->srv->cur_chat, chat->user,
+    srn_chat_add_misc_message_with_user_fmt(chat->srv->cur_chat, chat->user,
             _("\"%1$s\" has ignored"), nick);
 
     return SRN_OK;
@@ -617,12 +617,12 @@ static SrnRet on_command_unignore(SrnCommand *cmd, void *user_data){
     SrnServerUser *user = srn_server_get_user(chat->srv, nick);
     if(user){
         srn_server_user_set_is_ignored(user, FALSE);
-        srn_chat_add_misc_message_fmt(chat->srv->cur_chat, chat->user,
+        srn_chat_add_misc_message_with_user_fmt(chat->srv->cur_chat, chat->user,
                 _("\"%1$s\" has unignored"), nick);
 
         return SRN_OK;
     }
-    srn_chat_add_error_message_fmt(chat->srv->cur_chat, chat->user,
+    srn_chat_add_error_message_with_user_fmt(chat->srv->cur_chat, chat->user,
             _("user \"%1$s\" not found"), nick);
     return SRN_ERR;
 }

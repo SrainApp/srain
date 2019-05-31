@@ -285,7 +285,56 @@ cleanup:
     srn_message_free(msg);
 }
 
-void srn_chat_add_misc_message(SrnChat *self, SrnChatUser *user, const char *content){
+/**
+ * @brief Add a misc message to gvien SrnChat.
+ * The added message is originated from Srain internal or remote IRC server
+ * but not any other IRC user (So we use SrnChat->_user as message sender).
+ *
+ * If you want to link a message to a specific user,
+ * use srn_chat_add_misc_message_with_user().
+ *
+ * The added message never be ignored/filtered.
+ *
+ * @param self
+ * @param content
+ */
+void srn_chat_add_misc_message(SrnChat *self, const char *content){
+    SrnMessage *msg;
+    SrnRenderFlags rflags;
+
+    rflags = SRN_RENDER_FLAG_URL;
+    msg = srn_message_new(self, self->_user, content, SRN_MESSAGE_TYPE_MISC);
+    if (srn_render_message(msg, rflags) != SRN_OK){
+        goto cleanup;
+    }
+
+    add_message(self, msg);
+    return;
+
+cleanup:
+    srn_message_free(msg);
+}
+
+/**
+ * @brief Like srn_chat_add_misc_message, with format string support.
+ *
+ * @param self
+ * @param fmt
+ * @param ...
+ */
+void srn_chat_add_misc_message_fmt(SrnChat *self, const char *fmt, ...){
+    char *content;
+    va_list args;
+
+    va_start(args, fmt);
+    content = g_strdup_vprintf(fmt, args);
+    va_end(args);
+    srn_chat_add_misc_message(self, content);
+    g_free(content);
+}
+
+void srn_chat_add_misc_message_with_user(SrnChat *self, SrnChatUser *user,
+        const char *content){
     SrnMessage *msg;
     SrnRenderFlags rflags;
     SrnFilterFlags fflags;
@@ -307,18 +356,61 @@ cleanup:
     srn_message_free(msg);
 }
 
-void srn_chat_add_misc_message_fmt(SrnChat *self, SrnChatUser *user, const char *fmt, ...){
+void srn_chat_add_misc_message_with_user_fmt(SrnChat *self, SrnChatUser *user,
+        const char *fmt, ...){
     char *content;
     va_list args;
 
     va_start(args, fmt);
     content = g_strdup_vprintf(fmt, args);
     va_end(args);
-    srn_chat_add_misc_message(self, user, content);
+    srn_chat_add_misc_message_with_user(self, user, content);
     g_free(content);
 }
 
-void srn_chat_add_error_message(SrnChat *self, SrnChatUser *user, const char *content){
+/**
+ * @brief Like srn_chat_add_misc_message, but for error message.
+ *
+ * @param self
+ * @param content
+ */
+void srn_chat_add_error_message(SrnChat *self, const char *content){
+    SrnMessage *msg;
+    SrnRenderFlags rflags;
+
+    rflags = SRN_RENDER_FLAG_URL;
+    msg = srn_message_new(self, self->_user, content, SRN_MESSAGE_TYPE_ERROR);
+    if (srn_render_message(msg, rflags) != SRN_OK){
+        goto cleanup;
+    }
+
+    add_message(self, msg);
+    return;
+
+cleanup:
+    srn_message_free(msg);
+}
+
+/**
+ * @brief Like srn_chat_add_error_message, with format string support.
+ *
+ * @param self
+ * @param fmt
+ * @param ...
+ */
+void srn_chat_add_error_message_fmt(SrnChat *self, const char *fmt, ...){
+    char *content;
+    va_list args;
+
+    va_start(args, fmt);
+    content = g_strdup_vprintf(fmt, args);
+    va_end(args);
+    srn_chat_add_error_message(self, content);
+    g_free(content);
+}
+
+void srn_chat_add_error_message_with_user(SrnChat *self, SrnChatUser *user,
+        const char *content){
     SrnMessage *msg;
     SrnRenderFlags rflags;
     SrnFilterFlags fflags;
@@ -341,14 +433,15 @@ cleanup:
     srn_message_free(msg);
 }
 
-void srn_chat_add_error_message_fmt(SrnChat *self, SrnChatUser *user, const char *fmt, ...){
+void srn_chat_add_error_message_with_user_fmt(SrnChat *self, SrnChatUser *user,
+        const char *fmt, ...){
     char *content;
     va_list args;
 
     va_start(args, fmt);
     content = g_strdup_vprintf(fmt, args);
     va_end(args);
-    srn_chat_add_error_message(self, user, content);
+    srn_chat_add_error_message_with_user(self, user, content);
     g_free(content);
 }
 

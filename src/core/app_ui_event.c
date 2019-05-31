@@ -152,11 +152,11 @@ static SrnRet ui_event_disconnect(SuiBuffer *sui, SuiEvent event, GVariantDict *
     prev_state = srv->state;
     ret = srn_server_disconnect(srv);
     if (!RET_IS_OK(ret)){
-        srn_chat_add_error_message(chat, chat->_user, RET_MSG(ret));
+        srn_chat_add_error_message(chat, RET_MSG(ret));
     }
 
     if (prev_state == SRN_SERVER_STATE_RECONNECTING){
-        srn_chat_add_misc_message(chat, chat->_user, _("Reconnection stopped"));
+        srn_chat_add_misc_message(chat, _("Reconnection stopped"));
     }
 
     return SRN_OK;
@@ -167,7 +167,7 @@ static SrnRet ui_event_reconnect(SuiBuffer *sui, SuiEvent event, GVariantDict *p
     SrnServer *srv;
     SrnServerState prev_state;
     SrnChat *chat;
-    
+
     srv = ctx_get_server(sui);
     chat = ctx_get_chat(sui);
     g_return_val_if_fail(srn_server_is_valid(srv), SRN_ERR);
@@ -175,13 +175,13 @@ static SrnRet ui_event_reconnect(SuiBuffer *sui, SuiEvent event, GVariantDict *p
     prev_state = srv->state;
     if (prev_state == SRN_SERVER_STATE_RECONNECTING) {
         // ignore the duplicated reconnect request
-        srn_chat_add_misc_message(chat, chat->_user, _("Already reconnecting"));
+        srn_chat_add_misc_message(chat, _("Already reconnecting"));
         return SRN_OK;
     }
 
     ret = srn_server_reconnect(srv);
     if (!RET_IS_OK(ret)){
-        srn_chat_add_error_message(chat, chat->_user, RET_MSG(ret));
+        srn_chat_add_error_message(chat, RET_MSG(ret));
     }
 
     return SRN_OK;
@@ -199,7 +199,7 @@ static SrnRet ui_event_quit(SuiBuffer *sui, SuiEvent event, GVariantDict *params
     ret = srn_server_quit(srv, srv->cfg->user->quit_message);
     if (!RET_IS_OK(ret)){
         g_return_val_if_fail(srn_server_is_valid(srv), SRN_ERR);
-        srn_chat_add_error_message_fmt(chat, chat->_user,
+        srn_chat_add_error_message_fmt(chat,
                 _("Failed to quit from server: %1$s"), RET_MSG(ret));
     }
 
@@ -241,15 +241,15 @@ static SrnRet ui_event_send(SuiBuffer *sui, SuiEvent event, GVariantDict *params
         }
         if (RET_IS_OK(ret)){
             if (ret != SRN_OK) { // Has OK message
-                srn_chat_add_misc_message(chat, chat->_user, RET_MSG(ret));
+                srn_chat_add_misc_message(chat, RET_MSG(ret));
             }
         } else {
-            srn_chat_add_error_message(chat, chat->_user, RET_MSG(ret));
+            srn_chat_add_error_message(chat, RET_MSG(ret));
         }
     } else {
         if (chat == chat->srv->chat) {
             ret = RET_ERR(_("Cannot send message directly to a server"));
-            srn_chat_add_error_message(chat, chat->_user, RET_MSG(ret));
+            srn_chat_add_error_message(chat, RET_MSG(ret));
             return ret;
         }
 
@@ -257,7 +257,7 @@ static SrnRet ui_event_send(SuiBuffer *sui, SuiEvent event, GVariantDict *params
 
         ret = sirc_cmd_msg(chat->srv->irc, chat->name, msg);
         if (!RET_IS_OK(ret)){
-            srn_chat_add_error_message_fmt(chat, chat->_user,
+            srn_chat_add_error_message_fmt(chat,
                     _("Failed to send message: %1$s"), RET_MSG(ret));
         }
     }
@@ -376,10 +376,10 @@ static SrnRet ui_event_ignore(SuiBuffer *sui, SuiEvent event, GVariantDict *para
     srn_server_user_set_is_ignored(user, !user->is_ignored);
 
     if(user->is_ignored){
-        srn_chat_add_misc_message_fmt(chat, chat->user,
+        srn_chat_add_misc_message_with_user_fmt(chat, chat->user,
                 _("\"%1$s\" has ignored"), nick);
     } else {
-        srn_chat_add_misc_message_fmt(chat, chat->user,
+        srn_chat_add_misc_message_with_user_fmt(chat, chat->user,
                 _("\"%1$s\" has unignored"), nick);
     }
 

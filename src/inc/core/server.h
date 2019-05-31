@@ -340,10 +340,14 @@ void srn_chat_add_sent_message(SrnChat *chat, const char *content);
 void srn_chat_add_recv_message(SrnChat *chat, SrnChatUser *user, const char *content);
 void srn_chat_add_action_message(SrnChat *chat, SrnChatUser *user, const char *content);
 void srn_chat_add_notice_message(SrnChat *chat, SrnChatUser *user, const char *content);
-void srn_chat_add_misc_message(SrnChat *chat, SrnChatUser *user, const char *content);
-void srn_chat_add_misc_message_fmt(SrnChat *chat, SrnChatUser *user, const char *fmt, ...);
-void srn_chat_add_error_message(SrnChat *chat, SrnChatUser *user, const char *content);
-void srn_chat_add_error_message_fmt(SrnChat *chat, SrnChatUser *user, const char *fmt, ...);
+void srn_chat_add_misc_message(SrnChat *self, const char *content);
+void srn_chat_add_misc_message_fmt(SrnChat *self, const char *fmt, ...);
+void srn_chat_add_misc_message_with_user(SrnChat *chat, SrnChatUser *user, const char *content);
+void srn_chat_add_misc_message_with_user_fmt(SrnChat *chat, SrnChatUser *user, const char *fmt, ...);
+void srn_chat_add_error_message(SrnChat *self, const char *content);
+void srn_chat_add_error_message_fmt(SrnChat *self, const char *fmt, ...);
+void srn_chat_add_error_message_with_user(SrnChat *chat, SrnChatUser *user, const char *content);
+void srn_chat_add_error_message_with_user_fmt(SrnChat *chat, SrnChatUser *user, const char *fmt, ...);
 void srn_chat_set_topic(SrnChat *chat, SrnChatUser *user, const char *topic);
 void srn_chat_set_topic_setter(SrnChat *chat, const char *setter);
 
