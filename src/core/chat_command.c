@@ -60,8 +60,8 @@ static SrnRet on_command_server(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_connect(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_ignore(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_unignore(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_rignore(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_unrignore(SrnCommand *cmd, void *user_data);
+static SrnRet on_command_filter(SrnCommand *cmd, void *user_data);
+static SrnRet on_command_unfilter(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_query(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_unquery(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_join(SrnCommand *cmd, void *user_data);
@@ -135,24 +135,24 @@ SrnCommandBind cmd_binds[] = {
         .cb = on_command_unignore,
     },
     {
-        .name = "/rignore",
+        .name = "/filter",
         .argc = 1, // <pattern>
         .opt = {
             {.key = "-cur", .val = SRN_COMMAND_OPT_NO_VAL },
             SRN_COMMAND_EMPTY_OPT,
         },
         .flag = 0,
-        .cb = on_command_rignore,
+        .cb = on_command_filter,
     },
     {
-        .name = "/unrignore",
+        .name = "/unfilter",
         .argc = 1, // <pattern>
         .opt = {
             {.key = "-cur", .val = SRN_COMMAND_OPT_NO_VAL },
             SRN_COMMAND_EMPTY_OPT,
         },
         .flag = 0,
-        .cb = on_command_unrignore,
+        .cb = on_command_unfilter,
     },
     {
         .name = "/query",
@@ -627,7 +627,7 @@ static SrnRet on_command_unignore(SrnCommand *cmd, void *user_data){
     return SRN_ERR;
 }
 
-static SrnRet on_command_rignore(SrnCommand *cmd, void *user_data){
+static SrnRet on_command_filter(SrnCommand *cmd, void *user_data){
     const char *pattern;
     SrnChat *chat;
 
@@ -648,7 +648,7 @@ static SrnRet on_command_rignore(SrnCommand *cmd, void *user_data){
     return srn_filter_attach_pattern(chat->extra_data, pattern);
 }
 
-static SrnRet on_command_unrignore(SrnCommand *cmd, void *user_data){
+static SrnRet on_command_unfilter(SrnCommand *cmd, void *user_data){
     const char *pattern;
     SrnChat *chat;
 
