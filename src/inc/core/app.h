@@ -35,6 +35,8 @@
 typedef struct _SrnApplication SrnApplication;
 typedef struct _SrnApplicationConfig SrnApplicationConfig;
 
+#include "./server.h"
+
 struct _SrnApplication {
     SrnVersion *ver;
     SrnConfigManager *cfg_mgr;

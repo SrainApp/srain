@@ -36,14 +36,7 @@
 #define SRN_SERVER_RECONN_INTERVAL  (5 * 1000)
 #define SRN_SERVER_RECONN_STEP      SRN_SERVER_RECONN_INTERVAL
 
-typedef enum   _SrnMessageType SrnMessageType;
-typedef struct _SrnMessage SrnMessage;
 typedef struct _SrnServerUser SrnServerUser;
-typedef struct _SrnChatUser SrnChatUser;
-typedef enum   _SrnChatUserType SrnChatUserType;
-typedef struct _SrnChat SrnChat;
-typedef enum   _SrnChatType SrnChatType;
-typedef struct _SrnChatConfig SrnChatConfig;
 typedef struct _SrnServerAddr SrnServerAddr;
 typedef enum   _SrnServerState SrnServerState;
 typedef enum   _SrnServerAction SrnServerAction;
@@ -55,39 +48,7 @@ typedef struct _SrnServerConfig SrnServerConfig;
 typedef struct _EnabledCap EnabledCap;
 typedef struct _SrnServerCap SrnServerCap;
 
-enum _SrnChatType {
-    SRN_CHAT_TYPE_SERVER,
-    SRN_CHAT_TYPE_CHANNEL,
-    SRN_CHAT_TYPE_DIALOG,
-};
-
-enum _SrnChatUserType {
-    SRN_CHAT_USER_TYPE_OWNER,     // ~ mode +q
-    SRN_CHAT_USER_TYPE_ADMIN,     // & mode +a
-    SRN_CHAT_USER_TYPE_FULL_OP,   // @ mode +o
-    SRN_CHAT_USER_TYPE_HALF_OP,   // % mode +h
-    SRN_CHAT_USER_TYPE_VOICED,    // + mode +v
-    SRN_CHAT_USER_TYPE_CHIGUA,    // No prefix
-    /* ... */
-    SRN_SERVER_USER_TYPE_MAX
-};
-
-typedef struct _SrnUserContext SrnUserContext;
-
-struct _SrnChatUser{
-    SrnChat *chat;
-
-    bool is_joined;
-    bool is_ignored;            // TODO: New implementation of ignore list
-
-    SrnChatUserType type;
-    SrnServerUser *srv_user;
-    GList *msg_list;    // TODO: List of SrnMessage
-
-    SuiUser *ui;
-
-    SrnExtraData *extra_data;
-};
+#include "chat.h"
 
 struct _SrnServerUser {
     SrnServer *srv;
@@ -109,71 +70,6 @@ struct _SrnServerUser {
     GList *chat_user_list;  // List of SrnChatUser
 
     SrnExtraData *extra_data;
-};
-
-enum _SrnMessageType {
-    SRN_MESSAGE_TYPE_UNKNOWN,
-    SRN_MESSAGE_TYPE_RECV,
-    SRN_MESSAGE_TYPE_SENT,
-    SRN_MESSAGE_TYPE_ACTION,
-    SRN_MESSAGE_TYPE_NOTICE,
-    SRN_MESSAGE_TYPE_MISC,
-    SRN_MESSAGE_TYPE_ERROR,
-};
-
-struct _SrnMessage {
-    SrnChat *chat;
-    SrnChatUser *sender; // Sender of this message
-    SrnMessageType type;
-
-    /* Raw message */
-    char *content;  // Raw message content
-    GDateTime *time; // Local time when creating message
-
-    /* NOTE: All rendered_xxx fields MUST be valid XML and never be NULL */
-    char *rendered_sender; // Sender name
-    char *rendered_remark; // Message remark
-    char *rendered_content; // Rendered message content in
-    char *rendered_short_time; // Short format message time
-    char *rendered_full_time;  // Full format messsage time
-    GList *urls; // URLs in message, like "http://xxx", "irc://xxx"
-
-    bool mentioned; // Whether this message should be mentioned
-
-    SuiMessage *ui;
-};
-
-/* Represent a channel or dialog or a server session */
-struct _SrnChat {
-    char *name;
-    SrnChatType type;
-    bool is_joined;
-
-    SrnChatUser *user;  // Yourself
-    SrnChatUser *_user; // Hold all messages that do not belong other any user
-    GList *user_list;  // List of SrnChatUser
-
-    GList *msg_list;
-    SrnMessage *last_msg;
-
-    /* Used by Filters & Decorators */
-    GList *ignore_regex_list;
-    GList *relaybot_list;
-
-    SrnServer *srv;
-    SuiBuffer *ui;
-    SrnChatConfig *cfg;
-
-    SrnExtraData *extra_data;
-};
-
-struct _SrnChatConfig {
-    bool log; // TODO
-    bool render_mirc_color;
-    char *password;
-    GList *auto_run_cmd_list;
-
-    SuiBufferConfig *ui;
 };
 
 enum _SrnServerState {
@@ -326,35 +222,6 @@ SrnServerUser* srn_server_get_user(SrnServer *srv, const char *nick);
 SrnServerUser* srn_server_add_and_get_user(SrnServer *srv, const char *nick);
 SrnRet srn_server_rename_user(SrnServer *srv, SrnServerUser *user, const char *nick);
 
-SrnChat* srn_chat_new(SrnServer *srv, const char *name, SrnChatType type, SrnChatConfig *cfg);
-void srn_chat_free(SrnChat *chat);
-void srn_chat_set_config(SrnChat *chat, SrnChatConfig *cfg);
-void srn_chat_set_is_joined(SrnChat *chat, bool joined);
-SrnRet srn_chat_run_command(SrnChat *chat, const char *cmd);
-GList* srn_chat_complete_command(SrnChat *chat, const char *cmd);
-SrnRet srn_chat_add_user(SrnChat *chat, SrnServerUser *srv_user);
-SrnRet srn_chat_rm_user(SrnChat *chat, SrnChatUser *user);
-SrnChatUser* srn_chat_get_user(SrnChat *chat, const char *nick);
-SrnChatUser* srn_chat_add_and_get_user(SrnChat *chat, SrnServerUser *srv_user);
-void srn_chat_add_sent_message(SrnChat *chat, const char *content);
-void srn_chat_add_recv_message(SrnChat *chat, SrnChatUser *user, const char *content);
-void srn_chat_add_action_message(SrnChat *chat, SrnChatUser *user, const char *content);
-void srn_chat_add_notice_message(SrnChat *chat, SrnChatUser *user, const char *content);
-void srn_chat_add_misc_message(SrnChat *self, const char *content);
-void srn_chat_add_misc_message_fmt(SrnChat *self, const char *fmt, ...);
-void srn_chat_add_misc_message_with_user(SrnChat *chat, SrnChatUser *user, const char *content);
-void srn_chat_add_misc_message_with_user_fmt(SrnChat *chat, SrnChatUser *user, const char *fmt, ...);
-void srn_chat_add_error_message(SrnChat *self, const char *content);
-void srn_chat_add_error_message_fmt(SrnChat *self, const char *fmt, ...);
-void srn_chat_add_error_message_with_user(SrnChat *chat, SrnChatUser *user, const char *content);
-void srn_chat_add_error_message_with_user_fmt(SrnChat *chat, SrnChatUser *user, const char *fmt, ...);
-void srn_chat_set_topic(SrnChat *chat, SrnChatUser *user, const char *topic);
-void srn_chat_set_topic_setter(SrnChat *chat, const char *setter);
-
-SrnChatConfig *srn_chat_config_new();
-SrnRet srn_chat_config_check(SrnChatConfig *cfg);
-void srn_chat_config_free(SrnChatConfig *cfg);
-
 SrnServerUser *srn_server_user_new(SrnServer *srv, const char *nick);
 SrnServerUser *srn_server_user_ref(SrnServerUser *user);
 void srn_server_user_free(SrnServerUser *user);
@@ -367,17 +234,6 @@ void srn_server_user_set_is_online(SrnServerUser *user, bool online);
 void srn_server_user_set_is_ignored(SrnServerUser *user, bool ignored);
 SrnRet srn_server_user_attach_chat_user(SrnServerUser *user, SrnChatUser *chat_user);
 SrnRet srn_server_user_detach_chat_user(SrnServerUser *user, SrnChatUser *chat_user);
-
-SrnChatUser *srn_chat_user_new(SrnChat *chat, SrnServerUser *srv_user);
-void srn_chat_user_free(SrnChatUser *self);
-void srn_chat_user_update(SrnChatUser *self);
-void srn_chat_user_set_type(SrnChatUser *self, SrnChatUserType type);
-void srn_chat_user_set_is_joined(SrnChatUser *self, bool joined);
-void srn_chat_user_set_is_ignored(SrnChatUser *self, bool ignored);
-
-SrnMessage* srn_message_new(SrnChat *chat, SrnChatUser *user, const char *content, SrnMessageType type);
-void srn_message_free(SrnMessage *msg);
-char* srn_message_to_string(SrnMessage *self);
 
 SrnServerConfig* srn_server_config_new();
 SrnRet srn_server_config_check(SrnServerConfig *cfg);
