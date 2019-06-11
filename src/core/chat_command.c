@@ -568,6 +568,7 @@ static SrnRet on_command_ignore(SrnCommand *cmd, void *user_data){
     const char *nick;
     SrnServer *srv;
     SrnChat *chat;
+    SrnServerUser *user;
 
     nick = srn_command_get_arg(cmd, 0);
     g_return_val_if_fail(nick, SRN_ERR);
@@ -579,29 +580,25 @@ static SrnRet on_command_ignore(SrnCommand *cmd, void *user_data){
         g_return_val_if_fail(srv, SRN_ERR);
         chat = srv->chat;
     }
-
     g_return_val_if_fail(chat, SRN_ERR);
 
-    SrnServerUser *user = srn_server_get_user(chat->srv, nick); 
-    if(user == NULL){
+    user = srn_server_get_user(chat->srv, nick);
+    if(!user){
         user = srn_server_add_and_get_user(chat->srv, nick);
     }
+
     if(user->is_ignored){
-        srn_chat_add_error_message_with_user_fmt(chat->srv->cur_chat, chat->user,
-                _("\"%1$s\" is already ignored"), nick);
-        return SRN_ERR;
+        return RET_ERR(_("\"%1$s\" is already ignored"), nick);
     }
     srn_server_user_set_is_ignored(user, TRUE);
-    srn_chat_add_misc_message_with_user_fmt(chat->srv->cur_chat, chat->user,
-            _("\"%1$s\" has ignored"), nick);
-
-    return SRN_OK;
+    return RET_OK(_("\"%1$s\" has ignored"), nick);
 }
 
 static SrnRet on_command_unignore(SrnCommand *cmd, void *user_data){
     const char *nick;
     SrnServer *srv;
     SrnChat *chat;
+    SrnServerUser *user;
 
     nick = srn_command_get_arg(cmd, 0);
     g_return_val_if_fail(nick, SRN_ERR);
@@ -614,25 +611,28 @@ static SrnRet on_command_unignore(SrnCommand *cmd, void *user_data){
         chat = srv->chat;
     }
 
-    SrnServerUser *user = srn_server_get_user(chat->srv, nick);
-    if(user){
-        srn_server_user_set_is_ignored(user, FALSE);
-        srn_chat_add_misc_message_with_user_fmt(chat->srv->cur_chat, chat->user,
-                _("\"%1$s\" has unignored"), nick);
-
-        return SRN_OK;
+    user = srn_server_get_user(chat->srv, nick);
+    if(!user){
+        return RET_ERR(_("user \"%1$s\" not found"), nick);
     }
-    srn_chat_add_error_message_with_user_fmt(chat->srv->cur_chat, chat->user,
-            _("user \"%1$s\" not found"), nick);
-    return SRN_ERR;
+    srn_server_user_set_is_ignored(user, FALSE);
+    return RET_OK(_("\"%1$s\" has unignored"), nick);
 }
 
 static SrnRet on_command_filter(SrnCommand *cmd, void *user_data){
     const char *pattern;
+    SrnRet ret;
     SrnChat *chat;
+    SrnPatternSet *pattern_set;
 
     pattern = srn_command_get_arg(cmd, 0);
     g_return_val_if_fail(pattern, SRN_ERR);
+    pattern_set = srn_application_get_default()->pattern_set;
+    g_return_val_if_fail(pattern_set, SRN_ERR);
+
+    if (srn_pattern_set_get(pattern_set, pattern) == NULL) {
+        return RET_ERR(_("Pattern \"%1$s\" not found"), pattern);
+    }
 
     if (srn_command_get_opt(cmd, "-cur", NULL)){
         chat = ctx_get_chat(user_data);
@@ -645,11 +645,19 @@ static SrnRet on_command_filter(SrnCommand *cmd, void *user_data){
     }
     g_return_val_if_fail(chat, SRN_ERR);
 
-    return srn_filter_attach_pattern(chat->extra_data, pattern);
+    ret = srn_filter_attach_pattern(chat->extra_data, pattern);
+    if (!RET_IS_OK(ret)) {
+        return RET_ERR(_("Failed to attach pattern to chat \"%1$s\": %2$s"),
+                chat->name, RET_MSG(ret));
+    }
+
+    return RET_OK(_("Messages of chat \"%1$s\" will be filtered by pattern \"%2$s\""),
+            chat->name, pattern);
 }
 
 static SrnRet on_command_unfilter(SrnCommand *cmd, void *user_data){
     const char *pattern;
+    SrnRet ret;
     SrnChat *chat;
 
     pattern = srn_command_get_arg(cmd, 0);
@@ -666,7 +674,14 @@ static SrnRet on_command_unfilter(SrnCommand *cmd, void *user_data){
     }
     g_return_val_if_fail(chat, SRN_ERR);
 
-    return srn_filter_detach_pattern(chat->extra_data, pattern);
+    ret = srn_filter_detach_pattern(chat->extra_data, pattern);
+    if (!RET_IS_OK(ret)) {
+        return RET_ERR(_("Failed to dettach pattern from chat \"%1$s\": %2$s"),
+                chat->name, RET_MSG(ret));
+    }
+
+    return RET_OK(_("Messages of chat \"%1$s\" are no longer filtered by pattern \"%2$s\""),
+            chat->name, pattern);
 }
 
 static SrnRet on_command_query(SrnCommand *cmd, void *user_data){
@@ -1021,14 +1036,23 @@ static SrnRet on_command_pattern(SrnCommand *cmd, void *user_data){
 static SrnRet on_command_render(SrnCommand *cmd, void *user_data){
     const char *nick;
     const char *pattern;
+    SrnRet ret;
     SrnServer *srv;
+    SrnChat *chat;
     SrnServerUser *srv_user;
     SrnExtraData *extra_data;
+    SrnPatternSet *pattern_set;
 
     nick = srn_command_get_arg(cmd, 0);
     g_return_val_if_fail(nick, SRN_ERR);
     pattern = srn_command_get_arg(cmd, 1);
     g_return_val_if_fail(pattern, SRN_ERR);
+
+    // Check pattern
+    pattern_set = srn_application_get_default()->pattern_set;
+    if (srn_pattern_set_get(pattern_set, pattern) == NULL) {
+        return RET_ERR(_("Pattern \"%1$s\" not found"), pattern);
+    }
 
     srv = ctx_get_server(user_data);
     g_return_val_if_fail(srv, SRN_ERR);
@@ -1036,7 +1060,6 @@ static SrnRet on_command_render(SrnCommand *cmd, void *user_data){
     g_return_val_if_fail(srv_user, SRN_ERR);
 
     if (srn_command_get_opt(cmd, "-cur", NULL)){
-        SrnChat *chat;
         SrnChatUser *chat_user;
 
         chat = ctx_get_chat(user_data);
@@ -1046,17 +1069,28 @@ static SrnRet on_command_render(SrnCommand *cmd, void *user_data){
 
         extra_data = chat_user->extra_data;
     } else {
+        chat = srv->chat;
         extra_data = srv_user->extra_data;
     }
+    g_return_val_if_fail(chat, SRN_ERR);
     g_return_val_if_fail(extra_data, SRN_ERR);
 
-    return srn_render_attach_pattern(extra_data, pattern);
+    ret = srn_render_attach_pattern(extra_data, pattern);
+    if (!RET_IS_OK(ret)) {
+        return RET_ERR(_("Failed to attach pattern to user %1$s\" of chat \"%2$s\": %2$s"),
+                srv_user->nick, chat->name, RET_MSG(ret));
+    }
+
+    return RET_OK(_("Messages of user \"%1$s\" of chat \"%2$s\" will be rendered by pattern \"%3$s\""),
+            srv_user->nick, chat->name, pattern);
 }
 
 static SrnRet on_command_unrender(SrnCommand *cmd, void *user_data){
     const char *nick;
     const char *pattern;
+    SrnRet ret;
     SrnServer *srv;
+    SrnChat *chat;
     SrnServerUser *srv_user;
     SrnExtraData *extra_data;
 
@@ -1071,7 +1105,6 @@ static SrnRet on_command_unrender(SrnCommand *cmd, void *user_data){
     g_return_val_if_fail(srv_user, SRN_ERR);
 
     if (srn_command_get_opt(cmd, "-cur", NULL)){
-        SrnChat *chat;
         SrnChatUser *chat_user;
 
         chat = ctx_get_chat(user_data);
@@ -1081,11 +1114,20 @@ static SrnRet on_command_unrender(SrnCommand *cmd, void *user_data){
 
         extra_data = chat_user->extra_data;
     } else {
+        chat = srv->chat;
         extra_data = srv_user->extra_data;
     }
+    g_return_val_if_fail(chat, SRN_ERR);
     g_return_val_if_fail(extra_data, SRN_ERR);
 
-    return srn_render_detach_pattern(extra_data, pattern);
+    ret = srn_render_detach_pattern(extra_data, pattern);
+    if (!RET_IS_OK(ret)) {
+        return RET_ERR(_("Failed to dettach pattern from user \"%1$s\": %2$s"),
+                srv_user->nick, RET_MSG(ret));
+    }
+
+    return RET_OK(_("Messages of user \"%1$s\" of chat \"%2$s\" are no longer rendered by pattern \"%3$s\""),
+            srv_user->nick, chat->name, pattern);
 }
 
 /*******************************************************************************
