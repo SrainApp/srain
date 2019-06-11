@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 0.06.2\n"
 "Report-Msgid-Bugs-To: i@silverrainz.me\n"
-"POT-Creation-Date: 2019-05-06 21:04+0800\n"
+"POT-Creation-Date: 2019-06-11 19:52+0800\n"
 "PO-Revision-Date: 2016-12-18 01:44+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,87 +17,47 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/filter/regex.c:64
-#, c-format
-msgid "\"%1$s\" already exists in %2$s 's regex list"
-msgstr "\"%1$s\" 已存在于 %2$s 的正则屏蔽列表中"
-
-#: ../src/decorator/relay.c:47
-#, c-format
-msgid "\"%1$s\" already exists in %2$s 's relaybot list"
-msgstr "\"%1$s\" 已存在于 %2$s 的中继机器人列表中"
-
-#: ../src/filter/regex.c:89
-#, c-format
-msgid "\"%1$s\" has added to %2$s 's regex list"
-msgstr "\"%1$s\" 已加入 %2$s 的正则屏蔽列表"
-
-#: ../src/decorator/relay.c:57
-#, c-format
-msgid "\"%1$s\" has added to %2$s 's relaybot list"
-msgstr "\"%1$s\" 已加入到 %2$s 的中继机器人列表"
-
-#: ../src/core/chat_command.c:628 ../src/core/app_ui_event.c:381
+#: ../src/core/chat_command.c:594 ../src/core/app_ui_event.c:380
 #, c-format
 msgid "\"%1$s\" has ignored"
 msgstr "已经忽略 %1$s "
 
-#: ../src/core/chat_command.c:653 ../src/core/app_ui_event.c:384
+#: ../src/core/chat_command.c:619 ../src/core/app_ui_event.c:383
 #, c-format
 msgid "\"%1$s\" has unignored"
 msgstr "已经接触对 %1$s 的忽略"
 
-#: ../src/core/chat_command.c:623
+#: ../src/core/chat_command.c:591
 #, c-format
 msgid "\"%1$s\" is already ignored"
 msgstr "\"%1$s\" 已被忽略，无需再次执行"
 
-#: ../src/filter/regex.c:105
-#, c-format
-msgid "\"%1$s\" is removed from %2$s 's ignore list"
-msgstr "\"%1$s\" 已从 %2$s 的屏蔽列表中移除"
-
-#: ../src/decorator/relay.c:74
-#, c-format
-msgid "\"%1$s\" is removed from %2$s 's relaybot list"
-msgstr "已从 %2$s 的中继机器人列表中移除 \"%1$s\""
-
-#: ../src/filter/regex.c:118
-#, c-format
-msgid "\"%1$s\" not found in %2$s 's ignore list"
-msgstr "无法在 %2$s 的屏蔽列表中找到 \"%1$s\""
-
-#: ../src/decorator/relay.c:84
-#, c-format
-msgid "\"%1$s\" not found in %2$s 's relaybot list"
-msgstr "无法在 %2$s 的转发机器人列表中找到 \"%1$s\" "
-
-#: ../src/core/app_irc_event.c:1610
+#: ../src/core/app_irc_event.c:1609
 #, c-format
 msgid "%1$s %2$s"
 msgstr "%1$s %2$s"
 
-#: ../src/core/app_irc_event.c:1597
+#: ../src/core/app_irc_event.c:1596
 #, c-format
 msgid "%1$s %2$s %3$s"
 msgstr "%1$s %2$s %3$s"
 
-#: ../src/sui/sui_message.c:458
+#: ../src/sui/sui_message.c:455
 #, c-format
 msgid "%1$s %2$s @ %3$s"
 msgstr "%1$s %2$s %3$s"
 
-#: ../src/core/app_irc_event.c:1540
+#: ../src/core/app_irc_event.c:1539
 #, c-format
 msgid "%1$s <%2$s@%3$s> %4$s"
 msgstr ""
 
-#: ../src/sui/sui_message.c:513
+#: ../src/sui/sui_message.c:510
 #, c-format
 msgid "%1$s <fwd %2$s@%3$s>"
 msgstr "%1$s <fwd %2$s@%3$s>"
 
-#: ../src/sui/sui_message.c:453
+#: ../src/sui/sui_message.c:450
 #, c-format
 msgid "%1$s @ %2$s"
 msgstr "%1$s %2$s"
@@ -156,22 +116,22 @@ msgstr "%1$s 退出了聊天室：%2$s"
 msgid "%1$s invites you into %2$s"
 msgstr "%1$s 邀请你加入频道 %2$s"
 
-#: ../src/core/app_irc_event.c:1553
+#: ../src/core/app_irc_event.c:1552
 #, c-format
 msgid "%1$s is a member of %2$s"
 msgstr "%1$s 是频道 %2$s 的成员"
 
-#: ../src/core/app_irc_event.c:1565
+#: ../src/core/app_irc_event.c:1564
 #, c-format
 msgid "%1$s is attached to %2$s at \"%3$s\""
 msgstr "%1$s 接入了位于 \"%3$s\" 的 %2$s"
 
-#: ../src/core/app_irc_event.c:1785
+#: ../src/core/app_irc_event.c:1784
 #, c-format
 msgid "%1$s is away: %2$s"
 msgstr "%1$s 暂时离开了聊天: %2$s"
 
-#: ../src/core/app_irc_event.c:1584
+#: ../src/core/app_irc_event.c:1583
 #, c-format
 msgid "%1$s is idle for %2$s seconds since %3$s"
 msgstr "%1$s 自 %3$s 以来待机了 %2$s 秒"
@@ -190,12 +150,12 @@ msgstr ""
 "%1$s%2$s\n"
 "运行于 GTK+ %3$d.%4$d.%5$d"
 
-#: ../src/core/app_irc_event.c:1661 ../src/core/app_irc_event.c:1681
+#: ../src/core/app_irc_event.c:1660 ../src/core/app_irc_event.c:1680
 #, c-format
 msgid "%1$s: %2$s"
 msgstr "%1$s: %2$s"
 
-#: ../src/core/app_irc_event.c:1517 ../src/core/app_irc_event.c:1582
+#: ../src/core/app_irc_event.c:1516 ../src/core/app_irc_event.c:1581
 msgid "%Y-%m-%d %T"
 msgstr "%Y 年 %m 月 %d 日 %T"
 
@@ -203,7 +163,7 @@ msgstr "%Y 年 %m 月 %d 日 %T"
 msgid "<big>Welcome to Srain!</big>"
 msgstr "<big>欢迎使用 Srain！</big>"
 
-#: ../src/core/chat_command.c:821
+#: ../src/core/chat_command.c:803
 #, c-format
 msgid "A message has been sent to \"%1$s\""
 msgstr "消息已发送至 \"%1$s\""
@@ -225,11 +185,11 @@ msgstr "已确认的扩展能力：%1$s"
 msgid "Advanced Mode"
 msgstr "高级模式"
 
-#: ../src/core/app.c:216
+#: ../src/core/app.c:215
 msgid "All config reloaded"
 msgstr "成功重新加载所有配置"
 
-#: ../src/core/app_ui_event.c:179
+#: ../src/core/app_ui_event.c:178
 msgid "Already reconnecting"
 msgstr "已在重连中"
 
@@ -241,12 +201,17 @@ msgstr "外观"
 msgid "Application"
 msgstr "应用"
 
-#: ../src/config/manager.c:98
+#: ../src/config/manager.c:99
 #, c-format
 msgid "At line %1$d: %2$s"
 msgstr "在第 %1$d 行：%2$s"
 
-#: ../src/core/app_irc_event.c:1518
+#: ../src/core/chat_command.c:1012
+#, fuzzy
+msgid "Available regex patterns:"
+msgstr "无效的正则表达式：%1$s"
+
+#: ../src/core/app_irc_event.c:1517
 #, c-format
 msgid "By %1$s at %2$s"
 msgstr "%1$s 于 %2$s 设置"
@@ -255,11 +220,11 @@ msgstr "%1$s 于 %2$s 设置"
 msgid "Cancel"
 msgstr "取消"
 
-#: ../src/core/chat_command.c:439
+#: ../src/core/chat_command.c:449
 msgid "Cannot disconnect from a unconnected server"
 msgstr "无法从未连接的服务器断开连接"
 
-#: ../src/core/chat_command.c:841 ../src/core/app_ui_event.c:252
+#: ../src/core/chat_command.c:823 ../src/core/app_ui_event.c:251
 msgid "Cannot send message directly to a server"
 msgstr "不允许直接向服务器发送消息"
 
@@ -275,7 +240,7 @@ msgstr "频道密码"
 msgid "Channel:"
 msgstr "频道："
 
-#: ../src/core/server.c:291 ../src/core/server.c:295
+#: ../src/core/server.c:285 ../src/core/server.c:289
 #, c-format
 msgid "Chat autorun command: %1$s"
 msgstr "无效的 autorun 命令：%1$s"
@@ -293,12 +258,12 @@ msgstr "连接"
 msgid "Connected to %1$s(%2$s:%3$d)"
 msgstr "已连接到 %1$s(%2$s:%3$d)"
 
-#: ../src/core/chat_command.c:382
+#: ../src/core/chat_command.c:392
 #, c-format
 msgid "Context switched to server \"%1$s\""
 msgstr "无法在服务器 \"%1$s\" 上注册"
 
-#: ../src/core/chat_command.c:390
+#: ../src/core/chat_command.c:400
 #, c-format
 msgid "Context switched to server \"%1$s\", chat \"%2$s\""
 msgstr ""
@@ -320,12 +285,12 @@ msgstr "不校验服务器证书"
 msgid "Don't auto connect to servers"
 msgstr "不要自动连接到服务器"
 
-#: ../src/core/app_irc_event.c:1329
+#: ../src/core/app_irc_event.c:1328
 #, c-format
 msgid "ERROR: %1$s"
 msgstr "错误: %1$s"
 
-#: ../src/core/app_irc_event.c:1875
+#: ../src/core/app_irc_event.c:1874
 #, c-format
 msgid "ERROR[%1$3d] %2$s"
 msgstr "错误[%1$3d] %2$s"
@@ -342,8 +307,8 @@ msgstr "已开启 CSD(Client Side Decoration), 下次重启后生效"
 msgid "Enabled capabilities:"
 msgstr "已启用的扩展能力：%1$s"
 
-#: ../src/core/app.c:76 ../src/core/app.c:84 ../src/core/app.c:294
-#: ../src/core/app.c:407 ../src/sui/sui_app.c:468 ../src/sui/sui_app.c:487
+#: ../src/core/app.c:75 ../src/core/app.c:83 ../src/core/app.c:293
+#: ../src/core/app.c:406 ../src/sui/sui_app.c:468 ../src/sui/sui_app.c:487
 #: ../src/sui/sui_app.c:526 ../src/sui/sui_misc_message.c:189
 #: ../src/sui/sui_common.c:145 ../src/sui/sui_prefs_dialog.c:162
 #: ../src/sui/sui_connect_panel.c:487 ../src/sui/sui_connect_panel.c:496
@@ -407,12 +372,17 @@ msgstr "退出"
 msgid "Expand message:"
 msgstr "展开消息"
 
-#: ../src/core/app.c:292
+#: ../src/core/app.c:291
 #, c-format
 msgid "Failed to add chat \"%1$s\": %2$s"
 msgstr "无法添加聊天 \"%1$s\", 原因为: %2$s"
 
-#: ../src/core/app_url.c:119 ../src/core/app.c:405
+#: ../src/core/chat_command.c:990
+#, fuzzy, c-format
+msgid "Failed to add regex pattern \"%1$s\": %2$s"
+msgstr "无法添加服务器 \"%1$s\": %2$s"
+
+#: ../src/core/app_url.c:119 ../src/core/app.c:404
 #, c-format
 msgid "Failed to add server \"%1$s\": %2$s"
 msgstr "无法添加服务器 \"%1$s\": %2$s"
@@ -422,7 +392,17 @@ msgstr "无法添加服务器 \"%1$s\": %2$s"
 msgid "Failed to apply theme from file \"%1$s\": %2$s"
 msgstr "无法加载主题 \"%1$s\", 原因为: %2$s"
 
-#: ../src/core/server.c:155
+#: ../src/core/chat_command.c:650
+#, fuzzy, c-format
+msgid "Failed to attach pattern to chat \"%1$s\": %2$s"
+msgstr "无法添加服务器 \"%1$s\": %2$s"
+
+#: ../src/core/chat_command.c:1080
+#, fuzzy, c-format
+msgid "Failed to attach pattern to user %1$s\" of chat \"%2$s\": %2$s"
+msgstr "无法添加服务器 \"%1$s\": %2$s"
+
+#: ../src/core/server.c:149
 #, c-format
 msgid "Failed to chat config \"%1$s\" of server config \"%2$s\": %3$s"
 msgstr ""
@@ -472,7 +452,17 @@ msgstr "无法创建用户配置文件 \"%1$s\""
 msgid "Failed to create user data directory: %1$s"
 msgstr "无法创建用户数据文件夹 \"%1$s\""
 
-#: ../src/core/chat_command.c:417 ../src/core/chat_command.c:525
+#: ../src/core/chat_command.c:679
+#, fuzzy, c-format
+msgid "Failed to dettach pattern from chat \"%1$s\": %2$s"
+msgstr "无法加载主题 \"%1$s\", 原因为: %2$s"
+
+#: ../src/core/chat_command.c:1125
+#, fuzzy, c-format
+msgid "Failed to dettach pattern from user \"%1$s\": %2$s"
+msgstr "无法加载主题 \"%1$s\", 原因为: %2$s"
+
+#: ../src/core/chat_command.c:427 ../src/core/chat_command.c:535
 #, c-format
 msgid "Failed to instantiate server \"%1$s\""
 msgstr "无法实例化服务器 \"%1$s\""
@@ -492,28 +482,28 @@ msgstr "无法打开 URL \"%1$s\"：%2$s"
 msgid "Failed to parse \"%1$s\" as URL"
 msgstr "无法将 \"%1$s\" 解析为 URL"
 
-#: ../src/core/app_ui_event.c:204
+#: ../src/core/app_ui_event.c:203
 #, c-format
 msgid "Failed to quit from server: %1$s"
 msgstr "无法从服务器退出：%1$s"
 
-#: ../src/config/manager.c:65
+#: ../src/config/manager.c:66
 #, c-format
 msgid "Failed to read system configuration file: %1$s"
 msgstr "无法读取系统配置：%1$s"
 
-#: ../src/config/manager.c:77
+#: ../src/config/manager.c:78
 #, c-format
 msgid "Failed to read user configuration file: %1$s"
 msgstr "无法读取用户配置：%1$s"
 
-#: ../src/core/chat_command.c:427 ../src/core/chat_command.c:538
+#: ../src/core/chat_command.c:437 ../src/core/chat_command.c:548
 #: ../src/core/app_url.c:135
 #, c-format
 msgid "Failed to register on server \"%1$s\""
 msgstr "无法在服务器 \"%1$s\" 上注册"
 
-#: ../src/core/app.c:225
+#: ../src/core/app.c:224
 #, c-format
 msgid "Failed to reload application config: %1$s"
 msgstr "重新加载应用配置失败：%1$s"
@@ -523,17 +513,29 @@ msgstr "重新加载应用配置失败：%1$s"
 msgid "Failed to reload configuration: %s"
 msgstr "重新加载配置失败：%1$s"
 
-#: ../src/core/app.c:220
+#: ../src/core/app.c:219
 #, c-format
 msgid "Failed to reload logger config: %1$s"
 msgstr "重新加载日志配置失败 \"%1$s\""
 
-#: ../src/core/chat_command.c:846
+#: ../src/core/chat_command.c:1003
+#, fuzzy, c-format
+msgid "Failed to remove regex pattern \"%1$s\": %2$s"
+msgstr "无法打开 URL \"%1$s\"：%2$s"
+
+#: ../src/render/mirc_colorize_renderer.c:105
+#: ../src/render/mirc_strip_renderer.c:72 ../src/render/mention_renderer.c:88
+#: ../src/render/url_renderer.c:117
+#, fuzzy, c-format
+msgid "Failed to render markup text: %1$s"
+msgstr "无法发送消息：%1$s"
+
+#: ../src/core/chat_command.c:828
 #, c-format
 msgid "Failed to send action message: %1$s"
 msgstr "无法发送动作消息：%1$s"
 
-#: ../src/core/app_ui_event.c:262
+#: ../src/core/app_ui_event.c:261
 #, c-format
 msgid "Failed to send message: %1$s"
 msgstr "无法发送消息：%1$s"
@@ -565,11 +567,6 @@ msgstr "转发到……"
 msgid ""
 "Hold on, srain is connecting to the server, please do not repeat the action"
 msgstr "请稍等，正在连接服务器，请勿重复连接"
-
-#: ../src/filter/regex.c:76
-#, c-format
-msgid "Invaild regex pattern: %1$s"
-msgstr "无效的正则表达式：%1$s"
 
 #: ../src/sirc/sirc_config.c:37
 msgid "Invalid IRC config instance"
@@ -657,19 +654,43 @@ msgstr "匹配频道名"
 msgid "Max users"
 msgstr "最多用户数"
 
-#: ../src/sui/sui_message.c:464
+#: ../src/sui/sui_message.c:461
 msgid "Message from unknown chat"
 msgstr "来自未知聊天的消息"
+
+#: ../src/core/chat_command.c:683
+#, c-format
+msgid "Messages of chat \"%1$s\" are no longer filtered by pattern \"%2$s\""
+msgstr ""
+
+#: ../src/core/chat_command.c:654
+#, c-format
+msgid "Messages of chat \"%1$s\" will be filtered by pattern \"%2$s\""
+msgstr ""
+
+#: ../src/core/chat_command.c:1129
+#, c-format
+msgid ""
+"Messages of user \"%1$s\" of chat \"%2$s\" are no longer rendered by pattern "
+"\"%3$s\""
+msgstr ""
+
+#: ../src/core/chat_command.c:1084
+#, c-format
+msgid ""
+"Messages of user \"%1$s\" of chat \"%2$s\" will be rendered by pattern \"%3$s"
+"\""
+msgstr ""
 
 #: ../data/ui/join_panel.glade:237
 msgid "Min users"
 msgstr "最少用户数"
 
-#: ../src/core/chat_command.c:472
+#: ../src/core/chat_command.c:482
 msgid "Missing argument <addr>"
 msgstr "缺少参数 <服务器地址>"
 
-#: ../src/core/chat_command.c:371
+#: ../src/core/chat_command.c:381
 msgid "Missing argument <server>"
 msgstr "缺少参数 <服务器名称>"
 
@@ -714,17 +735,17 @@ msgstr "没有需要请求的扩展能力"
 msgid "No new capability to be requested"
 msgstr "没有需要请求的新的扩展能力"
 
-#: ../src/core/chat_command.c:386
+#: ../src/core/chat_command.c:396
 #, c-format
 msgid "No such chat: %1$s"
 msgstr "找不到聊天：%1$s"
 
-#: ../src/core/chat_command.c:375
+#: ../src/core/chat_command.c:385
 #, c-format
 msgid "No such server: %1$s"
 msgstr "找不到服务器：%1$s"
 
-#: ../src/core/app_irc_event.c:1476
+#: ../src/core/app_irc_event.c:1475
 msgid "No topic is set"
 msgstr "该频道没有设置主题"
 
@@ -751,6 +772,11 @@ msgstr "可选"
 #: ../data/ui/join_panel.glade:88
 msgid "Password:"
 msgstr "密码："
+
+#: ../src/core/chat_command.c:634 ../src/core/chat_command.c:1054
+#, fuzzy, c-format
+msgid "Pattern \"%1$s\" not found"
+msgstr "用户文件 %1$s 未找到"
 
 #: ../src/core/app_irc_event.c:246
 msgid "Ping time out"
@@ -792,9 +818,19 @@ msgstr "收到来自 %2$s 的不支持的 CTCP %1$s 请求"
 msgid "Received unsupported CTCP %1$s response form %2$s"
 msgstr "收到来自 %2$s 的不支持的 CTCP %1$s 响应"
 
-#: ../src/core/chat_command.c:446 ../src/core/app_ui_event.c:160
+#: ../src/core/chat_command.c:456 ../src/core/app_ui_event.c:159
 msgid "Reconnection stopped"
 msgstr "已停止重新连接"
+
+#: ../src/core/chat_command.c:993
+#, c-format
+msgid "Regex pattern \"%1$s\" has added"
+msgstr ""
+
+#: ../src/core/chat_command.c:1006
+#, c-format
+msgid "Regex pattern \"%1$s\" has removed"
+msgstr ""
 
 #: ../data/ui/prefs_dialog.glade:107
 msgid "Reload Configuration"
@@ -838,7 +874,7 @@ msgstr "请选择一个证书"
 msgid "Server"
 msgstr "服务器："
 
-#: ../src/core/app.c:317 ../src/core/app.c:321
+#: ../src/core/app.c:316 ../src/core/app.c:320
 #, c-format
 msgid "Server autorun command: %1$s"
 msgstr "无效的 autorun 命令：%1$s"
@@ -922,7 +958,7 @@ msgid ""
 "The assigned nickname does not match the requested nickname, login skipped"
 msgstr "分配的昵称和请求的昵称不匹配，登录已跳过"
 
-#: ../src/core/app_irc_event.c:1497
+#: ../src/core/app_irc_event.c:1496
 #, c-format
 msgid ""
 "The topic of this channel is:\n"
@@ -953,7 +989,7 @@ msgstr "主题"
 msgid "True"
 msgstr "启用"
 
-#: ../src/core/app_irc_event.c:1392
+#: ../src/core/app_irc_event.c:1391
 #, c-format
 msgid "Trying nickname: \"%1$s\"..."
 msgstr "正在尝试使用昵称：\"%1$s\"……"
@@ -964,7 +1000,7 @@ msgstr "正在尝试使用昵称：\"%1$s\"……"
 msgid "Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."
 msgstr "到 %1$s(%2$s:%3$d) 的连接已断开，%4$.1f 秒后尝试重新连接……"
 
-#: ../src/core/app_irc_event.c:1826
+#: ../src/core/app_irc_event.c:1825
 #, c-format
 msgid "URL of %1$s is: %2$s"
 msgstr "%1$s 的 URL 是：%2$s"
@@ -992,7 +1028,7 @@ msgstr "未知登陆方式：%1$s"
 msgid "Unknown option %1$s"
 msgstr "未知选项：%1$s"
 
-#: ../src/lib/command.c:421 ../src/core/chat_command.c:452
+#: ../src/core/chat_command.c:462 ../src/lib/command.c:421
 #, c-format
 msgid "Unknown sub command: %1$s"
 msgstr "未知子命令：%1$s"
@@ -1014,7 +1050,7 @@ msgstr "使用安全连接"
 msgid "User"
 msgstr "用户数"
 
-#: ../src/core/app.c:142
+#: ../src/core/app.c:141
 msgid "User config not found"
 msgstr "用户文件 %1$s 未找到"
 
@@ -1147,6 +1183,11 @@ msgstr "服务器："
 msgid "_Whois"
 msgstr "个人信息 (_W)"
 
+#: ../src/render/mention_renderer.c:80
+#, c-format
+msgid "g_regex_new() failed: %1$s"
+msgstr ""
+
 #: ../src/core/app_irc_event.c:568 ../src/core/app_irc_event.c:643
 #, c-format
 msgid "mode %1$s %2$s by %3$s"
@@ -1157,7 +1198,31 @@ msgstr "%3$s 将 %1$s 的模式变更为 %2$s"
 msgid "server-list[%1$d] doesn't have a name"
 msgstr "server_list 中的第 %1$d 个服务器没有名字"
 
-#: ../src/core/chat_command.c:658
+#: ../src/core/chat_command.c:616
 #, c-format
 msgid "user \"%1$s\" not found"
 msgstr "用户文件 %1$s 未找到"
+
+#~ msgid "\"%1$s\" already exists in %2$s 's regex list"
+#~ msgstr "\"%1$s\" 已存在于 %2$s 的正则屏蔽列表中"
+
+#~ msgid "\"%1$s\" already exists in %2$s 's relaybot list"
+#~ msgstr "\"%1$s\" 已存在于 %2$s 的中继机器人列表中"
+
+#~ msgid "\"%1$s\" has added to %2$s 's regex list"
+#~ msgstr "\"%1$s\" 已加入 %2$s 的正则屏蔽列表"
+
+#~ msgid "\"%1$s\" has added to %2$s 's relaybot list"
+#~ msgstr "\"%1$s\" 已加入到 %2$s 的中继机器人列表"
+
+#~ msgid "\"%1$s\" is removed from %2$s 's ignore list"
+#~ msgstr "\"%1$s\" 已从 %2$s 的屏蔽列表中移除"
+
+#~ msgid "\"%1$s\" is removed from %2$s 's relaybot list"
+#~ msgstr "已从 %2$s 的中继机器人列表中移除 \"%1$s\""
+
+#~ msgid "\"%1$s\" not found in %2$s 's ignore list"
+#~ msgstr "无法在 %2$s 的屏蔽列表中找到 \"%1$s\""
+
+#~ msgid "\"%1$s\" not found in %2$s 's relaybot list"
+#~ msgstr "无法在 %2$s 的转发机器人列表中找到 \"%1$s\" "
