@@ -27,13 +27,12 @@
 #include "core/core.h"
 #include "sui/sui.h"
 #include "config/reader.h"
-#include "filter.h"
-#include "decorator.h"
 #include "meta.h"
 #include "log.h"
 #include "i18n.h"
 #include "path.h"
 #include "utils.h"
+#include "pattern_set.h"
 
 #include "app_event.h"
 
@@ -99,8 +98,8 @@ SrnApplication* srn_application_new(void){
     app->ui = sui_new_application(cfg->id ? cfg->id : PACKAGE_APPID,
             app, &app->ui_app_events, cfg->ui);
 
-    filter_init(); // FIXME
-    decorator_init();
+    app->pattern_set = srn_pattern_set_new();
+
     app_instance = app;
 
     return app;
@@ -313,11 +312,11 @@ SrnRet srn_application_add_server_with_config(SrnApplication *app,
 
         if (RET_IS_OK(ret)){
             if (ret != SRN_OK) { // Has OK message
-                srn_chat_add_misc_message_fmt(chat, chat->_user,
+                srn_chat_add_misc_message_fmt(chat,
                        _("Server autorun command: %1$s"), RET_MSG(ret));
             }
         } else {
-            srn_chat_add_error_message_fmt(chat, chat->_user,
+            srn_chat_add_error_message_fmt(chat,
                        _("Server autorun command: %1$s"), RET_MSG(ret));
         }
     }

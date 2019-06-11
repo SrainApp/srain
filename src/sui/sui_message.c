@@ -205,8 +205,8 @@ void sui_message_compose_prev(SuiMessage *self, SuiMessage *prev){
     g_return_if_fail(!self->prev);
 
     // Only compose messages sent by same user.
-    if (self->ctx->user != prev->ctx->user
-            || g_ascii_strcasecmp(self->ctx->dname, prev->ctx->dname) != 0){
+    if (self->ctx->sender != prev->ctx->sender
+            || g_ascii_strcasecmp(self->ctx->rendered_sender, prev->ctx->rendered_sender) != 0){
         return;
     }
 
@@ -222,8 +222,8 @@ void sui_message_compose_next(SuiMessage *self, SuiMessage *next){
     g_return_if_fail(!self->next);
 
     // Only compose messages sent by same user.
-    if (self->ctx->user != next->ctx->user
-            || g_ascii_strcasecmp(self->ctx->dname, next->ctx->dname) != 0){
+    if (self->ctx->sender != next->ctx->sender
+            || g_ascii_strcasecmp(self->ctx->rendered_sender, next->ctx->rendered_sender) != 0){
         return;
     }
 
@@ -301,7 +301,8 @@ char* sui_message_format_time(SuiMessage *self){
 
     ctx = sui_message_get_ctx(self);
 
-    return g_date_time_format(ctx->time, "%R");
+    // TODO: return const char
+    return g_strdup(ctx->rendered_short_time);
 }
 
 char* sui_message_format_full_time(SuiMessage *self){
@@ -309,12 +310,8 @@ char* sui_message_format_full_time(SuiMessage *self){
 
     ctx = sui_message_get_ctx(self);
 
-#ifdef G_OS_WIN32
-    // FIXME: g_date_time_to_unix(xxx, "%c") does not work on MS Windows
-    return g_date_time_format(ctx->time, "%F %R");
-#else
-    return g_date_time_format(ctx->time, "%c");
-#endif
+    // TODO: return const char
+    return g_strdup(ctx->rendered_full_time);
 }
 
 /*****************************************************************************
@@ -325,7 +322,7 @@ static void sui_message_real_update(SuiMessage *self){
     GtkStyleContext *style_context;
 
     // Update message content
-    gtk_label_set_markup(self->message_label, self->ctx->dcontent);
+    gtk_label_set_markup(self->message_label, self->ctx->rendered_content);
 
     // Set mentioned style class
     style_context = gtk_widget_get_style_context(GTK_WIDGET(self));
@@ -390,7 +387,7 @@ static void sui_message_real_update(SuiMessage *self){
 
 static void sui_message_real_update_side_bar_item(SuiMessage *self,
         SuiSideBarItem *item){
-    sui_side_bar_item_update(item, self->ctx->dname, self->ctx->dcontent);
+    sui_side_bar_item_update(item, self->ctx->rendered_sender, self->ctx->rendered_content);
     sui_side_bar_item_inc_count(item);
     if (self->ctx->mentioned){
         sui_side_bar_item_highlight(item);
@@ -451,12 +448,12 @@ static SuiNotification* sui_message_real_new_notification(SuiMessage *self){
         case SRN_CHAT_TYPE_SERVER:
         case SRN_CHAT_TYPE_DIALOG:
             title = g_strdup_printf(_("%1$s @ %2$s"),
-                    self->ctx->dname,
+                    self->ctx->rendered_sender,
                     self->ctx->chat->srv->chat->name);
             break;
         case SRN_CHAT_TYPE_CHANNEL:
             title = g_strdup_printf(_("%1$s %2$s @ %3$s"),
-                    self->ctx->dname,
+                    self->ctx->rendered_sender,
                     self->ctx->chat->name,
                     self->ctx->chat->srv->chat->name);
             break;
@@ -468,7 +465,7 @@ static SuiNotification* sui_message_real_new_notification(SuiMessage *self){
     str_assign(&notif->id, "sui-message");
     str_assign(&notif->icon, PACKAGE_APPID);
     notif->title = title; // No need to copy
-    str_assign(&notif->body, self->ctx->dcontent);
+    str_assign(&notif->body, self->ctx->rendered_content);
 
     return notif;
 }
@@ -511,7 +508,7 @@ static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_da
         char *msg;
 
         msg = g_strdup_printf(_("%1$s <fwd %2$s@%3$s>"), line,
-                self->ctx->user->srv_user->nick, self->ctx->chat->name);
+                self->ctx->sender->srv_user->nick, self->ctx->chat->name);
         msg_lst = g_list_append(msg_lst, msg);
     }
 

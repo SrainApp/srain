@@ -78,15 +78,9 @@ SrnServer* srn_server_new(const char *name, SrnServerConfig *cfg){
     srv->irc = sirc_new_session(
             &srn_application_get_default()->irc_events,
             cfg->irc);
-    if (!srv->irc) goto bad;
     sirc_set_ctx(srv->irc, srv);
 
     return srv;
-
-
-bad:
-    srn_server_free(srv);
-    return NULL;
 }
 
 /**
@@ -287,11 +281,11 @@ SrnRet srn_server_add_chat(SrnServer *srv, const char *name){
 
         if (RET_IS_OK(ret)){
             if (ret != SRN_OK) { // Has OK message
-                srn_chat_add_misc_message_fmt(chat, chat->_user,
+                srn_chat_add_misc_message_fmt(chat,
                        _("Chat autorun command: %1$s"), RET_MSG(ret));
             }
         } else {
-            srn_chat_add_error_message_fmt(chat, chat->_user,
+            srn_chat_add_error_message_fmt(chat,
                        _("Chat autorun command: %1$s"), RET_MSG(ret));
         }
     }

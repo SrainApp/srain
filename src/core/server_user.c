@@ -33,6 +33,7 @@ SrnServerUser *srn_server_user_new(SrnServer *srv, const char *nick){
     self->srv = srv;
     self->is_ignored = FALSE;
     str_assign(&self->nick, nick);
+    self->extra_data = srn_extra_data_new();
 
     return self;
 }
@@ -44,6 +45,7 @@ void srn_server_user_free(SrnServerUser *self){
     str_assign(&self->username, NULL);
     str_assign(&self->hostname, NULL);
     str_assign(&self->realname, NULL);
+    srn_extra_data_free(self->extra_data);
     g_free(self);
 }
 

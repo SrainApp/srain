@@ -12,16 +12,16 @@
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkBox" id="user_box">
+          <object class="GtkBox" id="sender_box">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="spacing">2</property>
             <child>
-              <object class="GtkEventBox" id="user_event_box">
+              <object class="GtkEventBox" id="sender_event_box">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkLabel" id="user_name_label">
+                  <object class="GtkLabel" id="sender_label">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label">Unable to display nickname</property>
@@ -43,7 +43,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="user_subname_label">
+              <object class="GtkLabel" id="remark_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="use_underline">True</property>

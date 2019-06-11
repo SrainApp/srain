@@ -7,6 +7,27 @@ Change Log
     :depth: 1
     :backlinks: none
 
+.. _version-1.0.0rc5:
+
+XXXX-XX-XX Version 1.0.0rc5
+===========================
+
+- Added:
+
+   - Regular expression pattern management using :ref:`commands-pattern` command
+   - Add command :ref:`commands-filter` for filtering message via pattern
+   - Add command :ref:`commands-render` for rendering message via pattern
+
+- Changed:
+
+   - Refactor detector module and rename it to render
+   - Refactor filter module
+
+- Removed:
+
+   - Drop command :ref:`commands-rignore`
+   - Drop command :ref:`commands-relay`
+
 .. _version-latest:
 .. _version-1.0.0rc4:
 
@@ -15,7 +36,7 @@ Change Log
 
 - Added:
 
-   - New dependency `libsecret`
+   - New dependency ``libsecret``
    - Add password storage support
    - Add command line options "--no-auto", used to require Srain not to
      automatically connect to servers

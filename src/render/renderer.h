@@ -1,4 +1,4 @@
-/* Copyright (C) 2016-2017 Shengyu Zhang <i@silverrainz.me>
+/* Copyright (C) 2016-2019 Shengyu Zhang <i@silverrainz.me>
  *
  * This file is part of Srain.
  *
@@ -16,34 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file nick.c
- * @brief Nick filter
- * @author Shengyu Zhang <i@silverrainz.me>
- * @version 0.06.2
- * @date 2017-04-19
- */
+/* This is a private header file and should not be exported. */
 
-#include <string.h>
-#include <glib.h>
-
-#include "sirc/sirc.h"
+#ifndef __IN_RENDERER_H
+#define __IN_RENDERER_H
 
 #include "core/core.h"
 
-#include "filter.h"
+/**
+ * @brief SrnMessageRenderer defines a module context of a SrnMessgae rendering
+ *module.
+ */
+typedef struct _SrnMessageRenderer SrnMessageRenderer;
 
-#include "srain.h"
-#include "log.h"
-#include "i18n.h"
-
-static bool nick(const SrnMessage *msg, const char *content);
-
-Filter nick_filter = {
-    .name = "nick",
-    .func = nick,
+struct _SrnMessageRenderer {
+    const char *name;
+    void (*init) (void);
+    SrnRet (*render) (SrnMessage *msg);
+    void (*finalize) (void);
 };
 
-static bool nick(const SrnMessage *msg, const char *content){
-    return !(msg->user->is_ignored || msg->user->srv_user->is_ignored);
-}
+#endif /* __IN_RENDERER_H */

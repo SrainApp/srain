@@ -15,14 +15,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+/**
+ * @file pattern_set.h
+ * @brief Simple pattern set management.
+ * @author Shengyu Zhang <i@silverrainz.me>
+ * @version 
+ * @date 2019-05-16
+ */
 
-/* Internal header file */
+#ifndef __PATTERN_SET_H
+#define __PATTERN_SET_H
 
-#ifndef __IN_PASSWORD_H
-#define __IN_PASSWORD_H
+#include <glib.h>
+#include "ret.h"
 
-#include "config/config.h"
+typedef struct _SrnPatternSet SrnPatternSet;
 
-void srn_config_manager_init_secret_schema(SrnConfigManager *mgr);
+SrnPatternSet* srn_pattern_set_new(void);
+void srn_pattern_set_free(SrnPatternSet *self);
 
-#endif /* __IN_PASSWORD_H */
+SrnRet srn_pattern_set_add(SrnPatternSet *self, const char *name, const char *pattern);
+SrnRet srn_pattern_set_rm(SrnPatternSet *self, const char *name);
+GRegex* srn_pattern_set_get(SrnPatternSet *self, const char *name);
+GList* srn_pattern_set_list(SrnPatternSet *self);
+
+#endif /* __PATTERN_SET_H */

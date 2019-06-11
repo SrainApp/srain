@@ -39,9 +39,10 @@
 #include "meta.h"
 #include "i18n.h"
 #include "command.h"
-#include "filter.h"
-#include "decorator.h"
+#include "render/render.h"
+#include "filter/filter.h"
 #include "utils.h"
+#include "pattern_set.h"
 
 typedef struct _CommandContext {
     SrnApplication *app;
@@ -57,12 +58,10 @@ static SrnRet on_command_reload(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_context(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_server(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_connect(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_relay(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_unrelay(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_ignore(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_unignore(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_rignore(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_unrignore(SrnCommand *cmd, void *user_data);
+static SrnRet on_command_filter(SrnCommand *cmd, void *user_data);
+static SrnRet on_command_unfilter(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_query(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_unquery(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_join(SrnCommand *cmd, void *user_data);
@@ -78,6 +77,9 @@ static SrnRet on_command_kick(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_mode(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_ctcp(SrnCommand *cmd, void *user_data);
 static SrnRet on_command_away(SrnCommand *cmd, void *user_data);
+static SrnRet on_command_pattern(SrnCommand *cmd, void *user_data);
+static SrnRet on_command_render(SrnCommand *cmd, void *user_data);
+static SrnRet on_command_unrender(SrnCommand *cmd, void *user_data);
 
 SrnCommandBind cmd_binds[] = {
     {
@@ -113,26 +115,6 @@ SrnCommandBind cmd_binds[] = {
         .cb = on_command_connect,
     },
     {
-        .name = "/relay",
-        .argc = 1, // <nick>
-        .opt = {
-            {.key = "-cur", .val = SRN_COMMAND_OPT_NO_VAL },
-            SRN_COMMAND_EMPTY_OPT,
-        },
-        .flag = 0,
-        .cb = on_command_relay,
-    },
-    {
-        .name = "/unrelay",
-        .argc = 1, // <nick>
-        .opt = {
-            {.key = "-cur", .val = SRN_COMMAND_OPT_NO_VAL },
-            SRN_COMMAND_EMPTY_OPT,
-        },
-        .flag = 0,
-        .cb = on_command_unrelay,
-    },
-    {
         .name = "/ignore",
         .argc = 1, // <nick>
         .opt = {
@@ -153,24 +135,24 @@ SrnCommandBind cmd_binds[] = {
         .cb = on_command_unignore,
     },
     {
-        .name = "/rignore",
-        .argc = 2, // <name> <pattern>
+        .name = "/filter",
+        .argc = 1, // <pattern>
         .opt = {
             {.key = "-cur", .val = SRN_COMMAND_OPT_NO_VAL },
             SRN_COMMAND_EMPTY_OPT,
         },
         .flag = 0,
-        .cb = on_command_rignore,
+        .cb = on_command_filter,
     },
     {
-        .name = "/unrignore",
-        .argc = 1, // <name>
+        .name = "/unfilter",
+        .argc = 1, // <pattern>
         .opt = {
             {.key = "-cur", .val = SRN_COMMAND_OPT_NO_VAL },
             SRN_COMMAND_EMPTY_OPT,
         },
         .flag = 0,
-        .cb = on_command_unrignore,
+        .cb = on_command_unfilter,
     },
     {
         .name = "/query",
@@ -280,6 +262,34 @@ SrnCommandBind cmd_binds[] = {
         .opt = { SRN_COMMAND_EMPTY_OPT },
         .flag = SRN_COMMAND_FLAG_OMIT_ARG,
         .cb = on_command_away,
+    },
+    {
+        .name = "/pattern",
+        .subcmd = {"add", "rm", "list", NULL},
+        .argc = 2, // <name> [pattern]
+        .opt = { SRN_COMMAND_EMPTY_OPT },
+        .flag = SRN_COMMAND_FLAG_OMIT_ARG,
+        .cb = on_command_pattern,
+    },
+    {
+        .name = "/render",
+        .argc = 2, // <nick> <pattern>
+        .opt = {
+            {.key = "-cur", .val = SRN_COMMAND_OPT_NO_VAL },
+            SRN_COMMAND_EMPTY_OPT,
+        },
+        .flag = 0,
+        .cb = on_command_render,
+    },
+    {
+        .name = "/unrender",
+        .argc = 2, // <nick> <pattern>
+        .opt = {
+            {.key = "-cur", .val = SRN_COMMAND_OPT_NO_VAL },
+            SRN_COMMAND_EMPTY_OPT,
+        },
+        .flag = 0,
+        .cb = on_command_unrender,
     },
     SRN_COMMAND_EMPTY,
 };
@@ -554,52 +564,11 @@ FIN:
     return ret;
 }
 
-static SrnRet on_command_relay(SrnCommand *cmd, void *user_data){
-    const char *nick;
-    SrnServer *srv;
-    SrnChat *chat;
-
-    nick = srn_command_get_arg(cmd, 0);
-    g_return_val_if_fail(nick, SRN_ERR);
-
-    if (srn_command_get_opt(cmd, "-cur", NULL)){
-        chat = ctx_get_chat(user_data);
-    } else {
-        srv = ctx_get_server(user_data);
-        g_return_val_if_fail(srv, SRN_ERR);
-        chat = srv->chat;
-    }
-
-    g_return_val_if_fail(chat, SRN_ERR);
-
-    return relay_decroator_add_nick(chat, nick);
-}
-
-static SrnRet on_command_unrelay(SrnCommand *cmd, void *user_data){
-    const char *nick;
-    SrnServer *srv;
-    SrnChat *chat;
-
-    nick = srn_command_get_arg(cmd, 0);
-    g_return_val_if_fail(nick, SRN_ERR);
-
-    if (srn_command_get_opt(cmd, "-cur", NULL)){
-        chat = ctx_get_chat(user_data);
-    } else {
-        srv = ctx_get_server(user_data);
-        g_return_val_if_fail(srv, SRN_ERR);
-        chat = srv->chat;
-    }
-
-    g_return_val_if_fail(chat, SRN_ERR);
-
-    return relay_decroator_rm_nick(chat, nick);
-}
-
 static SrnRet on_command_ignore(SrnCommand *cmd, void *user_data){
     const char *nick;
     SrnServer *srv;
     SrnChat *chat;
+    SrnServerUser *user;
 
     nick = srn_command_get_arg(cmd, 0);
     g_return_val_if_fail(nick, SRN_ERR);
@@ -611,29 +580,25 @@ static SrnRet on_command_ignore(SrnCommand *cmd, void *user_data){
         g_return_val_if_fail(srv, SRN_ERR);
         chat = srv->chat;
     }
-
     g_return_val_if_fail(chat, SRN_ERR);
 
-    SrnServerUser *user = srn_server_get_user(chat->srv, nick); 
-    if(user == NULL){
+    user = srn_server_get_user(chat->srv, nick);
+    if(!user){
         user = srn_server_add_and_get_user(chat->srv, nick);
     }
+
     if(user->is_ignored){
-        srn_chat_add_error_message_fmt(chat->srv->cur_chat, chat->user,
-                _("\"%1$s\" is already ignored"), nick);
-        return SRN_ERR;
+        return RET_ERR(_("\"%1$s\" is already ignored"), nick);
     }
     srn_server_user_set_is_ignored(user, TRUE);
-    srn_chat_add_misc_message_fmt(chat->srv->cur_chat, chat->user,
-            _("\"%1$s\" has ignored"), nick);
-
-    return SRN_OK;
+    return RET_OK(_("\"%1$s\" has ignored"), nick);
 }
 
 static SrnRet on_command_unignore(SrnCommand *cmd, void *user_data){
     const char *nick;
     SrnServer *srv;
     SrnChat *chat;
+    SrnServerUser *user;
 
     nick = srn_command_get_arg(cmd, 0);
     g_return_val_if_fail(nick, SRN_ERR);
@@ -646,60 +611,77 @@ static SrnRet on_command_unignore(SrnCommand *cmd, void *user_data){
         chat = srv->chat;
     }
 
-    SrnServerUser *user = srn_server_get_user(chat->srv, nick);
-    if(user){
-        srn_server_user_set_is_ignored(user, FALSE);
-        srn_chat_add_misc_message_fmt(chat->srv->cur_chat, chat->user,
-                _("\"%1$s\" has unignored"), nick);
-
-        return SRN_OK;
+    user = srn_server_get_user(chat->srv, nick);
+    if(!user){
+        return RET_ERR(_("user \"%1$s\" not found"), nick);
     }
-    srn_chat_add_error_message_fmt(chat->srv->cur_chat, chat->user,
-            _("user \"%1$s\" not found"), nick);
-    return SRN_ERR;
+    srn_server_user_set_is_ignored(user, FALSE);
+    return RET_OK(_("\"%1$s\" has unignored"), nick);
 }
 
-static SrnRet on_command_rignore(SrnCommand *cmd, void *user_data){
-    const char *name;
+static SrnRet on_command_filter(SrnCommand *cmd, void *user_data){
     const char *pattern;
-    SrnServer *srv;
+    SrnRet ret;
+    SrnChat *chat;
+    SrnPatternSet *pattern_set;
+
+    pattern = srn_command_get_arg(cmd, 0);
+    g_return_val_if_fail(pattern, SRN_ERR);
+    pattern_set = srn_application_get_default()->pattern_set;
+    g_return_val_if_fail(pattern_set, SRN_ERR);
+
+    if (srn_pattern_set_get(pattern_set, pattern) == NULL) {
+        return RET_ERR(_("Pattern \"%1$s\" not found"), pattern);
+    }
+
+    if (srn_command_get_opt(cmd, "-cur", NULL)){
+        chat = ctx_get_chat(user_data);
+    } else {
+        SrnServer *srv;
+
+        srv = ctx_get_server(user_data);
+        g_return_val_if_fail(srv, SRN_ERR);
+        chat = srv->chat;
+    }
+    g_return_val_if_fail(chat, SRN_ERR);
+
+    ret = srn_filter_attach_pattern(chat->extra_data, pattern);
+    if (!RET_IS_OK(ret)) {
+        return RET_ERR(_("Failed to attach pattern to chat \"%1$s\": %2$s"),
+                chat->name, RET_MSG(ret));
+    }
+
+    return RET_OK(_("Messages of chat \"%1$s\" will be filtered by pattern \"%2$s\""),
+            chat->name, pattern);
+}
+
+static SrnRet on_command_unfilter(SrnCommand *cmd, void *user_data){
+    const char *pattern;
+    SrnRet ret;
     SrnChat *chat;
 
-    name = srn_command_get_arg(cmd, 0);
-    pattern = srn_command_get_arg(cmd, 1);
-    g_return_val_if_fail(name, SRN_ERR);
+    pattern = srn_command_get_arg(cmd, 0);
     g_return_val_if_fail(pattern, SRN_ERR);
 
     if (srn_command_get_opt(cmd, "-cur", NULL)){
         chat = ctx_get_chat(user_data);
     } else {
+        SrnServer *srv;
+
         srv = ctx_get_server(user_data);
         g_return_val_if_fail(srv, SRN_ERR);
         chat = srv->chat;
     }
-
     g_return_val_if_fail(chat, SRN_ERR);
 
-    return regex_filter_add_pattern(chat, name, pattern);
-}
-
-static SrnRet on_command_unrignore(SrnCommand *cmd, void *user_data){
-    const char *name;
-    SrnServer *srv;
-    SrnChat *chat;
-
-    name = srn_command_get_arg(cmd, 0);
-    g_return_val_if_fail(name, SRN_ERR);
-
-    if (srn_command_get_opt(cmd, "-cur", NULL)){
-        chat = ctx_get_chat(user_data);
-    } else {
-        srv = ctx_get_server(user_data);
-        g_return_val_if_fail(srv, SRN_ERR);
-        chat = srv->chat;
+    ret = srn_filter_detach_pattern(chat->extra_data, pattern);
+    if (!RET_IS_OK(ret)) {
+        return RET_ERR(_("Failed to dettach pattern from chat \"%1$s\": %2$s"),
+                chat->name, RET_MSG(ret));
     }
 
-    return regex_filter_rm_pattern(chat, name);
+    return RET_OK(_("Messages of chat \"%1$s\" are no longer filtered by pattern \"%2$s\""),
+            chat->name, pattern);
 }
 
 static SrnRet on_command_query(SrnCommand *cmd, void *user_data){
@@ -979,6 +961,173 @@ static SrnRet on_command_away(SrnCommand *cmd, void *user_data){
     msg = srn_command_get_arg(cmd, 0);
 
     return sirc_cmd_away(srv->irc, msg);
+}
+
+static SrnRet on_command_pattern(SrnCommand *cmd, void *user_data){
+    const char *subcmd;
+    SrnChat *chat;
+    SrnRet ret;
+    SrnPatternSet *pattern_set;
+
+    subcmd = srn_command_get_subcmd(cmd);
+    g_return_val_if_fail(subcmd, SRN_ERR);
+    chat = ctx_get_chat(user_data);
+    g_return_val_if_fail(chat, SRN_ERR);
+    pattern_set = srn_application_get_default()->pattern_set;
+    g_return_val_if_fail(pattern_set, SRN_ERR);
+
+    if (g_ascii_strcasecmp(subcmd, "add") == 0){
+        const char *name;
+        const char *pattern;
+
+        name = srn_command_get_arg(cmd, 0);
+        g_return_val_if_fail(name, SRN_ERR);
+        pattern = srn_command_get_arg(cmd, 1);
+        g_return_val_if_fail(pattern, SRN_ERR);
+
+        ret = srn_pattern_set_add(pattern_set, name, pattern);
+        if (!RET_IS_OK(ret)) {
+            ret = RET_ERR(_("Failed to add regex pattern \"%1$s\": %2$s"),
+                    name, RET_MSG(ret));
+        } else {
+            ret = RET_OK(_("Regex pattern \"%1$s\" has added"), name);
+        }
+    } else if (g_ascii_strcasecmp(subcmd, "rm") == 0){
+        const char *name;
+
+        name = srn_command_get_arg(cmd, 0);
+        g_return_val_if_fail(name, SRN_ERR);
+
+        ret = srn_pattern_set_rm(pattern_set, name);
+        if (!RET_IS_OK(ret)) {
+            ret = RET_ERR(_("Failed to remove regex pattern \"%1$s\": %2$s"),
+                    name, RET_MSG(ret));
+        } else {
+            ret = RET_OK(_("Regex pattern \"%1$s\" has removed"), name);
+        }
+    } else if (g_ascii_strcasecmp(subcmd, "list") == 0){
+        GList *lst;
+        GString *str;
+
+        str = g_string_new(_("Available regex patterns:"));
+        lst = srn_pattern_set_list(pattern_set);
+        while (lst) {
+            const char *name;
+            GRegex *regex;
+
+            name = lst->data;
+            regex = srn_pattern_set_get(pattern_set, name);
+            g_string_append_printf(str, "\n  * %s: %s",
+                    name, g_regex_get_pattern(regex));
+            lst = g_list_next(lst);
+        }
+        g_list_free(g_list_first(lst));
+
+        ret = RET_OK("%s", str->str);
+        g_string_free(str, TRUE);
+    } else {
+        g_warn_if_reached();
+        ret = SRN_ERR;
+    }
+
+    return ret;
+}
+
+static SrnRet on_command_render(SrnCommand *cmd, void *user_data){
+    const char *nick;
+    const char *pattern;
+    SrnRet ret;
+    SrnServer *srv;
+    SrnChat *chat;
+    SrnServerUser *srv_user;
+    SrnExtraData *extra_data;
+    SrnPatternSet *pattern_set;
+
+    nick = srn_command_get_arg(cmd, 0);
+    g_return_val_if_fail(nick, SRN_ERR);
+    pattern = srn_command_get_arg(cmd, 1);
+    g_return_val_if_fail(pattern, SRN_ERR);
+
+    // Check pattern
+    pattern_set = srn_application_get_default()->pattern_set;
+    if (srn_pattern_set_get(pattern_set, pattern) == NULL) {
+        return RET_ERR(_("Pattern \"%1$s\" not found"), pattern);
+    }
+
+    srv = ctx_get_server(user_data);
+    g_return_val_if_fail(srv, SRN_ERR);
+    srv_user = srn_server_add_and_get_user(srv, nick);
+    g_return_val_if_fail(srv_user, SRN_ERR);
+
+    if (srn_command_get_opt(cmd, "-cur", NULL)){
+        SrnChatUser *chat_user;
+
+        chat = ctx_get_chat(user_data);
+        g_return_val_if_fail(chat, SRN_ERR);
+        chat_user = srn_chat_add_and_get_user(chat, srv_user);
+        g_return_val_if_fail(chat_user, SRN_ERR);
+
+        extra_data = chat_user->extra_data;
+    } else {
+        chat = srv->chat;
+        extra_data = srv_user->extra_data;
+    }
+    g_return_val_if_fail(chat, SRN_ERR);
+    g_return_val_if_fail(extra_data, SRN_ERR);
+
+    ret = srn_render_attach_pattern(extra_data, pattern);
+    if (!RET_IS_OK(ret)) {
+        return RET_ERR(_("Failed to attach pattern to user %1$s\" of chat \"%2$s\": %2$s"),
+                srv_user->nick, chat->name, RET_MSG(ret));
+    }
+
+    return RET_OK(_("Messages of user \"%1$s\" of chat \"%2$s\" will be rendered by pattern \"%3$s\""),
+            srv_user->nick, chat->name, pattern);
+}
+
+static SrnRet on_command_unrender(SrnCommand *cmd, void *user_data){
+    const char *nick;
+    const char *pattern;
+    SrnRet ret;
+    SrnServer *srv;
+    SrnChat *chat;
+    SrnServerUser *srv_user;
+    SrnExtraData *extra_data;
+
+    nick = srn_command_get_arg(cmd, 0);
+    g_return_val_if_fail(nick, SRN_ERR);
+    pattern = srn_command_get_arg(cmd, 1);
+    g_return_val_if_fail(pattern, SRN_ERR);
+
+    srv = ctx_get_server(user_data);
+    g_return_val_if_fail(srv, SRN_ERR);
+    srv_user = srn_server_add_and_get_user(srv, nick);
+    g_return_val_if_fail(srv_user, SRN_ERR);
+
+    if (srn_command_get_opt(cmd, "-cur", NULL)){
+        SrnChatUser *chat_user;
+
+        chat = ctx_get_chat(user_data);
+        g_return_val_if_fail(chat, SRN_ERR);
+        chat_user = srn_chat_add_and_get_user(chat, srv_user);
+        g_return_val_if_fail(chat_user, SRN_ERR);
+
+        extra_data = chat_user->extra_data;
+    } else {
+        chat = srv->chat;
+        extra_data = srv_user->extra_data;
+    }
+    g_return_val_if_fail(chat, SRN_ERR);
+    g_return_val_if_fail(extra_data, SRN_ERR);
+
+    ret = srn_render_detach_pattern(extra_data, pattern);
+    if (!RET_IS_OK(ret)) {
+        return RET_ERR(_("Failed to dettach pattern from user \"%1$s\": %2$s"),
+                srv_user->nick, RET_MSG(ret));
+    }
+
+    return RET_OK(_("Messages of user \"%1$s\" of chat \"%2$s\" are no longer rendered by pattern \"%3$s\""),
+            srv_user->nick, chat->name, pattern);
 }
 
 /*******************************************************************************

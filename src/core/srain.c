@@ -32,6 +32,8 @@
 #include "i18n.h"
 #include "config/config.h"
 #include "path.h"
+#include "filter/filter.h"
+#include "render/render.h"
 
 int main(int argc, char *argv[]){
     SrnLogger *logger;
@@ -40,6 +42,8 @@ int main(int argc, char *argv[]){
 
     ret_init();
     i18n_init();
+    srn_filter_init();
+    srn_render_init();
 
     logger_cfg = srn_logger_config_new();
     logger_cfg->warn_targets = g_list_append(
@@ -51,6 +55,8 @@ int main(int argc, char *argv[]){
     app = srn_application_new();
     srn_application_run(app, argc, argv);
 
+    srn_render_finalize();
+    srn_filter_finalize();
     srn_logger_free(logger);
     ret_finalize();
 

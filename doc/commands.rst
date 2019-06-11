@@ -68,8 +68,8 @@ without quoted.
 If you want to use a single quotation mark in a quoted text, use backslash ``\``
 to escape it. For backslash itself, use double backslash ``\\``.
 
-Usage
-=====
+Available Commands
+==================
 
 .. _commands-usage-context:
 
@@ -143,7 +143,7 @@ Options:
 * ``-pwd``: connection password, default empty
 * ``-tls``: use secure connections with TLS
 * ``-tls-noverify``: use TLS connection without certificate verification
-* ``-user``: specify usernamem default same as nickname
+* ``-user``: specify username, default same as nickname
 * ``-real``: specify realname, default same as nickname
 
 Arguments:
@@ -164,32 +164,6 @@ Example::
     The context can be changed by :ref:`commands-usage-context`,
     :ref:`commands-server` or :ref:`commands-connect`.
 
-.. _commands-relay:
-
-/relay & /unrelay
------------------
-
-Usage::
-
-    /relay [-cur] <nick>
-    /unrelay [-cur] <nick>
-
-Flag ``nick`` as a relay bot, show the real nick of the message sender.
-Use ``[`` and ``]`` as delimiter.
-
-Refer :ref:`faq-relay-message-transform` to see its effect.
-
-Options:
-
-* ``-cur``: only effects the current chat
-
-Example::
-
-    /relay teleboto
-
-.. warning::
-
-    This command is unstable, it may be implemented as a plugin in the future.
 
 /ignore & /unignore
 -------------------
@@ -205,32 +179,8 @@ Options:
 
 * ``-cur``: only ignore in current chat
 
-.. _commands-rignore:
-
-/rignore & /unrignore
----------------------
-
-Usage::
-
-    /rignore [-cur] <name> <pattern>
-    /unignore [-cur] <name>
-
-Ignore/unignore message which matches specified pattern.
-
-Options:
-
-* ``-cur``: only ignore in current chat
-
-Arguments:
-
-* ``name``: unique pattern name
-* ``pattern``: perl-compatible regex expression which is used to match the
-  incoming message, for regex syntax, refer to
-  https://developer.gnome.org/glib/stable/glib-regex-syntax.html
-
 /query & /unquery
 -----------------
-
 Usage::
 
     /query <nick>
@@ -387,3 +337,144 @@ between the ``target``.
 .. note::
 
     DCC is not yet supported.
+
+.. _commands-pattern:
+
+/pattern
+--------
+
+Usage::
+
+    /pattern add <name> <pattern>
+    /pattern rm <name>
+    /pattern list
+
+Regular expression pattern management.
+The added pattern can be used elsewhere in the application, such as
+:ref:`commands-filter` and :ref:`commands-render`.
+
+Sub commands:
+
+* ``add``: add a pattern with given name
+* ``rm``: remove a pattern with given name
+* ``list``: list all availables patterns
+
+Arguments:
+
+* ``name``: unique name of pattern
+* ``pattern``: a valid `Perl-compatible Regular Expression`_
+
+.. _Perl-compatible Regular Expression: https://developer.gnome.org/glib/stable/glib-regex-syntax.html
+
+.. _commands-filter:
+
+/filter & /unfilter
+-------------------
+
+Usage::
+
+    /filter [-cur] <pattern>
+    /unfilter [-cur] <pattern>
+
+Filter message whose content matches specified pattern.
+
+Options:
+
+* ``-cur``: only ignore in current chat
+
+Arguments:
+
+* ``pattern``: name of regular expression pattern which is managed by
+  :ref:`commands-pattern`
+
+Example:
+
+This filter message that content is "Why GTK and not Qt?"::
+
+    /pattern add troll ^Why GTK and not Qt\?$
+    /filter troll
+
+To cancel the filter of these kind of message, use::
+
+    /unfilter troll
+
+.. note::
+
+   Pattern **NO NEED** to consider the case where the mIRC color code is
+   included in the message.
+
+.. _commands-render:
+
+/render & /unrender
+-------------------
+
+Usage::
+
+    /render [-cur] <nick> <pattern>
+    /unrender [-cur] <nick> <pattern>
+
+Render message of specific user via specific pattern.
+
+The given pattern should contains specific `Named Subpatterns`_ used for
+capturing message fragment from original message content and become part of
+rendered message.
+
+.. _Named Subpatterns: https://developer.gnome.org/glib/stable/glib-regex-syntax.html#id-1.5.25.13
+
+There are list of available named subpatterns:
+
+* ``(?<sender>)``: match name of sender, once this subpatterns is matched,
+  the original sender will be displayed as message remark
+* ``(?<content>)``: match content of rendered message
+* ``(?<time>)``: match time of rendered message
+
+Arguments:
+
+* ``nick``: nickname of user
+* ``pattern``: name of regular expression pattern which is managed by
+  :ref:`commands-pattern`
+
+Options:
+
+* ``-cur``: only effects the user under current chat
+
+Example:
+
+We assume that there is a IRC bot named "xmppbot".
+It forwards message between XMPP and IRC.
+On IRC side, the forwarded message looks like "<xmppbot> [xmpp_user] xmpp_message",
+you can render it to a more easy-to-read format via the following commands::
+
+   /pattern add xmpp \[(?<sender>[^:]+?)\] (?<content>.*)
+   /render xmppbot xmpp
+
+The forwarded meessage will look like "<xmpp_user> xmpp_message", and the
+original message sender "xmppbot" will be displayed as message remark.
+
+.. note::
+
+   TODO: Add figure
+
+.. note::
+
+   Pattern **SHOULD** consider the case where the mIRC color code is
+   included in the message.
+
+Obsoleted Commands
+==================
+
+.. _commands-rignore:
+
+/rignore & /unrignore
+---------------------
+
+This command has been dropped since :ref:`version-1.0.0rc5`,
+please use :ref:`commands-filter` instead.
+
+.. _commands-relay:
+
+/relay & /unrelay
+-----------------
+
+This command has been dropped since :ref:`version-1.0.0rc5`,
+please use :ref:`commands-render` instead.

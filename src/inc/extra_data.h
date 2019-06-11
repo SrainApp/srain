@@ -16,13 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* Internal header file */
+#ifndef _EXTRA_DATA_H
+#define _EXTRA_DATA_H
 
-#ifndef __IN_PASSWORD_H
-#define __IN_PASSWORD_H
+#include <glib.h>
 
-#include "config/config.h"
+typedef struct _SrnExtraData SrnExtraData;
 
-void srn_config_manager_init_secret_schema(SrnConfigManager *mgr);
+SrnExtraData* srn_extra_data_new(void);
+void srn_extra_data_free(SrnExtraData *self);
+void* srn_extra_data_get(SrnExtraData *self, const char *key);
+void srn_extra_data_set(SrnExtraData *self, const char *key, void *val,
+        GDestroyNotify val_destory_func);
 
-#endif /* __IN_PASSWORD_H */
+#endif /* __EXTRA_DATA_H */

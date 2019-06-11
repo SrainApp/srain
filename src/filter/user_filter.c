@@ -1,4 +1,4 @@
-/* Copyright (C) 2016-2019 Shengyu Zhang <i@silverrainz.me>
+/* Copyright (C) 2016-2017 Shengyu Zhang <i@silverrainz.me>
  *
  * This file is part of Srain.
  *
@@ -16,13 +16,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* Internal header file */
+#include "core/core.h"
 
-#ifndef __IN_PASSWORD_H
-#define __IN_PASSWORD_H
+#include "srain.h"
 
-#include "config/config.h"
+#include "./filter.h"
 
-void srn_config_manager_init_secret_schema(SrnConfigManager *mgr);
+static bool filter(const SrnMessage *msg);
 
-#endif /* __IN_PASSWORD_H */
+/**
+ * @brief user_filter is a filter module for filtering ignored user.
+ */
+SrnMessageFilter user_filter = {
+    .name = "user",
+    .filter = filter,
+};
+
+bool filter(const SrnMessage *msg) {
+    return !(msg->sender->is_ignored || msg->sender->srv_user->is_ignored);
+}

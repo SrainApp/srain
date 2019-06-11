@@ -26,6 +26,7 @@
 #include "config/config.h"
 #include "version.h"
 #include "log.h"
+#include "pattern_set.h"
 
 #ifndef __IN_CORE_H
 	#error This file should not be included directly, include just core.h
@@ -33,6 +34,8 @@
 
 typedef struct _SrnApplication SrnApplication;
 typedef struct _SrnApplicationConfig SrnApplicationConfig;
+
+#include "./server.h"
 
 struct _SrnApplication {
     SrnVersion *ver;
@@ -53,6 +56,8 @@ struct _SrnApplication {
     SrnServer *cur_srv;
     GList *srv_list;
     GList *srv_cfg_list;
+
+    SrnPatternSet *pattern_set;
 };
 
 struct _SrnApplicationConfig {

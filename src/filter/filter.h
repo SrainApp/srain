@@ -16,13 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* Internal header file */
+/* This is a private header file and should not be exported. */
 
-#ifndef __IN_PASSWORD_H
-#define __IN_PASSWORD_H
+#ifndef __IN_FILTER_H
+#define __IN_FILTER_H
 
-#include "config/config.h"
+#include "core/core.h"
 
-void srn_config_manager_init_secret_schema(SrnConfigManager *mgr);
+/**
+ * @brief SrnMessageFilter defines a module context of a SrnMessgae filter
+ * module.
+ */
+typedef struct _SrnMessageFilter SrnMessageFilter;
 
-#endif /* __IN_PASSWORD_H */
+struct _SrnMessageFilter {
+    const char *name;
+    void (*init) (void);
+    SrnRet (*filter) (const SrnMessage *msg);
+    void (*finalize) (void);
+};
+
+#endif /* __IN_FILTER_H */

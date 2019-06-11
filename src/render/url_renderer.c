@@ -16,21 +16,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file pango_markup.c
- * @brief Decorator for escaping message and render url
- * @author Shengyu Zhang <i@silverrainz.me>
- * @version 0.06.2
- * @date 2017-03-11
- */
-
 #include <stdio.h>
 #include <string.h>
 #include <glib.h>
 
-#include "decorator.h"
-
 #include "log.h"
+#include "i18n.h"
+#include "markup_renderer.h"
+
+#include "render/render.h"
+#include "./renderer.h"
+
+static void init(void);
+static void finalize(void);
+static SrnRet render(SrnMessage *msg);
+static void text(GMarkupParseContext *context, const gchar *text,
+        gsize text_len, gpointer user_data, GError **error);
+static bool match_pattern(const char *pattern, const char *str, int *start,
+        int *end);
+
+static SrnMarkupRenderer *markup_renderer;
+
+ /**
+  * @brief url_renderer is a render moduele for rendering URL in message.
+  */
+SrnMessageRenderer url_renderer = {
+    .name = "url",
+    .init = init,
+    .finalize = finalize,
+    .render = render,
+};
 
 /* Some patterns are copied from hexchat/src/common/url.c */
 #define PROTO_PATTERN       "(http|https|ftp|git|svn|irc|ircs|xmpp)"
@@ -62,13 +77,6 @@
 
 #define EMAIL_PATTERN       "[a-z0-9][._+%a-z0-9-]+@" HOST_PATTERN
 
-static char* pango_markup(SrnMessage *msg, int index, const char *frag);
-
-Decorator pango_markup_decroator = {
-    .name = "pango_markup",
-    .func = pango_markup,
-};
-
 typedef enum {
     MATCH_URL,
     MATCH_HOST,
@@ -86,48 +94,54 @@ static char* patterns[MATCH_MAX + 1] = {
     [MATCH_HOST] = SINGLY_HOST_PATTERN,
 };
 
-static bool match_pattern(const char *pattern, const char *str, int *start, int *end) {
-    bool ret;
-    GError *err;
-    GRegex *regex;
-    GMatchInfo *match_info;
+void init(void) {
+    GMarkupParser *parser;
 
-    err = NULL;
-    regex = g_regex_new(pattern, G_REGEX_CASELESS | G_REGEX_OPTIMIZE, 0, &err);
-    if (!regex){
-        ERR_FR("g_regex_new() failed, pattern: %s, err: %s", pattern, err->message);
-        return FALSE;
-    }
-
-    g_regex_match(regex, str, 0, &match_info);
-
-    if (!(ret = g_match_info_matches(match_info))){
-        goto fin;
-    }
-
-    ret = g_match_info_fetch_pos(match_info, 0, start, end);
-
-fin:
-
-    g_match_info_free(match_info);
-    g_regex_unref(regex);
-
-    return ret;
+    markup_renderer = srn_markup_renderer_new();
+    parser = srn_markup_renderer_get_markup_parser(markup_renderer);
+    parser->text = text;
 }
 
-static char* pango_markup(SrnMessage *msg, int index, const char *frag){
+void finalize(void) {
+    srn_markup_renderer_free(markup_renderer);
+}
+
+SrnRet render(SrnMessage *msg) {
+    char *rendered_content;
+    SrnRet ret;
+
+    rendered_content = NULL;
+    ret = srn_markup_renderer_render(markup_renderer,
+            msg->rendered_content, &rendered_content, msg);
+    if (!RET_IS_OK(ret)){
+        return RET_ERR(_("Failed to render markup text: %1$s"), RET_MSG(ret));
+    }
+    if (rendered_content) {
+        g_free(msg->rendered_content);
+        msg->rendered_content = rendered_content;
+    }
+
+    return SRN_OK;
+}
+
+void text(GMarkupParseContext *context, const gchar *text, gsize text_len,
+        gpointer user_data, GError **error) {
     int start, end;
     int tmpstart, tmpend;
     char *left;
     const char *ptr, *ptrend;
     char *url, *markuped_url;
-    GString *dcontent;
+    GString *rcontent;
+    SrnMarkupRenderer *markup_renderer;
+    SrnMessage *msg;
     MatchType type;
 
-    ptr = frag;
-    ptrend = frag + strlen(frag);
-    dcontent = g_string_new(NULL);
+    markup_renderer = user_data;
+    rcontent = srn_markup_renderer_get_markup(markup_renderer);
+    msg = srn_markup_renderer_get_user_data(markup_renderer);
 
+    ptr = text;
+    ptrend = ptr + text_len;
     while (ptr < ptrend) {
         type = MATCH_MAX;
         start = end = strlen(ptr);
@@ -149,7 +163,7 @@ static char* pango_markup(SrnMessage *msg, int index, const char *frag){
 
         /* Markup the left of the matched(maybe) url */
         left = g_markup_escape_text(ptr, start);
-        dcontent = g_string_append(dcontent, left);
+        g_string_append(rcontent, left);
         g_free(left);
 
         /* If something matched */
@@ -160,21 +174,25 @@ static char* pango_markup(SrnMessage *msg, int index, const char *frag){
 
             switch(type){
                 case MATCH_URL:
-                    markuped_url = g_markup_printf_escaped("<a href=\"%s\">%s</a>", url, url);
+                    markuped_url = g_markup_printf_escaped(
+                            "<a href=\"%s\">%s</a>", url, url);
                     break;
                 case MATCH_HOST:
                     /* Fallback to http protocol */
-                    markuped_url = g_markup_printf_escaped("<a href=\"http://%s\">%s</a>", url, url);
+                    markuped_url = g_markup_printf_escaped(
+                            "<a href=\"http://%s\">%s</a>", url, url);
                     break;
                 case MATCH_CHANNEL:
                     if (msg->chat->srv->cfg->irc->tls){
-                        markuped_url = g_markup_printf_escaped("<a href=\"ircs://%s:%d/%s\">%s</a>",
+                        markuped_url = g_markup_printf_escaped(
+                                "<a href=\"ircs://%s:%d/%s\">%s</a>",
                                 msg->chat->srv->addr->host,
                                 msg->chat->srv->addr->port,
                                 url,
                                 url);
                     } else {
-                        markuped_url = g_markup_printf_escaped("<a href=\"irc://%s:%d/%s\">%s</a>",
+                        markuped_url = g_markup_printf_escaped(
+                                "<a href=\"irc://%s:%d/%s\">%s</a>",
                                 msg->chat->srv->addr->host,
                                 msg->chat->srv->addr->port,
                                 url,
@@ -182,7 +200,8 @@ static char* pango_markup(SrnMessage *msg, int index, const char *frag){
                     }
                     break;
                 case MATCH_EMAIL:
-                    markuped_url = g_markup_printf_escaped("<a href=\"mailto:%s\">%s</a>", url, url);
+                    markuped_url = g_markup_printf_escaped(
+                            "<a href=\"mailto:%s\">%s</a>", url, url);
                     break;
                 default:
                     markuped_url = NULL;
@@ -190,7 +209,7 @@ static char* pango_markup(SrnMessage *msg, int index, const char *frag){
             }
 
             msg->urls = g_list_append(msg->urls, url);
-            dcontent = g_string_append(dcontent, markuped_url);
+            g_string_append(rcontent, markuped_url);
 
             DBG_FR("Appended url: %s", url);
             DBG_FR("Markuped url: %s", markuped_url);
@@ -200,10 +219,32 @@ static char* pango_markup(SrnMessage *msg, int index, const char *frag){
 
         ptr += end;
     }
+}
 
-    char *str;
-    str = dcontent->str;
-    g_string_free(dcontent, FALSE);
+bool match_pattern(const char *pattern, const char *str, int *start, int *end) {
+    bool ret;
+    GError *err;
+    GRegex *regex;
+    GMatchInfo *match_info;
 
-    return str;
+    err = NULL;
+    regex = g_regex_new(pattern, G_REGEX_CASELESS | G_REGEX_OPTIMIZE, 0, &err);
+    if (!regex){
+        ERR_FR("g_regex_new() failed, pattern: %s, err: %s", pattern, err->message);
+        return FALSE;
+    }
+
+    g_regex_match(regex, str, 0, &match_info);
+
+    if (!(ret = g_match_info_matches(match_info))){
+        goto fin;
+    }
+
+    ret = g_match_info_fetch_pos(match_info, 0, start, end);
+
+fin:
+    g_match_info_free(match_info);
+    g_regex_unref(regex);
+
+    return ret;
 }

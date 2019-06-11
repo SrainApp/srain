@@ -20,8 +20,10 @@
 #define __CORE_H
 
 #define __IN_CORE_H
-#include "server.h"
-#include "app.h"
+#include "./app.h"
+#include "./server.h"
+#include "./chat.h"
+#include "./message.h"
 #undef __IN_CORE_H
 
 #endif /* __CORE_H */

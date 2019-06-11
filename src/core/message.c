@@ -34,19 +34,29 @@ SrnMessage* srn_message_new(SrnChat *chat, SrnChatUser *user,
     self = g_malloc0(sizeof(SrnMessage));
 
     if (!content) {
+        g_warn_if_reached();
         content = "";
     }
 
-    self->user = user;
+    self->type = type;
+    self->sender = user;
     self->chat = chat;
     self->content = g_strdup(content);
     self->time = g_date_time_new_now_local();
-    self->mentioned = FALSE;
-    self->type = type;
 
-    /* Decorated */
-    self->dname = g_markup_escape_text(user->srv_user->nick, -1);
-    self->dcontent = g_markup_escape_text(content, -1);
+    // Inital render
+    self->rendered_sender = g_markup_escape_text(user->srv_user->nick, -1);
+    self->rendered_remark = g_markup_escape_text("", -1);
+    self->rendered_content = g_markup_escape_text(content, -1);
+    self->rendered_short_time = g_date_time_format(self->time, "%R");
+#ifdef G_OS_WIN32
+    // FIXME: g_date_time_format(xxx, "%c") does not work on MS Windows
+    self->rendered_full_time = g_date_time_format(self->time, "%F %R");
+#else
+    self->rendered_full_time = g_date_time_format(self->time, "%c");
+#endif
+
+    self->mentioned = FALSE;
 
     switch (self->type){
         case SRN_MESSAGE_TYPE_SENT:
@@ -85,16 +95,16 @@ char* srn_message_to_string(SrnMessage *self){
     switch (self->type){
         case SRN_MESSAGE_TYPE_SENT:
             msg_str = g_strdup_printf("[%s] <%s*> %s",
-                    time_str, self->user->srv_user->nick, self->content);
+                    time_str, self->sender->srv_user->nick, self->content);
             break;
         case SRN_MESSAGE_TYPE_RECV:
         case SRN_MESSAGE_TYPE_NOTICE:
             msg_str = g_strdup_printf("[%s] <%s> %s",
-                    time_str, self->user->srv_user->nick, self->content);
+                    time_str, self->sender->srv_user->nick, self->content);
             break;
         case SRN_MESSAGE_TYPE_ACTION:
             msg_str = g_strdup_printf("[%s] * %s %s",
-                    time_str, self->user->srv_user->nick, self->content);
+                    time_str, self->sender->srv_user->nick, self->content);
             break;
         case SRN_MESSAGE_TYPE_MISC:
             msg_str = g_strdup_printf("[%s] = %s", time_str, self->content);
@@ -103,6 +113,8 @@ char* srn_message_to_string(SrnMessage *self){
             msg_str = g_strdup_printf("[%s] ! %s", time_str, self->content);
             break;
         case SRN_MESSAGE_TYPE_UNKNOWN:
+            msg_str = NULL;
+            break;
         default:
             g_warn_if_reached();
             msg_str = NULL;
@@ -115,11 +127,15 @@ char* srn_message_to_string(SrnMessage *self){
 }
 
 void srn_message_free(SrnMessage *self){
-    str_assign(&self->dname, NULL);
-    str_assign(&self->role, NULL);
     str_assign(&self->content, NULL);
-    str_assign(&self->dcontent, NULL);
     g_date_time_unref(self->time);
+
+    str_assign(&self->rendered_sender, NULL);
+    str_assign(&self->rendered_remark, NULL);
+    str_assign(&self->rendered_content, NULL);
+    str_assign(&self->rendered_short_time, NULL);
+    str_assign(&self->rendered_full_time, NULL);
     g_list_free_full(self->urls, g_free);
+
     g_free(self);
 }
