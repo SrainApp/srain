@@ -14,12 +14,19 @@ XXXX-XX-XX Version 1.0.0rc5
 
 - Added:
 
-   - Regular expression management using :ref:`commands-pattern` command
+   - Regular expression pattern management using :ref:`commands-pattern` command
+   - Add command :ref:`commands-filter` for filtering message via pattern
+   - Add command :ref:`commands-render` for rendering message via pattern
 
 - Changed:
 
    - Refactor detector module and rename it to render
    - Refactor filter module
+
+- Removed:
+
+   - Drop command :ref:`commands-rignore`
+   - Drop command :ref:`commands-relay`
 
 .. _version-latest:
 .. _version-1.0.0rc4:
