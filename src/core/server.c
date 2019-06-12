@@ -282,11 +282,11 @@ SrnRet srn_server_add_chat(SrnServer *srv, const char *name){
         if (RET_IS_OK(ret)){
             if (ret != SRN_OK) { // Has OK message
                 srn_chat_add_misc_message_fmt(chat,
-                       _("Chat autorun command: %1$s"), RET_MSG(ret));
+                       _("Autorun command: %1$s"), RET_MSG(ret));
             }
         } else {
             srn_chat_add_error_message_fmt(chat,
-                       _("Chat autorun command: %1$s"), RET_MSG(ret));
+                       _("Autorun command: %1$s"), RET_MSG(ret));
         }
     }
 

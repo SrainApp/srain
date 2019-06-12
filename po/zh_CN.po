@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 0.06.2\n"
 "Report-Msgid-Bugs-To: i@silverrainz.me\n"
-"POT-Creation-Date: 2019-06-11 19:52+0800\n"
+"POT-Creation-Date: 2019-06-12 13:29+0800\n"
 "PO-Revision-Date: 2016-12-18 01:44+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -206,6 +206,12 @@ msgstr "应用"
 msgid "At line %1$d: %2$s"
 msgstr "在第 %1$d 行：%2$s"
 
+#: ../src/core/app.c:316 ../src/core/app.c:320 ../src/core/server.c:285
+#: ../src/core/server.c:289
+#, c-format
+msgid "Autorun command: %1$s"
+msgstr "自动运行命令：%1$s"
+
 #: ../src/core/chat_command.c:1012
 #, fuzzy
 msgid "Available regex patterns:"
@@ -239,11 +245,6 @@ msgstr "频道密码"
 #: ../data/ui/join_panel.glade:62
 msgid "Channel:"
 msgstr "频道："
-
-#: ../src/core/server.c:285 ../src/core/server.c:289
-#, c-format
-msgid "Chat autorun command: %1$s"
-msgstr "无效的 autorun 命令：%1$s"
 
 #: ../src/sui/sui_prefs_dialog.c:165
 msgid "Configuration is reloaded"
@@ -873,11 +874,6 @@ msgstr "请选择一个证书"
 #: ../data/ui/config_panel.glade:166
 msgid "Server"
 msgstr "服务器："
-
-#: ../src/core/app.c:316 ../src/core/app.c:320
-#, c-format
-msgid "Server autorun command: %1$s"
-msgstr "无效的 autorun 命令：%1$s"
 
 #: ../src/core/app_irc_event.c:1056
 #, c-format

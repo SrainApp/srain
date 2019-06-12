@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 1.0.0rc4\n"
 "Report-Msgid-Bugs-To: i@silverrainz.me\n"
-"POT-Creation-Date: 2019-06-11 19:52+0800\n"
+"POT-Creation-Date: 2019-06-12 13:29+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -202,6 +202,12 @@ msgstr ""
 msgid "At line %1$d: %2$s"
 msgstr ""
 
+#: ../src/core/app.c:316 ../src/core/app.c:320 ../src/core/server.c:285
+#: ../src/core/server.c:289
+#, c-format
+msgid "Autorun command: %1$s"
+msgstr ""
+
 #: ../src/core/chat_command.c:1012
 msgid "Available regex patterns:"
 msgstr ""
@@ -233,11 +239,6 @@ msgstr ""
 
 #: ../data/ui/join_panel.glade:62
 msgid "Channel:"
-msgstr ""
-
-#: ../src/core/server.c:285 ../src/core/server.c:289
-#, c-format
-msgid "Chat autorun command: %1$s"
 msgstr ""
 
 #: ../src/sui/sui_prefs_dialog.c:165
@@ -865,11 +866,6 @@ msgstr ""
 
 #: ../data/ui/config_panel.glade:166
 msgid "Server"
-msgstr ""
-
-#: ../src/core/app.c:316 ../src/core/app.c:320
-#, c-format
-msgid "Server autorun command: %1$s"
 msgstr ""
 
 #: ../src/core/app_irc_event.c:1056
