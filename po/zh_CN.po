@@ -25,7 +25,7 @@ msgstr "已经忽略 %1$s "
 #: ../src/core/chat_command.c:619 ../src/core/app_ui_event.c:383
 #, c-format
 msgid "\"%1$s\" has unignored"
-msgstr "已经接触对 %1$s 的忽略"
+msgstr "已经解除对 %1$s 的忽略"
 
 #: ../src/core/chat_command.c:591
 #, c-format
