@@ -53,7 +53,7 @@ void srn_extra_data_free(SrnExtraData *self) {
     while (g_hash_table_iter_next(&iter, &key, &val)){
         GDestroyNotify func;
 
-        func = g_hash_table_lookup(self->data_table, key);
+        func = g_hash_table_lookup(self->destory_func_table, key);
         if (func) {
             func(val);
         }
