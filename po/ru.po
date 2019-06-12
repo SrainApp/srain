@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 0.06.4\n"
 "Report-Msgid-Bugs-To: i@silverrainz.me\n"
-"POT-Creation-Date: 2019-06-11 19:52+0800\n"
+"POT-Creation-Date: 2019-06-12 13:29+0800\n"
 "PO-Revision-Date: 2019-04-17 16:14+0300\n"
 "Last-Translator: Artem Polishchuk <ego.cordatus@gmail.com>\n"
 "Language-Team: \n"
@@ -208,6 +208,12 @@ msgstr "Приложения"
 msgid "At line %1$d: %2$s"
 msgstr "На линии %1$d: %2$s"
 
+#: ../src/core/app.c:316 ../src/core/app.c:320 ../src/core/server.c:285
+#: ../src/core/server.c:289
+#, c-format
+msgid "Autorun command: %1$s"
+msgstr "Команда автозапуска: %1$s"
+
 #: ../src/core/chat_command.c:1012
 msgid "Available regex patterns:"
 msgstr ""
@@ -243,11 +249,6 @@ msgstr "Канал"
 #: ../data/ui/join_panel.glade:62
 msgid "Channel:"
 msgstr "Канал:"
-
-#: ../src/core/server.c:285 ../src/core/server.c:289
-#, fuzzy, c-format
-msgid "Chat autorun command: %1$s"
-msgstr "Команда автозапуска чата: %1$s"
 
 #: ../src/sui/sui_prefs_dialog.c:165
 msgid "Configuration is reloaded"
@@ -888,11 +889,6 @@ msgstr ""
 msgid "Server"
 msgstr "Сервер"
 
-#: ../src/core/app.c:316 ../src/core/app.c:320
-#, c-format
-msgid "Server autorun command: %1$s"
-msgstr "Команда автозапуска сервера: %1$s"
-
 #: ../src/core/app_irc_event.c:1056
 #, c-format
 msgid "Server capabilities: %1$s"
@@ -1218,27 +1214,3 @@ msgstr "список серверов[%1$d] не имеет имени"
 #, c-format
 msgid "user \"%1$s\" not found"
 msgstr "пользователь \"%1$s\" не найден"
-
-#~ msgid "\"%1$s\" already exists in %2$s 's regex list"
-#~ msgstr "\"%1$s\" уже есть в %2$s списке регулярных выражений"
-
-#~ msgid "\"%1$s\" already exists in %2$s 's relaybot list"
-#~ msgstr "\"%1$s\" уже существует в %2$s списке бота-ретранслятора"
-
-#~ msgid "\"%1$s\" has added to %2$s 's regex list"
-#~ msgstr "\"%1$s\" добавлен в %2$s список регулярных выражений"
-
-#~ msgid "\"%1$s\" has added to %2$s 's relaybot list"
-#~ msgstr "\"%1$s\" добавлен в %2$s список бота-ретранслятора"
-
-#~ msgid "\"%1$s\" is removed from %2$s 's ignore list"
-#~ msgstr "\"%1$s\" удалён из %2$s черного списка"
-
-#~ msgid "\"%1$s\" is removed from %2$s 's relaybot list"
-#~ msgstr "\"%1$s\" удалён из %2$s списка бота-ретранслятора"
-
-#~ msgid "\"%1$s\" not found in %2$s 's ignore list"
-#~ msgstr "\"%1$s\" не найден в %2$s черном списке"
-
-#~ msgid "\"%1$s\" not found in %2$s 's relaybot list"
-#~ msgstr "\"%1$s\" не найден в %2$s списке бота-ретранслятора"

@@ -1198,27 +1198,3 @@ msgstr "server_list 中的第 %1$d 个服务器没有名字"
 #, c-format
 msgid "user \"%1$s\" not found"
 msgstr "用户文件 %1$s 未找到"
-
-#~ msgid "\"%1$s\" already exists in %2$s 's regex list"
-#~ msgstr "\"%1$s\" 已存在于 %2$s 的正则屏蔽列表中"
-
-#~ msgid "\"%1$s\" already exists in %2$s 's relaybot list"
-#~ msgstr "\"%1$s\" 已存在于 %2$s 的中继机器人列表中"
-
-#~ msgid "\"%1$s\" has added to %2$s 's regex list"
-#~ msgstr "\"%1$s\" 已加入 %2$s 的正则屏蔽列表"
-
-#~ msgid "\"%1$s\" has added to %2$s 's relaybot list"
-#~ msgstr "\"%1$s\" 已加入到 %2$s 的中继机器人列表"
-
-#~ msgid "\"%1$s\" is removed from %2$s 's ignore list"
-#~ msgstr "\"%1$s\" 已从 %2$s 的屏蔽列表中移除"
-
-#~ msgid "\"%1$s\" is removed from %2$s 's relaybot list"
-#~ msgstr "已从 %2$s 的中继机器人列表中移除 \"%1$s\""
-
-#~ msgid "\"%1$s\" not found in %2$s 's ignore list"
-#~ msgstr "无法在 %2$s 的屏蔽列表中找到 \"%1$s\""
-
-#~ msgid "\"%1$s\" not found in %2$s 's relaybot list"
-#~ msgstr "无法在 %2$s 的转发机器人列表中找到 \"%1$s\" "
