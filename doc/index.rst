@@ -3,6 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+===================
 Srain Documentation
 ===================
 
@@ -20,10 +21,13 @@ If you found any mistake, feel free to file issue or pull request.
 
 .. _GitHub: https://github.com/SrainApp/srain/tree/master/doc
 
+All pages
+=========
+
 .. toctree::
-    :caption: All pages:
     :titlesonly:
 
+    Introduction <intro>
     start
     install
     commands
@@ -35,9 +39,7 @@ If you found any mistake, feel free to file issue or pull request.
     support
     resources
 
-
 Indices and Tables
 ==================
 
-* :ref:`genindex`
 * :ref:`search`

@@ -2,7 +2,7 @@
 Type=Application
 Name=Srain
 GenericName=Srain IRC client
-Comment=Modern, beautiful IRC client written in GTK+ 3.
+Comment=Modern IRC client written in GTK.
 TryExec=srain
 Exec=srain %u
 Icon=im.srain.Srain
