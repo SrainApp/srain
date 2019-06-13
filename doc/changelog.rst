@@ -22,6 +22,7 @@ XXXX-XX-XX Version 1.0.0rc5
 
    - Refactor detector module and rename it to render
    - Refactor filter module
+   - Change project description
 
 - Removed:
 
