@@ -1,39 +1,56 @@
-=================
-Srain |ci-status|
-=================
+=====
+Srain
+=====
+
+|ci-status| |channel|
 
 .. |ci-status| image:: https://travis-ci.org/SrainApp/srain.svg?branch=master
-    :target: https://travis-ci.org/SrainApp/srain
+   :target: https://travis-ci.org/SrainApp/srain
 
-Modern, beautiful IRC client written in GTK+ 3.
+.. |channel| image:: https://img.shields.io/badge/channel-%23srain-brightgreen.svg
+   :target: ircs://chat.freenode.net/#srain
 
-`Home`_ | `Documentation`_ | `Download`_ | `Source code`_
+Modern IRC client written in GTK.
+
+`Home`_ | `Documentation`_ | `Source code`_
 
 .. _Home: https://srain.im
 .. _Documentation: https://doc.srain.im
-.. _Download: https://github.com/SrainApp/srain/releases
 .. _Source code: https://github.com/SrainApp/srain
+
+Packaging Status
+================
+
+|pkgstat|
+
+.. |pkgstat| image:: https://repology.org/badge/vertical-allrepos/srain.svg
+   :target: https://repology.org/project/srain/versions
 
 Features
 ========
 
 - Fully open source
 - RFC {1459,2812} compatible
-- Act like modern IM clients
+- Partial `IRCv3`_ support
+- Multi-platform support (Linux, Windows and macOS)
+- Act like modern IM client
 
+  - Graphical user interface
   - Convenient connection panel
   - Interactive channel search
-  - Message forward
-  - Preview image from URL
-  - Upload images directly
+  - Forward message in one click
+  - URL preview
+  - Desktop notificaion
+  - Special optimization for bridge/relay bot
 
-- Act like traditional IRC clients
+- Act like geek IRC client
 
   - Anything can be done via commands
-  - Configurable and extensible
+  - Fine-grained configuration with hot update support
+  - Regex based message render and filter mechanisms
+  - IPC based plugin system (TODO)
 
-    - Fine-grained Configuration
-    - Python plugins
+.. _IRCv3: https://ircv3.net/
 
 Need Help?
 ==========
