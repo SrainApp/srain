@@ -5,7 +5,7 @@
   <metadata_license>FSFAP</metadata_license>
   <project_license>GPL-3.0</project_license>
   <name>Srain</name>
-  <summary>Modern, beautiful IRC client written in GTK+ 3</summary>
+  <summary>Modern IRC client written in GTK.</summary>
 
   <keywords>
     <keyword>srain</keyword>
@@ -15,7 +15,7 @@
 
   <description>
     <p>
-      Modern, beautiful IRC client written in GTK+ 3.
+      Modern IRC client written in GTK.
     </p>
   </description>
 
