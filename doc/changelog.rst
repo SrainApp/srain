@@ -7,9 +7,15 @@ Change Log
     :depth: 1
     :backlinks: none
 
+.. _version-1.0.0:
+
+XXXX-XX-XX Version 1.0.0
+========================
+
+.. _version-latest:
 .. _version-1.0.0rc5:
 
-XXXX-XX-XX Version 1.0.0rc5
+2019-06-14 Version 1.0.0rc5
 ===========================
 
 - Added:
@@ -29,7 +35,6 @@ XXXX-XX-XX Version 1.0.0rc5
    - Drop command :ref:`commands-rignore`
    - Drop command :ref:`commands-relay`
 
-.. _version-latest:
 .. _version-1.0.0rc4:
 
 2019-05-13 Version 1.0.0rc4

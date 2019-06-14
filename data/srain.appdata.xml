@@ -11,6 +11,7 @@
     <keyword>srain</keyword>
     <keyword>irc</keyword>
     <keyword>chat</keyword>
+    <keyword>gtk</keyword>
   </keywords>
 
   <description>
@@ -62,6 +63,31 @@
   </content_rating>
 
   <releases>
+      <release version="1.0.0rc5" date="2019-06-14">
+          <url>
+              https://doc.srain.im/en/latest/changelog.html#version-1-0-0rc5
+          </url>
+      </release>
+      <release version="1.0.0rc4" date="2019-05-13">
+          <url>
+              https://doc.srain.im/en/latest/changelog.html#version-1-0-0rc4
+          </url>
+      </release>
+      <release version="1.0.0rc3" date="2019-04-14">
+          <url>
+              https://doc.srain.im/en/latest/changelog.html#version-1-0-0rc3
+          </url>
+      </release>
+      <release version="1.0.0rc2" date="2019-01-24">
+          <url>
+              https://doc.srain.im/en/latest/changelog.html#version-1-0-0rc2
+          </url>
+      </release>
+      <release version="1.0.0rc1" date="2018-09-10">
+          <url>
+              https://doc.srain.im/en/latest/changelog.html#version-1-0-0rc1
+          </url>
+      </release>
     <release version="0.06.4" date="2018-02-28">
       <description>
         <p>Changed:</p>
