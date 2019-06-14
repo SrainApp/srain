@@ -60,7 +60,7 @@ SrnMarkupRenderer *srn_markup_renderer_new(void) {
 }
 
 void srn_markup_renderer_free(SrnMarkupRenderer *self) {
-    g_warn_if_fail(self->is_parsing);
+    g_warn_if_fail(!self->is_parsing);
     g_warn_if_fail(!self->str);
     g_warn_if_fail(!self->user_data);
     g_free(self);
