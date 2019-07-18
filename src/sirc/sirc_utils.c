@@ -72,6 +72,7 @@ bool sirc_target_is_servername(SircSession *sirc, const char *target){
         if (err){
             ERR_FR("g_regex_new() failed, pattern: %s, err: %s",
                     pattern, err->message);
+            g_error_free(err);
             return FALSE;
         }
     }
@@ -119,6 +120,7 @@ bool sirc_target_is_channel(SircSession *sirc, const char *target){
         if (err){
             ERR_FR("g_regex_new() failed, pattern: %s, err: %s",
                     pattern, err->message);
+            g_error_free(err);
             return FALSE;
         }
     }

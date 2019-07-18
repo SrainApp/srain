@@ -179,6 +179,7 @@ static char *strip_markup_tag(const char *markup){
     g_markup_parse_context_parse(ctx, markup, -1, &err);
     if (err){
         ERR_FR("%s", err->message);
+        g_error_free(err);
     }
 
     g_markup_parse_context_parse(ctx, "</markup>", -1, NULL);

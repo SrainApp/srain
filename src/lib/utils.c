@@ -99,5 +99,6 @@ void str_transcoding(char **str, const char *to, const char *from, const char *f
     }
     if (err) {
         WARN_FR("Failed to convert line from %s to %s: %s", from, to, err->message);
+        g_error_free(err);
     }
 }
