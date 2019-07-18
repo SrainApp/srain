@@ -190,8 +190,9 @@ static void on_recv_ready(GObject *obj, GAsyncResult *res, gpointer user_data){
     err = NULL;
     in = G_INPUT_STREAM(obj);
     size = g_input_stream_read_finish(in, res, &err);;
-    if (err != NULL){
+    if (err){
         on_disconnect(sirc, err->message);
+        g_error_free(err);
         return;
     }
     if (size == 0){
@@ -274,9 +275,10 @@ static void on_handshake_ready(GObject *obj, GAsyncResult *res, gpointer user_da
 
     err = NULL;
     g_tls_connection_handshake_finish(tls_conn, res, &err);
-    if (err != NULL){
+    if (err){
         g_object_unref(tls_conn);
         on_connect_fail(sirc, err->message);
+        g_error_free(err);
         return;
     }
     LOG_FR("TLS handshake successed");
@@ -295,15 +297,17 @@ static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data
     sirc = user_data;
     err = NULL;
     conn = g_socket_client_connect_finish(client, res, &err);
-    if (err != NULL){
+    if (err){
         on_connect_fail(sirc, err->message);
+        g_error_free(err);
         return;
     }
 
     err = NULL;
     addr = g_socket_connection_get_remote_address(conn, &err);
-    if (err != NULL){
+    if (err){
         ERR_FR("Get remote address : %d, %s", err->code, err->message);
+        g_error_free(err);
     } else {
         // DBG_FR("Remote address: %");
         // TODO: show remote address
@@ -316,8 +320,9 @@ static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data
          err = NULL;
          tls_conn = g_tls_client_connection_new(G_IO_STREAM(conn), NULL, &err);
          g_object_unref(conn);
-         if (err != NULL){
+         if (err){
              on_connect_fail(sirc, err->message);
+             g_error_free(err);
              return;
          }
 
