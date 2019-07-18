@@ -63,7 +63,10 @@ SrnRet srn_pattern_set_add(SrnPatternSet *self, const char *name,
     err = NULL;
     regex = g_regex_new(pattern, 0, 0, &err);
     if (err) {
-        return RET_ERR("%s", err->message);
+        SrnRet ret;
+        ret = RET_ERR("%s", err->message);
+        g_error_free(err);
+        return ret;
     }
     g_hash_table_insert(self->table, g_strdup(name), regex);
 
