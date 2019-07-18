@@ -143,6 +143,7 @@ SrnRet sui_common_open_url(const char *url){
     if (err) {
         ret = RET_ERR(_("Failed to open URL \"%1$s\": %2$s"), url, err->message);
         sui_message_box(_("Error"), RET_MSG(ret));
+        g_error_free(err);
     } else {
         ret = SRN_OK;
     }

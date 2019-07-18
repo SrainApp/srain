@@ -529,6 +529,7 @@ static void session_send_ready(GObject *object, GAsyncResult *result,
     input_stream = soup_session_send_finish(session, result, &err);
     if (err) {
         preview_error_text(self, err->message);
+        g_error_free(err);
         goto ERR;
     }
 
@@ -591,6 +592,7 @@ static void buffered_stream_fill_ready(GObject *object, GAsyncResult *result,
     g_buffered_input_stream_fill_finish(buffered_stream, result, &err);
     if (err) {
         preview_error_text(self, err->message);
+        g_error_free(err);
         goto FIN;
     }
 
@@ -623,6 +625,7 @@ static void buffered_stream_fill_ready(GObject *object, GAsyncResult *result,
                     gdk_pixbuf_loader_close(loader, NULL);
                     g_object_unref(loader);
                     preview_error_text(self, err->message);
+                    g_error_free(err);
                     goto FIN;
                 }
                 pixbuf = gdk_pixbuf_loader_get_pixbuf(loader);
