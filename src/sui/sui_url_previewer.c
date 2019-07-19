@@ -49,6 +49,7 @@ struct _SuiUrlPreviewer {
     GtkBox parent;
 
     char *url;
+    char *mime_type;
     SuiUrlContentType content_type;
 
     bool previewed;
@@ -82,6 +83,11 @@ static SoupSession *default_session = NULL;
 static void sui_url_previewer_set_url(SuiUrlPreviewer *self, const char *url);
 static void sui_url_previewer_set_content_type(SuiUrlPreviewer *self,
         SuiUrlContentType content_type);
+// FIXME: This is confused with `sui_url_previewer_set_content_type`.
+// Used as an ad-hoc method to tell pixbuf loader more information about image
+// data.
+static void sui_url_previewer_set_mime_type(SuiUrlPreviewer *self,
+        const char *mime_type);
 
 static void cancel_preview(SuiUrlPreviewer *self);
 static void preview_text(SuiUrlPreviewer *self, const char *text);
@@ -197,6 +203,7 @@ static void sui_url_previewer_finalize(GObject *object){
 
     self = SUI_URL_PREVIEWER(object);
     str_assign(&self->url, NULL);
+    str_assign(&self->mime_type, NULL);
     if (self->uri) {
         soup_uri_free(self->uri);
     }
@@ -376,6 +383,12 @@ static void sui_url_previewer_set_content_type(SuiUrlPreviewer *self,
 
 }
 
+
+static void sui_url_previewer_set_mime_type(SuiUrlPreviewer *self,
+        const char *mime_type) {
+    str_assign(&self->mime_type, mime_type);
+}
+
 static void cancel_preview(SuiUrlPreviewer *self){
     if (self->previewed){
         return;
@@ -542,7 +555,13 @@ static void session_send_ready(GObject *object, GAsyncResult *result,
     }
 
     content_type = soup_message_headers_get_content_type(headers, NULL);
-    if (g_str_has_prefix(content_type, "image/")){
+    if (g_str_has_prefix(content_type, "image/")) {
+        char **strv;
+
+        if ((strv = g_strsplit(content_type, ";", 1))) {
+            sui_url_previewer_set_mime_type(self, strv[0]);
+            g_strfreev(strv);
+        }
         sui_url_previewer_set_content_type(self, SUI_URL_CONTENT_TYPE_IMAGE);
     } else {
         sui_url_previewer_set_content_type(self, SUI_URL_CONTENT_TYPE_UNSUPPORTED);
@@ -617,7 +636,20 @@ static void buffered_stream_fill_ready(GObject *object, GAsyncResult *result,
                 GdkPixbuf *pixbuf;
                 GdkPixbufLoader *loader;
 
-                loader = gdk_pixbuf_loader_new();
+                if (self->mime_type) {
+                    GError *err;
+
+                    err = NULL;
+                    loader = gdk_pixbuf_loader_new_with_mime_type(self->mime_type, &err);
+                    if (err) {
+                        ERR_FR("Failed to create pixbuf loader: %s", err->message);
+                        g_error_free(err);
+                        // loader never be NULL even error occurred, so continue
+                    }
+                } else {
+                    loader = gdk_pixbuf_loader_new();
+                }
+
                 err = NULL;
                 gdk_pixbuf_loader_write(loader, buf, len, &err);
                 if (err) {
