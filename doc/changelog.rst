@@ -44,7 +44,7 @@ XXXX-XX-XX Version 1.0.0
 
    - New dependency ``libsecret``
    - Add password storage support
-   - Add command line options "--no-auto", used to require Srain not to
+   - Add command line options ``--no-auto``, used to require Srain not to
      automatically connect to servers
    - Add russian translation, thanks to @tim77
    - Allow user send slash(``/``) prefixed message
