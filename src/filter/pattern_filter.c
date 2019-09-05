@@ -61,6 +61,7 @@ void finalize(void) {
 }
 
 static bool filter(const SrnMessage *msg) {
+    bool drop;
     char *raw_content;
     GList *patterns;
     GList *lst;
@@ -74,10 +75,11 @@ static bool filter(const SrnMessage *msg) {
     ret = srn_markup_renderer_render(markup_renderer,
             msg->rendered_content, &raw_content, NULL);
     if (!RET_IS_OK(ret)){
-        // ret = RET_ERR(_("Failed to render markup text: %1$s"), RET_MSG(ret));
-        // return TRUE;
+        ERR_FR("Failed to render markup text: %1$s", RET_MSG(ret));
+        return TRUE;
     }
 
+    drop = FALSE;
     patterns = get_patterns(msg);
     lst = patterns;
     while (lst) {
@@ -86,18 +88,17 @@ static bool filter(const SrnMessage *msg) {
 
         pattern = lst->data;
         regex = srn_pattern_set_get(pattern_set, pattern);
-        if (regex) {
-             if (g_regex_match(regex, raw_content, 0, NULL)) {
-                 return FALSE;
-             }
+        if (regex && g_regex_match(regex, raw_content, 0, NULL)) {
+            drop = TRUE;
+            break;
         }
         lst = g_list_next(lst);
     }
 
     g_list_free(patterns);
+    g_free(raw_content);
 
-    // TODO
-    return TRUE;
+    return !drop;
 }
 
 /**
