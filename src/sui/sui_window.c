@@ -412,6 +412,10 @@ SuiBuffer* sui_window_get_cur_buffer(SuiWindow *self){
     return buf;
 }
 
+void sui_window_set_cur_buffer(SuiWindow *self, SuiBuffer *buf){
+    gtk_stack_set_visible_child(self->buffer_stack, GTK_WIDGET(buf));
+}
+
 SuiBuffer* sui_window_get_buffer(SuiWindow *self,
         const char *name, const char *remark){
     SuiBuffer *buf;
