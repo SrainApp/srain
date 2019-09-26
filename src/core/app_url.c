@@ -190,13 +190,28 @@ static SrnRet join_comma_separated_chans(SrnServer *srv, const char *comma_chans
 
     do {
         if (!str_is_empty(chan)){
+            SrnChat *chat;
+
             DBG_FR("Get channnel: %s", chan);
             if (!sirc_target_is_channel(srv->irc, chan)){
                 char *chan2 = g_strdup_printf("#%s", chan);
+                chat = srn_server_get_chat(srv, chan2);
+                // NOTE: We always send JOIN command regardless of whether
+                // chat already exists, because the existence of chat does not
+                // mean that we have joined the channel.
+                // For example: when we are kicked from the channel,
+                // we are no longer the channel but the corresponding chat
+                // still exists
                 ret = sirc_cmd_join(srv->irc, chan2, NULL);
                 g_free(chan2);
             } else {
+                // NOTE: Always send JOIN command, see aboved
                 ret = sirc_cmd_join(srv->irc, chan, NULL);
+                chat = srn_server_get_chat(srv, chan);
+            }
+            if (chat) {
+                // Activate buffer if chat already exists
+                sui_activate_buffer(chat->ui);
             }
             if (!(RET_IS_OK(ret))){
                 break;
