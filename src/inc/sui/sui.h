@@ -63,6 +63,7 @@ void sui_free_window(SuiWindow *win);
 /* SuiBuffer */
 SuiBuffer* sui_new_buffer(void *ctx, SuiBufferEvents *events, SuiBufferConfig *cfg);
 void sui_free_buffer(SuiBuffer *buf);
+void sui_activate_buffer(SuiBuffer *buf);
 
 void* sui_buffer_get_ctx(SuiBuffer *buf);
 void sui_buffer_set_config(SuiBuffer *buf, SuiBufferConfig *cfg);

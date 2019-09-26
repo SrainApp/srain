@@ -104,6 +104,7 @@ SuiBuffer* sui_new_buffer(void *ctx, SuiBufferEvents *events, SuiBufferConfig *c
         default:
             g_return_val_if_reached(NULL);
     }
+    // FIXME: Wrong usage of sui_common_get_cur_window()
     sui_window_add_buffer(sui_common_get_cur_window(), buf);
 
     return buf;
@@ -111,7 +112,13 @@ SuiBuffer* sui_new_buffer(void *ctx, SuiBufferEvents *events, SuiBufferConfig *c
 
 void sui_free_buffer(SuiBuffer *buf){
     g_return_if_fail(SUI_IS_BUFFER(buf));
+    // FIXME: Wrong usage of sui_common_get_cur_window()
     sui_window_rm_buffer(sui_common_get_cur_window(), buf);
+}
+
+void sui_activate_buffer(SuiBuffer *buf){
+    g_return_if_fail(SUI_IS_BUFFER(buf));
+    sui_window_set_cur_buffer(sui_common_get_cur_window(), buf);
 }
 
 void sui_buffer_add_message(SuiBuffer *buf, SuiMessage *msg){

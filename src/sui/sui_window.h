@@ -42,6 +42,7 @@ void sui_window_add_buffer(SuiWindow *self, SuiBuffer *buffer);
 void sui_window_rm_buffer(SuiWindow *self, SuiBuffer *buffer);
 SuiBuffer *sui_window_get_buffer(SuiWindow *self, const char *name, const char *remark);
 SuiBuffer *sui_window_get_cur_buffer(SuiWindow *self);
+void sui_window_set_cur_buffer(SuiWindow *self, SuiBuffer *buf);
 SuiSideBar* sui_window_get_side_bar(SuiWindow *self);
 
 int sui_window_is_active(SuiWindow *self);
