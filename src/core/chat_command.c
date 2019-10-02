@@ -95,6 +95,7 @@ SrnRet srn_chat_run_command(SrnChat *chat, const char *cmd){
  */
 GList* srn_chat_complete_command(SrnChat *chat, const char *cmd){
     int i;
+    char *lower_cmd;
     GList *lst;
 
     if (!g_str_has_prefix(cmd, "/")){
@@ -102,18 +103,20 @@ GList* srn_chat_complete_command(SrnChat *chat, const char *cmd){
     }
 
     i = 0;
+    lower_cmd = g_utf8_strdown(cmd, -1);
     lst = NULL;
     while (cmd_bindings[i].name){
-        if (g_str_has_prefix(cmd_bindings[i].name, cmd)){
+        if (g_str_has_prefix(cmd_bindings[i].name, lower_cmd)){
             lst = g_list_append(lst, g_strdup(cmd_bindings[i].name));
         }
         for (int j = 0; cmd_bindings[i].alias[j]; j++) {
-            if (g_str_has_prefix(cmd_bindings[i].alias[j], cmd)){
+            if (g_str_has_prefix(cmd_bindings[i].alias[j], lower_cmd)){
                 lst = g_list_append(lst, g_strdup(cmd_bindings[i].alias[j]));
             }
         }
         i++;
     }
+    g_free(lower_cmd);
 
     return lst;
 }
