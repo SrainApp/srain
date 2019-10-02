@@ -22,6 +22,13 @@
 #include "srain.h"
 #include "ret.h"
 
+typedef int SrnCommandFlags;
+typedef struct _SrnCommand SrnCommand;
+typedef struct _SrnCommandBinding SrnCommandBinding;
+typedef struct _SrnCommandOption SrnCommandOption;
+typedef struct _SrnCommandContext SrnCommandContext;
+typedef SrnRet (SrnCommandCallback) (SrnCommand *cmd, void *user_data);
+
 #define SRN_COMMAND_MAX_OPTS        20
 #define SRN_COMMAND_MAX_ARGS        20
 #define SRN_COMMAND_MAX_SUBCMD      10
@@ -38,36 +45,29 @@
     .subcmd = {NULL},               \
     .argc = 0,                      \
     .opt = {SRN_COMMAND_EMPTY_OPT}, \
-    .flag = 0,                      \
+    .flags = 0,                     \
     .cb = NULL,                     \
     }
-
-typedef int SrnCommandFlag;
-typedef struct _SrnCommand SrnCommand;
-typedef struct _SrnCommandBind SrnCommandBind;
-typedef struct _SrnCommandOption SrnCommandOption;
-typedef struct _SrnCommandContext SrnCommandContext;
-typedef SrnRet (SrnCommandCallback) (SrnCommand *cmd, void *user_data);
 
 struct _SrnCommandOption {
     const char *key;
     const char *val;
 };
 
-struct _SrnCommandBind {
+struct _SrnCommandBinding {
     const char *name;
     const char *subcmd[SRN_COMMAND_MAX_SUBCMD];
     const int argc;
     const SrnCommandOption opt[SRN_COMMAND_MAX_OPTS];
-    const SrnCommandFlag flag;
+    const SrnCommandFlags flags;
     SrnCommandCallback *cb;
 };
 
-struct _SrnCommandContext {
-    SrnCommandBind *binds;
-};
+SrnCommandContext *srn_command_context_new(void);
+void srn_command_context_free(SrnCommandContext *self);
+SrnRet srn_command_context_bind(SrnCommandContext *self, const SrnCommandBinding *bindings);
+SrnRet srn_command_context_proc(SrnCommandContext *self, const char *rawcmd, void *user_data);
 
-SrnRet srn_command_proc(SrnCommandContext *ctx, const char *rawcmd, void *user_data);
 const char *srn_command_get_subcmd(SrnCommand *cmd);
 const char *srn_command_get_arg(SrnCommand *cmd, unsigned index);
 bool srn_command_get_opt(SrnCommand *cmd, const char *opt_key, const char **opt_val);
