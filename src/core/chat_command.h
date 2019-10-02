@@ -120,6 +120,7 @@ static SrnCommandBinding cmd_bindings[] = {
     },
     {
         .name = "/query",
+        .alias = { "/q", NULL},
         .argc = 1, // <nick>
         .opt = { SRN_COMMAND_EMPTY_OPT },
         .cb = on_command_query,
@@ -133,12 +134,14 @@ static SrnCommandBinding cmd_bindings[] = {
     },
     {
         .name = "/join",
+        .alias = { "/j", NULL},
         .argc = 1, // <channel>
         .opt = { SRN_COMMAND_EMPTY_OPT },
         .cb = on_command_join,
     },
     {
         .name = "/part",
+        .alias = { "/leave", NULL},
         .argc = 2, // [channel] [reason]
         .opt = { SRN_COMMAND_EMPTY_OPT },
         .flags = SRN_COMMAND_FLAG_OMIT_ARG,
@@ -163,6 +166,7 @@ static SrnCommandBinding cmd_bindings[] = {
     },
     {
         .name = "/msg",
+        .alias = { "/m", NULL},
         .argc = 2, // <target> <message>
         .opt = { SRN_COMMAND_EMPTY_OPT },
         .cb = on_command_msg,
