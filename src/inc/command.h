@@ -32,6 +32,7 @@ typedef SrnRet (SrnCommandCallback) (SrnCommand *cmd, void *user_data);
 #define SRN_COMMAND_MAX_OPTS        20
 #define SRN_COMMAND_MAX_ARGS        20
 #define SRN_COMMAND_MAX_SUBCMD      10
+#define SRN_COMMAND_MAX_ALIAS       10
 
 #define SRN_COMMAND_OPT_PREFIX      '-'
 #define SRN_COMMAND_OPT_NO_VAL      NULL
@@ -56,6 +57,7 @@ struct _SrnCommandOption {
 
 struct _SrnCommandBinding {
     const char *name;
+    const char *alias[SRN_COMMAND_MAX_ALIAS];
     const char *subcmd[SRN_COMMAND_MAX_SUBCMD];
     const int argc;
     const SrnCommandOption opt[SRN_COMMAND_MAX_OPTS];

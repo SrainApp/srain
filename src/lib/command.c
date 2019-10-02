@@ -88,10 +88,22 @@ SrnRet srn_command_context_bind(SrnCommandContext *self,
             g_str_hash, g_str_equal, g_free, NULL);
 
     while (bindings && bindings->name) {
+        // Binding with name
+        DBG_FR("Binding command name %s ...", bindings->name);
         if (!g_hash_table_insert(self->binding_table,
                     g_utf8_strdown(bindings->name, -1), (gpointer)bindings)) {
             ERR_FR("Command %s is already binded", bindings->name);
         }
+        // Binding with alias
+        for (int i = 0; bindings->alias[i]; i++) {
+            DBG_FR("Binding command alias %s ...", bindings->alias[i]);
+            if (!g_hash_table_insert(self->binding_table,
+                        g_utf8_strdown(bindings->alias[i], -1),
+                        (gpointer)bindings)) {
+                ERR_FR("Command %s is already binded", bindings->alias[i]);
+            }
+        }
+
         bindings++;
     }
 
