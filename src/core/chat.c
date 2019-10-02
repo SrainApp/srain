@@ -32,8 +32,6 @@
 
 #include "sirc/sirc.h"
 
-extern SrnCommandBind cmd_binds[];
-
 static void add_message(SrnChat *self, SrnMessage *msg);
 
 SrnChat* srn_chat_new(SrnServer *srv, const char *name, SrnChatType type,

@@ -35,6 +35,7 @@
 #include "pattern_set.h"
 
 #include "app_event.h"
+#include "chat_command.h"
 
 /* Only one SrnApplication instance in one application */
 static SrnApplication *app_instance = NULL;
@@ -99,6 +100,9 @@ SrnApplication* srn_application_new(void){
             app, &app->ui_app_events, cfg->ui);
 
     app->pattern_set = srn_pattern_set_new();
+
+    app->cmd_ctx = srn_command_context_new();
+    srn_command_context_bind(app->cmd_ctx, cmd_bindings);
 
     app_instance = app;
 

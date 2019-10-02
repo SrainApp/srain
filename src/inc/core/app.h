@@ -27,6 +27,7 @@
 #include "version.h"
 #include "log.h"
 #include "pattern_set.h"
+#include "command.h"
 
 #ifndef __IN_CORE_H
 	#error This file should not be included directly, include just core.h
@@ -58,6 +59,7 @@ struct _SrnApplication {
     GList *srv_cfg_list;
 
     SrnPatternSet *pattern_set;
+    SrnCommandContext *cmd_ctx;
 };
 
 struct _SrnApplicationConfig {

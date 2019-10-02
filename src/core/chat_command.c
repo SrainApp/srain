@@ -43,260 +43,17 @@
 #include "filter/filter.h"
 #include "utils.h"
 #include "pattern_set.h"
+#include "chat_command.h"
 
-typedef struct _CommandContext {
+typedef struct _SrnChatCommandContext {
     SrnApplication *app;
     SrnServer *srv;
     SrnChat *chat;
-} CommandContext;
+} SrnChatCommandContext;
 
-static SrnApplication* ctx_get_app(CommandContext *ctx);
-static SrnServer* ctx_get_server(CommandContext *ctx);
-static SrnChat* ctx_get_chat(CommandContext *ctx);
-
-static SrnRet on_command_reload(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_context(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_server(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_connect(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_ignore(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_unignore(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_filter(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_unfilter(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_query(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_unquery(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_join(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_part(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_quit(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_topic(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_msg(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_me(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_nick(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_whois(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_invite(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_kick(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_mode(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_ctcp(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_away(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_pattern(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_render(SrnCommand *cmd, void *user_data);
-static SrnRet on_command_unrender(SrnCommand *cmd, void *user_data);
-
-SrnCommandBind cmd_binds[] = {
-    {
-        .name = "/reload",
-        .argc = 0,
-        .cb = on_command_reload,
-    },
-    {
-        .name = "/context",
-        .argc = 2, // <server> [chat]
-        .flag = SRN_COMMAND_FLAG_OMIT_ARG,
-        .cb = on_command_context,
-    },
-    {
-        .name = "/server",
-        .subcmd = {"connect", "disconnect", NULL},
-        .argc = 1, // <name>
-        .cb = on_command_server,
-    },
-    {
-        .name = "/connect",
-        .argc = 2, // <addr> [nick]
-        .opt = {
-            { .key = "-pwd",            .val = SRN_COMMAND_OPT_NO_DEFAULT },
-            { .key = "-user",           .val = SRN_COMMAND_OPT_NO_DEFAULT },
-            { .key = "-real",           .val = SRN_COMMAND_OPT_NO_DEFAULT },
-            { .key = "-encode",         .val = SRN_COMMAND_OPT_NO_DEFAULT },
-            { .key = "-tls",            .val = SRN_COMMAND_OPT_NO_VAL },
-            { .key = "-tls-noverify",   .val = SRN_COMMAND_OPT_NO_VAL },
-            SRN_COMMAND_EMPTY_OPT,
-        },
-        .flag = SRN_COMMAND_FLAG_OMIT_ARG,
-        .cb = on_command_connect,
-    },
-    {
-        .name = "/ignore",
-        .argc = 1, // <nick>
-        .opt = {
-            {.key = "-cur", .val = SRN_COMMAND_OPT_NO_VAL },
-            SRN_COMMAND_EMPTY_OPT,
-        },
-        .flag = 0,
-        .cb = on_command_ignore,
-    },
-    {
-        .name = "/unignore",
-        .argc = 1, // <nick>
-        .opt = {
-            {.key = "-cur", .val = SRN_COMMAND_OPT_NO_VAL },
-            SRN_COMMAND_EMPTY_OPT,
-        },
-        .flag = 0,
-        .cb = on_command_unignore,
-    },
-    {
-        .name = "/filter",
-        .argc = 1, // <pattern>
-        .opt = {
-            {.key = "-cur", .val = SRN_COMMAND_OPT_NO_VAL },
-            SRN_COMMAND_EMPTY_OPT,
-        },
-        .flag = 0,
-        .cb = on_command_filter,
-    },
-    {
-        .name = "/unfilter",
-        .argc = 1, // <pattern>
-        .opt = {
-            {.key = "-cur", .val = SRN_COMMAND_OPT_NO_VAL },
-            SRN_COMMAND_EMPTY_OPT,
-        },
-        .flag = 0,
-        .cb = on_command_unfilter,
-    },
-    {
-        .name = "/query",
-        .argc = 1, // <nick>
-        .opt = { SRN_COMMAND_EMPTY_OPT },
-        .flag = 0,
-        .cb = on_command_query,
-    },
-    {
-        .name = "/unquery",
-        .argc = 1, // [nick]
-        .opt = { SRN_COMMAND_EMPTY_OPT },
-        .flag = SRN_COMMAND_FLAG_OMIT_ARG,
-        .cb = on_command_unquery,
-    },
-    {
-        .name = "/join",
-        .argc = 1, // <channel>
-        .opt = { SRN_COMMAND_EMPTY_OPT },
-        .flag = 0,
-        .cb = on_command_join,
-    },
-    {
-        .name = "/part",
-        .argc = 2, // [channel] [reason]
-        .opt = { SRN_COMMAND_EMPTY_OPT },
-        .flag = SRN_COMMAND_FLAG_OMIT_ARG,
-        .cb = on_command_part,
-    },
-    {
-        .name = "/quit",
-        .argc = 1, // [reason]
-        .opt = { SRN_COMMAND_EMPTY_OPT },
-        .flag = SRN_COMMAND_FLAG_OMIT_ARG,
-        .cb = on_command_quit,
-    },
-    {
-        .name = "/topic",
-        .argc = 1, // [topic]
-        .opt = {
-            {.key = "-rm", .val = SRN_COMMAND_OPT_NO_VAL },
-            SRN_COMMAND_EMPTY_OPT,
-        },
-        .flag = SRN_COMMAND_FLAG_OMIT_ARG,
-        .cb = on_command_topic,
-    },
-    {
-        .name = "/msg",
-        .argc = 2, // <target> <message>
-        .opt = { SRN_COMMAND_EMPTY_OPT },
-        .flag = 0,
-        .cb = on_command_msg,
-    },
-    {
-        .name = "/me",
-        .argc = 1, // <message>
-        .opt = { SRN_COMMAND_EMPTY_OPT },
-        .flag = 0,
-        .cb = on_command_me,
-    },
-
-    {
-        .name = "/nick",
-        .argc = 1, // <new_nick>
-        .opt = { SRN_COMMAND_EMPTY_OPT },
-        .flag = 0,
-        .cb = on_command_nick,
-    },
-    {
-        .name = "/whois",
-        .argc = 1, // <nick>
-        .opt = { SRN_COMMAND_EMPTY_OPT },
-        .flag = 0,
-        .cb = on_command_whois,
-    },
-    {
-        .name = "/invite",
-        .argc = 2, // <nick> <channel>
-        .opt = { SRN_COMMAND_EMPTY_OPT },
-        .flag = SRN_COMMAND_FLAG_OMIT_ARG,
-        .cb = on_command_invite,
-    },
-    {
-        .name = "/kick",
-        .argc = 3, // <nick> <channel> <reason>
-        .opt = { SRN_COMMAND_EMPTY_OPT },
-        .flag = SRN_COMMAND_FLAG_OMIT_ARG,
-        .cb = on_command_kick,
-    },
-    {
-        .name = "/mode",
-        .argc = 2, // <target> <mode>
-        .opt = { SRN_COMMAND_EMPTY_OPT },
-        .flag = 0,
-        .cb = on_command_mode,
-    },
-    {
-        .name = "/ctcp",
-        .argc = 3, // <nick> <command> <msg>
-        .opt = { SRN_COMMAND_EMPTY_OPT },
-        .flag = SRN_COMMAND_FLAG_OMIT_ARG,
-        .cb = on_command_ctcp,
-    },
-    {
-        .name = "/away",
-        .argc = 1, // [msg]
-        .opt = { SRN_COMMAND_EMPTY_OPT },
-        .flag = SRN_COMMAND_FLAG_OMIT_ARG,
-        .cb = on_command_away,
-    },
-    {
-        .name = "/pattern",
-        .subcmd = {"add", "rm", "list", NULL},
-        .argc = 2, // <name> [pattern]
-        .opt = { SRN_COMMAND_EMPTY_OPT },
-        .flag = SRN_COMMAND_FLAG_OMIT_ARG,
-        .cb = on_command_pattern,
-    },
-    {
-        .name = "/render",
-        .argc = 2, // <nick> <pattern>
-        .opt = {
-            {.key = "-cur", .val = SRN_COMMAND_OPT_NO_VAL },
-            SRN_COMMAND_EMPTY_OPT,
-        },
-        .flag = 0,
-        .cb = on_command_render,
-    },
-    {
-        .name = "/unrender",
-        .argc = 2, // <nick> <pattern>
-        .opt = {
-            {.key = "-cur", .val = SRN_COMMAND_OPT_NO_VAL },
-            SRN_COMMAND_EMPTY_OPT,
-        },
-        .flag = 0,
-        .cb = on_command_unrender,
-    },
-    SRN_COMMAND_EMPTY,
-};
-
-static SrnCommandContext cmd_ctx = {
-    .binds = cmd_binds,
-};
+static SrnApplication* ctx_get_app(SrnChatCommandContext *cctx);
+static SrnServer* ctx_get_server(SrnChatCommandContext *cctx);
+static SrnChat* ctx_get_chat(SrnChatCommandContext *cctx);
 
 /*******************************************************************************
  * Exported functions
@@ -311,18 +68,19 @@ static SrnCommandContext cmd_ctx = {
  * @return SRN_OK or SRN_ERR or other error
  */
 SrnRet srn_chat_run_command(SrnChat *chat, const char *cmd){
-    CommandContext ctx;
+    SrnCommandContext *ctx;
+    SrnChatCommandContext cctx;
 
     g_return_val_if_fail(chat, SRN_ERR);
     g_return_val_if_fail(cmd, SRN_ERR);
 
-    ctx.app = srn_application_get_default();
-    ctx.srv = chat->srv;
-    ctx.chat = chat;
+    ctx = srn_application_get_default()->cmd_ctx;
+    cctx.app = srn_application_get_default();
+    cctx.srv = chat->srv;
+    cctx.chat = chat;
 
-    return srn_command_proc(&cmd_ctx, cmd, &ctx);
+    return srn_command_context_proc(ctx, cmd, &cctx);
 }
-
 
 /**
  * @brief Simplest commmand complete function
@@ -345,9 +103,9 @@ GList* srn_chat_complete_command(SrnChat *chat, const char *cmd){
 
     i = 0;
     lst = NULL;
-    while (cmd_binds[i].name){
-        if (g_str_has_prefix(cmd_binds[i].name, cmd)){
-            lst = g_list_append(lst, g_strdup(cmd_binds[i].name));
+    while (cmd_bindings[i].name){
+        if (g_str_has_prefix(cmd_bindings[i].name, cmd)){
+            lst = g_list_append(lst, g_strdup(cmd_bindings[i].name));
         }
         i++;
     }
@@ -359,7 +117,7 @@ GList* srn_chat_complete_command(SrnChat *chat, const char *cmd){
  * SrnCommand callbacks
  ******************************************************************************/
 
-static SrnRet on_command_reload(SrnCommand *cmd, void *user_data){
+SrnRet on_command_reload(SrnCommand *cmd, void *user_data){
     SrnApplication *app;
 
     app = ctx_get_app(user_data);
@@ -367,7 +125,7 @@ static SrnRet on_command_reload(SrnCommand *cmd, void *user_data){
     return srn_application_reload_config(app);
 }
 
-static SrnRet on_command_context(SrnCommand *cmd, void *user_data){
+SrnRet on_command_context(SrnCommand *cmd, void *user_data){
     const char *srv_name;
     const char *chat_name;
     SrnApplication *app;
@@ -401,7 +159,7 @@ static SrnRet on_command_context(SrnCommand *cmd, void *user_data){
             srv_name, chat_name);
 }
 
-static SrnRet on_command_server(SrnCommand *cmd, void *user_data){
+SrnRet on_command_server(SrnCommand *cmd, void *user_data){
     const char *subcmd;
     const char *name;
     SrnRet ret;
@@ -462,7 +220,7 @@ static SrnRet on_command_server(SrnCommand *cmd, void *user_data){
     return RET_ERR(_("Unknown sub command: %1$s"), subcmd);
 }
 
-static SrnRet on_command_connect(SrnCommand *cmd, void *user_data){
+SrnRet on_command_connect(SrnCommand *cmd, void *user_data){
     const char *name;
     const char *addr_str;
     const char *passwd;
@@ -564,7 +322,7 @@ FIN:
     return ret;
 }
 
-static SrnRet on_command_ignore(SrnCommand *cmd, void *user_data){
+SrnRet on_command_ignore(SrnCommand *cmd, void *user_data){
     const char *nick;
     SrnServer *srv;
     SrnChat *chat;
@@ -594,7 +352,7 @@ static SrnRet on_command_ignore(SrnCommand *cmd, void *user_data){
     return RET_OK(_("\"%1$s\" has ignored"), nick);
 }
 
-static SrnRet on_command_unignore(SrnCommand *cmd, void *user_data){
+SrnRet on_command_unignore(SrnCommand *cmd, void *user_data){
     const char *nick;
     SrnServer *srv;
     SrnChat *chat;
@@ -619,7 +377,7 @@ static SrnRet on_command_unignore(SrnCommand *cmd, void *user_data){
     return RET_OK(_("\"%1$s\" has unignored"), nick);
 }
 
-static SrnRet on_command_filter(SrnCommand *cmd, void *user_data){
+SrnRet on_command_filter(SrnCommand *cmd, void *user_data){
     const char *pattern;
     SrnRet ret;
     SrnChat *chat;
@@ -655,7 +413,7 @@ static SrnRet on_command_filter(SrnCommand *cmd, void *user_data){
             chat->name, pattern);
 }
 
-static SrnRet on_command_unfilter(SrnCommand *cmd, void *user_data){
+SrnRet on_command_unfilter(SrnCommand *cmd, void *user_data){
     const char *pattern;
     SrnRet ret;
     SrnChat *chat;
@@ -684,7 +442,7 @@ static SrnRet on_command_unfilter(SrnCommand *cmd, void *user_data){
             chat->name, pattern);
 }
 
-static SrnRet on_command_query(SrnCommand *cmd, void *user_data){
+SrnRet on_command_query(SrnCommand *cmd, void *user_data){
     const char *nick;
     SrnServer *srv;
 
@@ -697,7 +455,7 @@ static SrnRet on_command_query(SrnCommand *cmd, void *user_data){
     return srn_server_add_chat(srv, nick);
 }
 
-static SrnRet on_command_unquery(SrnCommand *cmd, void *user_data){
+SrnRet on_command_unquery(SrnCommand *cmd, void *user_data){
     const char *nick;
     SrnServer *srv;
     SrnChat *chat;
@@ -716,7 +474,7 @@ static SrnRet on_command_unquery(SrnCommand *cmd, void *user_data){
     return srn_server_rm_chat(srv, chat);
 }
 
-static SrnRet on_command_join(SrnCommand *cmd, void *user_data){
+SrnRet on_command_join(SrnCommand *cmd, void *user_data){
     const char *chan;
     const char *passwd;
     SrnServer *srv;
@@ -732,7 +490,7 @@ static SrnRet on_command_join(SrnCommand *cmd, void *user_data){
     return sirc_cmd_join(srv->irc, chan, passwd);
 }
 
-static SrnRet on_command_part(SrnCommand *cmd, void *user_data){
+SrnRet on_command_part(SrnCommand *cmd, void *user_data){
     const char *chan;
     const char *reason;
     SrnServer *srv;
@@ -753,7 +511,7 @@ static SrnRet on_command_part(SrnCommand *cmd, void *user_data){
     return sirc_cmd_part(srv->irc, chan, reason);
 }
 
-static SrnRet on_command_quit(SrnCommand *cmd, void *user_data){
+SrnRet on_command_quit(SrnCommand *cmd, void *user_data){
     const char *reason;
     SrnServer *srv;
 
@@ -766,7 +524,7 @@ static SrnRet on_command_quit(SrnCommand *cmd, void *user_data){
     return srn_server_quit(srv, reason);
 }
 
-static SrnRet on_command_topic(SrnCommand *cmd, void *user_data){
+SrnRet on_command_topic(SrnCommand *cmd, void *user_data){
     const char *topic;
     SrnServer *srv;
     SrnChat *chat;
@@ -786,7 +544,7 @@ static SrnRet on_command_topic(SrnCommand *cmd, void *user_data){
     return sirc_cmd_topic(srv->irc, chat->name, topic);
 }
 
-static SrnRet on_command_msg(SrnCommand *cmd, void *user_data){
+SrnRet on_command_msg(SrnCommand *cmd, void *user_data){
     const char *target;
     const char *msg;
     SrnServer *srv;
@@ -806,7 +564,7 @@ static SrnRet on_command_msg(SrnCommand *cmd, void *user_data){
     }
 }
 
-static SrnRet on_command_me(SrnCommand *cmd, void *user_data){
+SrnRet on_command_me(SrnCommand *cmd, void *user_data){
     const char *msg;
     SrnRet ret;
     SrnServer *srv;
@@ -833,7 +591,7 @@ static SrnRet on_command_me(SrnCommand *cmd, void *user_data){
     return SRN_OK;
 }
 
-static SrnRet on_command_nick(SrnCommand *cmd, void *user_data){
+SrnRet on_command_nick(SrnCommand *cmd, void *user_data){
     const char *nick;
     SrnServer *srv;
 
@@ -846,7 +604,7 @@ static SrnRet on_command_nick(SrnCommand *cmd, void *user_data){
     return sirc_cmd_nick(srv->irc, nick);
 }
 
-static SrnRet on_command_whois(SrnCommand *cmd, void *user_data){
+SrnRet on_command_whois(SrnCommand *cmd, void *user_data){
     const char *nick;
     SrnServer *srv;
 
@@ -859,7 +617,7 @@ static SrnRet on_command_whois(SrnCommand *cmd, void *user_data){
     return sirc_cmd_whois(srv->irc, nick);
 }
 
-static SrnRet on_command_invite(SrnCommand *cmd, void *user_data){
+SrnRet on_command_invite(SrnCommand *cmd, void *user_data){
     const char *nick;
     const char *chan;
     SrnServer *srv;
@@ -881,7 +639,7 @@ static SrnRet on_command_invite(SrnCommand *cmd, void *user_data){
     return sirc_cmd_invite(srv->irc, nick, chan);
 }
 
-static SrnRet on_command_kick(SrnCommand *cmd, void *user_data){
+SrnRet on_command_kick(SrnCommand *cmd, void *user_data){
     const char *nick;
     const char *chan;
     const char *reason;
@@ -905,7 +663,7 @@ static SrnRet on_command_kick(SrnCommand *cmd, void *user_data){
     return sirc_cmd_kick(srv->irc, nick, chan, reason);
 }
 
-static SrnRet on_command_mode(SrnCommand *cmd, void *user_data){
+SrnRet on_command_mode(SrnCommand *cmd, void *user_data){
     const char *mode;
     const char *target;
     SrnServer *srv;
@@ -921,7 +679,7 @@ static SrnRet on_command_mode(SrnCommand *cmd, void *user_data){
     return sirc_cmd_mode(srv->irc, target, mode);
 }
 
-static SrnRet on_command_ctcp(SrnCommand *cmd, void *user_data){
+SrnRet on_command_ctcp(SrnCommand *cmd, void *user_data){
     char timestr[64];
     const char *nick;
     const char *ctcp_cmd;
@@ -951,7 +709,7 @@ static SrnRet on_command_ctcp(SrnCommand *cmd, void *user_data){
     return sirc_cmd_ctcp_req(srv->irc, nick, ctcp_cmd, msg);
 }
 
-static SrnRet on_command_away(SrnCommand *cmd, void *user_data){
+SrnRet on_command_away(SrnCommand *cmd, void *user_data){
     const char *msg;
     SrnServer *srv;
 
@@ -963,7 +721,7 @@ static SrnRet on_command_away(SrnCommand *cmd, void *user_data){
     return sirc_cmd_away(srv->irc, msg);
 }
 
-static SrnRet on_command_pattern(SrnCommand *cmd, void *user_data){
+SrnRet on_command_pattern(SrnCommand *cmd, void *user_data){
     const char *subcmd;
     SrnChat *chat;
     SrnRet ret;
@@ -1033,7 +791,7 @@ static SrnRet on_command_pattern(SrnCommand *cmd, void *user_data){
     return ret;
 }
 
-static SrnRet on_command_render(SrnCommand *cmd, void *user_data){
+SrnRet on_command_render(SrnCommand *cmd, void *user_data){
     const char *nick;
     const char *pattern;
     SrnRet ret;
@@ -1085,7 +843,7 @@ static SrnRet on_command_render(SrnCommand *cmd, void *user_data){
             srv_user->nick, chat->name, pattern);
 }
 
-static SrnRet on_command_unrender(SrnCommand *cmd, void *user_data){
+SrnRet on_command_unrender(SrnCommand *cmd, void *user_data){
     const char *nick;
     const char *pattern;
     SrnRet ret;
@@ -1134,23 +892,23 @@ static SrnRet on_command_unrender(SrnCommand *cmd, void *user_data){
  * Misc
  ******************************************************************************/
 
-static SrnApplication* ctx_get_app(CommandContext *ctx){
-    g_return_val_if_fail(ctx, NULL);
-    g_return_val_if_fail(ctx->app, NULL);
+static SrnApplication* ctx_get_app(SrnChatCommandContext *cctx){
+    g_return_val_if_fail(cctx, NULL);
+    g_return_val_if_fail(cctx->app, NULL);
 
-    return ctx->app;
+    return cctx->app;
 }
 
-static SrnServer* ctx_get_server(CommandContext *ctx){
-    g_return_val_if_fail(ctx, NULL);
-    g_return_val_if_fail(ctx->srv, NULL);
+static SrnServer* ctx_get_server(SrnChatCommandContext *cctx){
+    g_return_val_if_fail(cctx, NULL);
+    g_return_val_if_fail(cctx->srv, NULL);
 
-    return ctx->srv;
+    return cctx->srv;
 }
 
-static SrnChat* ctx_get_chat(CommandContext *ctx){
-    g_return_val_if_fail(ctx, NULL);
-    g_return_val_if_fail(ctx->chat, NULL);
+static SrnChat* ctx_get_chat(SrnChatCommandContext *cctx){
+    g_return_val_if_fail(cctx, NULL);
+    g_return_val_if_fail(cctx->chat, NULL);
 
-    return ctx->chat;
+    return cctx->chat;
 }
