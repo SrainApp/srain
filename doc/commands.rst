@@ -27,10 +27,13 @@ Syntax
 A command is a line of string that has the following format, different elements
 are separated by whitespace::
 
-    <name> [subcommand] [<option> [value]]... [argument]...
+    /<name|alias> [subcommand] [<option> [value]]... [argument]...
 
+User should use ``name`` to invoke a command.
 The command's ``name`` starts with a slash ``/`` and doesn't contain any
 whitespace, such as: ``/join``.
+Some commands have ``alias`` that can be used instead of ``name``,
+for example, user can use ``/j`` instead of ``/join``.
 
 .. note::
 
@@ -183,7 +186,7 @@ Options:
 -----------------
 Usage::
 
-    /query <nick>
+    /query|q <nick>
     /unquery [nick]
 
 Start/stop private chat with somebody. For ``/unquery`` , If no ``nick`` is
@@ -196,7 +199,7 @@ specified, it stops the current private chat.
 
 Usage::
 
-    /join <channel>[,<channel>]... [<passwd>[,<passwd>]]...
+    /join|j <channel>[,<channel>]... [<passwd>[,<passwd>]]...
 
 Join specified channel(s), channels are separated by commas ``,``.
 
@@ -210,7 +213,7 @@ Example::
 
 Usage::
 
-    /part [<channel>[,<channel>]]... [<reason>]
+    /part|leave [<channel>[,<channel>]]... [<reason>]
 
 Leave specified channel(s) with optional reason, channels are separated by
 commas ``,``. If no ``channel`` is specified, it leaves the current channel.
@@ -256,7 +259,7 @@ Example::
 
 Usage::
 
-    /msg <target> <message>
+    /msg|m <target> <message>
 
 Send message to a target, the target can be channel or somebody's nick. If you
 want to send a message to channel, you should :ref:`commands-join` it first.

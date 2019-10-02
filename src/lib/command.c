@@ -34,22 +34,81 @@
 #include "i18n.h"
 
 struct _SrnCommand {
+    const SrnCommandBinding *binding;
+
+    char *raw;
+    char *name;
     char *subcmd;
     char *argv[SRN_COMMAND_MAX_ARGS];
     char *opt_key[SRN_COMMAND_MAX_OPTS];
     char *opt_val[SRN_COMMAND_MAX_OPTS];
-
-    SrnCommandBind *bind;
-    char *rawcmd;
 };
 
-static SrnCommand* srn_command_new(SrnCommandBind *bind, const char *rawcmd);
+struct _SrnCommandContext {
+    GHashTable *binding_table; // Table of const char* -> const SrnCommandBinding*
+};
+
+static SrnCommand *srn_command_new(const SrnCommandBinding *binding,
+                                   const char *raw);
 static void srn_command_free(SrnCommand *cmd);
-static SrnRet srn_command_parse(SrnCommandContext *ctx, SrnCommand *cmd, void *user_data);
+static SrnRet srn_command_parse(SrnCommand *cmd, void *user_data);
 
 static SrnRet get_arg(char *ptr, char **arg, char **next);
 static SrnRet get_quote_arg(char *ptr, char **arg, char **next);
 static SrnRet get_last_quote_arg(char *ptr, char **arg);
+
+SrnCommandContext* srn_command_context_new(void) {
+    SrnCommandContext *self;
+
+    self = g_malloc0(sizeof(SrnCommandContext));
+
+    return self;
+}
+
+void srn_command_context_free(SrnCommandContext *self) {
+    if (self->binding_table) {
+        g_hash_table_destroy(self->binding_table);
+    }
+    g_free(self);
+}
+
+/**
+ * @brief Binds a group of command binding to current context.
+ *
+ * @param self
+ * @param binding_table
+ *
+ * @return SRN_OK if binding successes.
+ */
+SrnRet srn_command_context_bind(SrnCommandContext *self,
+        const SrnCommandBinding *bindings) {
+    // Bind only once
+    g_return_val_if_fail(!self->binding_table, SRN_ERR);
+    self->binding_table = g_hash_table_new_full(
+            g_str_hash, g_str_equal, g_free, NULL);
+
+    while (bindings && bindings->name) {
+        // Binding with name
+        DBG_FR("Binding command name %s ...", bindings->name);
+        if (!g_hash_table_insert(self->binding_table,
+                    g_utf8_strdown(bindings->name, -1), (gpointer)bindings)) {
+            ERR_FR("Command %s is already binded", bindings->name);
+        }
+        // Binding with alias
+        for (int i = 0; bindings->alias[i]; i++) {
+            DBG_FR("Binding command alias %s ...", bindings->alias[i]);
+            if (!g_hash_table_insert(self->binding_table,
+                        g_utf8_strdown(bindings->alias[i], -1),
+                        (gpointer)bindings)) {
+                ERR_FR("Command %s is already binded", bindings->alias[i]);
+            }
+        }
+
+        bindings++;
+    }
+
+    return SRN_OK;
+}
 
 /**
  * @brief Check and parse command, and call the corresponding callback function
@@ -61,29 +120,40 @@ static SrnRet get_last_quote_arg(char *ptr, char **arg);
  * @return SRN_ERR if failed, the reason is various(no such command, no enouch
  *         argument, callback function failed, etc.)
  */
-SrnRet srn_command_proc(SrnCommandContext *ctx, const char *rawcmd, void *user_data){
+SrnRet srn_command_context_proc(SrnCommandContext *self, const char *rawcmd,
+        void *user_data){
+    char *rawcmd_dup;
+    char *name;
+    char *lower_name;
+    char *rawargs;
+    const SrnCommandBinding *binding;
     SrnRet ret;
     SrnCommand *cmd;
 
-    if (!ctx) return SRN_ERR;
+    rawcmd_dup = g_strdup(rawcmd);
+    get_arg(rawcmd_dup, &name, &rawargs);
+    lower_name = g_ascii_strdown(name, -1);
+    g_free(rawcmd_dup);
 
-    for (int i = 0; ctx->binds[i].name != NULL; i++){
-        if (g_str_has_prefix(rawcmd, ctx->binds[i].name)){
-            cmd = srn_command_new(&ctx->binds[i], rawcmd);
-            ret = srn_command_parse(ctx, cmd, user_data);
-            if (ret == SRN_OK){
-                // callback
-                ret = cmd->bind->cb(cmd, user_data);
-            } else if (ret == SRN_ERR) {
-                // TODO: decorate
-                ret = RET_ERR(_("Sorry, command parsing failed, please report a bug to <" PACKAGE_WEBSITE "/issues> ."));
-            }
-            srn_command_free(cmd);
-            return ret;
-        }
+    binding = g_hash_table_lookup(self->binding_table, lower_name);
+    if (!binding) {
+        return RET_ERR(_("Unknown command: %1$s"), lower_name);
     }
 
-    return RET_ERR(_("Unknown command: %1$s"), rawcmd);
+    cmd = srn_command_new(binding, rawcmd);
+    ret = srn_command_parse(cmd, user_data);
+    if (ret == SRN_OK){
+        // callback
+        ret = cmd->binding->cb(cmd, user_data);
+    } else if (ret == SRN_ERR) {
+        // TODO: decorate
+        ret = RET_ERR(_("Sorry, command parsing failed, please report a bug to <" PACKAGE_WEBSITE "/issues> ."));
+    }
+
+    srn_command_free(cmd);
+    g_free(lower_name);
+
+    return ret;
 }
 
 /**
@@ -110,7 +180,7 @@ const char *srn_command_get_subcmd(SrnCommand *cmd){
 const char *srn_command_get_arg(SrnCommand *cmd, unsigned index){
     g_return_val_if_fail(cmd, NULL);
 
-    if (index < cmd->bind->argc){
+    if (index < cmd->binding->argc){
         return cmd->argv[index];
     }
     return NULL;
@@ -151,15 +221,15 @@ bool srn_command_get_opt(SrnCommand *cmd, const char *opt_key, const char **opt_
 
     // Option no specified in command
     i = 0;
-    while (cmd->bind->opt[i].key != NULL){
-        if (g_ascii_strcasecmp(cmd->bind->opt[i].key, opt_key) == 0){
-            if (cmd->bind->opt[i].val == SRN_COMMAND_OPT_NO_VAL){
+    while (cmd->binding->opt[i].key != NULL){
+        if (g_ascii_strcasecmp(cmd->binding->opt[i].key, opt_key) == 0){
+            if (cmd->binding->opt[i].val == SRN_COMMAND_OPT_NO_VAL){
                 // Nothing todo
-            } else if (cmd->bind->opt[i].val == SRN_COMMAND_OPT_NO_DEFAULT){
+            } else if (cmd->binding->opt[i].val == SRN_COMMAND_OPT_NO_DEFAULT){
                 DBG_FR("No default value for opiton '%s'", opt_key);
             } else {
                 if (opt_val != NULL){
-                    *opt_val = cmd->bind->opt[i].val;
+                    *opt_val = cmd->binding->opt[i].val;
                 }
             }
             return FALSE;
@@ -171,20 +241,19 @@ bool srn_command_get_opt(SrnCommand *cmd, const char *opt_key, const char **opt_
     return FALSE;
 }
 
-static SrnCommand* srn_command_new(SrnCommandBind *bind, const char *rawcmd){
-    SrnCommand *cmd = g_malloc0(sizeof(SrnCommand));
+static SrnCommand* srn_command_new(const SrnCommandBinding *binding,
+        const char *raw){
+    SrnCommand *cmd;
 
-    cmd->bind = bind;
-    cmd->rawcmd = g_strdup(rawcmd);
-
-    g_strchomp(cmd->rawcmd); // Removes trailing whitespace
+    cmd = g_malloc0(sizeof(SrnCommand));
+    cmd->binding = binding;
+    cmd->raw = g_strdup(raw);
 
     return cmd;
 }
 
 static void srn_command_free(SrnCommand *cmd){
-    if (cmd->rawcmd)
-        g_free(cmd->rawcmd);
+    g_free(cmd->raw);
     g_free(cmd);
 }
 
@@ -296,24 +365,28 @@ static SrnRet get_last_quote_arg(char *ptr, char **arg){
     return SRN_OK;
 }
 
-static SrnRet srn_command_parse(SrnCommandContext *ctx, SrnCommand *cmd, void *user_data){
+static SrnRet srn_command_parse(SrnCommand *cmd, void *user_data){
     int nopt = 0;
     int narg = 0;
     char *ptr, *tmp;
+    const SrnCommandBinding *binding;
     SrnRet ret;
-    SrnCommandBind *bind = cmd->bind;
 
-    /* Skip command name */
-    ret = get_arg(cmd->rawcmd, &tmp, &ptr);
+    // Removes trailing whitespace
+    g_strchomp(cmd->raw);
+
+    binding = cmd->binding;
+    // Parse name (command name or alias)
+    ret = get_arg(cmd->raw, &cmd->name, &ptr);
     g_return_val_if_fail(ret == SRN_OK, SRN_ERR);
 
     /* Subcommand */
     if (ptr){
         bool has_subcmd = FALSE;
-        for (int i = 0; cmd->bind->subcmd[i]; i++){
+        for (int i = 0; cmd->binding->subcmd[i]; i++){
             has_subcmd = TRUE;
             if (!ptr) break;
-            if (!g_str_has_prefix(ptr, cmd->bind->subcmd[i])){
+            if (!g_str_has_prefix(ptr, cmd->binding->subcmd[i])){
                 continue;
             }
             /* Subcommand found */
@@ -330,8 +403,8 @@ static SrnRet srn_command_parse(SrnCommandContext *ctx, SrnCommand *cmd, void *u
     /* Get options */
     while (ptr && *ptr == SRN_COMMAND_OPT_PREFIX){
         int i;
-        for (i = 0; bind->opt[i].key != NULL; i++){
-            if (g_str_has_prefix(ptr, bind->opt[i].key)){
+        for (i = 0; binding->opt[i].key != NULL; i++){
+            if (g_str_has_prefix(ptr, binding->opt[i].key)){
                 break;
             }
         }
@@ -341,14 +414,14 @@ static SrnRet srn_command_parse(SrnCommandContext *ctx, SrnCommand *cmd, void *u
             return SRN_ERR;
         }
 
-        if (bind->opt[i].key == NULL){
+        if (binding->opt[i].key == NULL){
             goto unknown_opt;
         }
 
         DBG_FR("Option '%s' found", cmd->opt_key[nopt]);
 
         /* Option has value */
-        if (bind->opt[i].val != SRN_COMMAND_OPT_NO_VAL){
+        if (binding->opt[i].val != SRN_COMMAND_OPT_NO_VAL){
             if (!ptr || *ptr == '-'){
                 goto missing_opt_val;
             }
@@ -370,8 +443,8 @@ static SrnRet srn_command_parse(SrnCommandContext *ctx, SrnCommand *cmd, void *u
     cmd->opt_key[nopt] = NULL;
 
     /* Get arguments */
-    for (int i = 0; i < bind->argc; i++){
-        if (i != bind->argc - 1){
+    for (int i = 0; i < binding->argc; i++){
+        if (i != binding->argc - 1){
             if (get_quote_arg(ptr, &cmd->argv[narg], &ptr) != SRN_OK){
                 goto missing_arg;
             }
@@ -388,14 +461,14 @@ static SrnRet srn_command_parse(SrnCommandContext *ctx, SrnCommand *cmd, void *u
 
     /* Debug output */
     {
-        DBG_FR("command: %s", cmd->bind->name);
+        DBG_FR("command: %s", cmd->binding->name);
         for (int i = 0; i < nopt; i++){
             DBG_FR("opt: '%s'", cmd->opt_key[i]);
-            if (bind->opt[i].val != SRN_COMMAND_OPT_NO_VAL)
+            if (binding->opt[i].val != SRN_COMMAND_OPT_NO_VAL)
                 DBG_FR("val: '%s'", cmd->opt_val[i]);
         }
 
-        for (int i = 0; i < bind->argc; i++){
+        for (int i = 0; i < binding->argc; i++){
             DBG_FR("argv: '%s'", cmd->argv[i]);
         }
     }
@@ -403,10 +476,10 @@ static SrnRet srn_command_parse(SrnCommandContext *ctx, SrnCommand *cmd, void *u
     return SRN_OK;
 
 missing_arg:
-    if (cmd->bind->flag & SRN_COMMAND_FLAG_OMIT_ARG){
+    if (cmd->binding->flags & SRN_COMMAND_FLAG_OMIT_ARG){
         return SRN_OK;
     }
-    return RET_ERR(_("Missing argument, expect %1$d, actually %2$d"), cmd->bind->argc, narg);
+    return RET_ERR(_("Missing argument, expect %1$d, actually %2$d"), cmd->binding->argc, narg);
 
 unknown_opt:
     return RET_ERR(_("Unknown option %1$s"), cmd->opt_key[nopt]);
@@ -424,7 +497,7 @@ unknown_subcmd:
 too_many_arg:
     /* Currently, we regard all remaining text as the last argument, so this
      * label is never used. */
-    return RET_ERR(_("Too many arguments, expect %1$d"), cmd->bind->argc);
+    return RET_ERR(_("Too many arguments, expect %1$d"), cmd->binding->argc);
 #endif
 }
 

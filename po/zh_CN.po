@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 0.06.2\n"
 "Report-Msgid-Bugs-To: i@silverrainz.me\n"
-"POT-Creation-Date: 2019-06-12 13:29+0800\n"
+"POT-Creation-Date: 2019-10-02 21:36+0800\n"
 "PO-Revision-Date: 2016-12-18 01:44+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,17 +17,17 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/core/chat_command.c:594 ../src/core/app_ui_event.c:380
+#: ../src/core/chat_command.c:360 ../src/core/app_ui_event.c:380
 #, c-format
 msgid "\"%1$s\" has ignored"
 msgstr "已经忽略 %1$s "
 
-#: ../src/core/chat_command.c:619 ../src/core/app_ui_event.c:383
+#: ../src/core/chat_command.c:385 ../src/core/app_ui_event.c:383
 #, c-format
 msgid "\"%1$s\" has unignored"
 msgstr "已经解除对 %1$s 的忽略"
 
-#: ../src/core/chat_command.c:591
+#: ../src/core/chat_command.c:357
 #, c-format
 msgid "\"%1$s\" is already ignored"
 msgstr "\"%1$s\" 已被忽略，无需再次执行"
@@ -163,7 +163,7 @@ msgstr "%Y 年 %m 月 %d 日 %T"
 msgid "<big>Welcome to Srain!</big>"
 msgstr "<big>欢迎使用 Srain！</big>"
 
-#: ../src/core/chat_command.c:803
+#: ../src/core/chat_command.c:569
 #, c-format
 msgid "A message has been sent to \"%1$s\""
 msgstr "消息已发送至 \"%1$s\""
@@ -185,7 +185,7 @@ msgstr "已确认的扩展能力：%1$s"
 msgid "Advanced Mode"
 msgstr "高级模式"
 
-#: ../src/core/app.c:215
+#: ../src/core/app.c:219
 msgid "All config reloaded"
 msgstr "成功重新加载所有配置"
 
@@ -206,13 +206,13 @@ msgstr "应用"
 msgid "At line %1$d: %2$s"
 msgstr "在第 %1$d 行：%2$s"
 
-#: ../src/core/app.c:316 ../src/core/app.c:320 ../src/core/server.c:285
+#: ../src/core/app.c:320 ../src/core/app.c:324 ../src/core/server.c:285
 #: ../src/core/server.c:289
 #, c-format
 msgid "Autorun command: %1$s"
 msgstr "自动运行命令：%1$s"
 
-#: ../src/core/chat_command.c:1012
+#: ../src/core/chat_command.c:778
 #, fuzzy
 msgid "Available regex patterns:"
 msgstr "无效的正则表达式：%1$s"
@@ -226,11 +226,11 @@ msgstr "%1$s 于 %2$s 设置"
 msgid "Cancel"
 msgstr "取消"
 
-#: ../src/core/chat_command.c:449
+#: ../src/core/chat_command.c:215
 msgid "Cannot disconnect from a unconnected server"
 msgstr "无法从未连接的服务器断开连接"
 
-#: ../src/core/chat_command.c:823 ../src/core/app_ui_event.c:251
+#: ../src/core/chat_command.c:589 ../src/core/app_ui_event.c:251
 msgid "Cannot send message directly to a server"
 msgstr "不允许直接向服务器发送消息"
 
@@ -259,12 +259,12 @@ msgstr "连接"
 msgid "Connected to %1$s(%2$s:%3$d)"
 msgstr "已连接到 %1$s(%2$s:%3$d)"
 
-#: ../src/core/chat_command.c:392
+#: ../src/core/chat_command.c:158
 #, c-format
 msgid "Context switched to server \"%1$s\""
 msgstr "无法在服务器 \"%1$s\" 上注册"
 
-#: ../src/core/chat_command.c:400
+#: ../src/core/chat_command.c:166
 #, c-format
 msgid "Context switched to server \"%1$s\", chat \"%2$s\""
 msgstr ""
@@ -308,16 +308,16 @@ msgstr "已开启 CSD(Client Side Decoration), 下次重启后生效"
 msgid "Enabled capabilities:"
 msgstr "已启用的扩展能力：%1$s"
 
-#: ../src/core/app.c:75 ../src/core/app.c:83 ../src/core/app.c:293
-#: ../src/core/app.c:406 ../src/sui/sui_app.c:468 ../src/sui/sui_app.c:487
+#: ../src/core/app.c:76 ../src/core/app.c:84 ../src/core/app.c:297
+#: ../src/core/app.c:410 ../src/sui/sui_app.c:468 ../src/sui/sui_app.c:487
 #: ../src/sui/sui_app.c:526 ../src/sui/sui_misc_message.c:189
-#: ../src/sui/sui_common.c:145 ../src/sui/sui_prefs_dialog.c:162
 #: ../src/sui/sui_connect_panel.c:487 ../src/sui/sui_connect_panel.c:496
 #: ../src/sui/sui_connect_panel.c:534 ../src/sui/sui_connect_panel.c:543
 #: ../src/sui/sui_connect_panel.c:589 ../src/sui/sui_join_panel.c:308
 #: ../src/sui/sui_join_panel.c:363 ../src/sui/sui_join_panel.c:374
 #: ../src/sui/sui_join_panel.c:391 ../src/sui/sui_join_panel.c:430
-#: ../src/sui/sui_join_panel.c:436
+#: ../src/sui/sui_join_panel.c:436 ../src/sui/sui_common.c:145
+#: ../src/sui/sui_prefs_dialog.c:162
 msgid "Error"
 msgstr "错误"
 
@@ -361,7 +361,7 @@ msgstr "读取服务器配置时发生错误 %1$s：%2$s"
 msgid "Error occurred while reading server list config in %1$s: %2$s"
 msgstr "读取服务器配置列表时发生错误 %1$s：%2$s"
 
-#: ../src/sui/sui_url_previewer.c:539
+#: ../src/sui/sui_url_previewer.c:553
 msgid "Exceed max content length"
 msgstr "内容超出最大长度"
 
@@ -373,17 +373,17 @@ msgstr "退出"
 msgid "Expand message:"
 msgstr "展开消息"
 
-#: ../src/core/app.c:291
+#: ../src/core/app.c:295
 #, c-format
 msgid "Failed to add chat \"%1$s\": %2$s"
 msgstr "无法添加聊天 \"%1$s\", 原因为: %2$s"
 
-#: ../src/core/chat_command.c:990
+#: ../src/core/chat_command.c:756
 #, fuzzy, c-format
 msgid "Failed to add regex pattern \"%1$s\": %2$s"
 msgstr "无法添加服务器 \"%1$s\": %2$s"
 
-#: ../src/core/app_url.c:119 ../src/core/app.c:404
+#: ../src/core/app_url.c:119 ../src/core/app.c:408
 #, c-format
 msgid "Failed to add server \"%1$s\": %2$s"
 msgstr "无法添加服务器 \"%1$s\": %2$s"
@@ -393,12 +393,12 @@ msgstr "无法添加服务器 \"%1$s\": %2$s"
 msgid "Failed to apply theme from file \"%1$s\": %2$s"
 msgstr "无法加载主题 \"%1$s\", 原因为: %2$s"
 
-#: ../src/core/chat_command.c:650
+#: ../src/core/chat_command.c:416
 #, fuzzy, c-format
 msgid "Failed to attach pattern to chat \"%1$s\": %2$s"
 msgstr "无法添加服务器 \"%1$s\": %2$s"
 
-#: ../src/core/chat_command.c:1080
+#: ../src/core/chat_command.c:846
 #, fuzzy, c-format
 msgid "Failed to attach pattern to user %1$s\" of chat \"%2$s\": %2$s"
 msgstr "无法添加服务器 \"%1$s\": %2$s"
@@ -453,17 +453,17 @@ msgstr "无法创建用户配置文件 \"%1$s\""
 msgid "Failed to create user data directory: %1$s"
 msgstr "无法创建用户数据文件夹 \"%1$s\""
 
-#: ../src/core/chat_command.c:679
+#: ../src/core/chat_command.c:445
 #, fuzzy, c-format
 msgid "Failed to dettach pattern from chat \"%1$s\": %2$s"
 msgstr "无法加载主题 \"%1$s\", 原因为: %2$s"
 
-#: ../src/core/chat_command.c:1125
+#: ../src/core/chat_command.c:891
 #, fuzzy, c-format
 msgid "Failed to dettach pattern from user \"%1$s\": %2$s"
 msgstr "无法加载主题 \"%1$s\", 原因为: %2$s"
 
-#: ../src/core/chat_command.c:427 ../src/core/chat_command.c:535
+#: ../src/core/chat_command.c:193 ../src/core/chat_command.c:301
 #, c-format
 msgid "Failed to instantiate server \"%1$s\""
 msgstr "无法实例化服务器 \"%1$s\""
@@ -498,13 +498,13 @@ msgstr "无法读取系统配置：%1$s"
 msgid "Failed to read user configuration file: %1$s"
 msgstr "无法读取用户配置：%1$s"
 
-#: ../src/core/chat_command.c:437 ../src/core/chat_command.c:548
+#: ../src/core/chat_command.c:203 ../src/core/chat_command.c:314
 #: ../src/core/app_url.c:135
 #, c-format
 msgid "Failed to register on server \"%1$s\""
 msgstr "无法在服务器 \"%1$s\" 上注册"
 
-#: ../src/core/app.c:224
+#: ../src/core/app.c:228
 #, c-format
 msgid "Failed to reload application config: %1$s"
 msgstr "重新加载应用配置失败：%1$s"
@@ -514,12 +514,12 @@ msgstr "重新加载应用配置失败：%1$s"
 msgid "Failed to reload configuration: %s"
 msgstr "重新加载配置失败：%1$s"
 
-#: ../src/core/app.c:219
+#: ../src/core/app.c:223
 #, c-format
 msgid "Failed to reload logger config: %1$s"
 msgstr "重新加载日志配置失败 \"%1$s\""
 
-#: ../src/core/chat_command.c:1003
+#: ../src/core/chat_command.c:769
 #, fuzzy, c-format
 msgid "Failed to remove regex pattern \"%1$s\": %2$s"
 msgstr "无法打开 URL \"%1$s\"：%2$s"
@@ -531,7 +531,7 @@ msgstr "无法打开 URL \"%1$s\"：%2$s"
 msgid "Failed to render markup text: %1$s"
 msgstr "无法发送消息：%1$s"
 
-#: ../src/core/chat_command.c:828
+#: ../src/core/chat_command.c:594
 #, c-format
 msgid "Failed to send action message: %1$s"
 msgstr "无法发送动作消息：%1$s"
@@ -659,24 +659,24 @@ msgstr "最多用户数"
 msgid "Message from unknown chat"
 msgstr "来自未知聊天的消息"
 
-#: ../src/core/chat_command.c:683
+#: ../src/core/chat_command.c:449
 #, c-format
 msgid "Messages of chat \"%1$s\" are no longer filtered by pattern \"%2$s\""
 msgstr ""
 
-#: ../src/core/chat_command.c:654
+#: ../src/core/chat_command.c:420
 #, c-format
 msgid "Messages of chat \"%1$s\" will be filtered by pattern \"%2$s\""
 msgstr ""
 
-#: ../src/core/chat_command.c:1129
+#: ../src/core/chat_command.c:895
 #, c-format
 msgid ""
 "Messages of user \"%1$s\" of chat \"%2$s\" are no longer rendered by pattern "
 "\"%3$s\""
 msgstr ""
 
-#: ../src/core/chat_command.c:1084
+#: ../src/core/chat_command.c:850
 #, c-format
 msgid ""
 "Messages of user \"%1$s\" of chat \"%2$s\" will be rendered by pattern \"%3$s"
@@ -687,15 +687,15 @@ msgstr ""
 msgid "Min users"
 msgstr "最少用户数"
 
-#: ../src/core/chat_command.c:482
+#: ../src/core/chat_command.c:248
 msgid "Missing argument <addr>"
 msgstr "缺少参数 <服务器地址>"
 
-#: ../src/core/chat_command.c:381
+#: ../src/core/chat_command.c:147
 msgid "Missing argument <server>"
 msgstr "缺少参数 <服务器名称>"
 
-#: ../src/lib/command.c:409
+#: ../src/lib/command.c:482
 #, c-format
 msgid "Missing argument, expect %1$d, actually %2$d"
 msgstr "缺少参数，%1$d 个参数中，只提供了 %2$d 个"
@@ -715,7 +715,7 @@ msgstr "服务器配置中缺少了以下字段：%1$s"
 msgid "Missing field in user config: %1$s"
 msgstr "服务器配置中缺少了以下选项：%1$s"
 
-#: ../src/lib/command.c:418
+#: ../src/lib/command.c:491
 #, c-format
 msgid "Missing vaule for option %1$s"
 msgstr "可选参数 %1$s 缺少参数值"
@@ -736,12 +736,12 @@ msgstr "没有需要请求的扩展能力"
 msgid "No new capability to be requested"
 msgstr "没有需要请求的新的扩展能力"
 
-#: ../src/core/chat_command.c:396
+#: ../src/core/chat_command.c:162
 #, c-format
 msgid "No such chat: %1$s"
 msgstr "找不到聊天：%1$s"
 
-#: ../src/core/chat_command.c:385
+#: ../src/core/chat_command.c:151
 #, c-format
 msgid "No such server: %1$s"
 msgstr "找不到服务器：%1$s"
@@ -774,7 +774,7 @@ msgstr "可选"
 msgid "Password:"
 msgstr "密码："
 
-#: ../src/core/chat_command.c:634 ../src/core/chat_command.c:1054
+#: ../src/core/chat_command.c:400 ../src/core/chat_command.c:820
 #, fuzzy, c-format
 msgid "Pattern \"%1$s\" not found"
 msgstr "用户文件 %1$s 未找到"
@@ -819,16 +819,16 @@ msgstr "收到来自 %2$s 的不支持的 CTCP %1$s 请求"
 msgid "Received unsupported CTCP %1$s response form %2$s"
 msgstr "收到来自 %2$s 的不支持的 CTCP %1$s 响应"
 
-#: ../src/core/chat_command.c:456 ../src/core/app_ui_event.c:159
+#: ../src/core/chat_command.c:222 ../src/core/app_ui_event.c:159
 msgid "Reconnection stopped"
 msgstr "已停止重新连接"
 
-#: ../src/core/chat_command.c:993
+#: ../src/core/chat_command.c:759
 #, c-format
 msgid "Regex pattern \"%1$s\" has added"
 msgstr ""
 
-#: ../src/core/chat_command.c:1006
+#: ../src/core/chat_command.c:772
 #, c-format
 msgid "Regex pattern \"%1$s\" has removed"
 msgstr ""
@@ -845,7 +845,7 @@ msgstr "记住登录密码"
 msgid "Remember password"
 msgstr "记住密码"
 
-#: ../src/sirc/sirc.c:198
+#: ../src/sirc/sirc.c:199
 msgid "Remote connection closed"
 msgstr "远程连接已断开"
 
@@ -932,7 +932,7 @@ msgstr "正在显示 %2$d 个频道中的 %1$d 个"
 msgid "Some error occurred"
 msgstr "发生未知错误"
 
-#: ../src/lib/command.c:79
+#: ../src/lib/command.c:150
 msgid "Sorry, command parsing failed, please report a bug to <"
 msgstr "抱歉，命令解析失败，请提交 bug 报告到 <"
 
@@ -967,12 +967,12 @@ msgstr ""
 msgid "Theme:"
 msgstr "Srain 主题文件"
 
-#: ../src/lib/command.c:427
+#: ../src/lib/command.c:500
 #, c-format
 msgid "Too many arguments, expect %1$d"
 msgstr "参数过多，需要 %1$d 个"
 
-#: ../src/lib/command.c:415
+#: ../src/lib/command.c:488
 #, c-format
 msgid "Too many optional arguments (maximum allowed: %1$d)"
 msgstr "可选参数最多为 %1$d 个"
@@ -1006,11 +1006,11 @@ msgstr "%1$s 的 URL 是：%2$s"
 msgid "Unallowed action: %1$s"
 msgstr "不允许的行为：%1$s"
 
-#: ../src/lib/command.c:260
+#: ../src/lib/command.c:329
 msgid "Unclosed single quotation"
 msgstr "没有闭合的单引号"
 
-#: ../src/lib/command.c:86
+#: ../src/lib/command.c:140
 #, c-format
 msgid "Unknown command: %1$s"
 msgstr "未知命令：%1$s"
@@ -1019,17 +1019,17 @@ msgstr "未知命令：%1$s"
 msgid "Unknown login method"
 msgstr "未知登陆方式：%1$s"
 
-#: ../src/lib/command.c:412
+#: ../src/lib/command.c:485
 #, c-format
 msgid "Unknown option %1$s"
 msgstr "未知选项：%1$s"
 
-#: ../src/core/chat_command.c:462 ../src/lib/command.c:421
+#: ../src/core/chat_command.c:228 ../src/lib/command.c:494
 #, c-format
 msgid "Unknown sub command: %1$s"
 msgstr "未知子命令：%1$s"
 
-#: ../src/sui/sui_url_previewer.c:318 ../src/sui/sui_url_previewer.c:555
+#: ../src/sui/sui_url_previewer.c:325 ../src/sui/sui_url_previewer.c:575
 msgid "Unsupported URL content type"
 msgstr "不支持的 URL metadata 类型"
 
@@ -1046,7 +1046,7 @@ msgstr "使用安全连接"
 msgid "User"
 msgstr "用户数"
 
-#: ../src/core/app.c:141
+#: ../src/core/app.c:145
 msgid "User config not found"
 msgstr "用户文件 %1$s 未找到"
 
@@ -1194,7 +1194,7 @@ msgstr "%3$s 将 %1$s 的模式变更为 %2$s"
 msgid "server-list[%1$d] doesn't have a name"
 msgstr "server_list 中的第 %1$d 个服务器没有名字"
 
-#: ../src/core/chat_command.c:616
+#: ../src/core/chat_command.c:382
 #, c-format
 msgid "user \"%1$s\" not found"
 msgstr "用户文件 %1$s 未找到"
