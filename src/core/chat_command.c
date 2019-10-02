@@ -107,6 +107,11 @@ GList* srn_chat_complete_command(SrnChat *chat, const char *cmd){
         if (g_str_has_prefix(cmd_bindings[i].name, cmd)){
             lst = g_list_append(lst, g_strdup(cmd_bindings[i].name));
         }
+        for (int j = 0; cmd_bindings[i].alias[j]; j++) {
+            if (g_str_has_prefix(cmd_bindings[i].alias[j], cmd)){
+                lst = g_list_append(lst, g_strdup(cmd_bindings[i].alias[j]));
+            }
+        }
         i++;
     }
 
