@@ -42,6 +42,7 @@ struct _SuiUser {
     GtkTreeIter iter; // Can be used as a GtkTreeIter
 
     SrnChatUser *ctx;
+    SrnChatUserType type;
 
     GtkListStore *list;
     SuiUserStat *stat;
@@ -59,6 +60,7 @@ SuiUser *sui_user_new(void *ctx){
 
     self = g_malloc0(sizeof(SuiUser));
     self->ctx = ctx;
+    self->type = self->ctx->type;
 
     return self;
 }
@@ -66,11 +68,12 @@ SuiUser *sui_user_new(void *ctx){
 SuiUser *sui_user_new_from_iter(GtkListStore *list, GtkTreeIter *iter){
     SuiUser *self;
 
-    self = sui_user_new(NULL);
+    self = g_malloc0(sizeof(SuiUser));
     self->list = list;
     self->iter = *iter; // Copy iter
     gtk_tree_model_get(GTK_TREE_MODEL(list), iter,
             COL_USER, &self->ctx,
+            COL_TYPE, &self->type,
             -1);
 
     return self;
@@ -93,19 +96,12 @@ int sui_user_compare(SuiUser *user1, SuiUser *user2){
 }
 
 void sui_user_update(SuiUser *self, GtkStyleContext *style_context){
-    char *icon;
-    SrnChatUserType type;
-
     g_return_if_fail(self->list);
     g_return_if_fail(self->stat);
     g_return_if_fail(self->ctx);
 
     // Update stat
-    gtk_tree_model_get(GTK_TREE_MODEL(self->list), (GtkTreeIter *)self,
-            COL_ICON, &icon,
-            COL_TYPE, &type,
-            -1);
-    if (self->ctx->type != type){
+    if (self->ctx->type != self->type){
         switch (self->ctx->type) {
         case SRN_CHAT_USER_TYPE_ADMIN:
         case SRN_CHAT_USER_TYPE_OWNER:
@@ -121,20 +117,20 @@ void sui_user_update(SuiUser *self, GtkStyleContext *style_context){
         default:
             ;
         }
-        switch (self->ctx->type) {
-        case SRN_CHAT_USER_TYPE_ADMIN:
-        case SRN_CHAT_USER_TYPE_OWNER:
-        case SRN_CHAT_USER_TYPE_FULL_OP:
-            self->stat->full_op--;
-            break;
-        case SRN_CHAT_USER_TYPE_HALF_OP:
-            self->stat->half_op--;
-            break;
-        case SRN_CHAT_USER_TYPE_VOICED:
-            self->stat->voiced--;
-            break;
-        default:
-            ;
+        switch (self->type) {
+            case SRN_CHAT_USER_TYPE_ADMIN:
+            case SRN_CHAT_USER_TYPE_OWNER:
+            case SRN_CHAT_USER_TYPE_FULL_OP:
+                self->stat->full_op--;
+                break;
+            case SRN_CHAT_USER_TYPE_HALF_OP:
+                self->stat->half_op--;
+                break;
+            case SRN_CHAT_USER_TYPE_VOICED:
+                self->stat->voiced--;
+                break;
+            default:
+                ;
         }
     }
 
@@ -182,13 +178,13 @@ static GdkPixbuf* new_user_icon_from_type(SrnChatUserType type,
         case SRN_CHAT_USER_TYPE_ADMIN:
         case SRN_CHAT_USER_TYPE_OWNER:
         case SRN_CHAT_USER_TYPE_FULL_OP:
-            color_str = "#856117";
+            color_str = "#157915";
             break;
         case SRN_CHAT_USER_TYPE_HALF_OP:
-            color_str = "#451984";
+            color_str = "#856117";
             break;
         case SRN_CHAT_USER_TYPE_VOICED:
-            color_str = "#157915";
+            color_str = "#451984";
             break;
         case SRN_CHAT_USER_TYPE_CHIGUA:
             color_str = NULL;
