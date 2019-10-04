@@ -545,7 +545,7 @@ static void send_message(SuiWindow *self){
 
     gtk_image_set_from_icon_name(
             GTK_IMAGE(gtk_button_get_image(self->send_button)),
-            "dialog-cancel", GTK_ICON_SIZE_BUTTON);
+            "document-revert", GTK_ICON_SIZE_BUTTON);
 }
 
 static void send_message_cancel(SuiWindow *self){
