@@ -232,8 +232,12 @@ void sui_free_user(SuiUser *user){
     sui_user_free(user);
 }
 
-void sui_update_user(SuiUser *user){
-    sui_user_update(user);
+void sui_update_user(SuiBuffer *buf, SuiUser *user){
+    g_return_if_fail(SUI_IS_CHAT_BUFFER(buf));
+    g_return_if_fail(user);
+
+    sui_user_list_update_user(
+            sui_chat_buffer_get_user_list(SUI_CHAT_BUFFER(buf)), user);
 }
 
 void sui_add_user(SuiBuffer *buf, SuiUser *user){

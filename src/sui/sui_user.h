@@ -35,7 +35,7 @@ SuiUser *sui_user_new(void *ctx);
 SuiUser *sui_user_new_from_iter(GtkListStore *list_store, GtkTreeIter *iter);
 void sui_user_free(SuiUser *self);
 
-void sui_user_update(SuiUser *self);
+void sui_user_update(SuiUser *self, GtkStyleContext *style_context);
 int sui_user_compare(SuiUser *user1, SuiUser *user2);
 
 void sui_user_set_list(SuiUser *self, GtkListStore *list);

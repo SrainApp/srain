@@ -80,9 +80,9 @@ void sui_notify_message(SuiMessage *msg);
 /* User */
 SuiUser* sui_new_user(void *ctx);
 void sui_free_user(SuiUser *user);
-void sui_update_user(SuiUser *user);
 void sui_add_user(SuiBuffer *buf, SuiUser *user);
 void sui_rm_user(SuiBuffer *buf, SuiUser *user);
+void sui_update_user(SuiBuffer *buf, SuiUser *user);
 
 /* Misc */
 void sui_set_topic(SuiBuffer *sui, const char *topic);

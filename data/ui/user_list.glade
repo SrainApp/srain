@@ -52,11 +52,9 @@
             <child>
               <object class="GtkTreeViewColumn" id="user_tree_view_column">
                 <child>
-                  <object class="GtkCellRendererPixbuf">
-                    <property name="stock_size">4</property>
-                  </object>
+                  <object class="GtkCellRendererPixbuf"/>
                   <attributes>
-                    <attribute name="icon-name">1</attribute>
+                    <attribute name="pixbuf">1</attribute>
                   </attributes>
                 </child>
                 <child>
