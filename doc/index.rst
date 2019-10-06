@@ -37,7 +37,6 @@ All pages
     faq
     changelog
     support
-    resources
 
 Indices and Tables
 ==================
