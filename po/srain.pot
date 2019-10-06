@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 1.0.0rc3\n"
 "Report-Msgid-Bugs-To: i@silverrainz.me\n"
-"POT-Creation-Date: 2019-10-02 21:37+0800\n"
+"POT-Creation-Date: 2019-10-06 16:52+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1049,7 +1049,7 @@ msgstr ""
 msgid "Users"
 msgstr ""
 
-#: ../src/sui/sui_user_list.c:186
+#: ../src/sui/sui_user_list.c:208
 #, c-format
 msgid ""
 "Users: %d, <span color=\"#157915\">%d@</span>,<span color=\"#856117\">%d%%</"
