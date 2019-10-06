@@ -159,13 +159,13 @@ add_child(GtkWidget *child, SuiSideBar *sidebar){
 
     switch (chat->type) {
         case SRN_CHAT_TYPE_SERVER:
-            icon = "srain-server";
+            icon = "network-server";
             break;
         case SRN_CHAT_TYPE_CHANNEL:
-            icon = "srain-chan";
+            icon = "system-users";
             break;
         case SRN_CHAT_TYPE_DIALOG:
-            icon = "srain-person";
+            icon = "user-available";
             break;
         default:
             icon = "";

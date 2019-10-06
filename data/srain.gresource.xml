@@ -22,23 +22,7 @@
 
     <!-- Icons files, TODO: SVG -->
     <gresource prefix="/im/srain/Srain/icons/scalable/apps">
-        <file alias="srain-start.svg">icons/scalable/srain.png</file>
+        <file alias="srain.png">icons/scalable/srain.png</file>
         <file alias="srain-red.png">icons/scalable/srain-red.png</file>
-    </gresource>
-    <gresource prefix="/im/srain/Srain/icons/16x16/places">
-        <file alias="srain-server.png">icons/16x16/srain-server.png</file>
-        <file alias="srain-chan.png">icons/16x16/srain-chan.png</file>
-        <file alias="srain-person.png">icons/16x16/srain-person.png</file>
-        <file alias="srain-user-full-op.png">icons/16x16/srain-user-full-op.png</file>
-        <file alias="srain-user-half-op.png">icons/16x16/srain-user-half-op.png</file>
-        <file alias="srain-user-voiced.png">icons/16x16/srain-user-voiced.png</file>
-    </gresource>
-    <gresource prefix="/im/srain/Srain/icons/48x48/places">
-        <file alias="srain-server.png">icons/48x48/srain-server.png</file>
-        <file alias="srain-chan.png">icons/48x48/srain-chan.png</file>
-        <file alias="srain-person.png">icons/48x48/srain-person.png</file>
-        <file alias="srain-user-full-op.png">icons/48x48/srain-user-full-op.png</file>
-        <file alias="srain-user-half-op.png">icons/48x48/srain-user-half-op.png</file>
-        <file alias="srain-user-voiced.png">icons/48x48/srain-user-voiced.png</file>
     </gresource>
 </gresources>

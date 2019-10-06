@@ -5,19 +5,19 @@
   <object class="GtkImage" id="connect_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="icon_name">srain-server</property>
+    <property name="icon_name">network-server</property>
     <property name="use_fallback">True</property>
   </object>
   <object class="GtkImage" id="join_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="icon_name">srain-chan</property>
+    <property name="icon_name">contact-new</property>
     <property name="use_fallback">True</property>
   </object>
   <object class="GtkImage" id="plugin_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="icon_name">srain-photo</property>
+    <property name="icon_name">application-x-addon</property>
     <property name="use_fallback">True</property>
   </object>
   <object class="GtkImage" id="send_image">
@@ -57,7 +57,7 @@
                       <object class="GtkImage" id="start_image">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="icon_name">im.srain.Srain</property>
+                        <property name="icon_name">go-home</property>
                         <property name="use_fallback">True</property>
                       </object>
                     </child>
@@ -291,7 +291,7 @@
                         <property name="can_focus">False</property>
                         <property name="opacity">0.80000000000000004</property>
                         <property name="pixel_size">64</property>
-                        <property name="icon_name">im.srain.Srain</property>
+                        <property name="icon_name">srain</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>

@@ -45,7 +45,7 @@ void srn_chat_user_free(SrnChatUser *self){
 
 void srn_chat_user_update(SrnChatUser *self){
     if (self->is_joined) {
-        sui_update_user(self->ui);
+        sui_update_user(self->chat->ui, self->ui);
     }
 }
 

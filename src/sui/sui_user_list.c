@@ -28,6 +28,7 @@
  */
 
 #include <gtk/gtk.h>
+#include <cairo-gobject.h>
 
 #include "core/core.h"
 
@@ -42,6 +43,9 @@ struct _SuiUserList {
 
     GtkLabel *stat_label;   // users statistics
     GtkTreeView *user_tree_view;
+    GtkTreeViewColumn *user_tree_view_column;
+    GtkCellRendererText *user_name_cell_renderer;
+    GtkCellRendererPixbuf *user_icon_cell_renderer;
 
     /* Data model */
     SuiUserStat user_stat;
@@ -61,8 +65,9 @@ static int user_list_store_sort_func(GtkTreeModel *model,
 
 static gboolean user_tree_view_on_popup(GtkWidget *widget,
         GdkEventButton *event, gpointer user_data);
-void user_list_store_on_row_changed(GtkTreeModel *tree_model, GtkTreePath *path,
-        GtkTreeIter *iter, gpointer user_data);
+static void user_list_store_on_row_changed(GtkTreeModel *tree_model,
+        GtkTreePath *path, GtkTreeIter *iter, gpointer user_data);
+static void on_style_updated(SuiUserList *self, gpointer user_data);
 
 /*****************************************************************************
  * GObject functions
@@ -80,6 +85,8 @@ static void sui_user_list_init(SuiUserList *self){
             G_CALLBACK(user_tree_view_on_popup), NULL);
     g_signal_connect(self->user_list_store, "row-changed",
             G_CALLBACK(user_list_store_on_row_changed), self);
+    g_signal_connect(self, "style-updated",
+            G_CALLBACK(on_style_updated), NULL);
 }
 
 static void sui_user_list_class_init(SuiUserListClass *class){
@@ -90,8 +97,11 @@ static void sui_user_list_class_init(SuiUserListClass *class){
     gtk_widget_class_set_template_from_resource(widget_class,
             "/im/srain/Srain/user_list.glade");
 
-    gtk_widget_class_bind_template_child(widget_class, SuiUserList, user_tree_view);
     gtk_widget_class_bind_template_child(widget_class, SuiUserList, stat_label);
+    gtk_widget_class_bind_template_child(widget_class, SuiUserList, user_tree_view);
+    gtk_widget_class_bind_template_child(widget_class, SuiUserList, user_tree_view_column);
+    gtk_widget_class_bind_template_child(widget_class, SuiUserList, user_name_cell_renderer);
+    gtk_widget_class_bind_template_child(widget_class, SuiUserList, user_icon_cell_renderer);
 }
 
 /*****************************************************************************
@@ -107,7 +117,7 @@ void sui_user_list_add_user(SuiUserList *self, SuiUser *user){
     sui_user_set_list(user, self->user_list_store);
     sui_user_set_stat(user, &self->user_stat);
     self->user_stat.total++;
-    sui_user_update(user);
+    sui_user_list_update_user(self, user);
 }
 
 void sui_user_list_rm_user(SuiUserList *self, SuiUser *user){
@@ -115,7 +125,13 @@ void sui_user_list_rm_user(SuiUserList *self, SuiUser *user){
     sui_user_set_list(user, NULL);
     sui_user_set_stat(user, NULL);
     self->user_stat.total--;
-    sui_user_update(user);
+    sui_user_list_update_user(self, user);
+}
+
+void sui_user_list_update_user(SuiUserList *self, SuiUser *user){
+    sui_user_update(user,
+            gtk_widget_get_style_context(GTK_WIDGET(self)),
+            gtk_widget_get_window(GTK_WIDGET(self)));
 }
 
 void sui_user_list_clear(SuiUserList *self){
@@ -157,11 +173,17 @@ static void user_tree_view_set_model(SuiUserList *self){
     GtkTreeModel *filter;
     GtkTreeView *view;
 
-    /* 3 columns: user, icon, type */
-    self->user_list_store = gtk_list_store_new(3,
+    /* 4 columns: user, icon, model, type */
+    self->user_list_store = gtk_list_store_new(4,
             G_TYPE_STRING,
-            G_TYPE_STRING,
-            G_TYPE_POINTER);
+            CAIRO_GOBJECT_TYPE_SURFACE,
+            G_TYPE_POINTER,
+            G_TYPE_INT);
+    gtk_tree_view_column_add_attribute(self->user_tree_view_column,
+            GTK_CELL_RENDERER(self->user_name_cell_renderer), "text", 0);
+    gtk_tree_view_column_add_attribute(self->user_tree_view_column,
+            GTK_CELL_RENDERER(self->user_icon_cell_renderer), "surface", 1);
+
     store = self->user_list_store;
     view = self->user_tree_view;
 
@@ -249,10 +271,28 @@ static gboolean user_tree_view_on_popup(GtkWidget *widget,
     return TRUE;
 }
 
-void user_list_store_on_row_changed(GtkTreeModel *tree_model, GtkTreePath *path,
-        GtkTreeIter *iter, gpointer user_data){
+static void user_list_store_on_row_changed(GtkTreeModel *tree_model,
+        GtkTreePath *path, GtkTreeIter *iter, gpointer user_data){
     SuiUserList *self;
 
     self = SUI_USER_LIST(user_data);
     stat_label_update_stat(self);
+}
+
+static void on_style_updated(SuiUserList *self, gpointer user_data) {
+    GtkTreeModel *model;
+    GtkTreeIter iter;
+
+    model = GTK_TREE_MODEL(self->user_list_store);
+    if (!gtk_tree_model_get_iter_first(model, &iter)){
+        return;
+    }
+
+    do {
+        SuiUser *user;
+        user = sui_user_new_from_iter(GTK_LIST_STORE(model), &iter);
+        sui_user_set_stat(user, &self->user_stat);
+        sui_user_list_update_user(self, user);
+        sui_user_free(user);
+    } while (gtk_tree_model_iter_next(model, &iter));
 }
