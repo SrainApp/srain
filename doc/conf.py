@@ -169,3 +169,13 @@ texinfo_documents = [
      author, 'Srain', 'One line description of project.',
      'Miscellaneous'),
 ]
+
+# -- Options for sphinx.ext.extlinks --------------------------------------
+
+extensions.append('sphinx.ext.extlinks')
+
+extlinks = {
+    'issue': ('https://github.com/SrainApp/srain/issues/%s', 'issue '),
+    'pull': ('https://github.com/SrainApp/srain/pull/%s', 'pull request '),
+    'commit': ('https://github.com/SrainApp/srain/commit/%s', 'commit '),
+}
