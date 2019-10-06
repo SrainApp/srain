@@ -291,7 +291,7 @@
                         <property name="can_focus">False</property>
                         <property name="opacity">0.80000000000000004</property>
                         <property name="pixel_size">64</property>
-                        <property name="icon_name">im.srain.Srain</property>
+                        <property name="icon_name">srain</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>

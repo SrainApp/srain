@@ -337,7 +337,7 @@ void sui_application_send_notification(SuiApplication *self,
 
 void sui_application_highlight_tray_icon(SuiApplication *self, bool highlight){
     gtk_status_icon_set_from_icon_name(self->tray_icon,
-            highlight ? "srain-red": PACKAGE_APPID);
+            highlight ? "srain-red": PACKAGE);
 }
 
 SuiApplication* sui_application_get_instance(){
@@ -432,7 +432,7 @@ static void show_about_dialog(SuiApplication *self){
             "comments", PACKAGE_DESC,
             "authors", authors,
             "documenters", documentors,
-            "logo-icon-name", PACKAGE_APPID,
+            "logo-icon-name", PACKAGE,
             "title", _("About Srain"),
             "translator-credits", translators,
             NULL);

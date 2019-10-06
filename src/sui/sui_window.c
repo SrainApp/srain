@@ -295,7 +295,7 @@ static void sui_window_constructed(GObject *object){
         gtk_widget_show(GTK_WIDGET(self->header_separator));
     } else {
         // Use appliaction icon instead of standard icon when CSD enabled
-        gtk_image_set_from_icon_name(self->start_image, PACKAGE_APPID,
+        gtk_image_set_from_icon_name(self->start_image, PACKAGE,
                 GTK_ICON_SIZE_BUTTON);
     }
     update_header(self);
