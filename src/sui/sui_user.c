@@ -177,6 +177,7 @@ static cairo_surface_t* new_user_icon_from_type(SrnChatUserType type,
     GdkRGBA fg_color;
     GdkPixbuf *pixbuf;
     GtkIconInfo *icon_info;
+    cairo_surface_t *surface;
 
     switch (type){
         case SRN_CHAT_USER_TYPE_ADMIN:
@@ -218,12 +219,15 @@ static cairo_surface_t* new_user_icon_from_type(SrnChatUserType type,
         pixbuf = gtk_icon_info_load_symbolic_for_context(icon_info,
                 style_context, NULL, &err);
     }
+    g_object_unref(icon_info);
     if (err) {
         ERR_FR("Failed to load user icon: %s", err->message);
         g_error_free(err);
     }
 
     g_return_val_if_fail(pixbuf, NULL);
-    return gdk_cairo_surface_create_from_pixbuf(pixbuf,
+    surface = gdk_cairo_surface_create_from_pixbuf(pixbuf,
             gdk_window_get_scale_factor(window), window);
+    g_object_unref(pixbuf);
+    return surface;
 }
