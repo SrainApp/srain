@@ -48,8 +48,8 @@ struct _SuiUser {
     SuiUserStat *stat;
 };
 
-static GdkPixbuf* new_user_icon_from_type(SrnChatUserType type,
-        GtkStyleContext *style_context);
+static cairo_surface_t* new_user_icon_from_type(SrnChatUserType type,
+        GtkStyleContext *style_context, GdkWindow *window);
 
 /*****************************************************************************
  * Expored functions
@@ -95,7 +95,8 @@ int sui_user_compare(SuiUser *user1, SuiUser *user2){
             user2->ctx->srv_user->nick);
 }
 
-void sui_user_update(SuiUser *self, GtkStyleContext *style_context){
+void sui_user_update(SuiUser *self, GtkStyleContext *style_context,
+        GdkWindow *window){
     g_return_if_fail(self->list);
     g_return_if_fail(self->stat);
     g_return_if_fail(self->ctx);
@@ -134,12 +135,15 @@ void sui_user_update(SuiUser *self, GtkStyleContext *style_context){
         }
     }
 
+    cairo_surface_t *icon = new_user_icon_from_type(self->ctx->type,
+            style_context, window);
     gtk_list_store_set(self->list, (GtkTreeIter *)self,
             COL_NAME, self->ctx->srv_user->nick,
-            COL_ICON, new_user_icon_from_type(self->ctx->type, style_context),
+            COL_ICON, icon,
             COL_USER, self->ctx,
             COL_TYPE, self->ctx->type,
             -1);
+    cairo_surface_destroy(icon);
 }
 
 void sui_user_set_list(SuiUser *self, GtkListStore *list){
@@ -166,8 +170,8 @@ const char* sui_user_get_nickname(SuiUser *self){
  * Static functions
  *****************************************************************************/
 
-static GdkPixbuf* new_user_icon_from_type(SrnChatUserType type,
-        GtkStyleContext *style_context){
+static cairo_surface_t* new_user_icon_from_type(SrnChatUserType type,
+        GtkStyleContext *style_context, GdkWindow *window){
     const char *color_str;
     GError *err;
     GdkRGBA fg_color;
@@ -197,8 +201,12 @@ static GdkPixbuf* new_user_icon_from_type(SrnChatUserType type,
         ERR_FR("Failed to parser color str %s", color_str);
     }
 
-    icon_info = gtk_icon_theme_lookup_icon(gtk_icon_theme_get_default(),
-            "user-available", 16, GTK_ICON_LOOKUP_FORCE_SYMBOLIC);
+    icon_info = gtk_icon_theme_lookup_icon_for_scale(
+            gtk_icon_theme_get_default(),
+            "user-available",
+            16,
+            gdk_window_get_scale_factor(window),
+            GTK_ICON_LOOKUP_FORCE_SYMBOLIC);
     g_return_val_if_fail(icon_info, NULL);
 
     err = NULL;
@@ -215,5 +223,7 @@ static GdkPixbuf* new_user_icon_from_type(SrnChatUserType type,
         g_error_free(err);
     }
 
-    return pixbuf;
+    g_return_val_if_fail(pixbuf, NULL);
+    return gdk_cairo_surface_create_from_pixbuf(pixbuf,
+            gdk_window_get_scale_factor(window), window);
 }

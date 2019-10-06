@@ -28,6 +28,7 @@
  */
 
 #include <gtk/gtk.h>
+#include <cairo-gobject.h>
 
 #include "core/core.h"
 
@@ -42,6 +43,9 @@ struct _SuiUserList {
 
     GtkLabel *stat_label;   // users statistics
     GtkTreeView *user_tree_view;
+    GtkTreeViewColumn *user_tree_view_column;
+    GtkCellRendererText *user_name_cell_renderer;
+    GtkCellRendererPixbuf *user_icon_cell_renderer;
 
     /* Data model */
     SuiUserStat user_stat;
@@ -93,8 +97,11 @@ static void sui_user_list_class_init(SuiUserListClass *class){
     gtk_widget_class_set_template_from_resource(widget_class,
             "/im/srain/Srain/user_list.glade");
 
-    gtk_widget_class_bind_template_child(widget_class, SuiUserList, user_tree_view);
     gtk_widget_class_bind_template_child(widget_class, SuiUserList, stat_label);
+    gtk_widget_class_bind_template_child(widget_class, SuiUserList, user_tree_view);
+    gtk_widget_class_bind_template_child(widget_class, SuiUserList, user_tree_view_column);
+    gtk_widget_class_bind_template_child(widget_class, SuiUserList, user_name_cell_renderer);
+    gtk_widget_class_bind_template_child(widget_class, SuiUserList, user_icon_cell_renderer);
 }
 
 /*****************************************************************************
@@ -122,7 +129,9 @@ void sui_user_list_rm_user(SuiUserList *self, SuiUser *user){
 }
 
 void sui_user_list_update_user(SuiUserList *self, SuiUser *user){
-    sui_user_update(user, gtk_widget_get_style_context(GTK_WIDGET(self)));
+    sui_user_update(user,
+            gtk_widget_get_style_context(GTK_WIDGET(self)),
+            gtk_widget_get_window(GTK_WIDGET(self)));
 }
 
 void sui_user_list_clear(SuiUserList *self){
@@ -164,12 +173,17 @@ static void user_tree_view_set_model(SuiUserList *self){
     GtkTreeModel *filter;
     GtkTreeView *view;
 
-    /* 3 columns: user, icon, type */
+    /* 4 columns: user, icon, model, type */
     self->user_list_store = gtk_list_store_new(4,
             G_TYPE_STRING,
-            GDK_TYPE_PIXBUF,
+            CAIRO_GOBJECT_TYPE_SURFACE,
             G_TYPE_POINTER,
             G_TYPE_INT);
+    gtk_tree_view_column_add_attribute(self->user_tree_view_column,
+            GTK_CELL_RENDERER(self->user_name_cell_renderer), "text", 0);
+    gtk_tree_view_column_add_attribute(self->user_tree_view_column,
+            GTK_CELL_RENDERER(self->user_icon_cell_renderer), "surface", 1);
+
     store = self->user_list_store;
     view = self->user_tree_view;
 
