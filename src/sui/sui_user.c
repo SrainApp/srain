@@ -208,6 +208,14 @@ static cairo_surface_t* new_user_icon_from_type(SrnChatUserType type,
             16,
             gdk_window_get_scale_factor(window),
             GTK_ICON_LOOKUP_FORCE_SYMBOLIC);
+    if (!icon_info) {
+        icon_info = gtk_icon_theme_lookup_icon_for_scale(
+                gtk_icon_theme_get_default(),
+                "user-available",
+                16,
+                gdk_window_get_scale_factor(window),
+                0);
+    }
     g_return_val_if_fail(icon_info, NULL);
 
     err = NULL;
