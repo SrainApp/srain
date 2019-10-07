@@ -161,8 +161,6 @@ bool srn_server_is_valid(SrnServer *srv){
 }
 
 bool srn_server_is_chat_valid(SrnServer *srv, SrnChat *chat){
-    SrnApplication *app;
-
     if (!srn_server_is_valid(srv)){
         return FALSE;
     }

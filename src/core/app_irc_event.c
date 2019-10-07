@@ -396,7 +396,6 @@ static void irc_event_nick(SircSession *sirc, const char *event,
     const char *old_nick;
     const char *new_nick;
     GList *lst;
-    SrnRet ret;
     SrnServer *srv;
     SrnServerUser *srv_user;
 
@@ -946,7 +945,6 @@ static void irc_event_ctcp_req(SircSession *sirc, const char *event,
 
 static void irc_event_ctcp_rsp(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count){
-    const char *target;
     const char *msg;
     SrnServer *srv;
     SrnChat *chat;
@@ -956,7 +954,6 @@ static void irc_event_ctcp_rsp(SircSession *sirc, const char *event,
     // TODO: ignore ignored user's CTCP request
 
     g_return_if_fail(count >= 2);
-    target = params[0];
     msg = params[1];
 
     srv = sirc_get_ctx(sirc);
@@ -1260,7 +1257,7 @@ static void irc_event_authenticate(SircSession *sirc, const char *event,
                 }
 
                 // This is the second phase to authenticate, we need to sign the message from server and reply it
-                const unsigned char *challenge = params[0];
+                const char *challenge = params[0];
                 DBG_FR("CHALLENGE IS %s", challenge);
                 const char *cert = srv->cfg->user->login->cert_file;
                 char *output;
@@ -1270,7 +1267,7 @@ static void irc_event_authenticate(SircSession *sirc, const char *event,
                     ERR_FR("File %s not found, or it is not a valid ecdsa certificate file.", cert);
                     return ;
                 }
-                libecdsaauth_sign_base64(keypair, challenge, strlen(challenge), &output, &outlen);
+                libecdsaauth_sign_base64(keypair, (unsigned char *)challenge, strlen(challenge), &output, &outlen);
                 DBG_FR("RESPONSE is %s", output);
                 libecdsaauth_key_free(keypair);
                 sirc_cmd_authenticate(sirc, output);
@@ -1624,13 +1621,13 @@ static void irc_event_numeric(SircSession *sirc, int event,
             /************************ WHO message ************************/
         case SIRC_RFC_RPL_WHOREPLY:
             {
-                const char *nick;
-                const char *realname;
+                // const char *nick;
+                // const char *realname;
 
                 g_return_if_fail(count >= 7);
-                nick = params[5];
+                // nick = params[5];
                 // params[count - 1] = "<hopcount> <realname>", Skip ' '
-                realname = strchr(params[6], ' ');
+                // realname = strchr(params[6], ' ');
 
                 // TODO
                 break;

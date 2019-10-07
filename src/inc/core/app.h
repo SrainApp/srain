@@ -56,7 +56,6 @@ struct _SrnApplication {
 
     SrnServer *cur_srv;
     GList *srv_list;
-    GList *srv_cfg_list;
 
     SrnPatternSet *pattern_set;
     SrnCommandContext *cmd_ctx;

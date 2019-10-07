@@ -115,7 +115,8 @@ SrnApplication* srn_application_get_default(void){
 }
 
 void srn_application_quit(SrnApplication *app){
-    // TODO
+    // TODO: cleanup
+    finalize_logger(app);
 }
 
 void srn_application_run(SrnApplication *app, int argc, char *argv[]){
@@ -368,7 +369,6 @@ SrnServer* srn_application_get_server(SrnApplication *app, const char *name){
 SrnServer* srn_application_get_server_by_addr(SrnApplication *app,
         SrnServerAddr *addr){
     GList *lst;
-    SrnRet ret;
 
     lst = app->srv_list;
     while (lst) {
@@ -400,7 +400,6 @@ void srn_application_auto_connect_server(SrnApplication *app) {
             lst;
             lst = g_list_next(lst)){
         const char *name;
-        SrnServer *srv;
 
         name = lst->data;
         ret = srn_application_add_server(app, name);

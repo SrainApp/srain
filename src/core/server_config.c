@@ -47,7 +47,6 @@ SrnServerConfig* srn_server_config_new(){
 
 SrnRet srn_server_config_check(SrnServerConfig *cfg){
     const char *missing = _("Missing field in server config: %1$s");
-    const char *invalid = _("Invalid value in server config: %1$s");
     SrnRet ret;
 
     if (!cfg){
