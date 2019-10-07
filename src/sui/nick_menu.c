@@ -70,9 +70,6 @@ void nick_menu_popup(GtkWidget *widget, GdkEventButton *event, const char *nick)
     GtkMenuItem *chat_menu_item;
     GtkMenuItem *invite_menu_item;
     GtkMenu *invite_submenu;
-    SuiBuffer *buf;
-
-    LOG_FR("%s", nick);
 
     builder = gtk_builder_new_from_resource ("/im/srain/Srain/nick_menu.glade");
 
@@ -92,15 +89,10 @@ void nick_menu_popup(GtkWidget *widget, GdkEventButton *event, const char *nick)
     g_signal_connect(chat_menu_item, "activate",
             G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
 
-    /* Create subitem of invite_menu_item */
-    buf = sui_common_get_cur_buffer();
-    buf = NULL;
-    goto FIN;
-
+    /* Create subitems for invite_menu_item */
     n = 0;
+    lst = sui_server_buffer_get_buffer_list(sui_common_get_cur_server_buffer());
     invite_submenu = GTK_MENU(gtk_menu_new());
-    lst = NULL;
-    // FIXME
     while (lst){
         GtkMenuItem *item;
 
@@ -122,7 +114,7 @@ void nick_menu_popup(GtkWidget *widget, GdkEventButton *event, const char *nick)
         g_object_ref_sink(invite_submenu); // remove the floating reference
         g_object_unref(invite_submenu);
     }
-FIN:
+
     gtk_menu_popup(nick_menu, NULL, NULL, NULL, NULL,
             event->button, event->time);
     g_object_unref(builder);
