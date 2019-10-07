@@ -7,12 +7,31 @@ Change Log
     :depth: 1
     :backlinks: none
 
-.. _version-1.0.0:
-
-XXXX-XX-XX Version 1.0.0
-========================
-
 .. _version-latest:
+.. _version-1.0.0rc9999:
+
+2019-10-07 Version 1.0.0rc9999
+==============================
+
+- Features:
+
+  - Activate corresponding buffer when channel URL is clicked (:pull:`190`)
+  - Command alias support (:issue:`188`)
+  - List predefined servers via command, see :ref:`commands-server` for details
+    (:commit:`656f3e5`)
+
+- Changes:
+
+  - Replace all icons with freedesktop standard icons (:issue:`120`)
+
+- Bug fixs:
+
+  - Fix wrong usage of GError (:issue:`179`)
+  - Fix image preview problem when image is hard to detect type (:issue:`163`)
+  - Fix memory leak of pattern filter (:commit:`9464a9e`)
+  - Fix the breaking "abort sending" icon (:pull:`144`)
+  - Fix the invite menu of user (:commit:`9f98cbb`)
+
 .. _version-1.0.0rc5:
 
 2019-06-14 Version 1.0.0rc5
