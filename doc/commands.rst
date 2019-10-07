@@ -74,27 +74,6 @@ to escape it. For backslash itself, use double backslash ``\\``.
 Available Commands
 ==================
 
-.. _commands-usage-context:
-
-/context
---------
-
-.. warning:: This command is **deprecated**.
-
-Usage::
-
-    /context <server> [chat]
-
-Change the current context.
-
-Arguments:
-
-* ``server``: The server you want to operate after
-* ``chat``: Optional, the chat you want operate after, if not set, fallback to
-  server's current chat
-
-.. _commands-usage-reload:
-
 /reload
 -------
 
@@ -114,8 +93,6 @@ Usage::
     /server [connect|disconnect] <name>
 
 Predefined IRC server management.
-
-.. note:: This command may changes context.
 
 Sub commands:
 
@@ -138,8 +115,6 @@ Usage::
 
 Create a IRC server and connect to it immediately.
 
-.. note:: This command may changes context.
-
 Options:
 
 * ``-port``: server port, default ``6667``
@@ -158,15 +133,6 @@ Example::
 
     /connect -real 'I am srainbot' -tls -port 6697 chat.freenode.org srainbot
     /connect 127.0.0.1 srainbot
-
---------------------------------------------------------------------------------
-
-.. note::
-
-    The following commands should run under the specified **context**.
-    The context can be changed by :ref:`commands-usage-context`,
-    :ref:`commands-server` or :ref:`commands-connect`.
-
 
 /ignore & /unignore
 -------------------
