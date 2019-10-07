@@ -90,7 +90,7 @@ Reload user configuration.
 
 Usage::
 
-    /server [connect|disconnect] <name>
+    /server [connect|disconnect|list] <name>
 
 Predefined IRC server management.
 
@@ -98,6 +98,7 @@ Sub commands:
 
 * ``connect``: connect to specified predefined server
 * ``disconnect``: disconnect from specified predefined server
+* ``list``: list all predefined servers
 
 Arguments:
 
