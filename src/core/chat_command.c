@@ -191,6 +191,31 @@ SrnRet on_command_server(SrnCommand *cmd, void *user_data){
         return ret;
     }
 
+    if (g_ascii_strcasecmp(subcmd, "list") == 0){
+        GList *lst;
+        GList *srv_cfg_lst;
+        GString *str;
+
+        // Get a list of server name
+        ret = srn_config_manager_read_server_config_list(
+                app->cfg_mgr, &srv_cfg_lst);
+        if (!RET_IS_OK(ret)){
+            return ret;
+        }
+
+        str = g_string_new(NULL);
+        for (lst = srv_cfg_lst; lst; lst = g_list_next(lst)) {
+            g_string_append_c(str, ' ');
+            g_string_append(str, lst->data);
+        }
+        ret = RET_OK(_("%1$d available server(s):%2$s"),
+                g_list_length(srv_cfg_lst), str->str);
+        g_string_free(str, TRUE);
+        g_list_free_full(srv_cfg_lst, g_free);
+
+        return ret;
+    }
+
     return RET_ERR(_("Unknown sub command: %1$s"), subcmd);
 }
 

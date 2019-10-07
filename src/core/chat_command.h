@@ -56,8 +56,9 @@ static SrnCommandBinding cmd_bindings[] = {
     },
     {
         .name = "/server",
-        .subcmd = {"connect", "disconnect", NULL},
+        .subcmd = {"connect", "disconnect", "list", NULL},
         .argc = 1, // <name>
+        .flags = SRN_COMMAND_FLAG_OMIT_ARG,
         .cb = on_command_server,
     },
     {
