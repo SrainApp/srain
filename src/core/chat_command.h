@@ -23,7 +23,6 @@
 #include "ret.h"
 
 SrnRet on_command_reload(SrnCommand *cmd, void *user_data);
-SrnRet on_command_context(SrnCommand *cmd, void *user_data);
 SrnRet on_command_server(SrnCommand *cmd, void *user_data);
 SrnRet on_command_connect(SrnCommand *cmd, void *user_data);
 SrnRet on_command_ignore(SrnCommand *cmd, void *user_data);
@@ -54,12 +53,6 @@ static SrnCommandBinding cmd_bindings[] = {
         .name = "/reload",
         .argc = 0,
         .cb = on_command_reload,
-    },
-    {
-        .name = "/context",
-        .argc = 2, // <server> [chat]
-        .flags = SRN_COMMAND_FLAG_OMIT_ARG,
-        .cb = on_command_context,
     },
     {
         .name = "/server",

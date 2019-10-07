@@ -133,40 +133,6 @@ SrnRet on_command_reload(SrnCommand *cmd, void *user_data){
     return srn_application_reload_config(app);
 }
 
-SrnRet on_command_context(SrnCommand *cmd, void *user_data){
-    const char *srv_name;
-    const char *chat_name;
-    SrnApplication *app;
-    SrnServer *srv;
-    SrnChat *chat;
-
-    app = ctx_get_app(user_data);
-
-    srv_name = srn_command_get_arg(cmd, 0);
-    if (!srv_name) {
-        return RET_ERR(_("Missing argument <server>"));
-    }
-    srv = srn_application_get_server(app, srv_name);
-    if (!srv) {
-        return RET_ERR(_("No such server: %1$s"), srv_name);
-    }
-    app->cur_srv = srv; // Change current server
-
-    chat_name = srn_command_get_arg(cmd, 1);
-    if (!chat_name) {
-        // Argument "chat" is optional
-        return RET_OK(_("Context switched to server \"%1$s\""), srv_name);
-    }
-    chat = srn_server_get_chat(srv, chat_name);
-    if (!chat) {
-        return RET_ERR(_("No such chat: %1$s") , chat_name);
-    }
-    srv->cur_chat = chat;
-
-    return RET_OK(_("Context switched to server \"%1$s\", chat \"%2$s\""),
-            srv_name, chat_name);
-}
-
 SrnRet on_command_server(SrnCommand *cmd, void *user_data){
     const char *subcmd;
     const char *name;
