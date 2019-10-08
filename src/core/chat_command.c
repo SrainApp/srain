@@ -197,6 +197,7 @@ SrnRet on_command_server(SrnCommand *cmd, void *user_data){
         GString *str;
 
         // Get a list of server name
+        srv_cfg_lst = NULL;
         ret = srn_config_manager_read_server_config_list(
                 app->cfg_mgr, &srv_cfg_lst);
         if (!RET_IS_OK(ret)){
