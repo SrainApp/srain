@@ -1374,10 +1374,18 @@ static void irc_event_numeric(SircSession *sirc, int event,
                 g_return_if_fail(count >= 3);
                 nick = params[1];
 
-                /* If you don't have a nickname (unregistered) yet, try a nick
-                 * with a trailing underline('_') */
+                /* If you don't have a nickname (unregistered) yet */
                 if (!srv->registered){
-                    char *new_nick = g_strdup_printf("%s_", nick);
+                    char *new_nick;
+
+                    if (strlen(nick) - strlen(srv->user->nick) >= 2) {
+                        // Try new nick with a trailing underline('_')
+                        new_nick = g_strdup_printf("%s_", nick);
+                    } else {
+                        // Rewind to original nickname when there are too much
+                        // trailing underlines
+                        new_nick = g_strdup(srv->user->nick);
+                    }
 
                     // FIXME: ircd-seven will truncate the nick without
                     // returning a error message if it reaches the length
