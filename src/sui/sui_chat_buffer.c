@@ -55,7 +55,7 @@ static void sui_chat_buffer_set_property(GObject *object, guint property_id,
 
     switch (property_id){
         case PROP_SERVER_BUFFER:
-            self->server_buffer = SUI_SERVER_BUFFER(g_value_get_pointer(value));
+            self->server_buffer = SUI_SERVER_BUFFER(g_value_get_object(value));
             break;
         default:
             /* We don't have any other property... */
@@ -70,7 +70,7 @@ static void sui_chat_buffer_get_property(GObject *object, guint property_id,
 
     switch (property_id){
         case PROP_SERVER_BUFFER:
-            g_value_set_pointer(value,
+            g_value_set_object(value,
                     sui_chat_buffer_get_server_buffer(self));
             break;
         default:
@@ -203,9 +203,10 @@ static void sui_chat_buffer_class_init(SuiChatBufferClass *class){
 
     /* Install properties */
     obj_properties[PROP_SERVER_BUFFER] =
-        g_param_spec_pointer("server-buffer", // TODO: use spec gobject
+        g_param_spec_object("server-buffer",
                 "Server Buffer",
                 "Server buffer of buffer",
+                SUI_TYPE_SERVER_BUFFER,
                 G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
     g_object_class_install_properties(object_class,
