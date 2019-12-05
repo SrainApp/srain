@@ -137,7 +137,7 @@ static void sui_misc_message_class_init(SuiMiscMessageClass *class){
 }
 
 static void sui_misc_message_update(SuiMessage *_self){
-    char *full_time;
+    const char *full_time;
     SrnMessage *ctx;
     SuiMiscMessage *self;
 
@@ -145,10 +145,9 @@ static void sui_misc_message_update(SuiMessage *_self){
     g_return_if_fail(ctx);
     self = SUI_MISC_MESSAGE(_self);
 
-    full_time = sui_message_format_full_time(_self);
+    full_time = sui_message_get_full_time(_self);
     g_return_if_fail(full_time);
     gtk_widget_set_tooltip_text(GTK_WIDGET(_self->message_label), full_time);
-    g_free(full_time);
 
     SUI_MESSAGE_CLASS(sui_misc_message_parent_class)->update(_self);
 

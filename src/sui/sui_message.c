@@ -296,22 +296,20 @@ void sui_message_label_on_popup(GtkLabel *label, GtkMenu *menu, gpointer user_da
     }
 }
 
-char* sui_message_format_time(SuiMessage *self){
+const char* sui_message_get_time(SuiMessage *self){
     SrnMessage *ctx;
 
     ctx = sui_message_get_ctx(self);
 
-    // TODO: return const char
-    return g_strdup(ctx->rendered_short_time);
+    return ctx->rendered_short_time;
 }
 
-char* sui_message_format_full_time(SuiMessage *self){
+const char* sui_message_get_full_time(SuiMessage *self){
     SrnMessage *ctx;
 
     ctx = sui_message_get_ctx(self);
 
-    // TODO: return const char
-    return g_strdup(ctx->rendered_full_time);
+    return ctx->rendered_full_time;
 }
 
 /*****************************************************************************

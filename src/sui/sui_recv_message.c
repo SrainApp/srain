@@ -84,8 +84,8 @@ static void sui_recv_message_class_init(SuiRecvMessageClass *class){
 }
 
 static void sui_recv_message_update(SuiMessage *_self){
-    char *time;
-    char *full_time;
+    const char *time;
+    const char *full_time;
     SrnMessage *ctx;
     SuiRecvMessage *self;
 
@@ -98,16 +98,13 @@ static void sui_recv_message_update(SuiMessage *_self){
         gtk_label_set_text(self->remark_label, ctx->rendered_remark);
     }
 
-    time =  sui_message_format_time(_self);
-    full_time = sui_message_format_full_time(_self);
+    time =  sui_message_get_time(_self);
+    full_time = sui_message_get_full_time(_self);
     g_return_if_fail(time);
     g_return_if_fail(full_time);
 
     gtk_label_set_text(self->time_label, time);
     gtk_widget_set_tooltip_text(GTK_WIDGET(self->time_label), full_time);
-
-    g_free(full_time);
-    g_free(time);
 
     SUI_MESSAGE_CLASS(sui_recv_message_parent_class)->update(_self);
 }
