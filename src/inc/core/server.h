@@ -63,7 +63,7 @@ struct _SrnServerUser {
     bool is_me;
     bool is_server;
     bool is_online;
-    bool is_ignored;            // TODO: New implementation of ignore list
+    bool is_ignored;
     bool is_away;
     bool is_secure;
 

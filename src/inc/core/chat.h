@@ -93,7 +93,7 @@ struct _SrnChatUser{
     SrnChat *chat;
 
     bool is_joined;
-    bool is_ignored;            // TODO: New implementation of ignore list
+    bool is_ignored;
 
     SrnChatUserType type;
     SrnServerUser *srv_user;
