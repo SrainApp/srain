@@ -52,7 +52,6 @@ struct _SuiMessageListClass {
     GtkBoxClass parent_class;
 };
 
-static int get_list_box_length(GtkListBox *list_box);
 static void scroll_to_bottom(SuiMessageList *self);
 static gboolean scroll_to_bottom_timeout(gpointer user_data);
 static void smart_scroll(SuiMessageList *self);
@@ -224,10 +223,6 @@ GList *sui_message_list_get_recent_messages(SuiMessageList *self, int limit){
 /*****************************************************************************
  * Static functions
  *****************************************************************************/
-
-static int get_list_box_length(GtkListBox *list_box){
-    return g_list_length(gtk_container_get_children(GTK_CONTAINER(list_box)));
-}
 
 static void scroll_to_bottom(SuiMessageList *self){
     if (self->scroll_timer){
