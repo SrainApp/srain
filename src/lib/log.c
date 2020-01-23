@@ -26,6 +26,7 @@
 
 #include <stdio.h>
 #include <glib.h>
+#include <glib/gprintf.h>
 
 #include "srain.h"
 #include "config/config.h"
