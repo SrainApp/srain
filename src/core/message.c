@@ -85,7 +85,7 @@ SrnMessage* srn_message_new(SrnChat *chat, SrnChatUser *user,
     return self;
 }
 
-char* srn_message_to_string(SrnMessage *self){
+char* srn_message_to_string(const SrnMessage *self){
     char *time_str;
     char *msg_str;
 
