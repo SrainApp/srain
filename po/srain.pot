@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Srain 1.0.0rc3\n"
+"Project-Id-Version: Srain 1.0.0rc9999\n"
 "Report-Msgid-Bugs-To: i@silverrainz.me\n"
-"POT-Creation-Date: 2019-10-07 22:28+0800\n"
+"POT-Creation-Date: 2020-02-16 17:56+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,52 +17,52 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/core/chat_command.c:351 ../src/core/app_ui_event.c:380
+#: ../src/core/app_ui_event.c:380 ../src/core/chat_command.c:352
 #, c-format
 msgid "\"%1$s\" has ignored"
 msgstr ""
 
-#: ../src/core/chat_command.c:376 ../src/core/app_ui_event.c:383
+#: ../src/core/app_ui_event.c:383 ../src/core/chat_command.c:377
 #, c-format
 msgid "\"%1$s\" has unignored"
 msgstr ""
 
-#: ../src/core/chat_command.c:348
+#: ../src/core/chat_command.c:349
 #, c-format
 msgid "\"%1$s\" is already ignored"
 msgstr ""
 
-#: ../src/core/chat_command.c:211
+#: ../src/core/chat_command.c:212
 #, c-format
 msgid "%1$d available server(s):%2$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1606
+#: ../src/core/app_irc_event.c:1614
 #, c-format
 msgid "%1$s %2$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1593
+#: ../src/core/app_irc_event.c:1601
 #, c-format
 msgid "%1$s %2$s %3$s"
 msgstr ""
 
-#: ../src/sui/sui_message.c:455
+#: ../src/sui/sui_message.c:453
 #, c-format
 msgid "%1$s %2$s @ %3$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1536
+#: ../src/core/app_irc_event.c:1544
 #, c-format
 msgid "%1$s <%2$s@%3$s> %4$s"
 msgstr ""
 
-#: ../src/sui/sui_message.c:510
+#: ../src/sui/sui_message.c:508
 #, c-format
 msgid "%1$s <fwd %2$s@%3$s>"
 msgstr ""
 
-#: ../src/sui/sui_message.c:450
+#: ../src/sui/sui_message.c:448
 #, c-format
 msgid "%1$s @ %2$s"
 msgstr ""
@@ -119,22 +119,22 @@ msgstr ""
 msgid "%1$s invites you into %2$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1549
+#: ../src/core/app_irc_event.c:1557
 #, c-format
 msgid "%1$s is a member of %2$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1561
+#: ../src/core/app_irc_event.c:1569
 #, c-format
 msgid "%1$s is attached to %2$s at \"%3$s\""
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1781
+#: ../src/core/app_irc_event.c:1789
 #, c-format
 msgid "%1$s is away: %2$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1580
+#: ../src/core/app_irc_event.c:1588
 #, c-format
 msgid "%1$s is idle for %2$s seconds since %3$s"
 msgstr ""
@@ -151,12 +151,12 @@ msgid ""
 "Running against GTK+ %3$d.%4$d.%5$d"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1657 ../src/core/app_irc_event.c:1677
+#: ../src/core/app_irc_event.c:1665 ../src/core/app_irc_event.c:1685
 #, c-format
 msgid "%1$s: %2$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1513 ../src/core/app_irc_event.c:1578
+#: ../src/core/app_irc_event.c:1521 ../src/core/app_irc_event.c:1586
 msgid "%Y-%m-%d %T"
 msgstr ""
 
@@ -164,7 +164,7 @@ msgstr ""
 msgid "<big>Welcome to Srain!</big>"
 msgstr ""
 
-#: ../src/core/chat_command.c:560
+#: ../src/core/chat_command.c:561
 #, c-format
 msgid "A message has been sent to \"%1$s\""
 msgstr ""
@@ -213,11 +213,11 @@ msgstr ""
 msgid "Autorun command: %1$s"
 msgstr ""
 
-#: ../src/core/chat_command.c:769
+#: ../src/core/chat_command.c:770
 msgid "Available regex patterns:"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1514
+#: ../src/core/app_irc_event.c:1522
 #, c-format
 msgid "By %1$s at %2$s"
 msgstr ""
@@ -230,7 +230,7 @@ msgstr ""
 msgid "Cannot disconnect from a unconnected server"
 msgstr ""
 
-#: ../src/core/chat_command.c:580 ../src/core/app_ui_event.c:251
+#: ../src/core/app_ui_event.c:251 ../src/core/chat_command.c:581
 msgid "Cannot send message directly to a server"
 msgstr ""
 
@@ -250,7 +250,7 @@ msgstr ""
 msgid "Configuration is reloaded"
 msgstr ""
 
-#: ../data/ui/window.glade:84 ../data/ui/connect_panel.glade:554
+#: ../data/ui/connect_panel.glade:554 ../data/ui/window.glade:84
 msgid "Connect"
 msgstr ""
 
@@ -281,7 +281,7 @@ msgstr ""
 msgid "ERROR: %1$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1871
+#: ../src/core/app_irc_event.c:1879
 #, c-format
 msgid "ERROR[%1$3d] %2$s"
 msgstr ""
@@ -300,13 +300,13 @@ msgstr ""
 
 #: ../src/core/app.c:76 ../src/core/app.c:84 ../src/core/app.c:298
 #: ../src/core/app.c:409 ../src/sui/sui_app.c:468 ../src/sui/sui_app.c:487
-#: ../src/sui/sui_app.c:526 ../src/sui/sui_misc_message.c:189
+#: ../src/sui/sui_app.c:526 ../src/sui/sui_common.c:145
 #: ../src/sui/sui_connect_panel.c:487 ../src/sui/sui_connect_panel.c:496
 #: ../src/sui/sui_connect_panel.c:534 ../src/sui/sui_connect_panel.c:543
 #: ../src/sui/sui_connect_panel.c:589 ../src/sui/sui_join_panel.c:308
 #: ../src/sui/sui_join_panel.c:363 ../src/sui/sui_join_panel.c:374
 #: ../src/sui/sui_join_panel.c:391 ../src/sui/sui_join_panel.c:430
-#: ../src/sui/sui_join_panel.c:436 ../src/sui/sui_common.c:145
+#: ../src/sui/sui_join_panel.c:436 ../src/sui/sui_misc_message.c:188
 #: ../src/sui/sui_prefs_dialog.c:162
 msgid "Error"
 msgstr ""
@@ -368,12 +368,12 @@ msgstr ""
 msgid "Failed to add chat \"%1$s\": %2$s"
 msgstr ""
 
-#: ../src/core/chat_command.c:747
+#: ../src/core/chat_command.c:748
 #, c-format
 msgid "Failed to add regex pattern \"%1$s\": %2$s"
 msgstr ""
 
-#: ../src/core/app_url.c:119 ../src/core/app.c:407
+#: ../src/core/app.c:407 ../src/core/app_url.c:119
 #, c-format
 msgid "Failed to add server \"%1$s\": %2$s"
 msgstr ""
@@ -383,12 +383,12 @@ msgstr ""
 msgid "Failed to apply theme from file \"%1$s\": %2$s"
 msgstr ""
 
-#: ../src/core/chat_command.c:407
+#: ../src/core/chat_command.c:408
 #, c-format
 msgid "Failed to attach pattern to chat \"%1$s\": %2$s"
 msgstr ""
 
-#: ../src/core/chat_command.c:837
+#: ../src/core/chat_command.c:838
 #, c-format
 msgid "Failed to attach pattern to user %1$s\" of chat \"%2$s\": %2$s"
 msgstr ""
@@ -443,17 +443,17 @@ msgstr ""
 msgid "Failed to create user data directory: %1$s"
 msgstr ""
 
-#: ../src/core/chat_command.c:436
+#: ../src/core/chat_command.c:437
 #, c-format
 msgid "Failed to dettach pattern from chat \"%1$s\": %2$s"
 msgstr ""
 
-#: ../src/core/chat_command.c:882
+#: ../src/core/chat_command.c:883
 #, c-format
 msgid "Failed to dettach pattern from user \"%1$s\": %2$s"
 msgstr ""
 
-#: ../src/core/chat_command.c:159 ../src/core/chat_command.c:292
+#: ../src/core/chat_command.c:159 ../src/core/chat_command.c:293
 #, c-format
 msgid "Failed to instantiate server \"%1$s\""
 msgstr ""
@@ -488,8 +488,8 @@ msgstr ""
 msgid "Failed to read user configuration file: %1$s"
 msgstr ""
 
-#: ../src/core/chat_command.c:169 ../src/core/chat_command.c:305
-#: ../src/core/app_url.c:135
+#: ../src/core/app_url.c:135 ../src/core/chat_command.c:169
+#: ../src/core/chat_command.c:306
 #, c-format
 msgid "Failed to register on server \"%1$s\""
 msgstr ""
@@ -509,19 +509,19 @@ msgstr ""
 msgid "Failed to reload logger config: %1$s"
 msgstr ""
 
-#: ../src/core/chat_command.c:760
+#: ../src/core/chat_command.c:761
 #, c-format
 msgid "Failed to remove regex pattern \"%1$s\": %2$s"
 msgstr ""
 
+#: ../src/render/mention_renderer.c:88
 #: ../src/render/mirc_colorize_renderer.c:105
-#: ../src/render/mirc_strip_renderer.c:72 ../src/render/mention_renderer.c:88
-#: ../src/render/url_renderer.c:117
+#: ../src/render/mirc_strip_renderer.c:72 ../src/render/url_renderer.c:117
 #, c-format
 msgid "Failed to render markup text: %1$s"
 msgstr ""
 
-#: ../src/core/chat_command.c:585
+#: ../src/core/chat_command.c:586
 #, c-format
 msgid "Failed to send action message: %1$s"
 msgstr ""
@@ -595,7 +595,7 @@ msgid ""
 "try to enable it and reconnect"
 msgstr ""
 
-#: ../data/ui/window.glade:100 ../data/ui/join_panel.glade:416
+#: ../data/ui/join_panel.glade:416 ../data/ui/window.glade:100
 msgid "Join"
 msgstr ""
 
@@ -638,28 +638,28 @@ msgstr ""
 msgid "Max users"
 msgstr ""
 
-#: ../src/sui/sui_message.c:461
+#: ../src/sui/sui_message.c:459
 msgid "Message from unknown chat"
 msgstr ""
 
-#: ../src/core/chat_command.c:440
+#: ../src/core/chat_command.c:441
 #, c-format
 msgid "Messages of chat \"%1$s\" are no longer filtered by pattern \"%2$s\""
 msgstr ""
 
-#: ../src/core/chat_command.c:411
+#: ../src/core/chat_command.c:412
 #, c-format
 msgid "Messages of chat \"%1$s\" will be filtered by pattern \"%2$s\""
 msgstr ""
 
-#: ../src/core/chat_command.c:886
+#: ../src/core/chat_command.c:887
 #, c-format
 msgid ""
 "Messages of user \"%1$s\" of chat \"%2$s\" are no longer rendered by pattern "
 "\"%3$s\""
 msgstr ""
 
-#: ../src/core/chat_command.c:841
+#: ../src/core/chat_command.c:842
 #, c-format
 msgid ""
 "Messages of user \"%1$s\" of chat \"%2$s\" will be rendered by pattern \"%3$s"
@@ -670,7 +670,7 @@ msgstr ""
 msgid "Min users"
 msgstr ""
 
-#: ../src/core/chat_command.c:239
+#: ../src/core/chat_command.c:240
 msgid "Missing argument <addr>"
 msgstr ""
 
@@ -715,7 +715,7 @@ msgstr ""
 msgid "No new capability to be requested"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1472
+#: ../src/core/app_irc_event.c:1480
 msgid "No topic is set"
 msgstr ""
 
@@ -743,7 +743,7 @@ msgstr ""
 msgid "Password:"
 msgstr ""
 
-#: ../src/core/chat_command.c:391 ../src/core/chat_command.c:811
+#: ../src/core/chat_command.c:392 ../src/core/chat_command.c:812
 #, c-format
 msgid "Pattern \"%1$s\" not found"
 msgstr ""
@@ -788,16 +788,16 @@ msgstr ""
 msgid "Received unsupported CTCP %1$s response form %2$s"
 msgstr ""
 
-#: ../src/core/chat_command.c:188 ../src/core/app_ui_event.c:159
+#: ../src/core/app_ui_event.c:159 ../src/core/chat_command.c:188
 msgid "Reconnection stopped"
 msgstr ""
 
-#: ../src/core/chat_command.c:750
+#: ../src/core/chat_command.c:751
 #, c-format
 msgid "Regex pattern \"%1$s\" has added"
 msgstr ""
 
-#: ../src/core/chat_command.c:763
+#: ../src/core/chat_command.c:764
 #, c-format
 msgid "Regex pattern \"%1$s\" has removed"
 msgstr ""
@@ -873,7 +873,7 @@ msgid "Server is disconnecting"
 msgstr ""
 
 #: ../src/config/password.c:126
-msgid "Server passowrd"
+msgid "Server password"
 msgstr ""
 
 #: ../data/ui/connect_panel.glade:52
@@ -923,7 +923,7 @@ msgid ""
 "The assigned nickname does not match the requested nickname, login skipped"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1493
+#: ../src/core/app_irc_event.c:1501
 #, c-format
 msgid ""
 "The topic of this channel is:\n"
@@ -952,7 +952,7 @@ msgstr ""
 msgid "True"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1388
+#: ../src/core/app_irc_event.c:1396
 #, c-format
 msgid "Trying nickname: \"%1$s\"..."
 msgstr ""
@@ -963,7 +963,7 @@ msgstr ""
 msgid "Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1822
+#: ../src/core/app_irc_event.c:1830
 #, c-format
 msgid "URL of %1$s is: %2$s"
 msgstr ""
@@ -991,7 +991,7 @@ msgstr ""
 msgid "Unknown option %1$s"
 msgstr ""
 
-#: ../src/core/chat_command.c:219 ../src/lib/command.c:494
+#: ../src/core/chat_command.c:220 ../src/lib/command.c:494
 #, c-format
 msgid "Unknown sub command: %1$s"
 msgstr ""
@@ -1018,7 +1018,7 @@ msgid "User config not found"
 msgstr ""
 
 #: ../src/config/password.c:257
-msgid "User passowrd"
+msgid "User password"
 msgstr ""
 
 #: ../data/ui/join_panel.glade:309
@@ -1159,7 +1159,7 @@ msgstr ""
 msgid "server-list[%1$d] doesn't have a name"
 msgstr ""
 
-#: ../src/core/chat_command.c:373
+#: ../src/core/chat_command.c:374
 #, c-format
 msgid "user \"%1$s\" not found"
 msgstr ""
