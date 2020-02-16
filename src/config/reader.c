@@ -32,6 +32,7 @@
 #include "config/password.h"
 #include "i18n.h"
 #include "utils.h"
+#include "log.h"
 
 /* Libconfig helpers */
 static int config_lookup_string_ex(const config_t *config, const char *path, char **value);
@@ -139,13 +140,13 @@ SrnRet srn_config_manager_read_server_config(SrnConfigManager *mgr,
     }
     ret = srn_config_manager_lookup_server_password(mgr, &cfg->password, srv_name);
     if (!RET_IS_OK(ret)){
-        return RET_ERR(_("Error occurred while looking up server password: %1$s"),
+        WARN_FR(_("Error occurred while looking up server password: %1$s"),
                 RET_MSG(ret));
     }
     ret = srn_config_manager_lookup_user_password(mgr,
             &cfg->user->login->password, srv_name, cfg->user->nick);
     if (!RET_IS_OK(ret)){
-        return RET_ERR(_("Error occurred while looking up user password: %1$s"),
+        WARN_FR(_("Error occurred while looking up user password: %1$s"),
                 RET_MSG(ret));
     }
 
@@ -224,7 +225,7 @@ SrnRet srn_config_manager_read_chat_config(SrnConfigManager *mgr,
     ret = srn_config_manager_lookup_channel_password(mgr,
             &cfg->password, srv_name, chat_name);
     if (!RET_IS_OK(ret)){
-        return RET_ERR(_("Error occurred while looking up channel password: %1$s"),
+        WARN_FR(_("Error occurred while looking up channel password: %1$s"),
                 RET_MSG(ret));
     }
 
