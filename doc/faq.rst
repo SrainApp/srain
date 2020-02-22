@@ -12,28 +12,6 @@ Does Srain support Windows?
 
 Yes, please refer to :ref:`install-packages-windows`.
 
-Why does the image upload button not work?
-==========================================
-
-This function is implemented by a python plugin, therefore you should install
-``python3-urllib3`` and ``python3-request`` to let it work.
-
-.. warning:: Image upload function is unavailable after :ref:`version-1.0.0rc1`.
-
-Why can't I see people's avatar?
-================================
-
-There is not a specification for user avatar in IRC protocol
-(`IRCv3`_ has an idea about it), so currently the avatar function is simply
-implemented by a python plugin, therefore you should install
-``python3-urllib3`` and ``python3-request`` to let it work.
-
-Besides, you should set ``show_avatar`` to ``true`` in your configuration.
-
-.. _IRCv3: http://ircv3.net/
-
-.. warning:: Avatar function is unavailable after :ref:`version-1.0.0rc1`.
-
 .. _faq-relay-message-transform:
 
 What is "relay message transform"?
@@ -42,12 +20,17 @@ What is "relay message transform"?
 There are many relay bots forward messages from other IM to IRC network,
 "Relay message transform" make these messages easier to read.
 
-For example:
+For example, there is a telegram bot named "telegram", the words in brackets
+is the named of the telegram user.
 
-.. image:: http://img.vim-cn.com/7f/5211f94b8bcfabf16a852907bc76001ee321be.png
+.. figure:: _static/srain-render-message-before.png
 
-To enable "relay message transform", check :ref:`commands-relay` for more
-details.
+Run command ``/pattern add normal-relay \[(?<sender>[^:]+?)\] (?<content>.*)``
+and ``/render telegram normal-relay``, you get:
+
+.. figure:: _static/srain-render-message-after.png
+
+For more details, please refer to `commands-pattern` and `commands-render`.
 
 Where are the log files?
 ========================
@@ -63,8 +46,6 @@ Refer to :ref:`commands-syntax`.
 
 How can I remove my stored password?
 ====================================
-
-Since :ref:`version-1.0.0rc4`, Srain supports password storage.
 
 Just leave the password entry empty and check the "Remember password" checkbox
 before connect to server or join channel, the corresponding password will be
