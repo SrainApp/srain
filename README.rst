@@ -32,7 +32,7 @@ Features
 - Fully open source
 - RFC {1459,2812} compatible
 - Partial `IRCv3`_ support
-- Multi-platform support (Linux, Windows and macOS)
+- Multi-platform support (Linux, Windows, macOS and BSD)
 - Act like modern IM client
 
   - Graphical user interface

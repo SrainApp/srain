@@ -3,7 +3,8 @@ Installation
 ============
 
 Srain is available on :ref:`install-packages-gnu-linux`,
-:ref:`install-packages-windows` and :ref:`install-packages-macos`.
+:ref:`install-packages-windows`, :ref:`install-packages-macos` and
+:ref:`install-packages-bsd`.
 
 .. contents::
     :local:
@@ -242,3 +243,15 @@ Firstly install `Homebrew`_, run the following commands to install dependencies:
 .. _Homebrew: https://brew.sh/
 
 Then follow the steps in :ref:`install-building`.
+
+.. _install-packages-bsd:
+
+BSD
+---
+
+OpenBSD
+~~~~~~~
+
+Please refers to `OpenBSD Ports`_.
+
+.. _OpenBSD Ports: https://openports.se/net/srain
