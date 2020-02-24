@@ -7,7 +7,47 @@ Change Log
     :depth: 1
     :backlinks: none
 
+.. Please write changelog as the following template:
+
+    .. _version-x.x.x:
+
+    YYYY-MM-DD Version X.X.X
+    ========================
+
+    - Features:
+
+      - XXX (:pull:`PULL_REQUEST_ID`)
+      - XXX (:issue:`ISSUE_ID`)
+      - XXX (:commit:`COMMID_ID`)
+
+    - Changes:
+
+      - XXX
+
+    - Bug fixes:
+
+      - XXX
+
 .. _version-latest:
+.. _version-x.x.x:
+
+2020-02-24 Version 1.0.0
+========================
+
+- Changes:
+
+  - Some code cleanup
+  - Update :doc:`./start` documentation
+
+- Bug fixes:
+
+  - Allow Srain runs without dbus secrets service (:issue:`195`)
+  - Fix nick generation logical (:commit:`39ced08`)
+
+.. note::
+
+    1.0.0 is the first stable release of Srain, enjoy!
+
 .. _version-1.0.0rc9999:
 
 2019-10-07 Version 1.0.0rc9999
@@ -24,7 +64,7 @@ Change Log
 
   - Replace all icons with freedesktop standard icons (:issue:`120`)
 
-- Bug fixs:
+- Bug fixes:
 
   - Fix wrong usage of GError (:issue:`179`)
   - Fix image preview problem when image is hard to detect type (:issue:`163`)
@@ -82,21 +122,15 @@ Change Log
 2019-04-14 Version 1.0.0rc3
 ===========================
 
-.. note:: TODO.
-
 .. _version-1.0.0rc2:
 
 2019-01-24 Version 1.0.0rc2
 ===========================
 
-.. note:: TODO.
-
 .. _version-1.0.0rc1:
 
 2018-09-10 Version 1.0.0rc1
 ===========================
-
-.. note:: TODO.
 
 .. _version-0.06.4:
 
@@ -287,10 +321,6 @@ Change Log
   - More friendly User interface
   - Stronger {upload,avatar} plugin
   - Fixed a lot of bugs
-
-.. note::
-
-    0.05 is the first stable release of Srain, enjoy~
 
 2016-04-30 Version 0.03
 =======================

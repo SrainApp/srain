@@ -420,10 +420,7 @@ you can render it to a more easy-to-read format via the following commands::
 
 The forwarded meessage will look like "<xmpp_user> xmpp_message", and the
 original message sender "xmppbot" will be displayed as message remark.
-
-.. note::
-
-   TODO: Add figure
+Please refer to :ref:`faq-relay-message-transform` see its effect.
 
 .. note::
 

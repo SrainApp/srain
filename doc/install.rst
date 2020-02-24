@@ -3,7 +3,8 @@ Installation
 ============
 
 Srain is available on :ref:`install-packages-gnu-linux`,
-:ref:`install-packages-windows` and :ref:`install-packages-macos`.
+:ref:`install-packages-windows`, :ref:`install-packages-macos` and
+:ref:`install-packages-bsd`.
 
 .. contents::
     :local:
@@ -42,14 +43,10 @@ before the following steps.
 Firstly, download source code of srain,
 you can get source code of latest release:
 
-.. note::
-
-   The development of 1.0 release is working in progress.
-
 ..
-    $ wget https://github.com/SrainApp/srain/archive/1.0.0rc9999.tar.gz
-    $ tar -xvzf 1.0.0rc9999.tar.gz
-    $ cd srain-1.0.0rc9999
+    $ wget https://github.com/SrainApp/srain/archive/1.0.0.tar.gz
+    $ tar -xvzf 1.0.0.tar.gz
+    $ cd srain-1.0.0
 
 Or get git version:
 
@@ -242,3 +239,15 @@ Firstly install `Homebrew`_, run the following commands to install dependencies:
 .. _Homebrew: https://brew.sh/
 
 Then follow the steps in :ref:`install-building`.
+
+.. _install-packages-bsd:
+
+BSD
+---
+
+OpenBSD
+~~~~~~~
+
+Please refers to `OpenBSD Ports`_.
+
+.. _OpenBSD Ports: https://openports.se/net/srain

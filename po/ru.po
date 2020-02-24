@@ -5,9 +5,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Srain 0.06.4\n"
+"Project-Id-Version: Srain 1.0.0\n"
 "Report-Msgid-Bugs-To: i@silverrainz.me\n"
-"POT-Creation-Date: 2020-02-16 17:56+0800\n"
+"POT-Creation-Date: 2020-02-24 22:54+0800\n"
 "PO-Revision-Date: 2019-04-17 16:14+0300\n"
 "Last-Translator: Artem Polishchuk <ego.cordatus@gmail.com>\n"
 "Language-Team: \n"
@@ -321,42 +321,42 @@ msgstr "Включенные возможности:"
 msgid "Error"
 msgstr "Ошибка"
 
-#: ../src/config/reader.c:227
+#: ../src/config/reader.c:228
 #, fuzzy, c-format
 msgid "Error occurred while looking up channel password: %1$s"
 msgstr "Произошла ошибка при чтении конфигурации журнала в %1$s: %2$s"
 
-#: ../src/config/reader.c:142
+#: ../src/config/reader.c:143
 #, fuzzy, c-format
 msgid "Error occurred while looking up server password: %1$s"
 msgstr "Произошла ошибка при чтении конфигурации сервера в %1$s: %2$s"
 
-#: ../src/config/reader.c:148
+#: ../src/config/reader.c:149
 #, fuzzy, c-format
 msgid "Error occurred while looking up user password: %1$s"
 msgstr "Произошла ошибка при чтении конфигурации журнала в %1$s: %2$s"
 
-#: ../src/config/reader.c:90 ../src/config/reader.c:96
+#: ../src/config/reader.c:91 ../src/config/reader.c:97
 #, fuzzy, c-format
 msgid "Error occurred while reading application config in %1$s: %2$s"
 msgstr "Произошла ошибка при чтении конфигурации приложения в %1$s: %2$s"
 
-#: ../src/config/reader.c:211 ../src/config/reader.c:218
+#: ../src/config/reader.c:212 ../src/config/reader.c:219
 #, fuzzy, c-format
 msgid "Error occurred while reading chat config in %1$s: %2$s"
 msgstr "Произошла ошибка при чтении конфигурации чата в %1$s: %2$s"
 
-#: ../src/config/reader.c:70 ../src/config/reader.c:76
+#: ../src/config/reader.c:71 ../src/config/reader.c:77
 #, fuzzy, c-format
 msgid "Error occurred while reading log config in %1$s: %2$s"
 msgstr "Произошла ошибка при чтении конфигурации журнала в %1$s: %2$s"
 
-#: ../src/config/reader.c:130 ../src/config/reader.c:136
+#: ../src/config/reader.c:131 ../src/config/reader.c:137
 #, fuzzy, c-format
 msgid "Error occurred while reading server config in %1$s: %2$s"
 msgstr "Произошла ошибка при чтении конфигурации сервера в %1$s: %2$s"
 
-#: ../src/config/reader.c:110 ../src/config/reader.c:116
+#: ../src/config/reader.c:111 ../src/config/reader.c:117
 #, fuzzy, c-format
 msgid "Error occurred while reading server list config in %1$s: %2$s"
 msgstr "Ошибка при чтении конфигурации списка серверов в %1$s: %2$s"
@@ -1181,7 +1181,7 @@ msgstr ""
 msgid "mode %1$s %2$s by %3$s"
 msgstr "режим %1$s %2$s установлен %3$s"
 
-#: ../src/config/reader.c:330
+#: ../src/config/reader.c:331
 #, c-format
 msgid "server-list[%1$d] doesn't have a name"
 msgstr "список серверов[%1$d] не имеет имени"
