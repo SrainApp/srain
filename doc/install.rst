@@ -44,9 +44,9 @@ Firstly, download source code of srain,
 you can get source code of latest release:
 
 ..
-    $ wget https://github.com/SrainApp/srain/archive/1.0.0rc9999.tar.gz
-    $ tar -xvzf 1.0.0rc9999.tar.gz
-    $ cd srain-1.0.0rc9999
+    $ wget https://github.com/SrainApp/srain/archive/1.0.0.tar.gz
+    $ tar -xvzf 1.0.0.tar.gz
+    $ cd srain-1.0.0
 
 Or get git version:
 
