@@ -7,6 +7,27 @@ Change Log
     :depth: 1
     :backlinks: none
 
+.. Please write changelog as the following template:
+
+    .. _version-x.x.x:
+
+    YYYY-MM-DD Version X.X.X
+    ========================
+
+    - Features:
+
+      - XXX (:pull:`PULL_REQUEST_ID`)
+      - XXX (:issue:`ISSUE_ID`)
+      - XXX (:commit:`COMMID_ID`)
+
+    - Changes:
+
+      - XXX
+
+    - Bug fixes:
+
+      - XXX
+
 .. _version-latest:
 .. _version-1.0.0rc9999:
 
@@ -24,7 +45,7 @@ Change Log
 
   - Replace all icons with freedesktop standard icons (:issue:`120`)
 
-- Bug fixs:
+- Bug fixes:
 
   - Fix wrong usage of GError (:issue:`179`)
   - Fix image preview problem when image is hard to detect type (:issue:`163`)
