@@ -10,9 +10,11 @@ Quick Start
 .. note::
 
     For your information, the following screenshots are taken under
-    GNOME 3.34.4 with Wayland backed with theme `Arc`_ (version 20190917).
+    GNOME 3.34.4 with Wayland backed with `Arc GTK theme`_ and
+    `Breeze icon theme`_.
 
-.. _Arc: https://github.com/arc-design/arc-theme
+.. _Arc gtk theme: https://github.com/arc-design/arc-theme
+.. _Breeze icon theme: https://github.com/KDE/breeze-icons
 
 Start Srain
 ===========
