@@ -24,11 +24,11 @@
 
   <screenshots>
     <screenshot type="default">
-      <caption>Main</caption>
+      <caption>Main UI</caption>
       <image>https://srain.im/assets/screenshots/cover.png</image>
     </screenshot>
     <screenshot>
-      <caption>Login</caption>
+      <caption>Login UI</caption>
       <image>https://doc.srain.im/en/latest/_images/srain-startup.png</image>
     </screenshot>
     <screenshot>
