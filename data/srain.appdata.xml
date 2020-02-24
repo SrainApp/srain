@@ -24,12 +24,16 @@
 
   <screenshots>
     <screenshot type="default">
-      <caption>Channel joined</caption>
-      <image>https://raw.githubusercontent.com/SrainApp/srain/master/doc/_static/srain-joined-channel.png</image>
+      <caption>Main</caption>
+      <image>https://srain.im/assets/screenshots/cover.png</image>
     </screenshot>
     <screenshot>
-      <caption>Channel search</caption>
-      <image>https://raw.githubusercontent.com/SrainApp/srain/master/doc/_static/srain-searched-chennel.png</image>
+      <caption>Login</caption>
+      <image>https://doc.srain.im/en/latest/_images/srain-startup.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Search Channel</caption>
+      <image>https://doc.srain.im/en/latest/_images/srain-search-channel.png</image>
     </screenshot>
   </screenshots>
 
