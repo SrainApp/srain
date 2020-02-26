@@ -245,6 +245,8 @@ void srn_server_config_clear_addr(SrnServerConfig *cfg);
 SrnUserConfig* srn_user_config_new(void);
 void srn_user_config_free(SrnUserConfig *self);
 SrnRet srn_user_config_check(SrnUserConfig *self);
+char* srn_user_config_get_next_alternate_nick(SrnUserConfig *self, const char *cur_nick);
+bool srn_user_config_is_alternate_nick(SrnUserConfig *self, const char *nick);
 
 SrnLoginConfig* srn_login_config_new(void);
 void srn_login_config_free(SrnLoginConfig *self);
