@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 1.0.0\n"
 "Report-Msgid-Bugs-To: i@silverrainz.me\n"
-"POT-Creation-Date: 2020-02-24 22:54+0800\n"
+"POT-Creation-Date: 2020-02-26 18:09+0800\n"
 "PO-Revision-Date: 2016-12-18 01:44+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -37,12 +37,12 @@ msgstr "\"%1$s\" 已被忽略，无需再次执行"
 msgid "%1$d available server(s):%2$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1614
+#: ../src/core/app_irc_event.c:1615
 #, c-format
 msgid "%1$s %2$s"
 msgstr "%1$s %2$s"
 
-#: ../src/core/app_irc_event.c:1601
+#: ../src/core/app_irc_event.c:1602
 #, c-format
 msgid "%1$s %2$s %3$s"
 msgstr "%1$s %2$s %3$s"
@@ -52,7 +52,7 @@ msgstr "%1$s %2$s %3$s"
 msgid "%1$s %2$s @ %3$s"
 msgstr "%1$s %2$s %3$s"
 
-#: ../src/core/app_irc_event.c:1544
+#: ../src/core/app_irc_event.c:1545
 #, c-format
 msgid "%1$s <%2$s@%3$s> %4$s"
 msgstr ""
@@ -67,17 +67,17 @@ msgstr "%1$s <fwd %2$s@%3$s>"
 msgid "%1$s @ %2$s"
 msgstr "%1$s %2$s"
 
-#: ../src/core/app_irc_event.c:724
+#: ../src/core/app_irc_event.c:732
 #, c-format
 msgid "%1$s are kicked by %2$s"
 msgstr "%1$s 被 %2$s 踢出了频道"
 
-#: ../src/core/app_irc_event.c:721
+#: ../src/core/app_irc_event.c:729
 #, c-format
 msgid "%1$s are kicked by %2$s: %3$s"
 msgstr "%1$s 被 %2$s 踢出了频道：%3$s"
 
-#: ../src/core/app_irc_event.c:680
+#: ../src/core/app_irc_event.c:688
 #, c-format
 msgid ""
 "%1$s changed topic to:\n"
@@ -86,22 +86,22 @@ msgstr ""
 "%1$s 将主题更改为：\n"
 "\t%2$s"
 
-#: ../src/core/app_irc_event.c:676
+#: ../src/core/app_irc_event.c:684
 #, c-format
 msgid "%1$s cleared topic"
 msgstr "%1$s 清除了频道公告"
 
-#: ../src/core/app_irc_event.c:496
+#: ../src/core/app_irc_event.c:504
 #, c-format
 msgid "%1$s has joined"
 msgstr "%1$s 加入了频道"
 
-#: ../src/core/app_irc_event.c:530
+#: ../src/core/app_irc_event.c:538
 #, c-format
 msgid "%1$s has left"
 msgstr "%1$s 离开了频道"
 
-#: ../src/core/app_irc_event.c:528
+#: ../src/core/app_irc_event.c:536
 #, c-format
 msgid "%1$s has left: %2$s"
 msgstr "%1$s 离开了频道：%2$s"
@@ -116,27 +116,27 @@ msgstr "%1$s 退出了聊天室"
 msgid "%1$s has quit: %2$s"
 msgstr "%1$s 退出了聊天室：%2$s"
 
-#: ../src/core/app_irc_event.c:867
+#: ../src/core/app_irc_event.c:875
 #, c-format
 msgid "%1$s invites you into %2$s"
 msgstr "%1$s 邀请你加入频道 %2$s"
 
-#: ../src/core/app_irc_event.c:1557
+#: ../src/core/app_irc_event.c:1558
 #, c-format
 msgid "%1$s is a member of %2$s"
 msgstr "%1$s 是频道 %2$s 的成员"
 
-#: ../src/core/app_irc_event.c:1569
+#: ../src/core/app_irc_event.c:1570
 #, c-format
 msgid "%1$s is attached to %2$s at \"%3$s\""
 msgstr "%1$s 接入了位于 \"%3$s\" 的 %2$s"
 
-#: ../src/core/app_irc_event.c:1789
+#: ../src/core/app_irc_event.c:1790
 #, c-format
 msgid "%1$s is away: %2$s"
 msgstr "%1$s 暂时离开了聊天: %2$s"
 
-#: ../src/core/app_irc_event.c:1588
+#: ../src/core/app_irc_event.c:1589
 #, c-format
 msgid "%1$s is idle for %2$s seconds since %3$s"
 msgstr "%1$s 自 %3$s 以来待机了 %2$s 秒"
@@ -155,12 +155,12 @@ msgstr ""
 "%1$s%2$s\n"
 "运行于 GTK+ %3$d.%4$d.%5$d"
 
-#: ../src/core/app_irc_event.c:1665 ../src/core/app_irc_event.c:1685
+#: ../src/core/app_irc_event.c:1666 ../src/core/app_irc_event.c:1686
 #, c-format
 msgid "%1$s: %2$s"
 msgstr "%1$s: %2$s"
 
-#: ../src/core/app_irc_event.c:1521 ../src/core/app_irc_event.c:1586
+#: ../src/core/app_irc_event.c:1522 ../src/core/app_irc_event.c:1587
 msgid "%Y-%m-%d %T"
 msgstr "%Y 年 %m 月 %d 日 %T"
 
@@ -181,7 +181,7 @@ msgstr "关于"
 msgid "About Srain"
 msgstr "关于 Srain"
 
-#: ../src/core/app_irc_event.c:1100
+#: ../src/core/app_irc_event.c:1108
 #, c-format
 msgid "Acknowledged capabilities: %1$s"
 msgstr "已确认的扩展能力：%1$s"
@@ -222,7 +222,7 @@ msgstr "自动运行命令：%1$s"
 msgid "Available regex patterns:"
 msgstr "无效的正则表达式：%1$s"
 
-#: ../src/core/app_irc_event.c:1522
+#: ../src/core/app_irc_event.c:1523
 #, c-format
 msgid "By %1$s at %2$s"
 msgstr "%1$s 于 %2$s 设置"
@@ -281,12 +281,12 @@ msgstr "不校验服务器证书"
 msgid "Don't auto connect to servers"
 msgstr "不要自动连接到服务器"
 
-#: ../src/core/app_irc_event.c:1325
+#: ../src/core/app_irc_event.c:1333
 #, c-format
 msgid "ERROR: %1$s"
 msgstr "错误: %1$s"
 
-#: ../src/core/app_irc_event.c:1879
+#: ../src/core/app_irc_event.c:1880
 #, c-format
 msgid "ERROR[%1$3d] %2$s"
 msgstr "错误[%1$3d] %2$s"
@@ -610,7 +610,7 @@ msgstr "加入"
 msgid "Join Channel"
 msgstr "加入频道"
 
-#: ../src/core/app_irc_event.c:994
+#: ../src/core/app_irc_event.c:1002
 #, c-format
 msgid "Latency between %1$s: %2$lums"
 msgstr "到 %1$s 的延迟为 %2$lu 毫秒"
@@ -619,7 +619,7 @@ msgstr "到 %1$s 的延迟为 %2$lu 毫秒"
 msgid "Local connection closed"
 msgstr "本地链接已关闭"
 
-#: ../src/core/app_irc_event.c:1216 ../src/core/app_irc_event.c:1242
+#: ../src/core/app_irc_event.c:1224 ../src/core/app_irc_event.c:1250
 #, c-format
 msgid "Logging in with %1$s as %2$s..."
 msgstr "正在通过 %1$s 以 %2$s 的身份登录……"
@@ -710,19 +710,19 @@ msgstr "可选参数 %1$s 缺少参数值"
 msgid "Nickname:"
 msgstr "昵称："
 
-#: ../src/core/app_irc_event.c:1103
+#: ../src/core/app_irc_event.c:1111
 msgid "No acknowledged capability"
 msgstr "没有已确认的扩展能力"
 
-#: ../src/core/app_irc_event.c:1060
+#: ../src/core/app_irc_event.c:1068
 msgid "No capability to be requested"
 msgstr "没有需要请求的扩展能力"
 
-#: ../src/core/app_irc_event.c:1093
+#: ../src/core/app_irc_event.c:1101
 msgid "No new capability to be requested"
 msgstr "没有需要请求的新的扩展能力"
 
-#: ../src/core/app_irc_event.c:1480
+#: ../src/core/app_irc_event.c:1481
 msgid "No topic is set"
 msgstr "该频道没有设置主题"
 
@@ -775,22 +775,22 @@ msgstr "简易模式"
 msgid "Quitting the server"
 msgstr "正在退出服务器"
 
-#: ../src/core/app_irc_event.c:942
+#: ../src/core/app_irc_event.c:950
 #, c-format
 msgid "Received CTCP %1$s request form %2$s"
 msgstr "收到来自 %2$s 的 CTCP %1$s 请求"
 
-#: ../src/core/app_irc_event.c:977 ../src/core/app_irc_event.c:997
+#: ../src/core/app_irc_event.c:985 ../src/core/app_irc_event.c:1005
 #, c-format
 msgid "Received CTCP %1$s response from %2$s: %3$s"
 msgstr "收到来自 %2$s 的 CTCP %1$s 响应: %3$s"
 
-#: ../src/core/app_irc_event.c:938
+#: ../src/core/app_irc_event.c:946
 #, c-format
 msgid "Received unsupported CTCP %1$s request form %2$s"
 msgstr "收到来自 %2$s 的不支持的 CTCP %1$s 请求"
 
-#: ../src/core/app_irc_event.c:982
+#: ../src/core/app_irc_event.c:990
 #, c-format
 msgid "Received unsupported CTCP %1$s response form %2$s"
 msgstr "收到来自 %2$s 的不支持的 CTCP %1$s 响应"
@@ -825,17 +825,17 @@ msgstr "记住密码"
 msgid "Remote connection closed"
 msgstr "远程连接已断开"
 
-#: ../src/core/app_irc_event.c:1056
+#: ../src/core/app_irc_event.c:1064
 #, c-format
 msgid "Requesting capabilities: %1$s"
 msgstr "正在请求扩展能力：%1$s"
 
-#: ../src/core/app_irc_event.c:1089
+#: ../src/core/app_irc_event.c:1097
 #, c-format
 msgid "Requesting new capabilities: %1$s"
 msgstr "正在请求新的扩展能力：%1$s"
 
-#: ../src/core/app_irc_event.c:1175
+#: ../src/core/app_irc_event.c:1183
 msgid "SASL authentication is not supported on this server, login skipped"
 msgstr "服务器不支持 SASL 认证，登录已跳过"
 
@@ -851,17 +851,17 @@ msgstr "请选择一个证书"
 msgid "Server"
 msgstr "服务器："
 
-#: ../src/core/app_irc_event.c:1053
+#: ../src/core/app_irc_event.c:1061
 #, c-format
 msgid "Server capabilities: %1$s"
 msgstr "服务器扩展能力：%1$s"
 
-#: ../src/core/app_irc_event.c:1157
+#: ../src/core/app_irc_event.c:1165
 #, c-format
 msgid "Server has deleted capabilities: %1$s"
 msgstr "服务器已删除扩展能力：%1$s"
 
-#: ../src/core/app_irc_event.c:1086
+#: ../src/core/app_irc_event.c:1094
 #, c-format
 msgid "Server has new capabilities: %1$s"
 msgstr "服务器新增的扩展能力：%1$s"
@@ -930,7 +930,7 @@ msgid ""
 "The assigned nickname does not match the requested nickname, login skipped"
 msgstr "分配的昵称和请求的昵称不匹配，登录已跳过"
 
-#: ../src/core/app_irc_event.c:1501
+#: ../src/core/app_irc_event.c:1502
 #, c-format
 msgid ""
 "The topic of this channel is:\n"
@@ -961,7 +961,7 @@ msgstr "主题"
 msgid "True"
 msgstr "启用"
 
-#: ../src/core/app_irc_event.c:1396
+#: ../src/core/app_irc_event.c:1397
 #, c-format
 msgid "Trying nickname: \"%1$s\"..."
 msgstr "正在尝试使用昵称：\"%1$s\"……"
@@ -972,7 +972,7 @@ msgstr "正在尝试使用昵称：\"%1$s\"……"
 msgid "Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."
 msgstr "到 %1$s(%2$s:%3$d) 的连接已断开，%4$.1f 秒后尝试重新连接……"
 
-#: ../src/core/app_irc_event.c:1830
+#: ../src/core/app_irc_event.c:1831
 #, c-format
 msgid "URL of %1$s is: %2$s"
 msgstr "%1$s 的 URL 是：%2$s"
@@ -1043,17 +1043,17 @@ msgstr ""
 "在线用户: %d, <span color=\"#157915\">%d@</span>,<span color=\"#856117\">%d"
 "%%</span>,<span color=\"#451984\">%d+</span>"
 
-#: ../src/core/app_irc_event.c:715
+#: ../src/core/app_irc_event.c:723
 #, c-format
 msgid "You are kicked by %1$s"
 msgstr "你被 %1$s 踢出了频道"
 
-#: ../src/core/app_irc_event.c:712
+#: ../src/core/app_irc_event.c:720
 #, c-format
 msgid "You are kicked by %1$s: %2$s"
 msgstr "你被 %1$s 踢出了频道：%2$s"
 
-#: ../src/core/app_irc_event.c:492
+#: ../src/core/app_irc_event.c:500
 #, c-format
 msgid "You have joined the channel"
 msgstr "你加入了频道"
@@ -1160,7 +1160,7 @@ msgstr "个人信息 (_W)"
 msgid "g_regex_new() failed: %1$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:567 ../src/core/app_irc_event.c:642
+#: ../src/core/app_irc_event.c:575 ../src/core/app_irc_event.c:650
 #, c-format
 msgid "mode %1$s %2$s by %3$s"
 msgstr "%3$s 将 %1$s 的模式变更为 %2$s"
