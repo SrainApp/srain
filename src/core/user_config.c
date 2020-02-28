@@ -104,3 +104,57 @@ SrnRet srn_user_config_check(SrnUserConfig *self){
 
     return SRN_OK;
 }
+
+/**
+ * @brief Return next alternate nick according the given user config and current nick.
+ *
+ * @param self
+ * @param cur_nick
+ *
+ * @return A new-allocated string.
+ *
+ * When we suffers error such like "Nickname already in use", this function will
+ * be call to get a alternate nick.
+ * For now, the policy of alternate nick is that: Append a underline ("_") to
+ * current nick each time called. When count of append underline more than twice,
+ * use the original nick.
+ *
+ * For example:
+ * - call(cfg, "SilverRainZ") get "SilverRainZ_"
+ * - call(cfg, "SilverRainZ_") get "SilverRainZ__"
+ * - call(cfg, "SilverRainZ__") get "SilverRainZ"
+ *
+ * TODO: Add second_nick and third_nick fields to SrnUserConfig.
+ */
+char* srn_user_config_get_next_alternate_nick(SrnUserConfig *self, const char *cur_nick) {
+    char *next_nick;
+
+    if (strlen(cur_nick) - strlen(self->nick) <= 2) {
+        // Try alternate with a trailing underline('_')
+        next_nick = g_strdup_printf("%s_", cur_nick);
+    } else {
+        // Rewind to original nickname when there are too much
+        // trailing underlines
+        next_nick = g_strdup(self->nick);
+    }
+
+    return next_nick;
+}
+
+/**
+ * @brief Return whether the given nick is one of the alternative of SrnUserConfig.
+ * Refer to srn_user_config_get_next_alternate_nick to get to known what is alternate nick.
+ *
+ * @param self
+ * @param nick
+ *
+ * @return TRUE when given nick is a alternate nick, otherwise FALSE.
+ */
+bool srn_user_config_is_alternate_nick(SrnUserConfig *self, const char *nick) {
+    if (!g_str_has_prefix(nick, self->nick)) {
+        return FALSE;
+    }
+    return g_strcmp0(nick + strlen(self->nick), "") == 0
+        || g_strcmp0(nick + strlen(self->nick), "_") == 0
+        || g_strcmp0(nick + strlen(self->nick), "__") == 0;
+}

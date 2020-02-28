@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 1.0.0\n"
 "Report-Msgid-Bugs-To: i@silverrainz.me\n"
-"POT-Creation-Date: 2020-02-24 22:54+0800\n"
+"POT-Creation-Date: 2020-02-26 18:09+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,12 +37,12 @@ msgstr ""
 msgid "%1$d available server(s):%2$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1614
+#: ../src/core/app_irc_event.c:1615
 #, c-format
 msgid "%1$s %2$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1601
+#: ../src/core/app_irc_event.c:1602
 #, c-format
 msgid "%1$s %2$s %3$s"
 msgstr ""
@@ -52,7 +52,7 @@ msgstr ""
 msgid "%1$s %2$s @ %3$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1544
+#: ../src/core/app_irc_event.c:1545
 #, c-format
 msgid "%1$s <%2$s@%3$s> %4$s"
 msgstr ""
@@ -67,39 +67,39 @@ msgstr ""
 msgid "%1$s @ %2$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:724
+#: ../src/core/app_irc_event.c:732
 #, c-format
 msgid "%1$s are kicked by %2$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:721
+#: ../src/core/app_irc_event.c:729
 #, c-format
 msgid "%1$s are kicked by %2$s: %3$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:680
+#: ../src/core/app_irc_event.c:688
 #, c-format
 msgid ""
 "%1$s changed topic to:\n"
 "\t%2$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:676
+#: ../src/core/app_irc_event.c:684
 #, c-format
 msgid "%1$s cleared topic"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:496
+#: ../src/core/app_irc_event.c:504
 #, c-format
 msgid "%1$s has joined"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:530
+#: ../src/core/app_irc_event.c:538
 #, c-format
 msgid "%1$s has left"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:528
+#: ../src/core/app_irc_event.c:536
 #, c-format
 msgid "%1$s has left: %2$s"
 msgstr ""
@@ -114,27 +114,27 @@ msgstr ""
 msgid "%1$s has quit: %2$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:867
+#: ../src/core/app_irc_event.c:875
 #, c-format
 msgid "%1$s invites you into %2$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1557
+#: ../src/core/app_irc_event.c:1558
 #, c-format
 msgid "%1$s is a member of %2$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1569
+#: ../src/core/app_irc_event.c:1570
 #, c-format
 msgid "%1$s is attached to %2$s at \"%3$s\""
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1789
+#: ../src/core/app_irc_event.c:1790
 #, c-format
 msgid "%1$s is away: %2$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1588
+#: ../src/core/app_irc_event.c:1589
 #, c-format
 msgid "%1$s is idle for %2$s seconds since %3$s"
 msgstr ""
@@ -151,12 +151,12 @@ msgid ""
 "Running against GTK+ %3$d.%4$d.%5$d"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1665 ../src/core/app_irc_event.c:1685
+#: ../src/core/app_irc_event.c:1666 ../src/core/app_irc_event.c:1686
 #, c-format
 msgid "%1$s: %2$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1521 ../src/core/app_irc_event.c:1586
+#: ../src/core/app_irc_event.c:1522 ../src/core/app_irc_event.c:1587
 msgid "%Y-%m-%d %T"
 msgstr ""
 
@@ -177,7 +177,7 @@ msgstr ""
 msgid "About Srain"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1100
+#: ../src/core/app_irc_event.c:1108
 #, c-format
 msgid "Acknowledged capabilities: %1$s"
 msgstr ""
@@ -217,7 +217,7 @@ msgstr ""
 msgid "Available regex patterns:"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1522
+#: ../src/core/app_irc_event.c:1523
 #, c-format
 msgid "By %1$s at %2$s"
 msgstr ""
@@ -276,12 +276,12 @@ msgstr ""
 msgid "Don't auto connect to servers"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1325
+#: ../src/core/app_irc_event.c:1333
 #, c-format
 msgid "ERROR: %1$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1879
+#: ../src/core/app_irc_event.c:1880
 #, c-format
 msgid "ERROR[%1$3d] %2$s"
 msgstr ""
@@ -603,7 +603,7 @@ msgstr ""
 msgid "Join Channel"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:994
+#: ../src/core/app_irc_event.c:1002
 #, c-format
 msgid "Latency between %1$s: %2$lums"
 msgstr ""
@@ -612,7 +612,7 @@ msgstr ""
 msgid "Local connection closed"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1216 ../src/core/app_irc_event.c:1242
+#: ../src/core/app_irc_event.c:1224 ../src/core/app_irc_event.c:1250
 #, c-format
 msgid "Logging in with %1$s as %2$s..."
 msgstr ""
@@ -703,19 +703,19 @@ msgstr ""
 msgid "Nickname:"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1103
+#: ../src/core/app_irc_event.c:1111
 msgid "No acknowledged capability"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1060
+#: ../src/core/app_irc_event.c:1068
 msgid "No capability to be requested"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1093
+#: ../src/core/app_irc_event.c:1101
 msgid "No new capability to be requested"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1480
+#: ../src/core/app_irc_event.c:1481
 msgid "No topic is set"
 msgstr ""
 
@@ -768,22 +768,22 @@ msgstr ""
 msgid "Quitting the server"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:942
+#: ../src/core/app_irc_event.c:950
 #, c-format
 msgid "Received CTCP %1$s request form %2$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:977 ../src/core/app_irc_event.c:997
+#: ../src/core/app_irc_event.c:985 ../src/core/app_irc_event.c:1005
 #, c-format
 msgid "Received CTCP %1$s response from %2$s: %3$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:938
+#: ../src/core/app_irc_event.c:946
 #, c-format
 msgid "Received unsupported CTCP %1$s request form %2$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:982
+#: ../src/core/app_irc_event.c:990
 #, c-format
 msgid "Received unsupported CTCP %1$s response form %2$s"
 msgstr ""
@@ -818,17 +818,17 @@ msgstr ""
 msgid "Remote connection closed"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1056
+#: ../src/core/app_irc_event.c:1064
 #, c-format
 msgid "Requesting capabilities: %1$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1089
+#: ../src/core/app_irc_event.c:1097
 #, c-format
 msgid "Requesting new capabilities: %1$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1175
+#: ../src/core/app_irc_event.c:1183
 msgid "SASL authentication is not supported on this server, login skipped"
 msgstr ""
 
@@ -844,17 +844,17 @@ msgstr ""
 msgid "Server"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1053
+#: ../src/core/app_irc_event.c:1061
 #, c-format
 msgid "Server capabilities: %1$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1157
+#: ../src/core/app_irc_event.c:1165
 #, c-format
 msgid "Server has deleted capabilities: %1$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1086
+#: ../src/core/app_irc_event.c:1094
 #, c-format
 msgid "Server has new capabilities: %1$s"
 msgstr ""
@@ -923,7 +923,7 @@ msgid ""
 "The assigned nickname does not match the requested nickname, login skipped"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1501
+#: ../src/core/app_irc_event.c:1502
 #, c-format
 msgid ""
 "The topic of this channel is:\n"
@@ -952,7 +952,7 @@ msgstr ""
 msgid "True"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1396
+#: ../src/core/app_irc_event.c:1397
 #, c-format
 msgid "Trying nickname: \"%1$s\"..."
 msgstr ""
@@ -963,7 +963,7 @@ msgstr ""
 msgid "Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."
 msgstr ""
 
-#: ../src/core/app_irc_event.c:1830
+#: ../src/core/app_irc_event.c:1831
 #, c-format
 msgid "URL of %1$s is: %2$s"
 msgstr ""
@@ -1032,17 +1032,17 @@ msgid ""
 "span>,<span color=\"#451984\">%d+</span>"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:715
+#: ../src/core/app_irc_event.c:723
 #, c-format
 msgid "You are kicked by %1$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:712
+#: ../src/core/app_irc_event.c:720
 #, c-format
 msgid "You are kicked by %1$s: %2$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:492
+#: ../src/core/app_irc_event.c:500
 #, c-format
 msgid "You have joined the channel"
 msgstr ""
@@ -1149,7 +1149,7 @@ msgstr ""
 msgid "g_regex_new() failed: %1$s"
 msgstr ""
 
-#: ../src/core/app_irc_event.c:567 ../src/core/app_irc_event.c:642
+#: ../src/core/app_irc_event.c:575 ../src/core/app_irc_event.c:650
 #, c-format
 msgid "mode %1$s %2$s by %3$s"
 msgstr ""

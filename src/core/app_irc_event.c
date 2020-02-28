@@ -461,6 +461,14 @@ static void irc_event_quit(SircSession *sirc, const char *event,
     }
 
     srn_server_user_set_is_online(srv_user, FALSE);
+
+    // If the quit user is your ghost (own your exact original nick)
+    // and your are using alternate nick (bacause of original nick is in use),
+    // you can change your original nick back.
+    if (g_strcmp0(srv->cfg->user->nick, origin) == 0
+            && srn_user_config_is_alternate_nick(srv->cfg->user, srv->user->nick)) {
+        sirc_cmd_nick(srv->irc, srv->cfg->user->nick);
+    }
 }
 
 static void irc_event_join(SircSession *sirc, const char *event,
@@ -1378,15 +1386,8 @@ static void irc_event_numeric(SircSession *sirc, int event,
                 if (!srv->registered){
                     char *new_nick;
 
-                    if (strlen(nick) - strlen(srv->cfg->user->nick) <= 2) {
-                        // Try new nick with a trailing underline('_')
-                        new_nick = g_strdup_printf("%s_", nick);
-                    } else {
-                        // Rewind to original nickname when there are too much
-                        // trailing underlines
-                        new_nick = g_strdup(srv->cfg->user->nick);
-                    }
-
+                    new_nick = srn_user_config_get_next_alternate_nick(
+                            srv->cfg->user, nick);
                     // FIXME: ircd-seven will truncate the nick without
                     // returning a error message if it reaches the length
                     // limiation, at this time the new_nick is same to the
