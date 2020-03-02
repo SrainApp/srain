@@ -122,7 +122,7 @@ Debian
 **out of date**, I will be glad if anyone can fix it.
 
 .. _dfceaef: https://github.com/yangfl
-.. _Debian package script for Srain: https://github.com/SrainApp/srain/tree/debian/debian
+.. _Debian package script for Srain: https://github.com/SrainApp/srain/tree/misc/debian
 
 .. _install-packages-flatpak:
 
