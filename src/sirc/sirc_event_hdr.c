@@ -81,7 +81,7 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
         /* Named command */
          const char* event = imsg->cmd;
 
-         if (strcmp(event, "PRIVMSG") == 0){
+         if (strcasecmp(event, "PRIVMSG") == 0){
              g_return_if_fail(imsg->nparam >= 2);
 
              const char *target = params[0];
@@ -104,23 +104,23 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
                  events->privmsg(sirc, event, origin, params, imsg->nparam);
              }
          }
-         else if (strcmp(event, "JOIN") == 0){
+         else if (strcasecmp(event, "JOIN") == 0){
              g_return_if_fail(events->join);
              events->join(sirc, event, origin, params, imsg->nparam);
          }
-         else if (strcmp(event, "PART") == 0){
+         else if (strcasecmp(event, "PART") == 0){
              g_return_if_fail(events->part);
              events->part(sirc, event, origin, params, imsg->nparam);
          }
-         else if (strcmp(event, "QUIT") == 0){
+         else if (strcasecmp(event, "QUIT") == 0){
              g_return_if_fail(events->quit);
              events->quit(sirc, event, origin, params, imsg->nparam);
          }
-         else if (strcmp(event, "NICK") == 0){
+         else if (strcasecmp(event, "NICK") == 0){
              g_return_if_fail(events->nick);
              events->nick(sirc, event, origin, params, imsg->nparam);
          }
-         else if (strcmp(event, "MODE") == 0){
+         else if (strcasecmp(event, "MODE") == 0){
              g_return_if_fail(imsg->nparam >= 1);
              if (sirc_target_is_channel(sirc, params[0])){
                  /* Channel mode changed */
@@ -132,15 +132,15 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
                  events->umode(sirc, event, origin, params, imsg->nparam);
              }
          }
-         else if (strcmp(event, "TOPIC") == 0){
+         else if (strcasecmp(event, "TOPIC") == 0){
              g_return_if_fail(events->topic);
              events->topic(sirc, event, origin, params, imsg->nparam);
          }
-         else if (strcmp(event, "KICK") == 0){
+         else if (strcasecmp(event, "KICK") == 0){
              g_return_if_fail(events->kick);
              events->kick(sirc, event, origin, params, imsg->nparam);
          }
-         else if (strcmp(event, "NOTICE") == 0){
+         else if (strcasecmp(event, "NOTICE") == 0){
              g_return_if_fail(imsg->nparam >= 2);
 
              const char *target = params[0];
@@ -163,30 +163,30 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
                  events->notice(sirc, event, origin, params, imsg->nparam);
              }
          }
-         else if (strcmp(event, "INVITE") == 0){
+         else if (strcasecmp(event, "INVITE") == 0){
              g_return_if_fail(events->invite);
              events->invite(sirc, event, origin, params, imsg->nparam);
          }
-         else if (strcmp(event, "CAP") == 0){
+         else if (strcasecmp(event, "CAP") == 0){
              g_return_if_fail(events->cap);
              events->cap(sirc, event, origin, params, imsg->nparam);
          }
-         else if (strcmp(event, "AUTHENTICATE") == 0){
+         else if (strcasecmp(event, "AUTHENTICATE") == 0){
              g_return_if_fail(events->authenticate);
              events->authenticate(sirc, event, origin, params, imsg->nparam);
          }
-         else if (strcmp(event, "PING") == 0){
+         else if (strcasecmp(event, "PING") == 0){
              g_return_if_fail(events->ping);
              events->ping(sirc, event, origin, params, imsg->nparam);
              /* Response "PING" message */
              // FIXME: response all params?
              sirc_cmd_pong(sirc, params[imsg->nparam - 1]);
          }
-         else if (strcmp(event, "PONG") == 0){
+         else if (strcasecmp(event, "PONG") == 0){
              g_return_if_fail(events->pong);
              events->pong(sirc, event, origin, params, imsg->nparam);
          }
-         else if (strcmp(event, "ERROR") == 0){
+         else if (strcasecmp(event, "ERROR") == 0){
              g_return_if_fail(events->error);
              events->error(sirc, event, origin, params, imsg->nparam);
          }
@@ -229,7 +229,7 @@ static void sirc_ctcp_event_hdr(SircSession *sirc, SircMessage *imsg) {
 
     DBG_FR("sirc: %p, event: CTCP %s, origin: %s", sirc, ctcp_event, origin);
 
-    if (strcmp(event, "PRIVMSG") == 0) {
+    if (strcasecmp(event, "PRIVMSG") == 0) {
         if (!ptr) {
             events->ctcp_req(sirc, ctcp_event, origin, params, imsg->nparam - 1);
         } else {
@@ -237,7 +237,7 @@ static void sirc_ctcp_event_hdr(SircSession *sirc, SircMessage *imsg) {
             events->ctcp_req(sirc, ctcp_event, origin, params, imsg->nparam);
             imsg->params[imsg->nparam - 1] = tmp; // Recover parameter
         }
-    } else if (strcmp(event, "NOTICE") == 0) {
+    } else if (strcasecmp(event, "NOTICE") == 0) {
         if (!ptr) {
             events->ctcp_rsp(sirc, ctcp_event, origin, params, imsg->nparam - 1);
         } else {
