@@ -66,7 +66,6 @@ struct _SuiWindow {
     GtkBox *side_header_box;
     GtkBox *side_left_header_box;
     GtkBox *side_right_header_box;
-    GtkImage *start_image;
     GtkMenuButton *start_menu_button;
     GtkButton *connect_button;
     GtkButton *join_button;
@@ -293,10 +292,6 @@ static void sui_window_constructed(GObject *object){
         gtk_window_set_titlebar(GTK_WINDOW(self), NULL);
         // Show the seperator
         gtk_widget_show(GTK_WIDGET(self->header_separator));
-    } else {
-        // Use appliaction icon instead of standard icon when CSD enabled
-        gtk_image_set_from_icon_name(self->start_image, PACKAGE,
-                GTK_ICON_SIZE_BUTTON);
     }
     update_header(self);
     update_title(self);
@@ -344,7 +339,6 @@ static void sui_window_class_init(SuiWindowClass *class){
     gtk_widget_class_bind_template_child(widget_class, SuiWindow, side_header_box);
     gtk_widget_class_bind_template_child(widget_class, SuiWindow, side_left_header_box);
     gtk_widget_class_bind_template_child(widget_class, SuiWindow, side_right_header_box);
-    gtk_widget_class_bind_template_child(widget_class, SuiWindow, start_image);
     gtk_widget_class_bind_template_child(widget_class, SuiWindow, start_menu_button);
     gtk_widget_class_bind_template_child(widget_class, SuiWindow, connect_button);
     gtk_widget_class_bind_template_child(widget_class, SuiWindow, join_button);

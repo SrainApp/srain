@@ -48,6 +48,46 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
+                  <object class="GtkButton" id="connect_button">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="focus_on_click">False</property>
+                    <property name="receives_default">True</property>
+                    <property name="tooltip_text" translatable="yes">Connect</property>
+                    <property name="image">connect_image</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="join_button">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="focus_on_click">False</property>
+                    <property name="receives_default">True</property>
+                    <property name="tooltip_text" translatable="yes">Join</property>
+                    <property name="image">join_image</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+                <style>
+                  <class name="linked"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox" id="side_right_header_box">
+                <property name="name">f</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
                   <object class="GtkMenuButton" id="start_menu_button">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -56,7 +96,7 @@
                       <object class="GtkImage" id="start_image">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="icon_name">go-home-symbolic</property>
+                        <property name="icon_name">open-menu-symbolic</property>
                         <property name="use_fallback">True</property>
                       </object>
                     </child>
@@ -67,43 +107,12 @@
                     <property name="position">0</property>
                   </packing>
                 </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox" id="side_right_header_box">
-                <property name="name">f</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkButton" id="connect_button">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="focus_on_click">False</property>
-                    <property name="receives_default">True</property>
-                    <property name="tooltip_text" translatable="yes">Connect</property>
-                    <property name="image">connect_image</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
+                  <placeholder/>
                 </child>
-                <child>
-                  <object class="GtkButton" id="join_button">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="focus_on_click">False</property>
-                    <property name="receives_default">True</property>
-                    <property name="tooltip_text" translatable="yes">Join</property>
-                    <property name="image">join_image</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
+                <style>
+                  <class name="linked"/>
+                </style>
               </object>
               <packing>
                 <property name="pack_type">end</property>
@@ -166,7 +175,11 @@
                 <property name="receives_default">True</property>
                 <property name="direction">none</property>
                 <child>
-                  <placeholder/>
+                  <object class="GtkImage">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="icon_name">view-more-symbolic</property>
+                  </object>
                 </child>
               </object>
               <packing>
