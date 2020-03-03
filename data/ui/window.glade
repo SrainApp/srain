@@ -164,13 +164,9 @@
                 <property name="can_focus">False</property>
                 <property name="focus_on_click">False</property>
                 <property name="receives_default">True</property>
+                <property name="direction">none</property>
                 <child>
-                  <object class="GtkImage" id="menu_image">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="icon_name">preferences-other</property>
-                    <property name="use_fallback">True</property>
-                  </object>
+                  <placeholder/>
                 </child>
               </object>
               <packing>
