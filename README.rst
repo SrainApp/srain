@@ -4,8 +4,8 @@ Srain
 
 |ci-status| |channel|
 
-.. |ci-status| image:: https://travis-ci.org/SrainApp/srain.svg?branch=master
-   :target: https://travis-ci.org/SrainApp/srain
+.. |ci-status| image:: https://github.com/SrainApp/srain/workflows/build/badge.svg?branch=master
+   :target: https://github.com/SrainApp/srain/actions
 
 .. |channel| image:: https://img.shields.io/badge/channel-%23srain-brightgreen.svg
    :target: ircs://chat.freenode.net/#srain
