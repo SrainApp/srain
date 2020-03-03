@@ -28,7 +28,9 @@ jobs:
         ./configure \
         --prefix=/usr/local \
         --datadir=/usr/local/share \
-        sysconfdir=/etc; 
+        --sysconfdir=/etc; 
         make; 
+    - name: Install
+      run: |
         sudo make install; 
         /bin/sh -c "/usr/local/bin/srain --version"; 
