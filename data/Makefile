@@ -1,46 +1,43 @@
 # Makefile
+#
+# Install data files or gererate resources including icons, configure files
+# and etc.
 
-.PHONY: icons pixmaps themes plugins
+GLIB_COMPILE_RESOURCES = glib-compile-resources
 
-INSTALL = install -v
+RES = $(BUILD_DIR)/resources.c
 
-SIZE = 14x14 16x16 22x22 24x24 32x32 36x36 48x48 64x64 72x72 96x96 128x128 192x192 256x256 512x512
+GLADES = $(wildcard ui/*.glade)
+ICONS = $(wildcard icons/*.*)
+THEMES = $(wildcard themes/*.css)
 
-default: Srain.desktop icons themes plugins
-	$(INSTALL) -Dm644 $< "$(DESTDIR)$(PREFIX)/share/applications/$<"
+default: config icons themes misc plugins
 
-icons:
-	cd icons; \
-	for size in $(SIZE); do \
-		if [ -d "$$size" ]; then \
-			cd $$size; \
-			for i in *.png; do \
-				$(INSTALL) -Dm644 "$$i" \
-					"$(DESTDIR)$(PREFIX)/share/icons/hicolor/$$size/apps/$$i"; \
-			done; \
-			cd ..; \
-		fi; \
-	done
-	# Convert raw image to specified size
-	cd icons/raw; \
-	for i in *.png; do \
-		for size in $(SIZE); do \
-			convert "$$i" -resize $$size "/tmp/srain-tmp.png"; \
-			$(INSTALL) -Dm644 "/tmp/srain-tmp.png" \
-				"$(DESTDIR)$(PREFIX)/share/icons/hicolor/$$size/apps/$$i"; \
-		done; \
-	done; \
-	rm "/tmp/srain-tmp.png"
+.PHONY: resources
+resources: $(RES)
 
-themes:
-	cd themes; \
-	for i in *.css; do \
-		$(INSTALL) -Dm644 "$$i" "$(DESTDIR)$(PREFIX)/share/srain/themes/$$i"; \
+$(RES): srain.gresource.xml $(GLADES) $(ICONS)
+	$(GLIB_COMPILE_RESOURCES) "$<" --target="$@" --sourcedir=. --generate-source
+
+.PHONY: config
+config: builtin.cfg
+	$(INSTALL) -Dm644 "$<" "$(DESTDIR)$(PACKAGE_CONFIG_DIR)/$(PACKAGE)/$<"
+
+.PHONY: icons
+icons: icons/scalable/srain.png
+	$(INSTALL) -Dm644 "$<" "$(DESTDIR)$(PACKAGE_DATA_DIR)/icons/hicolor/scalable/apps/$(PACKAGE_APPID).png"
+
+.PHONY: themes
+themes: $(THEMES)
+	for i in $^; do \
+		$(INSTALL) -Dm644 "$$i" "$(DESTDIR)$(PACKAGE_DATA_DIR)/$(PACKAGE)/$$i"; \
 	done
 
+.PHONY: misc
+misc: srain.desktop srain.appdata.xml
+	$(INSTALL) -Dm644 "srain.desktop" "$(DESTDIR)$(PACKAGE_DATA_DIR)/applications/$(PACKAGE_APPID).desktop"
+	$(INSTALL) -Dm644 "srain.appdata.xml" "$(DESTDIR)$(PACKAGE_DATA_DIR)/metainfo/$(PACKAGE_APPID).appdata.xml"
+
+.PHONY: plugins
 plugins:
-	cd plugins; \
-	for i in *.py; do \
-		$(INSTALL) -Dm644 "$$i" "$(DESTDIR)$(PREFIX)/share/srain/plugins/$$i"; \
-	done
-
+	# TODO

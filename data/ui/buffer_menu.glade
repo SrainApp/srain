@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.20.2 -->
+<interface>
+  <requires lib="gtk+" version="3.16"/>
+  <object class="GtkMenuItem" id="close_menu_item">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="label" translatable="yes">_Close</property>
+    <property name="use_underline">True</property>
+  </object>
+  <object class="GtkMenuItem" id="disconn_menu_item">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="label" translatable="yes">_Disconnect</property>
+    <property name="use_underline">True</property>
+  </object>
+  <object class="GtkMenuItem" id="reconn_menu_item">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="label" translatable="yes">_Reconnect</property>
+    <property name="use_underline">True</property>
+  </object>
+  <object class="GtkMenuItem" id="leave_menu_item">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="label" translatable="yes">_Leave</property>
+    <property name="use_underline">True</property>
+  </object>
+  <object class="GtkMenuItem" id="quit_menu_item">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="label" translatable="yes">_Quit</property>
+    <property name="use_underline">True</property>
+  </object>
+  <object class="GtkCheckMenuItem" id="topic_menu_item">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="label" translatable="yes">Show _Topic</property>
+    <property name="use_underline">True</property>
+  </object>
+  <object class="GtkCheckMenuItem" id="user_list_menu_item">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="label" translatable="yes">Show _User List</property>
+    <property name="use_underline">True</property>
+  </object>
+</interface>

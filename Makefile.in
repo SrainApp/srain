@@ -1,73 +1,96 @@
 # Makefile
 
-.PHONY: install run bt clean cleanobj todo install-bin install-po install-data \
-		irctest uitest
-
 # Export all variables
 export
 
 # Package meta message
 PACKAGE = srain
 PACKAGE_NAME = Srain
+PACKAGE_APPID = im.srain.Srain
 PACKAGE_BUILD = $(shell [ -d .git ] && \
 				git rev-parse --git-dir > /dev/null 2>&1 && \
 				echo -n -git@0.`git rev-list --count HEAD`.`git describe --always`)
-PACKAGE_VERSION = 0.05$(PACKAGE_BUILD)
+PACKAGE_VERSION = 1.0.0
 PACKAGE_AUTHOR = Shengyu Zhang
-PACKAGE_EMAIL = silverrainz@outlook.com
-PACKAGE_DESC = It does not look like an IRC client.
-PACKAGE_WEBSITE = https://github.com/SilverRainZ/srain
-PACKAGE_DATA_DIR = $(PREFIX)
+PACKAGE_EMAIL = i@silverrainz.me
+PACKAGE_DESC = Modern IRC client written in GTK.
+PACKAGE_WEBSITE = https://srain.im
+PACKAGE_COPYRIGHT_DATES = 2016 - 2020
+PACKAGE_DATA_DIR = $(DATADIR)
+PACKAGE_CONFIG_DIR = $(SYSCONFDIR)
 
 MAKE = make
 DEL = rm -rf
 INSTALL = install -v
+DBG = gdb
 
-TARGET = build/srain
-TEST_FLAG = NO_TEST
+BUILD_DIR = $(BUILDDIR)
+TARGET = $(BUILD_DIR)/$(PACKAGE).out
+FAKE_HOME = $(BUILD_DIR)/home/$(PACKAGE)
+FAKE_XDG_DATA_DIR = $(PREFIX)/share:/usr/share:/usr/local/share
 
-default: src/Makefile data/ui/Makefile
-	$(MAKE) -C data/ui
+default: src/Makefile
+	- mkdir -p $(BUILD_DIR)
+	$(MAKE) -C data resources
 	$(MAKE) -C src
 
+.PHONY: install
 install: install-bin install-data install-po
 
+.PHONY: install-bin
 install-bin:
-	$(INSTALL) -Dm755 "$(TARGET)" "$(DESTDIR)$(PREFIX)/bin/srain"
+	$(INSTALL) -Dm755 "$(TARGET)" "$(DESTDIR)$(PREFIX)/bin/$(PACKAGE)"
 
+.PHONY: install-data
 install-data: data/Makefile
 	$(MAKE) -C data
 
+.PHONY: install-po
 install-po: po/Makefile
 	$(MAKE) -C po
 
-uitest:
-	$(MAKE) TEST_FLAG=UI_TEST run
+.PHONY: install-doc
+install-doc: doc/Makefile
+	$(MAKE) -C doc install
 
-irctest:
-	$(MAKE) TEST_FLAG=IRC_TEST run
+.PHONY: doc
+doc: doc/Makefile
+	$(MAKE) -C doc
 
+.PHONY: view-doc
+view-doc: doc/Makefile
+	$(MAKE) -C doc view
+
+.PHONY: run
 run:
-	$(MAKE) PREFIX=$(PWD)/build
-	$(MAKE) install-bin
-	$(MAKE) install-po
-	cp srainrc.example build/srainrc
-	cd build; \
-	XDG_DATA_DIRS=$(PWD)/build/share:/usr/share/ ./bin/srain
+	unset XDG_CONFIG_HOME XDG_DATA_HOME XDG_CACHE_HOME; \
+	export HOME=$(FAKE_HOME); \
+	export XDG_DATA_DIRS=$(FAKE_XDG_DATA_DIR); \
+	"$(DESTDIR)$(PREFIX)/bin/$(PACKAGE)"
 
-bt: $(TARGET)
-	cd build && yes | gdb ./srain -ex 'r' -ex 'bt' -ex 'q'
-	#	GTK_DEBUG=interactive\
-	#		GOBJECT_DEBUG=instance-countcd \
-	#		$(MAKE) run
+.PHONY: bt
+bt:
+	unset XDG_CONFIG_HOME XDG_DATA_HOME XDG_CACHE_HOME; \
+	export HOME=$(FAKE_HOME); \
+	export XDG_DATA_DIRS=$(FAKE_XDG_DATA_DIR); \
+	$(DBG) "$(DESTDIR)$(PREFIX)/bin/$(PACKAGE)" -ex 'r' -ex 'bt' -ex 'q'
 
+.PHONY: gtk-dbg
+gtk-dbg:
+	GTK_DEBUG=interactive \
+	GOBJECT_DEBUG=instance-countcd \
+	$(MAKE) run
+
+.PHONY: clean
 clean:
-	$(DEL) build/*
+	$(DEL) $(BUILD_DIR)/*
 
+.PHONY: cleanobj
 cleanobj:
-	$(DEL) build/*.c
-	$(DEL) build/*.o
-	$(DEL) build/srain
+	$(DEL) $(BUILD_DIR)/*.c
+	$(DEL) $(BUILD_DIR)/*.o
+	$(DEL) $(TARGET)
 
+.PHONY: todo
 todo:
 	grep --color=auto -r -E "TODO|FIXME" src/

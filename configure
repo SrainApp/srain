@@ -1,12 +1,28 @@
 #!/bin/sh
 
-prefix=/usr/local
-debugsym=true
-
 for arg in "$@"; do
     case "$arg" in
+    --builddir=*)
+        builddir=`echo $arg | sed 's/--builddir=//'`
+        echo "$builddir" | grep " " &&
+            echo "Whitespace is not allowed in build directory" &&
+            exit 1
+        ;;
+
     --prefix=*)
         prefix=`echo $arg | sed 's/--prefix=//'`
+        ;;
+
+    --config-dir=*)
+        echo "Option --config-dir is deprecated, use --sysconfdir instead."
+        sysconfdir=`echo $arg | sed 's/--config-dir=//'`
+        ;;
+    --sysconfdir=*)
+        sysconfdir=`echo $arg | sed 's/--sysconfdir=//'`
+        ;;
+
+    --datadir=*)
+        datadir=`echo $arg | sed 's/--datadir=//'`
         ;;
 
     --enable-debug)
@@ -17,7 +33,13 @@ for arg in "$@"; do
     --help)
         echo 'Usage: ./configure [options]'
         echo 'Options:'
+        echo '  --builddir=<path>: Build output directory'
+        echo '                     MUST be an absolute path and CANNOT contain'
+        echo '                     whitespace'
         echo '  --prefix=<path>: Installation prefix'
+        echo '  --config-dir=<path>: Deprecated, use --sysconfdir instead'
+        echo '  --sysconfdir=<path>: System wide configure file location'
+        echo '  --datadir=<path>: Application data location'
         echo '  --enable-debug: Include debug symbols'
         echo '  --disable-debug: Do not include debug symbols'
         echo 'All invalid options are silently ignored'
@@ -26,10 +48,34 @@ for arg in "$@"; do
     esac
 done
 
+if [ -z $builddir ]; then
+   builddir=$PWD/build
+fi
+
+if [ -z $prefix ]; then
+   prefix=/usr/local
+fi
+
+if [ -z $sysconfdir ]; then
+   sysconfdir=$prefix/etc
+fi
+
+if [ -z $datadir ]; then
+   datadir=$prefix/share
+fi
+
+if [ -z $debugsym ]; then
+    debugsym=true
+fi
+
 echo 'Generating makefile ...'
-echo "PREFIX = $prefix" > Makefile
+echo '' > Makefile
+echo "BUILDDIR = $builddir" | tee -a Makefile
+echo "PREFIX = $prefix" | tee -a Makefile
+echo "SYSCONFDIR = $sysconfdir" | tee -a Makefile
+echo "DATADIR = $datadir" | tee -a Makefile
 if $debugsym; then
-    echo 'DBGFLAGS = -ggdb' >> Makefile
+    echo 'DBGFLAGS = -ggdb' | tee -a Makefile
 fi
 cat Makefile.in >> Makefile
 echo 'Configuration complete, type make to build.'

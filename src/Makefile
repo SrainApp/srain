@@ -1,52 +1,63 @@
-# makefile
+# Makefile
 #
-# used to compile *.c (which located in . and ./irc ./ui) to object file
-# output ot <PROJECT DIR>/build
-#
+# Complie C source codes and output object files to $(BUILD_DIR), then links
+# them together to get a executable $(TARGET).
+
 CC = gcc
-INSTALL = install -v
-TEST_FLAG = NO_TEST
 DEFS = -D PACKAGE='"$(PACKAGE)"' \
 	   -D PACKAGE_NAME='"$(PACKAGE_NAME)"' \
 	   -D PACKAGE_VERSION='"$(PACKAGE_VERSION)"' \
+	   -D PACKAGE_BUILD='"$(PACKAGE_BUILD)"' \
+	   -D PACKAGE_APPID='"$(PACKAGE_APPID)"' \
 	   -D PACKAGE_AUTHOR='"$(PACKAGE_AUTHOR)"' \
 	   -D PACKAGE_EMAIL='"$(PACKAGE_EMAIL)"' \
 	   -D PACKAGE_DESC='"$(PACKAGE_DESC)"' \
 	   -D PACKAGE_WEBSITE='"$(PACKAGE_WEBSITE)"' \
 	   -D PACKAGE_DATA_DIR='"$(PACKAGE_DATA_DIR)"' \
-	   -D $(TEST_FLAG)
-CFLAGS = -O2 -Wall -I$(PWD)/src/inc -Wno-deprecated-declarations
+	   -D PACKAGE_CONFIG_DIR='"$(PACKAGE_CONFIG_DIR)"' \
+	   -D PACKAGE_COPYRIGHT_DATES='"$(PACKAGE_COPYRIGHT_DATES)"'
 GTK3FLAGS = $(shell pkg-config --cflags gtk+-3.0)
 GTK3LIBS = $(shell pkg-config --libs gtk+-3.0)
-PY3FLAGS = $(shell pkg-config --cflags python3)
-PY3LIBS = $(shell pkg-config --libs python3)
-CURLFLAGS = $(shell pkg-config --cflags libcurl)
-CURLLIBS = $(shell pkg-config --libs libcurl)
-# LIBIRCCLINETFLAGS = $(shell pkg-config --cflags libircclient)
-# LIBIRCCLINETLIBS = $(shell pkg-config --libs libircclient)
-LIBIRCCLINETFLAGS = -lircclient
-LIBIRCCLINETLIBS = -I/usr/include/libircclient
-LIBNOTIFYFLAGS = $(shell pkg-config --cflags libnotify)
-LIBNOTIFYLIBS = $(shell pkg-config --libs libnotify)
+LIBCONFIGFLAGS = $(shell pkg-config --cflags libconfig)
+LIBCONFIGLIBS = $(shell pkg-config --libs libconfig)
+LIBSOUPFLAGS = $(shell pkg-config --cflags libsoup-2.4)
+LIBSOUPLIBS = $(shell pkg-config --libs libsoup-2.4)
+LIBSSLFLAGS = $(shell pkg-config --cflags openssl)
+LIBSSLLIBS = $(shell pkg-config --libs openssl)
+LIBSECRETFLAGS =$(shell pkg-config --cflags libsecret-1)
+LIBSECRETLIBS =$(shell pkg-config --libs libsecret-1)
 
-CFLAGS += $(DEFS) $(GTK3FLAGS)  $(GTK3LIBS) $(PY3FLAGS) $(PY3LIBS) \
-		  $(CURLFLAGS) $(CURLLIBS) $(LIBIRCCLINETFLAGS) $(LIBIRCCLINETLIBS) \
-		  $(LIBNOTIFYFLAGS) $(LIBNOTIFYLIBS)
+CFLAGS += -std=gnu99 -O2 -Wall -Iinc -Wno-deprecated-declarations \
+		  $(DEFS) \
+		  $(DBGFLAGS) \
+		  $(GTK3FLAGS) \
+		  $(LIBCONFIGFLAGS) \
+		  $(LIBSOUPFLAGS) \
+		  $(LIBSSLFLAGS) \
+		  $(LIBSECRETFLAGS)
 
-TARGET = ../build/srain
-SRCS = $(wildcard *.c */*.c ../build/resources.c)
-OBJS = $(patsubst %.c, ../build/%.o, $(notdir $(SRCS)))
+LDFLAGS += $(DBGFLAGS) \
+		   $(GTK3LIBS) \
+		   $(LIBCONFIGLIBS) \
+		   $(LIBSOUPLIBS) \
+		   $(LIBSSLLIBS) \
+		   $(LIBSECRETLIBS)
+
+SRCS = $(wildcard *.c */*.c */*/*.c $(BUILD_DIR)/resources.c)
+OBJS = $(patsubst %.c, $(BUILD_DIR)/%.o, $(notdir $(SRCS)))
 
 default:
-	./cmd_list.sh --gen
-	make $(TARGET)
-	./cmd_list.sh --restore
+	$(MAKE) $(TARGET)
 
-../build/%.o: %.c
+$(BUILD_DIR)/%.o: %.c
 	$(CC) $(CFLAGS) -c $^ -o $@
 
-../build/%.o: */%.c
+$(BUILD_DIR)/%.o: */%.c
 	$(CC) $(CFLAGS) -c $^ -o $@
+
+$(BUILD_DIR)/%.o: */*/%.c
+	$(CC) $(CFLAGS) -c $^ -o $@
+
 
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) $^ -o $@
+	$(CC) $^ -o $@ $(LDFLAGS)

@@ -1,5 +1,0 @@
-/relaybot -ldelim '[' -rdelim '] ' teleboto
-/relaybot -ldelim '[' -rdelim '] ' xmppbot
-/relaybot -ldelim '(' -rdelim ') ' toxsync
-/connect  -realname 'I am srainbot' -ssl noverify -port 6697 chat.freenode.org srainbot
-/join #lasttest

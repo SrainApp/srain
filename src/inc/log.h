@@ -1,92 +1,113 @@
+/* Copyright (C) 2016-2017 Shengyu Zhang <i@silverrainz.me>
+ *
+ * This file is part of Srain.
+ *
+ * Srain is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef __LOG_H
 #define __LOG_H
 
-#include <stdlib.h>
 #include <glib.h>
 
-#define DBG_PROMPT      "[ DBG] [%s] "
-#define INFO_PROMPT     "\e[32m[INFO]\e[0m [%s]\t"
-#define WARN_PROMPT     "\e[33m[WARN] [%s]\t"
-#define ERR_PROMPT      "\e[31m[ ERR] [%s]\t"
+#include "srain.h"
+#include "ret.h"
 
-#ifdef __DBG_ON
-    #define DBG_FR(...) _DBG_FR(__VA_ARGS__)
-    #define DBG_F(...) _DBG_F(__VA_ARGS__)
-    #define DBG(...) _DBG(__VA_ARGS__)
-#else
-    #define DBG_FR(...) ;
-    #define DBG_F(...) ;
-    #define DBG(...) ;
-#endif
+typedef enum _SrnLogLevel SrnLogLevel;
+typedef struct _SrnLoggerConfig SrnLoggerConfig;
+typedef struct _SrnLogger SrnLogger;
 
-/* Print a line of debug message with fucntion name */
-#define _DBG_FR(...)                            \
-    do {                                        \
-        g_print(DBG_PROMPT, __FUNCTION__);      \
-        g_print(__VA_ARGS__);                   \
-        g_print("\n");                          \
-    } while (0);
+enum _SrnLogLevel {
+    LOG_DEBUG,
+    LOG_INFO,
+    LOG_WARN,
+    LOG_ERROR,
+    LOG_MAX,
+};
 
-/* Print a line of debug message with fucntion name, 
- * do not output the trailing newline */
-#define _DBG_F(...)                         \
-    do {                                    \
-        g_print(DBG_PROMPT, __FUNCTION__);  \
-        g_print(__VA_ARGS__);               \
-    } while (0);
+struct _SrnLoggerConfig {
+    bool prompt_color;
+    bool prompt_file;
+    bool prompt_function;
+    bool prompt_line;
 
-/* Print a log */
-#define _DBG(...)               \
-    do {                        \
-        g_print(__VA_ARGS__);   \
-    } while (0);
+    GList *debug_targets;
+    GList *info_targets;
+    GList *warn_targets;
+    GList *error_targets;
+};
 
-#ifdef __LOG_ON
-    #define LOG_FR(...) _LOG_FR(__VA_ARGS__)
-    #define LOG_F(...) _LOG_F(__VA_ARGS__)
-    #define LOG(...) _LOG(__VA_ARGS__)
-#else
-    #define LOG_FR(...) ;
-    #define LOG_F(...) ;
-    #define LOG(...) ;
-#endif
+/* Debug output */
+#define DBG_FR(...) \
+    srn_logger_log(srn_logger_get_default(), LOG_DEBUG, TRUE, TRUE, \
+            __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 
-/* Print a line of log with fucntion name */
-#define _LOG_FR(...)                                \
-    do {                                            \
-        g_print(INFO_PROMPT, __FUNCTION__);         \
-        g_print(__VA_ARGS__);                       \
-        g_print("\n");                              \
-    } while (0);
+#define DBG_F(...) \
+    srn_logger_log(srn_logger_get_default(), LOG_DEBUG, TRUE, FALSE, \
+            __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 
-/* Print a line of log with fucntion name
- * do not output the trailing newline */
-#define _LOG_F(...)                                 \
-    do {                                            \
-        g_print(INFO_PROMPT, __FUNCTION__);         \
-        g_print(__VA_ARGS__);                       \
-    } while (0);
+#define DBG(...) \
+    srn_logger_log(srn_logger_get_default(), LOG_DEBUG, FALSE, FALSE, \
+            __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 
-/* Print a log */
-#define _LOG(...)               \
-    do {                        \
-        g_print(__VA_ARGS__);   \
-    } while (0);
+/* Info output */
+#define LOG_FR(...) \
+    srn_logger_log(srn_logger_get_default(), LOG_INFO, TRUE, TRUE, \
+            __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 
-/* Print a line of warning message with fucntion name */
-#define WARN_FR(...)                                    \
-    do {                                                \
-        g_printerr(WARN_PROMPT, __FUNCTION__);          \
-        g_printerr(__VA_ARGS__);                        \
-        g_printerr("\n");                               \
-    } while (0);
+#define LOG_F(...) \
+    srn_logger_log(srn_logger_get_default(), LOG_INFO, TRUE, FALSE, \
+            __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 
-/* Print a line of error message with fucntion name */
-#define ERR_FR(...)                                 \
-    do {                                            \
-        g_printerr(ERR_PROMPT, __FUNCTION__);       \
-        g_printerr(__VA_ARGS__);                    \
-        g_printerr("\n");                           \
-    } while (0);
+#define LOG(...) \
+    srn_logger_log(srn_logger_get_default(), LOG_INFO, FALSE, FALSE, \
+            __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
+
+/* Warn output */
+#define WARN_FR(...) \
+    srn_logger_log(srn_logger_get_default(), LOG_WARN, TRUE, TRUE, \
+            __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
+
+#define WARN_F(...) \
+    srn_logger_log(srn_logger_get_default(), LOG_WARN, TRUE, FALSE, \
+            __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
+
+#define WARN(...) \
+    srn_logger_log(srn_logger_get_default(), LOG_WARN, FALSE, FALSE \
+            __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
+
+#define ERR_FR(...) \
+    srn_logger_log(srn_logger_get_default(), LOG_ERROR, TRUE, TRUE, \
+            __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
+
+#define ERR_F(...) \
+    srn_logger_log(srn_logger_get_default(), LOG_ERROR, TRUE, FALSE, \
+            __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
+
+SrnLogger *srn_logger_get_default(void);
+void srn_logger_set_default(SrnLogger *logger);
+
+SrnLogger *srn_logger_new(SrnLoggerConfig *cfg);
+void srn_logger_free(SrnLogger *logger);
+void srn_logger_set_config(SrnLogger *logger, SrnLoggerConfig *cfg);
+SrnLoggerConfig *srn_logger_get_config(SrnLogger *logger);
+void srn_logger_log(SrnLogger *logger, SrnLogLevel lv, bool print_prompt,
+        bool new_line, const char *file, const char *func, int line,
+        const char *fmt, ...);
+
+SrnLoggerConfig *srn_logger_config_new(void);
+void srn_logger_config_free(SrnLoggerConfig *cfg);
+SrnRet srn_logger_config_check(SrnLoggerConfig *cfg);
 
 #endif /* __LOG_H */

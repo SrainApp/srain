@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.0 -->
+<!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.16"/>
-  <template class="SrainUserList" parent="GtkBox">
+  <template class="SuiUserList" parent="GtkBox">
     <property name="name">user_list_box</property>
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -11,6 +11,8 @@
       <object class="GtkLabel" id="stat_label">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="margin_left">2</property>
+        <property name="margin_right">2</property>
         <property name="margin_top">2</property>
         <property name="margin_bottom">2</property>
         <property name="use_markup">True</property>
@@ -34,21 +36,27 @@
       </packing>
     </child>
     <child>
-      <object class="GtkScrolledWindow" id="scrolledwindow">
+      <object class="GtkScrolledWindow">
         <property name="width_request">150</property>
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <child>
-          <object class="GtkViewport" id="viewport">
-            <property name="name">user_list_viewport</property>
+          <object class="GtkTreeView" id="user_tree_view">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="shadow_type">none</property>
+            <property name="can_focus">True</property>
+            <property name="headers_visible">False</property>
+            <property name="search_column">0</property>
+            <child internal-child="selection">
+              <object class="GtkTreeSelection"/>
+            </child>
             <child>
-              <object class="GtkListBox" id="list_box">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="activate_on_single_click">False</property>
+              <object class="GtkTreeViewColumn" id="user_tree_view_column">
+                <child>
+                  <object class="GtkCellRendererPixbuf" id="user_icon_cell_renderer"/>
+                </child>
+                <child>
+                  <object class="GtkCellRendererText" id="user_name_cell_renderer"/>
+                </child>
               </object>
             </child>
           </object>

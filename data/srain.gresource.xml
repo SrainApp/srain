@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+    <!-- GTK UI design files, FIXME: prefix -->
+    <gresource prefix="/im/srain/Srain">
+        <file alias="app.glade" preprocess="xml-stripblanks">ui/app.glade</file>
+        <file alias="window.glade" preprocess="xml-stripblanks">ui/window.glade</file>
+        <file alias="buffer.glade" preprocess="xml-stripblanks">ui/buffer.glade</file>
+        <file alias="buffer_menu.glade" preprocess="xml-stripblanks">ui/buffer_menu.glade</file>
+        <file alias="misc_message.glade" preprocess="xml-stripblanks">ui/misc_message.glade</file>
+        <file alias="send_message.glade" preprocess="xml-stripblanks">ui/send_message.glade</file>
+        <file alias="recv_message.glade" preprocess="xml-stripblanks">ui/recv_message.glade</file>
+        <file alias="url_previewer.glade" preprocess="xml-stripblanks">ui/url_previewer.glade</file>
+        <file alias="image_window.glade" preprocess="xml-stripblanks">ui/image_window.glade</file>
+        <file alias="side_bar_item.glade" preprocess="xml-stripblanks">ui/side_bar_item.glade</file>
+        <file alias="message_list.glade" preprocess="xml-stripblanks">ui/message_list.glade</file>
+        <file alias="user_list.glade" preprocess="xml-stripblanks">ui/user_list.glade</file>
+        <file alias="nick_menu.glade" preprocess="xml-stripblanks">ui/nick_menu.glade</file>
+        <file alias="connect_panel.glade" preprocess="xml-stripblanks">ui/connect_panel.glade</file>
+        <file alias="join_panel.glade" preprocess="xml-stripblanks">ui/join_panel.glade</file>
+        <file alias="prefs_dialog.glade" preprocess="xml-stripblanks">ui/prefs_dialog.glade</file>
+    </gresource>
+
+    <!-- Icons files, TODO: SVG -->
+    <gresource prefix="/im/srain/Srain/icons/scalable/apps">
+        <file alias="srain.png">icons/scalable/srain.png</file>
+        <file alias="srain-red.png">icons/scalable/srain-red.png</file>
+    </gresource>
+</gresources>
