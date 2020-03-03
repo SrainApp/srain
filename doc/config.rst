@@ -18,7 +18,7 @@ The path of system wide configuration file ``builtin.cfg`` depends on the
 compile flag ``--sysconfdir``, default to be ``/etc/srain``.
 
 The path of user wide configuration file ``srain.cfg`` is ``$XDG_CONFIG_HOME/srain``,
-usually it is ``~/.config/srain``.
+usually it is ``~/.config/srain`` (``~/.var/app/im.srain.Srain`` for flatpak installs).
 
 The difference between system wide and user wide configuration file is the
 priority, **The user wide configuration always overwrite the one in system wide
