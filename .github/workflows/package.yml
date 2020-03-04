@@ -1,0 +1,31 @@
+name: packaging
+on: 
+  push:
+    paths-ignore:
+    - "README.rst"
+    - "doc/*"
+    - "po/*"
+  pull_request:
+    paths-ignore:
+    - "README.rst"
+    - "doc/*"
+    - "po/*"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install the dependencies
+      run: |
+        sudo apt install pkg-config gettext libgtk-3-dev libsoup2.4-dev libconfig-dev libssl-dev libsecret-1-dev \
+        glib-networking libgtk3.0 libsoup2.4 libconfig9 libsecret-1-0; 
+    - name: Packaging
+      run: |
+        dpkg-buildpackage -b -us -uc;
+    - name: Install & Run
+      run: |
+        cd ..;
+        DEB=`find -name "srain_*.deb"`;
+        sudo dpkg -i $DEB;
+        echo `which srain`;
+        /bin/sh -c "`which srain` --version"; 
