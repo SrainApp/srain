@@ -1,0 +1,6 @@
+*.debhelper
+.debhelper/
+files
+*.log
+*.substvars
+srain/

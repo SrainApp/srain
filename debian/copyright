@@ -1,6 +1,6 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: srain
-Source: https://github.com/SilverRainZ/srain
+Source: https://github.com/SrainApp/srain/
 
 Files: *
 Copyright: 2016 Shengyu Zhang <silverrainz@outlook.com>
