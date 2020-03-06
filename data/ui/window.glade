@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
+<!-- Generated with glade 3.22.2 -->
 <interface>
   <requires lib="gtk+" version="3.18"/>
   <object class="GtkImage" id="connect_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="icon_name">network-server</property>
+    <property name="icon_name">network-server-symbolic</property>
     <property name="use_fallback">True</property>
   </object>
   <object class="GtkImage" id="join_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="icon_name">contact-new</property>
+    <property name="icon_name">contact-new-symbolic</property>
     <property name="use_fallback">True</property>
   </object>
   <object class="GtkImage" id="plugin_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="icon_name">application-x-addon</property>
+    <property name="icon_name">application-x-addon-symbolic</property>
     <property name="use_fallback">True</property>
   </object>
   <object class="GtkImage" id="send_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="icon_name">document-send</property>
+    <property name="icon_name">document-send-symbolic</property>
     <property name="use_fallback">True</property>
   </object>
   <template class="SuiWindow" parent="GtkApplicationWindow">
@@ -52,12 +52,11 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="relief">none</property>
                     <child>
                       <object class="GtkImage" id="start_image">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="icon_name">go-home</property>
+                        <property name="icon_name">go-home-symbolic</property>
                         <property name="use_fallback">True</property>
                       </object>
                     </child>
@@ -83,7 +82,6 @@
                     <property name="receives_default">True</property>
                     <property name="tooltip_text" translatable="yes">Connect</property>
                     <property name="image">connect_image</property>
-                    <property name="relief">none</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -99,7 +97,6 @@
                     <property name="receives_default">True</property>
                     <property name="tooltip_text" translatable="yes">Join</property>
                     <property name="image">join_image</property>
-                    <property name="relief">none</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -167,14 +164,9 @@
                 <property name="can_focus">False</property>
                 <property name="focus_on_click">False</property>
                 <property name="receives_default">True</property>
-                <property name="relief">none</property>
+                <property name="direction">none</property>
                 <child>
-                  <object class="GtkImage" id="menu_image">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="icon_name">preferences-other</property>
-                    <property name="use_fallback">True</property>
-                  </object>
+                  <placeholder/>
                 </child>
               </object>
               <packing>
