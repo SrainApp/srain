@@ -1,0 +1,1184 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the Srain package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Srain 1.0.0\n"
+"Report-Msgid-Bugs-To: i@silverrainz.me\n"
+"POT-Creation-Date: 2020-02-26 18:09+0800\n"
+"PO-Revision-Date: 2020-03-07 20:14+0100\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.3\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: nl\n"
+
+#: ../src/core/app_ui_event.c:380 ../src/core/chat_command.c:352
+#, c-format
+msgid "\"%1$s\" has ignored"
+msgstr "'%1$s' wordt genegeerd"
+
+#: ../src/core/app_ui_event.c:383 ../src/core/chat_command.c:377
+#, c-format
+msgid "\"%1$s\" has unignored"
+msgstr "'%1$s' wordt niet meer genegeerd"
+
+#: ../src/core/chat_command.c:349
+#, c-format
+msgid "\"%1$s\" is already ignored"
+msgstr "'%1$s' wordt al genegeerd"
+
+#: ../src/core/chat_command.c:212
+#, c-format
+msgid "%1$d available server(s):%2$s"
+msgstr "%1$d beschikbare server(s):%2$s"
+
+#: ../src/core/app_irc_event.c:1615
+#, c-format
+msgid "%1$s %2$s"
+msgstr "%1$s %2$s"
+
+#: ../src/core/app_irc_event.c:1602
+#, c-format
+msgid "%1$s %2$s %3$s"
+msgstr "%1$s %2$s %3$s"
+
+#: ../src/sui/sui_message.c:453
+#, c-format
+msgid "%1$s %2$s @ %3$s"
+msgstr "%1$s %2$s @ %3$s"
+
+#: ../src/core/app_irc_event.c:1545
+#, c-format
+msgid "%1$s <%2$s@%3$s> %4$s"
+msgstr "%1$s <%2$s@%3$s> %4$s"
+
+#: ../src/sui/sui_message.c:508
+#, c-format
+msgid "%1$s <fwd %2$s@%3$s>"
+msgstr "%1$s <fwd %2$s@%3$s>"
+
+#: ../src/sui/sui_message.c:448
+#, c-format
+msgid "%1$s @ %2$s"
+msgstr "%1$s @ %2$s"
+
+#: ../src/core/app_irc_event.c:732
+#, c-format
+msgid "%1$s are kicked by %2$s"
+msgstr "%1$s is weggestuurd door %2$s"
+
+#: ../src/core/app_irc_event.c:729
+#, c-format
+msgid "%1$s are kicked by %2$s: %3$s"
+msgstr "%1$s is weggestuurd door %2$s: %3$s"
+
+#: ../src/core/app_irc_event.c:688
+#, c-format
+msgid ""
+"%1$s changed topic to:\n"
+"\t%2$s"
+msgstr ""
+"%1$s heeft het onderwerp veranderd in:\n"
+"\t%2$s"
+
+#: ../src/core/app_irc_event.c:684
+#, c-format
+msgid "%1$s cleared topic"
+msgstr "%1$s heeft het onderwerp weggehaald"
+
+#: ../src/core/app_irc_event.c:504
+#, c-format
+msgid "%1$s has joined"
+msgstr "%1$s is binnengekomen"
+
+#: ../src/core/app_irc_event.c:538
+#, c-format
+msgid "%1$s has left"
+msgstr "%1$s is weggegaan"
+
+#: ../src/core/app_irc_event.c:536
+#, c-format
+msgid "%1$s has left: %2$s"
+msgstr "%1$s is weggegaan: %2$s"
+
+#: ../src/core/app_irc_event.c:450
+#, c-format
+msgid "%1$s has quit"
+msgstr "%1$s heeft afgesloten"
+
+#: ../src/core/app_irc_event.c:448
+#, c-format
+msgid "%1$s has quit: %2$s"
+msgstr "%1$s heeft afgesloten: %2$s"
+
+#: ../src/core/app_irc_event.c:875
+#, c-format
+msgid "%1$s invites you into %2$s"
+msgstr "%1$s heeft u uitgenodigd voor %2$s"
+
+#: ../src/core/app_irc_event.c:1558
+#, c-format
+msgid "%1$s is a member of %2$s"
+msgstr "%1$s is lid van %2$s"
+
+#: ../src/core/app_irc_event.c:1570
+#, c-format
+msgid "%1$s is attached to %2$s at \"%3$s\""
+msgstr "%1$s is bijgevoegd aan %2$s op '%3$s'"
+
+#: ../src/core/app_irc_event.c:1790
+#, c-format
+msgid "%1$s is away: %2$s"
+msgstr "%1$s is afwezig: %2$s"
+
+#: ../src/core/app_irc_event.c:1589
+#, c-format
+msgid "%1$s is idle for %2$s seconds since %3$s"
+msgstr "%1$s is %2$s seconden afwezig sinds %3$s"
+
+#: ../src/core/app_irc_event.c:419 ../src/core/app_irc_event.c:424
+#, c-format
+msgid "%1$s is now known as %2$s"
+msgstr "%1$s draagt nu de naam %2$s"
+
+#: ../src/sui/sui_app.c:415
+#, c-format
+msgid ""
+"%1$s%2$s\n"
+"Running against GTK+ %3$d.%4$d.%5$d"
+msgstr ""
+"%1$s%2$s\n"
+"Wordt uitgevoerd met GTK+ %3$d.%4$d.%5$d"
+
+#: ../src/core/app_irc_event.c:1666 ../src/core/app_irc_event.c:1686
+#, c-format
+msgid "%1$s: %2$s"
+msgstr "%1$s: %2$s"
+
+#: ../src/core/app_irc_event.c:1522 ../src/core/app_irc_event.c:1587
+msgid "%Y-%m-%d %T"
+msgstr "%Y-%m-%d %T"
+
+#: ../data/ui/window.glade:307
+msgid "<big>Welcome to Srain!</big>"
+msgstr "<big>Welkom bij Srain!</big>"
+
+#: ../src/core/chat_command.c:561
+#, c-format
+msgid "A message has been sent to \"%1$s\""
+msgstr "Er is een bericht verstuurd aan '%1$s'"
+
+#: ../data/ui/app.glade:69
+msgid "About"
+msgstr "Over"
+
+#: ../src/sui/sui_app.c:436
+msgid "About Srain"
+msgstr "Over Srain"
+
+#: ../src/core/app_irc_event.c:1108
+#, c-format
+msgid "Acknowledged capabilities: %1$s"
+msgstr "Erkende functionaliteit: %1$s"
+
+#: ../data/ui/connect_panel.glade:521
+msgid "Advanced Mode"
+msgstr "Uitgebreide modus"
+
+#: ../src/core/app.c:220
+msgid "All config reloaded"
+msgstr "Alle configuratie is opnieuw geladen"
+
+#: ../src/core/app_ui_event.c:178
+msgid "Already reconnecting"
+msgstr "Bezig met opnieuw verbinden"
+
+#: ../data/ui/config_panel.glade:122
+msgid "Appearance"
+msgstr "Uiterlijk"
+
+#: ../data/ui/config_panel.glade:141
+msgid "Application"
+msgstr "Programma"
+
+#: ../src/config/manager.c:99
+#, c-format
+msgid "At line %1$d: %2$s"
+msgstr "Op regel %1$d: %2$s"
+
+#: ../src/core/app.c:321 ../src/core/app.c:325 ../src/core/server.c:283
+#: ../src/core/server.c:287
+#, c-format
+msgid "Autorun command: %1$s"
+msgstr "Automatisch uit te voeren opdracht: %1$s"
+
+#: ../src/core/chat_command.c:770
+msgid "Available regex patterns:"
+msgstr "Beschikbare regex-patronen:"
+
+#: ../src/core/app_irc_event.c:1523
+#, c-format
+msgid "By %1$s at %2$s"
+msgstr "Door %1$s op %2$s"
+
+#: ../data/ui/connect_panel.glade:540 ../data/ui/join_panel.glade:401
+msgid "Cancel"
+msgstr "Annuleren"
+
+#: ../src/core/chat_command.c:181
+msgid "Cannot disconnect from a unconnected server"
+msgstr "Kan de verbinding niet verbreken als u niet verbonden bent"
+
+#: ../src/core/app_ui_event.c:251 ../src/core/chat_command.c:581
+msgid "Cannot send message directly to a server"
+msgstr "Kan geen direct bericht versturen aan een server"
+
+#: ../data/ui/join_panel.glade:290
+msgid "Channel"
+msgstr "Kanaal"
+
+#: ../src/config/password.c:190
+msgid "Channel password"
+msgstr "Kanaalwachtwoord"
+
+#: ../data/ui/join_panel.glade:62
+msgid "Channel:"
+msgstr "Kanaal:"
+
+#: ../src/sui/sui_prefs_dialog.c:165
+msgid "Configuration is reloaded"
+msgstr "De configuratie is opnieuw geladen"
+
+#: ../data/ui/connect_panel.glade:554 ../data/ui/window.glade:84
+msgid "Connect"
+msgstr "Verbinden"
+
+#: ../src/core/app_irc_event.c:144 ../src/core/app_irc_event.c:150
+#, c-format
+msgid "Connected to %1$s(%2$s:%3$d)"
+msgstr "Verbonden met %1$s(%2$s:%3$d)"
+
+#: ../src/sui/sui_message.c:254
+msgid "Copy message"
+msgstr "Bericht kopiëren"
+
+#: ../src/core/app_irc_event.c:281 ../src/core/app_irc_event.c:296
+#, c-format
+msgid "Disconnected from %1$s(%2$s:%3$d): %4$s"
+msgstr "Verbinding verbroken met %1$s(%2$s:%3$d): %4$s"
+
+#: ../data/ui/connect_panel.glade:117
+msgid "Do not verify certificate"
+msgstr "Certificaat niet verifiëren"
+
+#: ../src/sui/sui_app.c:122
+msgid "Don't auto connect to servers"
+msgstr "Niet automatisch verbinden met servers"
+
+#: ../src/core/app_irc_event.c:1333
+#, c-format
+msgid "ERROR: %1$s"
+msgstr "FOUT: %1$s"
+
+#: ../src/core/app_irc_event.c:1880
+#, c-format
+msgid "ERROR[%1$3d] %2$s"
+msgstr "FOUT[%1$3d] %2$s"
+
+#: ../data/ui/config_panel.glade:81
+msgid "Enable CSD:"
+msgstr "CSD gebruiken:"
+
+#: ../data/ui/config_panel.glade:77
+msgid "Enable Client-Side Decorations, this will take effect after restart."
+msgstr "Schakel decoraties aan de cliëntzijde in. Herstart om toe te passen."
+
+#: ../src/core/server_cap.c:211
+msgid "Enabled capabilities:"
+msgstr "Ingeschakelde functionaliteit:"
+
+#: ../src/core/app.c:76 ../src/core/app.c:84 ../src/core/app.c:298
+#: ../src/core/app.c:409 ../src/sui/sui_app.c:468 ../src/sui/sui_app.c:487
+#: ../src/sui/sui_app.c:526 ../src/sui/sui_common.c:145
+#: ../src/sui/sui_connect_panel.c:487 ../src/sui/sui_connect_panel.c:496
+#: ../src/sui/sui_connect_panel.c:534 ../src/sui/sui_connect_panel.c:543
+#: ../src/sui/sui_connect_panel.c:589 ../src/sui/sui_join_panel.c:308
+#: ../src/sui/sui_join_panel.c:363 ../src/sui/sui_join_panel.c:374
+#: ../src/sui/sui_join_panel.c:391 ../src/sui/sui_join_panel.c:430
+#: ../src/sui/sui_join_panel.c:436 ../src/sui/sui_misc_message.c:188
+#: ../src/sui/sui_prefs_dialog.c:162
+msgid "Error"
+msgstr "Fout"
+
+#: ../src/config/reader.c:228
+#, c-format
+msgid "Error occurred while looking up channel password: %1$s"
+msgstr "Fout tijdens opzoeken van kanaalwachtwoord: %1$s"
+
+#: ../src/config/reader.c:143
+#, c-format
+msgid "Error occurred while looking up server password: %1$s"
+msgstr "Fout tijdens opzoeken van serverwachtwoord: %1$s"
+
+#: ../src/config/reader.c:149
+#, c-format
+msgid "Error occurred while looking up user password: %1$s"
+msgstr "Fout tijdens opzoeken van gebruikerswachtwoord: %1$s"
+
+#: ../src/config/reader.c:91 ../src/config/reader.c:97
+#, c-format
+msgid "Error occurred while reading application config in %1$s: %2$s"
+msgstr "Fout tijdens uitlezen van programmaconfiguratie in %1$s: %2$s"
+
+#: ../src/config/reader.c:212 ../src/config/reader.c:219
+#, c-format
+msgid "Error occurred while reading chat config in %1$s: %2$s"
+msgstr "Fout tijdens uitlezen van chatconfiguratie in %1$s: %2$s"
+
+#: ../src/config/reader.c:71 ../src/config/reader.c:77
+#, c-format
+msgid "Error occurred while reading log config in %1$s: %2$s"
+msgstr "Fout tijdens uitlezen van logboekconfiguratie in %1$s: %2$s"
+
+#: ../src/config/reader.c:131 ../src/config/reader.c:137
+#, c-format
+msgid "Error occurred while reading server config in %1$s: %2$s"
+msgstr "Fout tijdens uitlezen van serverconfiguratie in %1$s: %2$s"
+
+#: ../src/config/reader.c:111 ../src/config/reader.c:117
+#, c-format
+msgid "Error occurred while reading server list config in %1$s: %2$s"
+msgstr "Fout tijdens uitlezen van serverlijstconfiguratie in %1$s: %2$s"
+
+#: ../src/sui/sui_url_previewer.c:553
+msgid "Exceed max content length"
+msgstr "Maximum inhoudslengte overschreden"
+
+#: ../data/ui/app.glade:94
+msgid "Exit"
+msgstr "Afsluiten"
+
+#: ../data/ui/config_panel.glade:107
+msgid "Expand message:"
+msgstr "Bericht uitklappen:"
+
+#: ../src/core/app.c:296
+#, c-format
+msgid "Failed to add chat \"%1$s\": %2$s"
+msgstr "Kan chat '%1$s' niet toevoegen: %2$s"
+
+#: ../src/core/chat_command.c:748
+#, c-format
+msgid "Failed to add regex pattern \"%1$s\": %2$s"
+msgstr "Kan regex-patroon '%1$s' niet toevoegen: %2$s"
+
+#: ../src/core/app.c:407 ../src/core/app_url.c:119
+#, c-format
+msgid "Failed to add server \"%1$s\": %2$s"
+msgstr "Kan server '%1$s' niet toevoegen: %2$s"
+
+#: ../src/sui/sui_theme.c:102
+#, c-format
+msgid "Failed to apply theme from file \"%1$s\": %2$s"
+msgstr "Kan thema uit bestand '%1$s' niet toepassen: %2$s"
+
+#: ../src/core/chat_command.c:408
+#, c-format
+msgid "Failed to attach pattern to chat \"%1$s\": %2$s"
+msgstr "Kan patroon niet bijvoegen aan '%1$s': %2$s"
+
+#: ../src/core/chat_command.c:838
+#, c-format
+msgid "Failed to attach pattern to user %1$s\" of chat \"%2$s\": %2$s"
+msgstr ""
+"Kan patroon niet bijvoegen aan gebruiker '%1$s' in gesprek '%2$s': %2$s"
+
+#: ../src/core/server.c:149
+#, c-format
+msgid "Failed to chat config \"%1$s\" of server config \"%2$s\": %3$s"
+msgstr "Kan chatinstellingen '%1$s' niet toevegen aan '%2$s': %3$s"
+
+#: ../src/sui/sui_join_panel.c:372
+#, c-format
+msgid "Failed to clear channel password: %1$s"
+msgstr "Kan het kanaalwachtwoord niet wissen: %1$s"
+
+#: ../src/sui/sui_connect_panel.c:494
+#, c-format
+msgid "Failed to clear server password: %1$s"
+msgstr "Kan het serverwachtwoord niet wissen: %1$s"
+
+#: ../src/sui/sui_connect_panel.c:541
+#, c-format
+msgid "Failed to clear user password: 1$%s"
+msgstr "Kan het gebruikerswachtwoord niet wissen: %1$s"
+
+#: ../src/core/app_irc_event.c:197 ../src/core/app_irc_event.c:212
+#, c-format
+msgid "Failed to connect to %1$s(%2$s:%3$d): %4$s"
+msgstr "Kan niet verbinden met %1$s(%2$s:%3$d): %4$s"
+
+#: ../src/lib/path.c:184
+#, c-format
+msgid "Failed to create chat logs directory: %1$s"
+msgstr "Kan de chatlogmap niet aanmaken: %1$s"
+
+#: ../src/lib/path.c:164
+#, c-format
+msgid "Failed to create user cache directory: %1$s"
+msgstr "Kan de gebruikerscachemap niet aanmaken: %1$s"
+
+#: ../src/lib/path.c:144
+#, c-format
+msgid "Failed to create user configuration directory: %1$s"
+msgstr "Kan de gebruikersconfiguratiemap niet aanmaken: %1$s"
+
+#: ../src/lib/path.c:154
+#, c-format
+msgid "Failed to create user configuration file: %1$s"
+msgstr "Kan het gebruikersconfiguratiebestand niet aanmaken: %1$s"
+
+#: ../src/lib/path.c:174
+#, c-format
+msgid "Failed to create user data directory: %1$s"
+msgstr "Kan de gebruikersgegevensmap niet aanmaken: %1$s"
+
+#: ../src/core/chat_command.c:437
+#, c-format
+msgid "Failed to dettach pattern from chat \"%1$s\": %2$s"
+msgstr "Kan patroon niet verwijderen uit '%1$s': %2$s"
+
+#: ../src/core/chat_command.c:883
+#, c-format
+msgid "Failed to dettach pattern from user \"%1$s\": %2$s"
+msgstr "Kan patroon niet verwijderen van gebruiker '%1$s': %2$s"
+
+#: ../src/core/chat_command.c:159 ../src/core/chat_command.c:293
+#, c-format
+msgid "Failed to instantiate server \"%1$s\""
+msgstr "Kan server '%1$s' niet opzetten"
+
+#: ../src/core/app_url.c:146 ../src/core/app_url.c:154
+#, c-format
+msgid "Failed to join channel on server \"%1$s\": %2$s"
+msgstr "Kan niet verbinden met kanaal op server '%1$s': %2$s"
+
+#: ../src/sui/sui_common.c:144
+#, c-format
+msgid "Failed to open URL \"%1$s\": %2$s"
+msgstr "Kan de url '%1$s' niet openen: %2$s"
+
+#: ../src/core/app_url.c:60
+#, c-format
+msgid "Failed to parse \"%1$s\" as URL"
+msgstr "Kan '%1$s' niet verwerken als url"
+
+#: ../src/core/app_ui_event.c:203
+#, c-format
+msgid "Failed to quit from server: %1$s"
+msgstr "Kan niet weggaan van server: %1$s"
+
+#: ../src/config/manager.c:66
+#, c-format
+msgid "Failed to read system configuration file: %1$s"
+msgstr "Kan het systeemconfiguratiebestand niet uitlezen: %1$s"
+
+#: ../src/config/manager.c:78
+#, c-format
+msgid "Failed to read user configuration file: %1$s"
+msgstr "Kan het gebruikersconfiguratiebestand niet uitlezen: %1$s"
+
+#: ../src/core/app_url.c:135 ../src/core/chat_command.c:169
+#: ../src/core/chat_command.c:306
+#, c-format
+msgid "Failed to register on server \"%1$s\""
+msgstr "Kan niet registreren op server '%1$s'"
+
+#: ../src/core/app.c:229
+#, c-format
+msgid "Failed to reload application config: %1$s"
+msgstr "Kan de programmaconfiguratie niet opnieuw laden: %1$s"
+
+#: ../src/sui/sui_prefs_dialog.c:160
+#, c-format
+msgid "Failed to reload configuration: %s"
+msgstr "Kan de programmaconfiguratie niet opnieuw laden: %s"
+
+#: ../src/core/app.c:224
+#, c-format
+msgid "Failed to reload logger config: %1$s"
+msgstr "Kan de logboekconfiguratie niet opnieuw laden: %1$s"
+
+#: ../src/core/chat_command.c:761
+#, c-format
+msgid "Failed to remove regex pattern \"%1$s\": %2$s"
+msgstr "Kan regex-patroon '%1$s' niet verwijderen: %2$s"
+
+#: ../src/render/mention_renderer.c:88
+#: ../src/render/mirc_colorize_renderer.c:105
+#: ../src/render/mirc_strip_renderer.c:72 ../src/render/url_renderer.c:117
+#, c-format
+msgid "Failed to render markup text: %1$s"
+msgstr "Kan de opgemaakte tekst niet tonen: %1$s"
+
+#: ../src/core/chat_command.c:586
+#, c-format
+msgid "Failed to send action message: %1$s"
+msgstr "Kan het actiebericht niet versturen: %1$s"
+
+#: ../src/core/app_ui_event.c:261
+#, c-format
+msgid "Failed to send message: %1$s"
+msgstr "Kan het bericht niet versturen: %1$s"
+
+#: ../src/sui/sui_join_panel.c:361
+#, c-format
+msgid "Failed to store channel password: %1$s"
+msgstr "Kan het kanaalwachtwoord niet opslaan: %1$s"
+
+#: ../src/sui/sui_connect_panel.c:485
+#, c-format
+msgid "Failed to store server password: %1$s"
+msgstr "Kan het serverwachtwoord niet opslaan: %1$s"
+
+#: ../src/sui/sui_connect_panel.c:532
+#, c-format
+msgid "Failed to store user password: %1$s"
+msgstr "Kan het gebruikerswachtwoord niet opslaan: %1$s"
+
+#: ../src/sirc/sirc_config.c:68
+msgid "False"
+msgstr "Onjuist"
+
+#: ../src/sui/sui_message.c:261
+msgid "Forward to..."
+msgstr "Doorsturen naar..."
+
+#: ../src/core/server_state.c:92
+msgid ""
+"Hold on, srain is connecting to the server, please do not repeat the action"
+msgstr "Even geduld: srain is bezig met verbinden - doe dit niet nog eens"
+
+#: ../src/sirc/sirc_config.c:37
+msgid "Invalid IRC config instance"
+msgstr "Onjuiste IRC-configuratie-instantie"
+
+#: ../src/sui/sui_config.c:84
+msgid "Invalid SuiBufferConfig instance"
+msgstr "Onjuiste SuiBufferConfig-instantie"
+
+#: ../src/core/chat_config.c:38
+msgid "Invalid chat config instance"
+msgstr "Onjuiste chatconfiguratie-instantie"
+
+#: ../src/sirc/sirc_config.c:53
+#, c-format
+msgid "Invalid encoding in IRC config: %1$s"
+msgstr "Onjuiste opmaak in IRC-configuratie: %1$s"
+
+#: ../src/lib/ret.c:112
+msgid "Invalid error id, maybe this error is removed because out of date"
+msgstr ""
+"Ongeldige fout-id. Wellicht is deze foutmelding verwijderd omdat hij "
+"verouderd was."
+
+#: ../src/core/server_config.c:53
+msgid "Invalid server config instance"
+msgstr "Onjuiste serverconfiguratie-instantie"
+
+#: ../data/ui/nick_menu.glade:50
+msgid "Invite to..."
+msgstr "Uitnodigen voor..."
+
+#: ../src/core/app_irc_event.c:219
+#, c-format
+msgid ""
+"It seems that you connect to a TLS port(%1$d) without enable TLS connection, "
+"try to enable it and reconnect"
+msgstr ""
+"Het lijkt erop dat u probeert te verbinden met een TLS-poort(%1$d) zonder "
+"TLS-verbinding. Zet deze op en probeer het opnieuw."
+
+#: ../data/ui/join_panel.glade:416 ../data/ui/window.glade:100
+msgid "Join"
+msgstr "Binnengaan"
+
+#: ../data/ui/join_panel.glade:133
+msgid "Join Channel"
+msgstr "Kanaal binnengaan"
+
+#: ../src/core/app_irc_event.c:1002
+#, c-format
+msgid "Latency between %1$s: %2$lums"
+msgstr "Vertraging tussen %1$s: %2$lums"
+
+#: ../src/sirc/sirc.c:186
+msgid "Local connection closed"
+msgstr "Lokale verbinding afgesloten"
+
+#: ../src/core/app_irc_event.c:1224 ../src/core/app_irc_event.c:1250
+#, c-format
+msgid "Logging in with %1$s as %2$s..."
+msgstr "Bezig met inloggen met %1$s als %2$s..."
+
+#: ../src/core/app_irc_event.c:375
+#, c-format
+msgid "Logging in with %1$s..."
+msgstr "Bezig met inloggen met %1$s..."
+
+#: ../data/ui/connect_panel.glade:423
+msgid "Login certificate:"
+msgstr "Inlogcertificaat:"
+
+#: ../data/ui/connect_panel.glade:351
+msgid "Login password:"
+msgstr "Inlogwachtwoord:"
+
+#: ../src/sui/sui_join_panel.c:280
+msgid "Match channel name"
+msgstr "Kanaalnaam moet overeenkomen"
+
+#: ../data/ui/join_panel.glade:208
+msgid "Max users"
+msgstr "Max. aantal gebruikers"
+
+#: ../src/sui/sui_message.c:459
+msgid "Message from unknown chat"
+msgstr "Bericht uit onbekende chat"
+
+#: ../src/core/chat_command.c:441
+#, c-format
+msgid "Messages of chat \"%1$s\" are no longer filtered by pattern \"%2$s\""
+msgstr "Berichten uit '%1$s' worden niet langer gefilterd op basis van '%2$s'"
+
+#: ../src/core/chat_command.c:412
+#, c-format
+msgid "Messages of chat \"%1$s\" will be filtered by pattern \"%2$s\""
+msgstr "Berichten uit '%1$s' worden gefilterd op basis van '%2$s'"
+
+#: ../src/core/chat_command.c:887
+#, c-format
+msgid ""
+"Messages of user \"%1$s\" of chat \"%2$s\" are no longer rendered by pattern "
+"\"%3$s\""
+msgstr ""
+"Berichten van '%1$s' in '%2$s' worden niet langer getoond op basis van '%3$s'"
+
+#: ../src/core/chat_command.c:842
+#, c-format
+msgid ""
+"Messages of user \"%1$s\" of chat \"%2$s\" will be rendered by pattern \"%3$s"
+"\""
+msgstr "Berichten van '%1$s' in '%2$s' worden getoond op basis van '%3$s'"
+
+#: ../data/ui/join_panel.glade:237
+msgid "Min users"
+msgstr "Min. aantal gebruikers"
+
+#: ../src/core/chat_command.c:240
+msgid "Missing argument <addr>"
+msgstr "Ontbrekend argument <addr>"
+
+#: ../src/lib/command.c:482
+#, c-format
+msgid "Missing argument, expect %1$d, actually %2$d"
+msgstr "Ontbrekend argument: %1$d werd verwacht, %2$d werd verkregen"
+
+#: ../src/sui/sui_config.c:32
+#, c-format
+msgid "Missing field in SuiApplicationConfig: %1$s"
+msgstr "Ontbrekend veld in SuiApplicationConfig: %1$s"
+
+#: ../src/core/server_config.c:49
+#, c-format
+msgid "Missing field in server config: %1$s"
+msgstr "Ontbrekend veld in serverconfiguratie: %1$s"
+
+#: ../src/core/user_config.c:71
+#, c-format
+msgid "Missing field in user config: %1$s"
+msgstr "Ontbrekend veld in gebruikersconfiguratie: %1$s"
+
+#: ../src/lib/command.c:491
+#, c-format
+msgid "Missing vaule for option %1$s"
+msgstr "Ontbrekende waarde voor optie '%1$s'"
+
+#: ../data/ui/connect_panel.glade:84
+msgid "Nickname:"
+msgstr "Bijnaam:"
+
+#: ../src/core/app_irc_event.c:1111
+msgid "No acknowledged capability"
+msgstr "Geen erkende functionaliteit"
+
+#: ../src/core/app_irc_event.c:1068
+msgid "No capability to be requested"
+msgstr "Geen functionaliteit aangevraagd"
+
+#: ../src/core/app_irc_event.c:1101
+msgid "No new capability to be requested"
+msgstr "Geen nieuwe functionaliteit aangevraagd"
+
+#: ../src/core/app_irc_event.c:1481
+msgid "No topic is set"
+msgstr "Geen onderwerp ingesteld"
+
+#: ../src/lib/path.c:199
+msgid "Not a directory"
+msgstr "Geen map"
+
+#: ../src/lib/path.c:218
+msgid "Not a regular file"
+msgstr "Geen regulier bestand"
+
+#: ../src/sui/sui_prefs_dialog.c:165
+msgid "OK"
+msgstr "Oké"
+
+#: ../src/sui/sui_app.c:131
+msgid "Open one or more IRC URLs"
+msgstr "Open één of meer IRC-url's"
+
+#: ../data/ui/connect_panel.glade:485 ../data/ui/join_panel.glade:103
+msgid "Optional"
+msgstr "Optioneel"
+
+#: ../data/ui/join_panel.glade:88
+msgid "Password:"
+msgstr "Wachtwoord:"
+
+#: ../src/core/chat_command.c:392 ../src/core/chat_command.c:812
+#, c-format
+msgid "Pattern \"%1$s\" not found"
+msgstr "Patroon '%1$s' niet aangetroffen"
+
+#: ../src/core/app_irc_event.c:246
+msgid "Ping time out"
+msgstr "Ping-time-out"
+
+#: ../src/sui/sui_join_panel.c:309
+msgid "Please connect to a server before joining any channel"
+msgstr "Maak verbinding met een server voordat u een kanaal binnengaat"
+
+#: ../src/sui/sui_join_panel.c:430
+msgid "Please connect to a server before searching any channel"
+msgstr "Maak verbinding met een server voordat u een kanaal zoekt"
+
+#: ../data/ui/connect_panel.glade:106
+msgid "Quick Mode"
+msgstr "Snelle modus"
+
+#: ../src/core/server_state.c:172 ../src/core/server_state.c:179
+msgid "Quitting the server"
+msgstr "Bezig met weggaan"
+
+#: ../src/core/app_irc_event.c:950
+#, c-format
+msgid "Received CTCP %1$s request form %2$s"
+msgstr "CTCP %1$s-verzoek %2$s ontvangen"
+
+#: ../src/core/app_irc_event.c:985 ../src/core/app_irc_event.c:1005
+#, c-format
+msgid "Received CTCP %1$s response from %2$s: %3$s"
+msgstr "CTCP %1$s-antwoord ontvangen van %2$s: %3$s"
+
+#: ../src/core/app_irc_event.c:946
+#, c-format
+msgid "Received unsupported CTCP %1$s request form %2$s"
+msgstr "Niet-ondersteund CTCP %1$s-verzoek %2$s ontvangen"
+
+#: ../src/core/app_irc_event.c:990
+#, c-format
+msgid "Received unsupported CTCP %1$s response form %2$s"
+msgstr "Niet-ondersteund CTCP %1$s-antwoord %2$s ontvangen"
+
+#: ../src/core/app_ui_event.c:159 ../src/core/chat_command.c:188
+msgid "Reconnection stopped"
+msgstr "Opnieuw verbinden afgebroken"
+
+#: ../src/core/chat_command.c:751
+#, c-format
+msgid "Regex pattern \"%1$s\" has added"
+msgstr "Regex-patroon '%1$s' is toegevoegd"
+
+#: ../src/core/chat_command.c:764
+#, c-format
+msgid "Regex pattern \"%1$s\" has removed"
+msgstr "Regex-patroon '%1$s' is verwijderd"
+
+#: ../data/ui/prefs_dialog.glade:107
+msgid "Reload Configuration"
+msgstr "Configuratie opnieuw laden"
+
+#: ../data/ui/connect_panel.glade:375
+msgid "Remember login password"
+msgstr "Inlogwachtwoord onthouden"
+
+#: ../data/ui/connect_panel.glade:495 ../data/ui/join_panel.glade:113
+msgid "Remember password"
+msgstr "Wachtwoord onthouden"
+
+#: ../src/sirc/sirc.c:199
+msgid "Remote connection closed"
+msgstr "Externe verbinding afgesloten"
+
+#: ../src/core/app_irc_event.c:1064
+#, c-format
+msgid "Requesting capabilities: %1$s"
+msgstr "Functionaliteit aangevraagd: %1$s"
+
+#: ../src/core/app_irc_event.c:1097
+#, c-format
+msgid "Requesting new capabilities: %1$s"
+msgstr "Nieuwe functionaliteit aangevraagd: %1$s"
+
+#: ../src/core/app_irc_event.c:1183
+msgid "SASL authentication is not supported on this server, login skipped"
+msgstr ""
+"Deze server heeft geen ondersteuning voor SASL-authenticatie - inloggen "
+"overgeslagen"
+
+#: ../data/ui/join_panel.glade:383
+msgid "Search Channel"
+msgstr "Kanaal zoeken"
+
+#: ../data/ui/connect_panel.glade:409
+msgid "Select a certificate file"
+msgstr "Kies een certificaatbestand"
+
+#: ../data/ui/config_panel.glade:166
+msgid "Server"
+msgstr "Server"
+
+#: ../src/core/app_irc_event.c:1061
+#, c-format
+msgid "Server capabilities: %1$s"
+msgstr "Serverfunctionaliteit: %1$s"
+
+#: ../src/core/app_irc_event.c:1165
+#, c-format
+msgid "Server has deleted capabilities: %1$s"
+msgstr "Server heeft functionaliteit verwijderd: %1$s"
+
+#: ../src/core/app_irc_event.c:1094
+#, c-format
+msgid "Server has new capabilities: %1$s"
+msgstr "Server heeft nieuwe functionaliteit: %1$s"
+
+#: ../src/core/server_state.c:121
+msgid "Server is already connected"
+msgstr "Reeds verbonden met server"
+
+#: ../src/core/server_state.c:77
+msgid "Server is already disconnected"
+msgstr "Verbindig met server reeds verbroken"
+
+#: ../src/core/server_state.c:149 ../src/core/server_state.c:152
+#: ../src/core/server_state.c:155 ../src/core/server_state.c:158
+msgid "Server is disconnecting"
+msgstr "Bezig met verbreken van verbinding"
+
+#: ../src/config/password.c:126
+msgid "Server password"
+msgstr "Serverwachtwoord"
+
+#: ../data/ui/connect_panel.glade:52
+msgid "Server:"
+msgstr "Server:"
+
+#: ../data/ui/buffer_menu.glade:38
+msgid "Show _Topic"
+msgstr "_Onderwerp tonen"
+
+#: ../data/ui/buffer_menu.glade:44
+msgid "Show _User List"
+msgstr "Gebr_uikerslijst tonen"
+
+#: ../src/sui/sui_app.c:113
+msgid "Show version information"
+msgstr "Versie-informatie tonen"
+
+#: ../src/sui/sui_join_panel.c:481 ../src/sui/sui_join_panel.c:578
+#, c-format
+msgid "Showing %1$d of %2$d channnels"
+msgstr "Er worden %1$d van %2$d kanalen getoond"
+
+#: ../src/lib/ret.c:94
+msgid "Some error occurred"
+msgstr "Er is een fout opgetreden"
+
+#: ../src/lib/command.c:150
+msgid "Sorry, command parsing failed, please report a bug to <"
+msgstr "Sorry, de opdracht kan niet worden verwerkt. Meld dit aan <"
+
+#: ../data/ui/app.glade:115 ../data/ui/app.glade:116
+msgid "Srain"
+msgstr "Srain"
+
+#: ../data/ui/prefs_dialog.glade:9
+msgid "Srain Preferences"
+msgstr "Srain-instellingen"
+
+#: ../src/sirc/sirc_config.c:72
+#, c-format
+msgid "TLS: %1$s, TLS verify certificate: %2$s, Encoding: %3$s"
+msgstr "TLS: %1$s, TLS-certificaatverificatie: %2$s, Tekenreeks: %3$s"
+
+#: ../src/core/app_irc_event.c:379
+msgid ""
+"The assigned nickname does not match the requested nickname, login skipped"
+msgstr ""
+"De toegewezen bijnaam komt niet overeen met de aangevraagde - inloggen "
+"overgeslagen"
+
+#: ../src/core/app_irc_event.c:1502
+#, c-format
+msgid ""
+"The topic of this channel is:\n"
+"\t%1$s"
+msgstr ""
+"Het onderwerp van dit kanaal is:\n"
+"\t%1$s"
+
+#: ../data/ui/config_panel.glade:42
+msgid "Theme:"
+msgstr "Thema:"
+
+#: ../src/lib/command.c:500
+#, c-format
+msgid "Too many arguments, expect %1$d"
+msgstr "Te veel argumenten - verwacht werd %1$d"
+
+#: ../src/lib/command.c:488
+#, c-format
+msgid "Too many optional arguments (maximum allowed: %1$d)"
+msgstr "Te veel optionele argumenten (maximaal toegestaan: %1$d)"
+
+#: ../data/ui/join_panel.glade:327
+msgid "Topic"
+msgstr "Onderwerp"
+
+#: ../src/sirc/sirc_config.c:67
+msgid "True"
+msgstr "Waar"
+
+#: ../src/core/app_irc_event.c:1397
+#, c-format
+msgid "Trying nickname: \"%1$s\"..."
+msgstr "Bezig met uitproberen van '%1$s'..."
+
+#: ../src/core/app_irc_event.c:201 ../src/core/app_irc_event.c:224
+#: ../src/core/app_irc_event.c:285 ../src/core/app_irc_event.c:300
+#, c-format
+msgid "Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."
+msgstr "Herverbinden met %1$s(%2$s:%3$d) vindt plaats na %4$.1lfs..."
+
+#: ../src/core/app_irc_event.c:1831
+#, c-format
+msgid "URL of %1$s is: %2$s"
+msgstr "De url van %1$s is: %2$s"
+
+#: ../src/core/server_state.c:63
+#, c-format
+msgid "Unallowed action: %1$s"
+msgstr "Niet-toegestane actie: %1$s"
+
+#: ../src/lib/command.c:329
+msgid "Unclosed single quotation"
+msgstr "Onafgemaakt citaat"
+
+#: ../src/lib/command.c:140
+#, c-format
+msgid "Unknown command: %1$s"
+msgstr "Onbekende opdracht: %1$s"
+
+#: ../src/core/login_config.c:53
+msgid "Unknown login method"
+msgstr "Onbekende inlogmethode"
+
+#: ../src/lib/command.c:485
+#, c-format
+msgid "Unknown option %1$s"
+msgstr "Onbekende optie: %1$s"
+
+#: ../src/core/chat_command.c:220 ../src/lib/command.c:494
+#, c-format
+msgid "Unknown sub command: %1$s"
+msgstr "Onbekende achterliggende opdraht: %1$s"
+
+#: ../src/sui/sui_url_previewer.c:325 ../src/sui/sui_url_previewer.c:575
+msgid "Unsupported URL content type"
+msgstr "Niet-ondersteunde url"
+
+#: ../src/core/app_url.c:67
+#, c-format
+msgid "Unsupported protocol: %1$s"
+msgstr "Niet-ondersteund protocol: %1$s"
+
+#: ../data/ui/connect_panel.glade:132
+msgid "Use secure connection"
+msgstr "Beveiligde verbinding gebruiken"
+
+#: ../data/ui/config_panel.glade:180
+msgid "User"
+msgstr "Gebruiker"
+
+#: ../src/core/app.c:146
+msgid "User config not found"
+msgstr "Geen gebruikersconfiguratie aangetroffen"
+
+#: ../src/config/password.c:257
+msgid "User password"
+msgstr "Gebruikerswachtwoord"
+
+#: ../data/ui/join_panel.glade:309
+msgid "Users"
+msgstr "Gebruikers"
+
+#: ../src/sui/sui_user_list.c:208
+#, c-format
+msgid ""
+"Users: %d, <span color=\"#157915\">%d@</span>,<span color=\"#856117\">%d%%</"
+"span>,<span color=\"#451984\">%d+</span>"
+msgstr ""
+"Gebruikers: %d, <span color=\"#157915\">%d@</span>,<span color=\"#856117\">%d"
+"%%</span>,<span color=\"#451984\">%d+</span>"
+
+#: ../src/core/app_irc_event.c:723
+#, c-format
+msgid "You are kicked by %1$s"
+msgstr "U bent weggestuurd door %1$s"
+
+#: ../src/core/app_irc_event.c:720
+#, c-format
+msgid "You are kicked by %1$s: %2$s"
+msgstr "U bent weggestuurd door %1$s: %2$s"
+
+#: ../src/core/app_irc_event.c:500
+#, c-format
+msgid "You have joined the channel"
+msgstr "U bent het kanaal binnengegaan"
+
+#: ../src/core/login_config.c:52
+#, c-format
+msgid "You need to set the field %2$s in order to use login method %1$s"
+msgstr "Stel het veld '%2$s' in om de inlogmethode '%1$s' te kunnen gebruiken"
+
+#: ../src/sui/sui_app.c:132
+msgid "[URL…]"
+msgstr "[URL…]"
+
+#: ../data/ui/app.glade:22
+msgid "_About"
+msgstr "_Over"
+
+#: ../data/ui/connect_panel.glade:169
+msgid "_Address:"
+msgstr "_Adres:"
+
+#: ../data/ui/config_panel.glade:217
+msgid "_Apply"
+msgstr "Toep_assen"
+
+#: ../data/ui/config_panel.glade:203 ../data/ui/prefs_dialog.glade:29
+msgid "_Cancel"
+msgstr "_Annuleren"
+
+#: ../data/ui/nick_menu.glade:41
+msgid "_Chat"
+msgstr "_Chat"
+
+#: ../data/ui/buffer_menu.glade:8
+msgid "_Close"
+msgstr "_Sluiten"
+
+#: ../data/ui/buffer_menu.glade:14
+msgid "_Disconnect"
+msgstr "Verbin_ding verbreken"
+
+#: ../data/ui/app.glade:37
+msgid "_Exit"
+msgstr "_Afsluiten"
+
+#: ../data/ui/nick_menu.glade:23
+msgid "_Ignore"
+msgstr "_Negeren"
+
+#: ../data/ui/nick_menu.glade:32
+msgid "_Kick"
+msgstr "_Wegsturen"
+
+#: ../data/ui/buffer_menu.glade:26
+msgid "_Leave"
+msgstr "_Weggaan"
+
+#: ../data/ui/connect_panel.glade:450
+msgid "_Login method:"
+msgstr "In_logmethode:"
+
+#: ../data/ui/connect_panel.glade:276
+msgid "_Nickname:"
+msgstr "Bij_naam:"
+
+#: ../data/ui/config_panel.glade:231 ../data/ui/prefs_dialog.glade:43
+msgid "_OK"
+msgstr "_Oké"
+
+#: ../data/ui/connect_panel.glade:153
+msgid "_Password:"
+msgstr "_Wachtwoord:"
+
+#: ../data/ui/app.glade:13 ../data/ui/app.glade:55
+msgid "_Preferences"
+msgstr "_Instellingen"
+
+#: ../data/ui/url_previewer.glade:26
+msgid "_Preview"
+msgstr "_Voorvertoning"
+
+#: ../data/ui/buffer_menu.glade:32
+msgid "_Quit"
+msgstr "_Afsluiten"
+
+#: ../data/ui/buffer_menu.glade:20
+msgid "_Reconnect"
+msgstr "_Opnieuw verbinden"
+
+#: ../data/ui/prefs_dialog.glade:88
+msgid "_Reload"
+msgstr "He_rladen"
+
+#: ../data/ui/connect_panel.glade:185
+msgid "_Server:"
+msgstr "_Server:"
+
+#: ../data/ui/nick_menu.glade:14
+msgid "_Whois"
+msgstr "_Whois"
+
+#: ../src/render/mention_renderer.c:80
+#, c-format
+msgid "g_regex_new() failed: %1$s"
+msgstr "g_regex_new() is mislukt: %1$s"
+
+#: ../src/core/app_irc_event.c:575 ../src/core/app_irc_event.c:650
+#, c-format
+msgid "mode %1$s %2$s by %3$s"
+msgstr "modus %1$s %2$s door %3$s"
+
+#: ../src/config/reader.c:331
+#, c-format
+msgid "server-list[%1$d] doesn't have a name"
+msgstr "server-list[%1$d] is naamloos"
+
+#: ../src/core/chat_command.c:374
+#, c-format
+msgid "user \"%1$s\" not found"
+msgstr "gebruiker '%1$s' is niet gevonden"
