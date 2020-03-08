@@ -23,7 +23,7 @@ coreutils           Only for building
 make                Only for building
 gcc                 Only for building
 pkg-config          Only for building
-gettext
+gettext             Only for building
 glib2
 glib-networking     Optional, For TLS connection support
 gtk+3                                                                   >= 3.18
