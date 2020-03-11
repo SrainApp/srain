@@ -119,9 +119,16 @@ If you are the user of `Arch Linux CN Repository`_, try:
 Debian
 ~~~~~~
 
-`tomacat`_ is maintaining `Debian package script for Srain`_.
+`tomac4t`_ is maintaining `Debian package script for Srain`_.
 
-.. _tomacat: https://github.com/tomacat
+Move the ``debian`` directory to srain's project root directory, perform the
+following commands to build a deb package:
+
+.. code-block:: console
+
+    $ dpkg-buildpackage -b -us -uc
+
+.. _tomac4t: https://github.com/tomac4t
 .. _Debian package script for Srain: https://github.com/SrainApp/srain-contrib/tree/master/pack/debian
 
 .. _install-packages-flatpak:
