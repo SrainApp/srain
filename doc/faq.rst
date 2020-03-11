@@ -53,3 +53,30 @@ removed.
 
 Or you can use `secret-tool` (provided by libsecret) to manage all your stored
 passwords.
+
+How can I hide JOIN/PART messages of channel?
+=============================================
+
+So far, Srain has not yet a specialized option for hiding such messages.
+You can use write regular expression to filter them::
+
+    /pattern add filter-join ^\w+ has joined$
+    /filter filter-join
+    /pattern add filter-part ^\w+ has left: .*$
+    /filter filter-part
+
+.. NOTE:: The content of regular expression depends on your language.
+
+Why can't I login to my ZNC server?
+===================================
+
+According `ZNC's FAQ`_, way  2, supply your "user@phone/network:pass"
+(without quotes) in the server password field. Other as usual.
+
+.. NOTE::
+
+   Way 1 in `ZNC's FAQ`_ requires username field can be set via connection panel,
+   which will be supported by Srain in the future.
+
+
+.. _ZNC's FAQ: https://wiki.znc.in/FAQ#Why_do_I_get_an_.22Incorrect_Password.22_every_time_I_connect_even_though_my_pass_is_correct.3F

@@ -114,16 +114,22 @@ If you are the user of `Arch Linux CN Repository`_, try:
 .. _srain-git: https://aur.archlinux.org/packages/srain-git
 .. _Arch Linux CN Repository: https://www.archlinuxcn.org/archlinux-cn-repo-and-mirror
 
+.. _install-packages-debian:
+
 Debian
 ~~~~~~
 
-.. warning:: This package is **broken** now.
+`tomac4t`_ is maintaining `Debian package script for Srain`_.
 
-`dfceaef`_ has written `Debian package script for Srain`_, but it is already
-**out of date**, I will be glad if anyone can fix it.
+Move the ``debian`` directory to srain's project root directory, perform the
+following commands to build a deb package:
 
-.. _dfceaef: https://github.com/yangfl
-.. _Debian package script for Srain: https://github.com/SrainApp/srain/tree/misc/debian
+.. code-block:: console
+
+    $ dpkg-buildpackage -b -us -uc
+
+.. _tomac4t: https://github.com/tomac4t
+.. _Debian package script for Srain: https://github.com/SrainApp/srain-contrib/tree/master/pack/debian
 
 .. _install-packages-flatpak:
 

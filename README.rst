@@ -55,10 +55,14 @@ Features
 Need Help?
 ==========
 
+`Frequently Asked Questions`_ may be helpful.
+
 Feel free to contact us if you have any question about Srain.
 
 - IRC Channel: `#srain <ircs://chat.freenode.org:6697/srain>`_ @ freenode
 - Github: file an issue `Here <https://github.com/SrainApp/srain/issues>`_
+
+.. _Frequently Asked Questions: https://doc.srain.im/en/latest/faq.html
 
 License
 =======
