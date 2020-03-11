@@ -419,6 +419,7 @@ static void show_about_dialog(SuiApplication *self){
             gtk_get_minor_version(),
             gtk_get_micro_version());
     const char *translators =
+        "Heimen Stoffels (nl)\n" \
         "Artem Polishchuk (ru)\n" \
         "Shengyu Zhang (zh_CN)\n" \
         "Jianqiu Zhang (zh_CN)";
