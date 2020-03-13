@@ -57,8 +57,8 @@ struct _SuiWindow {
     GtkPaned *title_paned;
     GtkBox *window_box;
     GtkSeparator *header_separator;
-    GtkStack *header_box;
-    GtkStack *header_paned;
+    GtkBox *header_box;
+    GtkPaned *header_paned;
     GtkStack *window_stack;
 
     /* Side header */
@@ -266,6 +266,8 @@ static void sui_window_constructed(GObject *object){
 
     self = SUI_WINDOW(object);
     if (!self->cfg->csd){
+        gtk_widget_show(GTK_WIDGET(self->header_box));
+
         /* Move side header widgets from side_header_bar to side_header_box */
         gtk_container_remove(GTK_CONTAINER(self->side_header_bar),
                 GTK_WIDGET(self->side_left_header_box));
@@ -294,6 +296,8 @@ static void sui_window_constructed(GObject *object){
         // Show the seperator
         gtk_widget_show(GTK_WIDGET(self->header_separator));
     } else {
+        gtk_widget_hide(GTK_WIDGET(self->header_box));
+
         // Use appliaction icon instead of standard icon when CSD enabled
         gtk_image_set_from_icon_name(self->start_image, PACKAGE,
                 GTK_ICON_SIZE_BUTTON);
