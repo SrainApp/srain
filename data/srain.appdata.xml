@@ -25,7 +25,7 @@
   <screenshots>
     <screenshot type="default">
       <caption>Main UI</caption>
-      <image>https://srain.im/assets/screenshots/cover.png</image>
+      <image>https://srain.im/assets/images/cover.png</image>
     </screenshot>
     <screenshot>
       <caption>Login UI</caption>
@@ -67,19 +67,11 @@
   </content_rating>
 
 <releases>
+  <release version="1.0.1" date="2020-03-14">
+      <url>https://doc.srain.im/en/latest/changelog.html#version-1-0-1</url>
+  </release>
   <release version="1.0.0" date="2020-02-24">
-    <description>
-      <p>Changes:</p>
-      <ul>
-        <li>Some code cleanup</li>
-        <li>Update Quick Start documentation</li>
-      </ul>
-      <p>Bug fixes:</p>
-      <ul>
-        <li>Allow Srain runs without dbus secrets service (#195)</li>
-        <li>Fix nick generation logical (39ced08)</li>
-      </ul>
-    </description>
+      <url>https://doc.srain.im/en/latest/changelog.html#version-1-0-0</url>
   </release>
 </releases>
 </component>
