@@ -29,7 +29,35 @@ Change Log
       - XXX
 
 .. _version-latest:
-.. _version-x.x.x:
+.. _version-1.0.1:
+
+2020-03-14 Version 1.1.1
+========================
+
+- Features:
+
+  - Auto rename to original nick when ghost quit (:pull:`198`)
+  - Add hackint IRC network (:pull:`201`), thanks to :people:`kpcyrd`
+  - Add Dutch translation (:pull:`215`), thanks to :people:`Vistaus`
+  - Add two FAQs to documentation (:pull:`217`)
+  - Add debian pack script (:contrib-pull:`1`), thanks to :people:`tomac4t`.
+    Please refer to :ref:`install-packages-debian` to build a deb package
+
+- Changes:
+
+  - Move continuous integration from travis CI to github actions
+    (:pull:`203`, :pull:`204`), thanks to :people:`tomac4t`
+  - Make header bar buttons repect default belief (:pull:`205`, :pull:`218`)
+
+- Bug fixes:
+
+  - Fix case sensitivity issue for IRC messages (:pull:`202`),
+    thanks to :people:`hhirtz`
+  - Fix invalid changelog section of appdata file (:pull:`214`)
+  - Fix missing dependences in documentation (:pull:`216`),
+    thanks to :people:`avoidr`
+
+.. _version-1.0.0:
 
 2020-02-24 Version 1.0.0
 ========================

@@ -175,7 +175,13 @@ texinfo_documents = [
 extensions.append('sphinx.ext.extlinks')
 
 extlinks = {
-    'issue': ('https://github.com/SrainApp/srain/issues/%s', '#'),
-    'pull': ('https://github.com/SrainApp/srain/pull/%s', '#'),
+    'issue': ('https://github.com/SrainApp/srain/issues/%s', 'srain#'),
+    'pull': ('https://github.com/SrainApp/srain/pull/%s', 'srain#'),
     'commit': ('https://github.com/SrainApp/srain/commit/%s', ''),
+
+    'contrib-issue': ('https://github.com/SrainApp/srain-contrib/issues/%s', 'srain-contrib#'),
+    'contrib-pull': ('https://github.com/SrainApp/srain-contrib/pull/%s', 'srain-contrib#'),
+    'contrib-commit': ('https://github.com/SrainApp/srain/commit/%s', ''),
+
+    'people': ('https://github.com/%s', '@'),
 }
