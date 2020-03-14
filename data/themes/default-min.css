@@ -6,6 +6,12 @@
  * @date 2016-05-24
  */
 
+/* Header bar {{{1 */
+
+.sui-nocsd-header-bar {
+    padding: 2px;
+}
+
 /* Side bar {{{1 */
 .sui-side-bar-item > * {
     margin-bottom: 6px
