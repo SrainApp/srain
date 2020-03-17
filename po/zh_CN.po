@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 1.0.0\n"
 "Report-Msgid-Bugs-To: i@silverrainz.me\n"
-"POT-Creation-Date: 2020-02-26 18:09+0800\n"
+"POT-Creation-Date: 2020-03-17 23:15+0800\n"
 "PO-Revision-Date: 2016-12-18 01:44+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -164,7 +164,7 @@ msgstr "%1$s: %2$s"
 msgid "%Y-%m-%d %T"
 msgstr "%Y 年 %m 月 %d 日 %T"
 
-#: ../data/ui/window.glade:307
+#: ../data/ui/window.glade:320
 msgid "<big>Welcome to Srain!</big>"
 msgstr "<big>欢迎使用 Srain！</big>"
 
@@ -177,7 +177,7 @@ msgstr "消息已发送至 \"%1$s\""
 msgid "About"
 msgstr "关于"
 
-#: ../src/sui/sui_app.c:436
+#: ../src/sui/sui_app.c:437
 msgid "About Srain"
 msgstr "关于 Srain"
 
@@ -255,7 +255,7 @@ msgstr "频道："
 msgid "Configuration is reloaded"
 msgstr "已重新加载配置"
 
-#: ../data/ui/connect_panel.glade:554 ../data/ui/window.glade:84
+#: ../data/ui/connect_panel.glade:554 ../data/ui/window.glade:88
 msgid "Connect"
 msgstr "连接"
 
@@ -304,8 +304,8 @@ msgid "Enabled capabilities:"
 msgstr "已启用的扩展能力：%1$s"
 
 #: ../src/core/app.c:76 ../src/core/app.c:84 ../src/core/app.c:298
-#: ../src/core/app.c:409 ../src/sui/sui_app.c:468 ../src/sui/sui_app.c:487
-#: ../src/sui/sui_app.c:526 ../src/sui/sui_common.c:145
+#: ../src/core/app.c:409 ../src/sui/sui_app.c:469 ../src/sui/sui_app.c:488
+#: ../src/sui/sui_app.c:527 ../src/sui/sui_common.c:145
 #: ../src/sui/sui_connect_panel.c:487 ../src/sui/sui_connect_panel.c:496
 #: ../src/sui/sui_connect_panel.c:534 ../src/sui/sui_connect_panel.c:543
 #: ../src/sui/sui_connect_panel.c:589 ../src/sui/sui_join_panel.c:308
@@ -602,7 +602,7 @@ msgstr ""
 "看起来你似乎对一个 TLS 端口(%1$d) 使用了非 TLS 加密的连接，请尝试启用 TLS 并"
 "重新连接"
 
-#: ../data/ui/join_panel.glade:416 ../data/ui/window.glade:100
+#: ../data/ui/join_panel.glade:416 ../data/ui/window.glade:103
 msgid "Join"
 msgstr "加入"
 
@@ -703,7 +703,7 @@ msgstr "服务器配置中缺少了以下选项：%1$s"
 
 #: ../src/lib/command.c:491
 #, c-format
-msgid "Missing vaule for option %1$s"
+msgid "Missing value for option %1$s"
 msgstr "可选参数 %1$s 缺少参数值"
 
 #: ../data/ui/connect_panel.glade:84
@@ -901,7 +901,7 @@ msgstr "显示版本信息"
 
 #: ../src/sui/sui_join_panel.c:481 ../src/sui/sui_join_panel.c:578
 #, c-format
-msgid "Showing %1$d of %2$d channnels"
+msgid "Showing %1$d of %2$d channels"
 msgstr "正在显示 %2$d 个频道中的 %1$d 个"
 
 #: ../src/lib/ret.c:94

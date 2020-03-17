@@ -53,7 +53,7 @@ option ``-tls`` is just a flag that tells srain use secure connections with TLS.
 And ``-port`` requires a ``value``, if ``-port`` is not specified, program will
 use the default value ``6667``. Check :ref:`commands-connect` for more details.
 
-If a ``vaule`` starts with a hyphen ``-`` or contains whitespaces, it should be
+If a ``value`` starts with a hyphen ``-`` or contains whitespaces, it should be
 enclosed by single quotation mark ``'``.
 
 .. note::
@@ -61,7 +61,7 @@ enclosed by single quotation mark ``'``.
     All ``option`` should appear behind ``subcommand`` (If any), and before
     ``argument``.
 
-An ``argument`` is similar to ``vaule``, but commonly it doesn't have a default
+An ``argument`` is similar to ``value``, but commonly it doesn't have a default
 value so it can not be omitted (actually it depends on the implement of the
 command). If the first ``argument`` starts with a hyphen ``-``, it should be
 enclosed by single quotation mark ``'``. If an ``argument`` contains whitespaces,

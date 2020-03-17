@@ -226,7 +226,7 @@ bool srn_command_get_opt(SrnCommand *cmd, const char *opt_key, const char **opt_
             if (cmd->binding->opt[i].val == SRN_COMMAND_OPT_NO_VAL){
                 // Nothing todo
             } else if (cmd->binding->opt[i].val == SRN_COMMAND_OPT_NO_DEFAULT){
-                DBG_FR("No default value for opiton '%s'", opt_key);
+                DBG_FR("No default value for option '%s'", opt_key);
             } else {
                 if (opt_val != NULL){
                     *opt_val = cmd->binding->opt[i].val;
@@ -425,7 +425,7 @@ static SrnRet srn_command_parse(SrnCommand *cmd, void *user_data){
             if (!ptr || *ptr == '-'){
                 goto missing_opt_val;
             }
-            /* Get option vaule */
+            /* Get option value */
             if (get_quote_arg(ptr, &cmd->opt_val[nopt], &ptr) != SRN_OK){
                 ERR_FR("get option val failed");
                 return SRN_ERR;
@@ -488,7 +488,7 @@ too_many_opt:
     return RET_ERR(_("Too many optional arguments (maximum allowed: %1$d)"), SRN_COMMAND_MAX_OPTS);
 
 missing_opt_val:
-    return RET_ERR(_("Missing vaule for option %1$s"), cmd->opt_key[nopt]);
+    return RET_ERR(_("Missing value for option %1$s"), cmd->opt_key[nopt]);
 
 unknown_subcmd:
     return RET_ERR(_("Unknown sub command: %1$s"), ptr);

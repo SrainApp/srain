@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 1.0.0\n"
 "Report-Msgid-Bugs-To: i@silverrainz.me\n"
-"POT-Creation-Date: 2020-02-26 18:09+0800\n"
+"POT-Creation-Date: 2020-03-17 23:15+0800\n"
 "PO-Revision-Date: 2019-04-17 16:14+0300\n"
 "Last-Translator: Artem Polishchuk <ego.cordatus@gmail.com>\n"
 "Language-Team: \n"
@@ -166,7 +166,7 @@ msgstr ""
 msgid "%Y-%m-%d %T"
 msgstr ""
 
-#: ../data/ui/window.glade:307
+#: ../data/ui/window.glade:320
 msgid "<big>Welcome to Srain!</big>"
 msgstr "<big>Добро пожаловать в Srain!</big>"
 
@@ -179,7 +179,7 @@ msgstr "Сообщение было отправлено \"%1$s\""
 msgid "About"
 msgstr "О приложении"
 
-#: ../src/sui/sui_app.c:436
+#: ../src/sui/sui_app.c:437
 msgid "About Srain"
 msgstr "О Srain"
 
@@ -259,7 +259,7 @@ msgstr "Канал:"
 msgid "Configuration is reloaded"
 msgstr "Конфигурация перезагружена"
 
-#: ../data/ui/connect_panel.glade:554 ../data/ui/window.glade:84
+#: ../data/ui/connect_panel.glade:554 ../data/ui/window.glade:88
 msgid "Connect"
 msgstr "Подключиться"
 
@@ -309,8 +309,8 @@ msgid "Enabled capabilities:"
 msgstr "Включенные возможности:"
 
 #: ../src/core/app.c:76 ../src/core/app.c:84 ../src/core/app.c:298
-#: ../src/core/app.c:409 ../src/sui/sui_app.c:468 ../src/sui/sui_app.c:487
-#: ../src/sui/sui_app.c:526 ../src/sui/sui_common.c:145
+#: ../src/core/app.c:409 ../src/sui/sui_app.c:469 ../src/sui/sui_app.c:488
+#: ../src/sui/sui_app.c:527 ../src/sui/sui_common.c:145
 #: ../src/sui/sui_connect_panel.c:487 ../src/sui/sui_connect_panel.c:496
 #: ../src/sui/sui_connect_panel.c:534 ../src/sui/sui_connect_panel.c:543
 #: ../src/sui/sui_connect_panel.c:589 ../src/sui/sui_join_panel.c:308
@@ -612,7 +612,7 @@ msgstr ""
 "Похоже, что вы подключаетесь к порту TLS(%1$d) не включив предварительно TLS "
 "подключение. Попробуйте включить его и повторно подключиться."
 
-#: ../data/ui/join_panel.glade:416 ../data/ui/window.glade:100
+#: ../data/ui/join_panel.glade:416 ../data/ui/window.glade:103
 msgid "Join"
 msgstr "Войти"
 
@@ -715,7 +715,7 @@ msgstr "Отсутствует поле в конфигурации пользо
 
 #: ../src/lib/command.c:491
 #, c-format
-msgid "Missing vaule for option %1$s"
+msgid "Missing value for option %1$s"
 msgstr "Отсутствует значение для опции %1$s"
 
 #: ../data/ui/connect_panel.glade:84
@@ -915,7 +915,7 @@ msgstr "Показать информацию о версии"
 
 #: ../src/sui/sui_join_panel.c:481 ../src/sui/sui_join_panel.c:578
 #, c-format
-msgid "Showing %1$d of %2$d channnels"
+msgid "Showing %1$d of %2$d channels"
 msgstr "Показ %1$d из %2$d каналов"
 
 #: ../src/lib/ret.c:94

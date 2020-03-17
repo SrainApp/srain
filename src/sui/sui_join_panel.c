@@ -478,7 +478,7 @@ static void chan_tree_model_filter_refilter(gpointer user_data){
     gtk_tree_model_filter_refilter(GTK_TREE_MODEL_FILTER(filter));
 
     /* Update status while all channels have loaded */
-    status = g_strdup_printf(_("Showing %1$d of %2$d channnels"),
+    status = g_strdup_printf(_("Showing %1$d of %2$d channels"),
                 gtk_tree_model_iter_n_children(GTK_TREE_MODEL(filter), NULL),
                 gtk_tree_model_iter_n_children(model, NULL));
     gtk_label_set_text(self->status_label, status);
@@ -575,7 +575,7 @@ static void update_status(SuiJoinPanel *self){
         max = 0;
     }
 
-    status  = g_strdup_printf(_("Showing %1$d of %2$d channnels"), cur, max);
+    status  = g_strdup_printf(_("Showing %1$d of %2$d channels"), cur, max);
     gtk_label_set_text(self->status_label, status);
     g_free(status);
 }

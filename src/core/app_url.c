@@ -192,7 +192,7 @@ static SrnRet join_comma_separated_chans(SrnServer *srv, const char *comma_chans
         if (!str_is_empty(chan)){
             SrnChat *chat;
 
-            DBG_FR("Get channnel: %s", chan);
+            DBG_FR("Get channel: %s", chan);
             if (!sirc_target_is_channel(srv->irc, chan)){
                 char *chan2 = g_strdup_printf("#%s", chan);
                 chat = srn_server_get_chat(srv, chan2);

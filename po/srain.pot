@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Srain 1.0.0\n"
+"Project-Id-Version: Srain 1.0.1\n"
 "Report-Msgid-Bugs-To: i@silverrainz.me\n"
-"POT-Creation-Date: 2020-02-26 18:09+0800\n"
+"POT-Creation-Date: 2020-03-17 23:15+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -160,7 +160,7 @@ msgstr ""
 msgid "%Y-%m-%d %T"
 msgstr ""
 
-#: ../data/ui/window.glade:307
+#: ../data/ui/window.glade:320
 msgid "<big>Welcome to Srain!</big>"
 msgstr ""
 
@@ -173,7 +173,7 @@ msgstr ""
 msgid "About"
 msgstr ""
 
-#: ../src/sui/sui_app.c:436
+#: ../src/sui/sui_app.c:437
 msgid "About Srain"
 msgstr ""
 
@@ -250,7 +250,7 @@ msgstr ""
 msgid "Configuration is reloaded"
 msgstr ""
 
-#: ../data/ui/connect_panel.glade:554 ../data/ui/window.glade:84
+#: ../data/ui/connect_panel.glade:554 ../data/ui/window.glade:88
 msgid "Connect"
 msgstr ""
 
@@ -299,8 +299,8 @@ msgid "Enabled capabilities:"
 msgstr ""
 
 #: ../src/core/app.c:76 ../src/core/app.c:84 ../src/core/app.c:298
-#: ../src/core/app.c:409 ../src/sui/sui_app.c:468 ../src/sui/sui_app.c:487
-#: ../src/sui/sui_app.c:526 ../src/sui/sui_common.c:145
+#: ../src/core/app.c:409 ../src/sui/sui_app.c:469 ../src/sui/sui_app.c:488
+#: ../src/sui/sui_app.c:527 ../src/sui/sui_common.c:145
 #: ../src/sui/sui_connect_panel.c:487 ../src/sui/sui_connect_panel.c:496
 #: ../src/sui/sui_connect_panel.c:534 ../src/sui/sui_connect_panel.c:543
 #: ../src/sui/sui_connect_panel.c:589 ../src/sui/sui_join_panel.c:308
@@ -595,7 +595,7 @@ msgid ""
 "try to enable it and reconnect"
 msgstr ""
 
-#: ../data/ui/join_panel.glade:416 ../data/ui/window.glade:100
+#: ../data/ui/join_panel.glade:416 ../data/ui/window.glade:103
 msgid "Join"
 msgstr ""
 
@@ -696,7 +696,7 @@ msgstr ""
 
 #: ../src/lib/command.c:491
 #, c-format
-msgid "Missing vaule for option %1$s"
+msgid "Missing value for option %1$s"
 msgstr ""
 
 #: ../data/ui/connect_panel.glade:84
@@ -894,7 +894,7 @@ msgstr ""
 
 #: ../src/sui/sui_join_panel.c:481 ../src/sui/sui_join_panel.c:578
 #, c-format
-msgid "Showing %1$d of %2$d channnels"
+msgid "Showing %1$d of %2$d channels"
 msgstr ""
 
 #: ../src/lib/ret.c:94

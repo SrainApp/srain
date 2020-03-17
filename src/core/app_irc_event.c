@@ -1236,7 +1236,7 @@ static void irc_event_authenticate(SircSession *sirc, const char *event,
 
                 // Get the first parameter
                 if (!count) {
-                    ERR_FR("unexpected authenticate response recieved");
+                    ERR_FR("unexpected authenticate response received");
                     break;
                 }
 
@@ -1850,7 +1850,7 @@ static void irc_event_numeric(SircSession *sirc, int event,
                         }
                     }
 
-                    WARN_FR("Unspported message, You can report it at " PACKAGE_WEBSITE);
+                    WARN_FR("Unsupported message, You can report it at " PACKAGE_WEBSITE);
                     WARN_FR("server: %s, event: %d, origin: %s, count: %u, params: [%s]",
                             srv->name, event, origin, count, buf->str);
 
