@@ -9,7 +9,7 @@
 </a>
 </p>
 <hr>
-<p align="center"
+<p align="center">
    <a href="https://srain.im">Home</a> | <a href="https://doc.srain.im">Documentation</a> | <a href="https://github.com/SrainApp/srain">Source Code</a>
 </p>
 <p align="center">
