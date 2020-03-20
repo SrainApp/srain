@@ -18,6 +18,8 @@
    </a>
 </p>
 
+<h2 align="center">Features</h2>
+
 - Fully open source
 - RFC {1459,2812} compatible
 - Partial [IRCv3](https://ircv3.net/) support
@@ -47,7 +49,7 @@
 
 Feel free to contact us if you have any question about Srain.
 
-- IRC Channel: chat.freenode.org:6697/srain
+- IRC Channel: #srain at https://freenode.net
 - Github: file an issue [here](https://github.com/SrainApp/srain/issues)
 
 
