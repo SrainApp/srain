@@ -1,4 +1,4 @@
-<img src="https://i.imgur.com/AO42VNN.png" alt="srain" align="center" width="150">
+<p align="center"><img src="https://i.imgur.com/AO42VNN.png" alt="srain" width="400"></p>
 <p align="center">A Modern IRC client written in GTK.</p>
 <p align="center">
 <a href="https://github.com/SrainApp/srain/actions">
@@ -9,10 +9,10 @@
 </a>
 </p>
 <hr>
-
-[Home](https://srain.im) | [Documentation](https://doc.srain.im) | [Source Code](https://github.com/SrainApp/srain)
-
-<p align="right"
+<p align="center"
+   <a href="https://srain.im">Home</a> | <a href="https://doc.srain.im">Documentation</a> | <a href="https://github.com/SrainApp/srain">Source Code</a>
+</p>
+<p align="center">
    <a href="https://repology.org/project/srain/versions">
      <img src="https://repology.org/badge/vertical-allrepos/srain.svg" alt="Freenode IRC Channel: #srain">
    </a>
@@ -20,7 +20,7 @@
 
 - Fully open source
 - RFC {1459,2812} compatible
-- Partial `IRCv3`_ support
+- Partial [IRCv3](https://ircv3.net/) support
 - Multi-platform support (Linux, Windows, macOS and BSD)
 - Act like modern IM client
 
@@ -39,7 +39,7 @@
   - Regex based message render and filter mechanisms
   - IPC based plugin system (TODO)
 
- [IRCv3](https://ircv3.net/)
+
 
 ## Need Help?
 
