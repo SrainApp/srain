@@ -42,8 +42,7 @@
   - IPC based plugin system (TODO)
 
 
-
-## Need Help?
+<h2 align="center">Need Help?</h2>
 
 [Frequently Asked Questions](https://doc.srain.im/en/latest/faq.html) may be helpful.
 
@@ -52,9 +51,7 @@ Feel free to contact us if you have any question about Srain.
 - IRC Channel: #srain at https://freenode.net
 - Github: file an issue [here](https://github.com/SrainApp/srain/issues)
 
-
-
-## License
+<h2 align="center">License</h2>
 
 GNU General Public License Version 3
  
