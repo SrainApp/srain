@@ -1831,6 +1831,38 @@ static void irc_event_numeric(SircSession *sirc, int event,
                         _("URL of %1$s is: %2$s"), chan, msg);
                 break;
             }
+            /****************** Channel related errors **********************/
+        case SIRC_RFC_ERR_NOSUCHCHANNEL:
+        case SIRC_RFC_ERR_TOOMANYCHANNELS:
+        case SIRC_RFC_ERR_NOTONCHANNEL:
+        case SIRC_RFC_ERR_KEYSET:
+        case SIRC_RFC_ERR_CHANNELISFULL:
+        case SIRC_RFC_ERR_INVITEONLYCHAN:
+        case SIRC_RFC_ERR_BANNEDFROMCHAN:
+        case SIRC_RFC_ERR_BADCHANNELKEY:
+        case SIRC_RFC_ERR_BADCHANMASK:
+        case SIRC_RFC_ERR_NOCHANMODES:
+        case SIRC_RFC_ERR_CHANOPRIVSNEEDED:
+            {
+                const char *chan;
+                const char *msg;
+                SrnChat *chat;
+
+                // <nick> <channel> :<message>
+                g_return_if_fail(count >= 3);
+                chan = params[1];
+                msg = params[2];
+
+                if ((chat = srn_server_get_chat(srv, chan))) {
+                    srn_chat_add_error_message_fmt(chat,
+                            _("ERROR[%1$3d] %2$s"), event, msg);
+                } else {
+                    // Fallback to server'chat if no such channel
+                    srn_chat_add_error_message_fmt(srv->chat,
+                            _("ERROR[%1$3d] %2$s: %3$s"), event, chan, msg);
+                }
+                break;
+            }
         default:
             {
                 // Error message
