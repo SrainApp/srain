@@ -42,6 +42,8 @@
 #include "utils.h"
 
 static gboolean irc_period_ping(gpointer user_data);
+static void add_numeric_error_message(SrnChat *chat, int event, const char
+        *origin, const char **params, int count);
 
 static void irc_event_connect(SircSession *sirc, const char *event);
 static void irc_event_connect_fail(SircSession *sirc, const char *event,
@@ -1398,7 +1400,8 @@ static void irc_event_numeric(SircSession *sirc, int event,
 
                     g_free(new_nick);
                 }
-                goto ERRMSG;
+                add_numeric_error_message(srv->chat, event, origin, params, count);
+                break;
             }
 
             /************************ NAMES message ************************/
@@ -1757,11 +1760,13 @@ static void irc_event_numeric(SircSession *sirc, int event,
         case SIRC_RFC_ERR_SASLABORTED:
             {
                 sirc_cmd_cap_end(sirc); // End negotiation
-                goto ERRMSG;
+                add_numeric_error_message(srv->chat, event, origin, params, count);
+                break;
             }
         case SIRC_RFC_ERR_SASLALREADY:
             {
-                goto ERRMSG;
+                add_numeric_error_message(srv->chat, event, origin, params, count);
+                break;
             }
             /************************ AWAY message ************************/
         case SIRC_RFC_RPL_AWAY:
@@ -1867,7 +1872,8 @@ static void irc_event_numeric(SircSession *sirc, int event,
             {
                 // Error message
                 if (event >= 400 && event < 600){
-                    goto ERRMSG;
+                    add_numeric_error_message(srv->chat, event, origin, params, count);
+                    break;
                 }
 
                 // Unknown message
@@ -1888,32 +1894,6 @@ static void irc_event_numeric(SircSession *sirc, int event,
 
                     g_string_free(buf, TRUE);
                 }
-                return;
-ERRMSG:
-                /* Add error message to UI, usually the params of error message
-                 * is ["<nick>", ... "<reason>"] */
-                {
-                    GString *buf;
-
-                    buf = g_string_new(NULL);
-
-                    for (int i = 1; i < count - 1; i++){ // skip nick
-                        buf = g_string_append(buf, params[i]);
-                        buf = g_string_append_c(buf, ' ');
-                        if (i == count - 2){
-                            buf = g_string_append_c(buf, ':');
-                        }
-                    }
-                    if (count >= 2){
-                        buf = g_string_append(buf, params[count-1]); // reason
-                    }
-
-                    srn_chat_add_error_message_fmt(srv->cur_chat,
-                            _("ERROR[%1$3d] %2$s"), event, buf->str);
-
-                    g_string_free(buf, TRUE);
-                }
-                return;
             }
     }
 }
@@ -1946,4 +1926,42 @@ static gboolean irc_period_ping(gpointer user_data){
     sirc_cmd_ping(srv->irc, timestr);
 
     return G_SOURCE_CONTINUE;
+}
+
+/**
+ * @brief Helper function for adding general IRC numeric cerror message to UI.
+ * @param chat
+ * @param event
+ * @param origin
+ * @param params
+ * @param count
+ *
+ * Usually the params of error message is ["<nick>", ... "<reason>"].
+ */
+static void add_numeric_error_message(SrnChat *chat, int event, const char
+        *origin, const char **params, int count){
+    GString *buf;
+
+    g_return_if_fail(chat);
+
+    buf = g_string_new(NULL);
+
+    for (int i = 1; i < count - 1; i++){ // Skip nick params[0]
+        buf = g_string_append(buf, params[i]);
+        if (i != count - 2){
+            // Delimiter of params
+            buf = g_string_append_c(buf, ' ');
+        } else {
+            // Delimiter of reason
+            buf = g_string_append(buf, ": ");
+        }
+    }
+    if (count >= 2){
+        buf = g_string_append(buf, params[count-1]); // Reason
+    }
+
+    // Convert numeric event to 3-digits string
+    srn_chat_add_error_message_fmt(chat, _("ERROR[%1$3d] %2$s"), event, buf->str);
+
+    g_string_free(buf, TRUE);
 }
