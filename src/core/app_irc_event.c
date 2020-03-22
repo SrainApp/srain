@@ -1858,14 +1858,13 @@ static void irc_event_numeric(SircSession *sirc, int event,
                 chan = params[1];
                 msg = params[2];
 
-                if ((chat = srn_server_get_chat(srv, chan))) {
-                    srn_chat_add_error_message_fmt(chat,
-                            _("ERROR[%1$3d] %2$s"), event, msg);
-                } else {
-                    // Fallback to server'chat if no such channel
-                    srn_chat_add_error_message_fmt(srv->chat,
-                            _("ERROR[%1$3d] %2$s: %3$s"), event, chan, msg);
+                chat = srn_server_get_chat(srv, chan);
+                if (!chat) {
+                    // Fallback to general numeric error if no such channel
+                    add_numeric_error_message(srv->chat, event, origin, params, count);
+                    break;
                 }
+                srn_chat_add_error_message_fmt(chat, _("ERROR[%1$3d] %2$s"), event, msg);
                 break;
             }
         default:
