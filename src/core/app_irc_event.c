@@ -41,7 +41,7 @@
 #include "meta.h"
 #include "utils.h"
 
-static gboolean irc_period_ping(gpointer user_data);
+static gboolean do_period_ping(gpointer user_data);
 static void add_numeric_error_message(SrnChat *chat, int event, const char
         *origin, const char **params, int count);
 
@@ -326,7 +326,7 @@ static void irc_event_welcome(SircSession *sirc, int event,
 
     /* Start peroid ping */
     srv->last_pong = get_time_since_first_call_ms();
-    srv->ping_timer = g_timeout_add(SRN_SERVER_PING_INTERVAL, irc_period_ping, srv);
+    srv->ping_timer = g_timeout_add(SRN_SERVER_PING_INTERVAL, do_period_ping, srv);
     DBG_FR("Ping timer %d created", srv->ping_timer);
 
     // Set your actually nick
@@ -1898,7 +1898,7 @@ static void irc_event_numeric(SircSession *sirc, int event,
     }
 }
 
-static gboolean irc_period_ping(gpointer user_data){
+static gboolean do_period_ping(gpointer user_data){
     char timestr[64];
     unsigned long time;
     SrnServer *srv;
