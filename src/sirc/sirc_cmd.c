@@ -126,6 +126,7 @@ int sirc_cmd_msg(SircSession *sirc, const char *chan, const char *msg){
     g_return_val_if_fail(!str_is_empty(chan), SRN_ERR);
     g_return_val_if_fail(!str_is_empty(msg), SRN_ERR);
 
+    const char *origin_msg = msg;
     while (msg) {
         SircCommandBuilder *builder = sirc_command_builder_new("PRIVMSG");
         if (!sirc_command_builder_add_middle(builder, chan)) {
@@ -134,7 +135,8 @@ int sirc_cmd_msg(SircSession *sirc, const char *chan, const char *msg){
             return SRN_ERR;
         }
         msg = sirc_command_builder_set_trailing(builder, msg);
-        if (msg == msg) {
+        // Prevent endless loop
+        if (msg == origin_msg) {
             sirc_command_builder_free(builder);
             g_warn_if_reached();
             return SRN_ERR;
