@@ -34,6 +34,7 @@
 
 #include "sirc/sirc.h"
 #include "io_stream.h"
+#include "sirc_cmd_builder.h"
 
 #include "srain.h"
 #include "log.h"
@@ -125,7 +126,32 @@ int sirc_cmd_msg(SircSession *sirc, const char *chan, const char *msg){
     g_return_val_if_fail(!str_is_empty(chan), SRN_ERR);
     g_return_val_if_fail(!str_is_empty(msg), SRN_ERR);
 
-    return sirc_cmd_raw(sirc, "PRIVMSG %s :%s\r\n", chan, msg);
+    while (msg) {
+        SircCommandBuilder *builder = sirc_command_builder_new("PRIVMSG");
+        if (!sirc_command_builder_add_middle(builder, chan)) {
+            sirc_command_builder_free(builder);
+            g_warn_if_reached();
+            return SRN_ERR;
+        }
+        msg = sirc_command_builder_set_trailing(builder, msg);
+        if (msg == msg) {
+            sirc_command_builder_free(builder);
+            g_warn_if_reached();
+            return SRN_ERR;
+        }
+
+        char *cmd = sirc_command_builder_build(builder);
+        SrnRet ret = sirc_cmd_raw(sirc, "%s", cmd);
+        g_free(cmd);
+        sirc_command_builder_free(builder);
+
+        if (!RET_IS_OK(ret)) {
+            return ret;
+        }
+    }
+
+    // Entire message has been sent
+    return SRN_OK;
 }
 
 int sirc_cmd_names(SircSession *sirc, const char *chan){
