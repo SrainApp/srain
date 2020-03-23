@@ -23,7 +23,6 @@
 #define SIRC_RFC_CRLF "\r\n"
 #define SIRC_RFC_PARAM_DELIM " "
 #define SIRC_RFC_TRAILING_PREFIX ":"
-#define SIRC_RFC_MESSAGE_SZIE 512
 
 // The "prefix" means a servername or a nick!user@host in IRC message
 //
@@ -35,11 +34,12 @@
 // length is EXACTLY 512 bytes. When server forwards this command to everyone
 // in channel, it should add your user info as prefix of message, so it sent send:
 // ":nick!~user@hostname PRIVMSG #archlinux-cn :BlahBlah..." whose length MUST
-// exceeds 512bytes.
+// exceeds 512 bytes.
 //
 // It is hard to known length of user's prefix(a.k.a "nick!~user@hostname"),
 // so we have to use such an magic number:
 #define MAGIC_PREFIX_LEN 50
+#define SIRC_RFC_MESSAGE_SZIE (512 - MAGIC_PREFIX_LEN)
 
 struct _SircCommandBuilder {
     char *cmd;
@@ -60,7 +60,7 @@ SircCommandBuilder* sirc_command_builder_new(const char *cmd) {
 
     self = g_malloc0(sizeof(SircCommandBuilder));
     self->cmd = g_strdup(cmd);
-    self->expected_len = strlen(cmd) + strlen(SIRC_RFC_CRLF) + MAGIC_PREFIX_LEN;
+    self->expected_len = strlen(cmd) + strlen(SIRC_RFC_CRLF);
 
     return self;
 }
