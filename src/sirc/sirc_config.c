@@ -38,7 +38,7 @@ SrnRet sirc_config_check(SircConfig *cfg){
     }
 
     if (str_is_empty(cfg->encoding)) {
-        str_assign(&cfg->encoding, "UTF-8");
+        str_assign(&cfg->encoding, SRN_CODESET);
     }
 
     /* Check encoding */
@@ -46,15 +46,13 @@ SrnRet sirc_config_check(SircConfig *cfg){
         char *test;
         GError *err = NULL;
 
-        test = g_convert("", -1,
-                SRN_ENCODING, cfg->encoding,
-                NULL, NULL, &err);
+        // Just to test whether the codeset valid
+        test = g_convert("", -1, SRN_CODESET, cfg->encoding, NULL, NULL, &err);
         if (err){
             return RET_ERR(_("Invalid encoding in IRC config: %1$s"),
                     err->message);
-        } else {
-            g_free(test);
         }
+        g_free(test);
     }
 
     return SRN_OK;

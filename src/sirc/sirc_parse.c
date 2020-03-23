@@ -53,17 +53,15 @@ void sirc_message_free(SircMessage *imsg){
     g_free(imsg);
 }
 
-// FIXME: how to use fallback?
-void sirc_message_transcoding(SircMessage *imsg,
-        const char *to, const char *from, const char *fallback){
-    str_transcoding(&imsg->prefix, to, from, fallback);
-    str_transcoding(&imsg->nick, to, from, fallback);
-    str_transcoding(&imsg->user, to, from, fallback);
-    str_transcoding(&imsg->host, to, from, fallback);
-    str_transcoding(&imsg->cmd, to, from, fallback);
+void sirc_message_transcoding(SircMessage *imsg, const char *from_codeset) {
+    str_transcoding(&imsg->prefix, from_codeset);
+    str_transcoding(&imsg->nick, from_codeset);
+    str_transcoding(&imsg->user, from_codeset);
+    str_transcoding(&imsg->host, from_codeset);
+    str_transcoding(&imsg->cmd, from_codeset);
 
     for (int i = 0; i < imsg->nparam; i++){
-        str_transcoding(&imsg->params[i], to, from, fallback);
+        str_transcoding(&imsg->params[i], from_codeset);
     }
 }
 

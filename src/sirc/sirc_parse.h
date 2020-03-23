@@ -32,7 +32,7 @@ typedef struct {
 
 SircMessage *sirc_message_new();
 void sirc_message_free(SircMessage *imsg);
-void sirc_message_transcoding(SircMessage *imsg, const char *to, const char *from, const char *fallback);
+void sirc_message_transcoding(SircMessage *imsg, const char *from_codeset);
 SircMessage *sirc_parse(char *line);
 
 #endif /* __SIRC_PARSE_H */
