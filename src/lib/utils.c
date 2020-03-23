@@ -86,19 +86,27 @@ bool str_is_empty(const char *str){
     return TRUE;
 }
 
-void str_transcoding(char **str, const char *to, const char *from, const char *fallback){
-    char *tmp;
-    GError *err;
-
+void str_transcoding(char **str, const char *from_codeset){
     if (!*str) return;
 
-    err = NULL;
-    tmp = g_convert_with_fallback(*str, -1, to, from, fallback, NULL, NULL, &err);
+    if (g_ascii_strcasecmp(from_codeset, SRN_CODESET) == 0) {
+        // UTF-8 to UTF-8, just make sure it is valid
+        if (g_utf8_validate(*str, -1, NULL)) {
+            return;
+        }
+        // If invalid, make it valid
+        str_assign(str, g_utf8_make_valid(*str, -1));
+        return;
+    }
+
+    // To other codeset
+    GError *err = NULL;
+    char *tmp = g_convert_with_fallback(*str, -1, SRN_CODESET, from_codeset, "�", NULL, NULL, &err);
     if (tmp){
         str_assign(str, tmp);
     }
     if (err) {
-        WARN_FR("Failed to convert line from %s to %s: %s", from, to, err->message);
+        WARN_FR("Failed to convert line from %s to %s: %s", from_codeset, SRN_CODESET, err->message);
         g_error_free(err);
     }
 }

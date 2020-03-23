@@ -33,8 +33,6 @@ typedef gboolean bool;
 #define SRN_TRUE    TRUE
 #define SRN_FALSE   FALSE
 
-/* All strings in Srain should be utf-8 sequence */
-#define SRN_ENCODING        "utf-8"
-#define SRN_FALLBACK_CHAR   "�"
+#define SRN_CODESET "UTF-8"
 
 #endif /* __SRAIN_H */
