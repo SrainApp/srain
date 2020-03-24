@@ -104,6 +104,7 @@ static void sui_window_set_events(SuiWindow *self, SuiWindowEvents *events);
 
 static void update_header(SuiWindow *self);
 static void update_title(SuiWindow *self);
+static void update_focus(SuiWindow *self);
 static int get_buffer_count(SuiWindow *self);
 static void send_message_cancel(SuiWindow *self);
 static void send_message(SuiWindow *self);
@@ -541,6 +542,19 @@ static void update_title(SuiWindow *self){
     }
 }
 
+static void update_focus(SuiWindow *self){
+    const char *page;
+
+    page = gtk_stack_get_visible_child_name(self->window_stack);
+    if (g_strcmp0(page, WINDOW_STACK_PAGE_WELCOME) == 0){
+        // No need to grap focus of self->connect_panel because it isn't focusable.
+    } else if (g_strcmp0(page, WINDOW_STACK_PAGE_MAIN) == 0){
+        gtk_widget_grab_focus(GTK_WIDGET(self->input_text_view));
+    } else {
+        g_warn_if_reached();
+    }
+}
+
 static int get_buffer_count(SuiWindow *self){
     return g_list_length(
             gtk_container_get_children(GTK_CONTAINER(self->buffer_stack)));
@@ -744,6 +758,7 @@ static void window_stack_on_child_changed(GtkWidget *widget, GParamSpec *pspec,
     self = user_data;
     update_header(self);
     update_title(self);
+    update_focus(self);
 }
 
 static void buffer_stack_on_child_changed(GtkWidget *widget, GParamSpec *pspec,
