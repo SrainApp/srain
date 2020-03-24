@@ -50,7 +50,7 @@
                 <child>
                   <object class="GtkMenuButton" id="start_menu_button">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
+                    <property name="can_focus">False</property>
                     <property name="receives_default">True</property>
                     <child>
                       <object class="GtkImage" id="start_image">
@@ -82,7 +82,7 @@
                     <child>
                       <object class="GtkButton" id="connect_button">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
+                        <property name="can_focus">False</property>
                         <property name="focus_on_click">False</property>
                         <property name="receives_default">True</property>
                         <property name="tooltip_text" translatable="yes">Connect</property>
@@ -97,7 +97,7 @@
                     <child>
                       <object class="GtkButton" id="join_button">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
+                        <property name="can_focus">False</property>
                         <property name="focus_on_click">False</property>
                         <property name="receives_default">True</property>
                         <property name="tooltip_text" translatable="yes">Join</property>
