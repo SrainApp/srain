@@ -28,7 +28,7 @@ void i18n_init(){
      * the system locale data base
      */
     bindtextdomain (GETTEXT_PACKAGE,  PACKAGE_DATA_DIR "/locale");
-    bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
+    bind_textdomain_codeset (GETTEXT_PACKAGE, SRN_CODESET);
 
     // Set the current default message catalog to DOMAINNAME.
     textdomain (GETTEXT_PACKAGE);

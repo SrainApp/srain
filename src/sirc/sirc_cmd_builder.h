@@ -1,4 +1,4 @@
-/* Copyright (C) 2016-2017 Shengyu Zhang <i@silverrainz.me>
+/* Copyright (C) 2016-2020 Shengyu Zhang <i@silverrainz.me>
  *
  * This file is part of Srain.
  *
@@ -16,23 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SRAIN_H
-#define __SRAIN_H
+#ifndef __SIRC_COMMAND_BUILDER_H
+#define __SIRC_COMMAND_BUILDER_H
 
-#include <stdint.h>
-#include <glib.h>
+#include "srain.h"
 
-typedef gboolean bool;
+/**
+ * @brief A helper for building legal length IRC command.
+ */
+typedef struct _SircCommandBuilder SircCommandBuilder;
 
-/* General result value */
-#define SRN_OK      0
-#define SRN_ERR    -1
-#define SRN_EAGAIN -2
-#define SRN_EEXIST -3
+SircCommandBuilder* sirc_command_builder_new(const char *cmd);
+void sirc_command_builder_free(SircCommandBuilder *self);
+bool sirc_command_builder_add_middle(SircCommandBuilder *self, const char *param);
+const char* sirc_command_builder_set_trailing(SircCommandBuilder *self, const char *param);
+char* sirc_command_builder_build(SircCommandBuilder *self);
 
-#define SRN_TRUE    TRUE
-#define SRN_FALSE   FALSE
-
-#define SRN_CODESET "UTF-8"
-
-#endif /* __SRAIN_H */
+#endif /* __SIRC_COMMAND_BUILDER_H */

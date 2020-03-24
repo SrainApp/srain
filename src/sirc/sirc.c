@@ -227,8 +227,7 @@ static void on_recv_ready(GObject *obj, GAsyncResult *res, gpointer user_data){
     }
 
     /* Transcoding */
-    sirc_message_transcoding(imsg,
-            SRN_ENCODING, sirc->cfg->encoding, SRN_FALLBACK_CHAR);
+    sirc_message_transcoding(imsg, sirc->cfg->encoding);
     /* Handle event */
     sirc_event_hdr(sirc, imsg);
 
