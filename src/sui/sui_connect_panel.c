@@ -94,6 +94,7 @@ struct _SuiConnectPanelClass {
 static void update(SuiConnectPanel *self, const char *srv_name);
 static void refresh_server_list(SuiConnectPanel *self);
 static void refresh_login_method_list(SuiConnectPanel *self);
+static void update_focus(SuiConnectPanel *self);
 
 static void server_combo_box_on_changed(GtkComboBox *combo_box,
         gpointer user_data);
@@ -103,6 +104,8 @@ static void connect_button_on_click(gpointer user_data);
 static void cancel_button_on_click(gpointer user_data);
 static void nick_entry_on_changed(GtkEditable *editable, gpointer user_data);
 static void on_password_lookup(GObject *source, GAsyncResult *result,
+        gpointer user_data);
+static void stack_on_child_changed(GtkWidget *widget, GParamSpec *pspec,
         gpointer user_data);
 
 /*****************************************************************************
@@ -143,6 +146,9 @@ static void sui_connect_panel_init(SuiConnectPanel *self){
             self->quick_nick_entry, "text",
             self->nick_entry, "text",
             G_BINDING_BIDIRECTIONAL);
+
+    g_signal_connect(self->stack, "notify::visible-child",
+            G_CALLBACK(stack_on_child_changed), self);
 
     g_signal_connect(self->quick_server_combo_box, "changed",
             G_CALLBACK(server_combo_box_on_changed), self);
@@ -647,3 +653,19 @@ static void on_password_lookup(GObject *source, GAsyncResult *result,
     secret_password_free(passwd);
 }
 
+static void stack_on_child_changed(GtkWidget *widget, GParamSpec *pspec,
+        gpointer user_data) {
+    update_focus(SUI_CONNECT_PANEL(user_data));
+}
+
+static void update_focus(SuiConnectPanel *self) {
+    const char *page = gtk_stack_get_visible_child_name(self->stack);
+
+    if (g_strcmp0(page, PAGE_QUICK_MODE) == 0){
+        gtk_widget_grab_focus(GTK_WIDGET(self->quick_server_combo_box));
+    } else if (g_strcmp0(page, PAGE_ADVANCED_MODE) == 0){
+        gtk_widget_grab_focus(GTK_WIDGET(self->server_combo_box));
+    } else {
+        g_warn_if_reached();
+    }
+}
