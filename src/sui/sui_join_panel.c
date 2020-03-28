@@ -118,8 +118,11 @@ static void chan_tree_model_on_row_changed(GtkTreeModel *tree_model,
 static void chan_entry_on_changed(GtkEditable *editable, gpointer user_data);
 static void on_password_lookup(GObject *source, GAsyncResult *result,
         gpointer user_data);
+static void stack_on_child_changed(GtkWidget *widget, GParamSpec *pspec,
+        gpointer user_data);
 
 static void update_status(SuiJoinPanel *self);
+static void update_focus(SuiJoinPanel *self);
 
 /*****************************************************************************
  * GObject functions
@@ -134,6 +137,9 @@ static void sui_join_panel_init(SuiJoinPanel *self){
 
     self->match = MATCH_CHANNEL;
     match_combo_box_set_model(self);
+
+    g_signal_connect(self->stack, "notify::visible-child",
+            G_CALLBACK(stack_on_child_changed), self);
 
     /* Press enter to connect */
     g_signal_connect_swapped(self->chan_entry, "activate",
@@ -628,4 +634,21 @@ static void on_password_lookup(GObject *source, GAsyncResult *result,
 
     gtk_entry_set_text(entry, passwd);
     secret_password_free(passwd);
+}
+
+static void stack_on_child_changed(GtkWidget *widget, GParamSpec *pspec,
+        gpointer user_data) {
+    update_focus(SUI_JOIN_PANEL(user_data));
+}
+
+static void update_focus(SuiJoinPanel *self) {
+    const char *page = gtk_stack_get_visible_child_name(self->stack);
+
+    if (g_strcmp0(page, PAGE_JOIN_CHANNEL) == 0){
+        gtk_widget_grab_focus(GTK_WIDGET(self->chan_entry));
+    } else if (g_strcmp0(page, PAGE_SEARCH_CHANNEL) == 0){
+        gtk_widget_grab_focus(GTK_WIDGET(self->search_entry));
+    } else {
+        g_warn_if_reached();
+    }
 }
