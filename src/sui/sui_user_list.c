@@ -121,11 +121,11 @@ void sui_user_list_add_user(SuiUserList *self, SuiUser *user){
 }
 
 void sui_user_list_rm_user(SuiUserList *self, SuiUser *user){
+    self->user_stat.total--;
+    sui_user_list_update_user(self, user);
     gtk_list_store_remove(self->user_list_store, (GtkTreeIter *)user);
     sui_user_set_list(user, NULL);
     sui_user_set_stat(user, NULL);
-    self->user_stat.total--;
-    sui_user_list_update_user(self, user);
 }
 
 void sui_user_list_update_user(SuiUserList *self, SuiUser *user){
