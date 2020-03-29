@@ -121,11 +121,15 @@ void sui_user_list_add_user(SuiUserList *self, SuiUser *user){
 }
 
 void sui_user_list_rm_user(SuiUserList *self, SuiUser *user){
+    // FIXME: A hack for correcting user statistic
+    SrnChatUser *chat_user = sui_user_get_ctx(user);
+    chat_user->type = SRN_CHAT_USER_TYPE_CHIGUA;
+
+    self->user_stat.total--;
+    sui_user_list_update_user(self, user);
     gtk_list_store_remove(self->user_list_store, (GtkTreeIter *)user);
     sui_user_set_list(user, NULL);
     sui_user_set_stat(user, NULL);
-    self->user_stat.total--;
-    sui_user_list_update_user(self, user);
 }
 
 void sui_user_list_update_user(SuiUserList *self, SuiUser *user){
