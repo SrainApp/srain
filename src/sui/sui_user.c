@@ -134,6 +134,7 @@ void sui_user_update(SuiUser *self, GtkStyleContext *style_context,
                 ;
         }
     }
+    self->type = self->ctx->type;
 
     cairo_surface_t *icon = new_user_icon_from_type(self->ctx->type,
             style_context, window);
