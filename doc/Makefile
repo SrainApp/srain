@@ -9,12 +9,12 @@ SOURCEDIR     = .
 BUILDDIR      = $(BUILD_DIR)/doc
 
 default:
-	make html
+	make html man
 
 view:
 	xdg-open "$(BUILDDIR)/html/index.html"
 
-install: install-rst install-html
+install: install-rst install-html install-man
 
 install-rst:
 	for rst in *.rst; do \
@@ -30,6 +30,13 @@ install-html:
 		"$(DESTDIR)$(PACKAGE_DATA_DIR)/doc/$(PACKAGE)/html/$$html"; \
 	done; \
 	cp -r _static "$(DESTDIR)$(PACKAGE_DATA_DIR)/doc/$(PACKAGE)/html";
+
+install-man:
+	cd $(BUILDDIR)/man; \
+	for man in *.1; do \
+		$(INSTALL) -Dm644 $$man \
+		"$(DESTDIR)$(PACKAGE_DATA_DIR)/man/man1/$$man"; \
+	done; \
 
 # Put it first so that "make" without argument is like "make help".
 help:
