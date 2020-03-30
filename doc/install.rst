@@ -119,17 +119,27 @@ If you are the user of `Arch Linux CN Repository`_, try:
 Debian
 ~~~~~~
 
-`tomac4t`_ is maintaining `Debian package script for Srain`_.
+There is no srain package in the official repository yet. But you can package
+it by yourself.
 
-Move the ``debian`` directory to srain's project root directory, perform the
-following commands to build a deb package:
+Copy the debian folder on `srain-contrib`_ to srain folder. Then type following
+command on your terminal:
 
 .. code-block:: console
 
     $ dpkg-buildpackage -b -us -uc
 
-.. _tomac4t: https://github.com/tomac4t
-.. _Debian package script for Srain: https://github.com/SrainApp/srain-contrib/tree/master/pack/debian
+Note that the dependencies mentioned above also should be installed. The
+details could be found on `debian/crontrol`_ file.
+
+Then install the package (replace package name with the name of your package):
+
+.. code-block:: console
+
+    $ sudo apt-get install -f ../srain_1.0.1-1_amd64.deb 
+
+.. _srain-contrib: https://github.com/SrainApp/srain-contrib/tree/master/pack/
+.. _debian/crontrol: https://github.com/SrainApp/srain-contrib/blob/master/pack/debian/control
 
 .. _install-packages-flatpak:
 
