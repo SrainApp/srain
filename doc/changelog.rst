@@ -31,7 +31,7 @@ Change Log
 .. _version-latest:
 .. _version-1.0.1:
 
-2020-03-14 Version 1.1.1
+2020-03-14 Version 1.0.1
 ========================
 
 - Features:
