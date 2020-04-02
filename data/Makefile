@@ -24,8 +24,8 @@ config: builtin.cfg
 	$(INSTALL) -Dm644 "$<" "$(DESTDIR)$(PACKAGE_CONFIG_DIR)/$(PACKAGE)/$<"
 
 .PHONY: icons
-icons: icons/scalable/srain.png
-	$(INSTALL) -Dm644 "$<" "$(DESTDIR)$(PACKAGE_DATA_DIR)/icons/hicolor/scalable/apps/$(PACKAGE_APPID).png"
+icons: icons/128x128/srain.png
+	$(INSTALL) -Dm644 "$<" "$(DESTDIR)$(PACKAGE_DATA_DIR)/icons/hicolor/128x128/apps/$(PACKAGE_APPID).png"
 
 .PHONY: themes
 themes: $(THEMES)
