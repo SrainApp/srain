@@ -263,7 +263,7 @@ SrnRet srn_application_add_server_with_config(SrnApplication *app,
     while (lst) {
         srv = lst->data;
         if (g_ascii_strcasecmp(srv->name, name) == 0){
-            return SRN_ERR;
+            return RET_ERR(_("Server \"%1$s\" already exists"), name);
         }
         lst = g_list_next(lst);
     }
