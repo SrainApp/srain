@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 1.0.0\n"
 "Report-Msgid-Bugs-To: i@silverrainz.me\n"
-"POT-Creation-Date: 2020-04-06 11:21+0800\n"
+"POT-Creation-Date: 2020-04-06 11:27+0800\n"
 "PO-Revision-Date: 2016-12-18 01:44+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -724,7 +724,7 @@ msgstr "没有需要请求的新的扩展能力"
 
 #: ../src/sui/sui_connect_panel.c:432
 msgid "No server selected"
-msgstr ""
+msgstr "没有服务器被选中"
 
 #: ../src/core/app_irc_event.c:1484
 msgid "No topic is set"
@@ -856,9 +856,9 @@ msgid "Server"
 msgstr "服务器："
 
 #: ../src/core/app.c:266
-#, fuzzy, c-format
-msgid "Server \"%s\" already exists"
-msgstr "服务器已连接"
+#, c-format
+msgid "Server \"%1$s\" already exists"
+msgstr "服务器 \"%1$s\" 已存在"
 
 #: ../src/core/app_irc_event.c:1063
 #, c-format
