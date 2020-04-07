@@ -429,6 +429,7 @@ static void connect_button_on_click(gpointer user_data){
 
         srv_name = gtk_combo_box_get_active_id(self->quick_server_combo_box);
         if (!srv_name){
+            ret = RET_ERR(_("No server selected"));
             goto FIN;
         }
 
