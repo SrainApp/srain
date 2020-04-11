@@ -29,6 +29,33 @@ Change Log
       - XXX
 
 .. _version-latest:
+
+.. _version-1.0.2:
+
+2020-04-11 Version 1.0.2
+========================
+
+- Features:
+
+  - Add MAN documentation (:commit:`deaf723`)
+  - Add more predefined IRC networks: DALnet, EFnet, IRCnet, Undernet and QuakeNet (:pull:`228`)
+
+- Changes:
+
+  - Build: Allow setting CC variable via environment (:pull:`224`)
+  - Add channel related messages to corresponding buffer as possible (:issue:`149`)
+  - Improve widget focus control (:pull:`229`)
+  - Drop unused icons (:commit:`6239fe5`)
+  - Provide clearer error message when connecting (:pull:`233`)
+  - Update gentoo installation documentation :ref:`install-packages-gentoo` (:commit:`ceb5ca3`)
+
+- Bug fixes:
+
+  - Truncate long message before sendisg (:pull:`227`)
+  - Deal with invalid UTF-8 string (:commit:`50e7757`)
+  - Fix incorrect user number of channel user list (:pull:`230`)
+  - Fix incorrect icon install path (:commit:`9f07380`)
+
 .. _version-1.0.1:
 
 2020-03-14 Version 1.0.1
