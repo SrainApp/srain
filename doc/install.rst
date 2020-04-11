@@ -175,14 +175,14 @@ you already have flatpak installed:
 .. _Flatpak manifest for Srain: https://github.com/SrainApp/srain-contrib/tree/master/pack/flatpak
 .. _Flathub: https://flathub.org
 
+.. _install-packages-gentoo:
+
 Gentoo
 ~~~~~~
 
-`rtlanceroad`_ is maintaining `Gentoo ebuilds for Srain`_, please refer to it
-for more details.
+Please refers to `gentoo portage overlays`_.
 
-.. _rtlanceroad: https://github.com/rtlanceroad
-.. _Gentoo ebuilds for Srain: https://github.com/SrainApp/srain-contrib/tree/master/pack/gentoo
+.. _gentoo portage overlays: https://gpo.zugaina.org/net-im/srain
 
 .. _install-packages-opensuse:
 
