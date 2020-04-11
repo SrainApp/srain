@@ -67,6 +67,9 @@
   </content_rating>
 
 <releases>
+  <release version="1.0.2" date="2020-04-11">
+      <url>https://doc.srain.im/en/latest/changelog.html#version-1-0-2</url>
+  </release>
   <release version="1.0.1" date="2020-03-14">
       <url>https://doc.srain.im/en/latest/changelog.html#version-1-0-1</url>
   </release>

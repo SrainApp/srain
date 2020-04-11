@@ -2,10 +2,13 @@
 Srain
 =====
 
-|ci-status| |channel|
+|ci-status| |doc-status| |channel|
 
 .. |ci-status| image:: https://github.com/SrainApp/srain/workflows/build/badge.svg?branch=master
    :target: https://github.com/SrainApp/srain/actions
+
+.. |doc-status| image:: https://readthedocs.org/projects/srain/badge/?version=latest
+    :target: https://doc.srain.im/en/latest/
 
 .. |channel| image:: https://img.shields.io/badge/channel-%23srain-brightgreen.svg
    :target: ircs://chat.freenode.net/#srain
@@ -17,6 +20,8 @@ Modern IRC client written in GTK.
 .. _Home: https://srain.im
 .. _Documentation: https://doc.srain.im
 .. _Source code: https://github.com/SrainApp/srain
+
+.. image:: https://srain.im/assets/images/cover.png
 
 Packaging Status
 ================
