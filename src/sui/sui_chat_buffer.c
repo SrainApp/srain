@@ -25,6 +25,7 @@
  */
 
 #include <gtk/gtk.h>
+#include <string.h>
 
 #include "sui_buffer.h"
 #include "sui_chat_buffer.h"

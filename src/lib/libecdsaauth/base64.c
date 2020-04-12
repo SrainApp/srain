@@ -45,6 +45,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <assert.h>
+#include <ctype.h>
 
 static const char Base64[] =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
