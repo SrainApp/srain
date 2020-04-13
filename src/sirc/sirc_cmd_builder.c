@@ -17,6 +17,7 @@
  */
 
 #include <glib.h>
+#include <string.h>
 
 #include "sirc_cmd_builder.h"
 
