@@ -34,9 +34,9 @@ themes: $(THEMES)
 	done
 
 .PHONY: misc
-misc: srain.desktop srain.appdata.xml
+misc: srain.desktop srain.metainfo.xml
 	$(INSTALL) -Dm644 "srain.desktop" "$(DESTDIR)$(PACKAGE_DATA_DIR)/applications/$(PACKAGE_APPID).desktop"
-	$(INSTALL) -Dm644 "srain.appdata.xml" "$(DESTDIR)$(PACKAGE_DATA_DIR)/metainfo/$(PACKAGE_APPID).appdata.xml"
+	$(INSTALL) -Dm644 "srain.metainfo.xml" "$(DESTDIR)$(PACKAGE_DATA_DIR)/metainfo/$(PACKAGE_APPID).metainfo.xml"
 
 .PHONY: plugins
 plugins:
