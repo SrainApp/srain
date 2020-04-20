@@ -268,7 +268,7 @@ static void do_colorize(ColorlizeContext *ctx, char ch){
                 break;
         }
     } else {
-        DBG_FR("Closeing tag: 0x%x", ch);
+        DBG_FR("Closing tag: 0x%x", ch);
 
         // Closes all unclosed tags before the start tag corresponding to current tag
         for (int i = ctx->ptr - 1; i >= ptr; i--){
