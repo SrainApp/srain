@@ -43,7 +43,12 @@ struct _SuiMessageList {
     GtkScrolledWindow *scrolled_window;
     GtkViewport *viewport;
     GtkListBox *list_box;
+
+    GtkBox *browse_box; // Box for the go_xxx buttons
+    GtkButton *go_prev_mention_button;
+    GtkButton *go_next_mention_button;
     GtkButton *go_bottom_button;
+
     SuiMessage *first_msg;
     SuiMessage *last_msg;
 };
@@ -87,7 +92,7 @@ static void sui_message_list_init(SuiMessageList *self){
     g_object_bind_property(
             gtk_scrolled_window_get_vscrollbar(self->scrolled_window),
             "opacity",
-            self->go_bottom_button,
+            self->browse_box,
             "opacity",
             0);
 }
@@ -118,6 +123,9 @@ static void sui_message_list_class_init(SuiMessageListClass *class){
     gtk_widget_class_bind_template_child(widget_class, SuiMessageList, scrolled_window);
     gtk_widget_class_bind_template_child(widget_class, SuiMessageList, viewport);
     gtk_widget_class_bind_template_child(widget_class, SuiMessageList, list_box);
+    gtk_widget_class_bind_template_child(widget_class, SuiMessageList, browse_box);
+    gtk_widget_class_bind_template_child(widget_class, SuiMessageList, go_prev_mention_button);
+    gtk_widget_class_bind_template_child(widget_class, SuiMessageList, go_next_mention_button);
     gtk_widget_class_bind_template_child(widget_class, SuiMessageList, go_bottom_button);
 }
 
@@ -317,7 +325,7 @@ static void scrolled_window_on_edge_reached(GtkScrolledWindow *swin,
             break;
         case GTK_POS_BOTTOM:
             // TODO: Dynamic free
-            gtk_widget_hide(GTK_WIDGET(self->go_bottom_button));
+            gtk_widget_hide(GTK_WIDGET(self->browse_box));
             break;
         default:
             break;
@@ -351,6 +359,6 @@ static void scrolled_window_vadjustment_on_value_changed(
     // The go bottom button appears each time the distance from current
     // position to bottom is greater than 0.5 page (we think user is browsing
     // message now).
-    gtk_widget_set_visible(GTK_WIDGET(self->go_bottom_button),
+    gtk_widget_set_visible(GTK_WIDGET(self->browse_box),
             get_page_count_to_bottom(self) > 0.5);
 }

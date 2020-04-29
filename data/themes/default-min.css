@@ -66,8 +66,12 @@
     border-left-color: @sui_message_list_bg_color1;
 }
 
-.sui-go-bottom {
+.sui-message-browse-bar {
     margin: 6px;
+}
+
+.sui-message-browse-bar > * {
+    margin-top: 4px;
 }
 
 /* Misc {{{1 */
