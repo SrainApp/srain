@@ -2,14 +2,12 @@
 @define-color sui_message_list_bg_color2 transparent;
 
 @define-color sui_message_bg_color alpha(black, 0.4);
-@define-color sui_highlighted_message_bg_color alpha(black, 0.6);
 @define-color sui_message_shadow_color transparent;
 
 @define-color sui_misc_message_text_color alpha(white, 0.7);
 @define-color sui_misc_message_normal_bg_color alpha(black, 0.2);
 @define-color sui_misc_message_error_bg_color alpha(#e05868, 0.7);
 @define-color sui_misc_message_action_bg_color alpha(#82abe5, 0.7);
-@define-color sui_highlighted_misc_message_action_bg_color alpha(#82abe5, 1);
 
 @define-color sui_message_counter_text_color alpha(white, 0.7);
 @define-color sui_message_counter_bg_color alpha(black, 0.4);
