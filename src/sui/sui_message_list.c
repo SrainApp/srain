@@ -65,6 +65,7 @@ static void scroll_to_bottom(SuiMessageList *self);
 static gboolean scroll_to_bottom_timeout(gpointer user_data);
 static void smart_scroll(SuiMessageList *self);
 static double get_page_count_to_bottom(SuiMessageList *self);
+static void go_next_mentioned_row(SuiMessageList *self, GtkDirectionType dir);
 
 static void scrolled_window_on_edge_reached(GtkScrolledWindow *swin,
                GtkPositionType pos, gpointer user_data);
@@ -177,10 +178,16 @@ void sui_message_list_append_message(SuiMessageList *self, SuiMessage *msg,
         sui_message_compose_prev(msg, self->last_msg);
     }
     self->last_msg = msg;
+    if (!self->first_msg) {
+        self->first_msg = msg;
+    }
 
     row = sui_common_unfocusable_list_box_row_new(GTK_WIDGET(msg));
     gtk_list_box_insert(self->list_box, GTK_WIDGET(row), -1);
     self->last_row = row;
+    if (!self->first_row) {
+        self->first_row = row;
+    }
 
     smart_scroll(self);
 }
@@ -196,6 +203,9 @@ void sui_message_list_prepend_message(SuiMessageList *self, SuiMessage *msg,
         sui_message_compose_next(msg, self->first_msg);
     }
     self->first_msg = msg;
+    if (!self->last_msg) {
+        self->last_msg = msg;
+    }
 
     box = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0));
     gtk_box_pack_start(box, GTK_WIDGET(msg), TRUE, TRUE, 0);
@@ -203,6 +213,9 @@ void sui_message_list_prepend_message(SuiMessageList *self, SuiMessage *msg,
     row = sui_common_unfocusable_list_box_row_new(GTK_WIDGET(box));
     gtk_list_box_prepend(self->list_box, GTK_WIDGET(row));
     self->first_row = row;
+    if (!self->last_row) {
+        self->last_row = row;
+    }
 
     smart_scroll(self);
 }
@@ -376,55 +389,45 @@ static void clear_selection_button_on_click(GtkButton *button, gpointer user_dat
 
 static void go_prev_mention_button_on_click(GtkButton *button, gpointer user_data) {
     SuiMessageList *self;
-    GtkListBoxRow *row;
 
     self = user_data;
-    // Starts from selected row
-    row = gtk_list_box_get_selected_row(self->list_box);
-    if (!row) {
-        // No row selected, use last row
-        row = self->last_row;
-    }
-    if (!row) {
-        // No any row in list
-        return;
-    }
-
-    // Fine prev mentioned message
-    for (int i = gtk_list_box_row_get_index(row); i > 0; i--) {
-        SuiMessage *msg;
-
-        row = gtk_list_box_get_row_at_index(self->list_box, i);
-        msg = SUI_MESSAGE(gtk_bin_get_child(GTK_BIN(row)));
-        if (sui_message_is_mentioned(msg)) {
-            // Focus and select
-            gtk_list_box_unselect_all(self->list_box);
-            gtk_list_box_select_row(self->list_box, row);
-            gtk_container_set_focus_child(GTK_CONTAINER(self->list_box), GTK_WIDGET(row));
-            break;
-        }
-    }
+    go_next_mentioned_row(self, GTK_DIR_UP);
 }
 
 static void go_next_mention_button_on_click(GtkButton *button, gpointer user_data) {
     SuiMessageList *self;
-    GtkListBoxRow *row;
 
     self = user_data;
-    // Starts from selected row
-    row = gtk_list_box_get_selected_row(self->list_box);
-    if (!row) {
-        // No row selected, use last row
-        row = self->last_row;
-    }
-    if (!row) {
+    go_next_mentioned_row(self, GTK_DIR_DOWN);
+}
+
+static void go_next_mentioned_row(SuiMessageList *self, GtkDirectionType dir) {
+    int step;
+    int index;
+
+    g_return_if_fail(dir == GTK_DIR_UP || dir == GTK_DIR_DOWN);
+    step = dir == GTK_DIR_UP ? -1 : 1;
+
+    if (gtk_list_box_get_selected_row(self->list_box)) {
+        // Starts from next row of selected row
+        index = gtk_list_box_row_get_index(
+                gtk_list_box_get_selected_row(self->list_box));
+        index += step;
+    } else if (dir == GTK_DIR_UP && self->last_row) {
+        // Starts from last row
+        index = gtk_list_box_row_get_index(self->last_row);
+    } else if (dir == GTK_DIR_DOWN && self->first_row) {
+        // Starts from first row
+        index = gtk_list_box_row_get_index(self->first_row);
+    } else {
         // No any row in list
         return;
     }
 
     // Fine next mentioned message
-    for (int i = gtk_list_box_row_get_index(row);
-            gtk_list_box_get_row_at_index(self->list_box, i) != NULL; i++) {
+    for (int i = index;
+            gtk_list_box_get_row_at_index(self->list_box, i) != NULL; i += step) {
+        GtkListBoxRow *row;
         SuiMessage *msg;
 
         row = gtk_list_box_get_row_at_index(self->list_box, i);
