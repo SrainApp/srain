@@ -401,6 +401,7 @@ static void go_prev_mention_button_on_click(GtkButton *button, gpointer user_dat
         }
 
         // Focus and select
+        gtk_list_box_unselect_all(self->list_box);
         gtk_list_box_select_row(self->list_box, row);
         gtk_container_set_focus_child(GTK_CONTAINER(self->list_box), GTK_WIDGET(row));
     }
@@ -434,6 +435,7 @@ static void go_next_mention_button_on_click(GtkButton *button, gpointer user_dat
         }
 
         // Focus and select
+        gtk_list_box_unselect_all(self->list_box);
         gtk_list_box_select_row(self->list_box, row);
         gtk_container_set_focus_child(GTK_CONTAINER(self->list_box), GTK_WIDGET(row));
     }
