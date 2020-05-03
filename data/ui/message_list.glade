@@ -63,7 +63,7 @@
             <child>
               <object class="GtkButton" id="go_prev_mention_button">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
+                <property name="can_focus">False</property>
                 <property name="receives_default">True</property>
                 <property name="image">go_prev_mention_image</property>
                 <style>
@@ -79,7 +79,7 @@
             <child>
               <object class="GtkButton" id="go_next_mention_button">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
+                <property name="can_focus">False</property>
                 <property name="receives_default">True</property>
                 <property name="image">go_next_mention_image</property>
                 <style>
@@ -95,7 +95,7 @@
             <child>
               <object class="GtkButton" id="go_bottom_button">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
+                <property name="can_focus">False</property>
                 <property name="receives_default">True</property>
                 <property name="image">go_bottom_image</property>
                 <style>
