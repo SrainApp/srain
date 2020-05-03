@@ -169,7 +169,6 @@ void sui_message_list_scroll_down(SuiMessageList *self, double step){
 
 void sui_message_list_append_message(SuiMessageList *self, SuiMessage *msg,
         GtkAlign halign){
-    GtkBox *box;
     GtkListBoxRow *row;
 
     if (self->last_msg
@@ -179,10 +178,7 @@ void sui_message_list_append_message(SuiMessageList *self, SuiMessage *msg,
     }
     self->last_msg = msg;
 
-    box = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0));
-    gtk_box_pack_start(box, GTK_WIDGET(msg), TRUE, TRUE, 0);
-    gtk_widget_set_halign(GTK_WIDGET(msg), halign);
-    row = sui_common_unfocusable_list_box_row_new(GTK_WIDGET(box));
+    row = sui_common_unfocusable_list_box_row_new(GTK_WIDGET(msg));
     gtk_list_box_insert(self->list_box, GTK_WIDGET(row), -1);
     self->last_row = row;
 
@@ -228,18 +224,10 @@ GList *sui_message_list_get_recent_messages(SuiMessageList *self, int limit){
     while (lst && limit){
         GtkListBoxRow *row;
         SuiMessage *msg;
-        GtkBox *box;
-        GList *box_child;
 
         row = GTK_LIST_BOX_ROW(lst->data);
-        box = GTK_BOX(gtk_bin_get_child(GTK_BIN(row)));
-        box_child = gtk_container_get_children(GTK_CONTAINER(box));
-        g_return_val_if_fail(box_child, NULL);
-
-        msg = SUI_MESSAGE(box_child->data);
+        msg = SUI_MESSAGE(gtk_bin_get_child(GTK_BIN(row)));
         msgs = g_list_append(msgs, msg);
-
-        g_list_free(box_child);
 
         lst = g_list_previous(lst);
         limit--;
@@ -404,15 +392,10 @@ static void go_prev_mention_button_on_click(GtkButton *button, gpointer user_dat
 
     // Fine prev mentioned message
     for (int i = gtk_list_box_row_get_index(row); i > 0; i--) {
-        GtkContainer *box;
-        GList *lst;
         SuiMessage *msg;
 
         row = gtk_list_box_get_row_at_index(self->list_box, i);
-        box = GTK_CONTAINER(gtk_bin_get_child(GTK_BIN(row)));
-        lst = gtk_container_get_children(box);
-        msg = lst->data;
-        g_list_free(lst);
+        msg = SUI_MESSAGE(gtk_bin_get_child(GTK_BIN(row)));
         if (!sui_message_is_mentioned(msg)) {
             continue;
         }
@@ -442,15 +425,10 @@ static void go_next_mention_button_on_click(GtkButton *button, gpointer user_dat
     // Fine next mentioned message
     for (int i = gtk_list_box_row_get_index(row);
             gtk_list_box_get_row_at_index(self->list_box, i) != NULL; i++) {
-        GtkContainer *box;
         SuiMessage *msg;
-        GList *lst;
 
         row = gtk_list_box_get_row_at_index(self->list_box, i);
-        box = GTK_CONTAINER(gtk_bin_get_child(GTK_BIN(row)));
-        lst = gtk_container_get_children(box);
-        msg = lst->data;
-        g_list_free(lst);
+        msg = SUI_MESSAGE(gtk_bin_get_child(GTK_BIN(row)));
         if (!sui_message_is_mentioned(msg)) {
             continue;
         }
