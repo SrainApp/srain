@@ -312,6 +312,14 @@ const char* sui_message_get_full_time(SuiMessage *self){
     return ctx->rendered_full_time;
 }
 
+bool sui_message_is_mentioned(SuiMessage *self){
+    SrnMessage *ctx;
+
+    ctx = sui_message_get_ctx(self);
+
+    return ctx->mentioned;
+}
+
 /*****************************************************************************
  * Static functions
  *****************************************************************************/

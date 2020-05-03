@@ -95,6 +95,7 @@ SuiMessage* sui_message_get_prev(SuiMessage *self);
 SuiMessage* sui_message_get_next(SuiMessage *self);
 const char* sui_message_get_time(SuiMessage *self);
 const char* sui_message_get_full_time(SuiMessage *self);
+bool sui_message_is_mentioned(SuiMessage *self);
 
 void sui_message_label_on_popup(GtkLabel *label, GtkMenu *menu, gpointer user_data);
 

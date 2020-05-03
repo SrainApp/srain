@@ -45,32 +45,21 @@ static void popover_on_hide(GtkWidget *widget, gpointer user_data);
  *****************************************************************************/
 
 /**
- * @brief gtk_list_box_add_item
- *
+ * @brief used to create an unfocusable listbox row
  * @param listbox
  * @param widget
  *
  * @return a unfocusable GtkListRow
- *
- * a useful function used to add unfocusable row which contain `widget`
- * into `listbox`
  */
 
-GtkListBoxRow* sui_common_add_gtk_list_box_unfocusable_row(GtkListBox *listbox, GtkWidget *widget){
+GtkListBoxRow* sui_common_unfocusable_list_box_row_new(GtkWidget *widget){
     GtkListBoxRow *row;
 
     row = GTK_LIST_BOX_ROW(gtk_list_box_row_new());
-
-    gtk_widget_set_can_focus(widget, FALSE);
     gtk_widget_set_can_focus(GTK_WIDGET(row), FALSE);
-
     gtk_container_add(GTK_CONTAINER(row), widget);
-    gtk_list_box_insert(listbox, GTK_WIDGET(row), -1);
-
     gtk_widget_show(GTK_WIDGET(row));
-    gtk_widget_show(widget);
-
-    // theme_apply(GTK_WIDGET(row));
+    gtk_widget_show(GTK_WIDGET(widget));
 
     return row;
 }

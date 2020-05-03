@@ -181,9 +181,10 @@ add_child(GtkWidget *child, SuiSideBar *sidebar){
 
     g_object_set_data(G_OBJECT(item), "stack-child", child);
 
-    row = sui_common_add_gtk_list_box_unfocusable_row(sidebar->list, GTK_WIDGET(item));
+    row = sui_common_unfocusable_list_box_row_new(GTK_WIDGET(item));
+    gtk_list_box_insert(sidebar->list, GTK_WIDGET(row), -1);
+    gtk_list_box_select_row(sidebar->list, row);
     g_hash_table_insert(sidebar->rows, child, row);
-    gtk_list_box_select_row(sidebar->list, GTK_LIST_BOX_ROW(row));
 
     sui_side_bar_item_update(item, NULL, "");
 }
