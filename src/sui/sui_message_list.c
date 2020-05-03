@@ -396,14 +396,13 @@ static void go_prev_mention_button_on_click(GtkButton *button, gpointer user_dat
 
         row = gtk_list_box_get_row_at_index(self->list_box, i);
         msg = SUI_MESSAGE(gtk_bin_get_child(GTK_BIN(row)));
-        if (!sui_message_is_mentioned(msg)) {
-            continue;
+        if (sui_message_is_mentioned(msg)) {
+            // Focus and select
+            gtk_list_box_unselect_all(self->list_box);
+            gtk_list_box_select_row(self->list_box, row);
+            gtk_container_set_focus_child(GTK_CONTAINER(self->list_box), GTK_WIDGET(row));
+            break;
         }
-
-        // Focus and select
-        gtk_list_box_unselect_all(self->list_box);
-        gtk_list_box_select_row(self->list_box, row);
-        gtk_container_set_focus_child(GTK_CONTAINER(self->list_box), GTK_WIDGET(row));
     }
 }
 
@@ -430,14 +429,13 @@ static void go_next_mention_button_on_click(GtkButton *button, gpointer user_dat
 
         row = gtk_list_box_get_row_at_index(self->list_box, i);
         msg = SUI_MESSAGE(gtk_bin_get_child(GTK_BIN(row)));
-        if (!sui_message_is_mentioned(msg)) {
-            continue;
+        if (sui_message_is_mentioned(msg)) {
+            // Focus and select
+            gtk_list_box_unselect_all(self->list_box);
+            gtk_list_box_select_row(self->list_box, row);
+            gtk_container_set_focus_child(GTK_CONTAINER(self->list_box), GTK_WIDGET(row));
+            break;
         }
-
-        // Focus and select
-        gtk_list_box_unselect_all(self->list_box);
-        gtk_list_box_select_row(self->list_box, row);
-        gtk_container_set_focus_child(GTK_CONTAINER(self->list_box), GTK_WIDGET(row));
     }
 }
 
