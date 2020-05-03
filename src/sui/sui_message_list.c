@@ -22,8 +22,6 @@
  * @author Shengyu Zhang <i@silverrainz.me>
  * @version 0.06.2
  * @date 2016-05-19
- *
- * TODO: Smooth scroll support.
  */
 
 #include <gtk/gtk.h>
