@@ -265,16 +265,12 @@ static void scroll_to_bottom(SuiMessageList *self){
 }
 
 static gboolean scroll_to_bottom_timeout(gpointer user_data){
-    GtkAdjustment *adj;
     SuiMessageList *self;
 
     self = SUI_MESSAGE_LIST(user_data);
-
-    /* Scroll to bottom */
-    adj = gtk_scrolled_window_get_vadjustment(self->scrolled_window);
-    gtk_adjustment_set_value(adj, gtk_adjustment_get_upper(adj) -
-            gtk_adjustment_get_page_size(adj));
-
+    // Scroll to bottom by setting focus to last row
+    gtk_container_set_focus_child(GTK_CONTAINER(self->list_box),
+            GTK_WIDGET(self->last_row));
     self->scroll_timer = 0;
 
     return G_SOURCE_REMOVE;
