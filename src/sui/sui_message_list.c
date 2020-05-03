@@ -44,7 +44,9 @@ struct _SuiMessageList {
     GtkViewport *viewport;
     GtkListBox *list_box;
 
-    GtkBox *browse_box; // Box for the go_xxx buttons
+    // Message list toolbar
+    GtkRevealer *tool_bar_revealer;
+    GtkButton *clear_selection_button;
     GtkButton *go_prev_mention_button;
     GtkButton *go_next_mention_button;
     GtkButton *go_bottom_button;
@@ -70,8 +72,10 @@ static void scrolled_window_on_edge_overshot(GtkScrolledWindow *swin,
         GtkPositionType pos, gpointer user_data);
 static void scrolled_window_vadjustment_on_value_changed(
         GtkAdjustment *adjustment, gpointer user_data);
+static void clear_selection_button_on_click(GtkButton *button, gpointer user_data);
 static void go_prev_mention_button_on_click(GtkButton *button, gpointer user_data);
 static void go_next_mention_button_on_click(GtkButton *button, gpointer user_data);
+static void list_box_on_selected_rows_changed(GtkListBox *box, gpointer user_data);
 
 /*****************************************************************************
  * GObject functions
@@ -86,6 +90,8 @@ static void sui_message_list_init(SuiMessageList *self){
             G_CALLBACK(scrolled_window_on_edge_overshot), self);
     g_signal_connect(self->scrolled_window, "edge-reached",
             G_CALLBACK(scrolled_window_on_edge_reached), self);
+    g_signal_connect(self->clear_selection_button, "clicked",
+            G_CALLBACK(clear_selection_button_on_click), self);
     g_signal_connect(self->go_prev_mention_button, "clicked",
             G_CALLBACK(go_prev_mention_button_on_click), self);
     g_signal_connect(self->go_next_mention_button, "clicked",
@@ -96,13 +102,8 @@ static void sui_message_list_init(SuiMessageList *self){
             gtk_scrolled_window_get_vadjustment(self->scrolled_window),
             "value-changed",
             G_CALLBACK(scrolled_window_vadjustment_on_value_changed), self);
-
-    g_object_bind_property(
-            gtk_scrolled_window_get_vscrollbar(self->scrolled_window),
-            "opacity",
-            self->browse_box,
-            "opacity",
-            0);
+    g_signal_connect(self->list_box, "selected-rows-changed",
+            G_CALLBACK(list_box_on_selected_rows_changed), self);
 
     // Tell GtkScrolledWindow scrolls to show a row of GtkListBox when it is
     // focused. It is required by gtk_container_set_focus_child().
@@ -136,7 +137,8 @@ static void sui_message_list_class_init(SuiMessageListClass *class){
     gtk_widget_class_bind_template_child(widget_class, SuiMessageList, scrolled_window);
     gtk_widget_class_bind_template_child(widget_class, SuiMessageList, viewport);
     gtk_widget_class_bind_template_child(widget_class, SuiMessageList, list_box);
-    gtk_widget_class_bind_template_child(widget_class, SuiMessageList, browse_box);
+    gtk_widget_class_bind_template_child(widget_class, SuiMessageList, tool_bar_revealer);
+    gtk_widget_class_bind_template_child(widget_class, SuiMessageList, clear_selection_button);
     gtk_widget_class_bind_template_child(widget_class, SuiMessageList, go_prev_mention_button);
     gtk_widget_class_bind_template_child(widget_class, SuiMessageList, go_next_mention_button);
     gtk_widget_class_bind_template_child(widget_class, SuiMessageList, go_bottom_button);
@@ -335,16 +337,11 @@ static void scrolled_window_on_edge_overshot(GtkScrolledWindow *swin,
 
 static void scrolled_window_on_edge_reached(GtkScrolledWindow *swin,
                GtkPositionType pos, gpointer user_data){
-    SuiMessageList *self;
-
-    self = SUI_MESSAGE_LIST(user_data);
-
     switch (pos) {
         case GTK_POS_TOP:
             break;
         case GTK_POS_BOTTOM:
             // TODO: Dynamic free
-            gtk_widget_hide(GTK_WIDGET(self->browse_box));
             break;
         default:
             break;
@@ -375,11 +372,18 @@ static void scrolled_window_vadjustment_on_value_changed(
 
     self = SUI_MESSAGE_LIST((user_data));
 
-    // The go bottom button appears each time the distance from current
+    // The toolbar appears each time the distance from current
     // position to bottom is greater than 0.5 page (we think user is browsing
     // message now).
-    gtk_widget_set_visible(GTK_WIDGET(self->browse_box),
+    gtk_revealer_set_reveal_child(self->tool_bar_revealer,
             get_page_count_to_bottom(self) > 0.5);
+}
+
+static void clear_selection_button_on_click(GtkButton *button, gpointer user_data) {
+    SuiMessageList *self;
+
+    self = user_data;
+    gtk_list_box_unselect_all(self->list_box);
 }
 
 static void go_prev_mention_button_on_click(GtkButton *button, gpointer user_data) {
@@ -455,4 +459,13 @@ static void go_next_mention_button_on_click(GtkButton *button, gpointer user_dat
         gtk_list_box_select_row(self->list_box, row);
         gtk_container_set_focus_child(GTK_CONTAINER(self->list_box), GTK_WIDGET(row));
     }
+}
+
+static void list_box_on_selected_rows_changed(GtkListBox *box,
+        gpointer user_data) {
+    SuiMessageList *self;
+
+    self = user_data;
+    gtk_revealer_set_reveal_child(self->tool_bar_revealer,
+            gtk_list_box_get_selected_row(box) != NULL);
 }

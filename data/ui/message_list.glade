@@ -2,6 +2,11 @@
 <!-- Generated with glade 3.22.2 -->
 <interface>
   <requires lib="gtk+" version="3.16"/>
+  <object class="GtkImage" id="clear_selection_image">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="icon_name">edit-clear-all-symbolic</property>
+  </object>
   <object class="GtkImage" id="go_bottom_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -39,8 +44,7 @@
                   <object class="GtkListBox" id="list_box">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="selection_mode">none</property>
-                    <property name="activate_on_single_click">False</property>
+                    <property name="selection_mode">multiple</property>
                   </object>
                 </child>
               </object>
@@ -54,62 +58,90 @@
           </packing>
         </child>
         <child type="overlay">
-          <object class="GtkBox" id="browse_box">
+          <object class="GtkRevealer" id="tool_bar_revealer">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="halign">end</property>
             <property name="valign">end</property>
-            <property name="orientation">vertical</property>
+            <property name="transition_type">slide-left</property>
             <child>
-              <object class="GtkButton" id="go_prev_mention_button">
+              <object class="GtkBox" id="tool_bar_box">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="receives_default">True</property>
-                <property name="image">go_prev_mention_image</property>
+                <property name="halign">end</property>
+                <property name="valign">end</property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkButton" id="clear_selection_button">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="image">clear_selection_image</property>
+                    <style>
+                      <class name="circular"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="go_prev_mention_button">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="image">go_prev_mention_image</property>
+                    <style>
+                      <class name="circular"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="go_next_mention_button">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="image">go_next_mention_image</property>
+                    <style>
+                      <class name="circular"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="go_bottom_button">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="image">go_bottom_image</property>
+                    <style>
+                      <class name="circular"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">3</property>
+                  </packing>
+                </child>
                 <style>
-                  <class name="circular"/>
+                  <class name="sui-message-tool-bar"/>
                 </style>
               </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="go_next_mention_button">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="receives_default">True</property>
-                <property name="image">go_next_mention_image</property>
-                <style>
-                  <class name="circular"/>
-                </style>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="go_bottom_button">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="receives_default">True</property>
-                <property name="image">go_bottom_image</property>
-                <style>
-                  <class name="circular"/>
-                </style>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">2</property>
-              </packing>
             </child>
             <style>
-              <class name="sui-message-browse-bar"/>
+              <class name="sui-message-tool-bar"/>
             </style>
           </object>
         </child>

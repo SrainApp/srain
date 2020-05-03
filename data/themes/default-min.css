@@ -66,11 +66,11 @@
     border-left-color: @sui_message_list_bg_color1;
 }
 
-.sui-message-browse-bar {
+.sui-message-tool-bar {
     margin: 6px;
 }
 
-.sui-message-browse-bar > * {
+.sui-message-tool-bar > * {
     margin-top: 4px;
 }
 
