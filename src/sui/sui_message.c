@@ -312,6 +312,14 @@ const char* sui_message_get_full_time(SuiMessage *self){
     return ctx->rendered_full_time;
 }
 
+bool sui_message_is_mentioned(SuiMessage *self){
+    SrnMessage *ctx;
+
+    ctx = sui_message_get_ctx(self);
+
+    return ctx->mentioned;
+}
+
 /*****************************************************************************
  * Static functions
  *****************************************************************************/
@@ -321,12 +329,6 @@ static void sui_message_real_update(SuiMessage *self){
 
     // Update message content
     gtk_label_set_markup(self->message_label, self->ctx->rendered_content);
-
-    // Set mentioned style class
-    style_context = gtk_widget_get_style_context(GTK_WIDGET(self));
-    if (self->ctx->mentioned){
-        gtk_style_context_add_class(style_context, "highlighted");
-    }
 
     // Show url previewer if needed
     if (self->buf->cfg->preview_url) {

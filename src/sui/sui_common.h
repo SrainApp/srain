@@ -26,7 +26,7 @@
 #include "sui_server_buffer.h"
 
 /* Misc */
-GtkListBoxRow* sui_common_add_gtk_list_box_unfocusable_row(GtkListBox *listbox, GtkWidget *widget);
+GtkListBoxRow* sui_common_unfocusable_list_box_row_new(GtkWidget *widget);
 void sui_common_scale_size(int src_width, int src_height, int max_width, int max_height, int *dst_width, int *dst_height);
 gboolean sui_common_activate_gtk_label_link(GtkLabel *label, const char *uri, gpointer user_data);
 SrnRet sui_common_open_url(const char *url);

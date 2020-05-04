@@ -46,10 +46,6 @@
     background-color: @sui_misc_message_action_bg_color;
 }
 
-.sui-misc-message-action.highlighted .sui-message-frame {
-    background-color: @sui_highlighted_misc_message_action_bg_color;
-}
-
 .sui-misc-message .sui-message-frame {
     padding-left: 4px;
     padding-right: 4px;
@@ -76,9 +72,9 @@
     background-color: @sui_message_bg_color;
 }
 
-.sui-send-message.highlighted .sui-message-frame,
-.sui-recv-message.highlighted .sui-message-frame{
-    background-color: @sui_highlighted_message_bg_color;
+.sui-message-list row:selected .sui-send-message .sui-message-frame,
+.sui-message-list row:selected .sui-recv-message .sui-message-frame{
+    background-color: alpha(currentColor, 0.6);
 }
 
 .sui-send-message .sui-message-frame,
@@ -123,10 +119,6 @@
     padding-left: 10px;
     padding-right: 10px;
  }
-
-.sui-message-list row:hover {
-    background-color: transparent;
-}
 
 .sui-message-list list,
 .sui-message-list GtkListBox { /* For GTK early than 3.22 */
