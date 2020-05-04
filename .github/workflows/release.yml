@@ -6,13 +6,13 @@ jobs:
   debiab-buster:
     runs-on: ubuntu-latest
     container: debian:buster
-    env: 
+    env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GH_REPO: ${{ github.repository }}
       GH_REF: ${{ github.ref }}
     steps:
     - name: upgrade the packages
-      run: apt-get update && apt-get upgrade -y && apt-get install -y git 
+      run: apt-get update && apt-get upgrade -y && apt-get install -y git
     - uses: actions/checkout@v2
     - name: build
       run: .github/workflows/release-debian-package.sh

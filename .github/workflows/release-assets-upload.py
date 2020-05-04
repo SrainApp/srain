@@ -43,7 +43,7 @@ def get_uploadurl():
 
   try:
     print("Found the target tagname, " + str(RELEASES_NUMBER));
-  
+
   except:
     print("Can't found the target tagname.");
     sys.exit(1);
@@ -58,7 +58,7 @@ def upload_assets():
   print("Assets: " + str(OUT_FILES) + "\nAssets number: " + str(OUT_FILES_NUMBER));
 
   FAILURE_MARK = "0";
-  
+
   for i in range (0, OUT_FILES_NUMBER):
     FILENAME = OUT_FILES[i];
     print("Current asset: " + FILENAME);
@@ -72,7 +72,7 @@ def upload_assets():
     # Use `application/octet-stream` for an unknown file type.
     if MIMETYPE is None:
       MIMETYPE = "application/octet-stream";
-    
+
     print("Mimetype: " + MIMETYPE);
 
     headers = {
@@ -83,7 +83,7 @@ def upload_assets():
     params = (
       ('name', FILENAME),
     );
-  
+
     data = open(OUT_FILES_PATH + FILENAME, 'rb').read();
 
     response = requests.post(UPLOAD_URL, headers=headers, params=params, data=data);
@@ -94,16 +94,16 @@ def upload_assets():
     # https://developer.github.com/v3/repos/releases/#response-for-successful-upload
     if response.status_code == 201:
       print("\033[1;32;40m" + FILENAME + ": success. " + str(i+1) + "/" + str(OUT_FILES_NUMBER) + "\033[0m");
-    
+
     else:
       print("\033[1;31;40m" + FILENAME + ": fail. " + str(i+1) + "/" + str(OUT_FILES_NUMBER) +  "\033[0m");
       FAILURE_MARK = "1";
-  
+
   if FAILURE_MARK == "1":
     sys.exit(1);
-  
+
   elif FAILURE_MARK == "0":
     sys.exit(0);
-  
+
 get_uploadurl();
 upload_assets();
