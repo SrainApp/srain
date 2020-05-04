@@ -1,0 +1,14 @@
+name: lint
+on:
+  - push
+  - pull_request
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install the dependencies
+      run: sudo apt-get install appstream-util
+    - name: Validate metainfo
+      run: appstream-util validate-relax data/srain.metainfo.xml
