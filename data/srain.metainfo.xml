@@ -5,7 +5,9 @@
   <metadata_license>FSFAP</metadata_license>
   <project_license>GPL-3.0</project_license>
   <name>Srain</name>
-  <summary>Modern IRC client written in GTK.</summary>
+  <summary>Modern IRC client written in GTK</summary>
+  <update_contact>cpbadosa_AT_gmail.com</update_contact>
+  <translation type="gettext">srain</translation>
 
   <keywords>
     <keyword>srain</keyword>
@@ -24,11 +26,11 @@
 
   <screenshots>
     <screenshot type="default">
-      <caption>Main UI</caption>
+      <caption>Main User Interface</caption>
       <image>https://srain.im/assets/images/cover.png</image>
     </screenshot>
     <screenshot>
-      <caption>Login UI</caption>
+      <caption>Login User Interface</caption>
       <image>https://doc.srain.im/en/latest/_images/srain-startup.png</image>
     </screenshot>
     <screenshot>

@@ -12,7 +12,7 @@ SRAIN_TAG_COMMITTER_EMAIL=`git log $SRAIN_TAG -n 1 --pretty=format:"%ae"`;
 SRAIN_TAG_DATE=`git log $SRAIN_TAG -n 1 --pretty=format:"%ad" --date=format:'%a, %d %b %Y %H:%M:%S %z'`;
 # Install the dependencies:
 # Debian building packages: debhelper, dpkg-dev
-# Make dependencies: gettext, libconfig-dev, libgtk-3-dev, libsecret-1-dev, libsoup2.4-dev, libssl-dev, pkg-config    
+# Make dependencies: gettext, libconfig-dev, libgtk-3-dev, libsecret-1-dev, libsoup2.4-dev, libssl-dev, pkg-config
 # Runtime dependencies: glib-networking, libgtk-3-0, libsecret-1-0, libconfig9, libsoup2.4
 # Python3 script: python3 python3-requests
 apt-get install -y debhelper dpkg-dev gettext libconfig-dev libgtk-3-dev libsecret-1-dev libsoup2.4-dev libssl-dev pkg-config glib-networking libgtk-3-0 libsecret-1-0 libconfig9 libsoup2.4 python3 python3-requests;
