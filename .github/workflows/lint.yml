@@ -1,7 +1,11 @@
 name: lint
 on:
-  - push
-  - pull_request
+  push:
+    paths:
+    - "data/*"
+  pull_request:
+    paths:
+    - "data/*"
 
 jobs:
   lint:
