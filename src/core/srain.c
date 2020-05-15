@@ -26,6 +26,8 @@
 
 #include <stdlib.h>
 #include <signal.h>
+#include <glib.h>
+#include <sasl/sasl.h>
 
 #include "core/core.h"
 #include "ret.h"
@@ -39,6 +41,7 @@ int main(int argc, char *argv[]){
     SrnLogger *logger;
     SrnLoggerConfig *logger_cfg;
     SrnApplication *app;
+    int sasl_result;
 
     ret_init();
     i18n_init();
@@ -51,6 +54,12 @@ int main(int argc, char *argv[]){
     logger_cfg->prompt_function = TRUE;
     logger = srn_logger_new(logger_cfg);
     srn_logger_set_default(logger);
+
+    sasl_result = sasl_client_init(NULL);
+    if (sasl_result != SASL_OK) {
+        ERR_FR("Failed to initialize SASL library, code %d", sasl_result);
+        return 1;
+    }
 
     app = srn_application_new();
     srn_application_run(app, argc, argv);

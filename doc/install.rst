@@ -31,6 +31,7 @@ libsoup
 libconfig                                                               >= 1.5
 libsecret
 openssl
+libsasl2            For SASL authentication support                     >= 2.0
 =================== =================================================== =======
 
 .. _install-building:
