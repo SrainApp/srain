@@ -30,6 +30,29 @@ Change Log
 
 .. _version-latest:
 
+.. _version-x.x.x:
+
+2020-05-24 Version 1.1.0
+========================
+
+- Features:
+
+  - Support multiple selection of message (:issue:`138`)
+  - Support jump to mentioned message (:pull:`243`)
+  - Nickname will be highlighted when mentioned (:pull:`243`)
+  - Auto build deb package (:pull:`238`)
+
+- Changes:
+
+  - Improve fcous control of UI
+  - Replace appdata with metainfo (:pull:`240`)
+  - Validate metainfo with appstream-util (:issue:`242`)
+
+- Bug fixes:
+
+  - Some implicit declarations fixes (:pull:`236`)
+  - Some typo fixes (:pull:`239`)
+
 .. _version-1.0.2:
 
 2020-04-11 Version 1.0.2
