@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 1.0.0\n"
 "Report-Msgid-Bugs-To: i@silverrainz.me\n"
-"POT-Creation-Date: 2020-04-06 11:27+0800\n"
+"POT-Creation-Date: 2020-05-03 23:26+0800\n"
 "PO-Revision-Date: 2019-04-17 16:14+0300\n"
 "Last-Translator: Artem Polishchuk <ego.cordatus@gmail.com>\n"
 "Language-Team: \n"
@@ -49,7 +49,7 @@ msgstr ""
 msgid "%1$s %2$s %3$s"
 msgstr ""
 
-#: ../src/sui/sui_message.c:453
+#: ../src/sui/sui_message.c:455
 #, c-format
 msgid "%1$s %2$s @ %3$s"
 msgstr ""
@@ -59,12 +59,12 @@ msgstr ""
 msgid "%1$s <%2$s@%3$s> %4$s"
 msgstr ""
 
-#: ../src/sui/sui_message.c:508
+#: ../src/sui/sui_message.c:510
 #, c-format
 msgid "%1$s <fwd %2$s@%3$s>"
 msgstr ""
 
-#: ../src/sui/sui_message.c:448
+#: ../src/sui/sui_message.c:450
 #, c-format
 msgid "%1$s @ %2$s"
 msgstr ""
@@ -310,7 +310,7 @@ msgstr "Включенные возможности:"
 
 #: ../src/core/app.c:76 ../src/core/app.c:84 ../src/core/app.c:298
 #: ../src/core/app.c:409 ../src/sui/sui_app.c:469 ../src/sui/sui_app.c:488
-#: ../src/sui/sui_app.c:527 ../src/sui/sui_common.c:145
+#: ../src/sui/sui_app.c:527 ../src/sui/sui_common.c:134
 #: ../src/sui/sui_connect_panel.c:494 ../src/sui/sui_connect_panel.c:503
 #: ../src/sui/sui_connect_panel.c:541 ../src/sui/sui_connect_panel.c:550
 #: ../src/sui/sui_connect_panel.c:596 ../src/sui/sui_join_panel.c:314
@@ -475,7 +475,7 @@ msgstr "Не удалось создать экземпляр сервера \"%
 msgid "Failed to join channel on server \"%1$s\": %2$s"
 msgstr "Не удалось присоединиться к каналу на сервере \"%1$s\": %2$s"
 
-#: ../src/sui/sui_common.c:144
+#: ../src/sui/sui_common.c:133
 #, c-format
 msgid "Failed to open URL \"%1$s\": %2$s"
 msgstr "Не удалось открыть URL \"%1$s\": %2$s"
@@ -526,7 +526,7 @@ msgstr "Не удалось перезагрузить конфигурацию 
 msgid "Failed to remove regex pattern \"%1$s\": %2$s"
 msgstr "Не удалось открыть URL \"%1$s\": %2$s"
 
-#: ../src/render/mention_renderer.c:88
+#: ../src/render/mention_renderer.c:94
 #: ../src/render/mirc_colorize_renderer.c:105
 #: ../src/render/mirc_strip_renderer.c:72 ../src/render/url_renderer.c:117
 #, fuzzy, c-format
@@ -657,7 +657,7 @@ msgstr "Соответствует имени канала"
 msgid "Max users"
 msgstr "Максимум пользователей"
 
-#: ../src/sui/sui_message.c:459
+#: ../src/sui/sui_message.c:461
 msgid "Message from unknown chat"
 msgstr "Сообщение из неизвестного чата"
 
@@ -1180,7 +1180,7 @@ msgstr "_Сервер:"
 msgid "_Whois"
 msgstr "_Whois"
 
-#: ../src/render/mention_renderer.c:80
+#: ../src/render/mention_renderer.c:85
 #, c-format
 msgid "g_regex_new() failed: %1$s"
 msgstr ""
