@@ -66,7 +66,7 @@ char *srn_get_user_config_file(){
     char *path;
     SrnRet ret;
 
-    path = g_build_filename(g_get_user_config_dir(), PACKAGE, "srain.cfg", NULL);
+    path = g_build_filename(g_get_user_config_dir(), PACKAGE, "srain.ini", NULL);
 
     ret = create_file_if_not_exist(path);
     if (!RET_IS_OK(ret)){
@@ -82,7 +82,7 @@ char *srn_get_user_config_file(){
 char *srn_get_system_config_file(){
     char *path;
 
-    path = g_build_filename(PACKAGE_CONFIG_DIR, PACKAGE, "builtin.cfg", NULL);
+    path = g_build_filename(PACKAGE_CONFIG_DIR, PACKAGE, "builtin.ini", NULL);
 
     if (g_file_test(path, G_FILE_TEST_EXISTS)){
         return path;

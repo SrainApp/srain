@@ -11,7 +11,7 @@ GLADES = $(wildcard ui/*.glade)
 ICONS = $(wildcard icons/*.*)
 THEMES = $(wildcard themes/*.css)
 
-default: config icons themes misc plugins
+default: config gschema icons themes misc plugins
 
 .PHONY: resources
 resources: $(RES)
@@ -20,8 +20,12 @@ $(RES): srain.gresource.xml $(GLADES) $(ICONS)
 	$(GLIB_COMPILE_RESOURCES) "$<" --target="$@" --sourcedir=. --generate-source
 
 .PHONY: config
-config: builtin.cfg
+config: builtin.ini
 	$(INSTALL) -Dm644 "$<" "$(DESTDIR)$(PACKAGE_CONFIG_DIR)/$(PACKAGE)/$<"
+
+.PHONY: gschema
+gschema: im.srain.Srain.gschema.xml
+	$(INSTALL) -Dm644 "$<" "$(DESTDIR)$(PACKAGE_DATA_DIR)/glib-2.0/$<"
 
 .PHONY: icons
 icons: icons/128x128/srain.png

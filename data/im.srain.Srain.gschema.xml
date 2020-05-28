@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<schemalist>
+    <!-- Settings that don't belong to any group. -->
+    <schema path="/im/srain/srain/" id="im.srain.Srain.Settings">
+        <key name="theme" type="s">
+            <summary>Theme</summary>
+            <description>The theme of Srain.</description>
+            <default>"default-bubble"</default>
+        </key>
+        <key name="csd" type="b">
+            <summary>Client-side decoration</summary>
+            <description>Enable Client-Side Decoration or not.</description>
+            <default>true</default>
+        </key>
+        <key name="send-on-ctrl-enter" type="b">
+            <summary>Send on Ctrl+Enter</summary>
+            <description>Send messsage on CTRL+Enter pressed.</description>
+            <default>false</default>
+        </key>
+        <key name="exit-on-close" type="b">
+            <summary>Exit on close</summary>
+            <description>Exit program on main window closed.</description>
+            <default>false</default>
+        </key>
+        <key name="auto-connect" type="as">
+            <summary>Auto connect</summary>
+            <description>Servers that are auto connected after startup.</description>
+            <default>[]</default>
+        </key>
+        <key name="server-list" type="as">
+            <summary>Server list</summary>
+            <description>Servers that are avaliable to Srain.</description>
+            <default>[]</default>
+        </key>
+    </schema>
+    <schema path="/im/srain/srain/Logging/" id="im.srain.Srain.Settings.Logging">
+        <key name="prompt-color" type="b">
+            <summary>Colorful output</summary>
+            <!--<description></description>-->
+            <default>true</default>
+        </key>
+        <key name="prompt-file" type="b">
+            <summary>Print logfile name</summary>
+            <!--<description></description>-->
+            <default>false</default>
+        </key>
+        <key name="prompt-function" type="b">
+            <summary>Print function name</summary>
+            <!--<description></description>-->
+            <default>true</default>
+        </key>
+        <key name="prompt-line" type="b">
+            <summary>Print line number</summary>
+            <!--<description></description>-->
+            <default>false</default>
+        </key>
+        <key name="debug-targets" type="as">
+            <summary>Debug targets</summary>
+            <description>Files with debug log level</description>
+            <default>[]</default>
+        </key>
+        <key name="info-targets" type="as">
+            <summary>Info targets</summary>
+            <description>Files with debug log level</description>
+            <default>[]</default>
+        </key>
+        <key name="warn-targets" type="as">
+            <summary>Warning targets</summary>
+            <description>Files with warning log level</description>
+            <default>[]</default>
+        </key>
+        <key name="error-targets" type="as">
+            <summary>Error targets</summary>
+            <description>Files with error log level</description>
+            <default>[]</default>
+        </key>
+    </schema>
+    <enum id="im.srain.Srain.LoginMethod">
+        <value value="0" nick="none"/>
+        <value value="1" nick="nickserv"/>
+        <value value="2" nick="msg-nickserv"/>
+        <value value="3" nick="sasl-plain"/>
+        <value value="4" nick="sasl-ecdsa"/>
+        <value value="5" nick="unknown"/>
+    </enum>
+
+    <schema id="im.srain.Srain.Settings.Server">
+        <key name="name" type="ms">
+            <summary>Name</summary>
+            <description>The name of the server. Will be ignored for global config.</description>
+            <default>nothing</default>
+        </key>
+        <key name="addresses" type="mas">
+            <summary>Server addresses</summary>
+            <description>Server addresses. Will be ignored for global config.</description>
+            <default>nothing</default>
+        </key>
+        <key name="tls" type="mb">
+            <summary>Connect with TLS</summary>
+            <description>Connect with TLS. Will be ignored for global config.</description>
+            <default>nothing</default>
+        </key>
+        <key name="tls-noverify" type="mb">
+            <summary>Don't verify TLS certificate</summary>
+            <description>Don't verify TLS certificate when connecting via TLS. Will be ignored for global config.</description>
+            <default>nothing</default>
+        </key>
+        <key name="encoding" type="ms">
+            <summary>Encoding</summary>
+            <description>Encoding for the server. Can also be a global config. All useable values are the output of `iconv --list`, case-insenstive.</description>
+            <default>nothing</default>
+        </key>
+        <key name="ipv6" type="mb">
+            <summary>Use IPv6</summary>
+            <description>Use IPv6 for connecting to the server (not implmented). Will be ignored for global config.</description>
+            <default>nothing</default>
+        </key>
+        <key name="auto-join" type="mas">
+            <summary>Auto join</summary>
+            <description>Chats that are auto joined after server is created.</description>
+            <default>nothing</default>
+        </key>
+        <key name="auto-run" type="mas">
+            <summary>Auto run</summary>
+            <description>Commands that are auto run after server is created.</description>
+            <default>nothing</default>
+        </key>
+        <key name="user-nickname" type="ms">
+            <summary>User nickname</summary>
+            <description>Nickname of the user.</description>
+            <default>nothing</default>
+        </key>
+        <key name="user-username" type="ms">
+            <summary>User username</summary>
+            <description>Username of the user.</description>
+            <default>nothing</default>
+        </key>
+        <key name="user-realname" type="ms">
+            <summary>User realname</summary>
+            <description>Realname of the user.</description>
+            <default>nothing</default>
+        </key>
+        <key name="login-method" enum="im.srain.Srain.LoginMethod">
+            <summary>Login Method</summary>
+            <description>How to identify your nick. Avaliable values: "none": Disables any login method. "nickserv": Identify you with the /NICKSERV command. "msg-nickserv": Identify you with /msg NickServ identify. "sasl-plain": Identify you by loginning in with SASL PLAIN. "sasl-ecdsa": Identify you by loginning in with SASL ECDSA-NIST256P-CHALLENGE, which require a certificate file.</description>
+            <default>"none"</default>
+        </key>
+        <key name="login-certificate" type="ms">
+            <summary>Login certificate</summary>
+            <description>For login method SASL ECDSA-NIST256P-CHALLENGE, this is the path of the certificate file.</description>
+            <default>nothing</default>
+        </key>
+        <key name="part-message" type="ms">
+            <summary>Part message</summary>
+            <description>Message sent when you left a channel.</description>
+            <default>nothing</default>
+        </key>
+        <key name="kick-message" type="ms">
+            <summary>Kick message</summary>
+            <description>Message sent when you are kicked.</description>
+            <default>nothing</default>
+        </key>
+        <key name="away-message" type="ms">
+            <summary>Away message</summary>
+            <description>Default away message when you use the command /away without writing a reason.</description>
+            <default>nothing</default>
+        </key>
+        <key name="quit-message" type="ms">
+            <summary>Quit message</summary>
+            <description>Message sent when you quit.</description>
+            <default>nothing</default>
+        </key>
+        <key name="chat-list" type="mas">
+            <summary>Chat list</summary>
+            <description>List of chats. Can also be a global config.</description>
+            <default>nothing</default>
+        </key>
+    </schema>
+    <schema id="im.srain.Srain.Settings.Chat">
+        <key name="log" type="mb">
+            <summary>Log the chat</summary>
+            <description>Store persistent chat log.</description>
+            <default>nothing</default>
+        </key>
+        <key name="notify" type="mb">
+            <summary>Notify you</summary>
+            <description>Send notification when you are mentioned by others or receiving any ERROR message.</description>
+            <default>nothing</default>
+        </key>
+        <key name="notify-all" type="mb">
+            <summary>Notify all</summary>
+            <description>Send notification when receiving any PRIVMSG/ACTION/NOTIFY/ERROR message.</description>
+            <default>nothing</default>
+        </key>
+        <key name="show-topic" type="mb">
+            <summary>Show topic</summary>
+            <description>Show topic in the chat window.</description>
+            <default>nothing</default>
+        </key>
+        <key name="show-avatar" type="mb">
+            <summary>Show avatar</summary>
+            <description>Show avatars in the chat window.</description>
+            <default>nothing</default>
+        </key>
+        <key name="show-user-list" type="mb">
+            <summary>Show user list</summary>
+            <description>Show user list on the right of the chat window.</description>
+            <default>nothing</default>
+        </key>
+        <key name="render-mirc-color" type="mb">
+            <summary>Render mIRC color</summary>
+            <description>Render mIRC escape sequences.</description>
+            <default>nothing</default>
+        </key>
+        <key name="nick-completion-suffix" type="ms">
+            <summary>Nick completion suffix</summary>
+            <description>Suffix of completed nick name e.g. "nick: msg"</description>
+            <default>nothing</default>
+        </key>
+        <key name="preview-url" type="mb">
+            <summary>Preview URL</summary>
+            <description>Show previewer for every URL.</description>
+            <default>nothing</default>
+        </key>
+        <key name="auto-preview-url" type="mb">
+            <summary>Auto preview URL</summary>
+            <description>Automatically preview supported URL.</description>
+            <default>nothing</default>
+        </key>
+        <key name="auto-run" type="mas">
+            <summary>Auto run</summary>
+            <description>Commands that are auto run after chat is created.</description>
+            <default>nothing</default>
+        </key>
+    </schema>
+</schemalist>

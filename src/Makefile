@@ -20,6 +20,8 @@ DEFS = -D PACKAGE='"$(PACKAGE)"' \
 	   -D PACKAGE_COPYRIGHT_DATES='"$(PACKAGE_COPYRIGHT_DATES)"'
 GTK3FLAGS = $(shell pkg-config --cflags gtk+-3.0)
 GTK3LIBS = $(shell pkg-config --libs gtk+-3.0)
+GIOFLAGS = $(shell pkg-config --cflags gio-2.0)
+GIOLIBS = $(shell pkg-config --libs gio-2.0)
 LIBCONFIGFLAGS = $(shell pkg-config --cflags libconfig)
 LIBCONFIGLIBS = $(shell pkg-config --libs libconfig)
 LIBSOUPFLAGS = $(shell pkg-config --cflags libsoup-2.4)
@@ -33,6 +35,7 @@ CFLAGS += -std=gnu99 -O2 -Wall -Iinc -Wno-deprecated-declarations \
 		  $(DEFS) \
 		  $(DBGFLAGS) \
 		  $(GTK3FLAGS) \
+		  $(GIOFLAGS) \
 		  $(LIBCONFIGFLAGS) \
 		  $(LIBSOUPFLAGS) \
 		  $(LIBSSLFLAGS) \
@@ -40,6 +43,7 @@ CFLAGS += -std=gnu99 -O2 -Wall -Iinc -Wno-deprecated-declarations \
 
 LDFLAGS += $(DBGFLAGS) \
 		   $(GTK3LIBS) \
+		   $(GIOLIBS) \
 		   $(LIBCONFIGLIBS) \
 		   $(LIBSOUPLIBS) \
 		   $(LIBSSLLIBS) \

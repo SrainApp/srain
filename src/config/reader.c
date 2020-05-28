@@ -34,29 +34,27 @@
 #include "utils.h"
 #include "log.h"
 
-/* Libconfig helpers */
-static int config_lookup_string_ex(const config_t *config, const char *path, char **value);
-static int config_setting_lookup_string_ex(const config_setting_t *config, const char *name, char **value);
-static char* config_setting_get_string_elem_ex(const config_setting_t *setting, int index);
-static int config_lookup_bool_ex(const config_t *config, const char *name, bool *value);
-static int config_setting_lookup_bool_ex(const config_setting_t *config, const char *name, bool *value);
+/* Helpers */
+static void settings_get_string_ex(GSettings *settings, const char* key, char **value);
+static void settings_get_boolean_ex(GSettings *settings, const char* key, gboolean *value);
+static void settings_get_strv_ex(GSettings *settings, const char* key, gchar ***value);
 
 /* Configuration readers for various config structures */
-static SrnRet read_log_config_from_cfg(config_t *cfg, SrnLoggerConfig *log_cfg);
-static SrnRet read_log_targets_from_log(config_setting_t *log, const char *name, GList **lst);
+static SrnRet read_log_config_from_cfg(SrnSettingsStruct *cfg, SrnLoggerConfig *log_cfg);
+static SrnRet read_log_targets_from_log(GSettings *log, const char *name, GList **lst);
 
-static SrnRet read_application_config_from_cfg(config_t *cfg, SrnApplicationConfig *app_cfg);
+static SrnRet read_application_config_from_cfg(SrnSettingsStruct *cfg, SrnApplicationConfig *app_cfg);
 
-static SrnRet read_server_config_list_from_cfg(config_t *cfg, GList **srv_cfg_list);
-static SrnRet read_server_config_from_server(config_setting_t *server, SrnServerConfig *cfg);
-static SrnRet read_server_config_from_server_list(config_setting_t *server_list, SrnServerConfig *cfg, const char *srv_name);
-static SrnRet read_server_config_from_cfg(config_t *cfg, SrnServerConfig *srv_cfg, const char *srv_name);
+static SrnRet read_server_config_list_from_cfg(SrnSettingsStruct *cfg, GList **srv_cfg_list);
+static SrnRet read_server_config_from_server(GSettings *server, SrnServerConfig *cfg);
+static SrnRet read_server_config_from_server_list(SrnSettingsStruct *gs, SrnServerConfig *cfg, const char *srv_name);
+static SrnRet read_server_config_from_cfg(SrnSettingsStruct *cfg, SrnServerConfig *srv_cfg, const char *srv_name);
 
-static SrnRet read_chat_config_from_chat(config_setting_t *chat, SrnChatConfig *cfg);
-static SrnRet read_chat_config_from_chat_list(config_setting_t *chat_list, SrnChatConfig *cfg, const char *chat_name);
-static SrnRet read_chat_config_from_cfg(config_t *cfg, SrnChatConfig *chat_cfg, const char *srv_name, const char *chat_name);
+static SrnRet read_chat_config_from_chat(GSettings *chat, SrnChatConfig *cfg);
+static SrnRet read_chat_config_from_chat_list(SrnSettingsStruct *gs, gchar **chat_list, SrnChatConfig *cfg, const char *chat_name);
+static SrnRet read_chat_config_from_cfg(SrnSettingsStruct *cfg, SrnChatConfig *chat_cfg, const char *srv_name, const char *chat_name);
 
-static SrnRet read_user_config_from_user(config_setting_t *user, SrnUserConfig *cfg);
+static SrnRet read_user_config_from_server(GSettings *server, SrnUserConfig *cfg);
 
 /*****************************************************************************
  * Exported functions
@@ -66,18 +64,18 @@ SrnRet srn_config_manager_read_log_config(SrnConfigManager *mgr,
         SrnLoggerConfig *cfg){
     SrnRet ret;
 
-    ret = read_log_config_from_cfg(&mgr->system_cfg, cfg);
-    if (!RET_IS_OK(ret)){
+    ret = read_log_config_from_cfg(&mgr->gs_system_cfg, cfg);
+    /*if (!RET_IS_OK(ret)){
         return RET_ERR(_("Error occurred while reading log config in %1$s: %2$s"),
                 config_setting_source_file(config_root_setting(&mgr->system_cfg)),
                 RET_MSG(ret));
-    }
-    ret = read_log_config_from_cfg(&mgr->user_cfg, cfg);
-    if (!RET_IS_OK(ret)){
+    }*/
+    ret = read_log_config_from_cfg(&mgr->gs_user_cfg, cfg);
+    /*if (!RET_IS_OK(ret)){
         return RET_ERR(_("Error occurred while reading log config in %1$s: %2$s"),
                 config_setting_source_file(config_root_setting(&mgr->user_cfg)),
                 RET_MSG(ret));
-    }
+    }*/
 
     return SRN_OK;
 }
@@ -86,18 +84,18 @@ SrnRet srn_config_manager_read_application_config(SrnConfigManager *mgr,
         SrnApplicationConfig *cfg){
     SrnRet ret;
 
-    ret = read_application_config_from_cfg(&mgr->system_cfg, cfg);
-    if (!RET_IS_OK(ret)){
+    ret = read_application_config_from_cfg(&mgr->gs_system_cfg, cfg);
+    /*if (!RET_IS_OK(ret)){
         return RET_ERR(_("Error occurred while reading application config in %1$s: %2$s"),
                 config_setting_source_file(config_root_setting(&mgr->system_cfg)),
                 RET_MSG(ret));
-    }
-    ret = read_application_config_from_cfg(&mgr->user_cfg, cfg);
-    if (!RET_IS_OK(ret)){
+    }*/
+    ret = read_application_config_from_cfg(&mgr->gs_user_cfg, cfg);
+    /*if (!RET_IS_OK(ret)){
         return RET_ERR(_("Error occurred while reading application config in %1$s: %2$s"),
                 config_setting_source_file(config_root_setting(&mgr->user_cfg)),
                 RET_MSG(ret));
-    }
+    }*/
 
     return SRN_OK;
 }
@@ -106,18 +104,18 @@ SrnRet srn_config_manager_read_server_config_list(SrnConfigManager *mgr,
         GList **srv_cfg_list){
     SrnRet ret;
 
-    ret = read_server_config_list_from_cfg(&mgr->system_cfg, srv_cfg_list);
-    if (!RET_IS_OK(ret)){
+    ret = read_server_config_list_from_cfg(&mgr->gs_system_cfg, srv_cfg_list);
+    /*if (!RET_IS_OK(ret)){
         return RET_ERR(_("Error occurred while reading server list config in %1$s: %2$s"),
                 config_setting_source_file(config_root_setting(&mgr->system_cfg)),
                 RET_MSG(ret));
-    }
-    ret = read_server_config_list_from_cfg(&mgr->user_cfg, srv_cfg_list);
-    if (!RET_IS_OK(ret)){
+    }*/
+    ret = read_server_config_list_from_cfg(&mgr->gs_user_cfg, srv_cfg_list);
+    /*if (!RET_IS_OK(ret)){
         return RET_ERR(_("Error occurred while reading server list config in %1$s: %2$s"),
                 config_setting_source_file(config_root_setting(&mgr->user_cfg)),
                 RET_MSG(ret));
-    }
+    }*/
 
     return SRN_OK;
 }
@@ -126,18 +124,18 @@ SrnRet srn_config_manager_read_server_config(SrnConfigManager *mgr,
         SrnServerConfig *cfg, const char *srv_name){
     SrnRet ret;
 
-    ret = read_server_config_from_cfg(&mgr->system_cfg, cfg, srv_name);
-    if (!RET_IS_OK(ret)){
+    ret = read_server_config_from_cfg(&mgr->gs_system_cfg, cfg, srv_name);
+    /*if (!RET_IS_OK(ret)){
         return RET_ERR(_("Error occurred while reading server config in %1$s: %2$s"),
                 config_setting_source_file(config_root_setting(&mgr->system_cfg)),
                 RET_MSG(ret));
-    }
-    ret = read_server_config_from_cfg(&mgr->user_cfg, cfg, srv_name);
-    if (!RET_IS_OK(ret)){
+    }*/
+    ret = read_server_config_from_cfg(&mgr->gs_user_cfg, cfg, srv_name);
+    /*if (!RET_IS_OK(ret)){
         return RET_ERR(_("Error occurred while reading server config in %1$s: %2$s"),
                 config_setting_source_file(config_root_setting(&mgr->user_cfg)),
                 RET_MSG(ret));
-    }
+    }*/
     ret = srn_config_manager_lookup_server_password(mgr, &cfg->password, srv_name);
     if (!RET_IS_OK(ret)){
         WARN_FR(_("Error occurred while looking up server password: %1$s"),
@@ -207,19 +205,19 @@ SrnRet srn_config_manager_read_chat_config(SrnConfigManager *mgr,
         SrnChatConfig *cfg, const char *srv_name, const char *chat_name){
     SrnRet ret;
 
-    ret = read_chat_config_from_cfg(&mgr->system_cfg, cfg, srv_name, chat_name);
-    if (!RET_IS_OK(ret)){
+    ret = read_chat_config_from_cfg(&mgr->gs_system_cfg, cfg, srv_name, chat_name);
+    /*if (!RET_IS_OK(ret)){
         return RET_ERR(_("Error occurred while reading chat config in %1$s: %2$s"),
                 config_setting_source_file(config_root_setting(&mgr->system_cfg)),
                 RET_MSG(ret));
-    }
+    }*/
 
-    ret = read_chat_config_from_cfg(&mgr->user_cfg, cfg, srv_name, chat_name);
-    if (!RET_IS_OK(ret)){
+    ret = read_chat_config_from_cfg(&mgr->gs_user_cfg, cfg, srv_name, chat_name);
+    /*if (!RET_IS_OK(ret)){
         return RET_ERR(_("Error occurred while reading chat config in %1$s: %2$s"),
                 config_setting_source_file(config_root_setting(&mgr->user_cfg)),
                 RET_MSG(ret));
-    }
+    }*/
 
     // In fact we don't known whether this chat is channel
     ret = srn_config_manager_lookup_channel_password(mgr,
@@ -236,16 +234,16 @@ SrnRet srn_config_manager_read_chat_config(SrnConfigManager *mgr,
  * Static functions
  *****************************************************************************/
 
-static SrnRet read_log_config_from_cfg(config_t *cfg, SrnLoggerConfig *log_cfg){
+static SrnRet read_log_config_from_cfg(SrnSettingsStruct *cfg, SrnLoggerConfig *log_cfg){
     SrnRet ret;
-    config_setting_t *log;
+    GSettings *log;
 
-    log = config_lookup(cfg, "log");
+    log = g_settings_new_with_backend(PACKAGE_GSCHEMA_LOGGING_ID, cfg->gs_backend);
     if (log){
-        config_setting_lookup_bool_ex(log, "prompt-color", &log_cfg->prompt_color);
-        config_setting_lookup_bool_ex(log, "prompt-file", &log_cfg->prompt_file);
-        config_setting_lookup_bool_ex(log, "prompt-function", &log_cfg->prompt_function);
-        config_setting_lookup_bool_ex(log, "prompt-line", &log_cfg->prompt_line);
+        log_cfg->prompt_color = g_settings_get_boolean(log, "prompt-color");
+        log_cfg->prompt_file = g_settings_get_boolean(log, "prompt-file");
+        log_cfg->prompt_function = g_settings_get_boolean(log, "prompt-function");
+        log_cfg->prompt_line = g_settings_get_boolean(log, "prompt-line");
 
         ret = read_log_targets_from_log(log, "debug-targets", &log_cfg->debug_targets);
         if (!RET_IS_OK(ret)) return ret;
@@ -257,53 +255,48 @@ static SrnRet read_log_config_from_cfg(config_t *cfg, SrnLoggerConfig *log_cfg){
         if (!RET_IS_OK(ret)) return ret;
     }
 
+    g_object_unref(log);
     return SRN_OK;
 }
 
-static SrnRet read_log_targets_from_log(config_setting_t *log, const char *name,
+static SrnRet read_log_targets_from_log(GSettings *log, const char *name,
         GList **lst){
-    config_setting_t *targets;
+    gchar **targets;
 
-    targets = config_setting_lookup(log, name);
-    if (!targets) return SRN_OK;
+    targets = g_settings_get_strv(log, name);
+    //if (!targets) return SRN_OK;
 
-    int count = config_setting_length(targets);
-    for (int i = 0; i < count; i++){
+    guint count = g_strv_length(targets);
+    for (guint i = 0; i < count; i++){
         const char *val;
-        config_setting_t *target;
 
-        target = config_setting_get_elem(targets, i);
-        if (!target) break;
-
-        val = config_setting_get_string(target);
+        val = targets[i];
         if (!val) continue;
 
         *lst = g_list_append(*lst, g_strdup(val));
     }
 
+    g_strfreev(targets);
     return SRN_OK;
 }
-static SrnRet read_application_config_from_cfg(config_t *cfg,
+static SrnRet read_application_config_from_cfg(SrnSettingsStruct *cfg,
         SrnApplicationConfig *app_cfg){
-    config_lookup_string_ex(cfg, "id", &app_cfg->id);
-    config_lookup_string_ex(cfg, "theme", &app_cfg->ui->theme);
-    config_lookup_bool_ex(cfg, "csd", &app_cfg->ui->window.csd);
-    config_lookup_bool_ex(cfg, "send-on-ctrl-enter",
-            &app_cfg->ui->window.send_on_ctrl_enter);
-    config_lookup_bool_ex(cfg, "exit-on-close",
-            &app_cfg->ui->window.exit_on_close);
+    //app_cfg->id = g_settings_get_string(cfg->gs_cfg, "id");
+    app_cfg->id = NULL;
+    app_cfg->ui->theme = g_settings_get_string(cfg->gs_cfg, "theme");
+    app_cfg->ui->window.csd = g_settings_get_boolean(cfg->gs_cfg, "csd");
+    app_cfg->ui->window.send_on_ctrl_enter = g_settings_get_boolean(cfg->gs_cfg,
+                                                                    "send-on-ctrl-enter");
+    app_cfg->ui->window.exit_on_close = g_settings_get_boolean(cfg->gs_cfg, "exit-on-close");
 
     /* Read auto connect server list */
-    config_setting_t *auto_connect;
-    auto_connect = config_lookup(cfg, "auto-connect");
+    gchar **auto_connect;
+    auto_connect = g_settings_get_strv(cfg->gs_cfg, "auto-connect");
     if (auto_connect){
-        for (int i = 0; i < config_setting_length(auto_connect); i++){
+        for (int i = 0; i < g_strv_length(auto_connect); i++){
             const char *val;
-            config_setting_t *server;
 
-            server = config_setting_get_elem(auto_connect, i);
-            if (!server) continue;
-            val = config_setting_get_string(server);
+            val = auto_connect[i];
             if (!val) continue;
 
             app_cfg->auto_connect_srv_list = g_list_append(
@@ -311,24 +304,32 @@ static SrnRet read_application_config_from_cfg(config_t *cfg,
         }
     }
 
+    g_strfreev(auto_connect);
     return SRN_OK;
 }
 
-static SrnRet read_server_config_list_from_cfg(config_t *cfg,
+static SrnRet read_server_config_list_from_cfg(SrnSettingsStruct *cfg,
         GList **srv_cfg_list){
-    config_setting_t *server_list;
+    gchar **server_list;
 
-    server_list = config_lookup(cfg, "server-list");
+    server_list = g_settings_get_strv(cfg->gs_cfg, "server-list");
     if (server_list){
-        for (int i = 0, count = config_setting_length(server_list); i < count; i++){
-            char *name = NULL;
-            config_setting_t *server;
+        for (int i = 0, count = g_strv_length(server_list); i < count; i++){
+            gchar *name = NULL;
+            GSettings *server;
 
-            server = config_setting_get_elem(server_list, i);
+            gchar *server_path = g_strdup_printf("%s%s/",
+                                                 PACKAGE_GSCHEMA_SERVER_PATH,
+                                                 server_list[i]);
+
+            server = g_settings_new_with_backend_and_path(PACKAGE_GSCHEMA_SERVER_ID,
+                                                          cfg->gs_backend,
+                                                          server_path);
             if (!server) break;
 
-            if (config_setting_lookup_string_ex(server, "name", &name) != CONFIG_TRUE) {
-                return RET_ERR(_("server-list[%1$d] doesn't have a name"), i);
+            g_settings_get(server, "name", "ms", &name);
+            if (name == NULL) {
+                return RET_ERR(_("server-list[%1$s] doesn't have a name"), server_list[i]);
             }
             if (name) {
                 GList *lst;
@@ -350,162 +351,170 @@ static SrnRet read_server_config_list_from_cfg(config_t *cfg,
     return SRN_OK;
 }
 
-static SrnRet read_server_config_from_server(config_setting_t *server,
+static SrnRet read_server_config_from_server(GSettings *server,
         SrnServerConfig *cfg){
     /* Read server meta info,
      * NOTE: Server password is not stored in configuration file */
-    config_setting_lookup_string_ex(server, "name", &cfg->name);
-    config_setting_lookup_bool_ex(server, "tls", &cfg->irc->tls);
-    config_setting_lookup_bool_ex(server, "tls-noverify", &cfg->irc->tls_noverify);
-    config_setting_lookup_string_ex(server, "encoding", &cfg->irc->encoding);
+    g_settings_get(server, "name", "ms", &cfg->name);
+    settings_get_boolean_ex(server, "tls", &cfg->irc->tls);
+    settings_get_boolean_ex(server, "tls-noverify", &cfg->irc->tls_noverify);
+    settings_get_string_ex(server, "encoding", &cfg->irc->encoding);
     if (cfg->irc->tls_noverify) {
         cfg->irc->tls = TRUE;
     }
 
     /* Read server.addrs */
-    config_setting_t *addrs;
-    addrs = config_setting_lookup(server, "addresses");
+    gchar **addrs = NULL;
+    settings_get_strv_ex(server, "addresses", &addrs);
     if (addrs){
-        for (int i = 0, count = config_setting_length(addrs); i < count; i++){
+        for (int i = 0, count = g_strv_length(addrs); i < count; i++){
             char *addr;
 
-            addr = config_setting_get_string_elem_ex(addrs, i);
+            addr = addrs[i];
             if (addr){
                 SrnRet ret;
                 SrnServerAddr *srv_addr;
 
                 srv_addr = srn_server_addr_new_from_string(addr);
                 ret = srn_server_config_add_addr(cfg, srv_addr);
-                g_free(addr);
 
                 if (!RET_IS_OK(ret)){
                     srn_server_addr_free(srv_addr);
+                    g_strfreev(addrs);
                     return ret;
                 }
             }
         }
+        g_strfreev(addrs);
     }
 
     /* Read server.user */
-    config_setting_t *user;
-    user = config_setting_lookup(server, "user");
-    if (user){
+    {
         SrnRet ret;
-        ret = read_user_config_from_user(user, cfg->user);
+        ret = read_user_config_from_server(server, cfg->user);
         if (!RET_IS_OK(ret)){
             return ret;
         }
     }
 
     /* Read auto join chat list */
-    config_setting_t *auto_join;
-    auto_join = config_setting_lookup(server, "auto-join");
+    gchar **auto_join = NULL;
+    settings_get_strv_ex(server, "auto-join", &auto_join);
     if (auto_join){
-        for (int i = 0; i < config_setting_length(auto_join); i++){
+        for (int i = 0; i < g_strv_length(auto_join); i++){
             const char *val;
-            config_setting_t *chat;
 
-            chat = config_setting_get_elem(auto_join, i);
-            if (!chat) continue;
-            val = config_setting_get_string(chat);
+            val = auto_join[i];
             if (!val) continue;
 
             cfg->auto_join_chat_list = g_list_append(
                     cfg->auto_join_chat_list, g_strdup(val));
         }
+        g_strfreev(auto_join);
     }
 
     /* Read autorun command list */
-    config_setting_t *cmds;
-    cmds = config_setting_lookup(server, "auto-run");
+    gchar **cmds = NULL;
+    settings_get_strv_ex(server, "auto-run", &cmds);
     if (cmds){
-        for (int i = 0; i < config_setting_length(cmds); i++){
+        for (int i = 0; i < g_strv_length(cmds); i++){
             const char *val;
-            config_setting_t *cmd;
 
-            cmd = config_setting_get_elem(cmds, i);
-            if (!cmd) continue;
-            val = config_setting_get_string(cmd);
+            val = cmds[i];
             if (!val) continue;
 
             cfg->auto_run_cmd_list = g_list_append(cfg->auto_run_cmd_list,
                     g_strdup(val));
         }
+        g_strfreev(cmds);
     }
 
     return SRN_OK;
 }
 
-static SrnRet read_server_config_from_server_list(config_setting_t *server_list,
+static SrnRet read_server_config_from_server_list(SrnSettingsStruct *gs,
         SrnServerConfig *cfg, const char *srv_name){
     int count;
     SrnRet ret;
 
-    count = config_setting_length(server_list);
+    gchar **server_list = g_settings_get_strv(gs->gs_cfg, "server-list");
+    count = g_strv_length(server_list);
     for (int i = 0; i < count; i++){
-        const char *name = NULL;
-        config_setting_t *server;
+        char *name = NULL;
+        GSettings *server;
 
-        server = config_setting_get_elem(server_list, i);
-        if (!server) break;
+        gchar *server_path = g_strdup_printf("%s%s/",
+                                             PACKAGE_GSCHEMA_SERVER_PATH,
+                                             server_list[i]);
+        server = g_settings_new_with_backend_and_path(PACKAGE_GSCHEMA_SERVER_ID,
+                                                      gs->gs_backend,
+                                                      server_path);
+        if (!server){
+            g_free(server_path);
+            break;
+        };
 
-        config_setting_lookup_string(server, "name", &name);
-        if (g_strcmp0(srv_name, name) != 0) continue;
+        g_settings_get(server, "name", "ms", &name);
+        if (g_strcmp0(srv_name, name) != 0){
+            g_free(name);
+            g_free(server_path);
+            g_object_unref(server);
+            continue;
+        };
 
         DBG_FR("Read: server-list.[name = %s], srv_name: %s", name, srv_name);
         ret = read_server_config_from_server(server, cfg);
+        g_free(name);
+        g_free(server_path);
+        g_object_unref(server);
         if (!RET_IS_OK(ret)) return ret;
     }
+    g_strfreev(server_list);
 
     return SRN_OK;
 }
 
-static SrnRet read_server_config_from_cfg(config_t *cfg, SrnServerConfig *srv_cfg,
+static SrnRet read_server_config_from_cfg(SrnSettingsStruct *cfg, SrnServerConfig *srv_cfg,
         const char *srv_name){
     SrnRet ret;
-    config_setting_t *server;
+    GSettings *server;
 
     /* Read server */
-    server = config_lookup(cfg, "server");
+    server = g_settings_new_with_backend_and_path(PACKAGE_GSCHEMA_SERVER_ID,
+                                                  cfg->gs_backend,
+                                                  PACKAGE_GSCHEMA_SERVER_PATH);
     if (server){
         DBG_FR("Read: server, srv_name: %s", srv_name);
         ret = read_server_config_from_server(server, srv_cfg);
+        g_object_unref(server);
         if (!RET_IS_OK(ret)) return ret;
     }
 
     /* Read server_list[name = srv_name] */
-    config_setting_t *server_list;
-
-    server_list = config_lookup(cfg, "server-list");
-    if (server_list){
-        ret = read_server_config_from_server_list(server_list, srv_cfg, srv_name);
-        if (!RET_IS_OK(ret)) return ret;
-    }
+    ret = read_server_config_from_server_list(cfg, srv_cfg, srv_name);
+    if (!RET_IS_OK(ret)) return ret;
 
     return SRN_OK;
 }
 
-static SrnRet read_chat_config_from_chat(config_setting_t *chat, SrnChatConfig *cfg){
-    config_setting_lookup_bool_ex(chat, "notify", &cfg->ui->notify);
-    config_setting_lookup_bool_ex(chat, "show-topic", &cfg->ui->show_topic);
-    config_setting_lookup_bool_ex(chat, "show-avatar", &cfg->ui->show_avatar);
-    config_setting_lookup_bool_ex(chat, "show-user-list", &cfg->ui->show_user_list);
-    config_setting_lookup_bool_ex(chat, "render-mirc-color", &cfg->render_mirc_color);
-    config_setting_lookup_bool_ex(chat, "preview-url", &cfg->ui->preview_url);
-    config_setting_lookup_bool_ex(chat, "auto-preview-url", &cfg->ui->auto_preview_url);
-    config_setting_lookup_string_ex(chat, "nick-completion-suffix", &cfg->ui->nick_completion_suffix);
+static SrnRet read_chat_config_from_chat(GSettings *chat, SrnChatConfig *cfg){
+     settings_get_boolean_ex(chat, "notify", &cfg->ui->notify);
+     settings_get_boolean_ex(chat, "show-topic", &cfg->ui->show_topic);
+     settings_get_boolean_ex(chat, "show-avatar", &cfg->ui->show_avatar);
+     settings_get_boolean_ex(chat, "show-user-list", &cfg->ui->show_user_list);
+     settings_get_boolean_ex(chat, "render-mirc-color", &cfg->render_mirc_color);
+     settings_get_boolean_ex(chat, "preview-url", &cfg->ui->preview_url);
+     settings_get_boolean_ex(chat, "auto-preview-url", &cfg->ui->auto_preview_url);
+     settings_get_string_ex(chat, "nick-completion-suffix", &cfg->ui->nick_completion_suffix);
 
     /* Read autorun command list */
-    config_setting_t *cmds;
-    cmds = config_setting_lookup(chat, "auto-run");
+    gchar **cmds = NULL;
+    settings_get_strv_ex(chat, "auto-run", &cmds);
     if (cmds){
-        for (int i = 0; i < config_setting_length(cmds); i++){
+        for (int i = 0; i < g_strv_length(cmds); i++){
             const char *val;
-            config_setting_t *cmd;
 
-            cmd = config_setting_get_elem(cmds, i);
-            if (!cmd) continue;
-            val = config_setting_get_string(cmd);
+            val = cmds[i];
             if (!val) continue;
 
             cfg->auto_run_cmd_list = g_list_append(cfg->auto_run_cmd_list,
@@ -513,23 +522,30 @@ static SrnRet read_chat_config_from_chat(config_setting_t *chat, SrnChatConfig *
         }
     }
 
+    g_strfreev(cmds);
     return SRN_OK;
 }
 
-static SrnRet read_chat_config_from_chat_list(config_setting_t *chat_list,
-        SrnChatConfig *cfg, const char *chat_name){
+static SrnRet read_chat_config_from_chat_list(SrnSettingsStruct *gs,
+        gchar **chat_list, SrnChatConfig *cfg, const char *chat_name){
     SrnRet ret;
 
-    for (int i = 0, count = config_setting_length(chat_list); i < count; i++){
+    for (int i = 0, count = g_strv_length(chat_list); i < count; i++){
         const char *name = NULL;
-        config_setting_t *chat;
+        GSettings *chat;
 
-        chat = config_setting_get_elem(chat_list, i);
-        if (!chat) break;
-        if (config_setting_lookup_string(chat, "name", &name) != CONFIG_TRUE){
-            continue;
-        }
-        if (g_strcmp0(chat_name, name) != 0) continue;
+        gchar *chat_path = g_strdup_printf("%s%s/",
+                                           PACKAGE_GSCHEMA_CHAT_PATH,
+                                           chat_list[i]);
+        chat = g_settings_new_with_backend_and_path(PACKAGE_GSCHEMA_CHAT_ID,
+                                                    gs->gs_backend,
+                                                    chat_path);
+
+        if (!chat){
+            g_free(chat_path);
+            break;
+        };
+        name = chat_list[i];
 
         DBG_FR("Read: chat-list.%s, chat_name: %s", name, chat_name);
         ret = read_chat_config_from_chat(chat, cfg);
@@ -539,183 +555,159 @@ static SrnRet read_chat_config_from_chat_list(config_setting_t *chat_list,
     return SRN_OK;
 }
 
-static SrnRet read_chat_config_from_cfg(config_t *cfg, SrnChatConfig *chat_cfg,
+static SrnRet read_chat_config_from_server_chat_list(SrnSettingsStruct *gs,
+        const char *srv_name, gchar **chat_list, SrnChatConfig *cfg, const char *chat_name){
+    SrnRet ret;
+
+    for (int i = 0, count = g_strv_length(chat_list); i < count; i++){
+        const char *name = NULL;
+        GSettings *chat;
+
+        gchar *chat_path = g_strdup_printf("%s%s/Chat/%s/",
+                                           PACKAGE_GSCHEMA_SERVER_PATH,
+                                           srv_name,
+                                           chat_list[i]);
+        chat = g_settings_new_with_backend_and_path(PACKAGE_GSCHEMA_CHAT_ID,
+                                                    gs->gs_backend,
+                                                    chat_path);
+
+        if (!chat){
+            g_free(chat_path);
+            break;
+        };
+        name = chat_list[i];
+
+        DBG_FR("Read: server.%s.chat-list.%s, chat_name: %s", srv_name, name, chat_name);
+        ret = read_chat_config_from_chat(chat, cfg);
+        if (!RET_IS_OK(ret)) return ret;
+    }
+
+    return SRN_OK;
+}
+
+static SrnRet read_chat_config_from_cfg(SrnSettingsStruct *cfg, SrnChatConfig *chat_cfg,
         const char *srv_name, const char *chat_name){
     SrnRet ret;
 
     /* Read server.chat */
-    config_setting_t *chat;
+    GSettings *chat;
 
-    chat = config_lookup(cfg, "server.chat");
+    chat = g_settings_new_with_backend_and_path(PACKAGE_GSCHEMA_CHAT_ID,
+                                                cfg->gs_backend,
+                                                PACKAGE_GSCHEMA_CHAT_PATH);
     if (chat){
         DBG_FR("Read: server.chat, srv_name: %s, chat_name: %s", srv_name, chat_name);
         ret = read_chat_config_from_chat(chat, chat_cfg);
+        g_object_unref(chat);
         if (!RET_IS_OK(ret)) return ret;
     }
 
+
     /* Read server.chat_list[name = chat_name] */
     if (chat_name){
-        config_setting_t *chat_list;
+        GSettings *server = g_settings_new_with_backend_and_path(PACKAGE_GSCHEMA_SERVER_ID,
+                                                                 cfg->gs_backend,
+                                                                 PACKAGE_GSCHEMA_SERVER_PATH);
+        gchar **chat_list = NULL;
 
-        chat_list = config_lookup(cfg, "server.chat-list");
+        settings_get_strv_ex(server, "chat-list", &chat_list);
+        g_object_unref(server);
         if (chat_list){
-            ret = read_chat_config_from_chat_list(chat_list, chat_cfg, chat_name);
+            ret = read_chat_config_from_chat_list(cfg, chat_list, chat_cfg, chat_name);
             if (!RET_IS_OK(ret)) return ret;
         }
     }
 
     if (srv_name){
-        config_setting_t *server_list;
+        gchar **server_list;
 
-        server_list = config_lookup(cfg, "server-list");
+        server_list = g_settings_get_strv(cfg->gs_cfg, "server-list");
         if (server_list){
-            for (int i = 0, count = config_setting_length(server_list); i < count; i++){
+            for (int i = 0, count = g_strv_length(server_list); i < count; i++){
                 const char *name = NULL;
-                config_setting_t *server;
-                config_setting_t *chat;
+                GSettings *chat;
 
-                server = config_setting_get_elem(server_list, i);
-                if (!server) break;
-
-                config_setting_lookup_string(server, "name", &name);
+                name = server_list[i];
                 if (g_strcmp0(srv_name, name) != 0) continue;
 
                 /* Read server_list.[name = srv_name].chat */
-                chat = config_setting_lookup(server, "chat");
+
+                gchar *server_global_chat_path = g_strdup_printf("%s%s/Chat/",
+                                                                 PACKAGE_GSCHEMA_SERVER_PATH,
+                                                                 server_list[i]);
+                chat = g_settings_new_with_backend_and_path(PACKAGE_GSCHEMA_CHAT_ID,
+                                                            cfg->gs_backend,
+                                                            server_global_chat_path);
                 if (chat){
                     DBG_FR("Read server-list.[name = %s].chat, srv_name: %s, chat_name: %s",
                             name, srv_name, chat_name);
                     ret = read_chat_config_from_chat(chat, chat_cfg);
+                    g_object_unref(chat);
                     if (!RET_IS_OK(ret)) return ret;
                 }
+                g_free(server_global_chat_path);
 
                 /* Read server_list.[name = srv_name].chat_list[name = chat_name] */
                 if (chat_name){
-                    config_setting_t *chat_list;
-
-                    chat_list = config_setting_lookup(server, "server.chat-list");
+                    gchar **chat_list = NULL;
+                    gchar *server_path = g_strdup_printf("%s%s/",
+                                                         PACKAGE_GSCHEMA_SERVER_PATH,
+                                                         server_list[i]);
+                    GSettings *server = g_settings_new_with_backend_and_path(PACKAGE_GSCHEMA_CHAT_ID,
+                                                                             cfg->gs_backend,
+                                                                             server_path);
+                    settings_get_strv_ex(server, "chat-list", &chat_list);
+                    g_free(server_path);
+                    g_object_unref(server);
                     if (chat_list){
-                        ret = read_chat_config_from_chat_list(chat_list, chat_cfg, chat_name);
+                        ret = read_chat_config_from_server_chat_list(cfg, name, chat_list, chat_cfg, chat_name);
+                        g_strfreev(chat_list);
                         if (!RET_IS_OK(ret)) return ret;
                     }
                 }
             }
+
+            g_strfreev(server_list);
         }
     }
 
+    g_object_unref(chat);
     return SRN_OK;
 }
 
-static SrnRet read_user_config_from_user(config_setting_t *user, SrnUserConfig *cfg){
-    config_setting_t *login;
+static SrnRet read_user_config_from_server(GSettings *server, SrnUserConfig *cfg){
 
-    // Read user.login
     // NOTE: Login password is not stored in configuration file
-    login = config_setting_lookup(user, "login");
-    if (login) {
-        const char *method = NULL;
+    cfg->login->method = g_settings_get_enum(server, "login-method");
+    settings_get_string_ex(server, "login-certificate", &cfg->login->cert_file);
 
-        config_setting_lookup_string(login, "method", &method);
-        cfg->login->method = srn_login_method_from_string(method);
+    settings_get_string_ex(server, "user-nickname", &cfg->nick);
+    settings_get_string_ex(server, "user-username", &cfg->username);
+    settings_get_string_ex(server, "user-realname", &cfg->realname);
 
-        config_setting_lookup_string_ex(login, "certificate", &cfg->login->cert_file);
-    }
-
-    config_setting_lookup_string_ex(user, "nickname", &cfg->nick);
-    config_setting_lookup_string_ex(user, "username", &cfg->username);
-    config_setting_lookup_string_ex(user, "realname", &cfg->realname);
-
-    config_setting_lookup_string_ex(user, "part-message", &cfg->part_message);
-    config_setting_lookup_string_ex(user, "kick-message", &cfg->kick_message);
-    config_setting_lookup_string_ex(user, "away-message", &cfg->away_message);
-    config_setting_lookup_string_ex(user, "quit-message", &cfg->quit_message);
+    settings_get_string_ex(server, "part-message", &cfg->part_message);
+    settings_get_string_ex(server, "kick-message", &cfg->kick_message);
+    settings_get_string_ex(server, "away-message", &cfg->away_message);
+    settings_get_string_ex(server, "quit-message", &cfg->quit_message);
 
     return SRN_OK;
 }
 
-/**
- * @brief Wrapper of config_lookup_string(), This function will allocate a new
- * string, you should free it by yourself
- *
- * @param config
- * @param path
- * @param value
- *
- * @return
- */
-static int config_lookup_string_ex(const config_t *config, const char *path, char **value){
-    int ret;
-    const char *constval = NULL;
+static void settings_get_string_ex(GSettings *settings, const char* key, char **value){
+    char *constval = NULL;
 
-    ret = config_lookup_string(config, path, &constval);
-    if (ret == CONFIG_TRUE){
-        str_assign(value, constval);
-    }
-
-    return ret;
+    g_settings_get(settings, key, "ms", &constval);
+    if (constval != NULL) *value = constval;
 }
 
-/**
- * @brief Wrapper of config_setting_lookup_string(), This function will
- *      allocate a new string, you should free it by yourself
- *
- * @param config
- * @param path
- * @param value
- *
- * @return
- */
-static int config_setting_lookup_string_ex(const config_setting_t *config,
-        const char *name, char **value){
-    int ret;
-    const char *constval = NULL;
-
-    ret = config_setting_lookup_string(config, name, &constval);
-    if (ret == CONFIG_TRUE){
-        str_assign(value, constval);
-    }
-
-    return ret;
+static void settings_get_boolean_ex(GSettings *settings, const char* key, gboolean *value){
+    GVariant *maybe = g_settings_get_value(settings, key);
+    GVariant *bool_v = g_variant_get_maybe(maybe);
+    if (bool_v != NULL) *value = g_variant_get_boolean(bool_v);
 }
 
-static char* config_setting_get_string_elem_ex(const config_setting_t *setting,
-        int index){
-    return g_strdup(config_setting_get_string_elem(setting, index));
-}
-
-static int config_lookup_bool_ex(const config_t *config, const char *name,
-        bool *value){
-    int intval;
-    int ret;
-
-    ret = config_lookup_bool(config, name, &intval);
-    if (ret == CONFIG_TRUE){
-        *value = (bool)intval;
-    }
-
-    return ret;
-}
-
-/**
- * @brief Wrapper of config_setting_lookup_bool(), The "bool" in libconfig is
- * actually an integer, This function transform it to fit bool (alias of
- * gboolean) defined in "srain.h"
- *
- * @param config
- * @param name
- * @param value
- *
- * @return
- */
-static int config_setting_lookup_bool_ex(const config_setting_t *config,
-        const char *name, bool *value){
-    int intval;
-    int ret;
-
-    ret = config_setting_lookup_bool(config, name, &intval);
-    if (ret == CONFIG_TRUE){
-        *value = (bool)intval;
-    }
-
-    return ret;
+static void settings_get_strv_ex(GSettings *settings, const char* key, gchar ***value){
+    GVariant *maybe = g_settings_get_value(settings, key);
+    GVariant *strv_v = g_variant_get_maybe(maybe);
+    if (strv_v != NULL) *value = g_variant_dup_strv(strv_v, NULL);
 }

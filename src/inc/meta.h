@@ -71,4 +71,14 @@
 #define PACKAGE_CONFIG_DIR "Undefined"
 #endif
 
+/* GSettings */
+#define PACKAGE_GSCHEMA_SETTINGS_ID "im.srain.Srain.Settings"
+#define PACKAGE_GSCHEMA_ROOT_PATH "/im/srain/srain/"
+#define PACKAGE_GSCHEMA_SERVER_PATH "/im/srain/srain/Server/"
+#define PACKAGE_GSCHEMA_CHAT_PATH "/im/srain/srain/Chat/"
+#define PACKAGE_GSCHEMA_ROOT_GROUP "Srain"
+#define PACKAGE_GSCHEMA_LOGGING_ID "im.srain.Srain.Settings.Logging"
+#define PACKAGE_GSCHEMA_SERVER_ID "im.srain.Srain.Settings.Server"
+#define PACKAGE_GSCHEMA_CHAT_ID "im.srain.Srain.Settings.Chat"
+
 #endif /* __META_H */
