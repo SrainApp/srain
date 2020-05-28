@@ -32,28 +32,30 @@
 #include "./password2.h"
 
 #include "log.h"
+#include "meta.h"
 #include "path.h"
 #include "i18n.h"
 #include "version.h"
 
-
-static SrnRet load_config(SrnConfigManager *mgr, config_t *cfg, const char *file);
+static void srn_settings_struct_init(SrnSettingsStruct *cfg);
+static void srn_settings_struct_destroy(SrnSettingsStruct *cfg);
+static SrnRet load_config(SrnConfigManager *mgr, SrnSettingsStruct *cfg, const char *file);
 
 SrnConfigManager *srn_config_manager_new(SrnVersion *ver){
     SrnConfigManager *mgr;
 
     mgr = g_malloc0(sizeof(SrnConfigManager));
     mgr->ver = ver;
-    config_init(&mgr->user_cfg);
-    config_init(&mgr->system_cfg);
+    srn_settings_struct_init(&mgr->gs_user_cfg);
+    srn_settings_struct_init(&mgr->gs_system_cfg);
     srn_config_manager_init_secret_schema(mgr);
 
     return mgr;
 }
 
 void srn_config_manager_free(SrnConfigManager *mgr){
-    config_destroy(&mgr->user_cfg);
-    config_destroy(&mgr->system_cfg);
+    srn_settings_struct_destroy(&mgr->gs_user_cfg);
+    srn_settings_struct_destroy(&mgr->gs_system_cfg);
     g_free(mgr);
 }
 
@@ -61,7 +63,7 @@ SrnRet srn_config_manager_load_system_config(SrnConfigManager *mgr,
         const char *file){
     SrnRet ret;
 
-    ret = load_config(mgr, &mgr->system_cfg, file);
+    ret = load_config(mgr, &mgr->gs_system_cfg, file);
     if (!RET_IS_OK(ret)){
         return RET_ERR(_("Failed to read system configuration file: %1$s"),
                 RET_MSG(ret));
@@ -73,7 +75,7 @@ SrnRet srn_config_manager_load_user_config(SrnConfigManager *mgr,
         const char *file){
     SrnRet ret;
 
-    ret = load_config(mgr, &mgr->user_cfg, file);
+    ret = load_config(mgr, &mgr->gs_user_cfg, file);
     if (!RET_IS_OK(ret)){
         return RET_ERR(_("Failed to read user configuration file: %1$s"),
                 RET_MSG(ret));
@@ -81,17 +83,13 @@ SrnRet srn_config_manager_load_user_config(SrnConfigManager *mgr,
     return SRN_OK;
 }
 
-static SrnRet load_config(SrnConfigManager *mgr, config_t *cfg, const char *file){
-    char *dir;
+static SrnRet load_config(SrnConfigManager *mgr, SrnSettingsStruct *cfg, const char *file){
     // const char *rawver;
     SrnVersion *ver;
     SrnRet ret;
 
-    /* Clear previous config */
-    config_destroy(cfg);
-    config_init(cfg);
-
     ver = NULL;
+    /*
     dir = g_path_get_dirname(file);
     config_set_include_dir(cfg, dir);
 
@@ -100,7 +98,14 @@ static SrnRet load_config(SrnConfigManager *mgr, config_t *cfg, const char *file
                 config_error_line(cfg),
                 config_error_text(cfg));
         goto FIN;
-    }
+    }*/
+
+    srn_settings_struct_destroy(cfg);
+    cfg->gs_backend = g_keyfile_settings_backend_new(file,
+                                                     PACKAGE_GSCHEMA_ROOT_PATH,
+                                                     PACKAGE_GSCHEMA_ROOT_GROUP);
+    cfg->gs_cfg = g_settings_new_with_backend(PACKAGE_GSCHEMA_SETTINGS_ID,
+                                              cfg->gs_backend);
 
     /* Verify configure version */
     // if (!config_lookup_string(cfg, "version", &rawver)){
@@ -126,12 +131,20 @@ static SrnRet load_config(SrnConfigManager *mgr, config_t *cfg, const char *file
     */
 
     ret = SRN_OK;
-FIN:
-    if (dir){
-        g_free(dir);
-    }
+//FIN:
     if (ver){
         srn_version_free(ver);
     }
     return ret;
+}
+
+static void srn_settings_struct_init(SrnSettingsStruct *cfg){
+    cfg->gs_backend = g_null_settings_backend_new();
+    cfg->gs_cfg = g_settings_new_with_backend(PACKAGE_GSCHEMA_SETTINGS_ID,
+                                                   cfg->gs_backend);
+}
+
+static void srn_settings_struct_destroy(SrnSettingsStruct *cfg){
+    g_clear_object(&cfg->gs_cfg);
+    g_clear_object(&cfg->gs_backend);
 }

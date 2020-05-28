@@ -19,6 +19,9 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
+#include <gio/gio.h>
+#define G_SETTINGS_ENABLE_BACKEND
+#include <gio/gsettingsbackend.h>
 #include <libconfig.h>
 #include <libsecret/secret.h>
 
@@ -26,11 +29,17 @@
 #include "version.h"
 
 typedef struct _SrnConfigManager SrnConfigManager;
+typedef struct _SrnSettingsStruct SrnSettingsStruct;
+
+struct _SrnSettingsStruct {
+    GSettings *gs_cfg;
+    GSettingsBackend *gs_backend;
+};
 
 struct _SrnConfigManager {
     SrnVersion *ver; // Compatible version
-    config_t user_cfg;
-    config_t system_cfg;
+    SrnSettingsStruct gs_user_cfg;
+    SrnSettingsStruct gs_system_cfg;
     SecretSchema *srv_secret_schema;
     SecretSchema *chan_secret_schema;
     SecretSchema *user_secret_schema;

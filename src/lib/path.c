@@ -170,12 +170,7 @@ char *srn_get_user_config_file(){
     char *path;
     SrnRet ret;
 
-    path = srn_try_to_find_data_file("srain.cfg");
-    if (!path){
-        path = g_build_filename(g_get_user_config_dir(), PACKAGE, "srain.cfg", NULL);
-        if (!path) {
-            return NULL;
-        }
+    path = g_build_filename(g_get_user_config_dir(), PACKAGE, "srain.ini", NULL);
 
         ret = create_file_if_not_exist(path);
         if (!RET_IS_OK(ret)){
@@ -192,10 +187,10 @@ char *srn_get_user_config_file(){
 char *srn_get_system_config_file(){
     char *path;
 
-    path = srn_try_to_find_config_file("builtin.cfg");
-    if (!path){
-        // System configuration file should always exist
-        WARN_FR("'%s' not found", path);
+    path = g_build_filename(PACKAGE_CONFIG_DIR, PACKAGE, "builtin.ini", NULL);
+
+    if (g_file_test(path, G_FILE_TEST_EXISTS)){
+        return path;
     }
 
     return path;
