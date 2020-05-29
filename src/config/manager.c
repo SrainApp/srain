@@ -18,14 +18,13 @@
 
 /**
  * @file manager.c
- * @brief Configuration manager for Srain, use Libconfig backend
+ * @brief Configuration manager for Srain, use GSettings backend
  * @author Shengyu Zhang <i@silverrainz.me>
  * @version 0.06.2
  * @date 2017-05-14
  */
 
 #include <glib.h>
-#include <libconfig.h>
 #include <string.h>
 
 #include "config/config.h"

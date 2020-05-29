@@ -2,9 +2,10 @@
 Configuration Manual
 ====================
 
-Srain uses `Libconfig`_ to process configuration file.
+Srain uses `GKeyFile`_ (via `GSettings_`) to process configuration file.
 
-.. _Libconfig: http://www.hyperrealm.com/libconfig/
+.. _GKeyFile: https://developer.gnome.org/glib/stable/glib-Key-value-file-parser.html
+.. _GSettings: https://developer.gnome.org/gio/stable/GSettings.html
 
 .. contents::
     :local:
@@ -14,10 +15,10 @@ Srain uses `Libconfig`_ to process configuration file.
 Configuration File
 ==================
 
-The path of system wide configuration file ``builtin.cfg`` depends on the
+The path of system wide configuration file ``builtin.ini`` depends on the
 compile flag ``--sysconfdir``, default to be ``/etc/srain``.
 
-The path of user wide configuration file ``srain.cfg`` is ``$XDG_CONFIG_HOME/srain``,
+The path of user wide configuration file ``srain.ini`` is ``$XDG_CONFIG_HOME/srain``,
 usually it is ``~/.config/srain`` (``~/.var/app/im.srain.Srain`` for flatpak installs).
 
 The difference between system wide and user wide configuration file is the
@@ -28,10 +29,10 @@ configuration**. For more details about priority, refer to
 Syntax
 ======
 
-For the syntax of configuration file, please refer to Libconfig's documentation:
+For the syntax of configuration file, please refer to GLib's documentation:
 `Configuration Files`_
 
-.. _Configuration Files: http://www.hyperrealm.com/libconfig/libconfig_manual.html#Configuration-Files
+.. _Configuration Files: https://developer.gnome.org/glib/stable/glib-Key-value-file-parser.html
 
 For an example configuration, refer to :ref:`config-example`.
 
@@ -116,4 +117,4 @@ configuration file, but note:
 2. The ``server``'s ``name`` in ``server-list`` is unique, please remoeve the
    duplicated ``server`` in ``server-list`` before using
 
-.. literalinclude:: ../data/builtin.cfg
+.. literalinclude:: ../data/builtin.ini

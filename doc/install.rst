@@ -28,7 +28,6 @@ glib2
 glib-networking     Optional, For TLS connection support
 gtk+3                                                                   >= 3.18
 libsoup
-libconfig                                                               >= 1.5
 libsecret
 openssl
 =================== =================================================== =======
@@ -252,7 +251,7 @@ Firstly install `Homebrew`_, run the following commands to install dependencies:
 .. code-block:: console
 
    $ brew install coreutils gcc pkg-config # building
-   $ brew install gettext glib-networking gtk+3 libsoup libconfig
+   $ brew install gettext glib-networking gtk+3 libsoup
 
 .. _Homebrew: https://brew.sh/
 

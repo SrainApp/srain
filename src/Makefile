@@ -22,8 +22,6 @@ GTK3FLAGS = $(shell pkg-config --cflags gtk+-3.0)
 GTK3LIBS = $(shell pkg-config --libs gtk+-3.0)
 GIOFLAGS = $(shell pkg-config --cflags gio-2.0)
 GIOLIBS = $(shell pkg-config --libs gio-2.0)
-LIBCONFIGFLAGS = $(shell pkg-config --cflags libconfig)
-LIBCONFIGLIBS = $(shell pkg-config --libs libconfig)
 LIBSOUPFLAGS = $(shell pkg-config --cflags libsoup-2.4)
 LIBSOUPLIBS = $(shell pkg-config --libs libsoup-2.4)
 LIBSSLFLAGS = $(shell pkg-config --cflags openssl)
@@ -36,7 +34,6 @@ CFLAGS += -std=gnu99 -O2 -Wall -Iinc -Wno-deprecated-declarations \
 		  $(DBGFLAGS) \
 		  $(GTK3FLAGS) \
 		  $(GIOFLAGS) \
-		  $(LIBCONFIGFLAGS) \
 		  $(LIBSOUPFLAGS) \
 		  $(LIBSSLFLAGS) \
 		  $(LIBSECRETFLAGS)
@@ -44,7 +41,6 @@ CFLAGS += -std=gnu99 -O2 -Wall -Iinc -Wno-deprecated-declarations \
 LDFLAGS += $(DBGFLAGS) \
 		   $(GTK3LIBS) \
 		   $(GIOLIBS) \
-		   $(LIBCONFIGLIBS) \
 		   $(LIBSOUPLIBS) \
 		   $(LIBSSLLIBS) \
 		   $(LIBSECRETLIBS)
