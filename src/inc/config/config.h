@@ -22,7 +22,6 @@
 #include <gio/gio.h>
 #define G_SETTINGS_ENABLE_BACKEND
 #include <gio/gsettingsbackend.h>
-#include <libconfig.h>
 #include <libsecret/secret.h>
 
 #include "ret.h"

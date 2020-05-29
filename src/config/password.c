@@ -17,7 +17,6 @@
  */
 
 #include <glib.h>
-#include <libconfig.h>
 #include <string.h>
 
 #include "config/config.h"

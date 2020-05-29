@@ -25,7 +25,6 @@
  */
 
 #include <glib.h>
-#include <libconfig.h>
 
 #include "core/core.h"
 #include "config/config.h"
