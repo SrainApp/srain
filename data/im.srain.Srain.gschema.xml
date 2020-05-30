@@ -143,7 +143,7 @@
         <key name="login-method" enum="im.srain.Srain.LoginMethod">
             <summary>Login Method</summary>
             <description>How to identify your nick. Avaliable values: "none": Disables any login method. "nickserv": Identify you with the /NICKSERV command. "msg-nickserv": Identify you with /msg NickServ identify. "sasl-plain": Identify you by loginning in with SASL PLAIN. "sasl-ecdsa": Identify you by loginning in with SASL ECDSA-NIST256P-CHALLENGE, which require a certificate file.</description>
-            <default>"none"</default>
+            <default>"unknown"</default>
         </key>
         <key name="login-certificate" type="ms">
             <summary>Login certificate</summary>

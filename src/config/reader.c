@@ -663,7 +663,9 @@ static SrnRet read_chat_config_from_cfg(SrnSettingsStruct *cfg, SrnChatConfig *c
 static SrnRet read_user_config_from_server(GSettings *server, SrnUserConfig *cfg){
 
     // NOTE: Login password is not stored in configuration file
-    cfg->login->method = g_settings_get_enum(server, "login-method");
+    gint method = g_settings_get_enum(server, "login-method");
+    // NOTE: 5 == Unknown method
+    if (method != 5) cfg->login->method = method;
     settings_get_string_ex(server, "login-certificate", &cfg->login->cert_file);
 
     settings_get_string_ex(server, "user-nickname", &cfg->nick);
