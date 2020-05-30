@@ -25,6 +25,7 @@
  */
 
 #include <glib.h>
+#include <stdio.h>
 
 #include "core/core.h"
 #include "meta.h"
