@@ -33,4 +33,5 @@ jobs:
     - name: Install
       run: |
         sudo make install;
+        sudo glib-compile-schemas /usr/local/share/glib-2.0/schemas
         /bin/sh -c "/usr/local/bin/srain --version";
