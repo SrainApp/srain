@@ -597,20 +597,14 @@ static SrnRet read_chat_config_from_cfg(SrnSettingsStruct *cfg, SrnChatConfig *c
     if (chat){
         DBG_FR("Read: server.chat, srv_name: %s, chat_name: %s", srv_name, chat_name);
         ret = read_chat_config_from_chat(chat, chat_cfg);
-        g_object_unref(chat);
         if (!RET_IS_OK(ret)) return ret;
     }
 
-
     /* Read server.chat_list[name = chat_name] */
     if (chat_name){
-        GSettings *server = g_settings_new_with_backend_and_path(PACKAGE_GSCHEMA_SERVER_ID,
-                                                                 cfg->gs_backend,
-                                                                 PACKAGE_GSCHEMA_SERVER_PATH);
         gchar **chat_list = NULL;
 
-        settings_get_strv_ex(server, "chat-list", &chat_list);
-        g_object_unref(server);
+        settings_get_strv_ex(chat, "chat-list", &chat_list);
         if (chat_list){
             ret = read_chat_config_from_chat_list(cfg, chat_list, chat_cfg, chat_name);
             if (!RET_IS_OK(ret)) return ret;
@@ -641,7 +635,6 @@ static SrnRet read_chat_config_from_cfg(SrnSettingsStruct *cfg, SrnChatConfig *c
                     DBG_FR("Read server-list.[name = %s].chat, srv_name: %s, chat_name: %s",
                             name, srv_name, chat_name);
                     ret = read_chat_config_from_chat(chat, chat_cfg);
-                    g_object_unref(chat);
                     if (!RET_IS_OK(ret)) return ret;
                 }
                 g_free(server_global_chat_path);
@@ -649,21 +642,14 @@ static SrnRet read_chat_config_from_cfg(SrnSettingsStruct *cfg, SrnChatConfig *c
                 /* Read server_list.[name = srv_name].chat_list[name = chat_name] */
                 if (chat_name){
                     gchar **chat_list = NULL;
-                    gchar *server_path = g_strdup_printf("%s%s/",
-                                                         PACKAGE_GSCHEMA_SERVER_PATH,
-                                                         server_list[i]);
-                    GSettings *server = g_settings_new_with_backend_and_path(PACKAGE_GSCHEMA_CHAT_ID,
-                                                                             cfg->gs_backend,
-                                                                             server_path);
-                    settings_get_strv_ex(server, "chat-list", &chat_list);
-                    g_free(server_path);
-                    g_object_unref(server);
+                    settings_get_strv_ex(chat, "chat-list", &chat_list);
                     if (chat_list){
                         ret = read_chat_config_from_server_chat_list(cfg, name, chat_list, chat_cfg, chat_name);
                         g_strfreev(chat_list);
                         if (!RET_IS_OK(ret)) return ret;
                     }
                 }
+                g_object_unref(chat);
             }
 
             g_strfreev(server_list);

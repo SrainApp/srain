@@ -170,13 +170,13 @@
             <description>Message sent when you quit.</description>
             <default>nothing</default>
         </key>
+    </schema>
+    <schema id="im.srain.Srain.Settings.Chat">
         <key name="chat-list" type="mas">
             <summary>Chat list</summary>
             <description>List of chats. Can also be a global config.</description>
             <default>nothing</default>
         </key>
-    </schema>
-    <schema id="im.srain.Srain.Settings.Chat">
         <key name="log" type="mb">
             <summary>Log the chat</summary>
             <description>Store persistent chat log.</description>
