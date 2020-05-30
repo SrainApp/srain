@@ -25,7 +25,7 @@ config: builtin.ini
 
 .PHONY: gschema
 gschema: im.srain.Srain.gschema.xml
-	$(INSTALL) -Dm644 "$<" "$(DESTDIR)$(PACKAGE_DATA_DIR)/glib-2.0/$<"
+	$(INSTALL) -Dm644 "$<" "$(DESTDIR)$(PACKAGE_DATA_DIR)/glib-2.0/schemas/$<"
 
 .PHONY: icons
 icons: icons/128x128/srain.png
