@@ -497,14 +497,14 @@ static SrnRet read_server_config_from_cfg(SrnSettingsStruct *cfg, SrnServerConfi
 }
 
 static SrnRet read_chat_config_from_chat(GSettings *chat, SrnChatConfig *cfg){
-     settings_get_boolean_ex(chat, "notify", &cfg->ui->notify);
-     settings_get_boolean_ex(chat, "show-topic", &cfg->ui->show_topic);
-     settings_get_boolean_ex(chat, "show-avatar", &cfg->ui->show_avatar);
-     settings_get_boolean_ex(chat, "show-user-list", &cfg->ui->show_user_list);
-     settings_get_boolean_ex(chat, "render-mirc-color", &cfg->render_mirc_color);
-     settings_get_boolean_ex(chat, "preview-url", &cfg->ui->preview_url);
-     settings_get_boolean_ex(chat, "auto-preview-url", &cfg->ui->auto_preview_url);
-     settings_get_string_ex(chat, "nick-completion-suffix", &cfg->ui->nick_completion_suffix);
+    settings_get_boolean_ex(chat, "notify", &cfg->ui->notify);
+    settings_get_boolean_ex(chat, "show-topic", &cfg->ui->show_topic);
+    settings_get_boolean_ex(chat, "show-avatar", &cfg->ui->show_avatar);
+    settings_get_boolean_ex(chat, "show-user-list", &cfg->ui->show_user_list);
+    settings_get_boolean_ex(chat, "render-mirc-color", &cfg->render_mirc_color);
+    settings_get_boolean_ex(chat, "preview-url", &cfg->ui->preview_url);
+    settings_get_boolean_ex(chat, "auto-preview-url", &cfg->ui->auto_preview_url);
+    settings_get_string_ex(chat, "nick-completion-suffix", &cfg->ui->nick_completion_suffix);
 
     /* Read autorun command list */
     gchar **cmds = NULL;
@@ -531,11 +531,13 @@ static SrnRet read_chat_config_from_chat_list(SrnSettingsStruct *gs,
 
     for (int i = 0, count = g_strv_length(chat_list); i < count; i++){
         const char *name = NULL;
+        name = chat_list[i];
+        if (g_strcmp0(chat_name, name) != 0) continue;
         GSettings *chat;
 
         gchar *chat_path = g_strdup_printf("%s%s/",
                                            PACKAGE_GSCHEMA_CHAT_PATH,
-                                           chat_list[i]);
+                                           name);
         chat = g_settings_new_with_backend_and_path(PACKAGE_GSCHEMA_CHAT_ID,
                                                     gs->gs_backend,
                                                     chat_path);
@@ -544,7 +546,6 @@ static SrnRet read_chat_config_from_chat_list(SrnSettingsStruct *gs,
             g_free(chat_path);
             break;
         };
-        name = chat_list[i];
 
         DBG_FR("Read: chat-list.%s, chat_name: %s", name, chat_name);
         ret = read_chat_config_from_chat(chat, cfg);
@@ -560,6 +561,8 @@ static SrnRet read_chat_config_from_server_chat_list(SrnSettingsStruct *gs,
 
     for (int i = 0, count = g_strv_length(chat_list); i < count; i++){
         const char *name = NULL;
+        name = chat_list[i];
+        if (g_strcmp0(chat_name, name) != 0) continue;
         GSettings *chat;
 
         gchar *chat_path = g_strdup_printf("%s%s/Chat/%s/",
@@ -574,7 +577,6 @@ static SrnRet read_chat_config_from_server_chat_list(SrnSettingsStruct *gs,
             g_free(chat_path);
             break;
         };
-        name = chat_list[i];
 
         DBG_FR("Read: server.%s.chat-list.%s, chat_name: %s", srv_name, name, chat_name);
         ret = read_chat_config_from_chat(chat, cfg);
@@ -644,6 +646,8 @@ static SrnRet read_chat_config_from_cfg(SrnSettingsStruct *cfg, SrnChatConfig *c
                     gchar **chat_list = NULL;
                     settings_get_strv_ex(chat, "chat-list", &chat_list);
                     if (chat_list){
+                        DBG_FR("Read server-list.[name = %s].chat-list.[name = %s], srv_name: %s, chat_name: %s",
+                                name, chat_name, srv_name, chat_name);
                         ret = read_chat_config_from_server_chat_list(cfg, name, chat_list, chat_cfg, chat_name);
                         g_strfreev(chat_list);
                         if (!RET_IS_OK(ret)) return ret;
