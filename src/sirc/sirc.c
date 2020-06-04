@@ -37,6 +37,7 @@
 #include "srain.h"
 #include "log.h"
 #include "i18n.h"
+#include "utils.h"
 
 struct _SircSession {
     int bufptr;
@@ -44,6 +45,8 @@ struct _SircSession {
     GSocketClient *client;
     GIOStream *stream;
     GCancellable *cancel;
+    char *host;
+    int port;
 
     SircEvents *events; // Event callbacks
     SircConfig *cfg;
@@ -97,6 +100,7 @@ void sirc_free_session(SircSession *sirc){
 
     g_object_unref(sirc->client);
     g_object_unref(sirc->cancel);
+    str_assign(&sirc->host, NULL);
 
     g_free(sirc);
 }
@@ -147,6 +151,8 @@ void sirc_connect(SircSession *sirc, const char *host, int port){
     g_return_if_fail(port > 0);
 
     g_cancellable_reset(sirc->cancel);
+    str_assign(&sirc->host, host);
+    sirc->port = port;
     g_socket_client_connect_to_host_async (sirc->client, host,
             port, sirc->cancel, on_connect_ready, sirc);
 }
@@ -289,7 +295,6 @@ static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data
     GError *err;
     GSocketClient *client;
     GSocketConnection *conn;
-    GSocketAddress *addr;
     SircSession *sirc;
 
     client = G_SOCKET_CLIENT(obj);
@@ -302,22 +307,14 @@ static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data
         return;
     }
 
-    err = NULL;
-    addr = g_socket_connection_get_remote_address(conn, &err);
-    if (err){
-        ERR_FR("Get remote address : %d, %s", err->code, err->message);
-        g_error_free(err);
-    } else {
-        // DBG_FR("Remote address: %");
-        // TODO: show remote address
-        g_object_unref(addr);
-    }
-
     if (sirc->cfg->tls){
+         GSocketConnectable *addr;
          GIOStream *tls_conn;
 
          err = NULL;
-         tls_conn = g_tls_client_connection_new(G_IO_STREAM(conn), NULL, &err);
+         addr = g_network_address_new(sirc->host, sirc->port);
+         tls_conn = g_tls_client_connection_new(G_IO_STREAM(conn), addr, &err);
+         g_object_unref(addr);
          g_object_unref(conn);
          if (err){
              on_connect_fail(sirc, err->message);
