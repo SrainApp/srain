@@ -295,7 +295,6 @@ static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data
     GError *err;
     GSocketClient *client;
     GSocketConnection *conn;
-    GSocketAddress *addr;
     SircSession *sirc;
 
     client = G_SOCKET_CLIENT(obj);
@@ -306,17 +305,6 @@ static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data
         on_connect_fail(sirc, err->message);
         g_error_free(err);
         return;
-    }
-
-    err = NULL;
-    addr = g_socket_connection_get_remote_address(conn, &err);
-    if (err){
-        ERR_FR("Get remote address : %d, %s", err->code, err->message);
-        g_error_free(err);
-    } else {
-        // DBG_FR("Remote address: %");
-        // TODO: show remote address
-        g_object_unref(addr);
     }
 
     if (sirc->cfg->tls){
