@@ -43,3 +43,6 @@ GPATH
 
 # Debug files
 *.dSYM/
+
+# Meson
+builddir/

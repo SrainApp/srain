@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2018 Carles Pastor <cpbadosa@gmail.com> -->
+<component type="desktop-application">
+  <id>@app_id@</id>
+  <metadata_license>FSFAP</metadata_license>
+  <project_license>GPL-3.0</project_license>
+  <name>@app_pretty_name@</name>
+  <summary>@app_desc@</summary>
+  <update_contact>cpbadosa_AT_gmail.com</update_contact>
+  <translation type="gettext">@gettext_package@</translation>
+
+  <keywords>
+    <keyword>irc</keyword>
+    <keyword>chat</keyword>
+    <keyword>gtk</keyword>
+  </keywords>
+
+  <description>
+    <p>
+      @app_desc@
+    </p>
+  </description>
+
+  <launchable type="desktop-id">@desktop_id@</launchable>
+
+  <screenshots>
+    <screenshot type="default">
+      <caption>Main User Interface</caption>
+      <image>https://srain.im/assets/images/cover.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Login User Interface</caption>
+      <image>https://doc.srain.im/en/latest/_images/srain-startup.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Search Channel</caption>
+      <image>https://doc.srain.im/en/latest/_images/srain-search-channel.png</image>
+    </screenshot>
+  </screenshots>
+
+  <url type="homepage">@app_url@</url>
+
+  <provides>
+    <binary>@app_exec@</binary>
+  </provides>
+
+  <content_rating type="oars-1.0">
+    <content_attribute id="violence-cartoon">none</content_attribute>
+    <content_attribute id="violence-fantasy">none</content_attribute>
+    <content_attribute id="violence-realistic">none</content_attribute>
+    <content_attribute id="violence-bloodshed">none</content_attribute>
+    <content_attribute id="violence-sexual">none</content_attribute>
+    <content_attribute id="drugs-alcohol">none</content_attribute>
+    <content_attribute id="drugs-narcotics">none</content_attribute>
+    <content_attribute id="drugs-tobacco">none</content_attribute>
+    <content_attribute id="sex-nudity">none</content_attribute>
+    <content_attribute id="sex-themes">none</content_attribute>
+    <content_attribute id="language-profanity">none</content_attribute>
+    <content_attribute id="language-humor">none</content_attribute>
+    <content_attribute id="language-discrimination">none</content_attribute>
+    <content_attribute id="social-chat">intense</content_attribute>
+    <content_attribute id="social-info">none</content_attribute>
+    <content_attribute id="social-audio">none</content_attribute>
+    <content_attribute id="social-location">none</content_attribute>
+    <content_attribute id="social-contacts">none</content_attribute>
+    <content_attribute id="money-purchasing">none</content_attribute>
+    <content_attribute id="money-gambling">none</content_attribute>
+  </content_rating>
+
+<releases>
+  <release version="1.0.2" date="2020-04-11">
+      <url>https://doc.srain.im/en/latest/changelog.html#version-1-0-2</url>
+  </release>
+  <release version="1.0.1" date="2020-03-14">
+      <url>https://doc.srain.im/en/latest/changelog.html#version-1-0-1</url>
+  </release>
+  <release version="1.0.0" date="2020-02-24">
+      <url>https://doc.srain.im/en/latest/changelog.html#version-1-0-0</url>
+  </release>
+</releases>
+</component>

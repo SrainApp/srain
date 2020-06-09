@@ -22,6 +22,7 @@
 #define __IN_PASSWORD_H
 
 #include "config/config.h"
+#include "config/password.h"
 
 void srn_config_manager_init_secret_schema(SrnConfigManager *mgr);
 
