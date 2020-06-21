@@ -19,10 +19,9 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install the dependencies
       run: |
-        # Install make dependencies
-        sudo apt-get install pkg-config gettext libgtk-3-dev libsoup2.4-dev libconfig-dev libssl-dev libsecret-1-dev;
-        # Install runtime dependencies
-        sudo apt-get install glib-networking libgtk3.0 libsoup2.4 libconfig9 libsecret-1-0;
+        sudo apt-get update;
+        sudo apt-get install pkg-config gettext libgtk-3-dev libsoup2.4-dev libconfig-dev libssl-dev libsecret-1-dev \
+        glib-networking libgtk3.0 libsoup2.4 libconfig9 libsecret-1-0;
     - name: Build
       run: |
         ./configure \
