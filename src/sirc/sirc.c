@@ -146,15 +146,19 @@ void* sirc_get_ctx(SircSession *sirc){
 }
 
 void sirc_connect(SircSession *sirc, const char *host, int port){
+    char *escaped_host;
+
     g_return_if_fail(sirc);
     g_return_if_fail(host);
     g_return_if_fail(port > 0);
 
+    escaped_host = g_uri_escape_string(host, NULL, FALSE);
     g_cancellable_reset(sirc->cancel);
-    str_assign(&sirc->host, host);
+    str_assign(&sirc->host, escaped_host);
     sirc->port = port;
-    g_socket_client_connect_to_host_async (sirc->client, host,
+    g_socket_client_connect_to_host_async (sirc->client, escaped_host,
             port, sirc->cancel, on_connect_ready, sirc);
+    g_free(escaped_host);
 }
 
 void sirc_cancel_connect(SircSession *sirc){
