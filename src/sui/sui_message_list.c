@@ -69,8 +69,6 @@ static void scrolled_window_on_edge_reached(GtkScrolledWindow *swin,
                GtkPositionType pos, gpointer user_data);
 static void scrolled_window_on_edge_overshot(GtkScrolledWindow *swin,
         GtkPositionType pos, gpointer user_data);
-static void scrolled_window_vadjustment_on_value_changed(
-        GtkAdjustment *adjustment, gpointer user_data);
 static void clear_selection_button_on_click(GtkButton *button, gpointer user_data);
 static void go_prev_mention_button_on_click(GtkButton *button, gpointer user_data);
 static void go_next_mention_button_on_click(GtkButton *button, gpointer user_data);
@@ -97,10 +95,6 @@ static void sui_message_list_init(SuiMessageList *self){
             G_CALLBACK(go_next_mention_button_on_click), self);
     g_signal_connect_swapped(self->go_bottom_button, "clicked",
             G_CALLBACK(scroll_to_bottom), self);
-    g_signal_connect(
-            gtk_scrolled_window_get_vadjustment(self->scrolled_window),
-            "value-changed",
-            G_CALLBACK(scrolled_window_vadjustment_on_value_changed), self);
     g_signal_connect(self->list_box, "selected-rows-changed",
             G_CALLBACK(list_box_on_selected_rows_changed), self);
 
@@ -359,19 +353,6 @@ static double get_page_count_to_bottom(SuiMessageList *self) {
         return 0;
     }
     return (max_val - val) / page_size;
-}
-
-static void scrolled_window_vadjustment_on_value_changed(
-        GtkAdjustment *adj, gpointer user_data){
-    SuiMessageList *self;
-
-    self = SUI_MESSAGE_LIST((user_data));
-
-    // The toolbar appears each time the distance from current
-    // position to bottom is greater than 0.5 page (we think user is browsing
-    // message now).
-    gtk_revealer_set_reveal_child(self->tool_bar_revealer,
-            get_page_count_to_bottom(self) > 0.5);
 }
 
 static void clear_selection_button_on_click(GtkButton *button, gpointer user_data) {
