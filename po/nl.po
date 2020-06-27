@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 1.0.0\n"
 "Report-Msgid-Bugs-To: i@silverrainz.me\n"
-"POT-Creation-Date: 2020-05-03 23:26+0800\n"
+"POT-Creation-Date: 2020-06-27 12:05+0800\n"
 "PO-Revision-Date: 2020-03-07 20:14+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -618,7 +618,7 @@ msgstr "Kanaal binnengaan"
 msgid "Latency between %1$s: %2$lums"
 msgstr "Vertraging tussen %1$s: %2$lums"
 
-#: ../src/sirc/sirc.c:186
+#: ../src/sirc/sirc.c:196
 msgid "Local connection closed"
 msgstr "Lokale verbinding afgesloten"
 
@@ -829,7 +829,7 @@ msgstr "Inlogwachtwoord onthouden"
 msgid "Remember password"
 msgstr "Wachtwoord onthouden"
 
-#: ../src/sirc/sirc.c:199
+#: ../src/sirc/sirc.c:209
 msgid "Remote connection closed"
 msgstr "Externe verbinding afgesloten"
 

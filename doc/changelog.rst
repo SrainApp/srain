@@ -30,7 +30,21 @@ Change Log
 
 .. _version-latest:
 
-.. _version-x.x.x:
+.. _version-1.1.1:
+
+2020-06-27 Version 1.1.1
+========================
+
+- Changes:
+
+  - Improve auto-scroll policy of message list (:pull:`255`)
+
+- Bug fixes:
+
+  - Fix TLS certificate verification error on glib-networking 2.64.3 (:issue:`251`)
+  - Fix crash when connecting to an invalid host (:issue:`234`)
+
+.. _version-1.1.0:
 
 2020-05-24 Version 1.1.0
 ========================

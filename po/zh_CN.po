@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 1.0.0\n"
 "Report-Msgid-Bugs-To: i@silverrainz.me\n"
-"POT-Creation-Date: 2020-05-03 23:26+0800\n"
+"POT-Creation-Date: 2020-06-27 12:05+0800\n"
 "PO-Revision-Date: 2016-12-18 01:44+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -615,7 +615,7 @@ msgstr "加入频道"
 msgid "Latency between %1$s: %2$lums"
 msgstr "到 %1$s 的延迟为 %2$lu 毫秒"
 
-#: ../src/sirc/sirc.c:186
+#: ../src/sirc/sirc.c:196
 msgid "Local connection closed"
 msgstr "本地链接已关闭"
 
@@ -825,7 +825,7 @@ msgstr "记住登录密码"
 msgid "Remember password"
 msgstr "记住密码"
 
-#: ../src/sirc/sirc.c:199
+#: ../src/sirc/sirc.c:209
 msgid "Remote connection closed"
 msgstr "远程连接已断开"
 

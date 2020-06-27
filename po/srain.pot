@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 1.0.1\n"
 "Report-Msgid-Bugs-To: i@silverrainz.me\n"
-"POT-Creation-Date: 2020-05-24 12:47+0800\n"
+"POT-Creation-Date: 2020-06-27 12:05+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -608,7 +608,7 @@ msgstr ""
 msgid "Latency between %1$s: %2$lums"
 msgstr ""
 
-#: ../src/sirc/sirc.c:186
+#: ../src/sirc/sirc.c:196
 msgid "Local connection closed"
 msgstr ""
 
@@ -818,7 +818,7 @@ msgstr ""
 msgid "Remember password"
 msgstr ""
 
-#: ../src/sirc/sirc.c:199
+#: ../src/sirc/sirc.c:209
 msgid "Remote connection closed"
 msgstr ""
 
