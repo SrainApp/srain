@@ -45,6 +45,10 @@ LDFLAGS += $(DBGFLAGS) \
 		   $(LIBSSLLIBS) \
 		   $(LIBSECRETLIBS)
 
+ifeq ($(OS),Windows_NT)
+LDFLAGS += -mwindows
+endif
+
 SRCS = $(wildcard *.c */*.c */*/*.c $(BUILD_DIR)/resources.c)
 OBJS = $(patsubst %.c, $(BUILD_DIR)/%.o, $(notdir $(SRCS)))
 
