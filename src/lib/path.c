@@ -150,30 +150,38 @@ static char *srn_try_to_find_user_file(const char *name){
  * @return NULL or path to the theme file, must be freed by g_free.
  */
 char *srn_get_theme_file(const char *name){
+    char *suffix;
     char *path;
 
-    path = g_build_filename(PACKAGE_DATA_DIR, PACKAGE, "themes", name, NULL);
-
-    if (g_file_test(path, G_FILE_TEST_EXISTS)){
-        return path;
+    suffix = g_build_filename("themes", name, NULL);
+    if (!suffix){
+        return NULL;
     }
 
-    g_free(path);
-    return NULL;
+    path = srn_try_to_find_data_file(suffix);
+
+    g_free(suffix);
+    return path;
 }
 
 char *srn_get_user_config_file(){
     char *path;
     SrnRet ret;
 
-    path = g_build_filename(g_get_user_config_dir(), PACKAGE, "srain.cfg", NULL);
+    path = srn_try_to_find_data_file("srain.cfg");
+    if (!path){
+        path = g_build_filename(g_get_user_config_dir(), PACKAGE, "srain.cfg", NULL);
+        if (!path) {
+            return NULL;
+        }
 
-    ret = create_file_if_not_exist(path);
-    if (!RET_IS_OK(ret)){
-        WARN_FR("Failed to create user configuration file: %1$s", RET_MSG(ret));
+        ret = create_file_if_not_exist(path);
+        if (!RET_IS_OK(ret)){
+            WARN_FR("Failed to create user configuration file: %1$s", RET_MSG(ret));
 
-        g_free(path);
-        return NULL;
+            g_free(path);
+            return NULL;
+        }
     }
 
     return path;
@@ -182,37 +190,36 @@ char *srn_get_user_config_file(){
 char *srn_get_system_config_file(){
     char *path;
 
-    // Try reading config from srain executable's directory
-    path = g_build_filename(srn_get_executable_dir(), "builtin.cfg", NULL);
-
-    if (g_file_test(path, G_FILE_TEST_EXISTS)){
-        return path;
+    path = srn_try_to_find_config_file("builtin.cfg");
+    if (!path){
+        // System configuration file should always exist
+        WARN_FR("'%s' not found", path);
     }
 
-    g_free(path);
-
-    // Try reading from directory specified by configure
-    path = g_build_filename(PACKAGE_CONFIG_DIR, PACKAGE, "builtin.cfg", NULL);
-
-    if (g_file_test(path, G_FILE_TEST_EXISTS)){
-        return path;
-    }
-
-    // System configuration file should always exist
-    WARN_FR("'%s' not found", path);
-
-    g_free(path);
-    return NULL;
+    return path;
 }
 
 // FIXME: actually it only create the dir.
 char *srn_create_log_file(const char *srv_name, const char *fname){
     char *path;
+    char *tmp;
     SrnRet ret;
 
-    // $XDG_DATA_HOME/srain/logs/<srv_name>/<fname>
-    path = g_build_filename(g_get_user_data_dir(),
-            PACKAGE, "logs", srv_name, fname, NULL);
+    tmp = srn_try_to_find_user_file("logs");
+    if (tmp){
+        // Directory 'logs' exists
+        path = g_build_filename(tmp, srv_name, fname, NULL);
+        g_free(tmp);
+        tmp = NULL;
+    } else {
+        // $XDG_DATA_HOME/srain/logs/<srv_name>/<fname>
+        path = g_build_filename(g_get_user_data_dir(), PACKAGE, "logs",
+                                srv_name, fname, NULL);
+    }
+
+    if (!path){
+        return NULL;
+    }
 
     ret = create_file_if_not_exist(path);
     if (!RET_IS_OK(ret)){
