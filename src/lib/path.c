@@ -182,6 +182,16 @@ char *srn_get_user_config_file(){
 char *srn_get_system_config_file(){
     char *path;
 
+    // Try reading config from srain executable's directory
+    path = g_build_filename(srn_get_executable_dir(), "builtin.cfg", NULL);
+
+    if (g_file_test(path, G_FILE_TEST_EXISTS)){
+        return path;
+    }
+
+    g_free(path);
+
+    // Try reading from directory specified by configure
     path = g_build_filename(PACKAGE_CONFIG_DIR, PACKAGE, "builtin.cfg", NULL);
 
     if (g_file_test(path, G_FILE_TEST_EXISTS)){
