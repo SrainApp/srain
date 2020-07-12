@@ -73,6 +73,9 @@ cp -rfv $prefix/share/glib-2.0 $dst_share/
 
 echo 'Finished installing DLLs required by Srain'
 
+# Remove icon-theme.cache to fix incorrect icon showed in the taskbar
+rm -f $dst_share/icons/*/icon-theme.cache
+
 zip -r $output_file $tmp_dir
 
 echo 'Done'
