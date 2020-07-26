@@ -1,4 +1,5 @@
 /* Copyright (C) 2016-2017 Shengyu Zhang <i@silverrainz.me>
+ * Copyright (C) 2020 Fei Li <lifeibiren@gmail.com>
  *
  * This file is part of Srain.
  *
@@ -26,5 +27,7 @@ char *srn_get_user_config_file();
 char *srn_get_system_config_file();
 char *srn_create_log_file(const char *srv_name, const char *fname);
 SrnRet srn_create_user_file();
+char *srn_get_executable_path();
+char *srn_get_executable_dir();
 
 #endif /* __FILE_HELPER_H */

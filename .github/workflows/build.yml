@@ -13,7 +13,7 @@ on:
   schedule:
     - cron: '0 7 * * 6'
 jobs:
-  build:
+  build-ubuntu:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -33,3 +33,27 @@ jobs:
       run: |
         sudo make install;
         /bin/sh -c "/usr/local/bin/srain --version";
+
+  build-mingw64:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+    - uses: actions/checkout@v2
+    - uses: msys2/setup-msys2@v1
+      name: Init MSYS2/MINGW64 environment
+      with:
+        update: true
+        msystem: MINGW64
+        install: base-devel mingw-w64-x86_64-gcc mingw-w64-x86_64-gtk3 mingw-w64-x86_64-libconfig mingw-w64-x86_64-libsoup mingw-w64-x86_64-libsecret mingw-w64-x86_64-pkg-config mingw-w64-x86_64-gettext mingw-w64-x86_64-glib-networking
+    - name: Build
+      run: |
+        ./configure \
+        --prefix=$MINGW_PREFIX \
+        --datadir=$MINGW_PREFIX/share \
+        --sysconfdir=$MINGW_PREFIX/etc \
+        --disable-debug && \
+        make && \
+        make install && \
+        srain --version;
