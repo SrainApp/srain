@@ -8,7 +8,6 @@ Srain is available on :ref:`install-packages-gnu-linux`,
 
 .. contents::
     :local:
-    :depth: 3
     :backlinks: none
 
 .. _install-dependencies:
@@ -44,11 +43,11 @@ before the following steps.
 Firstly, download source code of srain,
 you can get source code of latest release:
 
-.. code-block:: console
+.. parsed-literal::
 
-    $ wget https://github.com/SrainApp/srain/archive/1.1.1.tar.gz
-    $ tar -xvzf 1.1.1.tar.gz
-    $ cd srain-1.1.1
+    $ wget https://github.com/SrainApp/srain/archive/|release|.tar.gz
+    $ tar -xvzf |release|.tar.gz
+    $ cd srain-|release|
 
 Or get git version:
 
@@ -120,8 +119,15 @@ If you are the user of `Arch Linux CN Repository`_, try:
 Debian
 ~~~~~~
 
-There is no srain package in the official repository yet. But you can package
-it by yourself.
+There is no srain package in the official repository yet.
+
+Pre-built package
+.................
+
+We provide pre-built deb package that you can get it from `Github release page`_.
+
+Build byself
+............
 
 Copy the debian folder on `srain-contrib`_ to srain folder. Then type following
 command on your terminal:
@@ -135,9 +141,9 @@ details could be found on `debian/crontrol`_ file.
 
 Then install the package (replace package name with the name of your package):
 
-.. code-block:: console
+.. parsed-literal::
 
-    $ sudo apt-get install -f ../srain_1.0.1-1_amd64.deb 
+    $ sudo apt-get install -f ../srain\_\ |release|-1_amd64.deb
 
 .. _srain-contrib: https://github.com/SrainApp/srain-contrib/tree/master/pack/
 .. _debian/crontrol: https://github.com/SrainApp/srain-contrib/blob/master/pack/debian/control
@@ -200,12 +206,21 @@ following this link to install it.
 Windows
 -------
 
-.. warning:: Windows support of Srain is still experimental.
-
 Srain requires Windows 7 or later.
 
-The easiest way to build/run Srain on Windows is using the toolchains provided
-by `MSYS2 project`_.
+Pre-built package
+~~~~~~~~~~~~~~~~~
+
+After :ref:`version-1.1.2`, we provide Windows portable binary that you can
+get it from `Github release page`_.
+
+.. _Github release page: https://github.com/SrainApp/srain/releases
+
+Build byself
+~~~~~~~~~~~~
+
+If you want to build Srain on Windows youself,
+you should use the toolchains provided by `MSYS2 project`_.
 
 Firstly install MSYS2, then open a MSYS2 shell, install the basic build tools:
 

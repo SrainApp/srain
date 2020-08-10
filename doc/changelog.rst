@@ -30,6 +30,28 @@ Change Log
 
 .. _version-latest:
 
+.. _version-1.1.2:
+
+2020-08-10 Version 1.1.2
+========================
+
+.. note::
+
+    This release contains only improvement for MS Windows,
+    user of other platform can ignore it.
+
+- Features:
+
+  - Binary for MS Windows now can automatically built via Github Actions,
+    thanks to :people:`lifeibiren` (:pull:`259`), please refer to
+    :ref:`install-packages-windows` for more details
+
+- Changes:
+
+  - For ease of running on windows, Srain's executable path is added to the
+    search paths of {configuration,data} file. Thanks to :people:`lifeibiren`
+    (:pull:`259`)
+
 .. _version-1.1.1:
 
 2020-06-27 Version 1.1.1

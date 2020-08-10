@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Srain 1.0.0\n"
 "Report-Msgid-Bugs-To: i@silverrainz.me\n"
-"POT-Creation-Date: 2020-06-27 12:05+0800\n"
+"POT-Creation-Date: 2020-08-02 16:09+0800\n"
 "PO-Revision-Date: 2019-04-17 16:14+0300\n"
 "Last-Translator: Artem Polishchuk <ego.cordatus@gmail.com>\n"
 "Language-Team: \n"
@@ -430,27 +430,27 @@ msgstr "Не удалось создать каталог пользовател
 msgid "Failed to connect to %1$s(%2$s:%3$d): %4$s"
 msgstr "Не удалось подключиться к %1$s(%2$s:%3$d): %4$s"
 
-#: ../src/lib/path.c:184
+#: ../src/lib/path.c:301
 #, fuzzy, c-format
 msgid "Failed to create chat logs directory: %1$s"
 msgstr "Не удалось создать каталог журналов чата: %s"
 
-#: ../src/lib/path.c:164
+#: ../src/lib/path.c:281
 #, fuzzy, c-format
 msgid "Failed to create user cache directory: %1$s"
 msgstr "Не удалось создать каталог кэша пользователя: %s"
 
-#: ../src/lib/path.c:144
+#: ../src/lib/path.c:261
 #, fuzzy, c-format
 msgid "Failed to create user configuration directory: %1$s"
 msgstr "Не удалось создать каталог конфигурации пользователя: %s"
 
-#: ../src/lib/path.c:154
+#: ../src/lib/path.c:271
 #, fuzzy, c-format
 msgid "Failed to create user configuration file: %1$s"
 msgstr "Не удалось создать файл конфигурации пользователя: %s"
 
-#: ../src/lib/path.c:174
+#: ../src/lib/path.c:291
 #, fuzzy, c-format
 msgid "Failed to create user data directory: %1$s"
 msgstr "Не удалось создать каталог пользовательских данных: %s"
@@ -742,11 +742,11 @@ msgstr ""
 msgid "No topic is set"
 msgstr "Тема не установлена"
 
-#: ../src/lib/path.c:199
+#: ../src/lib/path.c:316
 msgid "Not a directory"
 msgstr "Не каталог"
 
-#: ../src/lib/path.c:218
+#: ../src/lib/path.c:335
 msgid "Not a regular file"
 msgstr "Не обычный файл"
 
