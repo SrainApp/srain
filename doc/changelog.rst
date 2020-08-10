@@ -32,7 +32,7 @@ Change Log
 
 .. _version-1.1.2:
 
-2020-08-02 Version 1.1.2
+2020-08-10 Version 1.1.2
 ========================
 
 .. note::
@@ -43,7 +43,8 @@ Change Log
 - Features:
 
   - Binary for MS Windows now can automatically built via Github Actions,
-    thanks to :people:`lifeibiren` (:pull:`259`)
+    thanks to :people:`lifeibiren` (:pull:`259`), please refer to
+    :ref:`install-packages-windows` for more details
 
 - Changes:
 
