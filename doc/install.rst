@@ -43,11 +43,11 @@ before the following steps.
 Firstly, download source code of srain,
 you can get source code of latest release:
 
-.. code-block:: console
+.. parsed-literal::
 
-    $ wget https://github.com/SrainApp/srain/archive/1.1.2.tar.gz
-    $ tar -xvzf 1.1.2.tar.gz
-    $ cd srain-1.1.2
+    $ wget https://github.com/SrainApp/srain/archive/|release|.tar.gz
+    $ tar -xvzf |release|.tar.gz
+    $ cd srain-|release|
 
 Or get git version:
 
@@ -141,9 +141,9 @@ details could be found on `debian/crontrol`_ file.
 
 Then install the package (replace package name with the name of your package):
 
-.. code-block:: console
+.. parsed-literal::
 
-    $ sudo apt-get install -f ../srain_1.0.1-1_amd64.deb
+    $ sudo apt-get install -f ../srain\_\ |release|-1_amd64.deb
 
 .. _srain-contrib: https://github.com/SrainApp/srain-contrib/tree/master/pack/
 .. _debian/crontrol: https://github.com/SrainApp/srain-contrib/blob/master/pack/debian/control
