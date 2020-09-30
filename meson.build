@@ -20,7 +20,6 @@ app_exec = app_name
 
 # Meson builtin option
 if get_option('buildtype') == 'debug'
-  app_id += '.Dev'
   app_pretty_name += ' (Development)'
   app_generic_name += ' (Development)'
   app_desc += ' (Development version)'
