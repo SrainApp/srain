@@ -39,6 +39,11 @@ jobs:
         # Meson version on ubuntu is too old, use `ninja` instead
         sudo ninja -C builddir install;
         /bin/sh -c "/usr/local/bin/srain --version";
+    - name: Validate
+      run: |
+        sudo apt-get install appstream-util desktop-file-utils;
+        appstream-util validate-relax /usr/share/metainfo/im.srain.Srain.metainfo.xml
+        desktop-file-validate /usr/share/applications/im.srain.Srain.desktop
 
   build-mingw64:
     runs-on: windows-latest
