@@ -6,7 +6,7 @@ project(
   'srain', 'c',
   version: '1.1.0',
   license: 'GPL3',
-  meson_version: '>= 0.49.0'
+  meson_version: '>= 0.45.0'
 )
 
 app_id = 'im.srain.Srain'
@@ -20,8 +20,10 @@ app_exec = app_name
 
 # Meson builtin option
 if get_option('buildtype') == 'debug'
+  app_id += '.Dev'
   app_pretty_name += ' (Development)'
   app_generic_name += ' (Development)'
+  app_desc += ' (Development version)'
 endif
 
 ############################
@@ -29,18 +31,19 @@ endif
 ############################
 
 prefix = get_option('prefix')
-bin_dir = prefix / get_option('bindir')
-locale_dir = prefix / get_option('localedir')
-data_dir = prefix / get_option('datadir')
-pkg_data_dir = data_dir / meson.project_name()
-icons_dir = data_dir / 'icons'
-po_dir = meson.source_root () / 'po'
-gettext_package = meson.project_name()
-sys_conf_dir = prefix / get_option('sysconfdir')
+bin_dir = join_paths(prefix, get_option('bindir'))
+data_dir = join_paths(prefix, get_option('datadir'))
+pkg_data_dir = join_paths(data_dir, meson.project_name())
+# https://github.com/mesonbuild/meson/issues/825
+pkg_doc_dir = join_paths(data_dir, 'doc', meson.project_name())
+icons_dir = join_paths(data_dir, 'icons')
+po_dir = join_paths(meson.source_root (), 'po')
+sys_conf_dir = join_paths(prefix, get_option('sysconfdir'))
+pkg_sys_conf_dir = join_paths(sys_conf_dir, meson.project_name())
 
-gnome = import('gnome')
-i18n = import('i18n')
+srcs = []
 
 subdir('data')
 subdir('po')
 subdir('src')
+subdir('doc')

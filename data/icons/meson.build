@@ -1,4 +1,4 @@
 install_subdir(
   'hicolor',
-  install_dir: join_paths(data_dir, 'icons')
+  install_dir: icons_dir,
 )

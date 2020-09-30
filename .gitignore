@@ -1,6 +1,4 @@
 # Custom
-build/
-/Makefile
 .ycm_extra_conf.py
 *.pyc
 *.*~
@@ -10,6 +8,7 @@ GTAGS
 GRTAGS
 GPATH
 .ccls-cache/
+.clangd/
 
 # Object files
 *.o
@@ -46,3 +45,4 @@ GPATH
 
 # Meson
 builddir/
+prefix/

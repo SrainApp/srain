@@ -1,3 +1,4 @@
+i18n = import('i18n')
 desktop_conf = configuration_data()
 desktop_conf.set('app_id', app_id)
 desktop_conf.set('app_pretty_name', app_pretty_name)
@@ -18,5 +19,12 @@ desktop = i18n.merge_file(
   install_dir: join_paths(data_dir, 'applications')
 )
 
+gnome = import('gnome')
+
+srcs += gnome.compile_resources('srain-resources', 'srain.gresource.xml')
+
 subdir('metainfo')
 subdir('icons')
+
+install_subdir('themes', install_dir: pkg_data_dir)
+install_data('builtin.cfg', install_dir: pkg_sys_conf_dir)

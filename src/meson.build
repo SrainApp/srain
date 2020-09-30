@@ -12,11 +12,11 @@ meta_h.set_quoted('PACKAGE_BUGREPORT', app_bugreport)
 meta_h.set_quoted('PACKAGE_AUTHOR', 'Shengyu Zhang')
 meta_h.set_quoted('PACKAGE_EMAIL', 'i@silverrainz.me')
 meta_h.set_quoted('PACKAGE_COPYRIGHT_DATES', '2016 - 2020')
-meta_h.set_quoted('PACKAGE_DATA_DIR', pkg_data_dir)
+meta_h.set_quoted('PACKAGE_DATA_DIR', data_dir)
 meta_h.set_quoted('PACKAGE_CONFIG_DIR', sys_conf_dir)
 configure_file(output: 'meta.h', configuration: meta_h)
 
-srcs = [
+srcs += [
   'config/manager.c',
   'config/password.c',
   'config/reader.c',
@@ -122,4 +122,6 @@ incdirs = [
 
 executable(app_exec, srcs,
   include_directories: incdirs,
-  dependencies: deps)
+  dependencies: deps,
+  install: true,
+  install_dir: bin_dir)
