@@ -38,10 +38,10 @@ jobs:
       run: |
         # Meson version on ubuntu is too old, use `ninja` instead
         sudo ninja -C builddir install;
-        /bin/sh -c "/usr/local/bin/srain --version";
     - name: Validate
       run: |
         sudo apt-get install appstream-util desktop-file-utils;
+        /bin/sh -c "/usr/local/bin/srain --version";
         appstream-util validate-relax /usr/local/share/metainfo/im.srain.Srain.metainfo.xml
         desktop-file-validate /usr/local/share/applications/im.srain.Srain.desktop
 
@@ -57,14 +57,25 @@ jobs:
       with:
         update: true
         msystem: MINGW64
-        install: base-devel mingw-w64-x86_64-gcc mingw-w64-x86_64-gtk3 mingw-w64-x86_64-libconfig mingw-w64-x86_64-libsoup mingw-w64-x86_64-libsecret mingw-w64-x86_64-pkg-config mingw-w64-x86_64-gettext mingw-w64-x86_64-glib-networking
+        install: base-devel mingw-w64-x86_64-meson mingw-w64-x86_64-gcc mingw-w64-x86_64-gtk3 mingw-w64-x86_64-libconfig mingw-w64-x86_64-libsoup mingw-w64-x86_64-libsecret mingw-w64-x86_64-pkg-config mingw-w64-x86_64-gettext mingw-w64-x86_64-glib-networking mingw-w64-x86_64-appstream-glib
+        # For ITS rules for metainfo
+        # ref: https://answers.launchpad.net/launchpad/+question/692788
     - name: Build
       run: |
-        ./configure \
+        # Don't build documentation for now
+        #
+        # As of meson 0.47.0 -Dopt= and -Dopt=[] both pass an empty list,
+        # before this -Dopt= would pass a list with an empty string.
+        meson setup -Ddoc_builders=[] \
         --prefix=$MINGW_PREFIX \
         --datadir=$MINGW_PREFIX/share \
         --sysconfdir=$MINGW_PREFIX/etc \
-        --disable-debug && \
-        make && \
-        make install && \
+        builddir;
+        ninja -C builddir;
+    - name: Install
+      run: |
+        ninja -C builddir install;
         srain --version;
+    - name: Validate
+      run: |
+        $MINGW_PREFIX/bin/srain --version;
