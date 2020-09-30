@@ -209,7 +209,7 @@ static SuiNotification *sui_misc_message_new_notification(SuiMessage *_self){
     g_return_val_if_fail(notif, NULL);
 
     if (self->style == SUI_MISC_MESSAGE_STYLE_ERROR){
-        str_assign(&notif->icon, "srain-red");
+        str_assign(&notif->icon, PACKAGE_APPID ".Red");
     }
 
     return notif;
