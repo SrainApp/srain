@@ -33,6 +33,10 @@ clean:
 	$(RM) -rf $(BUILDDIR)
 	$(RM) -rf $(PREFIX)
 
+.PHONY: doc
+doc:
+	xdg-open $(PREFIX)/share/doc/srain/html/index.html
+
 $(BUILDDIR): meson.build | $(PREFIX)
 	$(MESON) setup --prefix=$(PREFIX) --buildtype=debug $@
 
