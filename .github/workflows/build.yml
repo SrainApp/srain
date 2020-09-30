@@ -20,18 +20,24 @@ jobs:
     - name: Install the dependencies
       run: |
         sudo apt-get update;
-        sudo apt-get install pkg-config gettext libgtk-3-dev libsoup2.4-dev libconfig-dev libssl-dev libsecret-1-dev \
+        sudo apt-get install meson pkg-config gettext libgtk-3-dev libsoup2.4-dev libconfig-dev libssl-dev libsecret-1-dev \
         glib-networking libgtk3.0 libsoup2.4 libconfig9 libsecret-1-0;
+        # For ITS rules for metainfo
+        # ref: https://answers.launchpad.net/launchpad/+question/692788
+        sudo apt-get install appstream;
     - name: Build
       run: |
-        ./configure \
-        --prefix=/usr/local \
-        --datadir=/usr/local/share \
-        --sysconfdir=/etc;
-        make;
+        # Don't build documentation for now
+        #
+        # As of meson 0.47.0 -Dopt= and -Dopt=[] both pass an empty list,
+        # before this -Dopt= would pass a list with an empty string.
+        meson setup -Ddoc_builders=[] builddir;
+        # Meson version on ubuntu is too old, use `ninja` instead
+        ninja -C builddir;
     - name: Install
       run: |
-        sudo make install;
+        # Meson version on ubuntu is too old, use `ninja` instead
+        sudo ninja -C builddir install;
         /bin/sh -c "/usr/local/bin/srain --version";
 
   build-mingw64:
