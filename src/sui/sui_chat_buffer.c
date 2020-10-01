@@ -133,9 +133,6 @@ static void sui_chat_buffer_finalize(GObject *object){
 
     self = SUI_CHAT_BUFFER(object);
     sui_server_buffer_rm_buffer(self->server_buffer, SUI_BUFFER(self));
-
-    sui_user_list_clear(self->user_list);
-
     G_OBJECT_CLASS(sui_chat_buffer_parent_class)->finalize(object);
 }
 
