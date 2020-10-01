@@ -62,7 +62,7 @@ Play with Meson
 ---------------
 
 Srain use `Meson`_ with ninja backend as its build system.
-You can build
+You can build it via the following commands:
 
 .. code-block:: console
 
@@ -99,6 +99,8 @@ It is convenient for development.
    $ make build     # Same as above
    $ make install   # Install srain to prefix under project root
    $ make run       # Run srain with isolated $HOME and XDG Directory
+   $ make debug     # Same as `make run`, but with GDB attached
+   $ make inspect   # Same as `make run`, but with GtkInspector
    $ make clean     # Remove all compilation and installation result
    $ make doc       # View installed HTML documentation
 

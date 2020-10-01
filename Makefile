@@ -31,8 +31,8 @@ debug: install
 	export XDG_DATA_DIRS=$(FAKE_XDG_DATA_DIRS); \
 	$(DBG) $(PREFIX)/bin/srain -ex r -ex bt -ex q
 
-.PHONY: gdebug
-gdebug:
+.PHONY: inspect
+inspect:
 	GTK_DEBUG=interactive \
 	GOBJECT_DEBUG=instance-countcd \
 	$(MAKE) run
