@@ -23,7 +23,6 @@
 #include <locale.h>
 
 #include "meta.h"
-#define GETTEXT_PACKAGE PACKAGE
 #include <glib/gi18n.h>
 
 void i18n_init(void);

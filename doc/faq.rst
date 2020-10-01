@@ -2,6 +2,11 @@
 Frequently Asked Questions
 ==========================
 
+Frequently asked questions are listed here,
+you can visit `issue page`_ to see more questions that asked by our users.
+
+.. _issue page: https://github.com/SrainApp/srain/issues?q=label%3Aquestion
+
 .. contents::
     :local:
     :depth: 3

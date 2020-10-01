@@ -22,7 +22,7 @@
 
     <!-- Icons files, TODO: SVG -->
     <gresource prefix="/im/srain/Srain/icons/scalable/apps">
-        <file alias="srain.png">icons/128x128/srain.png</file>
-        <file alias="srain-red.png">icons/128x128/srain-red.png</file>
+        <file alias="srain.png">icons/hicolor/128x128/apps/im.srain.Srain.png</file>
+        <file alias="srain-red.png">icons/hicolor/128x128/apps/im.srain.Srain.Red.png</file>
     </gresource>
 </gresources>

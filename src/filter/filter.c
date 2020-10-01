@@ -22,7 +22,7 @@
 #include "log.h"
 
 #include "filter/filter.h"
-#include "./filter.h"
+#include "./filter2.h"
 
 // Bits of a SrnRenderFlags(int)
 #define MAX_FILTER  sizeof(SrnFilterFlags) * 8

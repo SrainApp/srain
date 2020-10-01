@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright 2018 Carles Pastor <cpbadosa@gmail.com> -->
 <component type="desktop-application">
-  <id>im.srain.Srain</id>
+  <id>@app_id@</id>
   <metadata_license>FSFAP</metadata_license>
   <project_license>GPL-3.0</project_license>
-  <name>Srain</name>
-  <summary>Modern IRC client written in GTK</summary>
+  <name>@app_pretty_name@</name>
+  <summary>@app_desc@</summary>
   <update_contact>cpbadosa_AT_gmail.com</update_contact>
-  <translation type="gettext">srain</translation>
+  <translation type="gettext">@gettext_package@</translation>
 
   <keywords>
-    <keyword>srain</keyword>
     <keyword>irc</keyword>
     <keyword>chat</keyword>
     <keyword>gtk</keyword>
@@ -18,11 +17,11 @@
 
   <description>
     <p>
-      Modern IRC client written in GTK.
+      @app_desc@
     </p>
   </description>
 
-  <launchable type="desktop-id">im.srain.Srain.desktop</launchable>
+  <launchable type="desktop-id">@desktop_id@</launchable>
 
   <screenshots>
     <screenshot type="default">
@@ -39,10 +38,10 @@
     </screenshot>
   </screenshots>
 
-  <url type="homepage">https://srain.im/</url>
+  <url type="homepage">@app_url@</url>
 
   <provides>
-    <binary>srain</binary>
+    <binary>@app_exec@</binary>
   </provides>
 
   <content_rating type="oars-1.0">

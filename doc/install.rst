@@ -15,22 +15,24 @@ Srain is available on :ref:`install-packages-gnu-linux`,
 Dependencies
 ============
 
-=================== =================================================== =======
+=================== =================================================== ========
 Name                Notes                                               Version
-=================== =================================================== =======
+=================== =================================================== ========
+meson               Only for Building                                   > 0.45.0
+make                Optional, only for development
 coreutils           Only for building
-make                Only for building
 gcc                 Only for building
 pkg-config          Only for building
 gettext             Only for building
 glib2
-glib-networking     Optional, For TLS connection support
+glib-networking     Optional, for TLS connection support
 gtk+3                                                                   >= 3.18
 libsoup
 libconfig                                                               >= 1.5
 libsecret
 openssl
-=================== =================================================== =======
+python-sphinx       Optional, for building documentation
+=================== =================================================== ========
 
 .. _install-building:
 
@@ -56,33 +58,53 @@ Or get git version:
     $ git clone https://github.com/SrainApp/srain.git
     $ cd srain
 
-Setup build options and start building:
+Play with Meson
+---------------
+
+Srain use `Meson`_ with ninja backend as its build system.
+You can build it via the following commands:
 
 .. code-block:: console
 
-   $ ./configure                     \
-         --prefix=/usr/local         \
-         --datadir=/usr/local/share  \
-         --sysconfdir=/etc
-   $ make
-
-.. note::
-
-    The ``configure`` script **DOES NOT** check any dependience.
-    You should make sure that you have all dependencies installed.
+   $ meson setup builddir
+   $ cd builddir
+   $ ninja
 
 Install(root privileges required):
 
 .. code-block:: console
 
-   # make install
+   $ cd builddir
+   # ninja install
 
-Build and install documentation:
+HTML documentation and manpage are built and installed by default,
+if you don't need them, just set meson option ``doc_builders`` to an empty array
+when setup:
 
 .. code-block:: console
 
-   $ make doc
-   # make install-doc
+   $ meson setup -Ddoc_builders=[] builddir
+
+.. _Meson: https://mesonbuild.com
+
+Makefile Helper
+---------------
+
+We also provide a simple Makefile helper to simplify meson commands.
+It is convenient for development.
+
+.. code-block:: console
+
+   $ make           # Build srain
+   $ make build     # Same as above
+   $ make install   # Install srain to prefix under project root
+   $ make run       # Run srain with isolated $HOME and XDG Directory
+   $ make debug     # Same as `make run`, but with GDB attached
+   $ make inspect   # Same as `make run`, but with GtkInspector
+   $ make clean     # Remove all compilation and installation result
+   $ make doc       # View installed HTML documentation
+
+.. _Meson: https://mesonbuild.com
 
 Distribution Packages
 =====================

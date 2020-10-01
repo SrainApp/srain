@@ -34,7 +34,7 @@
 #include "i18n.h"
 #include "path.h"
 
-#include "./filter.h"
+#include "./filter2.h"
 
 static bool filter(const SrnMessage *msg);
 

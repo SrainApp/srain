@@ -1,11 +1,11 @@
 [Desktop Entry]
 Type=Application
-Name=Srain
-GenericName=Srain IRC client
-Comment=Modern IRC client written in GTK.
-TryExec=srain
-Exec=srain %u
-Icon=im.srain.Srain
+Name=@app_pretty_name@
+GenericName=@app_generic_name@
+Comment=@app_desc@
+TryExec=@app_exec@
+Exec=@app_exec@ %u
+Icon=@icon@
 MimeType=x-scheme-handler/irc;x-scheme-handler/ircs;
 Categories=GTK;InstantMessaging;Network;IRCClient;Chat
 Keywords=GTK;InstantMessaging;Network;IRCClient;Chat;SRN

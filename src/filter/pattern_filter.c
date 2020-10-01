@@ -20,7 +20,7 @@
 #include "markup_renderer.h"
 #include "pattern_set.h"
 
-#include "./filter.h"
+#include "./filter2.h"
 
 #define PATTERNS_KEY "pattern_filter_module_patterns"
 
