@@ -6,7 +6,7 @@ meta_h.set_quoted('PACKAGE_NAME', app_name)
 meta_h.set_quoted('PACKAGE_VERSION', meson.project_version())
 meta_h.set_quoted('PACKAGE_DESC', app_desc)
 meta_h.set_quoted('PACKAGE_APPID', app_id)
-meta_h.set_quoted('PACKAGE_BUILD', 'meson beta')
+meta_h.set_quoted('PACKAGE_BUILD', '@VCS_TAG@')
 meta_h.set_quoted('PACKAGE_WEBSITE', app_url)
 meta_h.set_quoted('PACKAGE_BUGREPORT', app_bugreport)
 meta_h.set_quoted('PACKAGE_AUTHOR', 'Shengyu Zhang')
@@ -14,7 +14,17 @@ meta_h.set_quoted('PACKAGE_EMAIL', 'i@silverrainz.me')
 meta_h.set_quoted('PACKAGE_COPYRIGHT_DATES', '2016 - 2020')
 meta_h.set_quoted('PACKAGE_DATA_DIR', data_dir)
 meta_h.set_quoted('PACKAGE_CONFIG_DIR', sys_conf_dir)
-configure_file(output: 'meta.h', configuration: meta_h)
+
+build_id_generator = [
+  join_paths(meson.source_root() , 'script', 'gen-build-id.sh'),
+  meson.source_root(),
+]
+
+vcs_tag(
+  command: build_id_generator,
+  input: configure_file(output: 'meta.h.in', configuration: meta_h),
+  output: 'meta.h',
+)
 
 srcs += [
   'config/manager.c',
