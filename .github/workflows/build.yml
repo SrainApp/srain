@@ -75,7 +75,6 @@ jobs:
     - name: Install
       run: |
         ninja -C builddir install;
-        srain --version;
     - name: Validate
       run: |
         $MINGW_PREFIX/bin/srain --version;
