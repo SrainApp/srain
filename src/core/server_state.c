@@ -38,6 +38,7 @@
 static const char *srn_server_state_to_string(SrnServerState state);
 static const char *srn_server_action_to_string(SrnServerAction action);
 static gboolean srn_server_reconnect_timeout(gpointer user_data);
+static gboolean idle_to_rm_server(gpointer user_data);
 
 /**
  * @brief server_state_transfrom SrnServer's connection state macheine, accept a
@@ -236,11 +237,13 @@ SrnRet srn_server_state_transfrom(SrnServer *srv, SrnServerAction action){
                 RET_MSG(ret));
     }
 
-    if (free){ // The server should be free now, be careful
-        SrnApplication *app;
 
-        app = srn_application_get_default();
-        return srn_application_rm_server(app, srv);
+    if (free){ // The server should be free now, be careful
+        // Remove the given server when main loop idle,
+        // because server may be referenceed after returning
+        //
+        // https://github.com/SrainApp/srain/issues/258
+        g_idle_add(idle_to_rm_server, srv);
     }
 
     return ret;
@@ -294,6 +297,17 @@ static gboolean srn_server_reconnect_timeout(gpointer user_data){
     srv = user_data;
     srv->reconn_interval += SRN_SERVER_RECONN_STEP;
     srn_server_state_transfrom(srv, SRN_SERVER_ACTION_CONNECT);
+
+    return G_SOURCE_REMOVE;
+}
+
+static gboolean idle_to_rm_server(gpointer user_data){
+    SrnServer *srv;
+
+    srv = user_data;
+    g_return_val_if_fail(srn_server_is_valid(srv), G_SOURCE_REMOVE);
+
+    srn_application_rm_server(srn_application_get_default(), srv);
 
     return G_SOURCE_REMOVE;
 }
