@@ -37,6 +37,8 @@
 #include "i18n.h"
 #include "path.h"
 
+#include <stdlib.h>
+
 #ifdef _WIN32
 #include <windows.h>
 #include <Shlwapi.h>
