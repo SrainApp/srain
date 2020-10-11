@@ -55,11 +55,16 @@
 #include <libgen.h>
 #include <unistd.h>
 
-#ifdef __sun
-#define PROC_SELF_EXE "/proc/self/path/a.out"
-#else
 #define PROC_SELF_EXE "/proc/self/exe"
-#endif
+
+#elif defined __sun
+
+#define PROC_SELF_EXE "/proc/self/path/a.out"
+
+#elif defined __FreeBSD__
+#include <sys/types.h>
+#include <sys/sysctl.h>
+
 #endif
 
 #define DEFAULT_FILE_MODE   (S_IRUSR | S_IWUSR)
@@ -395,6 +400,27 @@ char *srn_get_executable_path() {
 char *srn_get_executable_dir() {
     char *executablePath = srn_get_executable_path();
     char *executableDir = g_path_get_dirname(executablePathStr);
+    g_free(executablePath);
+    return executableDir;
+}
+
+#elif defined __FreeBSD__
+char *srn_get_executable_path() {
+    int mib[4] = { CTL_KERN, KERN_PROC, KERN_PROC_PATHNAME, -1 };
+    char rawPath[PATH_MAX];
+    char realPath[PATH_MAX];
+    size_t sz = sizeof(rawPath);
+
+    if(sysctl(mib, 4, rawPath, &sz, NULL, 0) == -1) {
+        return NULL;
+    }
+    realpath(rawPath, realPath);
+    return g_strdup(realPath);
+}
+
+char *srn_get_executable_dir() {
+    char *executablePath = srn_get_executable_path();
+    char *executableDir = g_path_get_dirname(executablePath);
     g_free(executablePath);
     return executableDir;
 }
