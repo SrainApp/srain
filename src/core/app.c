@@ -61,9 +61,8 @@ SrnApplication* srn_application_new(void){
     ver = srn_version_new(PACKAGE_VERSION PACKAGE_BUILD);
     ret = srn_version_parse(ver);
     if (!RET_IS_OK(ret)){
-        ERR_FR("Failed to parse " PACKAGE_VERSION PACKAGE_BUILD
-                "as application version: %s", RET_MSG(ret));
-        return NULL;
+        WARN_FR("Failed to parse " PACKAGE_VERSION PACKAGE_BUILD
+                " as application version: %s", RET_MSG(ret));
     }
 
     // Init config
