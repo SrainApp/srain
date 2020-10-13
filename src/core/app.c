@@ -58,10 +58,10 @@ SrnApplication* srn_application_new(void){
     // Keep only one instance
     g_return_val_if_fail(!app_instance, NULL);
 
-    ver = srn_version_new(PACKAGE_VERSION PACKAGE_BUILD);
+    ver = srn_version_new(PACKAGE_VERSION "-" PACKAGE_BUILD);
     ret = srn_version_parse(ver);
     if (!RET_IS_OK(ret)){
-        WARN_FR("Failed to parse " PACKAGE_VERSION PACKAGE_BUILD
+        WARN_FR("Failed to parse " PACKAGE_VERSION "-" PACKAGE_BUILD
                 " as application version: %s", RET_MSG(ret));
     }
 

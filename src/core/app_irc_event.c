@@ -917,7 +917,7 @@ static void irc_event_ctcp_req(SircSession *sirc, const char *event,
         // TODO
     } else if (strcmp(event, "FINGER") == 0) {
         sirc_cmd_ctcp_rsp(srv->irc, origin, event,
-                PACKAGE_NAME " " PACKAGE_VERSION PACKAGE_BUILD);
+                PACKAGE_NAME " " PACKAGE_VERSION "-" PACKAGE_BUILD);
     } else if (strcmp(event, "PING") == 0) {
         sirc_cmd_ctcp_rsp(srv->irc, origin, event, msg);
     } else if (strcmp(event, "SOURCE") == 0) {
@@ -933,7 +933,7 @@ static void irc_event_ctcp_req(SircSession *sirc, const char *event,
         }
     } else if (strcmp(event, "VERSION") == 0) {
         sirc_cmd_ctcp_rsp(srv->irc, origin, event,
-                PACKAGE_NAME " " PACKAGE_VERSION PACKAGE_BUILD);
+                PACKAGE_NAME " " PACKAGE_VERSION "-" PACKAGE_BUILD);
     } else if (strcmp(event, "USERINFO") == 0) {
         sirc_cmd_ctcp_rsp(srv->irc, origin, event, srv->user->realname);
     } else {
