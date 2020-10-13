@@ -24,6 +24,7 @@ vcs_tag(
   command: build_id_generator,
   input: configure_file(output: 'meta.h.in', configuration: meta_h),
   output: 'meta.h',
+  fallback: 'unknown',
 )
 
 srcs += [

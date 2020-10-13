@@ -412,7 +412,7 @@ static void show_about_dialog(SuiApplication *self){
             GTK_APPLICATION(self));
     const gchar *authors[] = { PACKAGE_AUTHOR " <" PACKAGE_EMAIL ">", NULL };
     const gchar **documentors = authors;
-    const gchar *version = g_strdup_printf(_("%1$s%2$s\nRunning against GTK+ %3$d.%4$d.%5$d"),
+    const gchar *version = g_strdup_printf(_("%1$s-%2$s\nRunning against GTK+ %3$d.%4$d.%5$d"),
             PACKAGE_VERSION,
             PACKAGE_BUILD,
             gtk_get_major_version(),
@@ -496,7 +496,7 @@ static void on_shutdown(SuiApplication *self){
 static int on_handle_local_options(SuiApplication *self, GVariantDict *options,
         gpointer user_data){
     if (g_variant_dict_lookup(options, "version", "b", NULL)){
-        g_print("%s %s%s\n", PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_BUILD);
+        g_print("%s %s-%s\n", PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_BUILD);
         return 0; // Exit
     }
 
