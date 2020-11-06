@@ -20,9 +20,8 @@
 #define __SRAIN_H
 
 #include <stdint.h>
+#include <stdbool.h>
 #include <glib.h>
-
-typedef gboolean bool;
 
 /* General result value */
 #define SRN_OK      0

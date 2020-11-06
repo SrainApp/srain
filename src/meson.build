@@ -112,7 +112,7 @@ srcs += [
 ]
 
 deps = [
-  dependency('gtk+-3.0', version: '>= 3.22.15'),
+  dependency('gtk4', version: '>= 3.99.4'),
   dependency('glib-2.0', version: '>= 2.39.3'),
   dependency('libconfig', version: '>= 1.5'),
   dependency('libsoup-2.4'),
