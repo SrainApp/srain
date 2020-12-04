@@ -20,11 +20,13 @@ build_id_generator = [
   meson.source_root(),
 ]
 
-vcs_tag(
-  command: build_id_generator,
-  input: configure_file(output: 'meta.h.in', configuration: meta_h),
-  output: 'meta.h',
-  fallback: 'unknown',
+generated_meta_h = declare_dependency(
+  sources: vcs_tag(
+    command: build_id_generator,
+    input: configure_file(output: 'meta.h.in', configuration: meta_h),
+    output: 'meta.h',
+    fallback: 'unknown',
+  )
 )
 
 srcs += [
@@ -118,6 +120,7 @@ deps = [
   dependency('libsoup-2.4'),
   dependency('openssl'),
   dependency('libsecret-1'),
+  generated_meta_h,
 ]
 
 incdirs = [
