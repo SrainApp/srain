@@ -1892,6 +1892,8 @@ static void irc_event_numeric(SircSession *sirc, int event,
                             srv->name, event, origin, count, buf->str);
 
                     g_string_free(buf, TRUE);
+
+                    srn_chat_add_recv_message(srv->chat, chat_user, params[count-1]);
                 }
             }
     }
