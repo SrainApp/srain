@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
 <interface>
-  <requires lib="gtk+" version="3.16"/>
+  <requires lib="gtk" version="4.0"/>
   <object class="GtkFileFilter" id="X509 Certificate">
     <mime-types>
       <mime-type>application/x-x509-ca-cert</mime-type>
@@ -12,522 +11,457 @@
     </patterns>
   </object>
   <template class="SuiConnectPanel" parent="GtkBox">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="can_focus">0</property>
     <property name="orientation">vertical</property>
     <property name="spacing">4</property>
     <child>
       <object class="GtkStackSwitcher" id="stack_switch">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can_focus">0</property>
         <property name="halign">center</property>
         <property name="stack">stack</property>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">0</property>
-      </packing>
     </child>
     <child>
       <object class="GtkStack" id="stack">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="hhomogeneous">False</property>
-        <property name="vhomogeneous">False</property>
+        <property name="can_focus">0</property>
+        <property name="hhomogeneous">0</property>
+        <property name="vhomogeneous">0</property>
         <property name="transition_type">slide-left-right</property>
         <child>
-          <object class="GtkGrid" id="quick_mode_grid">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="row_spacing">4</property>
-            <property name="column_spacing">4</property>
-            <child>
-              <object class="GtkLabel" id="quick_server_label">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="halign">start</property>
-                <property name="valign">baseline</property>
-                <property name="hexpand">True</property>
-                <property name="label" translatable="yes">Server:</property>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkComboBox" id="quick_server_combo_box">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="halign">end</property>
-                <property name="valign">baseline</property>
-                <child>
-                  <object class="GtkCellRendererText"/>
-                  <attributes>
-                    <attribute name="text">0</attribute>
-                  </attributes>
-                </child>
-              </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="quick_nick_label">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="halign">start</property>
-                <property name="valign">baseline</property>
-                <property name="hexpand">True</property>
-                <property name="label" translatable="yes">Nickname:</property>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkEntry" id="quick_nick_entry">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="halign">end</property>
-                <property name="valign">baseline</property>
-              </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">1</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
+          <object class="GtkStackPage">
             <property name="name">quick_mode_page</property>
             <property name="title" translatable="yes">Quick Mode</property>
-          </packing>
+            <property name="child">
+              <object class="GtkGrid" id="quick_mode_grid">
+                <property name="can_focus">0</property>
+                <property name="row_spacing">4</property>
+                <property name="column_spacing">4</property>
+                <child>
+                  <object class="GtkLabel" id="quick_server_label">
+                    <property name="can_focus">0</property>
+                    <property name="halign">start</property>
+                    <property name="valign">baseline</property>
+                    <property name="hexpand">1</property>
+                    <property name="label" translatable="yes">Server:</property>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="row">0</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkComboBox" id="quick_server_combo_box">
+                    <property name="can_focus">0</property>
+                    <property name="halign">end</property>
+                    <property name="valign">baseline</property>
+                    <child>
+                      <object class="GtkCellRendererText"/>
+                      <attributes>
+                        <attribute name="text">0</attribute>
+                      </attributes>
+                    </child>
+                    <layout>
+                      <property name="column">1</property>
+                      <property name="row">0</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="quick_nick_label">
+                    <property name="can_focus">0</property>
+                    <property name="halign">start</property>
+                    <property name="valign">baseline</property>
+                    <property name="hexpand">1</property>
+                    <property name="label" translatable="yes">Nickname:</property>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="row">1</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="quick_nick_entry">
+                    <property name="halign">end</property>
+                    <property name="valign">baseline</property>
+                    <layout>
+                      <property name="column">1</property>
+                      <property name="row">1</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </property>
+          </object>
         </child>
         <child>
-          <object class="GtkGrid" id="advanced_mode_grid">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="row_spacing">4</property>
-            <property name="column_spacing">4</property>
-            <child>
-              <object class="GtkCheckButton" id="tls_noverify_check_button">
-                <property name="label" translatable="yes">Do not verify certificate</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <property name="halign">end</property>
-                <property name="valign">baseline</property>
-                <property name="draw_indicator">True</property>
-              </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">5</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkCheckButton" id="tls_check_button">
-                <property name="label" translatable="yes">Use secure connection</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="focus_on_click">False</property>
-                <property name="receives_default">False</property>
-                <property name="halign">end</property>
-                <property name="valign">baseline</property>
-                <property name="draw_indicator">True</property>
-              </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">4</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="password_label">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="halign">start</property>
-                <property name="valign">baseline</property>
-                <property name="hexpand">True</property>
-                <property name="label" translatable="yes">_Password:</property>
-                <property name="use_underline">True</property>
-                <property name="mnemonic_widget">password_entry</property>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="addr_label">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="halign">start</property>
-                <property name="valign">baseline</property>
-                <property name="hexpand">True</property>
-                <property name="label" translatable="yes">_Address:</property>
-                <property name="use_underline">True</property>
-                <property name="mnemonic_widget">host_entry</property>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="server_label">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="halign">start</property>
-                <property name="valign">baseline</property>
-                <property name="hexpand">True</property>
-                <property name="label" translatable="yes">_Server:</property>
-                <property name="use_underline">True</property>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkBox" id="addr_box">
-                <property name="name">password_box</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="halign">end</property>
-                <property name="valign">baseline</property>
-                <child>
-                  <object class="GtkEntry" id="host_entry">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="valign">baseline</property>
-                    <property name="input_purpose">url</property>
-                  </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label"> : </property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkEntry" id="port_entry">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="max_length">5</property>
-                    <property name="width_chars">5</property>
-                    <property name="input_purpose">number</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">3</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkComboBox" id="server_combo_box">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="halign">end</property>
-                <property name="valign">baseline</property>
-                <property name="has_entry">True</property>
-                <child>
-                  <object class="GtkCellRendererText"/>
-                  <attributes>
-                    <attribute name="text">0</attribute>
-                  </attributes>
-                </child>
-                <child internal-child="entry">
-                  <object class="GtkEntry">
-                    <property name="can_focus">True</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="nick_label">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="halign">start</property>
-                <property name="valign">baseline</property>
-                <property name="hexpand">True</property>
-                <property name="label" translatable="yes">_Nickname:</property>
-                <property name="use_underline">True</property>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">6</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkEntry" id="nick_entry">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="halign">end</property>
-                <property name="valign">baseline</property>
-              </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">6</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkStack" id="login_method_stack">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="vhomogeneous">False</property>
-                <property name="transition_type">slide-up-down</property>
-                <child>
-                  <object class="GtkGrid" id="login_none_grid">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="name">none</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkGrid" id="login_password_grid">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="row_spacing">4</property>
-                    <property name="column_spacing">4</property>
-                    <child>
-                      <object class="GtkLabel" id="login_password_label">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="valign">baseline</property>
-                        <property name="hexpand">True</property>
-                        <property name="label" translatable="yes">Login password:</property>
-                      </object>
-                      <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkEntry" id="login_password_entry">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="halign">end</property>
-                        <property name="valign">baseline</property>
-                        <property name="visibility">False</property>
-                        <property name="invisible_char">●</property>
-                        <property name="input_purpose">password</property>
-                      </object>
-                      <packing>
-                        <property name="left_attach">1</property>
-                        <property name="top_attach">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkCheckButton" id="remember_login_password_check_button">
-                        <property name="label" translatable="yes">Remember login password</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="draw_indicator">True</property>
-                      </object>
-                      <packing>
-                        <property name="left_attach">1</property>
-                        <property name="top_attach">1</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="name">password</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkGrid" id="login_cert_grid">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="row_spacing">4</property>
-                    <property name="column_spacing">4</property>
-                    <child>
-                      <object class="GtkFileChooserButton" id="login_cert_file_chooser_button">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="halign">end</property>
-                        <property name="valign">baseline</property>
-                        <property name="create_folders">False</property>
-                        <property name="filter">X509 Certificate</property>
-                        <property name="title" translatable="yes">Select a certificate file</property>
-                      </object>
-                      <packing>
-                        <property name="left_attach">1</property>
-                        <property name="top_attach">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel" id="login_cert_label">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="valign">baseline</property>
-                        <property name="hexpand">True</property>
-                        <property name="label" translatable="yes">Login certificate:</property>
-                      </object>
-                      <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">0</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="name">certificate</property>
-                    <property name="position">2</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">8</property>
-                <property name="width">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="login_method_label">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="halign">start</property>
-                <property name="valign">baseline</property>
-                <property name="hexpand">True</property>
-                <property name="label" translatable="yes">_Login method:</property>
-                <property name="use_underline">True</property>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">7</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkComboBox" id="login_method_combo_box">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="halign">end</property>
-                <property name="valign">baseline</property>
-                <property name="hexpand">True</property>
-                <child>
-                  <object class="GtkCellRendererText"/>
-                  <attributes>
-                    <attribute name="text">1</attribute>
-                  </attributes>
-                </child>
-              </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">7</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkEntry" id="password_entry">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="halign">end</property>
-                <property name="valign">baseline</property>
-                <property name="visibility">False</property>
-                <property name="invisible_char">●</property>
-                <property name="placeholder_text" translatable="yes">Optional</property>
-                <property name="input_purpose">password</property>
-              </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkCheckButton" id="remember_password_check_button">
-                <property name="label" translatable="yes">Remember password</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="focus_on_click">False</property>
-                <property name="receives_default">False</property>
-                <property name="halign">end</property>
-                <property name="valign">baseline</property>
-                <property name="draw_indicator">True</property>
-              </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">3</property>
-              </packing>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-          </object>
-          <packing>
+          <object class="GtkStackPage">
             <property name="name">advanced_mode_page</property>
             <property name="title" translatable="yes">Advanced Mode</property>
             <property name="position">1</property>
-          </packing>
+            <property name="child">
+              <object class="GtkGrid" id="advanced_mode_grid">
+                <property name="can_focus">0</property>
+                <property name="row_spacing">4</property>
+                <property name="column_spacing">4</property>
+                <child>
+                  <object class="GtkCheckButton" id="tls_noverify_check_button">
+                    <property name="label" translatable="yes">Do not verify certificate</property>
+                    <property name="halign">end</property>
+                    <property name="valign">baseline</property>
+                    <layout>
+                      <property name="column">1</property>
+                      <property name="row">5</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="tls_check_button">
+                    <property name="label" translatable="yes">Use secure connection</property>
+                    <property name="focus_on_click">0</property>
+                    <property name="halign">end</property>
+                    <property name="valign">baseline</property>
+                    <layout>
+                      <property name="column">1</property>
+                      <property name="row">4</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="password_label">
+                    <property name="can_focus">0</property>
+                    <property name="halign">start</property>
+                    <property name="valign">baseline</property>
+                    <property name="hexpand">1</property>
+                    <property name="label" translatable="yes">_Password:</property>
+                    <property name="use_underline">1</property>
+                    <property name="mnemonic_widget">password_entry</property>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="row">2</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="addr_label">
+                    <property name="can_focus">0</property>
+                    <property name="halign">start</property>
+                    <property name="valign">baseline</property>
+                    <property name="hexpand">1</property>
+                    <property name="label" translatable="yes">_Address:</property>
+                    <property name="use_underline">1</property>
+                    <property name="mnemonic_widget">host_entry</property>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="row">1</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="server_label">
+                    <property name="can_focus">0</property>
+                    <property name="halign">start</property>
+                    <property name="valign">baseline</property>
+                    <property name="hexpand">1</property>
+                    <property name="label" translatable="yes">_Server:</property>
+                    <property name="use_underline">1</property>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="row">0</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox" id="addr_box">
+                    <property name="name">password_box</property>
+                    <property name="can_focus">0</property>
+                    <property name="halign">end</property>
+                    <property name="valign">baseline</property>
+                    <child>
+                      <object class="GtkEntry" id="host_entry">
+                        <property name="hexpand">1</property>
+                        <property name="valign">baseline</property>
+                        <property name="input_purpose">url</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="can_focus">0</property>
+                        <property name="label"> : </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkEntry" id="port_entry">
+                        <property name="max_length">5</property>
+                        <property name="width_chars">5</property>
+                        <property name="input_purpose">number</property>
+                      </object>
+                    </child>
+                    <layout>
+                      <property name="column">1</property>
+                      <property name="row">1</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkComboBox" id="server_combo_box">
+                    <property name="can_focus">0</property>
+                    <property name="halign">end</property>
+                    <property name="valign">baseline</property>
+                    <property name="has_entry">1</property>
+                    <child>
+                      <object class="GtkCellRendererText"/>
+                      <attributes>
+                        <attribute name="text">0</attribute>
+                      </attributes>
+                    </child>
+                    <property name="child">
+                      <object class="GtkEntry">
+                        <property name="visible">0</property>
+                      </object>
+                    </property>
+                    <layout>
+                      <property name="column">1</property>
+                      <property name="row">0</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="nick_label">
+                    <property name="can_focus">0</property>
+                    <property name="halign">start</property>
+                    <property name="valign">baseline</property>
+                    <property name="hexpand">1</property>
+                    <property name="label" translatable="yes">_Nickname:</property>
+                    <property name="use_underline">1</property>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="row">6</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="nick_entry">
+                    <property name="halign">end</property>
+                    <property name="valign">baseline</property>
+                    <layout>
+                      <property name="column">1</property>
+                      <property name="row">6</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkStack" id="login_method_stack">
+                    <property name="can_focus">0</property>
+                    <property name="vhomogeneous">0</property>
+                    <property name="transition_type">slide-up-down</property>
+                    <child>
+                      <object class="GtkStackPage">
+                        <property name="name">none</property>
+                        <property name="child">
+                          <object class="GtkGrid" id="login_none_grid">
+                            <property name="can_focus">0</property>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkStackPage">
+                        <property name="name">password</property>
+                        <property name="position">1</property>
+                        <property name="child">
+                          <object class="GtkGrid" id="login_password_grid">
+                            <property name="can_focus">0</property>
+                            <property name="row_spacing">4</property>
+                            <property name="column_spacing">4</property>
+                            <child>
+                              <object class="GtkLabel" id="login_password_label">
+                                <property name="can_focus">0</property>
+                                <property name="halign">start</property>
+                                <property name="valign">baseline</property>
+                                <property name="hexpand">1</property>
+                                <property name="label" translatable="yes">Login password:</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">0</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkEntry" id="login_password_entry">
+                                <property name="halign">end</property>
+                                <property name="valign">baseline</property>
+                                <property name="visibility">0</property>
+                                <property name="invisible_char">●</property>
+                                <property name="input_purpose">password</property>
+                                <layout>
+                                  <property name="column">1</property>
+                                  <property name="row">0</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="remember_login_password_check_button">
+                                <property name="label" translatable="yes">Remember login password</property>
+                                <layout>
+                                  <property name="column">1</property>
+                                  <property name="row">1</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkStackPage">
+                        <property name="name">certificate</property>
+                        <property name="position">2</property>
+                        <property name="child">
+                          <object class="GtkGrid" id="login_cert_grid">
+                            <property name="can_focus">0</property>
+                            <property name="row_spacing">4</property>
+                            <property name="column_spacing">4</property>
+                            <child>
+                              <object class="GtkFileChooserButton" id="login_cert_file_chooser_button">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="halign">end</property>
+                                <property name="valign">baseline</property>
+                                <property name="create_folders">False</property>
+                                <property name="filter">X509 Certificate</property>
+                                <property name="title" translatable="yes">Select a certificate file</property>
+                                <layout>
+                                  <property name="column">1</property>
+                                  <property name="row">0</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="login_cert_label">
+                                <property name="can_focus">0</property>
+                                <property name="halign">start</property>
+                                <property name="valign">baseline</property>
+                                <property name="hexpand">1</property>
+                                <property name="label" translatable="yes">Login certificate:</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">0</property>
+                                </layout>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="row">8</property>
+                      <property name="column-span">2</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="login_method_label">
+                    <property name="can_focus">0</property>
+                    <property name="halign">start</property>
+                    <property name="valign">baseline</property>
+                    <property name="hexpand">1</property>
+                    <property name="label" translatable="yes">_Login method:</property>
+                    <property name="use_underline">1</property>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="row">7</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkComboBox" id="login_method_combo_box">
+                    <property name="can_focus">0</property>
+                    <property name="halign">end</property>
+                    <property name="valign">baseline</property>
+                    <property name="hexpand">1</property>
+                    <child>
+                      <object class="GtkCellRendererText"/>
+                      <attributes>
+                        <attribute name="text">1</attribute>
+                      </attributes>
+                    </child>
+                    <layout>
+                      <property name="column">1</property>
+                      <property name="row">7</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="password_entry">
+                    <property name="halign">end</property>
+                    <property name="valign">baseline</property>
+                    <property name="visibility">0</property>
+                    <property name="invisible_char">●</property>
+                    <property name="placeholder_text" translatable="yes">Optional</property>
+                    <property name="input_purpose">password</property>
+                    <layout>
+                      <property name="column">1</property>
+                      <property name="row">2</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="remember_password_check_button">
+                    <property name="label" translatable="yes">Remember password</property>
+                    <property name="focus_on_click">0</property>
+                    <property name="halign">end</property>
+                    <property name="valign">baseline</property>
+                    <layout>
+                      <property name="column">1</property>
+                      <property name="row">3</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+              </object>
+            </property>
+          </object>
         </child>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">1</property>
-      </packing>
     </child>
     <child>
       <object class="GtkButtonBox">
@@ -538,23 +472,18 @@
         <child>
           <object class="GtkButton" id="cancel_button">
             <property name="label" translatable="yes">Cancel</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
+            <property name="receives_default">1</property>
           </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="position">1</property>
-            <property name="secondary">True</property>
           </packing>
         </child>
         <child>
           <object class="GtkButton" id="connect_button">
             <property name="label" translatable="yes">Connect</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
+            <property name="receives_default">1</property>
           </object>
           <packing>
             <property name="expand">True</property>
@@ -563,11 +492,6 @@
           </packing>
         </child>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">4</property>
-      </packing>
     </child>
   </template>
   <object class="GtkSizeGroup" id="advanced_mode_size_group">

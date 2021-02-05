@@ -1,120 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
 <interface>
-  <requires lib="gtk+" version="3.16"/>
+  <requires lib="gtk" version="4.0"/>
   <template class="SuiSideBarItem" parent="GtkBox">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="can_focus">0</property>
     <property name="orientation">vertical</property>
     <child>
       <object class="GtkBox" id="title_box">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can_focus">0</property>
         <child>
           <object class="GtkImage" id="image">
             <property name="width_request">16</property>
             <property name="height_request">16</property>
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can_focus">0</property>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
         </child>
         <child>
           <object class="GtkLabel" id="title_label">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can_focus">0</property>
             <property name="label">&lt;buffer&gt;</property>
             <property name="ellipsize">end</property>
-            <property name="single_line_mode">True</property>
+            <property name="single_line_mode">1</property>
             <property name="max_width_chars">32</property>
             <style>
               <class name="sui-title"/>
             </style>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
         </child>
         <child>
           <object class="GtkLabel" id="subtitle_label">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can_focus">0</property>
             <property name="label">&lt;server&gt;</property>
             <property name="ellipsize">end</property>
             <style>
               <class name="sui-subtitle"/>
             </style>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="pack_type">end</property>
-            <property name="position">2</property>
-          </packing>
         </child>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">1</property>
-      </packing>
     </child>
     <child>
       <object class="GtkBox" id="message_box">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can_focus">0</property>
         <child>
           <object class="GtkLabel" id="recent_message_label">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can_focus">0</property>
             <property name="label">&lt;user&gt;: &lt;message excerpt&gt;</property>
             <property name="ellipsize">end</property>
             <style>
               <class name="dim-label"/>
             </style>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
         </child>
         <child>
           <object class="GtkLabel" id="unread_count_label">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can_focus">0</property>
             <property name="label">&lt;unread count&gt;</property>
             <property name="justify">right</property>
             <property name="ellipsize">end</property>
             <property name="width_chars">1</property>
-            <property name="single_line_mode">True</property>
+            <property name="single_line_mode">1</property>
             <property name="max_width_chars">3</property>
             <attributes>
-              <attribute name="font-desc" value="&lt;输入值&gt; 9"/>
+              <attribute name="font-desc" value="&lt;输入值&gt; 9"></attribute>
             </attributes>
             <style>
               <class name="sui-unread-count"/>
             </style>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="pack_type">end</property>
-            <property name="position">2</property>
-          </packing>
         </child>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">2</property>
-      </packing>
     </child>
     <style>
       <class name="sui-side-bar-item"/>

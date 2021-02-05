@@ -1,50 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
 <interface>
-  <requires lib="gtk+" version="3.16"/>
+  <requires lib="gtk" version="4.0"/>
   <template class="SuiUserList" parent="GtkBox">
     <property name="name">user_list_box</property>
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="can_focus">0</property>
     <property name="orientation">vertical</property>
     <child>
       <object class="GtkLabel" id="stat_label">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="margin_left">2</property>
-        <property name="margin_right">2</property>
+        <property name="can_focus">0</property>
+        <property name="margin-start">2</property>
+        <property name="margin-end">2</property>
         <property name="margin_top">2</property>
         <property name="margin_bottom">2</property>
-        <property name="use_markup">True</property>
-        <property name="wrap">True</property>
+        <property name="use_markup">1</property>
+        <property name="wrap">1</property>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">0</property>
-      </packing>
     </child>
     <child>
       <object class="GtkSeparator">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can_focus">0</property>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">1</property>
-      </packing>
     </child>
     <child>
       <object class="GtkScrolledWindow">
+        <property name="vexpand">1</property>
         <property name="width_request">150</property>
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <child>
+        <property name="child">
           <object class="GtkTreeView" id="user_tree_view">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="headers_visible">False</property>
+            <property name="headers_visible">0</property>
             <property name="search_column">0</property>
             <child internal-child="selection">
               <object class="GtkTreeSelection"/>
@@ -60,13 +43,8 @@
               </object>
             </child>
           </object>
-        </child>
+        </property>
       </object>
-      <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
-        <property name="position">2</property>
-      </packing>
     </child>
   </template>
 </interface>
