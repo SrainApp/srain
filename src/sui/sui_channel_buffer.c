@@ -35,7 +35,7 @@
 struct _SuiChannelBuffer {
     SuiChatBuffer parent;
 
-    GtkMenuItem *leave_menu_item;
+    void *leave_menu_item;
 };
 
 struct _SuiChannelBufferClass {
@@ -54,16 +54,16 @@ static void sui_channel_buffer_init(SuiChannelBuffer *self){
     GtkBuilder *builder;
 
     /* Init menus */
-    builder = gtk_builder_new_from_resource("/im/srain/Srain/buffer_menu.glade");
-    self->leave_menu_item =
-        (GtkMenuItem *)gtk_builder_get_object(builder, "leave_menu_item");
-    gtk_menu_shell_append(
-            GTK_MENU_SHELL(sui_buffer_get_menu(SUI_BUFFER(self))),
-            GTK_WIDGET(self->leave_menu_item));
-    g_object_unref(builder);
+    // builder = gtk_builder_new_from_resource("/im/srain/Srain/buffer_menu.glade");
+    // self->leave_menu_item =
+    //     (GtkMenuItem *)gtk_builder_get_object(builder, "leave_menu_item");
+    // gtk_menu_shell_append(
+    //         GTK_MENU_SHELL(sui_buffer_get_menu(SUI_BUFFER(self))),
+    //         GTK_WIDGET(self->leave_menu_item));
+    // g_object_unref(builder);
 
-    g_signal_connect(self->leave_menu_item, "activate",
-            G_CALLBACK(leave_menu_item_on_activate), self);
+    // g_signal_connect(self->leave_menu_item, "activate",
+            // G_CALLBACK(leave_menu_item_on_activate), self);
 }
 
 static void sui_channel_buffer_finalize(GObject *object){
@@ -83,10 +83,10 @@ static void sui_channel_buffer_class_init(SuiChannelBufferClass *class){
     gtk_widget_class_set_template_from_resource(
             widget_class, "/im/srain/Srain/buffer.glade");
 
-    gtk_widget_class_bind_template_child_full(widget_class,
-            "leave_menu_item",
-            FALSE,
-            G_STRUCT_OFFSET(SuiChannelBuffer, leave_menu_item));
+    // gtk_widget_class_bind_template_child_full(widget_class,
+    //         "leave_menu_item",
+    //         FALSE,
+    //         G_STRUCT_OFFSET(SuiChannelBuffer, leave_menu_item));
 }
 
 /*****************************************************************************

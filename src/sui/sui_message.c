@@ -240,62 +240,6 @@ SuiNotification* sui_message_new_notification(SuiMessage *self){
     return class->new_notification(self);
 }
 
-void sui_message_label_on_popup(GtkLabel *label, GtkMenu *menu, gpointer user_data){
-    int n;
-    GList *lst;
-    GtkMenuItem *copy_menu_item;
-    GtkMenuItem *forward_menu_item;
-    GtkMenu *forward_submenu;
-    SuiMessage *self;
-
-    self = SUI_MESSAGE(user_data);
-
-    /* Create menuitem copy_menu_item */
-    copy_menu_item = GTK_MENU_ITEM(gtk_menu_item_new_with_label(_("Copy message")));
-    gtk_widget_show(GTK_WIDGET(copy_menu_item));
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), GTK_WIDGET(copy_menu_item));
-    g_signal_connect(copy_menu_item, "activate",
-                G_CALLBACK(copy_menu_item_on_activate), self);
-
-    /* Create menuitem forward_menu_item */
-    forward_menu_item = GTK_MENU_ITEM(gtk_menu_item_new_with_label(_("Forward to...")));
-    gtk_widget_show(GTK_WIDGET(forward_menu_item));
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), GTK_WIDGET(forward_menu_item));
-
-    /* Create submenu of forward_menu_item */
-    n = 0;
-    forward_submenu = GTK_MENU(gtk_menu_new());
-    if (SUI_IS_SERVER_BUFFER(self->buf)){
-        lst = sui_server_buffer_get_buffer_list(SUI_SERVER_BUFFER(self->buf));
-    } else if (SUI_IS_CHAT_BUFFER(self->buf)){
-        lst = sui_server_buffer_get_buffer_list(
-                sui_chat_buffer_get_server_buffer(SUI_CHAT_BUFFER(self->buf)));
-    } else {
-        lst = NULL;
-        g_warn_if_reached();
-    }
-    while (lst){
-        GtkMenuItem *item;
-
-        item = GTK_MENU_ITEM(gtk_menu_item_new_with_label(
-                    sui_buffer_get_name(SUI_BUFFER(lst->data))));
-        gtk_widget_show(GTK_WIDGET(item));
-        g_signal_connect(item, "activate",
-                G_CALLBACK(froward_submenu_item_on_activate), self);
-        gtk_menu_shell_append(GTK_MENU_SHELL(forward_submenu), GTK_WIDGET(item));
-
-        n++;
-        lst = g_list_next(lst);
-    }
-
-    if (n > 0) {
-        gtk_menu_item_set_submenu(forward_menu_item, GTK_WIDGET(forward_submenu));
-    } else {
-        g_object_ref_sink(forward_submenu); // remove the floating reference
-        g_object_unref(forward_submenu);
-    }
-}
-
 const char* sui_message_get_time(SuiMessage *self){
     SrnMessage *ctx;
 
@@ -332,16 +276,16 @@ static void sui_message_real_update(SuiMessage *self){
 
     // Show url previewer if needed
     if (self->buf->cfg->preview_url) {
-        GList *children;
         GList *urls;
-        children = gtk_container_get_children(GTK_CONTAINER(self->content_box));
         urls = self->ctx->urls;
 
         for (GList *url = urls; url; url = g_list_next(url)) {
             bool found;
 
             found = FALSE;
-            for (GList *child = children; child; child = g_list_next(child)) {
+            for (GList *child = gtk_widget_get_first_child(self->content_box);
+                    child;
+                    child = gtk_widget_get_next_sibling(child)) {
                 if (SUI_IS_URL_PREVIEWER(child->data)) {
                     SuiUrlPreviewer *pvr;
 
@@ -476,89 +420,27 @@ static void sui_message_set_ctx(SuiMessage *self, void *ctx){
 
 static void copy_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
     char* copied;
-    GtkClipboard *cb;
+    GdkClipboard *cb;
     SuiMessage *self;
 
     self = SUI_MESSAGE(user_data);
 
     // Get the clipboard object
-    cb = gtk_widget_get_clipboard(GTK_WIDGET(self), GDK_SELECTION_CLIPBOARD);
+    cb = gtk_widget_get_clipboard(GTK_WIDGET(self));
     copied = srn_message_to_string(self->ctx);
-    gtk_clipboard_set_text(cb, copied, -1);
+    gdk_clipboard_set_text(cb, copied);
     g_free(copied);
-}
-
-static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_data){
-    const char *target;
-    char *sel;
-    GList *msg_lst;
-    GList *buf_lst;
-    SuiMessage *self;
-
-    self = SUI_MESSAGE(user_data);
-    target = gtk_menu_item_get_label(GTK_MENU_ITEM(widget));
-
-    sel = label_get_selection(self->message_label);
-    if (!sel){
-        return;
-    }
-
-    msg_lst = NULL;
-    for (char *line =  strtok(sel, "\n"); line; line = strtok(NULL, "\n")){
-        char *msg;
-
-        msg = g_strdup_printf(_("%1$s <fwd %2$s@%3$s>"), line,
-                self->ctx->sender->srv_user->nick, self->ctx->chat->name);
-        msg_lst = g_list_append(msg_lst, msg);
-    }
-
-    /* Get buffer list */
-    if (SUI_IS_SERVER_BUFFER(self->buf)){
-        buf_lst = sui_server_buffer_get_buffer_list(SUI_SERVER_BUFFER(self->buf));
-    } else if (SUI_IS_CHAT_BUFFER(self->buf)){
-        buf_lst = sui_server_buffer_get_buffer_list(
-                sui_chat_buffer_get_server_buffer(SUI_CHAT_BUFFER(self->buf)));
-    } else {
-        buf_lst = NULL;
-        g_warn_if_reached();
-    }
-
-    /* Find target buffer */
-    for (GList *lst = buf_lst; lst; lst = g_list_next(lst)){
-        SuiBuffer *buf;
-
-        buf = lst->data;
-        if (g_strcmp0(sui_buffer_get_name(buf), target) != 0) {
-            continue;
-        }
-
-        for (GList *mlst = msg_lst; mlst; mlst = g_list_next(mlst)) {
-            GVariantDict *params;
-
-            params = g_variant_dict_new(NULL);
-            g_variant_dict_insert(params, "message", SUI_EVENT_PARAM_STRING, mlst->data);
-            sui_buffer_event_hdr(buf, SUI_EVENT_SEND, params);
-            g_variant_dict_unref(params);
-        }
-        break;
-    }
-
-    g_list_free_full(msg_lst, g_free);
-    g_free(sel);
 }
 
 static void url_previewer_on_notify_content_type(GObject *object,
         GParamSpec *pspec, gpointer data){
-    GtkContainer *container;
     SuiUrlPreviewer *pvr;
 
     pvr = SUI_URL_PREVIEWER(object);
-    container = GTK_CONTAINER(data);
 
     switch (sui_url_previewer_get_content_type(pvr)){
         case SUI_URL_CONTENT_TYPE_UNSUPPORTED:
         case SUI_URL_CONTENT_TYPE_UNKNOWN:
-            gtk_container_remove(container, GTK_WIDGET(pvr));
             break;
         default:
             gtk_widget_show(GTK_WIDGET(pvr));

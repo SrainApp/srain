@@ -48,8 +48,8 @@ struct _SuiUser {
     SuiUserStat *stat;
 };
 
-static cairo_surface_t* new_user_icon_from_type(SrnChatUserType type,
-        GtkStyleContext *style_context, GdkWindow *window);
+// static cairo_surface_t* new_user_icon_from_type(SrnChatUserType type,
+        // GtkStyleContext *style_context, GdkWindow *window);
 
 /*****************************************************************************
  * Expored functions
@@ -96,7 +96,7 @@ int sui_user_compare(SuiUser *user1, SuiUser *user2){
 }
 
 void sui_user_update(SuiUser *self, GtkStyleContext *style_context,
-        GdkWindow *window){
+        void *window){
     g_return_if_fail(self->list);
     g_return_if_fail(self->stat);
     g_return_if_fail(self->ctx);
@@ -136,15 +136,15 @@ void sui_user_update(SuiUser *self, GtkStyleContext *style_context,
     }
     self->type = self->ctx->type;
 
-    cairo_surface_t *icon = new_user_icon_from_type(self->ctx->type,
-            style_context, window);
+    // cairo_surface_t *icon = new_user_icon_from_type(self->ctx->type,
+            // style_context, window);
     gtk_list_store_set(self->list, (GtkTreeIter *)self,
             COL_NAME, self->ctx->srv_user->nick,
-            COL_ICON, icon,
+            // COL_ICON, icon,
             COL_USER, self->ctx,
             COL_TYPE, self->ctx->type,
             -1);
-    cairo_surface_destroy(icon);
+    // cairo_surface_destroy(icon);
 }
 
 void sui_user_set_list(SuiUser *self, GtkListStore *list){
@@ -171,72 +171,72 @@ const char* sui_user_get_nickname(SuiUser *self){
  * Static functions
  *****************************************************************************/
 
-static cairo_surface_t* new_user_icon_from_type(SrnChatUserType type,
-        GtkStyleContext *style_context, GdkWindow *window){
-    const char *color_str;
-    GError *err;
-    GdkRGBA fg_color;
-    GdkPixbuf *pixbuf;
-    GtkIconInfo *icon_info;
-    cairo_surface_t *surface;
-
-    switch (type){
-        case SRN_CHAT_USER_TYPE_ADMIN:
-        case SRN_CHAT_USER_TYPE_OWNER:
-        case SRN_CHAT_USER_TYPE_FULL_OP:
-            color_str = "#157915";
-            break;
-        case SRN_CHAT_USER_TYPE_HALF_OP:
-            color_str = "#856117";
-            break;
-        case SRN_CHAT_USER_TYPE_VOICED:
-            color_str = "#451984";
-            break;
-        case SRN_CHAT_USER_TYPE_CHIGUA:
-            color_str = NULL;
-            break;
-        default:
-            color_str = NULL;
-            g_warn_if_reached();
-    }
-    if (color_str && !gdk_rgba_parse(&fg_color, color_str)) {
-        ERR_FR("Failed to parser color str %s", color_str);
-    }
-
-    icon_info = gtk_icon_theme_lookup_icon_for_scale(
-            gtk_icon_theme_get_default(),
-            "user-available",
-            16,
-            gdk_window_get_scale_factor(window),
-            GTK_ICON_LOOKUP_FORCE_SYMBOLIC);
-    if (!icon_info) {
-        icon_info = gtk_icon_theme_lookup_icon_for_scale(
-                gtk_icon_theme_get_default(),
-                "user-available",
-                16,
-                gdk_window_get_scale_factor(window),
-                0);
-    }
-    g_return_val_if_fail(icon_info, NULL);
-
-    err = NULL;
-    if (color_str) {
-        pixbuf = gtk_icon_info_load_symbolic(icon_info, &fg_color,
-                NULL, NULL, NULL, NULL, &err);
-    } else {
-        // Use default foreground color
-        pixbuf = gtk_icon_info_load_symbolic_for_context(icon_info,
-                style_context, NULL, &err);
-    }
-    g_object_unref(icon_info);
-    if (err) {
-        ERR_FR("Failed to load user icon: %s", err->message);
-        g_error_free(err);
-    }
-
-    g_return_val_if_fail(pixbuf, NULL);
-    surface = gdk_cairo_surface_create_from_pixbuf(pixbuf,
-            gdk_window_get_scale_factor(window), window);
-    g_object_unref(pixbuf);
-    return surface;
-}
+// static cairo_surface_t* new_user_icon_from_type(SrnChatUserType type,
+//         GtkStyleContext *style_context, GdkWindow *window){
+//     const char *color_str;
+//     GError *err;
+//     GdkRGBA fg_color;
+//     GdkPixbuf *pixbuf;
+//     GtkIconInfo *icon_info;
+//     cairo_surface_t *surface;
+// 
+//     switch (type){
+//         case SRN_CHAT_USER_TYPE_ADMIN:
+//         case SRN_CHAT_USER_TYPE_OWNER:
+//         case SRN_CHAT_USER_TYPE_FULL_OP:
+//             color_str = "#157915";
+//             break;
+//         case SRN_CHAT_USER_TYPE_HALF_OP:
+//             color_str = "#856117";
+//             break;
+//         case SRN_CHAT_USER_TYPE_VOICED:
+//             color_str = "#451984";
+//             break;
+//         case SRN_CHAT_USER_TYPE_CHIGUA:
+//             color_str = NULL;
+//             break;
+//         default:
+//             color_str = NULL;
+//             g_warn_if_reached();
+//     }
+//     if (color_str && !gdk_rgba_parse(&fg_color, color_str)) {
+//         ERR_FR("Failed to parser color str %s", color_str);
+//     }
+// 
+//     icon_info = gtk_icon_theme_lookup_icon_for_scale(
+//             gtk_icon_theme_get_default(),
+//             "user-available",
+//             16,
+//             gdk_window_get_scale_factor(window),
+//             GTK_ICON_LOOKUP_FORCE_SYMBOLIC);
+//     if (!icon_info) {
+//         icon_info = gtk_icon_theme_lookup_icon_for_scale(
+//                 gtk_icon_theme_get_default(),
+//                 "user-available",
+//                 16,
+//                 gdk_window_get_scale_factor(window),
+//                 0);
+//     }
+//     g_return_val_if_fail(icon_info, NULL);
+// 
+//     err = NULL;
+//     if (color_str) {
+//         pixbuf = gtk_icon_info_load_symbolic(icon_info, &fg_color,
+//                 NULL, NULL, NULL, NULL, &err);
+//     } else {
+//         // Use default foreground color
+//         pixbuf = gtk_icon_info_load_symbolic_for_context(icon_info,
+//                 style_context, NULL, &err);
+//     }
+//     g_object_unref(icon_info);
+//     if (err) {
+//         ERR_FR("Failed to load user icon: %s", err->message);
+//         g_error_free(err);
+//     }
+// 
+//     g_return_val_if_fail(pixbuf, NULL);
+//     surface = gdk_cairo_surface_create_from_pixbuf(pixbuf,
+//             gdk_window_get_scale_factor(window), window);
+//     g_object_unref(pixbuf);
+//     return surface;
+// }

@@ -78,7 +78,7 @@ SrnRet sui_theme_manager_apply(SuiThemeManager *self, const char *theme){
     char *file;
     GError *err;
     GtkCssProvider *css;
-    GdkScreen *screen;
+    // GdkScreen *screen;
     SrnRet ret;
 
     if (!self->settings) {
@@ -96,27 +96,20 @@ SrnRet sui_theme_manager_apply(SuiThemeManager *self, const char *theme){
     }
 
     css = gtk_css_provider_new();
-    err = NULL;
-    gtk_css_provider_load_from_path(css, file, &err);
-    if (err) {
-        ret = RET_ERR(_("Failed to apply theme from file \"%1$s\": %2$s"),
-                file, err->message);
-        g_object_unref(css);
-        goto FIN;
-    }
+    gtk_css_provider_load_from_path(css, file);
 
-    screen = gdk_screen_get_default();
+    // screen = gdk_screen_get_default();
 
     if (self->provider) { // Clear prevsiou theme
         str_assign(&self->theme, NULL);
-        gtk_style_context_remove_provider_for_screen(screen, self->provider);
+        // gtk_style_context_remove_provider_for_screen(screen, self->provider);
         g_object_unref(self->provider);
         self->provider = NULL;
     }
 
     self->provider = GTK_STYLE_PROVIDER(g_object_ref(css));
-    gtk_style_context_add_provider_for_screen(screen, self->provider,
-            GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+    // gtk_style_context_add_provider_for_screen(screen, self->provider,
+            // GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
     str_assign(&self->theme, theme);
 
     ret = SRN_OK;

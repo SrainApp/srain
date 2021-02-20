@@ -34,7 +34,7 @@ struct _SuiChatBuffer {
 
     SuiServerBuffer *server_buffer;
 
-    GtkCheckMenuItem *user_list_menu_item;
+    void *user_list_menu_item;
     GtkRevealer *user_list_revealer;
     SuiUserList *user_list;
 };

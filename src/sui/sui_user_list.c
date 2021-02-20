@@ -63,8 +63,6 @@ static void stat_label_update_stat(SuiUserList *self);
 static int user_list_store_sort_func(GtkTreeModel *model,
         GtkTreeIter *iter1, GtkTreeIter *iter2, gpointer user_data);
 
-static gboolean user_tree_view_on_popup(GtkWidget *widget,
-        GdkEventButton *event, gpointer user_data);
 static void user_list_store_on_row_changed(GtkTreeModel *tree_model,
         GtkTreePath *path, GtkTreeIter *iter, gpointer user_data);
 static void on_style_updated(SuiUserList *self, gpointer user_data);
@@ -81,12 +79,12 @@ static void sui_user_list_init(SuiUserList *self){
     user_tree_view_set_model(self);
     stat_label_update_stat(self);
 
-    g_signal_connect(self->user_tree_view, "button-press-event",
-            G_CALLBACK(user_tree_view_on_popup), NULL);
-    g_signal_connect(self->user_list_store, "row-changed",
-            G_CALLBACK(user_list_store_on_row_changed), self);
-    g_signal_connect(self, "style-updated",
-            G_CALLBACK(on_style_updated), NULL);
+    // g_signal_connect(self->user_tree_view, "button-press-event",
+    //         G_CALLBACK(user_tree_view_on_popup), NULL);
+    // g_signal_connect(self->user_list_store, "row-changed",
+    //         G_CALLBACK(user_list_store_on_row_changed), self);
+    // g_signal_connect(self, "style-updated",
+    //         G_CALLBACK(on_style_updated), NULL);
 }
 
 static void sui_user_list_class_init(SuiUserListClass *class){
@@ -235,44 +233,6 @@ static int user_list_store_sort_func(GtkTreeModel *model,
     sui_user_free(user2);
 
     return ret;
-}
-
-static gboolean user_tree_view_on_popup(GtkWidget *widget,
-        GdkEventButton *event, gpointer user_data){
-    GtkTreeView *view;
-    GtkTreeModel *model;
-    GtkTreeModel *child_model;
-    GtkTreeIter iter;
-    GtkTreeIter child_iter;
-    GtkTreeSelection *selection;
-    SuiUser *user;
-    SrnChatUser *chat_user;
-
-    if (event->button != 3){
-        return FALSE;
-    }
-
-    view = GTK_TREE_VIEW(widget);
-    model = gtk_tree_view_get_model(view);
-    selection = gtk_tree_view_get_selection(view);
-    if (!gtk_tree_selection_get_selected(selection, &model, &iter)){
-        /* If not row is selected, just return */
-        return FALSE;
-    }
-    child_model = gtk_tree_model_filter_get_model(GTK_TREE_MODEL_FILTER(model));
-    gtk_tree_model_filter_convert_iter_to_child_iter(
-            GTK_TREE_MODEL_FILTER(model), &child_iter, &iter);
-
-    user = sui_user_new_from_iter(GTK_LIST_STORE(child_model), &child_iter);
-    chat_user = sui_user_get_ctx(user);
-    g_return_val_if_fail(chat_user, FALSE);
-
-    // TODO: impl SuiUserPanel
-    nick_menu_popup(widget, event, chat_user->srv_user->nick);
-
-    sui_user_free(user);
-
-    return TRUE;
 }
 
 static void user_list_store_on_row_changed(GtkTreeModel *tree_model,

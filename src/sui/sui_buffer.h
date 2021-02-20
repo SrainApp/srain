@@ -42,8 +42,8 @@ struct _SuiBuffer {
     SuiBufferConfig *cfg;
 
     /* Menus */
-    GtkMenu *menu;
-    GtkCheckMenuItem *topic_menu_item;
+    void *menu;
+    void *topic_menu_item;
 
     /* Topic */
     GtkRevealer *topic_revealer;
@@ -90,7 +90,7 @@ const char* sui_buffer_get_name(SuiBuffer *self);
 const char* sui_buffer_get_remark(SuiBuffer *self);
 void sui_buffer_set_topic(SuiBuffer *self, const char *topic);
 void sui_buffer_set_topic_setter(SuiBuffer *self, const char *setter);
-GtkMenu* sui_buffer_get_menu(SuiBuffer *self);
+void* sui_buffer_get_menu(SuiBuffer *self);
 SuiMessageList* sui_buffer_get_message_list(SuiBuffer *self);
 GtkTextBuffer* sui_buffer_get_input_text_buffer(SuiBuffer *self);
 

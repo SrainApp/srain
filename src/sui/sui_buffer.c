@@ -49,7 +49,7 @@ static void reset_browse_input(SuiBuffer *self);
 static void sui_buffer_set_ctx(SuiBuffer *self, void *ctx);
 static void sui_buffer_set_events(SuiBuffer *self, SuiBufferEvents *events);
 
-static void topic_menu_item_on_toggled(GtkWidget* widget, gpointer user_data);
+// static void topic_menu_item_on_toggled(GtkWidget* widget, gpointer user_data);
 
 /*****************************************************************************
  * GObject functions
@@ -124,13 +124,13 @@ static void sui_buffer_init(SuiBuffer *self){
     gtk_widget_init_template(GTK_WIDGET(self));
 
     /* Init menus */
-    builder = gtk_builder_new_from_resource("/im/srain/Srain/buffer_menu.glade");
-    self->topic_menu_item =
-        (GtkCheckMenuItem *)gtk_builder_get_object(builder, "topic_menu_item");
-    gtk_menu_shell_append(
-            GTK_MENU_SHELL(self->menu),
-            GTK_WIDGET(self->topic_menu_item));
-    g_object_unref(builder);
+    // builder = gtk_builder_new_from_resource("/im/srain/Srain/buffer_menu.glade");
+    // self->topic_menu_item =
+    //     (GtkCheckMenuItem *)gtk_builder_get_object(builder, "topic_menu_item");
+    // gtk_menu_shell_append(
+    //         GTK_MENU_SHELL(self->menu),
+    //         GTK_WIDGET(self->topic_menu_item));
+    // g_object_unref(builder);
 
     /* Init msg list */
     self->msg_list = sui_message_list_new();
@@ -143,8 +143,8 @@ static void sui_buffer_init(SuiBuffer *self){
 
     g_signal_connect(self->topic_label, "activate-link",
             G_CALLBACK(sui_common_activate_gtk_label_link), self);
-    g_signal_connect(self->topic_menu_item, "toggled",
-            G_CALLBACK(topic_menu_item_on_toggled), self);
+    // g_signal_connect(self->topic_menu_item, "toggled",
+            // G_CALLBACK(topic_menu_item_on_toggled), self);
 }
 
 static void sui_buffer_constructed(GObject *object){
@@ -215,7 +215,7 @@ static void sui_buffer_class_init(SuiBufferClass *class){
     gtk_widget_class_set_template_from_resource(
             widget_class, "/im/srain/Srain/buffer.glade");
 
-    gtk_widget_class_bind_template_child(widget_class, SuiBuffer, menu);
+    // gtk_widget_class_bind_template_child(widget_class, SuiBuffer, menu);
     gtk_widget_class_bind_template_child(widget_class, SuiBuffer, topic_revealer);
     gtk_widget_class_bind_template_child(widget_class, SuiBuffer, topic_label);
     gtk_widget_class_bind_template_child(widget_class, SuiBuffer, user_list_revealer);
@@ -260,7 +260,7 @@ void sui_buffer_insert_text(SuiBuffer *self, const char *text, int line, int off
 void sui_buffer_show_topic(SuiBuffer *self, bool isshow){
     g_return_if_fail(SUI_IS_BUFFER(self));
 
-    gtk_check_menu_item_set_active(self->topic_menu_item, isshow);
+    // gtk_check_menu_item_set_active(self->topic_menu_item, isshow);
 }
 
 /**
@@ -428,7 +428,7 @@ void sui_buffer_set_topic(SuiBuffer *self, const char *topic){
     g_return_if_fail(SUI_IS_BUFFER(self));
 
     gtk_label_set_markup(self->topic_label, topic);
-    gtk_check_menu_item_toggled(self->topic_menu_item);
+    // gtk_check_menu_item_toggled(self->topic_menu_item);
 }
 
 void sui_buffer_set_topic_setter(SuiBuffer *self, const char *setter){
@@ -443,7 +443,8 @@ SuiMessageList* sui_buffer_get_message_list(SuiBuffer *self){
     return self->msg_list;
 }
 
-GtkMenu* sui_buffer_get_menu(SuiBuffer *self){
+void* sui_buffer_get_menu(SuiBuffer *self){
+    return NULL;
     g_return_val_if_fail(SUI_IS_BUFFER(self), NULL);
 
     return self->menu;
@@ -467,21 +468,21 @@ static void sui_buffer_set_events(SuiBuffer *self, SuiBufferEvents *events){
     self->events = events;
 }
 
-static void topic_menu_item_on_toggled(GtkWidget* widget, gpointer user_data){
-    bool active;
-    SuiBuffer *self = SUI_BUFFER(user_data);
-    GtkCheckMenuItem *item = GTK_CHECK_MENU_ITEM(widget);
-
-    active = gtk_check_menu_item_get_active(item);
-    gtk_revealer_set_reveal_child(self->topic_revealer, active);
-
-    // If topic is empty, do not show it anyway
-    if (strlen(gtk_label_get_text(self->topic_label)) != 0){
-        gtk_widget_show(GTK_WIDGET(self->topic_label));
-    } else {
-        gtk_widget_hide(GTK_WIDGET(self->topic_label));
-    }
-}
+// static void topic_menu_item_on_toggled(GtkWidget* widget, gpointer user_data){
+//     bool active;
+//     SuiBuffer *self = SUI_BUFFER(user_data);
+//     GtkCheckMenuItem *item = GTK_CHECK_MENU_ITEM(widget);
+// 
+//     active = gtk_check_menu_item_get_active(item);
+//     gtk_revealer_set_reveal_child(self->topic_revealer, active);
+// 
+//     // If topic is empty, do not show it anyway
+//     if (strlen(gtk_label_get_text(self->topic_label)) != 0){
+//         gtk_widget_show(GTK_WIDGET(self->topic_label));
+//     } else {
+//         gtk_widget_hide(GTK_WIDGET(self->topic_label));
+//     }
+// }
 
 static GtkListStore* real_completion_func(SuiBuffer *self, const char *context){
     const char *prev;

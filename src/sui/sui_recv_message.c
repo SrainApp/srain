@@ -37,10 +37,10 @@ static void sui_recv_message_update(SuiMessage *msg);
 static void sui_recv_message_compose_prev(SuiMessage *_self, SuiMessage *_prev);
 static void sui_recv_message_compose_next(SuiMessage *_self, SuiMessage *_next);
 
-static void sender_event_box_on_button_press(GtkWidget *widget,
-        GdkEventButton *event, gpointer user_data);
-static void sender_event_box_on_button_release(GtkWidget *widget,
-        GdkEventButton *event, gpointer user_data);
+static void sender_event_box_on_button_press(GtkGestureClick *gesture,
+         int n_press, double x, double y);
+static void sender_event_box_on_button_release(GtkGestureClick *gesture,
+         int n_press, double x, double y);
 
 /*****************************************************************************
  * GObject functions
@@ -55,10 +55,12 @@ static void sui_recv_message_init(SuiRecvMessage *self){
             G_CALLBACK(sui_common_activate_gtk_label_link), self);
     g_signal_connect(SUI_MESSAGE(self)->message_label, "populate-popup",
             G_CALLBACK(sui_message_label_on_popup), self);
-    g_signal_connect(self->sender_event_box, "button-press-event",
-            G_CALLBACK(sender_event_box_on_button_press), self);
-    g_signal_connect(self->sender_event_box, "button-release-event",
-            G_CALLBACK(sender_event_box_on_button_release), self);
+
+    GtkEventController *controller = gtk_gesture_click_new();
+     g_signal_handler_connect(controller, "pressed",
+             G_CALLBACK(sender_event_box_on_button_press), NULL);
+     g_signal_handler_connect(controller, "released",
+             G_CALLBACK(sender_event_box_on_button_release), NULL);
 
 }
 
@@ -73,7 +75,6 @@ static void sui_recv_message_class_init(SuiRecvMessageClass *class){
     gtk_widget_class_bind_template_child(widget_class, SuiMessage, message_label);
     gtk_widget_class_bind_template_child(widget_class, SuiRecvMessage, time_label);
     gtk_widget_class_bind_template_child(widget_class, SuiRecvMessage, sender_box);
-    gtk_widget_class_bind_template_child(widget_class, SuiRecvMessage, sender_event_box);
     gtk_widget_class_bind_template_child(widget_class, SuiRecvMessage, sender_label);
     gtk_widget_class_bind_template_child(widget_class, SuiRecvMessage, remark_label);
 
@@ -143,29 +144,33 @@ SuiRecvMessage *sui_recv_message_new(void *ctx){
  * Static functions
  *****************************************************************************/
 
-static void sender_event_box_on_button_press(GtkWidget *widget,
-        GdkEventButton *event, gpointer user_data){
+static void sender_event_box_on_button_press(GtkGestureClick *gesture,
+         int n_press, double x, double y) {
+    GtkEventController *controller;
     SuiRecvMessage *self;
 
-    if (event->button != 3){ // Left mouse button
-        return;
+    controller = GTK_EVENT_CONTROLLER(gesture);
+    if (gtk_gesture_single_get_button(GTK_GESTURE_SINGLE(controller)) != 3){
+         return;
     }
 
-    self = SUI_RECV_MESSAGE(user_data);
-    nick_menu_popup(widget, event, gtk_label_get_text(self->sender_label));
+    self = SUI_RECV_MESSAGE(gtk_event_controller_get_widget(controller));
+    nick_menu_popup(self, gesture, gtk_label_get_text(self->sender_label));
 }
 
-static void sender_event_box_on_button_release(GtkWidget *widget,
-        GdkEventButton *event, gpointer user_data){
+static void sender_event_box_on_button_release(GtkGestureClick *gesture,
+         int n_press, double x, double y) {
     char *insert_text;
+    GtkEventController *controller;
     SuiBuffer *buf;
     SuiRecvMessage *self;
 
-    if (event->button != 1){ // Left mouse button
-        return;
+    controller = GTK_EVENT_CONTROLLER(gesture);
+    if (gtk_gesture_single_get_button(GTK_GESTURE_SINGLE(controller)) != 1){
+         return;
     }
 
-    self = SUI_RECV_MESSAGE(user_data);
+    self = SUI_RECV_MESSAGE(gtk_event_controller_get_widget(controller));
     insert_text = g_strdup_printf("%s: ", gtk_label_get_text(self->sender_label));
     buf = sui_message_get_buffer(SUI_MESSAGE(self));
     sui_buffer_insert_text(buf, insert_text, -1, 0);

@@ -36,14 +36,14 @@
 struct _SuiDialogBuffer {
     SuiChatBuffer parent;
 
-    GtkMenuItem *close_menu_item;
+    // GtkMenuItem *close_menu_item;
 };
 
 struct _SuiDialogBufferClass {
     SuiChatBufferClass parent_class;
 };
 
-static void close_menu_item_on_activate(GtkWidget* widget, gpointer user_data);
+// static void close_menu_item_on_activate(GtkWidget* widget, gpointer user_data);
 
 /*****************************************************************************
  * GObject functions
@@ -55,16 +55,16 @@ static void sui_dialog_buffer_init(SuiDialogBuffer *self){
     GtkBuilder *builder;
 
     /* Init menus */
-    builder = gtk_builder_new_from_resource("/im/srain/Srain/buffer_menu.glade");
-    self->close_menu_item =
-        (GtkMenuItem *)gtk_builder_get_object(builder, "close_menu_item");
-    gtk_menu_shell_append(
-            GTK_MENU_SHELL(sui_buffer_get_menu(SUI_BUFFER(self))),
-            GTK_WIDGET(self->close_menu_item));
-    g_object_unref(builder);
+    // builder = gtk_builder_new_from_resource("/im/srain/Srain/buffer_menu.glade");
+    // self->close_menu_item =
+    //     (GtkMenuItem *)gtk_builder_get_object(builder, "close_menu_item");
+    // gtk_menu_shell_append(
+    //         GTK_MENU_SHELL(sui_buffer_get_menu(SUI_BUFFER(self))),
+    //         GTK_WIDGET(self->close_menu_item));
+    // g_object_unref(builder);
 
-    g_signal_connect(self->close_menu_item, "activate",
-            G_CALLBACK(close_menu_item_on_activate), self);
+    // g_signal_connect(self->close_menu_item, "activate",
+            // G_CALLBACK(close_menu_item_on_activate), self);
 }
 
 static void sui_dialog_buffer_finalize(GObject *object){
@@ -84,10 +84,10 @@ static void sui_dialog_buffer_class_init(SuiDialogBufferClass *class){
     gtk_widget_class_set_template_from_resource(
             widget_class, "/im/srain/Srain/buffer.glade");
 
-    gtk_widget_class_bind_template_child_full(widget_class,
-            "close_menu_item",
-            FALSE,
-            G_STRUCT_OFFSET(SuiDialogBuffer, close_menu_item));
+    // gtk_widget_class_bind_template_child_full(widget_class,
+    //         "close_menu_item",
+    //         FALSE,
+    //         G_STRUCT_OFFSET(SuiDialogBuffer, close_menu_item));
 }
 
 /*****************************************************************************

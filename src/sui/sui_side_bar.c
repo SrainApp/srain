@@ -41,18 +41,18 @@
 #include "log.h"
 
 struct _SuiSideBar {
-    GtkBin parent;
+    GtkBox parent;
     GtkListBox *list;
     GtkStack *stack;
     GHashTable *rows;
 };
 
 struct _SuiSideBarClass {
-    GtkBinClass parent_class;
+    GtkBoxClass parent_class;
 };
 
 
-G_DEFINE_TYPE(SuiSideBar, sui_side_bar, GTK_TYPE_BIN)
+G_DEFINE_TYPE(SuiSideBar, sui_side_bar, GTK_TYPE_BOX);
 
 static void
 listbox_on_row_selected(GtkListBox *box, GtkListBoxRow *row, gpointer user_data){
@@ -64,35 +64,39 @@ listbox_on_row_selected(GtkListBox *box, GtkListBoxRow *row, gpointer user_data)
 
     if (!row) return;
 
-    item = SUI_SIDE_BAR_ITEM(gtk_bin_get_child(GTK_BIN(row)));
+    item = SUI_SIDE_BAR_ITEM(gtk_list_box_row_get_child(row));
     child = g_object_get_data(G_OBJECT(item), "stack-child");
     gtk_stack_set_visible_child(sidebar->stack, child);
 
     sui_side_bar_item_clear_count(item);
 }
 
-static gboolean
-list_box_on_popup(GtkWidget *widget, GdkEventButton *event, gpointer user_data){
+static void sender_event_box_on_button_press(GtkGestureClick *gesture,
+         int n_press, double x, double y) {
+
+    GtkEventController *controller;
     GtkListBox *list_box;
     GtkListBoxRow *row;
     SuiBuffer *child;
     SuiSideBarItem *item;
 
-    list_box = GTK_LIST_BOX(widget);
+    controller = GTK_EVENT_CONTROLLER(gesture);
+    list_box = GTK_LIST_BOX(gtk_event_controller_get_widget(controller));
 
-    if (event->button == 3){
+    if (gtk_gesture_single_get_button(GTK_GESTURE_SINGLE(controller)) == 3){
         row = gtk_list_box_get_selected_row(list_box);
-        if (!row) return FALSE;
+        // TODO:
+        // if (!row) return FALSE;
 
-        item = SUI_SIDE_BAR_ITEM(gtk_bin_get_child(GTK_BIN(row)));
+        item = SUI_SIDE_BAR_ITEM(gtk_list_box_row_get_child(row));
         child = g_object_get_data(G_OBJECT(item), "stack-child");
 
-        gtk_menu_popup(sui_buffer_get_menu(child), NULL, NULL, NULL, NULL,
-                event->button, event->time);
+        // gtk_menu_popup(sui_buffer_get_menu(child), NULL, NULL, NULL, NULL,
+                // event->button, event->time);
 
-        return TRUE;
+        // return TRUE;
     }
-    return FALSE;
+    // return FALSE;
 }
 
 static gint list_sort_func(GtkListBoxRow *row1, GtkListBoxRow *row2,
@@ -102,8 +106,8 @@ static gint list_sort_func(GtkListBoxRow *row1, GtkListBoxRow *row2,
     SuiSideBarItem *item1;
     SuiSideBarItem *item2;
 
-    item1 = SUI_SIDE_BAR_ITEM(gtk_bin_get_child(GTK_BIN(row1)));
-    item2 = SUI_SIDE_BAR_ITEM(gtk_bin_get_child(GTK_BIN(row2)));
+    item1 = SUI_SIDE_BAR_ITEM(gtk_list_box_row_get_child(row1));
+    item2 = SUI_SIDE_BAR_ITEM(gtk_list_box_row_get_child(row2));
 
     time1 = sui_side_bar_item_get_update_time(item1);
     time2 = sui_side_bar_item_get_update_time(item2);
@@ -116,26 +120,28 @@ sui_side_bar_init(SuiSideBar *self){
     GtkWidget *sw;
     GtkStyleContext *style;
 
-    sw = gtk_scrolled_window_new(NULL, NULL);
+    sw = gtk_scrolled_window_new();
     gtk_widget_show(sw);
-    gtk_widget_set_no_show_all(sw, TRUE);
+    // gtk_widget_set_no_show_all(sw, TRUE);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(sw),
             GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 
-    gtk_container_add(GTK_CONTAINER(self), sw);
+    gtk_box_append(GTK_BOX(self), sw);
 
     self->list = GTK_LIST_BOX(gtk_list_box_new());
     gtk_widget_show(GTK_WIDGET(self->list));
 
-    gtk_container_add(GTK_CONTAINER(sw), GTK_WIDGET(self->list));
+    gtk_box_append(GTK_BOX(sw), GTK_WIDGET(self->list));
 
     gtk_list_box_set_sort_func(GTK_LIST_BOX(self->list),
             list_sort_func, NULL, NULL);
 
     g_signal_connect(self->list, "row-selected",
             G_CALLBACK(listbox_on_row_selected), self);
-    g_signal_connect(self->list, "button-press-event",
-            G_CALLBACK(list_box_on_popup), NULL);
+
+    GtkEventController *controller = gtk_gesture_click_new();
+     // g_signal_handler_connect(controller, "pressed",
+             // G_CALLBACK(list_box_on_popup), NULL);
 
     style = gtk_widget_get_style_context(GTK_WIDGET(self));
     gtk_style_context_add_class(style, "sidebar"); // ?
@@ -196,7 +202,7 @@ remove_child(GtkWidget *widget, SuiSideBar *sidebar){
     row = g_hash_table_lookup(sidebar->rows, widget);
     if (!row) return;
 
-    gtk_container_remove(GTK_CONTAINER(sidebar->list), row);
+    gtk_list_box_remove(sidebar->list, row);
     g_hash_table_remove(sidebar->rows, widget);
 }
 
@@ -204,7 +210,7 @@ static void
 populate_sidebar(SuiSideBar *sidebar){
     GtkWidget *widget, *row;
 
-    gtk_container_foreach(GTK_CONTAINER(sidebar->stack),(GtkCallback)add_child, sidebar);
+    // gtk_container_foreach(GTK_CONTAINER(sidebar->stack),(GtkCallback)add_child, sidebar);
 
     widget = gtk_stack_get_visible_child(sidebar->stack);
     if (widget){
@@ -215,7 +221,7 @@ populate_sidebar(SuiSideBar *sidebar){
 
 static void
 clear_sidebar(SuiSideBar *sidebar){
-    gtk_container_foreach(GTK_CONTAINER(sidebar->stack), (GtkCallback)remove_child, sidebar);
+    // gtk_container_foreach(GTK_CONTAINER(sidebar->stack), (GtkCallback)remove_child, sidebar);
 }
 
 static void
@@ -241,12 +247,12 @@ on_child_changed(GtkWidget *widget, GParamSpec *pspec, SuiSideBar *sidebar){
 }
 
 static void
-on_stack_child_added(GtkContainer *container, GtkWidget *widget, SuiSideBar *sidebar){
+on_stack_child_added(GtkStack *stack, GtkWidget *widget, SuiSideBar *sidebar){
     add_child(widget, sidebar);
 }
 
 static void
-on_stack_child_removed(GtkContainer *container, GtkWidget *widget, SuiSideBar *sidebar){
+on_stack_child_removed(GtkStack *stack, GtkWidget *widget, SuiSideBar *sidebar){
     remove_child(widget, sidebar);
 }
 
@@ -333,7 +339,7 @@ sui_side_bar_get_item(SuiSideBar *sidebar, SuiBuffer *buf){
 
     row = g_hash_table_lookup(sidebar->rows, buf);
     g_return_val_if_fail(row, NULL);
-    return SUI_SIDE_BAR_ITEM(gtk_bin_get_child(GTK_BIN(row)));
+    return SUI_SIDE_BAR_ITEM(gtk_list_box_row_get_child(row));
 }
 
 void

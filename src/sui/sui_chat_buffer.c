@@ -34,7 +34,7 @@
 
 #define MIN_NICK_COMPLETION_LEN     1
 
-static void user_list_menu_item_on_toggled(GtkWidget* widget, gpointer user_data);
+// static void user_list_menu_item_on_toggled(GtkWidget* widget, gpointer user_data);
 
 /*****************************************************************************
  * GObject functions
@@ -108,24 +108,24 @@ static void sui_chat_buffer_constructed(GObject *object){
 static void sui_chat_buffer_init(SuiChatBuffer *self){
     GtkBuilder *builder;
 
-    /* Init menus */
-    builder = gtk_builder_new_from_resource("/im/srain/Srain/buffer_menu.glade");
-    self->user_list_menu_item =
-        (GtkCheckMenuItem *)gtk_builder_get_object(builder, "user_list_menu_item");
-    gtk_menu_shell_append(
-            GTK_MENU_SHELL(sui_buffer_get_menu(SUI_BUFFER(self))),
-            GTK_WIDGET(self->user_list_menu_item));
-    g_object_unref(builder);
-    
+    // /* Init menus */
+    // builder = gtk_builder_new_from_resource("/im/srain/Srain/buffer_menu.glade");
+    // self->user_list_menu_item =
+    //     (GtkCheckMenuItem *)gtk_builder_get_object(builder, "user_list_menu_item");
+    // gtk_menu_shell_append(
+    //         GTK_MENU_SHELL(sui_buffer_get_menu(SUI_BUFFER(self))),
+    //         GTK_WIDGET(self->user_list_menu_item));
+    // g_object_unref(builder);
+    // 
     /* Init user list*/
     self->user_list = sui_user_list_new();
     gtk_container_add(GTK_CONTAINER(self->parent.user_list_revealer), // FIXME
             GTK_WIDGET(self->user_list));
 
-    gtk_widget_show(GTK_WIDGET(self->user_list_menu_item));
+    // gtk_widget_show(GTK_WIDGET(self->user_list_menu_item));
 
-    g_signal_connect(self->user_list_menu_item, "toggled",
-            G_CALLBACK(user_list_menu_item_on_toggled), self);
+    // g_signal_connect(self->user_list_menu_item, "toggled",
+            // G_CALLBACK(user_list_menu_item_on_toggled), self);
 }
 
 static void sui_chat_buffer_finalize(GObject *object){
@@ -229,7 +229,7 @@ SuiUserList* sui_chat_buffer_get_user_list(SuiChatBuffer *self){
 }
 
 void sui_chat_buffer_show_user_list(SuiChatBuffer *self, bool isshow){
-    gtk_check_menu_item_set_active(self->user_list_menu_item, isshow);
+    // gtk_check_menu_item_set_active(self->user_list_menu_item, isshow);
 }
 
 /*****************************************************************************
@@ -237,10 +237,10 @@ void sui_chat_buffer_show_user_list(SuiChatBuffer *self, bool isshow){
  *****************************************************************************/
 
 static void user_list_menu_item_on_toggled(GtkWidget* widget, gpointer user_data){
-    bool active;
-    SuiChatBuffer *self = SUI_CHAT_BUFFER(user_data);
-    GtkCheckMenuItem *item = GTK_CHECK_MENU_ITEM(widget);
+    // bool active;
+    // SuiChatBuffer *self = SUI_CHAT_BUFFER(user_data);
+    // GtkCheckMenuItem *item = GTK_CHECK_MENU_ITEM(widget);
 
-    active = gtk_check_menu_item_get_active(item);
-    gtk_revealer_set_reveal_child(self->parent.user_list_revealer, active);
+    // active = gtk_check_menu_item_get_active(item);
+    // gtk_revealer_set_reveal_child(self->parent.user_list_revealer, active);
 }

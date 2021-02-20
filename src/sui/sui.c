@@ -294,7 +294,7 @@ void sui_message_box(const char *title, const char *msg){
     GtkMessageDialog *dia;
     char *markuped_msg;
 
-    gtk_init(0, NULL); // FIXME: config
+    gtk_init(); // FIXME: config
 
     dia = GTK_MESSAGE_DIALOG(
             gtk_message_dialog_new(GTK_WINDOW(sui_common_get_cur_window()),

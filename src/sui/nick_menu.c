@@ -59,63 +59,64 @@ static void nick_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
     g_variant_dict_unref(params);
 }
 
-void nick_menu_popup(GtkWidget *widget, GdkEventButton *event, const char *nick){
-    int n;
-    GList *lst;
-    GtkBuilder *builder;
-    GtkMenu *nick_menu;
-    GtkMenuItem *whois_menu_item;
-    GtkMenuItem *ignore_menu_item;
-    GtkMenuItem *kick_menu_item;
-    GtkMenuItem *chat_menu_item;
-    GtkMenuItem *invite_menu_item;
-    GtkMenu *invite_submenu;
+void nick_menu_popup(GtkWidget *widget, void *event, const char *nick){
+    return;
+    // int n;
+    // GList *lst;
+    // GtkBuilder *builder;
+    // GtkMenu *nick_menu;
+    // GtkMenuItem *whois_menu_item;
+    // GtkMenuItem *ignore_menu_item;
+    // GtkMenuItem *kick_menu_item;
+    // GtkMenuItem *chat_menu_item;
+    // GtkMenuItem *invite_menu_item;
+    // GtkMenu *invite_submenu;
 
-    builder = gtk_builder_new_from_resource ("/im/srain/Srain/nick_menu.glade");
+    // builder = gtk_builder_new_from_resource ("/im/srain/Srain/nick_menu.glade");
 
-    nick_menu = (GtkMenu *)gtk_builder_get_object(builder, "nick_menu");
-    whois_menu_item = (GtkMenuItem *)gtk_builder_get_object(builder, "whois_menu_item");
-    ignore_menu_item = (GtkMenuItem *)gtk_builder_get_object(builder, "ignore_menu_item");
-    kick_menu_item = (GtkMenuItem *)gtk_builder_get_object(builder, "kick_menu_item");
-    chat_menu_item = (GtkMenuItem *)gtk_builder_get_object(builder, "chat_menu_item");
-    invite_menu_item = (GtkMenuItem *)gtk_builder_get_object(builder, "invite_menu_item");
+    // nick_menu = (GtkMenu *)gtk_builder_get_object(builder, "nick_menu");
+    // whois_menu_item = (GtkMenuItem *)gtk_builder_get_object(builder, "whois_menu_item");
+    // ignore_menu_item = (GtkMenuItem *)gtk_builder_get_object(builder, "ignore_menu_item");
+    // kick_menu_item = (GtkMenuItem *)gtk_builder_get_object(builder, "kick_menu_item");
+    // chat_menu_item = (GtkMenuItem *)gtk_builder_get_object(builder, "chat_menu_item");
+    // invite_menu_item = (GtkMenuItem *)gtk_builder_get_object(builder, "invite_menu_item");
 
-    g_signal_connect(whois_menu_item, "activate",
-            G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
-    g_signal_connect(ignore_menu_item, "activate",
-            G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
-    g_signal_connect(kick_menu_item, "activate",
-            G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
-    g_signal_connect(chat_menu_item, "activate",
-            G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
+    // g_signal_connect(whois_menu_item, "activate",
+    //         G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
+    // g_signal_connect(ignore_menu_item, "activate",
+    //         G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
+    // g_signal_connect(kick_menu_item, "activate",
+    //         G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
+    // g_signal_connect(chat_menu_item, "activate",
+    //         G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
 
-    /* Create subitems for invite_menu_item */
-    n = 0;
-    lst = sui_server_buffer_get_buffer_list(sui_common_get_cur_server_buffer());
-    invite_submenu = GTK_MENU(gtk_menu_new());
-    while (lst){
-        GtkMenuItem *item;
+    // /* Create subitems for invite_menu_item */
+    // n = 0;
+    // lst = sui_server_buffer_get_buffer_list(sui_common_get_cur_server_buffer());
+    // invite_submenu = GTK_MENU(gtk_menu_new());
+    // while (lst){
+    //     GtkMenuItem *item;
 
-        item = GTK_MENU_ITEM(gtk_menu_item_new_with_label(
-                    sui_buffer_get_name(lst->data)));
-        gtk_widget_show(GTK_WIDGET(item));
-        gtk_widget_set_name(GTK_WIDGET(item), "invite_submenu_item");
-        g_signal_connect(item, "activate",
-                G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
-        gtk_menu_shell_append(GTK_MENU_SHELL(invite_submenu), GTK_WIDGET(item));
+    //     item = GTK_MENU_ITEM(gtk_menu_item_new_with_label(
+    //                 sui_buffer_get_name(lst->data)));
+    //     gtk_widget_show(GTK_WIDGET(item));
+    //     gtk_widget_set_name(GTK_WIDGET(item), "invite_submenu_item");
+    //     g_signal_connect(item, "activate",
+    //             G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
+    //     gtk_menu_shell_append(GTK_MENU_SHELL(invite_submenu), GTK_WIDGET(item));
 
-        n++;
-        lst = g_list_next(lst);
-    }
+    //     n++;
+    //     lst = g_list_next(lst);
+    // }
 
-    if (n > 0) {
-        gtk_menu_item_set_submenu(invite_menu_item, GTK_WIDGET(invite_submenu));
-    } else {
-        g_object_ref_sink(invite_submenu); // remove the floating reference
-        g_object_unref(invite_submenu);
-    }
+    // if (n > 0) {
+    //     gtk_menu_item_set_submenu(invite_menu_item, GTK_WIDGET(invite_submenu));
+    // } else {
+    //     g_object_ref_sink(invite_submenu); // remove the floating reference
+    //     g_object_unref(invite_submenu);
+    // }
 
-    gtk_menu_popup(nick_menu, NULL, NULL, NULL, NULL,
-            event->button, event->time);
-    g_object_unref(builder);
+    // gtk_menu_popup(nick_menu, NULL, NULL, NULL, NULL,
+    //         event->button, event->time);
+    // g_object_unref(builder);
 }

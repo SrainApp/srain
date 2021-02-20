@@ -75,7 +75,7 @@ struct _SuiConnectPanel {
     GtkStack *login_method_stack;
     GtkEntry *login_password_entry;
     GtkCheckButton *remember_login_password_check_button;
-    GtkFileChooserButton *login_cert_file_chooser_button;
+    GtkButton *login_cert_button;
 
 
     /* Buttons */
@@ -208,7 +208,7 @@ static void sui_connect_panel_class_init(SuiConnectPanelClass *class){
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, login_method_stack);
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, login_password_entry);
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, remember_login_password_check_button);
-    gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, login_cert_file_chooser_button);
+    gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, login_cert_button);
 
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, connect_button);
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, cancel_button);
@@ -246,7 +246,7 @@ static void update(SuiConnectPanel *self, const char *srv_name){
         gtk_toggle_button_set_active(
                 GTK_TOGGLE_BUTTON(self->remember_login_password_check_button), FALSE);
         gtk_file_chooser_set_filename(
-                GTK_FILE_CHOOSER(self->login_cert_file_chooser_button), "");
+                GTK_FILE_CHOOSER(self->login_cert_button), "");
     } else {
         SrnRet ret;
         SrnApplication *app_model;
@@ -294,7 +294,7 @@ static void update(SuiConnectPanel *self, const char *srv_name){
                 srv_cfg->user->login->password ?
                 srv_cfg->user->login->password : "");
         gtk_file_chooser_set_filename(
-                GTK_FILE_CHOOSER(self->login_cert_file_chooser_button),
+                GTK_FILE_CHOOSER(self->login_cert_button),
                 srv_cfg->user->login->cert_file ?
                 srv_cfg->user->login->cert_file : "");
 
@@ -554,7 +554,7 @@ static void connect_button_on_click(gpointer user_data){
         }
 
         login_cert_file = gtk_file_chooser_get_filename(
-                GTK_FILE_CHOOSER(self->login_cert_file_chooser_button));
+                GTK_FILE_CHOOSER(self->login_cert_button));
         if (!str_is_empty(login_cert_file)) {
             str_assign(&srv_cfg->user->login->cert_file, login_cert_file);
         }

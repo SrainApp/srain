@@ -69,7 +69,7 @@ struct _SuiUrlPreviewer {
     /* Page text */
     GtkLabel *text_label;
     /* Page image */
-    GtkEventBox *image_event_box;
+    GtkBox*image_event_box;
     GdkPixbuf *pixbuf;
     GtkImage *image;
 };
@@ -98,8 +98,7 @@ static void preview_image(SuiUrlPreviewer *self, GdkPixbuf *pixbuf);
 static void on_notify_visible(GObject *object, GParamSpec *pspec, gpointer data);
 static void preview_button_on_clicked(GtkWidget *widget, gpointer user_data);
 static void cancel_button_on_clicked(GtkWidget *widget, gpointer user_data);
-static void image_event_box_on_button_release(GtkWidget *widget,
-        GdkEventButton *event, gpointer user_data);
+static void image_event_box_on_button_release(GtkGestureClick *gesture, int n_press, double x, double y);
 static void session_send_ready(GObject *object, GAsyncResult *result,
         gpointer user_data);
 static void buffered_stream_fill_ready(GObject *object, GAsyncResult *result,
@@ -162,6 +161,8 @@ static void sui_url_previewer_get_property(GObject *object, guint property_id,
 }
 
 static void sui_url_previewer_init(SuiUrlPreviewer *self){
+    GtkGesture *image_event_box_controller;
+
     gtk_widget_init_template(GTK_WIDGET(self));
 
     self->previewed = FALSE;
@@ -182,8 +183,11 @@ static void sui_url_previewer_init(SuiUrlPreviewer *self){
             G_CALLBACK(preview_button_on_clicked), self);
     g_signal_connect(self->cancel_button, "clicked",
             G_CALLBACK(cancel_button_on_clicked), self);
-    g_signal_connect(self->image_event_box, "button-release-event",
-            G_CALLBACK(image_event_box_on_button_release), self);
+
+    image_event_box_controller = gtk_gesture_click_new();
+    g_signal_handler_connect(image_event_box_controller, "released",
+            G_CALLBACK(image_event_box_on_button_release), NULL);
+    gtk_widget_add_controller (self->image_event_box, image_event_box_controller);
 }
 
 static void sui_url_previewer_constructed(GObject *object){
@@ -455,10 +459,11 @@ static void cancel_button_on_clicked(GtkWidget *widget, gpointer user_data){
     cancel_preview(self);
 }
 
-static void image_event_box_on_button_release(GtkWidget *widget,
-        GdkEventButton *event, gpointer user_data){
+static void image_event_box_on_button_release(GtkGestureClick *gesture,
+        int n_press, double x, double y) {
     int width;
     int height;
+    GtkEventController *controller;
 #if GTK_CHECK_VERSION(3, 22, 0)
     GdkDisplay *display;
     GdkMonitor *monitor;
@@ -466,7 +471,6 @@ static void image_event_box_on_button_release(GtkWidget *widget,
     GdkScreen *screen;
     int monitor;
 #endif
-    GdkWindow *gdkwin;
     GdkRectangle rect;
     GdkPixbuf *pixbuf;
     GdkPixbuf *scaled_pixbuf;
@@ -475,26 +479,20 @@ static void image_event_box_on_button_release(GtkWidget *widget,
     GtkBuilder *builder;
     SuiUrlPreviewer *self;
 
-    if (event->button != 1){ // Left mouse button
+    // Left mouse button
+    controller = GTK_EVENT_CONTROLLER(gesture);
+    if (gtk_gesture_single_get_button(GTK_GESTURE_SINGLE(controller)) != 1){
         return;
     }
 
-    self = SUI_URL_PREVIEWER(user_data);
+    self = SUI_URL_PREVIEWER(gtk_event_controller_get_widget(controller));
     builder = gtk_builder_new_from_resource("/im/srain/Srain/image_window.glade");
     iwin = GTK_WINDOW(gtk_builder_get_object(builder, "image_window"));
     image = GTK_IMAGE(gtk_builder_get_object(builder, "image"));
 
-#if GTK_CHECK_VERSION(3, 22, 0)
     display = gdk_display_get_default();
-    gdkwin = gtk_widget_get_window(GTK_WIDGET(sui_common_get_cur_window()));
-    monitor = gdk_display_get_monitor_at_window(display, gdkwin);
+    monitor = gdk_display_get_monitor_at_surface(display, NULL);
     gdk_monitor_get_geometry(monitor, &rect);
-#else
-    screen = gdk_screen_get_default();
-    gdkwin = gtk_widget_get_window(GTK_WIDGET(sui_common_get_cur_window()));
-    monitor = gdk_screen_get_monitor_at_window(screen, gdkwin);
-    gdk_screen_get_monitor_geometry(screen, monitor, &rect);
-#endif
 
     /* If we should scale the image, do not fill full screen */
     rect.height -= 20;
@@ -509,10 +507,10 @@ static void image_event_box_on_button_release(GtkWidget *widget,
 
     gtk_image_set_from_pixbuf(image, scaled_pixbuf);
 
-    g_signal_connect_swapped(iwin, "button-release-event",
-            G_CALLBACK(gtk_widget_destroy), iwin);
-    g_signal_connect_swapped(image, "button-release-event",
-            G_CALLBACK(gtk_widget_destroy), iwin);
+    // g_signal_connect_swapped(iwin, "button-release-event",
+    //       G_CALLBACK(gtk_widget_destroy), iwin);
+    // g_signal_connect_swapped(image, "button-release-event",
+    // G_CALLBACK(gtk_widget_destroy), iwin);
 
     g_object_unref(scaled_pixbuf);
     g_object_unref(builder);

@@ -205,7 +205,7 @@ void sui_common_popup_panel(GtkWidget *relative_to, GtkWidget *child){
     GtkPopover *popover;
     GtkStyleContext *style_context;
 
-    popover = GTK_POPOVER(gtk_popover_new(NULL));
+    popover = GTK_POPOVER(gtk_popover_new());
     gtk_popover_set_relative_to(popover, relative_to);
     gtk_container_add(GTK_CONTAINER(popover), child);
 
@@ -227,7 +227,7 @@ void sui_common_popup_panel_at_point(GtkWidget *relative_to, GtkWidget *child,
     rect.y = y;
     rect.width = rect.height = 1;
 
-    popover = GTK_POPOVER(gtk_popover_new(NULL));
+    popover = GTK_POPOVER(gtk_popover_new());
     gtk_popover_set_relative_to(popover, relative_to);
     gtk_popover_set_pointing_to(popover, &rect);
     gtk_container_add(GTK_CONTAINER(popover), child);
