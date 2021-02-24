@@ -36,10 +36,24 @@ srcs += [
 deps = [
   dependency('gtk4', version: '>= 3.99.4'),
   dependency('glib-2.0', version: '>= 2.39.3'),
+  dependency('gobject-introspection-1.0'),
   generated_meta_h,
 ]
 
-executable(app_exec, srcs,
+exec = executable(app_exec, srcs,
   dependencies: deps,
   install: true,
-  install_dir: bin_dir)
+  install_dir: bin_dir,
+  export_dynamic: true,
+)
+
+gnome.generate_gir(
+  exec,
+  sources : srcs,
+  nsversion : '1.0',
+  namespace : 'Srn',
+  symbol_prefix : 'srn',
+  identifier_prefix : 'Srn',
+  includes : ['Gtk-4.0', 'GObject-2.0'],
+  install : true,
+)

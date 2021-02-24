@@ -21,7 +21,14 @@
 
 #include <gtk/gtk.h>
 
+G_BEGIN_DECLS
+
 #define SRN_TYPE_APPLICATION (srn_application_get_type())
+
 G_DECLARE_FINAL_TYPE(SrnApplication, srn_application, SRN, APPLICATION, GtkApplication)
+
+void srn_application_ping(SrnApplication *self);
+
+G_END_DECLS
 
 #endif /* __SRN_APP_H */

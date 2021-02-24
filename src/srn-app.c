@@ -18,6 +18,8 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+// For g_irepository_dump
+#include <girepository.h>
 
 #include "srn-app.h"
 // For package meta infos
@@ -25,10 +27,6 @@
 
 struct _SrnApplication {
     GtkApplication parent;
-};
-
-struct _SrnApplicationClass {
-    GtkApplicationClass parent_class;
 };
 
 static void
@@ -87,6 +85,14 @@ static const GOptionEntry option_entries[] = {
         .arg = G_OPTION_ARG_NONE,
         .arg_data = NULL,
         .description = N_("Don't auto connect to servers"),
+        .arg_description = NULL,
+    },
+    {
+        .long_name = "introspect-dump",
+        .flags = 0,
+        .arg = G_OPTION_ARG_STRING,
+        .arg_data = NULL,
+        .description = N_("Dump introspection data"),
         .arg_description = NULL,
     },
     {
@@ -240,12 +246,29 @@ on_shutdown(SrnApplication *self) {
 static int
 on_handle_local_options(SrnApplication *self, GVariantDict *options,
                         gpointer user_data) {
+    g_message("%d", srn_application_get_type() == G_TYPE_INVALID);
+    g_message("%d", g_application_get_type() == G_TYPE_INVALID);
+    g_message("%d", gtk_application_get_type() == G_TYPE_INVALID);
+
     if (g_variant_dict_lookup(options, "version", "b", NULL)) {
-        g_print("%s %s-%s\n", "Srain", "2.0", "a0");
-        return 0; // Exit
+        g_print("%s %s-%s\n", PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_BUILD);
+        return 0; // Success
     }
 
-    return -1; // Return -1 to let the default option processing continue.
+    GVariant *dump= g_variant_dict_lookup_value(options, "introspect-dump", "s");
+    if (dump) {
+        GError *err = NULL;
+        if(!g_irepository_dump(g_variant_get_string(dump, NULL), &err)) {
+            g_print("g_irepository_dump() failed: %s\n", err->message);
+            g_error_free(err);
+            g_variant_unref(dump);
+            return 1; // Exit
+        }
+        g_variant_unref(dump);
+        return 0; // Success
+    }
+
+    return -1; // Let the default option processing continue.
 }
 
 static int
@@ -269,4 +292,17 @@ on_activate_prefs(GSimpleAction *action, GVariant *parameter, gpointer user_data
 
 static void
 on_activate_exit(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+}
+
+/**
+ * srn_application_ping:
+ * @self: a #SrnApplication.
+ *
+ * Print a Ping! message.
+ */
+void
+srn_application_ping(SrnApplication *self) {
+  g_return_if_fail(SRN_IS_APPLICATION(self));
+
+  g_message("Ping!");
 }

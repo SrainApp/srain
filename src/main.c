@@ -29,6 +29,8 @@
 // For SrnApplication
 #include "srn-app.h"
 
+extern char *irdump;
+
 int main(int argc, char *argv[]){
     // Set the current local to default
     setlocale(LC_ALL, "");
@@ -41,5 +43,6 @@ int main(int argc, char *argv[]){
     textdomain(GETTEXT_PACKAGE);
 
     SrnApplication *app = SRN_APPLICATION(g_object_new(SRN_TYPE_APPLICATION, NULL));
+
     return g_application_run(G_APPLICATION(app), argc, argv);
 }
