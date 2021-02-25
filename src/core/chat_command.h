@@ -47,6 +47,7 @@ SrnRet on_command_away(SrnCommand *cmd, void *user_data);
 SrnRet on_command_pattern(SrnCommand *cmd, void *user_data);
 SrnRet on_command_render(SrnCommand *cmd, void *user_data);
 SrnRet on_command_unrender(SrnCommand *cmd, void *user_data);
+SrnRet on_command_quote(SrnCommand *cmd, void *user_data);
 
 static SrnCommandBinding cmd_bindings[] = {
     {
@@ -243,6 +244,12 @@ static SrnCommandBinding cmd_bindings[] = {
             SRN_COMMAND_EMPTY_OPT,
         },
         .cb = on_command_unrender,
+    },
+    {
+        .name = "/quote",
+        .argc = 1, // <command string>
+        .opt = { SRN_COMMAND_EMPTY_OPT },
+        .cb = on_command_quote,
     },
     SRN_COMMAND_EMPTY,
 };

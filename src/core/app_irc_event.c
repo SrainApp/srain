@@ -1881,7 +1881,7 @@ static void irc_event_numeric(SircSession *sirc, int event,
 
                     buf = g_string_new(NULL);
                     for (int i = 0; i < count; i++){
-                        buf = g_string_append(buf, params[count-1]); // reason
+                        buf = g_string_append(buf, params[i]); // reason
                         if (i != count - 1){
                             buf = g_string_append(buf, ", ");
                         }
@@ -1892,6 +1892,8 @@ static void irc_event_numeric(SircSession *sirc, int event,
                             srv->name, event, origin, count, buf->str);
 
                     g_string_free(buf, TRUE);
+
+                    srn_chat_add_recv_message(srv->chat, chat_user, params[count-1]);
                 }
             }
     }
