@@ -44,6 +44,7 @@ SuiBuffer *sui_window_get_buffer(SuiWindow *self, const char *name, const char *
 SuiBuffer *sui_window_get_cur_buffer(SuiWindow *self);
 void sui_window_set_cur_buffer(SuiWindow *self, SuiBuffer *buf);
 SuiSideBar* sui_window_get_side_bar(SuiWindow *self);
+void sui_window_toggle_server_visibility(SuiWindow* self);
 
 int sui_window_is_active(SuiWindow *self);
 void sui_window_tray_icon_stress(SuiWindow *self, int stress);
