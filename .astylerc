@@ -1,4 +1,4 @@
-#http://astyle.sourceforge.net/astyle.html
+# http://astyle.sourceforge.net/astyle.html
 style=attach
 
 indent=spaces=4
@@ -17,4 +17,4 @@ align-reference=name
 
 break-return-type
 break-return-type-decl
-max‑code‑length=100
+max-code-length=80
