@@ -82,6 +82,8 @@ static void on_activate_prefs(GSimpleAction *action, GVariant  *parameter,
         gpointer user_data);
 static void on_activate_exit(GSimpleAction *action, GVariant  *parameter,
         gpointer user_data);
+static void on_toggle_server_visibility(GSimpleAction *action, GVariant  *parameter,
+        gpointer user_data);
 static void tray_icon_on_click(GtkStatusIcon *status_icon, gpointer user_data);
 static void tray_icon_on_popup_menu(GtkStatusIcon *status_icon, guint button,
        guint activate_time, gpointer user_data);
@@ -147,7 +149,11 @@ static const GActionEntry action_entries[] = {
         .name = "exit",
         .activate = on_activate_exit,
     },
-    {NULL}
+    {
+        .name = "toggle-server-visibility",
+        .activate = on_toggle_server_visibility,
+    },
+    { NULL },
 };
 
 static void sui_application_set_property(GObject *object, guint property_id,
@@ -565,6 +571,17 @@ static void on_activate_exit(GSimpleAction *action, GVariant  *parameter,
 
     self = user_data;
     sui_application_exit(self);
+}
+
+
+static void on_toggle_server_visibility(GSimpleAction *action, GVariant  *parameter,
+        gpointer user_data){
+    SuiApplication *self;
+    SuiWindow *win;
+
+    self = user_data;
+    win = sui_application_get_cur_window(self);
+    sui_window_toggle_server_visibility(win);
 }
 
 static void tray_icon_on_click(GtkStatusIcon *status_icon, gpointer user_data){

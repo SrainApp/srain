@@ -94,6 +94,8 @@ struct _SuiWindow {
 
     /* Panels */
     SuiConnectPanel *connect_panel;
+
+    gboolean server_visibility;
 };
 
 struct _SuiWindowClass {
@@ -108,6 +110,7 @@ static void update_focus(SuiWindow *self);
 static int get_buffer_count(SuiWindow *self);
 static void send_message_cancel(SuiWindow *self);
 static void send_message(SuiWindow *self);
+static void set_server_visibility(SuiWindow* self);
 
 static void on_destroy(SuiWindow *self);
 static void on_notify_is_active(GObject *object, GParamSpec *pspec,
@@ -202,6 +205,8 @@ static void sui_window_init(SuiWindow *self){
             G_BINDING_BIDIRECTIONAL);
 
     self->send_timer = 0;
+    self->server_visibility = TRUE;
+
 
     /* Stack side bar init */
     self->side_bar = sui_side_bar_new();
@@ -404,6 +409,7 @@ void sui_window_add_buffer(SuiWindow *self, SuiBuffer *buf){
     g_string_free(gstr, TRUE);
 
     gtk_stack_set_visible_child(self->buffer_stack, GTK_WIDGET(buf));
+    set_server_visibility(self);
 }
 
 void sui_window_rm_buffer(SuiWindow *self, SuiBuffer *buf){
@@ -441,6 +447,11 @@ SuiBuffer* sui_window_get_buffer(SuiWindow *self,
 
 SuiSideBar* sui_window_get_side_bar(SuiWindow *self){
     return self->side_bar;
+}
+
+void sui_window_toggle_server_visibility(SuiWindow* self){
+    self->server_visibility = !self->server_visibility;
+    set_server_visibility(self);
 }
 
 int sui_window_is_active(SuiWindow *self){
@@ -582,6 +593,20 @@ static void send_message_cancel(SuiWindow *self){
     gtk_image_set_from_icon_name(
             GTK_IMAGE(gtk_button_get_image(self->send_button)),
             "document-send-symbolic", GTK_ICON_SIZE_BUTTON);
+}
+
+static void set_server_visibility(SuiWindow* self){
+    GList *lst = gtk_container_get_children(GTK_CONTAINER(self->buffer_stack));
+    while (lst) {
+        if (SUI_IS_SERVER_BUFFER(lst->data)) {
+            SuiBuffer *buf = SUI_BUFFER(lst->data);
+            SuiSideBarItem *item = sui_side_bar_get_item(self->side_bar, buf);
+            g_return_if_fail(item);
+            gtk_widget_set_visible(GTK_WIDGET(item), self->server_visibility);
+            sui_side_bar_item_update(item, NULL, "");
+        }
+        lst = g_list_next(lst);
+    }
 }
 
 static void on_destroy(SuiWindow *self){

@@ -111,6 +111,11 @@ static gint list_sort_func(GtkListBoxRow *row1, GtkListBoxRow *row2,
     return time1 <= time2;
 }
 
+static gboolean list_filter_func(GtkListBoxRow *row, gpointer user_data){
+    SuiSideBarItem *item = gtk_bin_get_child(GTK_BIN(row));
+    return gtk_widget_get_visible(GTK_WIDGET(item));
+}
+
 static void
 sui_side_bar_init(SuiSideBar *self){
     GtkWidget *sw;
@@ -131,6 +136,8 @@ sui_side_bar_init(SuiSideBar *self){
 
     gtk_list_box_set_sort_func(GTK_LIST_BOX(self->list),
             list_sort_func, NULL, NULL);
+    gtk_list_box_set_filter_func(GTK_LIST_BOX(self->list),
+            list_filter_func, NULL, NULL);
 
     g_signal_connect(self->list, "row-selected",
             G_CALLBACK(listbox_on_row_selected), self);
@@ -336,20 +343,34 @@ sui_side_bar_get_item(SuiSideBar *sidebar, SuiBuffer *buf){
     return SUI_SIDE_BAR_ITEM(gtk_bin_get_child(GTK_BIN(row)));
 }
 
+static GList *get_visible_rows(SuiSideBar* self) {
+    GList *rows, *lst;
+
+    rows = NULL;
+    lst = gtk_container_get_children(GTK_CONTAINER(self->list));
+
+    for (; lst; lst = g_list_next(lst)) {
+        if (gtk_widget_get_visible(gtk_bin_get_child(GTK_BIN(lst->data)))) {
+            rows = g_list_append(rows, lst->data);
+        }
+    }
+    return rows;
+}
+
 void
 sui_side_bar_prev(SuiSideBar *sidebar){
     GList *rows;
     GtkListBoxRow *tail, *cur_row;
 
     cur_row = gtk_list_box_get_selected_row(sidebar->list);
-
-    rows = gtk_container_get_children(GTK_CONTAINER(sidebar->list));
+    rows = get_visible_rows(sidebar);
 
     while (rows){
         if (rows->data == cur_row){
             if (rows->prev){
                 gtk_list_box_select_row(sidebar->list,
                         GTK_LIST_BOX_ROW(rows->prev->data));
+                break;
             } else {
                 while (rows->next){
                     rows = rows->next;
@@ -357,11 +378,13 @@ sui_side_bar_prev(SuiSideBar *sidebar){
                 tail = rows->data;
                 gtk_list_box_select_row(sidebar->list,
                         GTK_LIST_BOX_ROW(tail));
-                return;
+                break;
             }
         }
         rows = rows->next;
     }
+
+    g_list_free(rows);
 }
 
 void sui_side_bar_next(SuiSideBar *sidebar){
@@ -369,8 +392,7 @@ void sui_side_bar_next(SuiSideBar *sidebar){
     GtkListBoxRow *head, *cur_row;
 
     cur_row = gtk_list_box_get_selected_row(sidebar->list);
-
-    rows = gtk_container_get_children(GTK_CONTAINER(sidebar->list));
+    rows = get_visible_rows(sidebar);
     if (rows){
         head = GTK_LIST_BOX_ROW(rows->data);
     }
@@ -380,11 +402,15 @@ void sui_side_bar_next(SuiSideBar *sidebar){
             if (rows->next){
                 gtk_list_box_select_row(sidebar->list,
                         GTK_LIST_BOX_ROW(rows->next->data));
+                break;
             } else {
                 gtk_list_box_select_row(sidebar->list,
                         GTK_LIST_BOX_ROW(head));
+                break;
             }
         }
         rows = rows->next;
     }
+
+    g_list_free(rows);
 }
