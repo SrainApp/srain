@@ -427,6 +427,17 @@ Please refer to :ref:`faq-relay-message-transform` see its effect.
    Pattern **SHOULD** consider the case where the mIRC color code is
    included in the message.
 
+/quote
+------
+
+Usage::
+
+    /quote <raw message>
+
+For sending special IRC commands.
+
+.. versionadded:: 1.2.0
+
 Obsoleted Commands
 ==================
 
