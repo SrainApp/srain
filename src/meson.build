@@ -10,6 +10,7 @@ meta_h.set_quoted('PACKAGE_WEBSITE', app_url)
 meta_h.set_quoted('PACKAGE_BUGREPORT', app_bugreport)
 meta_h.set_quoted('PACKAGE_COPYRIGHT_DATES', '2016 - 2021')
 meta_h.set_quoted('PACKAGE_DATA_DIR', data_dir)
+meta_h.set_quoted('PACKAGE_LIB_DIR', lib_dir)
 meta_h.set_quoted('PACKAGE_CONFIG_DIR', sys_conf_dir)
 meta_h.set_quoted('PACKAGE_CODESET', 'UTF-8')
 

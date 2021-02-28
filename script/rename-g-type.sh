@@ -9,6 +9,7 @@
 
 OLD_TYPE=$1
 NEW_TYPE=$2
+FILES=${*:3}
 
 gen_var() {
     cmd=$(cat <<EOF
@@ -27,7 +28,11 @@ EOF
 old_var=($(gen_var ${OLD_TYPE}))
 new_var=($(gen_var ${NEW_TYPE}))
 
-for f in $(find ./src/ \( -name '*.h' -o -name '*.c' \)); do
+if [ -z "$FILES" ]; then
+    FILES=$(find ./src/ \( -name '*.h' -o -name '*.c' \))
+fi
+
+for f in $FILES; do
     sed -i "s/\b${old_var[0]}\b/${new_var[0]}/g" ${f} # GtkWidget
     sed -i "s/\b${old_var[0]}Class\b/${new_var[0]}Class/g" ${f} # GtkWidgetClass
     sed -i "s/\b_${old_var[0]}\b/_${new_var[0]}/g" ${f} # _GtkWidget

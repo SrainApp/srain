@@ -32,60 +32,13 @@ struct _SrnMessengerClass {
 
 enum {
     // 0 for PROP_NOME
+    PROP_NAME = 1;
     N_PROPERTIES
 };
 
 G_DEFINE_TYPE(SrnMessenger, srn_messenger, G_TYPE_OBJECT);
 
-static GParamSpec *obj_properties[N_PROPERTIES] = {
-};
-
-static const GOptionEntry option_entries[] = {
-    {
-        .long_name = "version",
-        .short_name = 'v',
-        .flags = 0,
-        .arg = G_OPTION_ARG_NONE,
-        .arg_data = NULL,
-        .description = N_("Show version information"),
-        .arg_description = NULL,
-    },
-    {
-        .long_name = "no-auto",
-        .short_name = 'a',
-        .flags = 0,
-        .arg = G_OPTION_ARG_NONE,
-        .arg_data = NULL,
-        .description = N_("Don't auto connect to servers"),
-        .arg_description = NULL,
-    },
-    {
-        .long_name = G_OPTION_REMAINING,
-        .short_name = '\0',
-        .flags = 0,
-        .arg = G_OPTION_ARG_STRING_ARRAY,
-        .arg_data = NULL,
-        .description = N_("Open one or more IRC URLs"),
-        .arg_description = N_("[URL…]")
-    },
-    { NULL }
-};
-
-static const GActionEntry action_entries[] = {
-    {
-        .name = "about",
-        .activate = on_activate_about,
-    },
-    {
-        .name = "preferences",
-        .activate = on_activate_prefs,
-    },
-    {
-        .name = "exit",
-        .activate = on_activate_exit,
-    },
-    { NULL }
-};
+static GParamSpec *obj_properties[N_PROPERTIES] = { NULL, };
 
 static void
 srn_messenger_set_property(GObject *object, guint property_id,
@@ -102,7 +55,7 @@ srn_messenger_set_property(GObject *object, guint property_id,
 
 static void
 srn_messenger_get_property(GObject *object, guint property_id,
-                             GValue *value, GParamSpec *pspec) {
+                           GValue *value, GParamSpec *pspec) {
     SrnMessenger *self = SRN_MESSENGER(object);
 
     switch (property_id) {

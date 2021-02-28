@@ -113,5 +113,5 @@ gi_sample_thing_print_message (GISampleThing *self)
 {
   g_return_if_fail (GI_IS_SAMPLE_THING (self));
 
-  g_print ("Message: %s\n", self->msg);
+  g_print ("Message: >>> %s\n", self->msg);
 }

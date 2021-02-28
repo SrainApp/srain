@@ -12,8 +12,8 @@ project(
 app_id = 'im.srain.Srain'
 app_name = meson.project_name()
 app_pretty_name = 'Srain'
-app_generic_name = 'Srain IRC Client'
-app_desc = 'Modern IRC client written in GTK'
+app_generic_name = 'Srain IM Client'
+app_desc = 'Modern instant messaging client'
 app_url = 'https://srain.im'
 app_bugreport = 'https://github.com/SrainApp/' + app_name + '/issues/new'
 app_exec = app_name
@@ -32,6 +32,7 @@ endif
 prefix = get_option('prefix')
 bin_dir = join_paths(prefix, get_option('bindir'))
 data_dir = join_paths(prefix, get_option('datadir'))
+lib_dir = join_paths(prefix, get_option('libdir'))
 pkg_data_dir = join_paths(data_dir, meson.project_name())
 # https://github.com/mesonbuild/meson/issues/825
 pkg_doc_dir = join_paths(data_dir, 'doc', meson.project_name())
@@ -40,9 +41,12 @@ po_dir = join_paths(meson.source_root (), 'po')
 sys_conf_dir = join_paths(prefix, get_option('sysconfdir'))
 pkg_sys_conf_dir = join_paths(sys_conf_dir, meson.project_name())
 
+gnome = import('gnome')
+
 srcs = []
 
-subdir('data')
-subdir('po')
+# subdir('data')
+# subdir('po')
 subdir('src')
-subdir('doc')
+# subdir('doc')
+subdir('mod')

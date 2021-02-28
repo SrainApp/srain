@@ -21,13 +21,13 @@
 
 #include <gtk/gtk.h>
 
-#define SRN_TYPE_APPLICATION (srn_application_get_type())
-#define SRN_APPLICATION(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SRN_TYPE_APPLICATION, SrnApplication))
-#define SRN_IS_APPLICATION(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), SRN_TYPE_APPLICATION))
+#define SRN_TYPE_MESSENGER (srn_messenger_get_type())
+#define SRN_MESSENGER(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SRN_TYPE_MESSENGER, SrnMessenger))
+#define SRN_IS_MESSENGER(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), SRN_TYPE_MESSENGER))
 
-typedef struct _SrnApplication SrnApplication;
-typedef struct _SrnApplicationClass SrnApplicationClass;
+typedef struct _SrnMessenger SrnMessenger;
+typedef struct _SrnMessengerClass SrnMessengerClass;
 
-GType srn_application_get_type(void);
+GType srn_messenger_get_type(void);
 
 #endif /* __SRN_APP_H */

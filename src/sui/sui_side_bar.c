@@ -115,6 +115,11 @@ static gint list_sort_func(GtkListBoxRow *row1, GtkListBoxRow *row2,
     return time1 <= time2;
 }
 
+static gboolean list_filter_func(GtkListBoxRow *row, gpointer user_data){
+    SuiSideBarItem *item = gtk_bin_get_child(GTK_BIN(row));
+    return gtk_widget_get_visible(GTK_WIDGET(item));
+}
+
 static void
 sui_side_bar_init(SuiSideBar *self){
     GtkWidget *sw;
@@ -135,6 +140,8 @@ sui_side_bar_init(SuiSideBar *self){
 
     gtk_list_box_set_sort_func(GTK_LIST_BOX(self->list),
             list_sort_func, NULL, NULL);
+    gtk_list_box_set_filter_func(GTK_LIST_BOX(self->list),
+            list_filter_func, NULL, NULL);
 
     g_signal_connect(self->list, "row-selected",
             G_CALLBACK(listbox_on_row_selected), self);

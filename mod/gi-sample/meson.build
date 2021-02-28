@@ -1,5 +1,3 @@
-project('gi-sample-meson', 'c')
-
 libsources = ['gi-sample.c', 'gi-sample.h']
 
 gnome = import('gnome')

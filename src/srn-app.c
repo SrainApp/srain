@@ -198,19 +198,20 @@ srn_application_class_init(SrnApplicationClass *class) {
 static void
 show_about_dialog(SrnApplication *self) {
     GtkWindow *window = gtk_application_get_active_window(
-            GTK_APPLICATION(self));
+                            GTK_APPLICATION(self));
     const gchar *authors[] = { "Shengyu Zhang <i@silverrainz.me>", NULL };
     const gchar **documentors = authors;
     const char *translators = "Heimen Stoffels (nl)\n"
                               "Artem Polishchuk (ru)\n"
                               "Shengyu Zhang (zh_CN)\n"
                               "Jianqiu Zhang (zh_CN)";
-    gchar *version = g_strdup_printf(_("%1$s-%2$s\nRunning against GTK+ %3$d.%4$d.%5$d"),
-                                           PACKAGE_VERSION,
-                                           PACKAGE_BUILD,
-                                           gtk_get_major_version(),
-                                           gtk_get_minor_version(),
-                                           gtk_get_micro_version());
+    gchar *version = g_strdup_printf(
+                         _("%1$s-%2$s\nRunning against GTK+ %3$d.%4$d.%5$d"),
+                         PACKAGE_VERSION,
+                         PACKAGE_BUILD,
+                         gtk_get_major_version(),
+                         gtk_get_minor_version(),
+                         gtk_get_micro_version());
 
     gtk_show_about_dialog(window,
                           "program-name", PACKAGE_NAME,
@@ -236,6 +237,75 @@ on_startup(SrnApplication *self) {
 static void
 on_activate(SrnApplication *self) {
     g_message("Activate");
+
+    GIRepository *repository;
+    GError *error = NULL;
+    GIBaseInfo *base_info;
+    GIArgument in_args[1];
+    GIArgument retval;
+
+    repository = g_irepository_get_default();
+
+    g_irepository_prepend_search_path(PACKAGE_LIB_DIR "/girepository-1.0");
+    g_irepository_prepend_library_path(PACKAGE_LIB_DIR);
+
+    GSList *lst = g_irepository_get_search_path();
+    for (lst; lst; lst = g_slist_next(lst)) {
+        g_message("se %s", lst->data);
+    }
+
+    g_irepository_require(repository, "GISample", "1.0", 0, &error);
+    if (error) {
+        g_error("ERROR: %s\n", error->message);
+        return;
+    }
+
+    base_info = g_irepository_find_by_name(repository, "GISample", "Thing");
+    if (!base_info) {
+        g_error("ERROR: %s\n", "Could not find GLib.warn_message");
+        return;
+    }
+    g_warn_if_fail(GI_IS_OBJECT_INFO(base_info));
+    GIObjectInfo *base_info1 = g_object_info_find_method((GIObjectInfo *)base_info,
+                               "new");
+    if (!base_info1) {
+        g_error("ERROR: %s\n", "Could not find new");
+        return;
+    }
+    g_message("new");
+
+    if (!g_function_info_invoke((GIFunctionInfo *) base_info1,
+                                NULL,
+                                0,
+                                NULL,
+                                0,
+                                &retval,
+                                &error)) {
+        g_error("ERROR: %s\n", error->message);
+        return;
+    }
+    g_message("get obj");
+
+    GIBaseInfo *base_info2 = g_object_info_find_method((GIObjectInfo *)base_info,
+                             "print_message");
+    if (!base_info2) {
+        g_error("ERROR: %s\n", "Could not find print message");
+        return;
+    }
+
+    in_args[0].v_pointer = (gpointer) retval.v_pointer;
+    if (!g_function_info_invoke((GIFunctionInfo *) base_info2,
+                                (const GIArgument *) &in_args,
+                                1,
+                                NULL,
+                                0,
+                                &retval,
+                                &error)) {
+        g_error("ERROR: %s\n", error->message);
+        return;
+    }
+    g_message("print message");
+    return;
 }
 
 static void
@@ -255,10 +325,10 @@ on_handle_local_options(SrnApplication *self, GVariantDict *options,
         return 0; // Success
     }
 
-    GVariant *dump= g_variant_dict_lookup_value(options, "introspect-dump", "s");
+    GVariant *dump = g_variant_dict_lookup_value(options, "introspect-dump", "s");
     if (dump) {
         GError *err = NULL;
-        if(!g_irepository_dump(g_variant_get_string(dump, NULL), &err)) {
+        if (!g_irepository_dump(g_variant_get_string(dump, NULL), &err)) {
             g_print("g_irepository_dump() failed: %s\n", err->message);
             g_error_free(err);
             g_variant_unref(dump);
@@ -287,11 +357,13 @@ on_activate_about(GSimpleAction *action, GVariant *parameter,
 }
 
 static void
-on_activate_prefs(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+on_activate_prefs(GSimpleAction *action, GVariant *parameter,
+                  gpointer user_data) {
 }
 
 static void
-on_activate_exit(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+on_activate_exit(GSimpleAction *action, GVariant *parameter,
+                 gpointer user_data) {
 }
 
 /**
@@ -302,7 +374,7 @@ on_activate_exit(GSimpleAction *action, GVariant *parameter, gpointer user_data)
  */
 void
 srn_application_ping(SrnApplication *self) {
-  g_return_if_fail(SRN_IS_APPLICATION(self));
+    g_return_if_fail(SRN_IS_APPLICATION(self));
 
-  g_message("Ping!");
+    g_message("Ping!");
 }
