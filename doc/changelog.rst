@@ -30,6 +30,36 @@ Change Log
 
 .. _version-latest:
 
+.. _version-1.2.0:
+
+2021-02-28 Version 1.2.0
+========================
+
+- Features:
+
+  - Switch build system from Make to Meson (:pull:`266`)
+  - Add FreeBSD implementations for ``srn_get_executable_{path,dir}``,
+    thanks to :people:`wahjava`
+  - Add ``/quote`` command for sending special IRC commands,
+    thanks to :people:`hno` (:pull:`283`)
+  - Add support for hiding server buffer (:pull:`287`)
+
+
+- Bug fixes:
+
+   - Fix an use-after-free BUG (:pull:`267`)
+   - Fix implicit declaration error on some systems,
+     thanks to :people:`lgbaldoni` (:pull:`270`)
+
+.. _version-1.1.3:
+
+2020-10-01 Version 1.1.3
+========================
+
+- Bug fixes:
+
+   - Fix an use-after-free BUG (:pull:`267`)
+
 .. _version-1.1.2:
 
 2020-08-10 Version 1.1.2
