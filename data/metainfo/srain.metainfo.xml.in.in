@@ -68,6 +68,18 @@
   </content_rating>
 
 <releases>
+  <release version="1.2.0" date="2020-02-28">
+      <url>https://doc.srain.im/en/latest/changelog.html#version-1-2-0</url>
+  </release>
+  <release version="1.1.2" date="2020-08-10">
+      <url>https://doc.srain.im/en/latest/changelog.html#version-1-1-2</url>
+  </release>
+  <release version="1.1.1" date="2020-06-27">
+      <url>https://doc.srain.im/en/latest/changelog.html#version-1-1-1</url>
+  </release>
+  <release version="1.1.0" date="2020-05-24">
+      <url>https://doc.srain.im/en/latest/changelog.html#version-1-1-0</url>
+  </release>
   <release version="1.0.2" date="2020-04-11">
       <url>https://doc.srain.im/en/latest/changelog.html#version-1-0-2</url>
   </release>
