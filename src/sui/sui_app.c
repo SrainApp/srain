@@ -425,10 +425,11 @@ static void show_about_dialog(SuiApplication *self){
             gtk_get_minor_version(),
             gtk_get_micro_version());
     const char *translators =
-        "Heimen Stoffels (nl)\n" \
-        "Artem Polishchuk (ru)\n" \
-        "Shengyu Zhang (zh_CN)\n" \
-        "Jianqiu Zhang (zh_CN)";
+        "Heimen Stoffels <vistausss@outlook.com> (nl)\n" \
+        "Artem Polishchuk <ego.cordatus@gmail.com> (ru)\n" \
+        "Andrij Mizyk <andmizyk@gmail.com> (uk)\n" \
+        "Shengyu Zhang <i@silverrainz.me> (zh_CN)\n" \
+        "Jianqiu Zhang <zhangjianqiu13@gmail.com> (zh_CN)";
 
     gtk_show_about_dialog(window,
             "program-name", PACKAGE_NAME,
