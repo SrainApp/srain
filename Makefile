@@ -22,6 +22,7 @@ run: install
 	unset XDG_CONFIG_HOME XDG_DATA_HOME XDG_CACHE_HOME; \
 	export HOME=$(FAKE_HOME); \
 	export XDG_DATA_DIRS=$(FAKE_XDG_DATA_DIRS); \
+	export LD_PRELOAD=$(PREFIX)/lib/libsif.so; \
 	"$(PREFIX)/bin/srain"
 
 .PHONY: debug

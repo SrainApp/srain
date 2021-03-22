@@ -19,7 +19,7 @@ build_id_generator = [
   meson.source_root(),
 ]
 
-generated_meta_h = declare_dependency(
+meta_dep = declare_dependency(
   sources: vcs_tag(
     command: build_id_generator,
     input: configure_file(output: 'srn-meta.h.in', configuration: meta_h),
@@ -28,33 +28,9 @@ generated_meta_h = declare_dependency(
   )
 )
 
-srcs += [
-  'main.c',
-  'srn-app.h',
-  'srn-app.c',
-]
+glib_dep = dependency('glib-2.0', version: '>= 2.39.3')
+gtk_dep = dependency('gtk4', version: '>= 3.99.4')
 
-deps = [
-  dependency('gtk4', version: '>= 3.99.4'),
-  dependency('glib-2.0', version: '>= 2.39.3'),
-  dependency('gobject-introspection-1.0'),
-  generated_meta_h,
-]
-
-exec = executable(app_exec, srcs,
-  dependencies: deps,
-  install: true,
-  install_dir: bin_dir,
-  export_dynamic: true,
-)
-
-gnome.generate_gir(
-  exec,
-  sources : srcs,
-  nsversion : '1.0',
-  namespace : 'Srn',
-  symbol_prefix : 'srn',
-  identifier_prefix : 'Srn',
-  includes : ['Gtk-4.0', 'GObject-2.0'],
-  install : true,
-)
+subdir('sif')
+subdir('srn')
+subdir('mod')

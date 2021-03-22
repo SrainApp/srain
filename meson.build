@@ -4,9 +4,9 @@
 
 project(
   'srain', 'c',
-  version: '1.1.2',
+  version: '2.0.0rc0',
   license: 'GPL3',
-  meson_version: '>= 0.45.0'
+  meson_version: '>= 0.46.0'
 )
 
 app_id = 'im.srain.Srain'
@@ -49,4 +49,4 @@ srcs = []
 # subdir('po')
 subdir('src')
 # subdir('doc')
-subdir('mod')
+# subdir('mod')
