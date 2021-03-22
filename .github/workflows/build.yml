@@ -2,14 +2,9 @@ name: build
 on:
   push:
     paths-ignore:
-    - "README.rst"
-    - "doc/*"
-    - "po/*"
+    - "*"
   pull_request:
-    paths-ignore:
-    - "README.rst"
-    - "doc/*"
-    - "po/*"
+    - "*"
   schedule:
     - cron: '0 7 * * 6'
 jobs:
