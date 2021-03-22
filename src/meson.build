@@ -32,6 +32,10 @@ srcs += [
   'main.c',
   'srn-app.h',
   'srn-app.c',
+  'srn-messenger.h',
+  'srn-messenger.c',
+  'srn-flow.h',
+  'srn-flow.c',
 ]
 
 deps = [

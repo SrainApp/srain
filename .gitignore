@@ -9,6 +9,7 @@ GRTAGS
 GPATH
 .ccls-cache/
 .clangd/
+.cache/
 
 # Object files
 *.o

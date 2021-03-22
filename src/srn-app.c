@@ -21,9 +21,10 @@
 // For g_irepository_dump
 #include <girepository.h>
 
-#include "srn-app.h"
 // For package meta infos
 #include "srn-meta.h"
+#include "srn-app.h"
+#include "srn-messenger.h"
 
 struct _SrnApplication {
     GtkApplication parent;
@@ -59,14 +60,13 @@ on_activate_exit(GSimpleAction *action, GVariant *parameter,
  *****************************************************************************/
 
 enum {
-    // 0 for PROP_NOME
+    PROP_0,
     N_PROPERTIES
 };
 
 G_DEFINE_TYPE(SrnApplication, srn_application, GTK_TYPE_APPLICATION);
 
-static GParamSpec *obj_properties[N_PROPERTIES] = {
-};
+static GParamSpec *obj_properties[N_PROPERTIES] = { };
 
 static const GOptionEntry option_entries[] = {
     {
@@ -79,30 +79,12 @@ static const GOptionEntry option_entries[] = {
         .arg_description = NULL,
     },
     {
-        .long_name = "no-auto",
-        .short_name = 'a',
-        .flags = 0,
-        .arg = G_OPTION_ARG_NONE,
-        .arg_data = NULL,
-        .description = N_("Don't auto connect to servers"),
-        .arg_description = NULL,
-    },
-    {
         .long_name = "introspect-dump",
         .flags = 0,
         .arg = G_OPTION_ARG_STRING,
         .arg_data = NULL,
         .description = N_("Dump introspection data"),
         .arg_description = NULL,
-    },
-    {
-        .long_name = G_OPTION_REMAINING,
-        .short_name = '\0',
-        .flags = 0,
-        .arg = G_OPTION_ARG_STRING_ARRAY,
-        .arg_data = NULL,
-        .description = N_("Open one or more IRC URLs"),
-        .arg_description = N_("[URL…]")
     },
     { NULL }
 };
@@ -126,8 +108,6 @@ static const GActionEntry action_entries[] = {
 static void
 srn_application_set_property(GObject *object, guint property_id,
                              const GValue *value, GParamSpec *pspec) {
-    SrnApplication *self = SRN_APPLICATION(object);
-
     switch (property_id) {
     default:
         /* We don't have any other property... */
@@ -139,8 +119,6 @@ srn_application_set_property(GObject *object, guint property_id,
 static void
 srn_application_get_property(GObject *object, guint property_id,
                              GValue *value, GParamSpec *pspec) {
-    SrnApplication *self = SRN_APPLICATION(object);
-
     switch (property_id) {
     default:
         /* We don't have any other property... */
@@ -162,6 +140,10 @@ srn_application_init(SrnApplication *self) {
     g_signal_connect(self, "command-line", G_CALLBACK(on_command_line), NULL);
     g_signal_connect(self, "handle-local-options",
                      G_CALLBACK(on_handle_local_options), NULL);
+
+    /* Init GObject Introspection repository */
+    g_irepository_prepend_search_path(PACKAGE_LIB_DIR "/girepository-1.0");
+    g_irepository_prepend_library_path(PACKAGE_LIB_DIR);
 }
 
 static void
@@ -171,10 +153,6 @@ srn_application_constructed(GObject *object) {
 
 static void
 srn_application_finalize(GObject *object) {
-    SrnApplication *self;
-
-    self = SRN_APPLICATION(object);
-
     G_OBJECT_CLASS(srn_application_parent_class)->finalize(object);
 }
 
@@ -232,47 +210,31 @@ show_about_dialog(SrnApplication *self) {
 static void
 on_startup(SrnApplication *self) {
     g_message("Startup");
-}
-
-static void
-on_activate(SrnApplication *self) {
-    g_message("Activate");
-
     GIRepository *repository;
     GError *error = NULL;
     GIBaseInfo *base_info;
-    GIArgument in_args[1];
     GIArgument retval;
 
     repository = g_irepository_get_default();
 
-    g_irepository_prepend_search_path(PACKAGE_LIB_DIR "/girepository-1.0");
-    g_irepository_prepend_library_path(PACKAGE_LIB_DIR);
-
-    GSList *lst = g_irepository_get_search_path();
-    for (lst; lst; lst = g_slist_next(lst)) {
-        g_message("se %s", lst->data);
-    }
-
-    g_irepository_require(repository, "GISample", "1.0", 0, &error);
+    g_irepository_require(repository, "Sirc", "1.0", 0, &error);
     if (error) {
         g_error("ERROR: %s\n", error->message);
         return;
     }
 
-    base_info = g_irepository_find_by_name(repository, "GISample", "Thing");
+    base_info = g_irepository_find_by_name(repository, "Sirc", "Messenger");
     if (!base_info) {
-        g_error("ERROR: %s\n", "Could not find GLib.warn_message");
+        g_error("ERROR: %s\n", "Could not find Sirc.Messenger");
         return;
     }
     g_warn_if_fail(GI_IS_OBJECT_INFO(base_info));
-    GIObjectInfo *base_info1 = g_object_info_find_method((GIObjectInfo *)base_info,
-                               "new");
+    GIObjectInfo *base_info1 = g_object_info_find_method(
+                                   (GIObjectInfo *)base_info, "new");
     if (!base_info1) {
-        g_error("ERROR: %s\n", "Could not find new");
+        g_error("ERROR: %s\n", "Could not find Sirc.Messenger.new() ");
         return;
     }
-    g_message("new");
 
     if (!g_function_info_invoke((GIFunctionInfo *) base_info1,
                                 NULL,
@@ -284,27 +246,14 @@ on_activate(SrnApplication *self) {
         g_error("ERROR: %s\n", error->message);
         return;
     }
-    g_message("get obj");
+    g_message("Sirc.Messenger.new() done");
 
-    GIBaseInfo *base_info2 = g_object_info_find_method((GIObjectInfo *)base_info,
-                             "print_message");
-    if (!base_info2) {
-        g_error("ERROR: %s\n", "Could not find print message");
-        return;
-    }
+    g_message("Is SrnMessenger? %d", SRN_IS_MESSENGER((gpointer)retval.v_pointer));
+    return;
+}
 
-    in_args[0].v_pointer = (gpointer) retval.v_pointer;
-    if (!g_function_info_invoke((GIFunctionInfo *) base_info2,
-                                (const GIArgument *) &in_args,
-                                1,
-                                NULL,
-                                0,
-                                &retval,
-                                &error)) {
-        g_error("ERROR: %s\n", error->message);
-        return;
-    }
-    g_message("print message");
+static void
+on_activate(SrnApplication *self) {
     return;
 }
 
@@ -316,16 +265,13 @@ on_shutdown(SrnApplication *self) {
 static int
 on_handle_local_options(SrnApplication *self, GVariantDict *options,
                         gpointer user_data) {
-    g_message("%d", srn_application_get_type() == G_TYPE_INVALID);
-    g_message("%d", g_application_get_type() == G_TYPE_INVALID);
-    g_message("%d", gtk_application_get_type() == G_TYPE_INVALID);
-
     if (g_variant_dict_lookup(options, "version", "b", NULL)) {
         g_print("%s %s-%s\n", PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_BUILD);
         return 0; // Success
     }
 
-    GVariant *dump = g_variant_dict_lookup_value(options, "introspect-dump", "s");
+    GVariant *dump = g_variant_dict_lookup_value(options, "introspect-dump",
+                     G_VARIANT_TYPE_STRING);
     if (dump) {
         GError *err = NULL;
         if (!g_irepository_dump(g_variant_get_string(dump, NULL), &err)) {
@@ -350,10 +296,7 @@ on_command_line(SrnApplication *self,
 static void
 on_activate_about(GSimpleAction *action, GVariant *parameter,
                   gpointer user_data) {
-    SrnApplication *self;
-
-    self = SRN_APPLICATION(user_data);
-    show_about_dialog(self);
+    show_about_dialog(SRN_APPLICATION(user_data));
 }
 
 static void

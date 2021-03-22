@@ -16,18 +16,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SNR_APP_H
-#define __SNR_APP_H
+#ifndef __SRN_MESSENGER_H
+#define __SRN_MESSENGER_H
 
-#include <gtk/gtk.h>
+#include <glib-object.h>
 
-#define SRN_TYPE_MESSENGER (srn_messenger_get_type())
-#define SRN_MESSENGER(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SRN_TYPE_MESSENGER, SrnMessenger))
-#define SRN_IS_MESSENGER(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), SRN_TYPE_MESSENGER))
+#include "srn-flow.h"
 
-typedef struct _SrnMessenger SrnMessenger;
-typedef struct _SrnMessengerClass SrnMessengerClass;
+G_BEGIN_DECLS
 
-GType srn_messenger_get_type(void);
+#define SRN_TYPE_MESSENGER (srn_messenger_get_type ())
 
-#endif /* __SRN_APP_H */
+G_DECLARE_INTERFACE(SrnMessenger, srn_messenger, SRN, MESSENGER, GObject)
+
+struct _SrnMessengerInterface {
+    GTypeInterface parent_iface;
+
+    SrnFlow *(*login)(SrnMessenger *self);
+    SrnFlow *(*contact)(SrnMessenger *self);
+};
+
+G_END_DECLS
+
+#endif /* __SRN_MESSENGER_H */

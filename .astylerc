@@ -16,5 +16,5 @@ align-pointer=name
 align-reference=name
 
 break-return-type
-break-return-type-decl
+# break-return-type-decl
 max-code-length=80

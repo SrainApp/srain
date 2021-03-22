@@ -16,19 +16,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SNR_APP_H
-#define __SNR_APP_H
+#ifndef __SNR_FLOW_H
+#define __SNR_FLOW_H
 
 #include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 
-#define SRN_TYPE_APPLICATION srn_application_get_type()
-G_DECLARE_FINAL_TYPE(SrnApplication, srn_application, SRN, APPLICATION,
-                     GtkApplication)
+#define SRN_TYPE_FLOW (srn_flow_get_type())
 
-void srn_application_ping(SrnApplication *self);
+G_DECLARE_INTERFACE(SrnFlow, srn_flow, SRN, FLOW, GObject)
+
+struct _SrnFlowInterface {
+    GTypeInterface parent_iface;
+
+    GtkWidget *(*launch)(SrnFlow *self, GCancellable *cancellable, GError **error);
+};
+
+GtkWidget *srn_flow_launch(SrnFlow *self, GCancellable *cancellable,
+                           GError **error);
 
 G_END_DECLS
 
-#endif /* __SRN_APP_H */
+#endif /* __SRN_FLOW_H */

@@ -1,1 +1,1 @@
-subdir('gi-sample')
+subdir('sirc')
