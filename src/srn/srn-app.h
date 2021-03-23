@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SNR_APP_H
-#define __SNR_APP_H
+#ifndef __SRN_APP_H
+#define __SRN_APP_H
 
 #include <gtk/gtk.h>
 

@@ -25,35 +25,27 @@
 // For package meta infos
 #include "srn-meta.h"
 #include "srn-app.h"
+#include "srn-window.h"
 
 struct _SrnApplication {
     GtkApplication parent;
 };
 
-static void
-show_about_dialog(SrnApplication *self);
+static void show_about_dialog(SrnApplication *self);
 
-static void
-on_startup(SrnApplication *self);
-static void
-on_activate(SrnApplication *self);
-static void
-on_shutdown(SrnApplication *self);
-static int
-on_handle_local_options(SrnApplication *self, GVariantDict *options,
-                        gpointer user_data);
-static int
-on_command_line(SrnApplication *self,
-                GApplicationCommandLine *cmdline, gpointer user_data);
-static void
-on_activate_about(GSimpleAction *action, GVariant *parameter,
-                  gpointer user_data);
-static void
-on_activate_prefs(GSimpleAction *action, GVariant *parameter,
-                  gpointer user_data);
-static void
-on_activate_exit(GSimpleAction *action, GVariant *parameter,
-                 gpointer user_data);
+static void on_startup(SrnApplication *self);
+static void on_activate(SrnApplication *self);
+static void on_shutdown(SrnApplication *self);
+static int on_handle_local_options(SrnApplication *self, GVariantDict *options,
+                                   gpointer user_data);
+static int on_command_line(SrnApplication *self,
+                           GApplicationCommandLine *cmdline, gpointer user_data);
+static void on_activate_about(GSimpleAction *action, GVariant *parameter,
+                              gpointer user_data);
+static void on_activate_prefs(GSimpleAction *action, GVariant *parameter,
+                              gpointer user_data);
+static void on_activate_exit(GSimpleAction *action, GVariant *parameter,
+                             gpointer user_data);
 
 /*****************************************************************************
  * GObject functions
@@ -254,6 +246,8 @@ on_startup(SrnApplication *self) {
 
 static void
 on_activate(SrnApplication *self) {
+    SrnWindow *win = srn_window_new(self);
+    gtk_window_present(GTK_WINDOW(win));
     return;
 }
 

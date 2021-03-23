@@ -21,7 +21,11 @@ desktop = i18n.merge_file(
 
 gnome = import('gnome')
 
-srcs += gnome.compile_resources('srain-resources', 'srain.gresource.xml')
+srcs += gnome.compile_resources(
+  'srn-resources',
+  'srain.gresource.xml',
+  c_name: 'srn',
+)
 
 subdir('metainfo')
 subdir('icons')

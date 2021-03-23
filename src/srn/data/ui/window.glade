@@ -1,29 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <object class="GtkImage" id="connect_image">
+  <template class="SrnWindow" parent="GtkApplicationWindow">
     <property name="can_focus">0</property>
-    <property name="icon_name">network-server-symbolic</property>
-    <property name="use_fallback">1</property>
-  </object>
-  <object class="GtkImage" id="join_image">
-    <property name="can_focus">0</property>
-    <property name="icon_name">contact-new-symbolic</property>
-    <property name="use_fallback">1</property>
-  </object>
-  <object class="GtkImage" id="plugin_image">
-    <property name="can_focus">0</property>
-    <property name="icon_name">application-x-addon-symbolic</property>
-    <property name="use_fallback">1</property>
-  </object>
-  <object class="GtkImage" id="send_image">
-    <property name="can_focus">0</property>
-    <property name="icon_name">document-send-symbolic</property>
-    <property name="use_fallback">1</property>
-  </object>
-  <template class="SuiWindow" parent="GtkApplicationWindow">
-    <property name="can_focus">0</property>
-    <property name="window_position">center</property>
     <property name="default_width">1050</property>
     <property name="default_height">650</property>
     <property name="icon_name">im.srain.Srain</property>
@@ -117,7 +96,6 @@
                             <property name="opacity">0.8</property>
                             <property name="label" translatable="yes">&lt;big&gt;Welcome to Srain!&lt;/big&gt;</property>
                             <property name="use_markup">1</property>
-                            <property name="track_visited_links">False</property>
                           </object>
                         </child>
                         <child>
@@ -141,7 +119,6 @@
             <child>
               <object class="GtkStackPage">
                 <property name="name">main</property>
-                <property name="position">1</property>
                 <property name="child">
                   <object class="GtkPaned" id="main_paned">
                     <property name="shrink-end-child">0</property>
@@ -189,21 +166,16 @@
                                 <property name="can_focus">0</property>
                                 <property name="focus_on_click">0</property>
                                 <property name="receives_default">1</property>
-                                <property name="image">plugin_image</property>
-                                <property name="relief">none</property>
                               </object>
                             </child>
                             <child>
                               <object class="GtkTextView" id="input_text_view">
                                 <property name="hexpand">1</property>
-                                <property name="has_focus">1</property>
-                                <property name="is_focus">True</property>
                                 <property name="wrap_mode">word-char</property>
                                 <property name="left_margin">4</property>
                                 <property name="right_margin">4</property>
                                 <property name="top_margin">7</property>
                                 <property name="bottom_margin">7</property>
-                                <property name="populate_all">True</property>
                               </object>
                             </child>
                             <child>
@@ -211,8 +183,6 @@
                                 <property name="can_focus">0</property>
                                 <property name="focus_on_click">0</property>
                                 <property name="receives_default">1</property>
-                                <property name="image">send_image</property>
-                                <property name="relief">none</property>
                               </object>
                             </child>
                             <style>
@@ -241,7 +211,6 @@
           <object class="GtkHeaderBar" id="side_header_bar">
             <property name="width_request">300</property>
             <property name="can_focus">0</property>
-            <property name="has_subtitle">False</property>
             <child>
               <object class="GtkBox" id="side_left_header_box">
                 <property name="name">window_header_box</property>
@@ -265,48 +234,7 @@
               <object class="GtkBox" id="side_right_header_box">
                 <property name="name">f</property>
                 <property name="can_focus">0</property>
-                <child>
-                  <object class="GtkButtonBox">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="layout_style">expand</property>
-                    <child>
-                      <object class="GtkButton" id="connect_button">
-                        <property name="can_focus">0</property>
-                        <property name="focus_on_click">0</property>
-                        <property name="receives_default">1</property>
-                        <property name="tooltip_text" translatable="yes">Connect</property>
-                        <property name="image">connect_image</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="join_button">
-                        <property name="can_focus">0</property>
-                        <property name="focus_on_click">0</property>
-                        <property name="receives_default">1</property>
-                        <property name="tooltip_text" translatable="yes">Join</property>
-                        <property name="image">join_image</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                    <style>
-                      <class name="linked"/>
-                    </style>
-                  </object>
-                </child>
               </object>
-              <packing>
-                <property name="pack_type">end</property>
-              </packing>
             </child>
           </object>
         </child>
@@ -347,9 +275,6 @@
                   <placeholder/>
                 </child>
               </object>
-              <packing>
-                <property name="pack_type">end</property>
-              </packing>
             </child>
           </object>
         </child>

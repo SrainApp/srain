@@ -43,10 +43,7 @@ pkg_sys_conf_dir = join_paths(sys_conf_dir, meson.project_name())
 
 gnome = import('gnome')
 
-srcs = []
-
-# subdir('data')
-# subdir('po')
+subdir('po')
 subdir('src')
 # subdir('doc')
 # subdir('mod')

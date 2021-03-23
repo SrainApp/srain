@@ -4,7 +4,11 @@ srcs = [
   'srn-app.c',
   'srn-flow-controller.h',
   'srn-flow-controller.c',
+  'srn-window.h',
+  'srn-window.c',
 ]
+
+subdir('data')
 
 exec = executable(app_exec, srcs,
   dependencies: [glib_dep, gtk_dep, gi_dep, meta_dep],

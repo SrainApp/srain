@@ -1,4 +1,4 @@
-/* Copyright (C) 2016-2021 Shengyu Zhang <i@silverrainz.me>
+/* Copyright (C) 2016-2017 Shengyu Zhang <i@silverrainz.me>
  *
  * This file is part of Srain.
  *
@@ -16,17 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SRN_FLOW_CONTROLLER_H
-#define __SRN_FLOW_CONTROLLER_H
+#ifndef __SRN_WINDOW_H
+#define __SRN_WINDOW_H
 
 #include <gtk/gtk.h>
 
+#include "srn-app.h"
+
 G_BEGIN_DECLS
 
-#define SRN_TYPE_FLOW_CONTROLLER srn_flow_controller_get_type()
-G_DECLARE_FINAL_TYPE(SrnFlowController, srn_flow_controller, SRN,
-                     FLOW_CONTROLLER, GObject)
+#define SRN_TYPE_WINDOW srn_window_get_type()
+G_DECLARE_FINAL_TYPE(SrnWindow, srn_window, SRN, WINDOW, GtkApplicationWindow)
+
+SrnWindow *srn_window_new(SrnApplication *app);
 
 G_END_DECLS
 
-#endif /* __SRN_FLOW_CONTROLLER_H */
+#endif /* __SRN_WINDOW_H */
