@@ -18,7 +18,6 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-// For g_irepository_dump
 #include <girepository.h>
 
 #include "sif/sif.h"

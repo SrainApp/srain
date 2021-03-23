@@ -30,6 +30,7 @@ meta_dep = declare_dependency(
 
 glib_dep = dependency('glib-2.0', version: '>= 2.39.3')
 gtk_dep = dependency('gtk4', version: '>= 3.99.4')
+gi_dep = dependency('gobject-introspection-1.0')
 
 subdir('sif')
 subdir('srn')

@@ -6,8 +6,6 @@ srcs = [
   'srn-flow-controller.c',
 ]
 
-gi_dep = dependency('gobject-introspection-1.0')
-
 exec = executable(app_exec, srcs,
   dependencies: [glib_dep, gtk_dep, gi_dep, meta_dep],
   include_directories: libsif_inc,

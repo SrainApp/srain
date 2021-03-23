@@ -29,52 +29,14 @@ G_DEFINE_INTERFACE(SifMessenger, sif_messenger, G_TYPE_OBJECT)
 static void
 sif_messenger_default_init(SifMessengerInterface *iface) {
     /**
-     * SifMessenger:name
-     *
-     * The name of the #SifMessenger.
-     */
-    g_object_interface_install_property(iface,
-                                        g_param_spec_string("name",
-                                                "Messenger Name",
-                                                "Name of the Messenger.",
-                                                "unknown",
-                                                G_PARAM_READABLE));
-    /**
-     * SifMessenger:pretty-name
-     *
-     * The pretty name of the #SifMessenger.
-     */
-    g_object_interface_install_property(iface,
-                                        g_param_spec_string("pretty-name",
-                                                "Pretty Messenger Name",
-                                                "Pretty Name of the Messenger.",
-                                                NULL, /* default value */
-                                                G_PARAM_READABLE));
-    /**
-     * SifMessenger:version
-     *
-     * The version of the #SifMessenger.
-     */
-    g_object_interface_install_property(iface,
-                                        g_param_spec_string("version",
-                                                "Version",
-                                                "Version of the Messenger.",
-                                                NULL, /* default value */
-                                                G_PARAM_READABLE));
-    /**
      * SifMessenger:schemas
      *
-     * The resources URL schemas of the #SifMessenger.
+     * Semicolen secparated URL schemas handled by of #SifMessenger.
      */
-    g_object_interface_install_property(
-        iface,
-        g_param_spec_value_array("schemas",
-                                 "Schemas",
-                                 "URL schemas of the Messenger",
-                                 g_param_spec_string("schema",
-                                         "Schema",
-                                         "URL schemas of the Messenger",
-                                         NULL,
-                                         G_PARAM_READABLE), /* element spec */
-                                 G_PARAM_READABLE));
+    g_object_interface_install_property(iface,
+                                        g_param_spec_string("schemas",
+                                                "Schemas",
+                                                "URL Schemas of SifMessenger",
+                                                NULL,
+                                                G_PARAM_READABLE));
 }
