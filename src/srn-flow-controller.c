@@ -18,8 +18,6 @@
 
 #include <gtk/gtk.h>
 
-#include "sif/sif.h"
-
 #include "srn-flow-controller.h"
 
 struct _SrnFlowController {

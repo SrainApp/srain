@@ -88,8 +88,8 @@ meta_dep = declare_dependency(sources: meta_h)
 # Subdirectories #
 ##################
 
-subdir('sif')
-subdir('srn')
+subdir('data')
+subdir('src')
 subdir('mod')
-subdir('po')
-subdir('doc')
+# subdir('po')
+# subdir('doc')

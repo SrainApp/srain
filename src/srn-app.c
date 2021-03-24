@@ -20,16 +20,18 @@
 #include <gtk/gtk.h>
 #include <girepository.h>
 
-#include "sif/sif.h"
 
 // For package meta infos
 #include "srn-meta.h"
 #include "srn-app.h"
 #include "srn-window.h"
+#include "srn-messenger.h"
 
 struct _SrnApplication {
     GtkApplication parent;
 };
+
+static SrnApplication *instance = NULL;
 
 static void show_about_dialog(SrnApplication *self);
 
@@ -121,6 +123,8 @@ srn_application_get_property(GObject *object, guint property_id,
 
 static void
 srn_application_init(SrnApplication *self) {
+    instance = self;
+
     g_application_add_main_option_entries(G_APPLICATION(self), option_entries);
 
     g_action_map_add_action_entries(G_ACTION_MAP(self), action_entries,
@@ -240,7 +244,7 @@ on_startup(SrnApplication *self) {
     }
     g_message("Sirc.Messenger.new() done");
 
-    g_message("Is SifMessenger? %d", SIF_IS_MESSENGER((gpointer)retval.v_pointer));
+    g_message("Is SrnMessenger? %d", SRN_IS_MESSENGER((gpointer)retval.v_pointer));
     return;
 }
 
@@ -314,4 +318,14 @@ srn_application_ping(SrnApplication *self) {
     g_return_if_fail(SRN_IS_APPLICATION(self));
 
     g_message("Ping!");
+}
+
+/**
+ * srn_application_get_instance:
+ *
+ * Returns: (transfer none): The currently running instance of #SrnApplication.
+ */
+SrnApplication *
+srn_application_get_instance() {
+    return instance;
 }

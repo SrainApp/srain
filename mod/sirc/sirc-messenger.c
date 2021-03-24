@@ -1,4 +1,4 @@
-#include <sif/sif.h>
+#include <srn.h>
 
 #include "sirc-messenger.h"
 
@@ -8,10 +8,10 @@ struct _SircMessenger {
     GObject parent_instance;
 };
 
-static void sirc_messenger_interface_init(SifMessengerInterface *iface);
+static void sirc_messenger_interface_init(SrnMessengerInterface *iface);
 
 G_DEFINE_TYPE_WITH_CODE(SircMessenger, sirc_messenger, G_TYPE_OBJECT,
-                        G_IMPLEMENT_INTERFACE(SIF_TYPE_MESSENGER,
+                        G_IMPLEMENT_INTERFACE(SRN_TYPE_MESSENGER,
                                 sirc_messenger_interface_init))
 
 enum {
@@ -33,7 +33,7 @@ sirc_messenger_new(void) {
 }
 
 static void
-sirc_messenger_interface_init(SifMessengerInterface *iface) {
+sirc_messenger_interface_init(SrnMessengerInterface *iface) {
 }
 
 static void

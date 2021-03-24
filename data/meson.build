@@ -20,15 +20,14 @@ desktop = i18n.merge_file(
 )
 
 gnome = import('gnome')
-
-srcs += gnome.compile_resources(
+srn_res = gnome.compile_resources(
   'srn-resources',
   'srain.gresource.xml',
   c_name: 'srn',
 )
 
-subdir('metainfo')
-subdir('icons')
-
 install_subdir('themes', install_dir: pkg_data_dir)
 install_data('builtin.cfg', install_dir: pkg_sys_conf_dir)
+
+subdir('metainfo')
+subdir('icons')
