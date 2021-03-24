@@ -206,6 +206,12 @@ srn_window_class_init(SrnWindowClass *class) {
     gtk_widget_class_bind_template_child(widget_class, SrnWindow, send_button);
 }
 
+/**
+ * srn_window_new:
+ * @app: A #SrnApplication.
+ *
+ * Returns: (transfer full): A new #SrnWindow.
+ */
 SrnWindow *
 srn_window_new(SrnApplication *app) {
     return g_object_new(SRN_TYPE_WINDOW,

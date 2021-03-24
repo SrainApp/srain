@@ -19,6 +19,7 @@
 #ifndef __SRN_H
 #define __SRN_H
 
+#include "srn-app.h"
 #include "srn-flow.h"
 #include "srn-messenger.h"
 

@@ -29,6 +29,8 @@
 
 struct _SrnApplication {
     GtkApplication parent;
+
+    GList *messengers;
 };
 
 static SrnApplication *instance = NULL;
@@ -55,6 +57,7 @@ static void on_activate_exit(GSimpleAction *action, GVariant *parameter,
 
 enum {
     PROP_0,
+    PROP_MESSENGERS,
     N_PROPERTIES
 };
 
@@ -113,7 +116,11 @@ srn_application_set_property(GObject *object, guint property_id,
 static void
 srn_application_get_property(GObject *object, guint property_id,
                              GValue *value, GParamSpec *pspec) {
+    SrnApplication *self = SRN_APPLICATION(object);
+
     switch (property_id) {
+    case PROP_MESSENGERS:
+        g_value_set_pointer(value, self->messengers);
     default:
         /* We don't have any other property... */
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
@@ -123,7 +130,10 @@ srn_application_get_property(GObject *object, guint property_id,
 
 static void
 srn_application_init(SrnApplication *self) {
+    // TODO: GOnce
     instance = self;
+
+    self->messengers = NULL;
 
     g_application_add_main_option_entries(G_APPLICATION(self), option_entries);
 
@@ -149,6 +159,14 @@ srn_application_constructed(GObject *object) {
 
 static void
 srn_application_finalize(GObject *object) {
+    SrnApplication *self = SRN_APPLICATION(object);
+    GList *lst = self->messengers;
+
+    // Free all messengers
+    for (; lst; lst = g_list_next(lst)) {
+        g_object_unref(SRN_MESSENGER(lst->data));
+    }
+
     G_OBJECT_CLASS(srn_application_parent_class)->finalize(object);
 }
 
@@ -164,6 +182,12 @@ srn_application_class_init(SrnApplicationClass *class) {
     object_class->get_property = srn_application_get_property;
 
     /* Install properties */
+    obj_properties[PROP_MESSENGERS] =
+        g_param_spec_pointer("messengers",
+                             "Messengers",
+                             "Registered messengers.",
+                             G_PARAM_READABLE);
+
     g_object_class_install_properties(object_class,
                                       N_PROPERTIES,
                                       obj_properties);
@@ -206,45 +230,12 @@ show_about_dialog(SrnApplication *self) {
 static void
 on_startup(SrnApplication *self) {
     g_message("Startup");
-    GIRepository *repository;
-    GError *error = NULL;
-    GIBaseInfo *base_info;
-    GIArgument retval;
 
-    repository = g_irepository_get_default();
+    // GIOModule *sirc_mod = g_io_module_new(PACKAGE_LIB_DIR "/libsirc.so");
+    //sirc_mod
+    g_io_modules_load_all_in_directory(PACKAGE_LIB_DIR);
 
-    g_irepository_require(repository, "Sirc", "1.0", 0, &error);
-    if (error) {
-        g_error("ERROR: %s\n", error->message);
-        return;
-    }
-
-    base_info = g_irepository_find_by_name(repository, "Sirc", "Messenger");
-    if (!base_info) {
-        g_error("ERROR: %s\n", "Could not find Sirc.Messenger");
-        return;
-    }
-    g_warn_if_fail(GI_IS_OBJECT_INFO(base_info));
-    GIObjectInfo *base_info1 = g_object_info_find_method(
-                                   (GIObjectInfo *)base_info, "new");
-    if (!base_info1) {
-        g_error("ERROR: %s\n", "Could not find Sirc.Messenger.new() ");
-        return;
-    }
-
-    if (!g_function_info_invoke((GIFunctionInfo *) base_info1,
-                                NULL,
-                                0,
-                                NULL,
-                                0,
-                                &retval,
-                                &error)) {
-        g_error("ERROR: %s\n", error->message);
-        return;
-    }
-    g_message("Sirc.Messenger.new() done");
-
-    g_message("Is SrnMessenger? %d", SRN_IS_MESSENGER((gpointer)retval.v_pointer));
+    // g_message("GIOModule %p", sirc_mod);
     return;
 }
 
