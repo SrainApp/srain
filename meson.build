@@ -92,6 +92,6 @@ meta_dep = declare_dependency(sources: meta_h)
 
 subdir('data')
 subdir('src')
-subdir('mod')
+subdir('modules')
 # subdir('po')
-# subdir('doc')
+# subdir('docs')

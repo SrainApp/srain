@@ -16,6 +16,9 @@ G_DEFINE_TYPE_WITH_CODE(SircMessenger, sirc_messenger, G_TYPE_OBJECT,
 
 enum {
     PROP_0,
+    PROP_NAME,
+    PROP_PRETTY_NAME,
+    PROP_VERSION,
     PROP_SCHEMAS,
     N_PROPERTIES
 };
@@ -47,6 +50,15 @@ sirc_messenger_get_property(GObject    *object,
                             GValue     *value,
                             GParamSpec *pspec) {
     switch (prop_id) {
+    case PROP_NAME:
+        g_value_set_string(value, "sirc");
+        break;
+    case PROP_PRETTY_NAME:
+        g_value_set_string(value, "IRC Messenger");
+        break;
+    case PROP_VERSION:
+        g_value_set_int(value, 1);
+        break;
     case PROP_SCHEMAS:
         g_value_set_string(value, SCHEMAS);
         break;
@@ -74,6 +86,9 @@ sirc_messenger_class_init(SircMessengerClass *klass) {
     object_class->get_property = sirc_messenger_get_property;
     object_class->set_property = sirc_messenger_set_property;
 
+    g_object_class_override_property(object_class, PROP_NAME, "name");
+    g_object_class_override_property(object_class, PROP_PRETTY_NAME, "pretty-name");
+    g_object_class_override_property(object_class, PROP_VERSION, "version");
     g_object_class_override_property(object_class, PROP_SCHEMAS, "schemas");
 }
 

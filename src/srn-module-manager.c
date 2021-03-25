@@ -152,11 +152,19 @@ srn_module_manager_load_modules(SrnModuleManager *self, GError **err) {
         if (!ext)
             continue;
 
-        g_message("Found %s messenger\n", backends[i]);
+        g_message("Found %s messenger", backends[i]);
 
         type = g_io_extension_get_type(ext);
         obj = g_object_new(type, NULL);
         self->messengers = g_list_append(self->messengers, SRN_MESSENGER(obj));
+
+        gchar *name;
+        gint version;
+        g_object_get(obj,
+                     "pretty-name", &name,
+                     "version", &version,
+                     NULL);
+        g_message("Name: %s, Version: %d", name, version);
     }
 }
 

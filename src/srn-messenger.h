@@ -25,6 +25,8 @@
 
 G_BEGIN_DECLS
 
+#define SRN_MESSENGER_EXTENSION_POINT_NAME "srn-messenger"
+
 #define SRN_TYPE_MESSENGER srn_messenger_get_type ()
 G_DECLARE_INTERFACE(SrnMessenger, srn_messenger, SRN, MESSENGER, GObject)
 

@@ -23,8 +23,6 @@
 
 G_BEGIN_DECLS
 
-#define SRN_MESSENGER_EXTENSION_POINT_NAME "srn-messenger"
-
 #define SRN_TYPE_MODULE_MANAGER srn_module_manager_get_type()
 G_DECLARE_FINAL_TYPE(SrnModuleManager, srn_module_manager, SRN,
                      MODULE_MANAGER, GObject)

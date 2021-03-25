@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
 #include "srn-messenger.h"
@@ -29,14 +30,42 @@ G_DEFINE_INTERFACE(SrnMessenger, srn_messenger, G_TYPE_OBJECT)
 static void
 srn_messenger_default_init(SrnMessengerInterface *iface) {
     /**
+     * SrnMessenger:name
+     */
+    g_object_interface_install_property(iface,
+                                        g_param_spec_string("name",
+                                                N_("Name"),
+                                                N_("Name of messenger"),
+                                                NULL,
+                                                G_PARAM_READABLE));
+    /**
+     * SrnMessenger:pretty-name
+     */
+    g_object_interface_install_property(iface,
+                                        g_param_spec_string("pretty-name",
+                                                N_("Pretty Name"),
+                                                N_("Titlecased name of messenger"),
+                                                NULL,
+                                                G_PARAM_READABLE));
+    /**
+     * SrnMessenger:version
+     */
+    g_object_interface_install_property(iface,
+                                        g_param_spec_int("version",
+                                                N_("Version"),
+                                                N_("Version of messenger"),
+                                                0, G_MAXINT, 0,
+                                                G_PARAM_READABLE));
+
+    /**
      * SrnMessenger:schemas
      *
      * Semicolen secparated URL schemas handled by of #SrnMessenger.
      */
     g_object_interface_install_property(iface,
                                         g_param_spec_string("schemas",
-                                                "Schemas",
-                                                "URL Schemas of SrnMessenger",
+                                                N_("Schemas"),
+                                                N_("Semicolen secparated URL schemas"),
                                                 NULL,
                                                 G_PARAM_READABLE));
 }
