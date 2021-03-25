@@ -5,7 +5,7 @@
 
 G_MODULE_EXPORT void
 g_io_sirc_load(GIOModule *module) {
-    g_message("GIOModule loaded");
+    g_message("GIOModule sirc loaded");
 
     g_type_module_use(G_TYPE_MODULE(module));
 
@@ -20,7 +20,7 @@ g_io_sirc_load(GIOModule *module) {
 
 G_MODULE_EXPORT void
 g_io_sirc_unload(GIOModule *module) {
-    g_message("GIOModule unloaded");
+    g_message("GIOModule sirc unloaded");
 }
 
 G_MODULE_EXPORT gchar **

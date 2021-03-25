@@ -1,2 +1,2 @@
 subdir('sirc')
-# subdir('stg')
+subdir('spy')

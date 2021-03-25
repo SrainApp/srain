@@ -31,7 +31,8 @@
 
 extern char *irdump;
 
-int main(int argc, char *argv[]){
+int
+main(int argc, char *argv[]) {
     // Set the current local to default
     setlocale(LC_ALL, "");
     // Specify that the DOMAINNAME message catalog
@@ -42,7 +43,7 @@ int main(int argc, char *argv[]){
     // Set the current default message catalog to DOMAINNAME.
     textdomain(GETTEXT_PACKAGE);
 
-    SrnApplication *app = SRN_APPLICATION(g_object_new(SRN_TYPE_APPLICATION, NULL));
+    SrnApplication *app = srn_application_new();
 
     return g_application_run(G_APPLICATION(app), argc, argv);
 }

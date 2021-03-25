@@ -29,8 +29,9 @@ G_BEGIN_DECLS
 G_DECLARE_FINAL_TYPE(SrnApplication, srn_application, SRN, APPLICATION,
                      GtkApplication)
 
+SrnApplication *srn_application_new(void);
 void srn_application_ping(SrnApplication *self);
-SrnApplication *srn_application_get_instance();
+SrnApplication *srn_application_get_instance(void);
 SrnModuleManager *srn_application_get_module_manager(SrnApplication *self);
 
 G_END_DECLS

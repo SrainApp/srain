@@ -20,7 +20,6 @@
 #include <gtk/gtk.h>
 #include <girepository.h>
 
-
 // For package meta infos
 #include "srn-meta.h"
 #include "srn-app.h"
@@ -145,10 +144,6 @@ srn_application_init(SrnApplication *self) {
     g_signal_connect(self, "command-line", G_CALLBACK(on_command_line), NULL);
     g_signal_connect(self, "handle-local-options",
                      G_CALLBACK(on_handle_local_options), NULL);
-
-    /* Init GObject Introspection repository */
-    g_irepository_prepend_search_path(PACKAGE_LIB_DIR "/girepository-1.0");
-    g_irepository_prepend_library_path(PACKAGE_LIB_DIR);
 }
 
 static void
@@ -234,8 +229,8 @@ on_startup(SrnApplication *self) {
 
 static void
 on_activate(SrnApplication *self) {
-    SrnWindow *win = srn_window_new(self);
-    gtk_window_present(GTK_WINDOW(win));
+    // SrnWindow *win = srn_window_new(self);
+    // gtk_window_present(GTK_WINDOW(win));
     return;
 }
 
@@ -289,6 +284,16 @@ on_activate_prefs(GSimpleAction *action, GVariant *parameter,
 static void
 on_activate_exit(GSimpleAction *action, GVariant *parameter,
                  gpointer user_data) {
+}
+
+/**
+ * srn_application_new:
+ *
+ * Returns: (transfer full): A new allocated #SrnApplication.
+ */
+SrnApplication *
+srn_application_new(void) {
+    return g_object_new(SRN_TYPE_APPLICATION, NULL);
 }
 
 /**
