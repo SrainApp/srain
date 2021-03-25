@@ -19,5 +19,7 @@ spy_lib = shared_library(
   dependencies: [glib_dep, gobject_dep, gio_dep, python3_dep, pygobject_dep],
   include_directories: srn_inc,
   install: true,
+  export_dynamic: true,
+  link_args: '-rdynamic',
   install_dir: pkg_sys_mod_dir,
 )

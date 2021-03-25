@@ -2,7 +2,8 @@
 #include <gio/gio.h>
 #include <gobject/gobject.h>
 
-#include <python3.9/Python.h>
+#define PY_SSIZE_T_CLEAN
+#include <Python.h>
 
 #include <pygobject.h>
 
@@ -15,17 +16,19 @@ g_io_spy_load(GIOModule *module) {
 
     data = g_resources_lookup_data("/im/srain/Srain/PythonLoader/main.py", 0, NULL);
     g_message("Data: %p", data);
+    g_message("PyUnicode_FromFromat: %p", PyUnicode_FromFormat);
     Py_Initialize();
-    pygobject_init(-1, -1, -1);
+    PyObject *pyobj = pygobject_init(-1, -1, -1);
+    /* Initialize support for threads */
+    // pyg_enable_threads();
+    // PyEval_InitThreads();
 
-    g_message("PyRun %.*s",
-              g_bytes_get_size(data),
-              g_bytes_get_data(data, NULL));
+    // GString *str = g_string_new_len(g_bytes_get_data(data, NULL),
+    //                                 g_bytes_get_size(data));
+    // PyRun_SimpleString(str->str);
+    g_message("Py exit code: %d", Py_FinalizeEx());
 
-    PyRun_SimpleString(g_bytes_get_data(data, NULL));
-    PyRun_SimpleString("print(1)");
-
-    g_message("PyRun Done");
+    // g_message("PyRun Done");
 
     g_bytes_unref(data);
 }
