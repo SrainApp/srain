@@ -39,6 +39,7 @@ icons_dir = join_paths(data_dir, 'icons')
 po_dir = join_paths(meson.source_root (), 'po')
 sys_conf_dir = join_paths(prefix, get_option('sysconfdir'))
 pkg_sys_conf_dir = join_paths(sys_conf_dir, meson.project_name())
+pkg_sys_mod_dir = join_paths(lib_dir, meson.project_name(), 'modules')
 
 ####################
 # Meta info header #
@@ -59,6 +60,7 @@ meta_data.set_quoted('PACKAGE_DATA_DIR', data_dir)
 meta_data.set_quoted('PACKAGE_LIB_DIR', lib_dir)
 meta_data.set_quoted('PACKAGE_CONFIG_DIR', sys_conf_dir)
 meta_data.set_quoted('PACKAGE_CODESET', 'UTF-8')
+meta_data.set_quoted('PACKAGE_SYS_MOD_DIR', pkg_sys_mod_dir)
 
 build_id_generator = [
   join_paths(meson.source_root() , 'utils', 'gen-build-id.sh'),

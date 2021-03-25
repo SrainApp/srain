@@ -25,12 +25,11 @@
 #include "srn-meta.h"
 #include "srn-app.h"
 #include "srn-window.h"
-#include "srn-messenger.h"
 
 struct _SrnApplication {
     GtkApplication parent;
 
-    GList *messengers;
+    SrnModuleManager *moudle_manager;
 };
 
 static SrnApplication *instance = NULL;
@@ -57,7 +56,7 @@ static void on_activate_exit(GSimpleAction *action, GVariant *parameter,
 
 enum {
     PROP_0,
-    PROP_MESSENGERS,
+    PROP_MODULE_MANAGER,
     N_PROPERTIES
 };
 
@@ -119,8 +118,8 @@ srn_application_get_property(GObject *object, guint property_id,
     SrnApplication *self = SRN_APPLICATION(object);
 
     switch (property_id) {
-    case PROP_MESSENGERS:
-        g_value_set_pointer(value, self->messengers);
+    case PROP_MODULE_MANAGER:
+        g_value_set_object(value, srn_application_get_module_manager(self));
     default:
         /* We don't have any other property... */
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
@@ -133,7 +132,7 @@ srn_application_init(SrnApplication *self) {
     // TODO: GOnce
     instance = self;
 
-    self->messengers = NULL;
+    self->moudle_manager = srn_module_manager_new();
 
     g_application_add_main_option_entries(G_APPLICATION(self), option_entries);
 
@@ -160,12 +159,8 @@ srn_application_constructed(GObject *object) {
 static void
 srn_application_finalize(GObject *object) {
     SrnApplication *self = SRN_APPLICATION(object);
-    GList *lst = self->messengers;
 
-    // Free all messengers
-    for (; lst; lst = g_list_next(lst)) {
-        g_object_unref(SRN_MESSENGER(lst->data));
-    }
+    g_clear_object(&self->moudle_manager);
 
     G_OBJECT_CLASS(srn_application_parent_class)->finalize(object);
 }
@@ -182,11 +177,12 @@ srn_application_class_init(SrnApplicationClass *class) {
     object_class->get_property = srn_application_get_property;
 
     /* Install properties */
-    obj_properties[PROP_MESSENGERS] =
-        g_param_spec_pointer("messengers",
-                             "Messengers",
-                             "Registered messengers.",
-                             G_PARAM_READABLE);
+    obj_properties[PROP_MODULE_MANAGER] =
+        g_param_spec_object("module-manager",
+                            "Module Manager",
+                            "Module Manager",
+                            SRN_TYPE_MODULE_MANAGER,
+                            G_PARAM_READABLE);
 
     g_object_class_install_properties(object_class,
                                       N_PROPERTIES,
@@ -231,11 +227,8 @@ static void
 on_startup(SrnApplication *self) {
     g_message("Startup");
 
-    // GIOModule *sirc_mod = g_io_module_new(PACKAGE_LIB_DIR "/libsirc.so");
-    //sirc_mod
-    g_io_modules_load_all_in_directory(PACKAGE_LIB_DIR);
+    srn_module_manager_load_modules(self->moudle_manager, NULL);
 
-    // g_message("GIOModule %p", sirc_mod);
     return;
 }
 
@@ -319,4 +312,15 @@ srn_application_ping(SrnApplication *self) {
 SrnApplication *
 srn_application_get_instance() {
     return instance;
+}
+
+/**
+ * srn_application_get_module_manager:
+ * @self: A #SrnApplication.
+ *
+ * Returns: (transfer none): The #SrnModuleManager of application.
+ */
+SrnModuleManager *
+srn_application_get_module_manager(SrnApplication *self) {
+    return self->moudle_manager;
 }

@@ -16,10 +16,12 @@ srn_srcs = [
   'srn-messenger.c',
   'srn-flow-controller.h',
   'srn-flow-controller.c',
+  'srn-module-manager.h',
+  'srn-module-manager.c',
   'srn-window.h',
   'srn-window.c',
    srn_res,
-]
+] + srn_hdrs
 
 srn_exec = executable(
   app_exec,

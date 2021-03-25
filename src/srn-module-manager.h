@@ -16,26 +16,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SIF_FLOW_H
-#define __SIF_FLOW_H
+#ifndef __SRN_MODULE_MANAGER_H
+#define __SRN_MODULE_MANAGER_H
 
 #include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 
-#define SIF_TYPE_FLOW (sif_flow_get_type())
+#define SRN_MESSENGER_EXTENSION_POINT_NAME "srn-messenger"
 
-G_DECLARE_INTERFACE(SifFlow, sif_flow, SIF, FLOW, GObject)
+#define SRN_TYPE_MODULE_MANAGER srn_module_manager_get_type()
+G_DECLARE_FINAL_TYPE(SrnModuleManager, srn_module_manager, SRN,
+                     MODULE_MANAGER, GObject)
 
-struct _SifFlowInterface {
-    GTypeInterface parent_iface;
-
-    GtkWidget *(*launch)(SifFlow *self, GCancellable *cancellable, GError **error);
-};
-
-GtkWidget *sif_flow_launch(SifFlow *self, GCancellable *cancellable,
-                           GError **error);
+SrnModuleManager *srn_module_manager_new();
+void srn_module_manager_load_modules(SrnModuleManager *self, GError **err);
+GList *srn_module_manager_get_messengers(SrnModuleManager *self);
 
 G_END_DECLS
 
-#endif /* __SIF_FLOW_H */
+#endif /* __SRN_MODULE_MANAGER_H */

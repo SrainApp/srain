@@ -10,4 +10,5 @@ sirc_lib = shared_module(
   dependencies: [glib_dep, gtk_dep],
   include_directories: srn_inc,
   install: true,
+  install_dir: pkg_sys_mod_dir,
 )
