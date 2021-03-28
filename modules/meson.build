@@ -1,2 +1,2 @@
+subdir('bindings')
 subdir('sirc')
-subdir('spy')

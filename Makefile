@@ -29,7 +29,7 @@ debug: install
 	unset XDG_CONFIG_HOME XDG_DATA_HOME XDG_CACHE_HOME; \
 	export HOME=$(FAKE_HOME); \
 	export XDG_DATA_DIRS=$(FAKE_XDG_DATA_DIRS); \
-	$(DBG) $(PREFIX)/bin/srain -ex r -ex bt -ex q
+	$(DBG) $(PREFIX)/bin/srain
 
 .PHONY: inspect
 inspect:

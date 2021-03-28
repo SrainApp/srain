@@ -16,13 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
-#include <signal.h>
 #include <libintl.h>
+#include <signal.h>
+#include <stdlib.h>
 
 // For i18n
-#include <locale.h>
 #include <glib/gi18n.h>
+#include <locale.h>
 
 // For package meta infos
 #include "srn-meta.h"
@@ -38,7 +38,7 @@ main(int argc, char *argv[]) {
     // Specify that the DOMAINNAME message catalog
     // will be found in DIRNAME rather than in
     // the system locale data base
-    bindtextdomain(GETTEXT_PACKAGE,  PACKAGE_DATA_DIR "/locale");
+    bindtextdomain(GETTEXT_PACKAGE, PACKAGE_DATA_DIR "/locale");
     bind_textdomain_codeset(GETTEXT_PACKAGE, PACKAGE_CODESET);
     // Set the current default message catalog to DOMAINNAME.
     textdomain(GETTEXT_PACKAGE);

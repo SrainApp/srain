@@ -13,13 +13,11 @@ spy_res = gnome.compile_resources(
   c_name: 'spy',
 )
 
-spy_lib = shared_library(
+spy_lib = shared_module(
   'spy',
   sources: spy_srcs + spy_res,
-  dependencies: [glib_dep, gobject_dep, gio_dep, python3_dep, pygobject_dep],
+  dependencies: [glib_dep, gobject_dep, gio_dep, gi_dep, python3_dep, pygobject_dep, gtk_dep, meta_dep],
   include_directories: srn_inc,
   install: true,
-  export_dynamic: true,
-  link_args: '-rdynamic',
-  install_dir: pkg_sys_mod_dir,
+  install_dir: pkg_sys_bind_dir,
 )
