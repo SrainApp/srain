@@ -20,7 +20,9 @@
 #define __SRN_H
 
 #include "srn-app.h"
-#include "srn-flow.h"
+#include "srn-extension.h"
 #include "srn-messenger.h"
+#include "srn-flow.h"
+#include "srn-loader.h"
 
 #endif /* __SRN_FLOW_H */

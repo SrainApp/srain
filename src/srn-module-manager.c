@@ -21,6 +21,7 @@
 
 #include "srn-meta.h"
 #include "srn-messenger.h"
+#include "srn-loader.h"
 
 #include "srn-module-manager.h"
 
@@ -28,8 +29,8 @@ struct _SrnModuleManager {
     GtkApplication parent;
 
     GList *modules;
-    GList *bindings;
-    GList *messengers;
+    GList *extensions;
+    // TODO: modues unload
 };
 
 /*********************
@@ -39,7 +40,7 @@ struct _SrnModuleManager {
 enum {
     PROP_0,
     PROP_MODULES,
-    PROP_MESSENGERS,
+    PROP_EXTENSIONS,
     N_PROPERTIES
 };
 
@@ -66,8 +67,8 @@ srn_module_manager_get_property(GObject *object, guint property_id,
     switch (property_id) {
     case PROP_MODULES:
         g_value_set_pointer(value, srn_module_manager_get_modules(self));
-    case PROP_MESSENGERS:
-        g_value_set_pointer(value, srn_module_manager_get_messengers(self));
+    case PROP_EXTENSIONS:
+        g_value_set_pointer(value, srn_module_manager_get_extensions(self));
     default:
         /* We don't have any other property... */
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
@@ -92,36 +93,29 @@ is_valid_module_name(const gchar *basename) {
     return TRUE;
 }
 
-/** pre_load_modules:
+/* pre_load_modules:
  *
  * The implementation of GIOModule loads GModule with
  * G_MODULE_BIND_LOCAL flags, which causes other share libraries
  * (such as pygobject's lib) can not use symbols (such as symbols
- * in libpython.so) introduced by binding module.
+ * in libpython.so) introduced by loader module.
  *
- * So we open binding modules with correct flags before loading
- * them as GIOModule. Don't care about leaking because we unref
- * modules at post_load_modules.
- *
- * Returns: (element-type GModule) (transfer full):
- *          Free it with g_list_free_full(list, g_object_unref).
+ * So we open loader modules with correct flags before loading
+ * them as GIOModule.
  */
-static GList *
+static void
 pre_load_modules(void) {
     const gchar *name;
     GDir *dir;
-    GList *bindings;
 
-    g_return_val_if_fail(!g_module_supported(), NULL);
+    g_return_if_fail(g_module_supported());
 
     dir = g_dir_open(PACKAGE_SYS_BIND_DIR, 0, NULL);
-    if (!dir) return NULL;
+    if (!dir) return;
 
-    bindings = NULL;
     while ((name = g_dir_read_name(dir))) {
         if (is_valid_module_name(name)) {
             gchar *path;
-            GModule *binding;
 
             path = g_build_filename(PACKAGE_SYS_BIND_DIR, name, NULL);
             /* NOTE:
@@ -129,46 +123,29 @@ pre_load_modules(void) {
              * The implementation of GIOModule loads GModule with
              * G_MODULE_BIND_LOCAL flags, which causes other share libraries
              * (such as pygobject's lib) can not use symbols (such as symbols
-             * in libpython.so) introduced by binding module.
+             * in libpython.so) introduced by loader module.
              *
-             * So we open binding modules with correct flags before loading
+             * So we open loader modules with correct flags before loading
              * them as GIOModule. Don't care about leaking because we no need
              * to unload any modules.
              * */
-            binding = g_module_open(path, G_MODULE_BIND_LAZY);
-            if (!binding) {
-                g_error("Failed to load binding module: %s", path);
-                g_free(path);
-                continue;
-            }
-            g_message("Loaded language binding module: %s", path);
-            g_free(path);
 
-            bindings = g_list_append(bindings, binding);
+            if (!g_module_open(path, G_MODULE_BIND_LAZY)) {
+                g_error("Failed to open loader module: %s", path);
+            } else {
+                g_message("Pre-open language loader module: %s", path);
+            }
+            g_free(path);
         }
     }
 
     g_dir_close(dir);
-
-    return bindings;
-}
-
-/** post_load_modules:
- * @bindings: (element-type GModule) (transfer full):
- *
- * Unref modules opened by pre_load_modules.
- */
-static void
-post_load_modules(GList *bindings) {
-    g_list_free_full(bindings, g_object_unref);
 }
 
 static void
 srn_module_manager_init(SrnModuleManager *self) {
-    GIOExtensionPoint *ep;
-
     self->modules = NULL;
-    self->messengers = NULL;
+    self->extensions = NULL;
 }
 
 static void
@@ -180,7 +157,7 @@ static void
 srn_module_manager_finalize(GObject *object) {
     SrnModuleManager *self = SRN_MODULE_MANAGER(object);
 
-    g_list_free_full(self->messengers, g_object_unref);
+    g_list_free_full(self->modules, (GDestroyNotify)g_type_module_unuse);
 
     G_OBJECT_CLASS(srn_module_manager_parent_class)->finalize(object);
 }
@@ -197,10 +174,16 @@ srn_module_manager_class_init(SrnModuleManagerClass *class) {
     object_class->get_property = srn_module_manager_get_property;
 
     /* Install properties */
-    obj_properties[PROP_MESSENGERS] =
-        g_param_spec_pointer("messengers",
-                             "Messengers",
-                             "Instances of registered messenger.",
+    obj_properties[PROP_MODULES] =
+        g_param_spec_pointer("modules",
+                             "Modules",
+                             "List of GIOModule.",
+                             G_PARAM_READABLE);
+
+    obj_properties[PROP_EXTENSIONS] =
+        g_param_spec_pointer("extensions",
+                             "Extensions",
+                             "List of GIOExtension.",
                              G_PARAM_READABLE);
 
     g_object_class_install_properties(object_class,
@@ -227,49 +210,54 @@ srn_module_manager_new(void) {
  */
 void
 srn_module_manager_load_modules(SrnModuleManager *self, GError **err) {
-    GIOExtensionPoint *ep;
+    GIOExtensionPoint *msger_ep;
+    GIOExtensionPoint *loader_ep;
     GIOModuleScope *scope;
-    GList *bindings;
+
+    /* Prevent dulplicate loading */
+    g_return_if_fail(!self->modules);
+    g_return_if_fail(!self->extensions);
 
     /* Pre load action */
-    bindings = pre_load_modules();
+    pre_load_modules();
 
     /* Extension point for SrnMessenger */
-    ep = g_io_extension_point_register(SRN_MESSENGER_EXTENSION_POINT_NAME);
-    g_io_extension_point_set_required_type(ep, SRN_TYPE_MESSENGER);
+    msger_ep = g_io_extension_point_register(SRN_MESSENGER_EXTENSION_POINT_NAME);
+    g_io_extension_point_set_required_type(msger_ep, SRN_TYPE_MESSENGER);
     /* TODO: More extension point */
 
+    loader_ep = g_io_extension_point_register(SRN_LOADER_EXTENSION_POINT_NAME);
+    g_io_extension_point_set_required_type(loader_ep, SRN_TYPE_LOADER);
+
     scope = g_io_module_scope_new(G_IO_MODULE_SCOPE_BLOCK_DUPLICATES);
-    /* Scan language binding modules */
-    g_io_modules_load_all_in_directory_with_scope(PACKAGE_SYS_BIND_DIR, scope);
+    /* Scan language loader modules */
+    self->modules = g_io_modules_load_all_in_directory_with_scope(
+                        PACKAGE_SYS_BIND_DIR, scope);
     /* Scan other modules */
-    g_io_modules_load_all_in_directory_with_scope(PACKAGE_SYS_MOD_DIR, scope);
+    self->modules = g_list_concat(self->modules,
+                                  g_io_modules_load_all_in_directory_with_scope(PACKAGE_SYS_MOD_DIR, scope));
     g_io_module_scope_free(scope);
 
-    post_load_modules(bindings);
-
-    for (gint i = 0; backends[i]; i++) {
+    for (GList *lst = g_io_extension_point_get_extensions(msger_ep); lst;
+         lst = g_list_next(lst)) {
         GIOExtension *ext;
-        GType type;
-        GObject *obj;
 
-        ext = g_io_extension_point_get_extension_by_name(ep, backends[i]);
-        if (!ext)
-            continue;
+        ext = lst->data;
+        self->extensions = g_list_append(self->extensions, ext);
+        g_message("Found messenger extension, name: %s, type: %s",
+                  g_io_extension_get_name(ext),
+                  g_type_name(g_io_extension_get_type(ext)));
+    }
 
-        g_message("Found %s messenger", backends[i]);
+    for (GList *lst = g_io_extension_point_get_extensions(loader_ep); lst;
+         lst = g_list_next(lst)) {
+        GIOExtension *ext;
 
-        type = g_io_extension_get_type(ext);
-        obj = g_object_new(type, NULL);
-        self->messengers = g_list_append(self->messengers, SRN_MESSENGER(obj));
-
-        gchar *name;
-        gint version;
-        g_object_get(obj,
-                     "pretty-name", &name,
-                     "version", &version,
-                     NULL);
-        g_message("Name: %s, Version: %d", name, version);
+        ext = lst->data;
+        self->extensions = g_list_append(self->extensions, ext);
+        g_message("Found loader extension, name: %s, type: %s",
+                  g_io_extension_get_name(ext),
+                  g_type_name(g_io_extension_get_type(ext)));
     }
 }
 
@@ -283,20 +271,20 @@ srn_module_manager_load_modules(SrnModuleManager *self, GError **err) {
  */
 GList *
 srn_module_manager_get_modules(SrnModuleManager *self) {
-    return NULL;
+    return self->modules;
 }
 
 /**
- * srn_module_manager_get_messengers:
+ * srn_module_manager_get_extensions:
  * @self: A #SrnModuleManager.
  *
- * Returns: (element-type SrnMessenger) (transfer none):
- *          A #GList of #SrnMessenger. The list is owned by #self,
+ * Returns: (element-type GIOExtension) (transfer none):
+ *          A #GList of #GIOExtension. The list is owned by #self,
  *          and should not be modified.
  */
 GList *
-srn_module_manager_get_messengers(SrnModuleManager *self) {
-    return self->messengers;
+srn_module_manager_get_extensions(SrnModuleManager *self) {
+    return self->extensions;
 }
 
 // TODO: srn_module_manager_get_other_extensions ...

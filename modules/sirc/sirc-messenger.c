@@ -1,4 +1,4 @@
-#include <srn.h>
+#include <srn-messenger.h>
 
 #include "sirc-messenger.h"
 

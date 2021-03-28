@@ -16,28 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SRN_MESSENGER_H
-#define __SRN_MESSENGER_H
+#ifndef __SRN_EXTENSIONG_H
+#define __SRN_EXTENSIONG_H
 
 #include <glib-object.h>
 
-#include "srn-flow.h"
-#include "srn-extension.h"
-
 G_BEGIN_DECLS
 
-#define SRN_MESSENGER_EXTENSION_POINT_NAME "srn-messenger"
+#define SRN_TYPE_EXTENSION srn_extension_get_type ()
+G_DECLARE_INTERFACE(SrnExtension, srn_extension, SRN, EXTENSION, GObject)
 
-#define SRN_TYPE_MESSENGER srn_messenger_get_type ()
-G_DECLARE_INTERFACE(SrnMessenger, srn_messenger, SRN, MESSENGER, GObject)
-
-struct _SrnMessengerInterface {
-    SrnExtensionInterface parent_iface;
-
-    SrnFlow *(*login)(SrnMessenger *self);
-    SrnFlow *(*contact)(SrnMessenger *self);
+struct _SrnExtensionInterface {
+    GTypeInterface parent_iface;
 };
 
 G_END_DECLS
 
-#endif /* __SRN_MESSENGER_H */
+#endif /* __SRN_EXTENSIONG_H */

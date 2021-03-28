@@ -17,27 +17,26 @@
  */
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
 
-#include "srn-messenger.h"
+#include "srn-loader.h"
 
 /*********************
  * GObject functions *
  *********************/
 
-G_DEFINE_INTERFACE(SrnMessenger, srn_messenger, G_TYPE_OBJECT)
+G_DEFINE_INTERFACE(SrnLoader, srn_loader, G_TYPE_OBJECT)
 
 static void
-srn_messenger_default_init(SrnMessengerInterface *iface) {
+srn_loader_default_init(SrnLoaderInterface *iface) {
     /**
-     * SrnMessenger:schemas
+     * SrnLoader:extension-names
      *
-     * Semicolen secparated URL schemas handled by of #SrnMessenger.
+     * Semicolen secparated file extension names
      */
     g_object_interface_install_property(iface,
-                                        g_param_spec_string("schemas",
-                                                N_("Schemas"),
-                                                N_("Semicolen secparated URL schemas handled by messenger."),
+                                        g_param_spec_string("extension-names",
+                                                N_("Extension Names"),
+                                                N_("Semicolen secparated file extension names"),
                                                 NULL,
                                                 G_PARAM_READABLE));
 }

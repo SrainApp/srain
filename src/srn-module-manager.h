@@ -30,7 +30,7 @@ G_DECLARE_FINAL_TYPE(SrnModuleManager, srn_module_manager, SRN,
 SrnModuleManager *srn_module_manager_new();
 void srn_module_manager_load_modules(SrnModuleManager *self, GError **err);
 GList *srn_module_manager_get_modules(SrnModuleManager *self);
-GList *srn_module_manager_get_messengers(SrnModuleManager *self);
+GList *srn_module_manager_get_extensions(SrnModuleManager *self);
 
 G_END_DECLS
 

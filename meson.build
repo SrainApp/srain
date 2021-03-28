@@ -40,7 +40,7 @@ po_dir = join_paths(meson.source_root (), 'po')
 sys_conf_dir = join_paths(prefix, get_option('sysconfdir'))
 pkg_sys_conf_dir = join_paths(sys_conf_dir, meson.project_name())
 pkg_sys_mod_dir = join_paths(lib_dir, meson.project_name(), 'modules')
-pkg_sys_bind_dir = join_paths(pkg_sys_mod_dir, 'bindings')
+pkg_sys_bind_dir = join_paths(pkg_sys_mod_dir, 'loaders')
 
 ####################
 # Meta info header #

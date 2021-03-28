@@ -1,5 +1,5 @@
 #include <gio/gio.h>
-#include <srn.h>
+#include <srn-messenger.h>
 
 #include "sirc-messenger.h"
 
@@ -13,9 +13,6 @@ g_io_sirc_load(GIOModule *module) {
                                    SIRC_TYPE_MESSENGER,
                                    "sirc",
                                    10);
-
-    SrnApplication *app = srn_application_get_instance();
-    srn_application_ping(app);
 }
 
 G_MODULE_EXPORT void

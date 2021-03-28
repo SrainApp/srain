@@ -1,8 +1,10 @@
 srn_hdrs = [
   'srn.h',
   'srn-app.h',
-  'srn-flow.h',
+  'srn-extension.h',
   'srn-messenger.h',
+  'srn-flow.h',
+  'srn-loader.h',
 ]
 
 install_headers(srn_hdrs)
@@ -12,14 +14,20 @@ srn_inc = include_directories('.')
 srn_srcs = [
   'main.c',
   'srn-app.c',
-  'srn-flow.c',
-  'srn-messenger.c',
   'srn-flow-controller.h',
   'srn-flow-controller.c',
   'srn-module-manager.h',
   'srn-module-manager.c',
+
+  # UI
   'srn-window.h',
   'srn-window.c',
+
+  # Extensions
+  'srn-extension.c',
+  'srn-flow.c',
+  'srn-messenger.c',
+  'srn-loader.c',
    srn_res,
 ] + srn_hdrs
 
