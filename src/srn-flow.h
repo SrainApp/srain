@@ -30,11 +30,11 @@ G_DECLARE_INTERFACE(SrnFlow, srn_flow, SRN, FLOW, GObject)
 struct _SrnFlowInterface {
     GTypeInterface parent_iface;
 
-    GtkWidget *(*launch)(SrnFlow *self, GCancellable *cancellable, GError **error);
+    gboolean(*launch)(SrnFlow *self, GError **err);
 };
 
-GtkWidget *srn_flow_launch(SrnFlow *self, GCancellable *cancellable,
-                           GError **error);
+gboolean srn_flow_launch(SrnFlow *self, GError **err);
+const gchar *srn_flow_get_name(SrnFlow *self);
 
 G_END_DECLS
 

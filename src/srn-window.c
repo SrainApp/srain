@@ -22,6 +22,12 @@
 #include "srn-window.h"
 #include "srn-flow-controller.h"
 
+/**
+ * SrnWindow:
+ *
+ * Srain's main window widget.
+ */
+
 struct _SrnWindow {
     GtkApplicationWindow parent;
 

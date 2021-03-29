@@ -20,9 +20,11 @@
 
 #include "srn-loader.h"
 
-/*********************
- * GObject functions *
- *********************/
+/**
+ * SrnLoader:
+ *
+ * Interface of Srain's language binding loader.
+ */
 
 G_DEFINE_INTERFACE(SrnLoader, srn_loader, G_TYPE_OBJECT)
 

@@ -21,9 +21,11 @@
 
 #include "srn-messenger.h"
 
-/*********************
- * GObject functions *
- *********************/
+/**
+ * SrnMessenger:
+ *
+ * Interface of IM protocol implementation
+ */
 
 G_DEFINE_INTERFACE(SrnMessenger, srn_messenger, G_TYPE_OBJECT)
 
@@ -32,7 +34,7 @@ srn_messenger_default_init(SrnMessengerInterface *iface) {
     /**
      * SrnMessenger:schemas
      *
-     * Semicolen secparated URL schemas handled by of #SrnMessenger.
+     * Semicolen secparated URL schemas handled by of [iface@Messenger].
      */
     g_object_interface_install_property(iface,
                                         g_param_spec_string("schemas",

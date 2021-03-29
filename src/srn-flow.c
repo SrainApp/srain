@@ -16,18 +16,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
 #include "srn-flow.h"
 
-/*********************
- * GObject functions *
- *********************/
+
+/**
+ * SrnFlow:
+ *
+ * Interface for defineing a interactive flow.
+ *
+ * See also [class@FlowController].
+ */
 
 G_DEFINE_INTERFACE(SrnFlow, srn_flow, G_TYPE_OBJECT)
 
 enum {
     BUSY,
+    PREV,
     NEXT,
     ABORT,
     N_SIGNALS
@@ -40,17 +47,31 @@ srn_flow_default_init(SrnFlowInterface *iface) {
     /* add properties and signals to the interface here */
 
     /**
-     * SrnFlow::busy:
-     * @flow: the object which received the signal
-     * @text: (transfer none): the text message to indicate
-     *        the busy state
-     * @widget: (transfer none) (nullable): the widget to
-     *          indicate the busy state
+     * SrnFlow:name
      *
-     * This signal is emitted when flow comes into busy state.
-     * The SrnFlowController will add the widget to interface to
-     * indicate the busy state of this flow.
-     * If the widget is NULL, a #GtkLabel with text will be created.
+     * Name of the flow.
+     */
+    g_object_interface_install_property(iface,
+                                        g_param_spec_string("name",
+                                                N_("Name"),
+                                                N_("Name of flow"),
+                                                NULL,
+                                                G_PARAM_READABLE));
+
+    /**
+     * SrnFlow::busy:
+     * @flow: #SrnFlow implementation which received the signal
+     * @caption: (transfer none): the text message to indicate
+     *           the busy state
+     * @indicator: (transfer none) (nullable): the widget to
+     *          indicate the busy state
+     * @cancel: (transfer none) (nullable): Object for cancellation
+     *          of busy state.
+     *
+     * This signal is emitted when @flow comes into busy state.
+     * The [class@FlowController] will add the @indicator to interface
+     * and use @caption as title to indicate the busy state of this flow.
+     * If the @indicator is NULL, a default indicator will be used.
      */
     signals[BUSY] =
         g_signal_new("busy",
@@ -61,20 +82,40 @@ srn_flow_default_init(SrnFlowInterface *iface) {
                      NULL /* accumulator data */,
                      NULL /* C marshaller */,
                      G_TYPE_NONE /* return_type */,
-                     2 /* n_params */,
-                     G_TYPE_STRING, /* param_types text */
-                     GTK_TYPE_WIDGET /* param_types widget */);
+                     3 /* n_params */,
+                     G_TYPE_STRING /* param_types caption */,
+                     GTK_TYPE_WIDGET /* param_types indicator */,
+                     G_TYPE_CANCELLABLE /* param_types cancel */);
+
+    /**
+     * SrnFlow::prev:
+     * @flow: #SrnFlow implementation which received the signal
+     *
+     * This signal is emitted when @flow asks [class@FlowController]
+     * to return to previous step.
+     */
+    signals[PREV] =
+        g_signal_new("prev",
+                     SRN_TYPE_FLOW,
+                     G_SIGNAL_RUN_LAST,
+                     0, /* class offet */
+                     NULL /* accumulator */,
+                     NULL /* accumulator data */,
+                     NULL /* C marshaller */,
+                     G_TYPE_NONE /* return_type */,
+                     0 /* n_params */);
 
     /**
      * SrnFlow::next:
-     * @flow: the object which received the signal
-     * @widget: (transfer none): the operation widget of
-     *          the next step of flow
+     * @flow: #SrnFlow implementation which received the signal
+     * @caption: (transfer none): the text message that descripts
+     *           the @interator
+     * @interator: (transfer none): the interactive widget that
+     *             represents next step of @flow
      *
-     * This signal is emitted when flow comes into next
-     * step. The SrnFlowController will add the widget to
-     * user interface so that user can interact
-     * with the it.
+     * This signal is emitted when @flow comes into next
+     * step. The [class@FlowController] will add the @interator to
+     * user interface so that user can interact with the it.
      */
     signals[NEXT] =
         g_signal_new("next",
@@ -85,22 +126,22 @@ srn_flow_default_init(SrnFlowInterface *iface) {
                      NULL /* accumulator data */,
                      NULL /* C marshaller */,
                      G_TYPE_NONE /* return_type */,
-                     1 /* n_params */,
-                     GTK_TYPE_WIDGET /* param_types widget */);
+                     2 /* n_params */,
+                     G_TYPE_STRING /* param_types caption */,
+                     GTK_TYPE_WIDGET /* param_types interator */);
 
     /**
      * SrnFlow::abort:
-     * @flow: the object which received the signal
-     * @text: (transfer none): the text message to
-     *        indicate abort of the flow
-     * @widget: (transfer none) (nullable): the widget
+     * @flow: #SrnFlow implementation which received the signal
+     * @caption: (transfer none): the text message to
+     *           indicate abort of the flow
+     * @indicator: (transfer none) (nullable): the widget
      *          to indicate abort of the flow
      *
-     * This signal is emitted when flow aborts.
-     * The SrnFlowController will add the widget to
-     * interface to indicate the flow is aborted.
-     * If the widget is NULL, a #GtkLabel with text
-     * will be created.
+     * This signal is emitted when @flow asks [class@FlowController] to abort.
+     * The @SrnFlowController will add the widget to interface to
+     * indicate the @flow is aborted. If the widget is NULL,
+     * a default indicator will be will be used.
      */
     signals[ABORT] =
         g_signal_new("abort",
@@ -112,26 +153,46 @@ srn_flow_default_init(SrnFlowInterface *iface) {
                      NULL /* C marshaller */,
                      G_TYPE_NONE /* return_type */,
                      2 /* n_params */,
-                     G_TYPE_STRING, /* param_types text */
-                     GTK_TYPE_WIDGET /* param_types widget */);
+                     G_TYPE_STRING, /* param_types caption */
+                     GTK_TYPE_WIDGET /* param_types indicator */);
 }
+
 /**
  * srn_flow_launch:
- * @self: a #SrnFlow.
+ * @self:
+ * @err:
  *
  * Lanuch a flow.
  *
- * Returns: (nullable) (transfer none): Operation widget
- *           of the first step of flow.
+ * Returns: TRUE if flow launched successfully.
  */
-GtkWidget *
-srn_flow_launch(SrnFlow *self, GCancellable *cancellable, GError **error) {
+gboolean
+srn_flow_launch(SrnFlow *self, GError **err) {
     SrnFlowInterface *iface;
 
-    g_return_val_if_fail(SRN_IS_FLOW(self), NULL);
-    g_return_val_if_fail(error == NULL || *error == NULL, NULL);
+    g_return_val_if_fail(SRN_IS_FLOW(self), FALSE);
+    g_return_val_if_fail(err == NULL || *err == NULL, FALSE);
 
     iface = SRN_FLOW_GET_IFACE(self);
-    g_return_val_if_fail(iface->launch != NULL, NULL);
-    return iface->launch(self, cancellable, error);
+    g_return_val_if_fail(iface->launch != NULL, FALSE);
+    return iface->launch(self, err);
+}
+
+/**
+ * srn_flow_get_name:
+ * @self:
+ *
+ * See [property@Flow:name].
+ *
+ * Returns: (transfer none):
+ */
+const gchar *
+srn_flow_get_name(SrnFlow *self) {
+    const gchar *name;
+
+    g_object_get(self,
+                 "name", &name,
+                 NULL);
+
+    return name;
 }

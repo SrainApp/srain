@@ -1,7 +1,9 @@
 # XXX: gi-docgen needs a deps file
 
 toml_conf = configuration_data()
-toml_conf.set('version', meson.project_version())
+toml_conf.set('app_version', meson.project_version())
+toml_conf.set('app_url', app_url)
+toml_conf.set('app_desc', app_desc)
 
 gidocgen = find_program('gi-docgen')
 

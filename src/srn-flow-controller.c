@@ -20,10 +20,17 @@
 
 #include "srn-flow-controller.h"
 
+/**
+ * SrnFlowController:
+ *
+ * Controller of [iface@Flow].
+ */
+
 struct _SrnFlowController {
     GtkGrid parent;
 
     SrnFlow *flow;
+    gint state;
 
     GtkStack *stack;
 };
@@ -36,6 +43,15 @@ enum {
     PROP_0,
     PROP_FLOW,
     N_PROPERTIES
+};
+
+
+enum {
+    STATE_INIT,
+    STATE_BUSY,
+    STATE_IDLE,
+    STATE_ABORT,
+    N_STATE
 };
 
 G_DEFINE_TYPE(SrnFlowController, srn_flow_controller, GTK_TYPE_GRID);
@@ -75,8 +91,73 @@ srn_flow_controller_get_property(GObject *object, guint property_id,
 }
 
 static void
+on_flow_busy(SrnFlow *flow, const gchar *caption, GtkWidget *indicator,
+             GCancellable *cancel, gpointer user_data) {
+    SrnFlowController *self = SRN_FLOW_CONTROLLER(user_data);
+
+    g_return_if_fail(caption);
+    g_return_if_fail(self->state == STATE_IDLE);
+
+    g_message("Flow %s comes to busy state with message: %s",
+              srn_flow_get_name(flow),
+              caption);
+
+    self->state = STATE_BUSY;
+}
+
+static void
+on_flow_next(SrnFlow *flow, const gchar *caption, GtkWidget *interactor,
+             gpointer user_data) {
+    SrnFlowController *self = SRN_FLOW_CONTROLLER(user_data);
+
+    g_return_if_fail(caption);
+    g_return_if_fail(interactor);
+    g_return_if_fail(self->state == STATE_INIT
+                     || self->state == STATE_IDLE
+                     || self->state == STATE_BUSY);
+
+    g_message("Flow %s goto next step with message: %s",
+              srn_flow_get_name(flow),
+              caption);
+
+    self->state = STATE_IDLE;
+}
+
+static void
+on_flow_prev(SrnFlow *flow, gpointer user_data) {
+    SrnFlowController *self = SRN_FLOW_CONTROLLER(user_data);
+
+    g_return_if_fail(self->state == STATE_IDLE);
+
+    g_message("Flow %s goto previous step", srn_flow_get_name(flow));
+
+    self->state = STATE_IDLE;
+}
+
+static void
+on_flow_abort(SrnFlow *flow, const gchar *caption, GtkWidget *indicator,
+              gpointer user_data) {
+    SrnFlowController *self = SRN_FLOW_CONTROLLER(user_data);
+
+    g_return_if_fail(self->state == STATE_IDLE || self->state == STATE_BUSY);
+
+    g_message("Flow %s aborted with message: %s",
+              srn_flow_get_name(flow),
+              caption);
+
+    self->state = STATE_ABORT;
+}
+
+static void
 srn_flow_controller_init(SrnFlowController *self) {
     gtk_widget_init_template(GTK_WIDGET(self));
+
+    self->state = STATE_INIT;
+
+    g_signal_connect(self->flow, "busy", G_CALLBACK(on_flow_busy), self);
+    g_signal_connect(self->flow, "next", G_CALLBACK(on_flow_next), self);
+    g_signal_connect(self->flow, "prev", G_CALLBACK(on_flow_prev), self);
+    g_signal_connect(self->flow, "abort", G_CALLBACK(on_flow_abort), self);
 }
 
 static void
@@ -126,11 +207,11 @@ srn_flow_controller_class_init(SrnFlowControllerClass *class) {
 
 /**
  * srn_flow_controller_new:
- * @flow: A #SrnFlow.
+ * @flow:
  *
- * Allocate a new #SrnFlowController for given @flow.
+ * Allocate a new flow controller for given @flow.
  *
- * Returns: (transfer full): A new allocated #SrnFlowController.
+ * Returns: (transfer full):
  */
 SrnFlowController *
 srn_flow_controller_new(SrnFlow *flow) {
@@ -141,11 +222,11 @@ srn_flow_controller_new(SrnFlow *flow) {
 
 /**
  * srn_flow_controller_get_flow:
- * @self: A #SrnFlowController.
+ * @self:
  *
- * Get #SrnFlow of @self.
+ * Get flow of controller.
  *
- * Returns: (transfer none): The #SrnFlow of controller.
+ * Returns: (transfer none):
  */
 SrnFlow *
 srn_flow_controller_get_flow(SrnFlowController *self) {

@@ -25,6 +25,12 @@
 
 #include "srn-extension-manager.h"
 
+/**
+ * SrnExtensionManager:
+ *
+ * Manager of [iface@Extension] subclass.
+ */
+
 struct _SrnExtensionManager {
     GtkApplication parent;
 
@@ -32,10 +38,6 @@ struct _SrnExtensionManager {
     GList *extensions;
     // TODO: modues unload
 };
-
-/*********************
- * GObject functions *
- *********************/
 
 enum {
     PROP_0,
@@ -174,16 +176,28 @@ srn_extension_manager_class_init(SrnExtensionManagerClass *class) {
     object_class->get_property = srn_extension_manager_get_property;
 
     /* Install properties */
+
+    /**
+     * SrnExtensionManager:modules
+     *
+     * A #GList of loaded [class@Gio.IOExtension].
+     */
     obj_properties[PROP_MODULES] =
         g_param_spec_pointer("modules",
                              "Modules",
-                             "List of GIOModule.",
+                             "List of loaded GIOModule.",
                              G_PARAM_READABLE);
+
+    /**
+     * SrnExtensionManager:extensions:
+     *
+     * A #GList of of loaded [class@Gio.IOExtension].
+     */
 
     obj_properties[PROP_EXTENSIONS] =
         g_param_spec_pointer("extensions",
                              "Extensions",
-                             "List of GIOExtension.",
+                             "List of loaded GIOExtension.",
                              G_PARAM_READABLE);
 
     g_object_class_install_properties(object_class,
@@ -194,7 +208,7 @@ srn_extension_manager_class_init(SrnExtensionManagerClass *class) {
 /**
  * srn_extension_manager_new:
  *
- * Allocates a new #SrnExtensionManager.
+ * Allocates a new extension manager.
  *
  * Returns: (transfer full):
  */
@@ -205,8 +219,10 @@ srn_extension_manager_new(void) {
 
 /**
  * srn_extension_manager_load_modules:
- * @self: A #SrnExtensionManager.
- * @err: A #GError.
+ * @self:
+ * @err:
+ *
+ * Load [class@Gio.IOModule]s from `pkg_sys_mod_dir`.
  */
 void
 srn_extension_manager_load_modules(SrnExtensionManager *self, GError **err) {
@@ -263,11 +279,11 @@ srn_extension_manager_load_modules(SrnExtensionManager *self, GError **err) {
 
 /**
  * srn_extension_manager_get_modules:
- * @self: A #SrnExtensionManager.
+ * @self:
+ *
+ * See [property@ExtensionManager:modules].
  *
  * Returns: (element-type GIOModule) (transfer none):
- *          A #GList of #GIOModule. The list is owned by @self,
- *          and should not be modified.
  */
 GList *
 srn_extension_manager_get_modules(SrnExtensionManager *self) {
@@ -276,11 +292,11 @@ srn_extension_manager_get_modules(SrnExtensionManager *self) {
 
 /**
  * srn_extension_manager_get_extensions:
- * @self: A #SrnExtensionManager.
+ * @self:
+ *
+ * See [property@ExtensionManager:extensions].
  *
  * Returns: (element-type GIOExtension) (transfer none):
- *          A #GList of #GIOExtension. The list is owned by #self,
- *          and should not be modified.
  */
 GList *
 srn_extension_manager_get_extensions(SrnExtensionManager *self) {

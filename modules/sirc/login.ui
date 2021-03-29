@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.38.2 -->
+<interface>
+  <requires lib="gtk+" version="3.24"/>
+  <object class="GtkListStore" id="network_list_store">
+    <columns>
+      <!-- column-name Network -->
+      <column type="gchararray"/>
+      <!-- column-name Address -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">freenode</col>
+        <col id="1" translatable="yes">irc://chat.freenode.net</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">GIMPNet</col>
+        <col id="1" translatable="yes">irc://irc.gimp.org</col>
+      </row>
+    </data>
+  </object>
+  <!-- n-columns=3 n-rows=3 -->
+  <object class="GtkGrid">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <child>
+      <object class="GtkComboBox">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="model">network_list_store</property>
+      </object>
+      <packing>
+        <property name="left-attach">1</property>
+        <property name="top-attach">1</property>
+      </packing>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+  </object>
+</interface>

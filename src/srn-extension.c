@@ -21,12 +21,23 @@
 
 #include "srn-extension.h"
 
+/**
+ * SrnExtension:
+ *
+ * Base interface for Srain's extension interfaces.
+ *
+ * See also [class@ExtensionManager], [iface@Messenger]
+ * and [iface@Loader].
+ */
+
 G_DEFINE_INTERFACE(SrnExtension, srn_extension, G_TYPE_OBJECT)
 
 static void
 srn_extension_default_init(SrnExtensionInterface *iface) {
     /**
      * SrnExtension:name
+     *
+     * Name of extension.
      */
     g_object_interface_install_property(iface,
                                         g_param_spec_string("name",
@@ -36,15 +47,19 @@ srn_extension_default_init(SrnExtensionInterface *iface) {
                                                 G_PARAM_READABLE));
     /**
      * SrnExtension:pretty-name
+     *
+     * Titlecased, translatable name of extension.
      */
     g_object_interface_install_property(iface,
                                         g_param_spec_string("pretty-name",
                                                 N_("Pretty Name"),
-                                                N_("Titlecased pretty name of extension"),
+                                                N_("Titlecased, translatable name of extension"),
                                                 NULL,
                                                 G_PARAM_READABLE));
     /**
      * SrnExtension:version
+     *
+     * Version of extension.
      */
     g_object_interface_install_property(iface,
                                         g_param_spec_int("version",

@@ -25,6 +25,12 @@
 #include "srn-app.h"
 #include "srn-window.h"
 
+/**
+ * SrnApplication:
+ *
+ * The Srain Application class.
+ */
+
 struct _SrnApplication {
     GtkApplication parent;
 
@@ -289,7 +295,9 @@ on_activate_exit(GSimpleAction *action, GVariant *parameter,
 /**
  * srn_application_new:
  *
- * Returns: (transfer full): A new allocated #SrnApplication.
+ * Allocate a new application.
+ *
+ * Returns: (transfer full):
  */
 SrnApplication *
 srn_application_new(void) {
@@ -298,7 +306,7 @@ srn_application_new(void) {
 
 /**
  * srn_application_ping:
- * @self: a #SrnApplication.
+ * @self:
  *
  * Print a Ping! message.
  */
@@ -312,7 +320,9 @@ srn_application_ping(SrnApplication *self) {
 /**
  * srn_application_get_instance:
  *
- * Returns: (transfer none): The currently running instance of #SrnApplication.
+ * Get the currently running application instance.
+ *
+ * Returns: (transfer none):
  */
 SrnApplication *
 srn_application_get_instance() {
@@ -321,9 +331,11 @@ srn_application_get_instance() {
 
 /**
  * srn_application_get_extension_manager:
- * @self: A #SrnApplication.
+ * @self:
  *
- * Returns: (transfer none): The #SrnExtensionManager of application.
+ * Get the extension manager of application.
+ *
+ * Returns: (transfer none):
  */
 SrnExtensionManager *
 srn_application_get_extension_manager(SrnApplication *self) {

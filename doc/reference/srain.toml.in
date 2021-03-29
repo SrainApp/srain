@@ -1,8 +1,9 @@
 [library]
-version = "@version@"
+version = "@app_version@"
 browse_url = "https://github.com/SrainApp/srain"
 repository_url = "https://github.com/SrainApp/srain.git"
 website_url = "@app_url@"
+logo_url = "../../data/icons/hicolor/128x128/apps/im.srain.Srain.png"
 authors = "Shengyu Zhang"
 license = "GPL-3.0-or-later"
 description = "@app_desc@"
