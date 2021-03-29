@@ -21,11 +21,16 @@
 
 #include <gtk/gtk.h>
 
+#include "srn-flow.h"
+
 G_BEGIN_DECLS
 
 #define SRN_TYPE_FLOW_CONTROLLER srn_flow_controller_get_type()
 G_DECLARE_FINAL_TYPE(SrnFlowController, srn_flow_controller, SRN,
-                     FLOW_CONTROLLER, GObject)
+                     FLOW_CONTROLLER, GtkGrid)
+
+SrnFlowController *srn_flow_controller_new(SrnFlow *flow);
+SrnFlow *srn_flow_controller_get_flow(SrnFlowController *self);
 
 G_END_DECLS
 

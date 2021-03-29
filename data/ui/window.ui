@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+    <requires lib="gtk" version="4.0"/>
+    <template class="SrnWindow" parent="GtkApplicationWindow">
+        <property name="icon-name">im.srain.Srain</property>
+        <child>
+            <object id="center_box" class="GtkCenterBox">
+            </object>
+        </child>
+    </template>
+</interface>

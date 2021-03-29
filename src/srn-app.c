@@ -28,7 +28,7 @@
 struct _SrnApplication {
     GtkApplication parent;
 
-    SrnExtensionManager *moudle_manager;
+    SrnExtensionManager *extension_manager;
 };
 
 static SrnApplication *instance = NULL;
@@ -131,7 +131,7 @@ srn_application_init(SrnApplication *self) {
     // TODO: GOnce
     instance = self;
 
-    self->moudle_manager = srn_extension_manager_new();
+    self->extension_manager = srn_extension_manager_new();
 
     g_application_add_main_option_entries(G_APPLICATION(self), option_entries);
 
@@ -155,7 +155,7 @@ static void
 srn_application_finalize(GObject *object) {
     SrnApplication *self = SRN_APPLICATION(object);
 
-    g_clear_object(&self->moudle_manager);
+    g_clear_object(&self->extension_manager);
 
     G_OBJECT_CLASS(srn_application_parent_class)->finalize(object);
 }
@@ -222,15 +222,15 @@ static void
 on_startup(SrnApplication *self) {
     g_message("Startup");
 
-    srn_extension_manager_load_modules(self->moudle_manager, NULL);
+    srn_extension_manager_load_modules(self->extension_manager, NULL);
 
     return;
 }
 
 static void
 on_activate(SrnApplication *self) {
-    // SrnWindow *win = srn_window_new(self);
-    // gtk_window_present(GTK_WINDOW(win));
+    SrnWindow *win = srn_window_new(self);
+    gtk_window_present(GTK_WINDOW(win));
     return;
 }
 
@@ -327,5 +327,5 @@ srn_application_get_instance() {
  */
 SrnExtensionManager *
 srn_application_get_extension_manager(SrnApplication *self) {
-    return self->moudle_manager;
+    return self->extension_manager;
 }

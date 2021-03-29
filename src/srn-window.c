@@ -20,47 +20,12 @@
 
 #include "srn-meta.h"
 #include "srn-window.h"
-
-#define WINDOW_STACK_PAGE_WELCOME   "welcome"
-#define WINDOW_STACK_PAGE_MAIN      "main"
+#include "srn-flow-controller.h"
 
 struct _SrnWindow {
     GtkApplicationWindow parent;
 
-    /* Top level container */
-    GtkPaned *title_paned;
-    GtkBox *window_box;
-    GtkSeparator *header_separator;
-    GtkBox *header_box;
-    GtkPaned *header_paned;
-    GtkStack *window_stack;
-
-    /* Side header */
-    GtkHeaderBar *side_header_bar;
-    GtkBox *side_header_box;
-    GtkBox *side_left_header_box;
-    GtkBox *side_right_header_box;
-    GtkImage *start_image;
-    GtkMenuButton *start_menu_button;
-
-    /* Buffer header */
-    GtkHeaderBar *buffer_header_bar;
-    GtkBox *buffer_header_box;
-    GtkBox *buffer_title_box;
-    GtkLabel *buffer_title_label;
-    GtkLabel *buffer_subtitle_label;
-    GtkMenuButton *buffer_menu_button;
-
-    /* Welcome page */
-    GtkBox *welcome_connect_box;
-
-    /* Main page */
-    GtkPaned *main_paned;
-    GtkBox *side_box;
-    GtkStack *buffer_stack;
-    GtkButton *plugin_button;
-    GtkTextView *input_text_view;
-    GtkButton *send_button;
+    GtkCenterBox *center_box;
 };
 
 enum {
@@ -71,26 +36,6 @@ enum {
 static GParamSpec *obj_properties[N_PROPERTIES] = { NULL, };
 
 G_DEFINE_TYPE(SrnWindow, srn_window, GTK_TYPE_APPLICATION_WINDOW);
-
-static void
-on_destroy(SrnWindow *self) {
-    // Nothing to do for now
-}
-
-static void
-on_notify_is_active(GObject *object, GParamSpec *pspec,
-                    gpointer data) {
-}
-
-static void
-window_stack_on_child_changed(GtkWidget *widget, GParamSpec *pspec,
-                              gpointer user_data) {
-}
-
-static void
-buffer_stack_on_child_changed(GtkWidget *widget, GParamSpec *pspec,
-                              gpointer user_data) {
-}
 
 static void
 srn_window_set_property(GObject *object, guint property_id,
@@ -118,32 +63,13 @@ static void
 srn_window_init(SrnWindow *self) {
     gtk_widget_init_template(GTK_WIDGET(self));
 
-    /* Bind title_paned, header_paned and main_paned */
-    g_object_bind_property(
-        self->title_paned, "position",
-        self->main_paned, "position",
-        G_BINDING_BIDIRECTIONAL);
-    g_object_bind_property(
-        self->header_paned, "position",
-        self->main_paned, "position",
-        G_BINDING_BIDIRECTIONAL);
 
-    g_signal_connect(self, "destroy",
-                     G_CALLBACK(on_destroy), NULL);
-    g_signal_connect(self, "notify::is-active",
-                     G_CALLBACK(on_notify_is_active), NULL);
-
-    g_signal_connect(self->window_stack, "notify::visible-child",
-                     G_CALLBACK(window_stack_on_child_changed), self);
-    g_signal_connect(self->buffer_stack, "notify::visible-child",
-                     G_CALLBACK(buffer_stack_on_child_changed), self);
+    gtk_center_box_set_center_widget(self->center_box,
+                                     srn_flow_controller_new(NULL));
 }
 
 static void
 srn_window_constructed(GObject *object) {
-    SrnWindow *self;
-
-    self = SRN_WINDOW(object);
     G_OBJECT_CLASS(srn_window_parent_class)->constructed(object);
 }
 
@@ -162,48 +88,11 @@ srn_window_class_init(SrnWindowClass *class) {
     g_object_class_install_properties(object_class, N_PROPERTIES,
                                       obj_properties);
 
+    /* Load template from resource */
     widget_class = GTK_WIDGET_CLASS(class);
     gtk_widget_class_set_template_from_resource(widget_class,
-            "/im/srain/Srain/window.glade");
-
-    gtk_widget_class_bind_template_child(widget_class, SrnWindow, title_paned);
-    gtk_widget_class_bind_template_child(widget_class, SrnWindow, window_box);
-    gtk_widget_class_bind_template_child(widget_class, SrnWindow, header_separator);
-    gtk_widget_class_bind_template_child(widget_class, SrnWindow, header_box);
-    gtk_widget_class_bind_template_child(widget_class, SrnWindow, header_paned);
-    gtk_widget_class_bind_template_child(widget_class, SrnWindow, window_stack);
-
-    gtk_widget_class_bind_template_child(widget_class, SrnWindow, side_header_bar);
-    gtk_widget_class_bind_template_child(widget_class, SrnWindow, side_header_box);
-    gtk_widget_class_bind_template_child(widget_class, SrnWindow,
-                                         side_left_header_box);
-    gtk_widget_class_bind_template_child(widget_class, SrnWindow,
-                                         side_right_header_box);
-    gtk_widget_class_bind_template_child(widget_class, SrnWindow, start_image);
-    gtk_widget_class_bind_template_child(widget_class, SrnWindow,
-                                         start_menu_button);
-
-    gtk_widget_class_bind_template_child(widget_class, SrnWindow,
-                                         buffer_header_bar);
-    gtk_widget_class_bind_template_child(widget_class, SrnWindow,
-                                         buffer_header_box);
-    gtk_widget_class_bind_template_child(widget_class, SrnWindow, buffer_title_box);
-    gtk_widget_class_bind_template_child(widget_class, SrnWindow,
-                                         buffer_title_label);
-    gtk_widget_class_bind_template_child(widget_class, SrnWindow,
-                                         buffer_subtitle_label);
-    gtk_widget_class_bind_template_child(widget_class, SrnWindow,
-                                         buffer_menu_button);
-
-    gtk_widget_class_bind_template_child(widget_class, SrnWindow,
-                                         welcome_connect_box);
-
-    gtk_widget_class_bind_template_child(widget_class, SrnWindow, main_paned);
-    gtk_widget_class_bind_template_child(widget_class, SrnWindow, side_box);
-    gtk_widget_class_bind_template_child(widget_class, SrnWindow, buffer_stack);
-    gtk_widget_class_bind_template_child(widget_class, SrnWindow, plugin_button);
-    gtk_widget_class_bind_template_child(widget_class, SrnWindow, input_text_view);
-    gtk_widget_class_bind_template_child(widget_class, SrnWindow, send_button);
+            "/im/srain/Srain/window.ui");
+    gtk_widget_class_bind_template_child(widget_class, SrnWindow, center_box);
 }
 
 /**
