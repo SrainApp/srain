@@ -18,7 +18,7 @@ g_io_spy_load(GIOModule *module) {
 
     g_io_extension_point_implement(SRN_LOADER_EXTENSION_POINT_NAME,
                                    SPY_TYPE_LOADER,
-                                   "spy",
+                                   "Srain Python3 Loader",
                                    10);
 
     // GBytes *data;

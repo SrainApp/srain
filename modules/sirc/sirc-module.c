@@ -11,7 +11,7 @@ g_io_sirc_load(GIOModule *module) {
 
     g_io_extension_point_implement(SRN_MESSENGER_EXTENSION_POINT_NAME,
                                    SIRC_TYPE_MESSENGER,
-                                   "sirc",
+                                   "Srain IRC Messenger",
                                    10);
 }
 

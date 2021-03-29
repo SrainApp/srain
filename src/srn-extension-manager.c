@@ -23,9 +23,9 @@
 #include "srn-messenger.h"
 #include "srn-loader.h"
 
-#include "srn-module-manager.h"
+#include "srn-extension-manager.h"
 
-struct _SrnModuleManager {
+struct _SrnExtensionManager {
     GtkApplication parent;
 
     GList *modules;
@@ -44,13 +44,13 @@ enum {
     N_PROPERTIES
 };
 
-G_DEFINE_TYPE(SrnModuleManager, srn_module_manager, G_TYPE_OBJECT);
+G_DEFINE_TYPE(SrnExtensionManager, srn_extension_manager, G_TYPE_OBJECT);
 
 static GParamSpec *obj_properties[N_PROPERTIES] = { };
 
 static void
-srn_module_manager_set_property(GObject *object, guint property_id,
-                                const GValue *value, GParamSpec *pspec) {
+srn_extension_manager_set_property(GObject *object, guint property_id,
+                                   const GValue *value, GParamSpec *pspec) {
     switch (property_id) {
     default:
         /* We don't have any other property... */
@@ -60,15 +60,15 @@ srn_module_manager_set_property(GObject *object, guint property_id,
 }
 
 static void
-srn_module_manager_get_property(GObject *object, guint property_id,
-                                GValue *value, GParamSpec *pspec) {
-    SrnModuleManager *self = SRN_MODULE_MANAGER(object);
+srn_extension_manager_get_property(GObject *object, guint property_id,
+                                   GValue *value, GParamSpec *pspec) {
+    SrnExtensionManager *self = SRN_EXTENSION_MANAGER(object);
 
     switch (property_id) {
     case PROP_MODULES:
-        g_value_set_pointer(value, srn_module_manager_get_modules(self));
+        g_value_set_pointer(value, srn_extension_manager_get_modules(self));
     case PROP_EXTENSIONS:
-        g_value_set_pointer(value, srn_module_manager_get_extensions(self));
+        g_value_set_pointer(value, srn_extension_manager_get_extensions(self));
     default:
         /* We don't have any other property... */
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
@@ -143,35 +143,35 @@ pre_load_modules(void) {
 }
 
 static void
-srn_module_manager_init(SrnModuleManager *self) {
+srn_extension_manager_init(SrnExtensionManager *self) {
     self->modules = NULL;
     self->extensions = NULL;
 }
 
 static void
-srn_module_manager_constructed(GObject *object) {
-    G_OBJECT_CLASS(srn_module_manager_parent_class)->constructed(object);
+srn_extension_manager_constructed(GObject *object) {
+    G_OBJECT_CLASS(srn_extension_manager_parent_class)->constructed(object);
 }
 
 static void
-srn_module_manager_finalize(GObject *object) {
-    SrnModuleManager *self = SRN_MODULE_MANAGER(object);
+srn_extension_manager_finalize(GObject *object) {
+    SrnExtensionManager *self = SRN_EXTENSION_MANAGER(object);
 
     g_list_free_full(self->modules, (GDestroyNotify)g_type_module_unuse);
 
-    G_OBJECT_CLASS(srn_module_manager_parent_class)->finalize(object);
+    G_OBJECT_CLASS(srn_extension_manager_parent_class)->finalize(object);
 }
 
 static void
-srn_module_manager_class_init(SrnModuleManagerClass *class) {
+srn_extension_manager_class_init(SrnExtensionManagerClass *class) {
     GObjectClass *object_class;
 
     /* Overwrite callbacks */
     object_class = G_OBJECT_CLASS(class);
-    object_class->constructed = srn_module_manager_constructed;
-    object_class->finalize = srn_module_manager_finalize;
-    object_class->set_property = srn_module_manager_set_property;
-    object_class->get_property = srn_module_manager_get_property;
+    object_class->constructed = srn_extension_manager_constructed;
+    object_class->finalize = srn_extension_manager_finalize;
+    object_class->set_property = srn_extension_manager_set_property;
+    object_class->get_property = srn_extension_manager_get_property;
 
     /* Install properties */
     obj_properties[PROP_MODULES] =
@@ -192,24 +192,24 @@ srn_module_manager_class_init(SrnModuleManagerClass *class) {
 }
 
 /**
- * srn_module_manager_new:
+ * srn_extension_manager_new:
  *
- * Allocates a new #SrnModuleManager.
+ * Allocates a new #SrnExtensionManager.
  *
  * Returns: (transfer full):
  */
-SrnModuleManager *
-srn_module_manager_new(void) {
-    return SRN_MODULE_MANAGER(g_object_new(SRN_TYPE_MODULE_MANAGER, NULL));
+SrnExtensionManager *
+srn_extension_manager_new(void) {
+    return SRN_EXTENSION_MANAGER(g_object_new(SRN_TYPE_EXTENSION_MANAGER, NULL));
 }
 
 /**
- * srn_module_manager_load_modules:
- * @self: A #SrnModuleManager.
+ * srn_extension_manager_load_modules:
+ * @self: A #SrnExtensionManager.
  * @err: A #GError.
  */
 void
-srn_module_manager_load_modules(SrnModuleManager *self, GError **err) {
+srn_extension_manager_load_modules(SrnExtensionManager *self, GError **err) {
     GIOExtensionPoint *msger_ep;
     GIOExtensionPoint *loader_ep;
     GIOModuleScope *scope;
@@ -262,29 +262,29 @@ srn_module_manager_load_modules(SrnModuleManager *self, GError **err) {
 }
 
 /**
- * srn_module_manager_get_modules:
- * @self: A #SrnModuleManager.
+ * srn_extension_manager_get_modules:
+ * @self: A #SrnExtensionManager.
  *
  * Returns: (element-type GIOModule) (transfer none):
  *          A #GList of #GIOModule. The list is owned by @self,
  *          and should not be modified.
  */
 GList *
-srn_module_manager_get_modules(SrnModuleManager *self) {
+srn_extension_manager_get_modules(SrnExtensionManager *self) {
     return self->modules;
 }
 
 /**
- * srn_module_manager_get_extensions:
- * @self: A #SrnModuleManager.
+ * srn_extension_manager_get_extensions:
+ * @self: A #SrnExtensionManager.
  *
  * Returns: (element-type GIOExtension) (transfer none):
  *          A #GList of #GIOExtension. The list is owned by #self,
  *          and should not be modified.
  */
 GList *
-srn_module_manager_get_extensions(SrnModuleManager *self) {
+srn_extension_manager_get_extensions(SrnExtensionManager *self) {
     return self->extensions;
 }
 
-// TODO: srn_module_manager_get_other_extensions ...
+// TODO: srn_extension_manager_get_other_extensions ...

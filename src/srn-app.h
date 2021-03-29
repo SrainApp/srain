@@ -21,7 +21,7 @@
 
 #include <gtk/gtk.h>
 
-#include "srn-module-manager.h"
+#include "srn-extension-manager.h"
 
 G_BEGIN_DECLS
 
@@ -32,7 +32,8 @@ G_DECLARE_FINAL_TYPE(SrnApplication, srn_application, SRN, APPLICATION,
 SrnApplication *srn_application_new(void);
 void srn_application_ping(SrnApplication *self);
 SrnApplication *srn_application_get_instance(void);
-SrnModuleManager *srn_application_get_module_manager(SrnApplication *self);
+SrnExtensionManager *srn_application_get_extension_manager(
+    SrnApplication *self);
 
 G_END_DECLS
 

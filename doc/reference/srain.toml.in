@@ -1,0 +1,36 @@
+[library]
+version = "@version@"
+browse_url = "https://github.com/SrainApp/srain"
+repository_url = "https://github.com/SrainApp/srain.git"
+website_url = "@app_url@"
+authors = "Shengyu Zhang"
+license = "GPL-3.0-or-later"
+description = "@app_desc@"
+dependencies = ["GObject-2.0", "Gtk-4.0"]
+devhelp = true
+search_index = true
+
+  [dependencies."GObject-2.0"]
+  name = "GObject"
+  description = "The base type system library"
+  docs_url = "https://developer.gnome.org/gobject/stable/"
+
+  [dependencies."Gtk-4.0"]
+  name = "GTK"
+  description = "The GTK toolkit"
+  docs_url = "https://gnome.pages.gitlab.gnome.org/gtk/gtk4/"
+
+[theme]
+name = "basic"
+show_index_summary = true
+show_class_hierarchy = true
+
+[source-location]
+base_url = "https://github.com/SrainApp/srain/blob/dev-2.0/"
+
+[extra]
+# The same order will be used when generating the index
+content_files = []
+content_images = []
+
+# vim: set filetype=toml:

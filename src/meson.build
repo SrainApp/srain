@@ -14,20 +14,16 @@ srn_inc = include_directories('.')
 srn_srcs = [
   'main.c',
   'srn-app.c',
-  'srn-flow-controller.h',
-  'srn-flow-controller.c',
-  'srn-module-manager.h',
-  'srn-module-manager.c',
-
-  # UI
   'srn-window.h',
   'srn-window.c',
-
-  # Extensions
   'srn-extension.c',
-  'srn-flow.c',
+  'srn-extension-manager.h',
+  'srn-extension-manager.c',
   'srn-messenger.c',
   'srn-loader.c',
+  'srn-flow.c',
+  'srn-flow-controller.h',
+  'srn-flow-controller.c',
    srn_res,
 ] + srn_hdrs
 

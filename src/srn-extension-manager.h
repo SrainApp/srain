@@ -16,22 +16,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SRN_MODULE_MANAGER_H
-#define __SRN_MODULE_MANAGER_H
+#ifndef __SRN_EXTENSION_MANAGER_H
+#define __SRN_EXTENSION_MANAGER_H
 
 #include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 
-#define SRN_TYPE_MODULE_MANAGER srn_module_manager_get_type()
-G_DECLARE_FINAL_TYPE(SrnModuleManager, srn_module_manager, SRN,
-                     MODULE_MANAGER, GObject)
+#define SRN_TYPE_EXTENSION_MANAGER srn_extension_manager_get_type()
+G_DECLARE_FINAL_TYPE(SrnExtensionManager, srn_extension_manager, SRN,
+                     EXTENSION_MANAGER, GObject)
 
-SrnModuleManager *srn_module_manager_new();
-void srn_module_manager_load_modules(SrnModuleManager *self, GError **err);
-GList *srn_module_manager_get_modules(SrnModuleManager *self);
-GList *srn_module_manager_get_extensions(SrnModuleManager *self);
+SrnExtensionManager *srn_extension_manager_new();
+void srn_extension_manager_load_modules(SrnExtensionManager *self,
+                                        GError **err);
+GList *srn_extension_manager_get_modules(SrnExtensionManager *self);
+GList *srn_extension_manager_get_extensions(SrnExtensionManager *self);
 
 G_END_DECLS
 
-#endif /* __SRN_MODULE_MANAGER_H */
+#endif /* __SRN_EXTENSION_MANAGER_H */

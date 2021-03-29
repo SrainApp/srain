@@ -18,5 +18,5 @@ endif
 
 # `in` operator requires meson 0.49.0
 if doc_builders.contains('html')
-  install_subdir(join_paths(sphinx_build_dir, 'html'), install_dir: pkg_doc_dir)
+  install_subdir(join_paths(sphinx_build_dir, 'html'), install_dir: pkg_man_dir)
 endif

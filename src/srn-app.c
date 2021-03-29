@@ -28,7 +28,7 @@
 struct _SrnApplication {
     GtkApplication parent;
 
-    SrnModuleManager *moudle_manager;
+    SrnExtensionManager *moudle_manager;
 };
 
 static SrnApplication *instance = NULL;
@@ -55,7 +55,7 @@ static void on_activate_exit(GSimpleAction *action, GVariant *parameter,
 
 enum {
     PROP_0,
-    PROP_MODULE_MANAGER,
+    PROP_EXTENSION_MANAGER,
     N_PROPERTIES
 };
 
@@ -117,8 +117,8 @@ srn_application_get_property(GObject *object, guint property_id,
     SrnApplication *self = SRN_APPLICATION(object);
 
     switch (property_id) {
-    case PROP_MODULE_MANAGER:
-        g_value_set_object(value, srn_application_get_module_manager(self));
+    case PROP_EXTENSION_MANAGER:
+        g_value_set_object(value, srn_application_get_extension_manager(self));
     default:
         /* We don't have any other property... */
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
@@ -131,7 +131,7 @@ srn_application_init(SrnApplication *self) {
     // TODO: GOnce
     instance = self;
 
-    self->moudle_manager = srn_module_manager_new();
+    self->moudle_manager = srn_extension_manager_new();
 
     g_application_add_main_option_entries(G_APPLICATION(self), option_entries);
 
@@ -172,11 +172,11 @@ srn_application_class_init(SrnApplicationClass *class) {
     object_class->get_property = srn_application_get_property;
 
     /* Install properties */
-    obj_properties[PROP_MODULE_MANAGER] =
-        g_param_spec_object("module-manager",
-                            "Module Manager",
-                            "Module Manager",
-                            SRN_TYPE_MODULE_MANAGER,
+    obj_properties[PROP_EXTENSION_MANAGER] =
+        g_param_spec_object("extension-manager",
+                            N_("Extension Manager"),
+                            N_("Extension Manager"),
+                            SRN_TYPE_EXTENSION_MANAGER,
                             G_PARAM_READABLE);
 
     g_object_class_install_properties(object_class,
@@ -222,7 +222,7 @@ static void
 on_startup(SrnApplication *self) {
     g_message("Startup");
 
-    srn_module_manager_load_modules(self->moudle_manager, NULL);
+    srn_extension_manager_load_modules(self->moudle_manager, NULL);
 
     return;
 }
@@ -320,12 +320,12 @@ srn_application_get_instance() {
 }
 
 /**
- * srn_application_get_module_manager:
+ * srn_application_get_extension_manager:
  * @self: A #SrnApplication.
  *
- * Returns: (transfer none): The #SrnModuleManager of application.
+ * Returns: (transfer none): The #SrnExtensionManager of application.
  */
-SrnModuleManager *
-srn_application_get_module_manager(SrnApplication *self) {
+SrnExtensionManager *
+srn_application_get_extension_manager(SrnApplication *self) {
     return self->moudle_manager;
 }

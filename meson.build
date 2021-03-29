@@ -33,10 +33,12 @@ bin_dir = join_paths(prefix, get_option('bindir'))
 data_dir = join_paths(prefix, get_option('datadir'))
 lib_dir = join_paths(prefix, get_option('libdir'))
 pkg_data_dir = join_paths(data_dir, meson.project_name())
-# https://github.com/mesonbuild/meson/issues/825
 pkg_doc_dir = join_paths(data_dir, 'doc', meson.project_name())
+pkg_man_dir = join_paths(pkg_doc_dir, 'manual')
+pkg_ref_dir = join_paths(pkg_doc_dir, 'reference')
+# https://github.com/mesonbuild/meson/issues/825
 icons_dir = join_paths(data_dir, 'icons')
-po_dir = join_paths(meson.source_root (), 'po')
+po_dir = join_paths(meson.source_root(), 'po')
 sys_conf_dir = join_paths(prefix, get_option('sysconfdir'))
 pkg_sys_conf_dir = join_paths(sys_conf_dir, meson.project_name())
 pkg_sys_mod_dir = join_paths(lib_dir, meson.project_name(), 'modules')
@@ -92,6 +94,8 @@ gmodule_dep = dependency('gmodule-2.0', version: glib_req)
 gtk_dep = dependency('gtk4', version: gtk_req)
 gi_dep = dependency('gobject-introspection-1.0')
 meta_dep = declare_dependency(sources: meta_h)
+# TODO: sphinx
+gidocgen_dep = dependency('gi-docgen', fallback: ['gi-docgen', 'dummy_dep'])
 
 ##################
 # Subdirectories #
@@ -101,4 +105,4 @@ subdir('data')
 subdir('src')
 subdir('modules')
 # subdir('po')
-# subdir('docs')
+subdir('doc')

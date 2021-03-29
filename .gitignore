@@ -47,3 +47,4 @@ GPATH
 # Meson
 builddir/
 prefix/
+subprojects/*/
