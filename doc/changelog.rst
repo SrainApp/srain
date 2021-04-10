@@ -30,6 +30,19 @@ Change Log
 
 .. _version-latest:
 
+.. _version-1.2.1:
+
+2021-04-02 Version 1.2.1
+========================
+
+- Features:
+
+  - Add Ukrainian translations (:pull:`292`), thanks to :people:`andmizyk`
+
+- Bug fixes:
+
+  -  Minor fixes (:issue:`290`)
+
 .. _version-1.2.0:
 
 2021-02-28 Version 1.2.0
