@@ -35,8 +35,8 @@ output_file=$3
 gdbus=$prefix/bin/gdbus.exe
 
 # srain
-cp -vf $srain_exe $prefix/bin/srain # make DLLs of mingw64 have the highest priority
-get_dll $prefix/bin/srain
+cp -vf $srain_exe $prefix/bin/srain.exe # make DLLs of mingw64 have the highest priority
+get_dll $prefix/bin/srain.exe
 mingw64_dlls=$ret
 
 # glib-networking
@@ -56,7 +56,7 @@ mkdir -pv $dst_etc
 mkdir -pv $dst_share
 
 # portable installation of srain
-cp -rfv $srain_exe $dst_bin/srain
+cp -rfv $srain_exe $dst_bin/srain.exe
 cp -rfv $srain_etc $dst_etc/
 cp -rfv $srain_share $dst_share/
 mkdir -pv $dst_bin/logs

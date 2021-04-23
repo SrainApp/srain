@@ -41,18 +41,15 @@ jobs:
         INSTALL_DIR=srain-$SRAIN_TAG-mingw64-install;
         PACKAGE_DIR=srain-$SRAIN_TAG-mingw64;
         PACKAGE_NAME=$PACKAGE_DIR.zip;
+        PREFIX=a/_temp/msys/msys64/mingw64; # Hardcoded meson prefix
         mkdir -pv out;
         mkdir -pv $INSTALL_DIR;
         meson setup -Ddoc_builders=[] \
-          --prefix=$MINGW_PREFIX \
-          --datadir=$MINGW_PREFIX/share \
-          --sysconfdir=$MINGW_PREFIX/etc \
           --buildtype=release \
           builddir && \
         ninja -C builddir && \
         DESTDIR=$PWD/$INSTALL_DIR ninja -C builddir install && \
-        .github/workflows/pack-mingw64.sh $INSTALL_DIR/$MINGW_PREFIX $PACKAGE_DIR $PACKAGE_NAME && \
+        .github/workflows/pack-mingw64.sh $INSTALL_DIR/$PREFIX $PACKAGE_DIR $PACKAGE_NAME && \
         mv $PACKAGE_NAME ./out
     - name: Upload
       run: /mingw64/bin/python3 .github/workflows/release-assets-upload.py
-
