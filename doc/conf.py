@@ -158,6 +158,8 @@ man_pages = [
      [author], 1)
 ]
 
+# Default in v4, set for v3
+man_make_section_directory = True
 
 # -- Options for Texinfo output -------------------------------------------
 
