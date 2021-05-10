@@ -13,7 +13,7 @@ endforeach
 
 # `in` operator requires meson 0.49.0
 if doc_builders.contains('man')
-  install_man(join_paths(sphinx_build_dir, 'man', 'srain.1'))
+  install_man(join_paths(sphinx_build_dir, 'man', '1', 'srain.1'))
 endif
 
 # `in` operator requires meson 0.49.0
