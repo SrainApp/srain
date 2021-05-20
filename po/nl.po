@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: Srain 1.0.0\n"
 "Report-Msgid-Bugs-To: i@silverrainz.me\n"
 "POT-Creation-Date: 2020-08-02 16:09+0800\n"
-"PO-Revision-Date: 2020-03-07 20:14+0100\n"
-"Last-Translator: \n"
+"PO-Revision-Date: 2021-05-20 13:39+0200\n"
+"Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: \n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.3\n"
+"X-Generator: Poedit 2.4.2\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../src/core/app_ui_event.c:380 ../src/core/chat_command.c:352
@@ -197,7 +197,7 @@ msgstr "Alle configuratie is opnieuw geladen"
 
 #: ../src/core/app_ui_event.c:178
 msgid "Already reconnecting"
-msgstr "Bezig met opnieuw verbinden"
+msgstr "Bezig met opnieuw verbinden…"
 
 #: ../data/ui/config_panel.glade:122
 msgid "Appearance"
@@ -402,7 +402,8 @@ msgstr ""
 #: ../src/core/server.c:149
 #, c-format
 msgid "Failed to chat config \"%1$s\" of server config \"%2$s\": %3$s"
-msgstr "Kan chatinstellingen '%1$s' niet toevegen aan '%2$s': %3$s"
+msgstr ""
+"De chatinstellingen '%1$s' kunnen niet worden toegevoegd aan '%2$s': %3$s"
 
 #: ../src/sui/sui_join_panel.c:378
 #, c-format
@@ -427,7 +428,7 @@ msgstr "Kan niet verbinden met %1$s(%2$s:%3$d): %4$s"
 #: ../src/lib/path.c:301
 #, c-format
 msgid "Failed to create chat logs directory: %1$s"
-msgstr "Kan de chatlogmap niet aanmaken: %1$s"
+msgstr "Kan de logboekmap niet aanmaken: %1$s"
 
 #: ../src/lib/path.c:281
 #, c-format
@@ -558,7 +559,7 @@ msgstr "Onjuist"
 
 #: ../src/sui/sui_message.c:261
 msgid "Forward to..."
-msgstr "Doorsturen naar..."
+msgstr "Doorsturen naar…"
 
 #: ../src/core/server_state.c:92
 msgid ""
@@ -567,7 +568,7 @@ msgstr "Even geduld: srain is bezig met verbinden - doe dit niet nog eens"
 
 #: ../src/sirc/sirc_config.c:37
 msgid "Invalid IRC config instance"
-msgstr "Onjuiste IRC-configuratie-instantie"
+msgstr "Verkeerd irc-configuratieproces"
 
 #: ../src/sui/sui_config.c:84
 msgid "Invalid SuiBufferConfig instance"
@@ -580,7 +581,7 @@ msgstr "Onjuiste chatconfiguratie-instantie"
 #: ../src/sirc/sirc_config.c:52
 #, c-format
 msgid "Invalid encoding in IRC config: %1$s"
-msgstr "Onjuiste opmaak in IRC-configuratie: %1$s"
+msgstr "Onjuiste opmaak in irc-configuratie: %1$s"
 
 #: ../src/lib/ret.c:112
 msgid "Invalid error id, maybe this error is removed because out of date"
@@ -594,7 +595,7 @@ msgstr "Onjuiste serverconfiguratie-instantie"
 
 #: ../data/ui/nick_menu.glade:50
 msgid "Invite to..."
-msgstr "Uitnodigen voor..."
+msgstr "Uitnodigen voor…"
 
 #: ../src/core/app_irc_event.c:221
 #, c-format
@@ -602,8 +603,8 @@ msgid ""
 "It seems that you connect to a TLS port(%1$d) without enable TLS connection, "
 "try to enable it and reconnect"
 msgstr ""
-"Het lijkt erop dat u probeert te verbinden met een TLS-poort(%1$d) zonder "
-"TLS-verbinding. Zet deze op en probeer het opnieuw."
+"Het lijkt er op dat u probeert te verbinden met een tls-poort(%1$d) zonder "
+"tls-verbinding. Zet deze op en probeer het opnieuw."
 
 #: ../data/ui/join_panel.glade:416 ../data/ui/window.glade:103
 msgid "Join"
@@ -625,12 +626,12 @@ msgstr "Lokale verbinding afgesloten"
 #: ../src/core/app_irc_event.c:1226 ../src/core/app_irc_event.c:1252
 #, c-format
 msgid "Logging in with %1$s as %2$s..."
-msgstr "Bezig met inloggen met %1$s als %2$s..."
+msgstr "Bezig met inloggen met %1$s als %2$s…"
 
 #: ../src/core/app_irc_event.c:377
 #, c-format
 msgid "Logging in with %1$s..."
-msgstr "Bezig met inloggen met %1$s..."
+msgstr "Bezig met inloggen met %1$s…"
 
 #: ../data/ui/connect_panel.glade:423
 msgid "Login certificate:"
@@ -728,7 +729,7 @@ msgstr "Geen nieuwe functionaliteit aangevraagd"
 
 #: ../src/sui/sui_connect_panel.c:432
 msgid "No server selected"
-msgstr ""
+msgstr "Geen server gekozen"
 
 #: ../src/core/app_irc_event.c:1484
 msgid "No topic is set"
@@ -748,7 +749,7 @@ msgstr "Oké"
 
 #: ../src/sui/sui_app.c:131
 msgid "Open one or more IRC URLs"
-msgstr "Open één of meer IRC-url's"
+msgstr "Open één of meer irc-url's"
 
 #: ../data/ui/connect_panel.glade:485 ../data/ui/join_panel.glade:103
 msgid "Optional"
@@ -761,7 +762,7 @@ msgstr "Wachtwoord:"
 #: ../src/core/chat_command.c:392 ../src/core/chat_command.c:812
 #, c-format
 msgid "Pattern \"%1$s\" not found"
-msgstr "Patroon '%1$s' niet aangetroffen"
+msgstr "'%1$s' is niet aangetroffen"
 
 #: ../src/core/app_irc_event.c:248
 msgid "Ping time out"
@@ -769,11 +770,14 @@ msgstr "Ping-time-out"
 
 #: ../src/sui/sui_join_panel.c:315
 msgid "Please connect to a server before joining any channel"
-msgstr "Maak verbinding met een server voordat u een kanaal binnengaat"
+msgstr ""
+"U dient verbinding te maken met een server voordat u een kanaal kunt "
+"binnengaan"
 
 #: ../src/sui/sui_join_panel.c:436
 msgid "Please connect to a server before searching any channel"
-msgstr "Maak verbinding met een server voordat u een kanaal zoekt"
+msgstr ""
+"U dient verbinding te maken met een server voordat u een kanaal kunt zoeken"
 
 #: ../data/ui/connect_panel.glade:106
 msgid "Quick Mode"
@@ -781,7 +785,7 @@ msgstr "Snelle modus"
 
 #: ../src/core/server_state.c:172 ../src/core/server_state.c:179
 msgid "Quitting the server"
-msgstr "Bezig met weggaan"
+msgstr "Bezig met weggaan…"
 
 #: ../src/core/app_irc_event.c:952
 #, c-format
@@ -862,9 +866,9 @@ msgid "Server"
 msgstr "Server"
 
 #: ../src/core/app.c:266
-#, fuzzy, c-format
+#, c-format
 msgid "Server \"%1$s\" already exists"
-msgstr "Reeds verbonden met server"
+msgstr "‘%1$s’ is al toegevoegd"
 
 #: ../src/core/app_irc_event.c:1063
 #, c-format
@@ -874,12 +878,12 @@ msgstr "Serverfunctionaliteit: %1$s"
 #: ../src/core/app_irc_event.c:1167
 #, c-format
 msgid "Server has deleted capabilities: %1$s"
-msgstr "Server heeft functionaliteit verwijderd: %1$s"
+msgstr "De server heeft functionaliteit verwijderd: %1$s"
 
 #: ../src/core/app_irc_event.c:1096
 #, c-format
 msgid "Server has new capabilities: %1$s"
-msgstr "Server heeft nieuwe functionaliteit: %1$s"
+msgstr "De server beschikt over nieuwe functionaliteit: %1$s"
 
 #: ../src/core/server_state.c:121
 msgid "Server is already connected"
@@ -892,7 +896,7 @@ msgstr "Verbindig met server reeds verbroken"
 #: ../src/core/server_state.c:149 ../src/core/server_state.c:152
 #: ../src/core/server_state.c:155 ../src/core/server_state.c:158
 msgid "Server is disconnecting"
-msgstr "Bezig met verbreken van verbinding"
+msgstr "Bezig met verbreken van verbinding…"
 
 #: ../src/config/password.c:126
 msgid "Server password"
@@ -933,7 +937,7 @@ msgstr "Srain"
 
 #: ../data/ui/prefs_dialog.glade:9
 msgid "Srain Preferences"
-msgstr "Srain-instellingen"
+msgstr "Srain-voorkeuren"
 
 #: ../src/sirc/sirc_config.c:70
 #, c-format
@@ -981,13 +985,13 @@ msgstr "Waar"
 #: ../src/core/app_irc_event.c:1399
 #, c-format
 msgid "Trying nickname: \"%1$s\"..."
-msgstr "Bezig met uitproberen van '%1$s'..."
+msgstr "Bezig met uitproberen van '%1$s'…"
 
 #: ../src/core/app_irc_event.c:203 ../src/core/app_irc_event.c:226
 #: ../src/core/app_irc_event.c:287 ../src/core/app_irc_event.c:302
 #, c-format
 msgid "Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."
-msgstr "Herverbinden met %1$s(%2$s:%3$d) vindt plaats na %4$.1lfs..."
+msgstr "Opnieuw verbinden met %1$s(%2$s:%3$d) vindt plaats na %4$.1lfs…"
 
 #: ../src/core/app_irc_event.c:1836
 #, c-format
@@ -1146,7 +1150,7 @@ msgstr "_Wachtwoord:"
 
 #: ../data/ui/app.glade:13 ../data/ui/app.glade:55
 msgid "_Preferences"
-msgstr "_Instellingen"
+msgstr "_Voorkeuren"
 
 #: ../data/ui/url_previewer.glade:26
 msgid "_Preview"
@@ -1190,4 +1194,4 @@ msgstr "server-list[%1$d] is naamloos"
 #: ../src/core/chat_command.c:374
 #, c-format
 msgid "user \"%1$s\" not found"
-msgstr "gebruiker '%1$s' is niet gevonden"
+msgstr "'%1$s' is niet gevonden"
