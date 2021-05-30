@@ -30,6 +30,20 @@ Change Log
 
 .. _version-latest:
 
+.. _version-1.2.2:
+
+2021-05-30 Version 1.2.2
+========================
+
+- Changed:
+
+  - Add libera.chat IRC network (:pull:`311`)
+  - Updated Dutch translation (:commit:`b6830e9`)
+
+- Bug fixes:
+
+  -  Fix windows build (:pull:`300`, :pull:`303`)
+
 .. _version-1.2.1:
 
 2021-04-02 Version 1.2.1
