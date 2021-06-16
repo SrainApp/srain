@@ -133,9 +133,13 @@ void sui_user_list_rm_user(SuiUserList *self, SuiUser *user){
 }
 
 void sui_user_list_update_user(SuiUserList *self, SuiUser *user){
-    sui_user_update(user,
-            gtk_widget_get_style_context(GTK_WIDGET(self)),
-            gtk_widget_get_window(GTK_WIDGET(self)));
+    GdkWindow *win;
+
+    win = gtk_widget_get_window(GTK_WIDGET(self));
+    if (!win) {
+        return;
+    }
+    sui_user_update(user, gtk_widget_get_style_context(GTK_WIDGET(self)), win);
 }
 
 void sui_user_list_clear(SuiUserList *self){
