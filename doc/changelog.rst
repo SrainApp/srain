@@ -30,6 +30,15 @@ Change Log
 
 .. _version-latest:
 
+.. _version-1.2.3:
+
+2021-06-26 Version 1.2.3
+========================
+
+- Bug fixes:
+
+  - Eliminate GDK warning (:pull:`316`)
+
 .. _version-1.2.2:
 
 2021-05-30 Version 1.2.2
