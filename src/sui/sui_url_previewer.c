@@ -123,41 +123,41 @@ G_DEFINE_TYPE(SuiUrlPreviewer, sui_url_previewer, GTK_TYPE_BOX);
 
 static void sui_url_previewer_set_property(GObject *object, guint property_id,
         const GValue *value, GParamSpec *pspec){
-  SuiUrlPreviewer *self;
+    SuiUrlPreviewer *self;
 
-  self = SUI_URL_PREVIEWER(object);
+    self = SUI_URL_PREVIEWER(object);
 
-  switch (property_id){
-    case PROP_URL:
-      sui_url_previewer_set_url(self, g_value_get_string(value));
-      break;
-    case PROP_CONTENT_TYPE:
-      sui_url_previewer_set_content_type(self, g_value_get_int(value));
-      break;
-    default:
-      /* We don't have any other property... */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
-      break;
+    switch (property_id){
+        case PROP_URL:
+            sui_url_previewer_set_url(self, g_value_get_string(value));
+            break;
+        case PROP_CONTENT_TYPE:
+            sui_url_previewer_set_content_type(self, g_value_get_int(value));
+            break;
+        default:
+            /* We don't have any other property... */
+            G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+            break;
     }
 }
 
 static void sui_url_previewer_get_property(GObject *object, guint property_id,
         GValue *value, GParamSpec *pspec){
-  SuiUrlPreviewer *self;
+    SuiUrlPreviewer *self;
 
-  self = SUI_URL_PREVIEWER(object);
+    self = SUI_URL_PREVIEWER(object);
 
-  switch (property_id){
-    case PROP_URL:
-      g_value_set_string(value, sui_url_previewer_get_url(self));
-      break;
-    case PROP_CONTENT_TYPE:
-      g_value_set_int(value, sui_url_previewer_get_content_type(self));
-      break;
-    default:
-      /* We don't have any other property... */
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
-      break;
+    switch (property_id){
+        case PROP_URL:
+            g_value_set_string(value, sui_url_previewer_get_url(self));
+            break;
+        case PROP_CONTENT_TYPE:
+            g_value_set_int(value, sui_url_previewer_get_content_type(self));
+            break;
+        default:
+            /* We don't have any other property... */
+            G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+            break;
     }
 }
 
@@ -207,6 +207,7 @@ static void sui_url_previewer_finalize(GObject *object){
     if (self->uri) {
         soup_uri_free(self->uri);
     }
+    g_cancellable_cancel(self->cancel);
     g_object_unref(self->cancel);
     if (SOUP_IS_MESSAGE(self->msg)){
         g_object_unref(self->msg);
@@ -424,7 +425,7 @@ static void preview_image(SuiUrlPreviewer *self, GdkPixbuf *pixbuf){
     sui_common_scale_size(gdk_pixbuf_get_width(pixbuf), gdk_pixbuf_get_height(pixbuf),
             THUMBNAIL_SIZE, THUMBNAIL_SIZE, &width, &height);
     scaled_pixbuf = gdk_pixbuf_scale_simple(pixbuf, width, height,
-                        GDK_INTERP_BILINEAR);
+            GDK_INTERP_BILINEAR);
 
     self->pixbuf = g_object_ref(pixbuf);
     gtk_image_set_from_pixbuf(self->image, scaled_pixbuf);
@@ -531,20 +532,19 @@ static void session_send_ready(GObject *object, GAsyncResult *result,
     SoupMessageHeaders *headers;
     SuiUrlPreviewer *self;
 
-
     session = SOUP_SESSION(object);
-    self = SUI_URL_PREVIEWER(user_data);
-
-    // Freeze notify because PROP_CONTENT_TYPE may be modified here
-    g_object_freeze_notify(G_OBJECT(self));
-
+    self = NULL;
     err = NULL;
     input_stream = soup_session_send_finish(session, result, &err);
     if (err) {
-        preview_error_text(self, err->message);
+        WARN_FR("Async soup session send aborted: %s", err->message);
         g_error_free(err);
         goto ERR;
     }
+
+    self = SUI_URL_PREVIEWER(user_data);
+    // Freeze notify because PROP_CONTENT_TYPE may be modified here
+    g_object_freeze_notify(G_OBJECT(self));
 
     headers = self->msg->response_headers;
     // TODO: chunked encoding support
@@ -590,10 +590,13 @@ ERR:
     if (G_IS_INPUT_STREAM(input_stream)){
         g_object_unref(input_stream);
     }
-    g_object_unref(self->msg);
-    self->msg = NULL;
 
-    g_object_thaw_notify(G_OBJECT(self));
+    if (self) {
+        g_object_unref(self->msg);
+        self->msg = NULL;
+
+        g_object_thaw_notify(G_OBJECT(self));
+    }
 }
 
 static void buffered_stream_fill_ready(GObject *object, GAsyncResult *result,
@@ -605,15 +608,16 @@ static void buffered_stream_fill_ready(GObject *object, GAsyncResult *result,
     SuiUrlPreviewer *self;
 
     buffered_stream = G_BUFFERED_INPUT_STREAM(object);
-    self = SUI_URL_PREVIEWER(user_data);
+    self = NULL;
 
     err = NULL;
     g_buffered_input_stream_fill_finish(buffered_stream, result, &err);
     if (err) {
-        preview_error_text(self, err->message);
+        WARN_FR("Async soup session input stream aborted: %s", err->message);
         g_error_free(err);
         goto FIN;
     }
+    self = SUI_URL_PREVIEWER(user_data);
 
     {
         int avail;
@@ -676,6 +680,8 @@ static void buffered_stream_fill_ready(GObject *object, GAsyncResult *result,
 
 FIN:
     g_object_unref(buffered_stream);
-    g_object_unref(self->msg);
-    self->msg = NULL;
+    if (self) {
+        g_object_unref(self->msg);
+        self->msg = NULL;
+    }
 }
