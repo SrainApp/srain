@@ -104,19 +104,19 @@ void sui_user_update(SuiUser *self, GtkStyleContext *style_context,
     // Update stat
     if (self->ctx->type != self->type){
         switch (self->ctx->type) {
-        case SRN_CHAT_USER_TYPE_ADMIN:
-        case SRN_CHAT_USER_TYPE_OWNER:
-        case SRN_CHAT_USER_TYPE_FULL_OP:
-            self->stat->full_op++;
-            break;
-        case SRN_CHAT_USER_TYPE_HALF_OP:
-            self->stat->half_op++;
-            break;
-        case SRN_CHAT_USER_TYPE_VOICED:
-            self->stat->voiced++;
-            break;
-        default:
-            ;
+            case SRN_CHAT_USER_TYPE_ADMIN:
+            case SRN_CHAT_USER_TYPE_OWNER:
+            case SRN_CHAT_USER_TYPE_FULL_OP:
+                self->stat->full_op++;
+                break;
+            case SRN_CHAT_USER_TYPE_HALF_OP:
+                self->stat->half_op++;
+                break;
+            case SRN_CHAT_USER_TYPE_VOICED:
+                self->stat->voiced++;
+                break;
+            default:
+                ;
         }
         switch (self->type) {
             case SRN_CHAT_USER_TYPE_ADMIN:
@@ -135,16 +135,19 @@ void sui_user_update(SuiUser *self, GtkStyleContext *style_context,
         }
     }
     self->type = self->ctx->type;
-
-    cairo_surface_t *icon = new_user_icon_from_type(self->ctx->type,
-            style_context, window);
     gtk_list_store_set(self->list, (GtkTreeIter *)self,
             COL_NAME, self->ctx->srv_user->nick,
-            COL_ICON, icon,
             COL_USER, self->ctx,
             COL_TYPE, self->ctx->type,
             -1);
-    cairo_surface_destroy(icon);
+
+    // Update icon only when GdkWindow available
+    if (window) {
+        cairo_surface_t *icon = new_user_icon_from_type(self->ctx->type,
+                style_context, window);
+        gtk_list_store_set(self->list, (GtkTreeIter *)self, COL_ICON, icon, -1);
+        cairo_surface_destroy(icon);
+    }
 }
 
 void sui_user_set_list(SuiUser *self, GtkListStore *list){
