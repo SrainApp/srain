@@ -162,6 +162,7 @@ GList* sui_user_list_get_users_by_prefix(SuiUserList *self, const char *prefix){
         SuiUser *user;
 
         user = sui_user_new_from_iter(GTK_LIST_STORE(model), &iter);
+        WARN_FR("user: %p", user);
         if (g_str_has_prefix(sui_user_get_nickname(user), prefix)){
             users = g_list_append(users, user);
         } else {
