@@ -164,6 +164,9 @@ void* sui_user_get_ctx(SuiUser *self){
 }
 
 const char* sui_user_get_nickname(SuiUser *self){
+    WARN_FR("self %p", self);
+    WARN_FR("self->ctx %p", self->ctx);
+    WARN_FR("self->ctx->srv_user %p", self->ctx->srv_user);
     return self->ctx->srv_user->nick;
 }
 
