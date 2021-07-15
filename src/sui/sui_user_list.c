@@ -162,6 +162,9 @@ GList* sui_user_list_get_users_by_prefix(SuiUserList *self, const char *prefix){
         SuiUser *user;
 
         user = sui_user_new_from_iter(GTK_LIST_STORE(model), &iter);
+        if (!user) {
+            continue;
+        }
         if (g_str_has_prefix(sui_user_get_nickname(user), prefix)){
             users = g_list_append(users, user);
         } else {
@@ -231,7 +234,9 @@ static int user_list_store_sort_func(GtkTreeModel *model,
     SuiUser *user2;
 
     user1 = sui_user_new_from_iter(GTK_LIST_STORE(model), iter1);
+    g_return_val_if_fail(user1, 0);
     user2 = sui_user_new_from_iter(GTK_LIST_STORE(model), iter2);
+    g_return_val_if_fail(user2, 0);
 
     ret = sui_user_compare(user1, user2);
 
@@ -268,6 +273,7 @@ static gboolean user_tree_view_on_popup(GtkWidget *widget,
             GTK_TREE_MODEL_FILTER(model), &child_iter, &iter);
 
     user = sui_user_new_from_iter(GTK_LIST_STORE(child_model), &child_iter);
+    g_return_val_if_fail(user, FALSE);
     chat_user = sui_user_get_ctx(user);
     g_return_val_if_fail(chat_user, FALSE);
 
@@ -299,6 +305,9 @@ static void on_style_updated(SuiUserList *self, gpointer user_data) {
     do {
         SuiUser *user;
         user = sui_user_new_from_iter(GTK_LIST_STORE(model), &iter);
+        if (!user) {
+            continue;
+        }
         sui_user_set_stat(user, &self->user_stat);
         sui_user_list_update_user(self, user);
         sui_user_free(user);

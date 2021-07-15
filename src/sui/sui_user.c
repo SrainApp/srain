@@ -76,6 +76,11 @@ SuiUser *sui_user_new_from_iter(GtkListStore *list, GtkTreeIter *iter){
             COL_TYPE, &self->type,
             -1);
 
+    if (!self->ctx) {
+        g_free(self);
+        return NULL;
+    }
+
     return self;
 }
 
