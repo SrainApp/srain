@@ -30,6 +30,16 @@ Change Log
 
 .. _version-latest:
 
+.. _version-1.2.4:
+
+2021-07-18 Version 1.2.4
+========================
+
+- Bug fixes:
+
+  - Fix bug casued by :pull:`316` (:issue:`319`)
+  - Fix crach when URL preview async task failed (:issue:`322`)
+
 .. _version-1.2.3:
 
 2021-06-26 Version 1.2.3
