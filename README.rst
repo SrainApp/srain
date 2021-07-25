@@ -11,7 +11,7 @@ Srain
     :target: https://doc.srain.im/en/latest/
 
 .. |channel| image:: https://img.shields.io/badge/channel-%23srain-brightgreen.svg
-   :target: ircs://chat.freenode.net/#srain
+   :target: ircs://irc.libera.chat/#srain
 
 Modern IRC client written in GTK.
 
@@ -64,7 +64,7 @@ Need Help?
 
 Feel free to contact us if you have any question about Srain.
 
-- IRC Channel: `#srain <ircs://chat.freenode.org:6697/srain>`_ @ freenode
+- IRC Channel: `#srain <ircs://irc.libera.chat/srain>`_ @ Libera Chat
 - Github: file an issue `Here <https://github.com/SrainApp/srain/issues>`_
 
 .. _Frequently Asked Questions: https://doc.srain.im/en/latest/faq.html
