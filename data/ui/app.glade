@@ -6,6 +6,14 @@
     <property name="visible">True</property>
     <property name="can-focus">False</property>
     <child>
+      <object class="GtkMenuItem" id="show_window_menu_item">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="label" translatable="yes">_Show window</property>
+        <property name="use-underline">True</property>
+      </object>
+    </child>
+    <child>
       <object class="GtkMenuItem" id="prefs_menu_item">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
@@ -133,11 +141,5 @@
     <style>
       <class name="sui-panel"/>
     </style>
-  </object>
-  <object class="GtkStatusIcon" id="tray_icon">
-    <property name="icon-name">im.srain.Srain</property>
-    <property name="has-tooltip">True</property>
-    <property name="tooltip-text" translatable="yes">Srain</property>
-    <property name="title" translatable="yes">Srain</property>
   </object>
 </interface>
