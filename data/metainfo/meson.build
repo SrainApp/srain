@@ -10,7 +10,7 @@ metainfo = i18n.merge_file(
   type: 'xml',
   input: configure_file(
     input: 'srain.metainfo.xml.in.in',
-    output: 'srian.metainfo.xml.in',
+    output: 'srain.metainfo.xml.in',
     configuration: metainfo_conf,
   ),
   output: '@0@.metainfo.xml'.format(app_id),
