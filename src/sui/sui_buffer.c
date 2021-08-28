@@ -486,6 +486,7 @@ static void topic_menu_item_on_toggled(GtkWidget* widget, gpointer user_data){
 static GtkListStore* real_completion_func(SuiBuffer *self, const char *context){
     const char *prev;
     const char *prefix;
+    char *normalized_prefix;
     GList *msgs;
     GList *cmds;
     GtkListStore *store;
@@ -527,9 +528,12 @@ static GtkListStore* real_completion_func(SuiBuffer *self, const char *context){
         prefix = "";
     }
 
+    normalized_prefix = g_utf8_strdown(prefix, -1);
+
     msgs = sui_message_list_get_recent_messages(self->msg_list, 10);
     for (GList *lst = msgs; lst; lst = g_list_next(lst)){
         const char *user;
+        char *normalized_user;
         GtkTreeIter iter;
         SuiRecvMessage *rmsg;
 
@@ -538,14 +542,21 @@ static GtkListStore* real_completion_func(SuiBuffer *self, const char *context){
         }
         rmsg = SUI_RECV_MESSAGE(lst->data);
         user = gtk_label_get_text(rmsg->sender_label);
-        if (g_str_has_prefix(user, prefix)){
+        normalized_user = g_utf8_strdown(user, -1);
+        if (g_str_has_prefix(normalized_user, normalized_prefix)){
             gtk_list_store_append(store, &iter);
+
+            // "Same" prefix, but with the right casing for the user
+            char *corrected_prefix = g_strndup(user, strlen(prefix));
             gtk_list_store_set(store, &iter,
-                    SUI_COMPLETION_COLUMN_PREFIX, prefix,
+                    SUI_COMPLETION_COLUMN_PREFIX, corrected_prefix,
                     SUI_COMPLETION_COLUMN_SUFFIX, user + strlen(prefix),
                     -1);
+            g_free(corrected_prefix);
         }
+        g_free(normalized_user);
     }
+    g_free(normalized_prefix);
     g_list_free(msgs);
 
     return store;
