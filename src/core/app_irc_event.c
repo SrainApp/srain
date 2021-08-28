@@ -1836,6 +1836,10 @@ static void irc_event_numeric(SircSession *sirc, int event,
                         _("URL of %1$s is: %2$s"), chan, msg);
                 break;
             }
+        case SIRC_RFC_RPL_UMODEIS:
+            {
+                break;
+            }
             /****************** Channel related errors **********************/
         case SIRC_RFC_ERR_NOSUCHCHANNEL:
         case SIRC_RFC_ERR_TOOMANYCHANNELS:
