@@ -20,6 +20,7 @@ Name                Notes                                               Version
 =================== =================================================== ========
 meson               Only for Building                                   > 0.45.0
 make                Optional, only for development
+appstream           Only for building
 coreutils           Only for building
 gcc                 Only for building
 pkg-config          Only for building
