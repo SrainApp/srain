@@ -1349,6 +1349,31 @@ static void irc_event_numeric(SircSession *sirc, int event,
     g_return_if_fail(chat_user);
 
     switch (event) {
+        case SIRC_RFC_RPL_ISUPPORT:
+            {
+                for (int i = 1; i < count; i++){
+                    char *delim = strchr(params[i], '=');
+                    char *key, *value;
+                    if (delim){
+                        /* ISUPPORT token with value */
+                        key = g_strndup(params[i], delim - params[i]);
+                        value = g_strdup(delim+1);
+                    }
+                    else{
+                        /* ISUPPORT token with no value */
+                        key = g_strdup(params[i]);
+                        value = g_strdup("\0");
+                    }
+                    if (!strcmp(key, "UTF8ONLY")){
+                        /* https://ircv3.net/specs/extensions/utf8-only */
+                        str_assign(&srv->cfg->irc->encoding, "utf-8");
+                    }
+
+                    g_free(key);
+                    g_free(value);
+                }
+                /* Fall through, so ISUPPORT tokens are displayed */
+            }
         case SIRC_RFC_RPL_WELCOME:
         case SIRC_RFC_RPL_YOURHOST:
         case SIRC_RFC_RPL_CREATED:
@@ -1356,7 +1381,6 @@ static void irc_event_numeric(SircSession *sirc, int event,
         case SIRC_RFC_RPL_MOTD:
         case SIRC_RFC_RPL_ENDOFMOTD:
         case SIRC_RFC_RPL_MYINFO:
-        case SIRC_RFC_RPL_BOUNCE:
         case SIRC_RFC_RPL_LUSEROP:
         case SIRC_RFC_RPL_LUSERUNKNOWN:
         case SIRC_RFC_RPL_LUSERCHANNELS:
