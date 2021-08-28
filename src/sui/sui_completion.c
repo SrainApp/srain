@@ -27,6 +27,7 @@
  *
  */
 
+#include <assert.h>
 #include <gtk/gtk.h>
 #include <string.h>
 
@@ -189,7 +190,7 @@ void sui_completion_complete(SuiCompletion *self, SuiCompletionFunc *func,
 
         ctx = gtk_text_buffer_get_text(buf, &start, &comp, FALSE);
         if (!g_str_has_suffix(ctx, self->last_prefix)){
-            DBG_FR("Last prefix chagned: '%s' -> '%s'",
+            DBG_FR("Last prefix changed: '%s' -> '%s'",
                     ctx, self->last_prefix);
 
             g_free(ctx);
@@ -207,7 +208,7 @@ void sui_completion_complete(SuiCompletion *self, SuiCompletionFunc *func,
 
         suffix = gtk_text_buffer_get_text(buf, &comp, &cursor, FALSE);
         if (g_ascii_strcasecmp(suffix, self->last_suffix) != 0){
-            DBG_FR("Last suffix chagned: '%s' -> '%s'",
+            DBG_FR("Last suffix changed: '%s' -> '%s'",
                     suffix, self->last_suffix);
 
             g_free(suffix);
@@ -234,7 +235,15 @@ void sui_completion_complete(SuiCompletion *self, SuiCompletionFunc *func,
     DBG_FR("Completion: prefix: '%s', suffix: '%s'",
             self->last_prefix, self->last_suffix);
 
+
+    // Go backward, to remove the prefix
+    assert(gtk_text_iter_backward_chars(&comp, g_utf8_strlen(self->last_prefix, -1)));
+
+    // Remove prefix and suffix
     gtk_text_buffer_delete(buf, &comp, &cursor);
+
+    // Add prefix, then suffix
+    gtk_text_buffer_insert(buf, &comp, self->last_prefix, strlen(self->last_prefix));
     gtk_text_buffer_insert(buf, &comp, self->last_suffix, strlen(self->last_suffix));
 
     if (!gtk_tree_model_iter_next(self->model, &self->iter)){

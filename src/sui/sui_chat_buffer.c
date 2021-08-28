@@ -170,17 +170,22 @@ static GtkListStore* sui_chat_buffer_completion_func(SuiBuffer *_self,
         SuiUser *user;
         GtkTreeIter iter;
         char *suffix;
+        char *corrected_prefix;
 
         user = lst->data;
         suffix = cfg->nick_completion_suffix;
         gchar *nick_with_suffix = g_strconcat(sui_user_get_nickname(user), 
                 suffix, NULL);
         gtk_list_store_append(store, &iter);
+
+        // "Same" prefix, but with the right casing for the user
+        corrected_prefix = g_strndup(nick_with_suffix, strlen(prefix));
         gtk_list_store_set(store, &iter,
-                SUI_COMPLETION_COLUMN_PREFIX, prefix,
+                SUI_COMPLETION_COLUMN_PREFIX, corrected_prefix,
                 SUI_COMPLETION_COLUMN_SUFFIX, nick_with_suffix + strlen(prefix),
                 -1);
         g_free(nick_with_suffix);
+        g_free(corrected_prefix);
     }
     g_list_free_full(users, (GDestroyNotify)sui_user_free);
 

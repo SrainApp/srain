@@ -147,22 +147,28 @@ GList* sui_user_list_get_users_by_prefix(SuiUserList *self, const char *prefix){
     GList *users;
     GtkTreeModel *model;
     GtkTreeIter iter;
+    char *normalized_prefix;
 
     model = GTK_TREE_MODEL(self->user_list_store);
     if (!gtk_tree_model_get_iter_first(model, &iter)){
         return NULL;
     }
 
+    normalized_prefix = g_utf8_strdown(prefix, -1);
+
     users = NULL;
     do {
         SuiUser *user;
+        char *normalized_nickname;
 
         user = sui_user_new_from_iter(GTK_LIST_STORE(model), &iter);
-        if (g_str_has_prefix(sui_user_get_nickname(user), prefix)){
+        normalized_nickname = g_utf8_strdown(sui_user_get_nickname(user), -1);
+        if (g_str_has_prefix(normalized_nickname, normalized_prefix)){
             users = g_list_append(users, user);
         } else {
             sui_user_free(user);
         }
+        g_free(normalized_nickname);
     } while (gtk_tree_model_iter_next(model, &iter));
 
     return users;
