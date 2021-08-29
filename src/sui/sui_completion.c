@@ -27,7 +27,6 @@
  *
  */
 
-#include <assert.h>
 #include <gtk/gtk.h>
 #include <string.h>
 
@@ -237,7 +236,7 @@ void sui_completion_complete(SuiCompletion *self, SuiCompletionFunc *func,
 
 
     // Go backward, to remove the prefix
-    assert(gtk_text_iter_backward_chars(&comp, g_utf8_strlen(self->last_prefix, -1)));
+    g_return_if_fail(gtk_text_iter_backward_chars(&comp, g_utf8_strlen(self->last_prefix, -1)));
 
     // Remove prefix and suffix
     gtk_text_buffer_delete(buf, &comp, &cursor);
