@@ -74,10 +74,10 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
                 events->welcome(sirc, num, origin, params, imsg->nparam);
                 break;
             case SIRC_RFC_RPL_UMODEIS:
-                 /* User mode changed */
-                 g_return_if_fail(events->umode);
-                 events->umode(sirc, imsg->cmd, origin, params, imsg->nparam);
-                 break;
+                /* User mode changed */
+                g_return_if_fail(events->umode);
+                events->umode(sirc, imsg->cmd, origin, params, imsg->nparam);
+                break;
         }
         g_return_if_fail(events->numeric);
         events->numeric(sirc, num, origin, params, imsg->nparam);
