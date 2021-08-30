@@ -91,6 +91,7 @@ struct _SuiWindow {
     GtkTextView *input_text_view;
     GtkButton *send_button;
     int send_timer;
+    GtkButton *insert_emoji_button;
 
     /* Panels */
     SuiConnectPanel *connect_panel;
@@ -130,6 +131,7 @@ static gboolean input_text_view_on_key_press(GtkTextView *text_view,
         GdkEventKey *event, gpointer user_data);
 static void send_button_on_clicked(GtkWidget *widget, gpointer user_data);
 static gboolean send_message_timeout(gpointer user_data);
+static void insert_emoji_button_on_clicked(GtkWidget *widget, gpointer user_data);
 
 /*****************************************************************************
  * GObject functions
@@ -246,6 +248,8 @@ static void sui_window_init(SuiWindow *self){
             G_CALLBACK(input_text_view_on_key_press), self);
     g_signal_connect(self->send_button, "clicked",
             G_CALLBACK(send_button_on_clicked), self);
+    g_signal_connect(self->insert_emoji_button, "clicked",
+            G_CALLBACK(insert_emoji_button_on_clicked), self);
 
     /* shortcut <C-j> and <C-k> */
     accel = gtk_accel_group_new();
@@ -265,6 +269,12 @@ static void sui_window_init(SuiWindow *self){
     g_closure_unref(closure_j);
     g_closure_unref(closure_k);
 
+#if GTK_CHECK_VERSION(3, 22, 27)
+    // Show insert_emoji_button when it is available
+    //
+    // ref: https://docs.gtk.org/gtk3/signal.TextView.insert-emoji.html
+    gtk_widget_show(GTK_WIDGET(self->insert_emoji_button));
+#endif
 }
 
 static void sui_window_constructed(GObject *object){
@@ -374,6 +384,7 @@ static void sui_window_class_init(SuiWindowClass *class){
     gtk_widget_class_bind_template_child(widget_class, SuiWindow, plugin_button);
     gtk_widget_class_bind_template_child(widget_class, SuiWindow, input_text_view);
     gtk_widget_class_bind_template_child(widget_class, SuiWindow, send_button);
+    gtk_widget_class_bind_template_child(widget_class, SuiWindow, insert_emoji_button);
 }
 
 /*****************************************************************************
@@ -774,6 +785,13 @@ static gboolean send_message_timeout(gpointer user_data){
     }
 
     return G_SOURCE_CONTINUE;
+}
+
+static void insert_emoji_button_on_clicked(GtkWidget *widget, gpointer user_data){
+    SuiWindow *self;
+
+    self = SUI_WINDOW(user_data);
+    g_signal_emit_by_name(G_OBJECT(self->input_text_view), "insert-emoji");
 }
 
 static void window_stack_on_child_changed(GtkWidget *widget, GParamSpec *pspec,
