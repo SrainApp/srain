@@ -35,6 +35,9 @@
 #include "log.h"
 #include "utils.h"
 
+/* https://ircv3.net/specs/extensions/message-tags#size-limit */
+#define TAGS_SIZE_LIMIT 8191
+
 SircMessage *sirc_message_new(){
     return g_malloc0(sizeof(SircMessage));
 }
@@ -50,6 +53,15 @@ void sirc_message_free(SircMessage *imsg){
         str_assign(&imsg->params[i], NULL);
     }
 
+    for (int i = 0; i < imsg->ntags; i++){
+        str_assign(&imsg->tags[i].key, NULL);
+        str_assign(&imsg->tags[i].value, NULL);
+    }
+
+    if (imsg->ntags > 0) {
+        g_free(imsg->tags);
+    }
+
     g_free(imsg);
 }
 
@@ -63,6 +75,8 @@ void sirc_message_transcoding(SircMessage *imsg, const char *from_codeset) {
     for (int i = 0; i < imsg->nparam; i++){
         str_transcoding(&imsg->params[i], from_codeset);
     }
+
+    /* No need to transcode tags, they are guaranteed to be UTF-8 */
 }
 
 /**
@@ -80,20 +94,107 @@ SircMessage* sirc_parse(char *line){
     imsg = sirc_message_new();
 
     /* This is a IRC message
-     * IRS protocol message format?
-     * See: https://tools.ietf.org/html/rfc1459#section-2.3
+     * IRC protocol message format?
+     * See: https://ircv3.net/specs/extensions/message-tags
      */
+    char *rfc1459_line;
+    char *tags_ptr;
     char *prefix_ptr, *command_ptr;
     char *trailing_ptr, *params_ptr;
     char *nick_ptr, *user_ptr, *host_ptr;
 
-    // <message> ::= [':' <prefix> <SPACE> ] <command> <params> <crlf>
-    if (line[0] == ':'){
-        prefix_ptr = strtok(line + 1, " "); // Skip ':'
+    // <message> ::= ['@' <tags> <SPACE> ] [':' <prefix> <SPACE> ] <command> <params> <crlf>
+    if (line[0] == '@'){
+        size_t ntags;
+        tags_ptr = line + 1;
+        rfc1459_line = strchr(line, ' ') + 1;
+
+        /* Count the number of tags to allocate a tag array */
+        ntags = 1;
+        for (char *p=tags_ptr; *p != ' '; p++){
+            if (*p == ';'){
+                ntags++;
+            }
+        }
+
+        imsg->ntags = ntags;
+        imsg->tags = g_malloc_n(ntags, sizeof(SircMessageTag));
+        size_t i=0;
+        char current_tag_key[TAGS_SIZE_LIMIT];
+        char current_tag_value[TAGS_SIZE_LIMIT];
+        char *current_tag_key_ptr = current_tag_key;
+        char *current_tag_value_ptr = current_tag_value;
+        gboolean in_key = TRUE;
+        for (char *p=tags_ptr; ; p++){
+            if (*p == ';' || *p == ' '){
+                /* next tag or end of tags*/
+                in_key = TRUE;
+                *current_tag_key_ptr = '\0';
+                imsg->tags[i].key = strdup(current_tag_key);
+                if (current_tag_value == current_tag_value_ptr){
+                    /* Key is absent or empty */
+                    imsg->tags[i].value = NULL;
+                }
+                else {
+                    *current_tag_value_ptr = '\0';
+                    imsg->tags[i].value = strdup(current_tag_value);
+                }
+                if (*p == ' '){
+                    /* end of tags */
+                    break;
+                }
+                i++;
+
+                current_tag_key_ptr = current_tag_key;
+                current_tag_value_ptr = current_tag_value;
+            }
+            else if (*p == '=' && in_key){
+                /* tag's value */
+                in_key = FALSE;
+            }
+            else if (in_key){
+                *(current_tag_key_ptr++) = *p;
+            }
+            else if (!in_key && *p == '\\'){
+                /* Possibly an escaped character in the value */
+                p++;
+                if (*p == ':')
+                    *(current_tag_value_ptr++) = ';';
+                else if (*p == 's')
+                    *(current_tag_value_ptr++) = ' ';
+                else if (*p == '\\')
+                    *(current_tag_value_ptr++) = '\\';
+                else if (*p == 'r')
+                    *(current_tag_value_ptr++) = '\r';
+                else if (*p == 'n')
+                    *(current_tag_value_ptr++) = '\n';
+                else{
+                    /* "If a \ exists with no valid escape character (for example, \b),
+                     * then the invalid backslash SHOULD be dropped.
+                     * For example, \b should unescape to just b."
+                     */
+                    *(current_tag_value_ptr++) = *p;
+                }
+            }
+            else{
+                *(current_tag_value_ptr++) = *p;
+            }
+        }
+    }
+    else{
+        imsg->tags = NULL;
+        imsg->ntags = 0;
+        rfc1459_line = line;
+    }
+
+    /* Now parse like in RFC1459 */
+
+    if (rfc1459_line[0] == ':'){
+        prefix_ptr = strtok(rfc1459_line + 1, " "); // Skip ':'
         command_ptr = strtok(NULL, " ");
     } else {
         prefix_ptr = NULL;
-        command_ptr = strtok(line, " ");
+        command_ptr = strtok(rfc1459_line, " ");
     }
 
     params_ptr = strtok(NULL, "");

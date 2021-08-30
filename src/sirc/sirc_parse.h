@@ -22,6 +22,14 @@
 #define SIRC_PARAM_COUNT    64      // RFC 2812 limits it to 14
 
 typedef struct {
+    char *key;
+    char *value; // possibly NULL
+} SircMessageTag;
+
+typedef struct {
+    size_t ntags;
+    SircMessageTag *tags;
+
     char *prefix; // servername or nick!user@host
     char *nick, *user, *host;
 

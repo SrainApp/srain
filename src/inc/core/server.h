@@ -180,6 +180,7 @@ struct _EnabledCap {
     bool sasl;
 
     // Version 3.2
+    bool message_tags;
     bool server_time;
     bool userhost_in_names;
     bool cap_notify;
