@@ -62,7 +62,8 @@ struct _SrnMessage {
     SuiMessage *ui;
 };
 
-SrnMessage* srn_message_new(SrnChat *chat, SrnChatUser *user, const char *content, SrnMessageType type);
+SrnMessage* srn_message_new(SrnChat *chat, SrnChatUser *user, const char *content,
+        SrnMessageType type, const SircMessageContext *context);
 void srn_message_free(SrnMessage *msg);
 char* srn_message_to_string(const SrnMessage *self);
 

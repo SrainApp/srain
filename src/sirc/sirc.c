@@ -359,31 +359,46 @@ static void on_disconnect_ready(GObject *obj, GAsyncResult *result, gpointer use
 
 static void on_connect_finish(SircSession *sirc, GIOStream *stream){
     LOG_FR("Connected");
+    SircMessageContext *context = sirc_message_context_new(NULL);
 
     sirc->stream = stream;
     sirc_recv(sirc);
 
-    g_return_if_fail(sirc->events->connect);
-    sirc->events->connect(sirc, "CONNECT");
+    if (!sirc->events->connect) {
+        sirc_message_context_free(context);
+        g_return_if_fail(0);
+    }
+    sirc->events->connect(sirc, "CONNECT", context);
+    sirc_message_context_free(context);
 }
 
 static void on_connect_fail(SircSession *sirc, const char *reason){
     const char *params[] = { reason };
+    SircMessageContext *context = sirc_message_context_new(NULL);
 
     ERR_FR("Connect failed: %s", reason);
 
-    g_return_if_fail(sirc->events->connect_fail);
-    sirc->events->connect_fail(sirc, "CONNECT_FAIL", "", params, 1);
+    if (!sirc->events->connect_fail) {
+        sirc_message_context_free(context);
+        g_return_if_fail(0);
+    }
+    sirc->events->connect_fail(sirc, "CONNECT_FAIL", "", params, 1, context);
+    sirc_message_context_free(context);
 }
 
 static void on_disconnect(SircSession *sirc, const char *reason){
     const char *params[] = { reason };
+    SircMessageContext *context = sirc_message_context_new(NULL);
 
     LOG_FR("Disconnected: %s", reason);
 
     g_object_unref(sirc->stream);
     sirc->stream = NULL;
 
-    g_return_if_fail(sirc->events->disconnect);
-    sirc->events->disconnect(sirc, "DISCONNECT", "", params, 1);
+    if (!sirc->events->disconnect) {
+        sirc_message_context_free(context);
+        g_return_if_fail(0);
+    }
+    sirc->events->disconnect(sirc, "DISCONNECT", "", params, 1, context);
+    sirc_message_context_free(context);
 }

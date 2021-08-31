@@ -314,15 +314,19 @@ SrnRet srn_application_add_server_with_config(SrnApplication *app,
             return ret;
         }
 
+        SircMessageContext *context = sirc_message_context_new(NULL);
+
         if (RET_IS_OK(ret)){
             if (ret != SRN_OK) { // Has OK message
-                srn_chat_add_misc_message_fmt(chat,
+                srn_chat_add_misc_message_fmt(chat, context,
                        _("Autorun command: %1$s"), RET_MSG(ret));
             }
         } else {
-            srn_chat_add_error_message_fmt(chat,
+            srn_chat_add_error_message_fmt(chat, context,
                        _("Autorun command: %1$s"), RET_MSG(ret));
         }
+
+        sirc_message_context_free(context);
     }
 
     return SRN_OK;

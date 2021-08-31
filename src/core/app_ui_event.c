@@ -149,15 +149,19 @@ static SrnRet ui_event_disconnect(SuiBuffer *sui, SuiEvent event, GVariantDict *
     chat = ctx_get_chat(sui);
     g_return_val_if_fail(srn_server_is_valid(srv), SRN_ERR);
 
+    SircMessageContext *context = sirc_message_context_new(NULL);
+
     prev_state = srv->state;
     ret = srn_server_disconnect(srv);
     if (!RET_IS_OK(ret)){
-        srn_chat_add_error_message(chat, RET_MSG(ret));
+        srn_chat_add_error_message(chat, RET_MSG(ret), context);
     }
 
     if (prev_state == SRN_SERVER_STATE_RECONNECTING){
-        srn_chat_add_misc_message(chat, _("Reconnection stopped"));
+        srn_chat_add_misc_message(chat, _("Reconnection stopped"), context);
     }
+
+    sirc_message_context_free(context);
 
     return SRN_OK;
 }
@@ -172,17 +176,21 @@ static SrnRet ui_event_reconnect(SuiBuffer *sui, SuiEvent event, GVariantDict *p
     chat = ctx_get_chat(sui);
     g_return_val_if_fail(srn_server_is_valid(srv), SRN_ERR);
 
+    SircMessageContext *context = sirc_message_context_new(NULL);
+
     prev_state = srv->state;
     if (prev_state == SRN_SERVER_STATE_RECONNECTING) {
         // ignore the duplicated reconnect request
-        srn_chat_add_misc_message(chat, _("Already reconnecting"));
+        srn_chat_add_misc_message(chat, _("Already reconnecting"), context);
         return SRN_OK;
     }
 
     ret = srn_server_reconnect(srv);
     if (!RET_IS_OK(ret)){
-        srn_chat_add_error_message(chat, RET_MSG(ret));
+        srn_chat_add_error_message(chat, RET_MSG(ret), context);
     }
+
+    sirc_message_context_free(context);
 
     return SRN_OK;
 }
@@ -196,13 +204,19 @@ static SrnRet ui_event_quit(SuiBuffer *sui, SuiEvent event, GVariantDict *params
     chat = ctx_get_chat(sui);
     g_return_val_if_fail(srn_server_is_valid(srv), SRN_ERR);
 
+    SircMessageContext *context = sirc_message_context_new(NULL);
+
     ret = srn_server_quit(srv, srv->cfg->user->quit_message);
     if (!RET_IS_OK(ret)){
-        g_return_val_if_fail(srn_server_is_valid(srv), SRN_ERR);
-        srn_chat_add_error_message_fmt(chat,
+        if (!srn_server_is_valid(srv)) {
+            sirc_message_context_free(context);
+            g_return_val_if_reached(SRN_ERR);
+        }
+        srn_chat_add_error_message_fmt(chat, context,
                 _("Failed to quit from server: %1$s"), RET_MSG(ret));
     }
 
+    sirc_message_context_free(context);
     return ret;
 }
 
@@ -233,6 +247,8 @@ static SrnRet ui_event_send(SuiBuffer *sui, SuiEvent event, GVariantDict *params
         }
     }
 
+    SircMessageContext *context = sirc_message_context_new(NULL);
+
     if (is_cmd){
         ret = srn_chat_run_command(chat, msg);
         // NOTE: The server and chat may be invlid after running command
@@ -241,26 +257,28 @@ static SrnRet ui_event_send(SuiBuffer *sui, SuiEvent event, GVariantDict *params
         }
         if (RET_IS_OK(ret)){
             if (ret != SRN_OK) { // Has OK message
-                srn_chat_add_misc_message(chat, RET_MSG(ret));
+                srn_chat_add_misc_message(chat, RET_MSG(ret), context);
             }
         } else {
-            srn_chat_add_error_message(chat, RET_MSG(ret));
+            srn_chat_add_error_message(chat, RET_MSG(ret), context);
         }
     } else {
         if (chat == chat->srv->chat) {
             ret = RET_ERR(_("Cannot send message directly to a server"));
-            srn_chat_add_error_message(chat, RET_MSG(ret));
+            srn_chat_add_error_message(chat, RET_MSG(ret), context);
             return ret;
         }
 
-        srn_chat_add_sent_message(chat, msg); // Show on UI first
+        srn_chat_add_sent_message(chat, msg, context); // Show on UI first
 
         ret = sirc_cmd_msg(chat->srv->irc, chat->name, msg);
         if (!RET_IS_OK(ret)){
-            srn_chat_add_error_message_fmt(chat,
+            srn_chat_add_error_message_fmt(chat, context,
                     _("Failed to send message: %1$s"), RET_MSG(ret));
         }
     }
+
+    sirc_message_context_free(context);
 
     return ret;
 }
@@ -375,13 +393,17 @@ static SrnRet ui_event_ignore(SuiBuffer *sui, SuiEvent event, GVariantDict *para
 
     srn_server_user_set_is_ignored(user, !user->is_ignored);
 
+    SircMessageContext *context = sirc_message_context_new(NULL);
+
     if(user->is_ignored){
-        srn_chat_add_misc_message_with_user_fmt(chat, chat->user,
+        srn_chat_add_misc_message_with_user_fmt(chat, chat->user, context,
                 _("\"%1$s\" has ignored"), nick);
     } else {
-        srn_chat_add_misc_message_with_user_fmt(chat, chat->user,
+        srn_chat_add_misc_message_with_user_fmt(chat, chat->user, context,
                 _("\"%1$s\" has unignored"), nick);
     }
+
+    sirc_message_context_free(context);
 
     return SRN_OK;
 }
