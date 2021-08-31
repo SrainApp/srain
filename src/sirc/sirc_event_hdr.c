@@ -77,7 +77,7 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
                 /* User mode changed */
                 g_return_if_fail(events->umode);
                 events->umode(sirc, imsg->cmd, origin, params, imsg->nparam);
-                break;
+                return;
         }
         g_return_if_fail(events->numeric);
         events->numeric(sirc, num, origin, params, imsg->nparam);
