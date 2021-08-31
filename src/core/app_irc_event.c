@@ -557,6 +557,7 @@ static void irc_event_mode(SircSession *sirc, const char *event,
     GString *modes;
     SrnServer *srv;
     SrnChat *chat;
+    SrnServerUser *srv_user;
     SrnChatUser *chat_user;
 
     g_return_if_fail(count >= 1);
@@ -566,7 +567,10 @@ static void irc_event_mode(SircSession *sirc, const char *event,
     g_return_if_fail(srn_server_is_valid(srv));
     chat = srn_server_get_chat(srv, chan);
     g_return_if_fail(chat);
-    chat_user = srn_chat_get_user(chat, origin);
+
+    srv_user = srn_server_add_and_get_user(srv, origin);
+    g_return_if_fail(srv_user);
+    chat_user = srn_chat_add_and_get_user(chat, srv_user);
     g_return_if_fail(chat_user);
 
     modes = g_string_new(NULL);
@@ -699,6 +703,7 @@ static void irc_event_kick(SircSession *sirc, const char *event,
     const char *reason;
     SrnServer *srv;
     SrnChat *chat;
+    SrnServerUser *srv_user;
     SrnChatUser *kick_chat_user;
     SrnChatUser *kicked_chat_user;
 
@@ -711,7 +716,9 @@ static void irc_event_kick(SircSession *sirc, const char *event,
     g_return_if_fail(srn_server_is_valid(srv));
     chat = srn_server_get_chat(srv, chan);
     g_return_if_fail(chat);
-    kick_chat_user = srn_chat_get_user(chat, origin);
+    srv_user = srn_server_add_and_get_user(srv, origin);
+    g_return_if_fail(srv_user);
+    kick_chat_user = srn_chat_add_and_get_user(chat, srv_user);
     g_return_if_fail(kick_chat_user);
     kicked_chat_user = srn_chat_get_user(chat, kicked);
     g_return_if_fail(kicked_chat_user);
@@ -746,6 +753,7 @@ static void irc_event_channel(SircSession *sirc, const char *event,
     const char *msg;
     SrnServer *srv;
     SrnChat *chat;
+    SrnServerUser *srv_user;
     SrnChatUser *chat_user;
 
     g_return_if_fail(count >= 2);
@@ -756,7 +764,10 @@ static void irc_event_channel(SircSession *sirc, const char *event,
     g_return_if_fail(srn_server_is_valid(srv));
     chat = srn_server_get_chat(srv, chan);
     g_return_if_fail(chat);
-    chat_user = srn_chat_get_user(chat, origin);
+
+    srv_user = srn_server_add_and_get_user(srv, origin);
+    g_return_if_fail(srv_user);
+    chat_user = srn_chat_add_and_get_user(chat, srv_user);
     g_return_if_fail(chat_user);
 
     srn_chat_add_recv_message(chat, chat_user, msg);
@@ -830,6 +841,7 @@ static void irc_event_channel_notice(SircSession *sirc, const char *event,
     const char *msg;
     SrnServer *srv;
     SrnChat *chat;
+    SrnServerUser *srv_user;
     SrnChatUser *chat_user;
 
     g_return_if_fail(count >= 2);
@@ -840,7 +852,10 @@ static void irc_event_channel_notice(SircSession *sirc, const char *event,
     g_return_if_fail(srn_server_is_valid(srv));
     chat = srn_server_get_chat(srv, chan);
     g_return_if_fail(chat);
-    chat_user = srn_chat_get_user(chat, origin);
+
+    srv_user = srn_server_add_and_get_user(srv, origin);
+    g_return_if_fail(srv_user);
+    chat_user = srn_chat_add_and_get_user(chat, srv_user);
     g_return_if_fail(chat_user);
 
     srn_chat_add_notice_message(chat, chat_user, msg);
