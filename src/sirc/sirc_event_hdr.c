@@ -69,18 +69,19 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
     if (num != 0) {
         /* Numeric command */
         switch (num){
-            case SIRC_RFC_RPL_WELCOME:
-                g_return_if_fail(events->welcome);
-                events->welcome(sirc, num, origin, params, imsg->nparam);
-                break;
             case SIRC_RFC_RPL_UMODEIS:
                 /* User mode changed */
                 g_return_if_fail(events->umode);
                 events->umode(sirc, imsg->cmd, origin, params, imsg->nparam);
                 return;
+            case SIRC_RFC_RPL_WELCOME:
+                g_return_if_fail(events->welcome);
+                events->welcome(sirc, num, origin, params, imsg->nparam);
+                /* Do not break here */
+            default:
+                g_return_if_fail(events->numeric);
+                events->numeric(sirc, num, origin, params, imsg->nparam);
         }
-        g_return_if_fail(events->numeric);
-        events->numeric(sirc, num, origin, params, imsg->nparam);
      } else {
         /* Named command */
          const char* event = imsg->cmd;
