@@ -30,6 +30,22 @@ Change Log
 
 .. _version-latest:
 
+.. _version-1.3:
+
+2021-09-23 Version 1.3
+======================
+
+- Features:
+
+  - Implement ISUPPORT parsing + the UTF8ONLY IRCv3 specification (:pull:`331`), thanks to @progval
+  - Add support for RPL_UMODEIS (:pull:`331`), thanks to @progval
+  - Make nick completion case-insensitive (:pull:`333`), thanks to @progval
+  - Add button for inserting emoji (:issue:`279`)
+
+- Bug fixes:
+
+  - Fix configuration syntax errors caused by trailing commas (:pull:`330`), thanks to @progval
+
 .. _version-1.2.4:
 
 2021-07-18 Version 1.2.4
