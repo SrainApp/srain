@@ -399,7 +399,7 @@ char *srn_get_executable_path() {
 
 char *srn_get_executable_dir() {
     char *executablePath = srn_get_executable_path();
-    char *executableDir = g_path_get_dirname(executablePathStr);
+    char *executableDir = g_path_get_dirname(executablePath);
     g_free(executablePath);
     return executableDir;
 }
