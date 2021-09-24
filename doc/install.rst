@@ -33,6 +33,7 @@ libconfig                                                               >= 1.5
 libsecret
 openssl
 python-sphinx       Optional, for building documentation
+adwaita-icon-theme  Or other icon themes
 =================== =================================================== ========
 
 .. _install-building:
@@ -290,7 +291,14 @@ Firstly install `Homebrew`_, run the following commands to install dependencies:
 .. code-block:: console
 
    $ brew install coreutils gcc pkg-config # building
-   $ brew install gettext glib-networking gtk+3 libsoup libconfig
+   $ brew install gettext glib-networking gtk+3 libsoup libconfig openssl adwaita-icon-theme
+
+Next, tell `pkg-config` where to find the libraries we just installed:
+
+.. code-block:: console
+
+   export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:"/usr/local/opt/icu4c/lib/pkgconfig"
+   export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:"/usr/local/opt/openssl@3/lib/pkgconfig"
 
 .. _Homebrew: https://brew.sh/
 
