@@ -278,6 +278,9 @@ int sirc_cmd_away(SircSession *sirc, const char *msg){
     }
 }
 
+int sirc_get_msgid(SircSession *sirc);
+void sirc_set_msgid(SircSession *sirc, int msgid);
+
 int sirc_cmd_raw(SircSession *sirc, const char *fmt, ...){
     char buf[SIRC_BUF_LEN];
     int len = 0;
