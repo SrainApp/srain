@@ -22,6 +22,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <openssl/pem.h>
 
 static inline libecdsaauth_key_t *libecdsaauth_key_alloc(void)
 {
