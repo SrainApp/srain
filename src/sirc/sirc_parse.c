@@ -76,7 +76,8 @@ void sirc_message_transcoding(SircMessage *imsg, const char *from_codeset) {
         str_transcoding(&imsg->params[i], from_codeset);
     }
 
-    /* No need to transcode tags, they are guaranteed to be UTF-8 */
+    /* No need to transcode tags, they are guaranteed to be UTF-8
+     * by https://ircv3.net/specs/extensions/message-tags */
 }
 
 /**
@@ -156,7 +157,9 @@ SircMessage* sirc_parse(char *line){
                 *(current_tag_key_ptr++) = *p;
             }
             else if (!in_key && *p == '\\'){
-                /* Possibly an escaped character in the value */
+                /* Possibly an escaped character in the value
+                 * https://ircv3.net/specs/extensions/message-tags#escaping-values
+                 */
                 p++;
                 if (*p == ':')
                     *(current_tag_value_ptr++) = ';';
