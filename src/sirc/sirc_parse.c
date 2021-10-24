@@ -119,7 +119,7 @@ SircMessage* sirc_parse(char *line){
         }
 
         imsg->ntags = ntags;
-        imsg->tags = g_malloc_n(ntags, sizeof(SircMessageTag));
+        imsg->tags = g_malloc0_n(ntags, sizeof(SircMessageTag));
         size_t i=0;
         char current_tag_key[TAGS_SIZE_LIMIT];
         char current_tag_value[TAGS_SIZE_LIMIT];
@@ -127,6 +127,15 @@ SircMessage* sirc_parse(char *line){
         char *current_tag_value_ptr = current_tag_value;
         gboolean in_key = TRUE;
         for (char *p=tags_ptr; ; p++){
+            if (*p == '\0') {
+                ERR_FR("Unexpected null byte in message tags");
+                goto bad;
+            }
+            if (p >= (tags_ptr + TAGS_SIZE_LIMIT)) {
+                ERR_FR("Message tag exceeds maximum size");
+                goto bad;
+            }
+
             if (*p == ';' || *p == ' '){
                 /* next tag or end of tags*/
                 in_key = TRUE;
