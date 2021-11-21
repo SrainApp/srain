@@ -195,6 +195,10 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
              g_return_if_fail(events->error);
              events->error(sirc, event, origin, params, imsg->nparam);
          }
+         else if (strcasecmp(event, "TAGMSG") == 0){
+             g_return_if_fail(events->error);
+             events->tagmsg(sirc, event, origin, params, imsg->nparam);
+        }
          else {
              g_return_if_fail(events->unknown);
              events->unknown(sirc, event, origin, params, imsg->nparam);

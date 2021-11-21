@@ -73,6 +73,8 @@ static void irc_event_privmsg(SircSession *sirc, const char *event,
         const char *origin, const char *params[], int count);
 static void irc_event_notice(SircSession *sirc, const char *event,
         const char *origin, const char *params[], int count);
+static void irc_event_tagmsg(SircSession *sirc, const char *event,
+        const char *origin, const char *params[], int count);
 static void irc_event_channel_notice(SircSession *sirc, const char *event,
         const char *origin, const char *params[], int count);
 static void irc_event_invite(SircSession *sirc, const char *event,
@@ -113,6 +115,7 @@ void srn_application_init_irc_event(SrnApplication *app) {
     app->irc_events.channel = irc_event_channel;
     app->irc_events.privmsg = irc_event_privmsg;
     app->irc_events.notice = irc_event_notice;
+    app->irc_events.tagmsg = irc_event_tagmsg;
     app->irc_events.channel_notice = irc_event_channel_notice;
     app->irc_events.invite = irc_event_invite;
     app->irc_events.ctcp_req = irc_event_ctcp_req;
@@ -833,6 +836,11 @@ static void irc_event_notice(SircSession *sirc, const char *event,
     g_return_if_fail(chat_user);
 
     srn_chat_add_notice_message(chat, chat_user, msg);
+}
+
+static void irc_event_tagmsg(SircSession *sirc, const char *event,
+        const char *origin, const char **params, int count){
+    /* Not used yet */
 }
 
 static void irc_event_channel_notice(SircSession *sirc, const char *event,

@@ -80,6 +80,10 @@ static ServerCapSupport supported_caps[] = {
     },
 
     // /* IRCv3.2 */
+    {
+        .name = "message-tags",
+        .offset = offsetof(EnabledCap, message_tags),
+    },
     // {
     //     .name = "server-time",
     //     .offset = offsetof(EnabledCap, server_time),
