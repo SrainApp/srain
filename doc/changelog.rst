@@ -28,6 +28,13 @@ Change Log
 
       - XXX
 
+2021-12-18 Version 1.2.5
+========================
+
+- Bug fixes:
+
+  - Backport :pull:`336`, :issue:`274`
+
 .. _version-latest:
 
 .. _version-1.3.1:
