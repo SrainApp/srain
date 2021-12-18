@@ -30,6 +30,17 @@ Change Log
 
 .. _version-latest:
 
+.. _version-1.3.1:
+
+2021-12-18 Version 1.3.1
+========================
+
+- Bug fixes:
+
+  - Fix build of macOS (:pull:`339`), by @SilverRainZ
+  - Make channel messages with origin out of channels can be shown (:pull:`336`), by @progval
+  - Rejoin channels after NICKSERV authentication finishes (:issue:`274`), by @SilverRainZ
+
 .. _version-1.3:
 
 2021-09-23 Version 1.3.0
