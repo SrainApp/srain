@@ -68,6 +68,7 @@ void sui_activate_buffer(SuiBuffer *buf);
 void* sui_buffer_get_ctx(SuiBuffer *buf);
 void sui_buffer_set_config(SuiBuffer *buf, SuiBufferConfig *cfg);
 void sui_buffer_add_message(SuiBuffer *buf, SuiMessage *msg);
+void sui_buffer_clear_message(SuiBuffer *buf);
 
 /* SuiMessage */
 SuiMessage *sui_new_misc_message(void *ctx, SuiMiscMessageStyle style);

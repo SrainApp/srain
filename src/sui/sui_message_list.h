@@ -34,6 +34,7 @@ SuiMessageList *sui_message_list_new(void);
 
 void sui_message_list_add_message(SuiMessageList *self, SuiMessage *msg, GtkAlign halign);
 GList *sui_message_list_get_recent_messages(SuiMessageList *self, int limit);
+void sui_message_list_clear_message(SuiMessageList *self);
 
 void sui_message_list_scroll_up(SuiMessageList *self, double step);
 void sui_message_list_scroll_down(SuiMessageList *self, double step);
