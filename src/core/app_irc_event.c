@@ -44,6 +44,8 @@
 static gboolean do_period_ping(gpointer user_data);
 static void add_numeric_error_message(SrnChat *chat, int event, const char
         *origin, const char **params, int count);
+static void rejoin_all_channels(SrnServer *srv);
+static gboolean rejoin_all_channels_cb(gpointer user_data);
 
 static void irc_event_connect(SircSession *sirc, const char *event);
 static void irc_event_connect_fail(SircSession *sirc, const char *event,
@@ -315,7 +317,6 @@ static void irc_event_welcome(SircSession *sirc, int event,
     bool try_login;
     bool nick_match;
     const char *nick ;
-    GList *list;
     SrnServer *srv;
 
     g_return_if_fail(count >= 1);
@@ -379,21 +380,18 @@ static void irc_event_welcome(SircSession *sirc, int event,
             srn_chat_add_misc_message_fmt(srv->chat,
                     _("Logging in with %1$s..."),
                     srn_login_method_to_string(srv->cfg->user->login->method));
+            // Rejoin after 8s, We hope to complete the auth within it
+            g_timeout_add(8 * 1000, rejoin_all_channels_cb, srv);
+            return;
         } else {
             srn_chat_add_error_message(srv->chat,
                     _("The assigned nickname does not match the requested nickname, login skipped"));
         }
     }
 
-    /* Join all channels already exists */
-    list = srv->chat_list;
-    while (list){
-        SrnChat *chat = list->data;
-        if (sirc_target_is_channel(srv->irc, chat->name)){
-            sirc_cmd_join(srv->irc, chat->name, chat->cfg->password);
-        }
-        list = g_list_next(list);
-    }
+    // Rejoin channels immediately when no need to do NICKSERV login now.
+    // If have login via other method, it doesn't matter, auth should finished now.
+    rejoin_all_channels(srv);
 }
 
 static void irc_event_nick(SircSession *sirc, const char *event,
@@ -2012,4 +2010,28 @@ static void add_numeric_error_message(SrnChat *chat, int event, const char
     srn_chat_add_error_message_fmt(chat, _("ERROR[%1$3d] %2$s"), event, buf->str);
 
     g_string_free(buf, TRUE);
+}
+
+/**
+ * @brief Rejoin all channels already exist
+ */
+static void rejoin_all_channels(SrnServer *srv) {
+    DBG_FR("Rejoining all channels already exist....");
+
+    GList *list = srv->chat_list;
+    while (list){
+        SrnChat *chat = list->data;
+        if (sirc_target_is_channel(srv->irc, chat->name)){
+            sirc_cmd_join(srv->irc, chat->name, chat->cfg->password);
+        }
+        list = g_list_next(list);
+    }
+}
+
+/**
+ * @brief Timer callback wrapper for rejoin_all_channels.
+ */
+static gboolean rejoin_all_channels_cb(gpointer user_data) {
+    rejoin_all_channels(user_data);
+    return G_SOURCE_REMOVE;
 }
