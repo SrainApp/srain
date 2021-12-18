@@ -901,6 +901,17 @@ SrnRet on_command_quote(SrnCommand *cmd, void *user_data){
     return sirc_cmd_raw(srv->irc, "%s\r\n", msg);
 }
 
+SrnRet on_command_clear(SrnCommand *cmd, void *user_data){
+    SrnChat *chat;
+
+    chat = ctx_get_chat(user_data);
+    g_return_val_if_fail(chat, SRN_ERR);
+
+    sui_buffer_clear_message(chat->ui);
+
+    return SRN_OK;
+}
+
 /*******************************************************************************
  * Misc
  ******************************************************************************/
