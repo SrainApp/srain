@@ -160,6 +160,28 @@ void sui_buffer_add_message(SuiBuffer *buf, SuiMessage *msg){
     }
 }
 
+void sui_buffer_clear_message(SuiBuffer *buf){
+    SuiWindow *win;
+    SuiSideBar *sidebar;
+    SuiSideBarItem *item;
+    SuiMessageList *list;
+
+    g_return_if_fail(SUI_IS_BUFFER(buf));
+
+    /* Clear messages */
+    list = sui_buffer_get_message_list(buf);
+    sui_message_list_clear_message(list);
+
+    /* Update side bar */
+    win = SUI_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(buf)));
+    g_return_if_fail(SUI_IS_WINDOW(win));
+
+    sidebar = sui_window_get_side_bar(win);
+    item = sui_side_bar_get_item(sidebar, buf);
+    sui_side_bar_item_update(item, "", "");
+    sui_side_bar_item_clear_count(item);
+}
+
 void sui_free_message(SuiMessage *msg){
     // TODO
 }

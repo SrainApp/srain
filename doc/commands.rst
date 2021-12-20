@@ -438,6 +438,17 @@ For sending special IRC commands.
 
 .. versionadded:: 1.2.0
 
+/clear
+------
+
+Usage::
+
+    /clear
+
+Clear all messages in current buffer.
+
+.. versionadded:: 1.4
+
 Obsoleted Commands
 ==================
 

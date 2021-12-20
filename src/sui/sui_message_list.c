@@ -242,6 +242,26 @@ GList *sui_message_list_get_recent_messages(SuiMessageList *self, int limit){
     return msgs;
 }
 
+/**
+ * @brief sui_message_list_clear_message Clear all messages in message list.
+ *
+ * @param self
+ */
+void sui_message_list_clear_message(SuiMessageList *self){
+    // Clear pointers
+    self->first_msg = NULL;
+    self->first_row = NULL;
+    self->last_msg = NULL;
+    self->last_row = NULL;
+
+    // Remove all messages
+    for (GList *lst = gtk_container_get_children(GTK_CONTAINER(self->list_box));
+            lst != NULL;
+            lst = g_list_next(lst)){
+        gtk_container_remove(GTK_CONTAINER(self->list_box), GTK_WIDGET(lst->data));
+    }
+}
+
 /*****************************************************************************
  * Static functions
  *****************************************************************************/
