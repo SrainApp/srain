@@ -1107,6 +1107,15 @@ static void irc_event_cap(SircSession *sirc, const char *event,
     }
     caps = g_strsplit(rawcaps, " ", 0);
 
+    /* The last item of caps is "" if rawcaps ends with a trailing ' ';
+     * which can happen from some servers.
+     * Strip it to avoid an "Unknown capability" warning. */
+    size_t nb_caps;
+    for (nb_caps = 0; caps[nb_caps]; nb_caps++);
+    if (nb_caps && !g_strcmp0(caps[nb_caps-1], "")) {
+        caps[nb_caps-1] = NULL;
+    }
+
     /* Process CAP event */
     if (g_ascii_strcasecmp(cap_event, "LS") == 0){
         GString *buf;
