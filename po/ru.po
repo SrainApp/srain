@@ -400,7 +400,7 @@ msgstr "Не удалось добавить сервер \"%1$s\": %2$s"
 
 #: ../src/core/chat_command.c:838
 #, fuzzy, c-format
-msgid "Failed to attach pattern to user %1$s\" of chat \"%2$s\": %2$s"
+msgid "Failed to attach pattern to user %1$s\" of chat \"%2$s\": %3$s"
 msgstr "Не удалось добавить сервер \"%1$s\": %2$s"
 
 #: ../src/core/server.c:149

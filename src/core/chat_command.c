@@ -837,7 +837,7 @@ SrnRet on_command_render(SrnCommand *cmd, void *user_data){
 
     ret = srn_render_attach_pattern(extra_data, pattern);
     if (!RET_IS_OK(ret)) {
-        return RET_ERR(_("Failed to attach pattern to user %1$s\" of chat \"%2$s\": %2$s"),
+        return RET_ERR(_("Failed to attach pattern to user %1$s\" of chat \"%2$s\": %3$s"),
                 srv_user->nick, chat->name, RET_MSG(ret));
     }
 
