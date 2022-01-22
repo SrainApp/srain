@@ -35,5 +35,6 @@ void sirc_message_context_free(SircMessageContext *context);
  * Never returns NULL. */
 const GDateTime* sirc_message_context_get_time(const SircMessageContext *context);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(SircMessageContext, sirc_message_context_free)
 
 #endif /* __SIRC_CONTEXT_H */

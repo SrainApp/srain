@@ -30,10 +30,7 @@ SircMessageContext* sirc_message_context_new(GDateTime* time) {
         time = g_date_time_new_now_local();
     }
 
-    g_return_val_if_fail(time, NULL);
-
     context = g_malloc0(sizeof(SircMessageContext));
-    g_return_val_if_fail(context, NULL);
     context->time = time;
 
     return context;

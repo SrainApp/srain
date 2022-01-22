@@ -359,17 +359,15 @@ static void on_disconnect_ready(GObject *obj, GAsyncResult *result, gpointer use
 
 static void on_connect_finish(SircSession *sirc, GIOStream *stream){
     LOG_FR("Connected");
-    SircMessageContext *context = sirc_message_context_new(NULL);
+    g_autoptr(SircMessageContext) context = sirc_message_context_new(NULL);
 
     sirc->stream = stream;
     sirc_recv(sirc);
 
     if (!sirc->events->connect) {
-        sirc_message_context_free(context);
         g_return_if_fail(0);
     }
     sirc->events->connect(sirc, "CONNECT", context);
-    sirc_message_context_free(context);
 }
 
 static void on_connect_fail(SircSession *sirc, const char *reason){
