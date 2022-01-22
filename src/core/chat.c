@@ -161,7 +161,8 @@ SrnChatUser* srn_chat_get_user(SrnChat *self, const char *nick){
     return NULL;
 }
 
-void srn_chat_add_sent_message(SrnChat *self, const char *content){
+void srn_chat_add_sent_message(SrnChat *self, const char *content,
+        const SircMessageContext *context){
     SrnChatUser *user;
     SrnMessage *msg;
     SrnRenderFlags rflags;
@@ -170,7 +171,7 @@ void srn_chat_add_sent_message(SrnChat *self, const char *content){
     user = self->user;
     rflags = SRN_RENDER_FLAG_URL;
     fflags = SRN_FILTER_FLAG_LOG;
-    msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_SENT);
+    msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_SENT, context);
 
     if (srn_render_message(msg, rflags) != SRN_OK){
         goto cleanup;
@@ -188,7 +189,8 @@ cleanup:
     srn_message_free(msg);
 }
 
-void srn_chat_add_recv_message(SrnChat *self, SrnChatUser *user, const char *content){
+void srn_chat_add_recv_message(SrnChat *self, SrnChatUser *user,
+        const char *content, const SircMessageContext *context){
     SrnMessage *msg;
     SrnRenderFlags rflags;
     SrnFilterFlags fflags;
@@ -201,7 +203,7 @@ void srn_chat_add_recv_message(SrnChat *self, SrnChatUser *user, const char *con
     }
     fflags = SRN_FILTER_FLAG_USER | SRN_FILTER_FLAG_PATTERN | SRN_FILTER_FLAG_LOG;
 
-    msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_RECV);
+    msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_RECV, context);
     if (srn_render_message(msg, rflags) != SRN_OK){
         goto cleanup;
     }
@@ -217,7 +219,8 @@ cleanup:
     srn_message_free(msg);
 }
 
-void srn_chat_add_notice_message(SrnChat *self, SrnChatUser *user, const char *content){
+void srn_chat_add_notice_message(SrnChat *self, SrnChatUser *user,
+        const char *content, const SircMessageContext *context){
     SrnMessage *msg;
     SrnRenderFlags rflags;
     SrnFilterFlags fflags;
@@ -230,7 +233,7 @@ void srn_chat_add_notice_message(SrnChat *self, SrnChatUser *user, const char *c
     }
     fflags = SRN_FILTER_FLAG_USER | SRN_FILTER_FLAG_PATTERN | SRN_FILTER_FLAG_LOG;
 
-    msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_NOTICE);
+    msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_NOTICE, context);
     if (srn_render_message(msg, rflags) != SRN_OK){
         goto cleanup;
     }
@@ -246,7 +249,8 @@ cleanup:
     srn_message_free(msg);
 }
 
-void srn_chat_add_action_message(SrnChat *self, SrnChatUser *user, const char *content){
+void srn_chat_add_action_message(SrnChat *self, SrnChatUser *user,
+        const char *content, const SircMessageContext *context){
     SrnMessage *msg;
     SrnFilterFlags fflags;
     SrnRenderFlags rflags;
@@ -259,7 +263,7 @@ void srn_chat_add_action_message(SrnChat *self, SrnChatUser *user, const char *c
     }
     fflags = SRN_FILTER_FLAG_LOG;
 
-    msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_ACTION);
+    msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_ACTION, context);
     if (!user->srv_user->is_me){
         fflags |= SRN_FILTER_FLAG_USER | SRN_FILTER_FLAG_PATTERN;
         rflags |= SRN_RENDER_FLAG_PATTERN | SRN_RENDER_FLAG_MENTION;
@@ -296,12 +300,13 @@ cleanup:
  * @param self
  * @param content
  */
-void srn_chat_add_misc_message(SrnChat *self, const char *content){
+void srn_chat_add_misc_message(SrnChat *self, const char *content,
+        const SircMessageContext *context){
     SrnMessage *msg;
     SrnRenderFlags rflags;
 
     rflags = SRN_RENDER_FLAG_URL;
-    msg = srn_message_new(self, self->_user, content, SRN_MESSAGE_TYPE_MISC);
+    msg = srn_message_new(self, self->_user, content, SRN_MESSAGE_TYPE_MISC, context);
     if (srn_render_message(msg, rflags) != SRN_OK){
         goto cleanup;
     }
@@ -320,26 +325,26 @@ cleanup:
  * @param fmt
  * @param ...
  */
-void srn_chat_add_misc_message_fmt(SrnChat *self, const char *fmt, ...){
+void srn_chat_add_misc_message_fmt(SrnChat *self, const SircMessageContext *context, const char *fmt, ...){
     char *content;
     va_list args;
 
     va_start(args, fmt);
     content = g_strdup_vprintf(fmt, args);
     va_end(args);
-    srn_chat_add_misc_message(self, content);
+    srn_chat_add_misc_message(self, content, context);
     g_free(content);
 }
 
 void srn_chat_add_misc_message_with_user(SrnChat *self, SrnChatUser *user,
-        const char *content){
+        const char *content, const SircMessageContext *context){
     SrnMessage *msg;
     SrnRenderFlags rflags;
     SrnFilterFlags fflags;
 
     rflags = SRN_RENDER_FLAG_URL;
     fflags = SRN_FILTER_FLAG_USER | SRN_FILTER_FLAG_PATTERN | SRN_FILTER_FLAG_LOG;
-    msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_MISC);
+    msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_MISC, context);
     if (srn_render_message(msg, rflags) != SRN_OK){
         goto cleanup;
     }
@@ -355,14 +360,14 @@ cleanup:
 }
 
 void srn_chat_add_misc_message_with_user_fmt(SrnChat *self, SrnChatUser *user,
-        const char *fmt, ...){
+        const SircMessageContext *context, const char *fmt, ...){
     char *content;
     va_list args;
 
     va_start(args, fmt);
     content = g_strdup_vprintf(fmt, args);
     va_end(args);
-    srn_chat_add_misc_message_with_user(self, user, content);
+    srn_chat_add_misc_message_with_user(self, user, content, context);
     g_free(content);
 }
 
@@ -372,12 +377,12 @@ void srn_chat_add_misc_message_with_user_fmt(SrnChat *self, SrnChatUser *user,
  * @param self
  * @param content
  */
-void srn_chat_add_error_message(SrnChat *self, const char *content){
+void srn_chat_add_error_message(SrnChat *self, const char *content, const SircMessageContext *context){
     SrnMessage *msg;
     SrnRenderFlags rflags;
 
     rflags = SRN_RENDER_FLAG_URL;
-    msg = srn_message_new(self, self->_user, content, SRN_MESSAGE_TYPE_ERROR);
+    msg = srn_message_new(self, self->_user, content, SRN_MESSAGE_TYPE_ERROR, context);
     if (srn_render_message(msg, rflags) != SRN_OK){
         goto cleanup;
     }
@@ -396,26 +401,27 @@ cleanup:
  * @param fmt
  * @param ...
  */
-void srn_chat_add_error_message_fmt(SrnChat *self, const char *fmt, ...){
+void srn_chat_add_error_message_fmt(SrnChat *self, const SircMessageContext *context,
+        const char *fmt, ...){
     char *content;
     va_list args;
 
     va_start(args, fmt);
     content = g_strdup_vprintf(fmt, args);
     va_end(args);
-    srn_chat_add_error_message(self, content);
+    srn_chat_add_error_message(self, content, context);
     g_free(content);
 }
 
 void srn_chat_add_error_message_with_user(SrnChat *self, SrnChatUser *user,
-        const char *content){
+        const char *content, const SircMessageContext *context){
     SrnMessage *msg;
     SrnRenderFlags rflags;
     SrnFilterFlags fflags;
 
     rflags = SRN_RENDER_FLAG_URL;
     fflags = SRN_FILTER_FLAG_USER | SRN_FILTER_FLAG_PATTERN | SRN_FILTER_FLAG_LOG;
-    msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_ERROR);
+    msg = srn_message_new(self, user, content, SRN_MESSAGE_TYPE_ERROR, context);
     if (srn_render_message(msg, rflags) != SRN_OK){
         goto cleanup;
     }
@@ -432,18 +438,19 @@ cleanup:
 }
 
 void srn_chat_add_error_message_with_user_fmt(SrnChat *self, SrnChatUser *user,
-        const char *fmt, ...){
+        const SircMessageContext *context, const char *fmt, ...){
     char *content;
     va_list args;
 
     va_start(args, fmt);
     content = g_strdup_vprintf(fmt, args);
     va_end(args);
-    srn_chat_add_error_message_with_user(self, user, content);
+    srn_chat_add_error_message_with_user(self, user, content, context);
     g_free(content);
 }
 
-void srn_chat_set_topic(SrnChat *self, SrnChatUser *user, const char *topic){
+void srn_chat_set_topic(SrnChat *self, SrnChatUser *user, const char *topic,
+        const SircMessageContext *context){
     SrnMessage *msg;
     SrnRenderFlags rflags;
 
@@ -454,7 +461,7 @@ void srn_chat_set_topic(SrnChat *self, SrnChatUser *user, const char *topic){
         rflags |= SRN_RENDER_FLAG_MIRC_STRIP;
     }
 
-    msg = srn_message_new(self, user, topic, SRN_MESSAGE_TYPE_UNKNOWN);
+    msg = srn_message_new(self, user, topic, SRN_MESSAGE_TYPE_UNKNOWN, context);
     if (srn_render_message(msg, rflags) == SRN_OK){
         sui_set_topic(self->ui, msg->rendered_content);
     }

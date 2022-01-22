@@ -24,7 +24,7 @@
 #include "utils.h"
 
 SrnMessage* srn_message_new(SrnChat *chat, SrnChatUser *user,
-        const char *content, SrnMessageType type){
+        const char *content, SrnMessageType type, const SircMessageContext *context){
     SrnMessage *self;
 
     g_return_val_if_fail(chat, NULL);
@@ -42,7 +42,7 @@ SrnMessage* srn_message_new(SrnChat *chat, SrnChatUser *user,
     self->sender = user;
     self->chat = chat;
     self->content = g_strdup(content);
-    self->time = g_date_time_new_now_local();
+    self->time = sirc_message_context_get_time(context);
 
     // Inital render
     self->rendered_sender = g_markup_escape_text(user->srv_user->nick, -1);

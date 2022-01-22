@@ -35,6 +35,7 @@ typedef struct _SircSession SircSession;
 
 #define __IN_SIRC_H
 #include "sirc_cmd.h"
+#include "sirc_context.h"
 #include "sirc_event.h"
 #include "sirc_numeric.h"
 #include "sirc_utils.h"

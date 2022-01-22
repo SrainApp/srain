@@ -81,6 +81,7 @@ srcs += [
   'sirc/sirc_cmd.c',
   'sirc/sirc_config.c',
   'sirc/sirc_event_hdr.c',
+  'sirc/sirc_context.c',
   'sirc/sirc_parse.c',
   'sirc/sirc_utils.c',
   'sui/nick_menu.c',

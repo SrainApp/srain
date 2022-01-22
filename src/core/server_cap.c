@@ -84,10 +84,10 @@ static ServerCapSupport supported_caps[] = {
         .name = "message-tags",
         .offset = offsetof(EnabledCap, message_tags),
     },
-    // {
-    //     .name = "server-time",
-    //     .offset = offsetof(EnabledCap, server_time),
-    // },
+    {
+        .name = "server-time",
+        .offset = offsetof(EnabledCap, server_time),
+    },
     // {
     //     .name = "userhost-in-names",
     //     .offset = offsetof(EnabledCap, userhost_in_names),
