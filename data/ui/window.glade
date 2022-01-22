@@ -316,6 +316,7 @@
                             <property name="receives-default">True</property>
                             <property name="image">insert_emoji_image</property>
                             <property name="relief">none</property>
+                            <property name="tooltip-text" translatable="yes">Insert emoji</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -331,6 +332,7 @@
                             <property name="receives-default">True</property>
                             <property name="image">send_image</property>
                             <property name="relief">none</property>
+                            <property name="tooltip-text" translatable="yes">Send message</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
