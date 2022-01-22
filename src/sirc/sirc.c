@@ -372,21 +372,19 @@ static void on_connect_finish(SircSession *sirc, GIOStream *stream){
 
 static void on_connect_fail(SircSession *sirc, const char *reason){
     const char *params[] = { reason };
-    SircMessageContext *context = sirc_message_context_new(NULL);
+    g_autoptr(SircMessageContext) context = sirc_message_context_new(NULL);
 
     ERR_FR("Connect failed: %s", reason);
 
     if (!sirc->events->connect_fail) {
-        sirc_message_context_free(context);
         g_return_if_fail(0);
     }
     sirc->events->connect_fail(sirc, "CONNECT_FAIL", "", params, 1, context);
-    sirc_message_context_free(context);
 }
 
 static void on_disconnect(SircSession *sirc, const char *reason){
     const char *params[] = { reason };
-    SircMessageContext *context = sirc_message_context_new(NULL);
+    g_autoptr(SircMessageContext) context = sirc_message_context_new(NULL);
 
     LOG_FR("Disconnected: %s", reason);
 
@@ -394,9 +392,7 @@ static void on_disconnect(SircSession *sirc, const char *reason){
     sirc->stream = NULL;
 
     if (!sirc->events->disconnect) {
-        sirc_message_context_free(context);
         g_return_if_fail(0);
     }
     sirc->events->disconnect(sirc, "DISCONNECT", "", params, 1, context);
-    sirc_message_context_free(context);
 }

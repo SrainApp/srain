@@ -314,7 +314,7 @@ SrnRet srn_application_add_server_with_config(SrnApplication *app,
             return ret;
         }
 
-        SircMessageContext *context = sirc_message_context_new(NULL);
+        g_autoptr(SircMessageContext) context = sirc_message_context_new(NULL);
 
         if (RET_IS_OK(ret)){
             if (ret != SRN_OK) { // Has OK message
@@ -325,8 +325,6 @@ SrnRet srn_application_add_server_with_config(SrnApplication *app,
             srn_chat_add_error_message_fmt(chat, context,
                        _("Autorun command: %1$s"), RET_MSG(ret));
         }
-
-        sirc_message_context_free(context);
     }
 
     return SRN_OK;

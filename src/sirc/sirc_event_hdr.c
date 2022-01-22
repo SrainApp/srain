@@ -56,11 +56,9 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
         time = g_date_time_new_now_local();
     }
 
-    SircMessageContext *context = sirc_message_context_new(time);
+    g_autoptr(SircMessageContext) context = sirc_message_context_new(time);
 
     _sirc_event_hdr(sirc, imsg, context);
-
-    sirc_message_context_free(context);
 }
 
 void _sirc_event_hdr(SircSession *sirc, SircMessage *imsg, const SircMessageContext *context){

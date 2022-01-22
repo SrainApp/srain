@@ -586,11 +586,9 @@ SrnRet on_command_me(SrnCommand *cmd, void *user_data){
         return RET_ERR(_("Failed to send action message: %1$s"), RET_MSG(ret));
     }
 
-    SircMessageContext *context = sirc_message_context_new(NULL);
+    g_autoptr(SircMessageContext) context = sirc_message_context_new(NULL);
 
     srn_chat_add_action_message(chat, chat->user, msg, context);
-
-    sirc_message_context_free(context);
 
     return SRN_OK;
 }
