@@ -34,6 +34,7 @@ struct _SircConfig {
     // bool ipv6;
     // bool sasl;
     char *encoding;
+    char *certificate_filename; /* Client TLS certificate */
 };
 
 SircConfig* sirc_config_new();

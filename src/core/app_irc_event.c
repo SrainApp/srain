@@ -1246,18 +1246,22 @@ static void irc_event_cap(SircSession *sirc, const char *event,
 
         SrnLoginMethod method = srv->cfg->user->login->method;
 
-        if (method == SRN_LOGIN_METHOD_SASL_PLAIN || method == SRN_LOGIN_METHOD_SASL_ECDSA_NIST256P_CHALLENGE) {
-            if (srv->cap->client_enabled.sasl){
-                // Negotiation should end after sasl authentication end
-            } else {
-                srn_chat_add_error_message_fmt(srv->chat, context,
-                        _("SASL authentication is not supported on this server, login skipped"));
+        switch (method) {
+            case SRN_LOGIN_METHOD_SASL_PLAIN:
+            case SRN_LOGIN_METHOD_SASL_ECDSA_NIST256P_CHALLENGE:
+            case SRN_LOGIN_METHOD_SASL_EXTERNAL:
+                if (srv->cap->client_enabled.sasl){
+                    // Negotiation should end after sasl authentication end
+                } else {
+                    srn_chat_add_error_message_fmt(srv->chat, context,
+                            _("SASL authentication is not supported on this server, login skipped"));
+                    sirc_cmd_cap_end(sirc); // End negotiation
+                    srv->negotiated = TRUE;
+                }
+                break;
+            default:
                 sirc_cmd_cap_end(sirc); // End negotiation
                 srv->negotiated = TRUE;
-            }
-        } else {
-            sirc_cmd_cap_end(sirc); // End negotiation
-            srv->negotiated = TRUE;
         }
     }
 
@@ -1353,6 +1357,31 @@ static void irc_event_authenticate(SircSession *sirc, const char *event,
                 sirc_cmd_authenticate(sirc, output);
 
                 free(output);
+                break;
+            }
+        case SRN_LOGIN_METHOD_SASL_EXTERNAL:
+            {
+                const char *method;
+
+                /* refs: https://ircv3.net/specs/extensions/sasl-3.1.html
+                 * and https://datatracker.ietf.org/doc/html/rfc4422#appendix-A.2
+                 *
+                 * On IRC, SASL external is typically used to authenticate with
+                 * client certificates.
+                 * Either way, the authentication works through "external means",
+                 * so we just send an empty string. */
+
+                if(g_strcmp0(params[0], "+")) {
+                    g_warn_if_reached();
+                }
+
+                sirc_cmd_authenticate(sirc, "+");
+
+                method = srn_login_method_to_string(srv->cfg->user->login->method);
+                srn_chat_add_misc_message_fmt(srv->chat, context,
+                        _("Logging in with %1$s as %2$s..."),
+                        method, srv->cfg->user->nick);
+
                 break;
             }
         default:

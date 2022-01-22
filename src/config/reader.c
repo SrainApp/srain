@@ -358,6 +358,7 @@ static SrnRet read_server_config_from_server(config_setting_t *server,
     config_setting_lookup_bool_ex(server, "tls", &cfg->irc->tls);
     config_setting_lookup_bool_ex(server, "tls-noverify", &cfg->irc->tls_noverify);
     config_setting_lookup_string_ex(server, "encoding", &cfg->irc->encoding);
+    config_setting_lookup_string_ex(server, "certificate", &cfg->irc->certificate_filename);
     if (cfg->irc->tls_noverify) {
         cfg->irc->tls = TRUE;
     }
