@@ -77,6 +77,7 @@
                     <property name="can_focus">False</property>
                     <property name="receives_default">True</property>
                     <property name="image">clear_selection_image</property>
+                    <property name="tooltip-text" translatable="yes">Clear selection</property>
                     <style>
                       <class name="circular"/>
                     </style>
@@ -93,6 +94,7 @@
                     <property name="can_focus">False</property>
                     <property name="receives_default">True</property>
                     <property name="image">go_prev_mention_image</property>
+                    <property name="tooltip-text" translatable="yes">Previous mention</property>
                     <style>
                       <class name="circular"/>
                     </style>
@@ -109,6 +111,7 @@
                     <property name="can_focus">False</property>
                     <property name="receives_default">True</property>
                     <property name="image">go_next_mention_image</property>
+                    <property name="tooltip-text" translatable="yes">Next mention</property>
                     <style>
                       <class name="circular"/>
                     </style>
@@ -125,6 +128,7 @@
                     <property name="can_focus">False</property>
                     <property name="receives_default">True</property>
                     <property name="image">go_bottom_image</property>
+                    <property name="tooltip-text" translatable="yes">Scroll to bottom</property>
                     <style>
                       <class name="circular"/>
                     </style>
