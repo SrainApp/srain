@@ -458,9 +458,6 @@ static SrnRet srn_command_parse(SrnCommand *cmd, void *user_data){
         }
         narg++;
     }
-    if (!ptr){
-        goto missing_arg;
-    }
 
     /* Debug output */
     {
