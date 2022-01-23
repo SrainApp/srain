@@ -224,6 +224,19 @@ void _sirc_event_hdr(SircSession *sirc, SircMessage *imsg, const SircMessageCont
              g_return_if_fail(events->error);
              events->tagmsg(sirc, event, origin, params, imsg->nparam, context);
         }
+         /* FAIL/WARN/NOTE are defined in https://ircv3.net/specs/extensions/standard-replies */
+         else if (strcasecmp(event, "FAIL") == 0){
+             g_return_if_fail(events->error);
+             events->fail(sirc, event, origin, params, imsg->nparam, context);
+        }
+         else if (strcasecmp(event, "WARN") == 0){
+             g_return_if_fail(events->error);
+             events->warn(sirc, event, origin, params, imsg->nparam, context);
+        }
+         else if (strcasecmp(event, "NOTE") == 0){
+             g_return_if_fail(events->error);
+             events->note(sirc, event, origin, params, imsg->nparam, context);
+        }
          else {
              g_return_if_fail(events->unknown);
              events->unknown(sirc, event, origin, params, imsg->nparam, context);

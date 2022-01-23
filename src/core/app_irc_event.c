@@ -92,6 +92,15 @@ static void irc_event_notice(SircSession *sirc, const char *event,
 static void irc_event_tagmsg(SircSession *sirc, const char *event,
         const char *origin, const char *params[], int count,
         const SircMessageContext *context);
+static void irc_event_fail(SircSession *sirc, const char *event,
+        const char *origin, const char *params[], int count,
+        const SircMessageContext *context);
+static void irc_event_warn(SircSession *sirc, const char *event,
+        const char *origin, const char *params[], int count,
+        const SircMessageContext *context);
+static void irc_event_note(SircSession *sirc, const char *event,
+        const char *origin, const char *params[], int count,
+        const SircMessageContext *context);
 static void irc_event_channel_notice(SircSession *sirc, const char *event,
         const char *origin, const char *params[], int count,
         const SircMessageContext *context);
@@ -144,6 +153,9 @@ void srn_application_init_irc_event(SrnApplication *app) {
     app->irc_events.privmsg = irc_event_privmsg;
     app->irc_events.notice = irc_event_notice;
     app->irc_events.tagmsg = irc_event_tagmsg;
+    app->irc_events.fail = irc_event_fail;
+    app->irc_events.warn = irc_event_warn;
+    app->irc_events.note = irc_event_note;
     app->irc_events.channel_notice = irc_event_channel_notice;
     app->irc_events.invite = irc_event_invite;
     app->irc_events.ctcp_req = irc_event_ctcp_req;
@@ -882,6 +894,46 @@ static void irc_event_tagmsg(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count,
         const SircMessageContext *context){
     /* Not used yet */
+}
+
+static void irc_event_fail(SircSession *sirc, const char *event,
+        const char *origin, const char **params, int count,
+        const SircMessageContext *context){
+    /* https://ircv3.net/specs/extensions/standard-replies */
+    g_return_if_fail(count >= 3);
+    const char *command = params[0];
+    const char *code = params[1];
+    /* context = params[2]...params[count-2] */
+    const char *description = params[count-1];
+    SrnServer *srv = sirc_get_ctx(sirc);
+    srn_chat_add_error_message_fmt(srv->chat, context, _("FAIL[%1$s] %2$s: %3$s"), command, code, description);
+}
+
+static void irc_event_warn(SircSession *sirc, const char *event,
+        const char *origin, const char **params, int count,
+        const SircMessageContext *context){
+    /* https://ircv3.net/specs/extensions/standard-replies */
+    g_return_if_fail(count >= 3);
+    const char *command = params[0];
+    const char *code = params[1];
+    /* context = params[2]...params[count-2] */
+    const char *description = params[count-1];
+    SrnServer *srv = sirc_get_ctx(sirc);
+    srn_chat_add_error_message_fmt(srv->chat, context, _("WARN[%1$s] %2$s: %3$s"), command, code, description);
+}
+
+static void irc_event_note(SircSession *sirc, const char *event,
+        const char *origin, const char **params, int count,
+        const SircMessageContext *context){
+    /* https://ircv3.net/specs/extensions/standard-replies */
+    g_return_if_fail(count >= 3);
+    const char *command = params[0];
+    const char *code = params[1];
+    /* context = params[2]...params[count-2] */
+    const char *description = params[count-1];
+    SrnServer *srv = sirc_get_ctx(sirc);
+    SrnChat *chat = srn_server_get_chat(srv, origin);
+    srn_chat_add_misc_message_fmt(srv->chat, context, _("NOTE[%1$s] %2$s: %3$s"), command, code, description);
 }
 
 static void irc_event_channel_notice(SircSession *sirc, const char *event,
