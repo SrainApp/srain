@@ -393,8 +393,8 @@ msgstr "Не вдалося застосувати шаблон до чату \"
 
 #: ../src/core/chat_command.c:838
 #, c-format
-msgid "Failed to attach pattern to user %1$s\" of chat \"%2$s\": %2$s"
-msgstr "Не вдалося застосувати шаблон до користувача %1$s\" чату \"%2$s\": %2$s"
+msgid "Failed to attach pattern to user %1$s\" of chat \"%2$s\": %3$s"
+msgstr "Не вдалося застосувати шаблон до користувача %1$s\" чату \"%2$s\": %3$s"
 
 #: ../src/core/server.c:149
 #, c-format

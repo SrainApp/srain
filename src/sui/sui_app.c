@@ -425,6 +425,7 @@ static void show_about_dialog(SuiApplication *self){
             gtk_get_minor_version(),
             gtk_get_micro_version());
     const char *translators =
+        "Val Lorentz <progval+srain@progval.net> (fr)\n" \
         "Heimen Stoffels <vistausss@outlook.com> (nl)\n" \
         "Artem Polishchuk <ego.cordatus@gmail.com> (ru)\n" \
         "Andrij Mizyk <andmizyk@gmail.com> (uk)\n" \

@@ -1,41 +1,42 @@
-# Chinese translations for Srain package
-# Srain 软件包的简体中文翻译.
-# Copyright (C) 2016 THE Srain'S COPYRIGHT HOLDER
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the Srain package.
-# Automatically generated, 2016.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Srain 1.0.0\n"
+"Project-Id-Version: Srain 1.1.1\n"
 "Report-Msgid-Bugs-To: i@silverrainz.me\n"
 "POT-Creation-Date: 2020-08-02 16:09+0800\n"
-"PO-Revision-Date: 2016-12-18 01:44+0800\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
-"Language: zh_CN\n"
+"PO-Revision-Date: 2022-01-22 20:35+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.4.2\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: ../src/core/app_ui_event.c:380 ../src/core/chat_command.c:352
 #, c-format
 msgid "\"%1$s\" has ignored"
-msgstr "已经忽略 %1$s "
+msgstr "« %1$s » est ignoré(e)"
 
 #: ../src/core/app_ui_event.c:383 ../src/core/chat_command.c:377
 #, c-format
 msgid "\"%1$s\" has unignored"
-msgstr "已经解除对 %1$s 的忽略"
+msgstr "« %1$s » n'est plus ignoré(e)"
 
 #: ../src/core/chat_command.c:349
 #, c-format
 msgid "\"%1$s\" is already ignored"
-msgstr "\"%1$s\" 已被忽略，无需再次执行"
+msgstr "« %1$s » est déjà ignoré(e)"
 
 #: ../src/core/chat_command.c:212
 #, c-format
 msgid "%1$d available server(s):%2$s"
-msgstr ""
+msgstr "%1$d serveur(s) disponible(s) :%2$s"
 
 #: ../src/core/app_irc_event.c:1618
 #, c-format
@@ -50,32 +51,32 @@ msgstr "%1$s %2$s %3$s"
 #: ../src/sui/sui_message.c:455
 #, c-format
 msgid "%1$s %2$s @ %3$s"
-msgstr "%1$s %2$s %3$s"
+msgstr "%1$s %2$s @ %3$s"
 
 #: ../src/core/app_irc_event.c:1548
 #, c-format
 msgid "%1$s <%2$s@%3$s> %4$s"
-msgstr ""
+msgstr "%1$s <%2$s@%3$s> %4$s"
 
 #: ../src/sui/sui_message.c:510
 #, c-format
 msgid "%1$s <fwd %2$s@%3$s>"
-msgstr "%1$s <fwd %2$s@%3$s>"
+msgstr "%1$s <transféré %2$s@%3$s>"
 
 #: ../src/sui/sui_message.c:450
 #, c-format
 msgid "%1$s @ %2$s"
-msgstr "%1$s %2$s"
+msgstr "%1$s @ %2$s"
 
 #: ../src/core/app_irc_event.c:734
 #, c-format
 msgid "%1$s are kicked by %2$s"
-msgstr "%1$s 被 %2$s 踢出了频道"
+msgstr "%2$s a éjecté %1$s"
 
 #: ../src/core/app_irc_event.c:731
 #, c-format
 msgid "%1$s are kicked by %2$s: %3$s"
-msgstr "%1$s 被 %2$s 踢出了频道：%3$s"
+msgstr "%2$s a éjecté %1$s : %3$s"
 
 #: ../src/core/app_irc_event.c:690
 #, c-format
@@ -83,68 +84,68 @@ msgid ""
 "%1$s changed topic to:\n"
 "\t%2$s"
 msgstr ""
-"%1$s 将主题更改为：\n"
+"%1$s a changé le topic :\n"
 "\t%2$s"
 
 #: ../src/core/app_irc_event.c:686
 #, c-format
 msgid "%1$s cleared topic"
-msgstr "%1$s 清除了频道公告"
+msgstr "%1$s a effacé le topic"
 
 #: ../src/core/app_irc_event.c:506
 #, c-format
 msgid "%1$s has joined"
-msgstr "%1$s 加入了频道"
+msgstr "%1$s a rejoint"
 
 #: ../src/core/app_irc_event.c:540
 #, c-format
 msgid "%1$s has left"
-msgstr "%1$s 离开了频道"
+msgstr "%1$s est parti(e)"
 
 #: ../src/core/app_irc_event.c:538
 #, c-format
 msgid "%1$s has left: %2$s"
-msgstr "%1$s 离开了频道：%2$s"
+msgstr "%1$s est parti(e) : %2$s"
 
 #: ../src/core/app_irc_event.c:452
 #, c-format
 msgid "%1$s has quit"
-msgstr "%1$s 退出了聊天室"
+msgstr "%1$s a quitté"
 
 #: ../src/core/app_irc_event.c:450
 #, c-format
 msgid "%1$s has quit: %2$s"
-msgstr "%1$s 退出了聊天室：%2$s"
+msgstr "%1$s a quitté : %2$s"
 
 #: ../src/core/app_irc_event.c:877
 #, c-format
 msgid "%1$s invites you into %2$s"
-msgstr "%1$s 邀请你加入频道 %2$s"
+msgstr "%1$s vous invite à %2$s"
 
 #: ../src/core/app_irc_event.c:1561
 #, c-format
 msgid "%1$s is a member of %2$s"
-msgstr "%1$s 是频道 %2$s 的成员"
+msgstr "%1$s est membre de %2$s"
 
 #: ../src/core/app_irc_event.c:1573
 #, c-format
 msgid "%1$s is attached to %2$s at \"%3$s\""
-msgstr "%1$s 接入了位于 \"%3$s\" 的 %2$s"
+msgstr "%1$s se connecte au serveur %2$s à \"%3$s\""
 
 #: ../src/core/app_irc_event.c:1795
 #, c-format
 msgid "%1$s is away: %2$s"
-msgstr "%1$s 暂时离开了聊天: %2$s"
+msgstr "%1$s est absent(e) : %2$s"
 
 #: ../src/core/app_irc_event.c:1592
 #, c-format
 msgid "%1$s is idle for %2$s seconds since %3$s"
-msgstr "%1$s 自 %3$s 以来待机了 %2$s 秒"
+msgstr "%1$s est inactif/ve depuis %2$s (dernière activité à %3$s)"
 
 #: ../src/core/app_irc_event.c:421 ../src/core/app_irc_event.c:426
 #, c-format
 msgid "%1$s is now known as %2$s"
-msgstr "%1$s 将昵称更改为 %2$s"
+msgstr "%1$s est maintenant connu(e) sous le nom de %2$s"
 
 #: ../src/sui/sui_app.c:415
 #, c-format
@@ -153,155 +154,155 @@ msgid ""
 "Running against GTK+ %3$d.%4$d.%5$d"
 msgstr ""
 "%1$s%2$s\n"
-"运行于 GTK+ %3$d.%4$d.%5$d"
+"Fonctionnant sur GTK+ %3$d.%4$d.%5$d"
 
 #: ../src/core/app_irc_event.c:1669 ../src/core/app_irc_event.c:1689
 #, c-format
 msgid "%1$s: %2$s"
-msgstr "%1$s: %2$s"
+msgstr "%1$s : %2$s"
 
 #: ../src/core/app_irc_event.c:1525 ../src/core/app_irc_event.c:1590
 msgid "%Y-%m-%d %T"
-msgstr "%Y 年 %m 月 %d 日 %T"
+msgstr "%Y-%m-%d %T"
 
 #: ../data/ui/window.glade:320
 msgid "<big>Welcome to Srain!</big>"
-msgstr "<big>欢迎使用 Srain！</big>"
+msgstr "<big>Bienvenue dans Srain !</big>"
 
 #: ../src/core/chat_command.c:561
 #, c-format
 msgid "A message has been sent to \"%1$s\""
-msgstr "消息已发送至 \"%1$s\""
+msgstr "Un message a été envoyé à \"%1$s\""
 
 #: ../data/ui/app.glade:69
 msgid "About"
-msgstr "关于"
+msgstr "À propos"
 
 #: ../src/sui/sui_app.c:437
 msgid "About Srain"
-msgstr "关于 Srain"
+msgstr "À propos de Srain"
 
 #: ../src/core/app_irc_event.c:1110
 #, c-format
 msgid "Acknowledged capabilities: %1$s"
-msgstr "已确认的扩展能力：%1$s"
+msgstr "Capacités acceptées : %1$s"
 
 #: ../data/ui/connect_panel.glade:521
 msgid "Advanced Mode"
-msgstr "高级模式"
+msgstr "Mode avancé"
 
 #: ../src/core/app.c:220
 msgid "All config reloaded"
-msgstr "成功重新加载所有配置"
+msgstr "Configuration entièrement rechargée"
 
 #: ../src/core/app_ui_event.c:178
 msgid "Already reconnecting"
-msgstr "已在重连中"
+msgstr "Déjà reconnecté(e)"
 
 #: ../data/ui/config_panel.glade:122
 msgid "Appearance"
-msgstr "外观"
+msgstr "Apparence"
 
 #: ../data/ui/config_panel.glade:141
 msgid "Application"
-msgstr "应用"
+msgstr "Application"
 
 #: ../src/config/manager.c:99
 #, c-format
 msgid "At line %1$d: %2$s"
-msgstr "在第 %1$d 行：%2$s"
+msgstr "À la ligne %1$d : %2$s"
 
 #: ../src/core/app.c:321 ../src/core/app.c:325 ../src/core/server.c:283
 #: ../src/core/server.c:287
 #, c-format
 msgid "Autorun command: %1$s"
-msgstr "自动运行命令：%1$s"
+msgstr "Commande automatique : %1$s"
 
 #: ../src/core/chat_command.c:770
-#, fuzzy
 msgid "Available regex patterns:"
-msgstr "无效的正则表达式：%1$s"
+msgstr "Modèles de regex :"
 
 #: ../src/core/app_irc_event.c:1526
 #, c-format
 msgid "By %1$s at %2$s"
-msgstr "%1$s 于 %2$s 设置"
+msgstr "Par %1$s à %2$s"
 
 #: ../data/ui/connect_panel.glade:540 ../data/ui/join_panel.glade:401
 msgid "Cancel"
-msgstr "取消"
+msgstr "Annuler"
 
 #: ../src/core/chat_command.c:181
 msgid "Cannot disconnect from a unconnected server"
-msgstr "无法从未连接的服务器断开连接"
+msgstr "Impossible de se déconnecter d'un serveur sans y être connecté(e)"
 
 #: ../src/core/app_ui_event.c:251 ../src/core/chat_command.c:581
 msgid "Cannot send message directly to a server"
-msgstr "不允许直接向服务器发送消息"
+msgstr "Impossible d'envoyer un message directement à un serveur"
 
 #: ../data/ui/join_panel.glade:290
 msgid "Channel"
-msgstr "频道"
+msgstr "Salon"
 
 #: ../src/config/password.c:190
 msgid "Channel password"
-msgstr "频道密码"
+msgstr "Mot de passe du salon"
 
 #: ../data/ui/join_panel.glade:62
 msgid "Channel:"
-msgstr "频道："
+msgstr "Salon :"
 
 #: ../src/sui/sui_prefs_dialog.c:165
 msgid "Configuration is reloaded"
-msgstr "已重新加载配置"
+msgstr "La configuration a été rechargée"
 
 #: ../data/ui/connect_panel.glade:554 ../data/ui/window.glade:88
 msgid "Connect"
-msgstr "连接"
+msgstr "Connexion"
 
 #: ../src/core/app_irc_event.c:146 ../src/core/app_irc_event.c:152
 #, c-format
 msgid "Connected to %1$s(%2$s:%3$d)"
-msgstr "已连接到 %1$s(%2$s:%3$d)"
+msgstr "Connecté(e) à %1$s(%2$s:%3$d)"
 
 #: ../src/sui/sui_message.c:254
 msgid "Copy message"
-msgstr "复制消息"
+msgstr "Copier le message"
 
 #: ../src/core/app_irc_event.c:283 ../src/core/app_irc_event.c:298
 #, c-format
 msgid "Disconnected from %1$s(%2$s:%3$d): %4$s"
-msgstr "到 %1$s(%2$s:%3$d) 的连接已断开：%4$s"
+msgstr "Déconnecté(e) de %1$s(%2$s:%3$d) : %4$s"
 
 #: ../data/ui/connect_panel.glade:117
 msgid "Do not verify certificate"
-msgstr "不校验服务器证书"
+msgstr "Ne pas vérifier le certificat"
 
 #: ../src/sui/sui_app.c:122
 msgid "Don't auto connect to servers"
-msgstr "不要自动连接到服务器"
+msgstr "Ne pas se connecter automatiquement aux serveurs"
 
 #: ../src/core/app_irc_event.c:1335
 #, c-format
 msgid "ERROR: %1$s"
-msgstr "错误: %1$s"
+msgstr "ERREUR : %1$s"
 
 #: ../src/core/app_irc_event.c:1867 ../src/core/app_irc_event.c:1963
 #, c-format
 msgid "ERROR[%1$3d] %2$s"
-msgstr "错误[%1$3d] %2$s"
+msgstr "ERROR[%1$3d] %2$s"
 
 #: ../data/ui/config_panel.glade:81
 msgid "Enable CSD:"
-msgstr "开启 CSD(Client Side Decoration)"
+msgstr "Activer CSD :"
 
 #: ../data/ui/config_panel.glade:77
 msgid "Enable Client-Side Decorations, this will take effect after restart."
-msgstr "已开启 CSD(Client Side Decoration), 下次重启后生效"
+msgstr ""
+"Activer les Décorations Côté-Client, cela prendra effet après redémarrage."
 
 #: ../src/core/server_cap.c:211
 msgid "Enabled capabilities:"
-msgstr "已启用的扩展能力：%1$s"
+msgstr "Activer les capacités :"
 
 #: ../src/core/app.c:76 ../src/core/app.c:84 ../src/core/app.c:298
 #: ../src/core/app.c:409 ../src/sui/sui_app.c:469 ../src/sui/sui_app.c:488
@@ -314,284 +315,309 @@ msgstr "已启用的扩展能力：%1$s"
 #: ../src/sui/sui_join_panel.c:442 ../src/sui/sui_misc_message.c:188
 #: ../src/sui/sui_prefs_dialog.c:162
 msgid "Error"
-msgstr "错误"
+msgstr "Erreur"
 
 #: ../src/config/reader.c:228
 #, c-format
 msgid "Error occurred while looking up channel password: %1$s"
-msgstr "读取频道密码时发生错误：%1$s"
+msgstr ""
+"Une erreur est survenue pendant la recherche du mot de passe du salon : %1$s"
 
 #: ../src/config/reader.c:143
 #, c-format
 msgid "Error occurred while looking up server password: %1$s"
-msgstr "读取服务器密码时发生错误：%1$s"
+msgstr ""
+"Une erreur est survenue pendant la recherche du mot de passe du serveur : "
+"%1$s"
 
 #: ../src/config/reader.c:149
 #, c-format
 msgid "Error occurred while looking up user password: %1$s"
-msgstr "读取用户密码时发生错误：%1$s"
+msgstr ""
+"Une erreur est survenue pendant la recherche du mot de passe de "
+"l'utilisateur/trice : %1$s"
 
 #: ../src/config/reader.c:91 ../src/config/reader.c:97
 #, c-format
 msgid "Error occurred while reading application config in %1$s: %2$s"
-msgstr "读取应用配置时发生错误 %1$s：%2$s"
+msgstr ""
+"Une erreur est survenue pendant la lecture de la configuration de "
+"l'application dans %1$s : %2$s"
 
 #: ../src/config/reader.c:212 ../src/config/reader.c:219
 #, c-format
 msgid "Error occurred while reading chat config in %1$s: %2$s"
-msgstr "读取聊天配置时发生错误 %1$s：%2$s"
+msgstr ""
+"Une erreur est survenue pendant la lecture de la configuration du chat dans "
+"%1$s : %2$s"
 
 #: ../src/config/reader.c:71 ../src/config/reader.c:77
 #, c-format
 msgid "Error occurred while reading log config in %1$s: %2$s"
-msgstr "读取日志配置时发生错误 %1$s：%2$s"
+msgstr ""
+"Une erreur est survenue pendant la lecture de la configuration de "
+"l'historique dans %1$s : %2$s"
 
 #: ../src/config/reader.c:131 ../src/config/reader.c:137
 #, c-format
 msgid "Error occurred while reading server config in %1$s: %2$s"
-msgstr "读取服务器配置时发生错误 %1$s：%2$s"
+msgstr ""
+"Une erreur est survenue pendant la lecture de la configuration du serveur "
+"dans %1$s : %2$s"
 
 #: ../src/config/reader.c:111 ../src/config/reader.c:117
 #, c-format
 msgid "Error occurred while reading server list config in %1$s: %2$s"
-msgstr "读取服务器配置列表时发生错误 %1$s：%2$s"
+msgstr ""
+"Une erreur est survenue pendant la lecture de la configuration de la liste "
+"de serveurs dans %1$s : %2$s"
 
 #: ../src/sui/sui_url_previewer.c:553
 msgid "Exceed max content length"
-msgstr "内容超出最大长度"
+msgstr "Dépassement de la longueur maximale du contenu"
 
 #: ../data/ui/app.glade:94
 msgid "Exit"
-msgstr "退出"
+msgstr "Quitter"
 
 #: ../data/ui/config_panel.glade:107
 msgid "Expand message:"
-msgstr "展开消息"
+msgstr "Dérouler le message :"
 
 #: ../src/core/app.c:296
 #, c-format
 msgid "Failed to add chat \"%1$s\": %2$s"
-msgstr "无法添加聊天 \"%1$s\", 原因为: %2$s"
+msgstr "Impossible d'ajouter le chat « %1$s »: %2$s"
 
 #: ../src/core/chat_command.c:748
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to add regex pattern \"%1$s\": %2$s"
-msgstr "无法添加服务器 \"%1$s\": %2$s"
+msgstr "Impossible d'ajouter le modèle de regex « %1$s »: %2$s"
 
 #: ../src/core/app.c:407 ../src/core/app_url.c:119
 #, c-format
 msgid "Failed to add server \"%1$s\": %2$s"
-msgstr "无法添加服务器 \"%1$s\": %2$s"
+msgstr "Impossible d'ajouter le serveur « %1$s »: %2$s"
 
 #: ../src/sui/sui_theme.c:102
 #, c-format
 msgid "Failed to apply theme from file \"%1$s\": %2$s"
-msgstr "无法加载主题 \"%1$s\", 原因为: %2$s"
+msgstr "Impossible d'appliquer le thème du fichier « %1$s »: %2$s"
 
 #: ../src/core/chat_command.c:408
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to attach pattern to chat \"%1$s\": %2$s"
-msgstr "无法添加服务器 \"%1$s\": %2$s"
+msgstr "Impossible d'attacher le modèle au salon « %1$s »: %2$s"
 
 #: ../src/core/chat_command.c:838
 #, fuzzy, c-format
+#| msgid "Failed to attach pattern to user %1$s\" of chat \"%2$s\": %2$s"
 msgid "Failed to attach pattern to user %1$s\" of chat \"%2$s\": %3$s"
-msgstr "无法添加服务器 \"%1$s\": %2$s"
+msgstr ""
+"Impossible d'attacher le à l'utilisateur « %1$s » du salon « %2$s »: %3$s"
 
 #: ../src/core/server.c:149
 #, c-format
 msgid "Failed to chat config \"%1$s\" of server config \"%2$s\": %3$s"
-msgstr ""
+msgstr "Impossible de charger la config « %1$s » du serveur « %2$s »: %3$s"
 
 #: ../src/sui/sui_join_panel.c:378
 #, c-format
 msgid "Failed to clear channel password: %1$s"
-msgstr "无法清除频道密码：%s"
+msgstr "Impossible d'effacer le mot de passe du salon : %1$s"
 
 #: ../src/sui/sui_connect_panel.c:501
 #, c-format
 msgid "Failed to clear server password: %1$s"
-msgstr "无法清除服务器密码：%1$s"
+msgstr "Impossible d'effacer le mot de passe du serveur : %1$s"
 
 #: ../src/sui/sui_connect_panel.c:548
 #, c-format
 msgid "Failed to clear user password: 1$%s"
-msgstr "无法清除用户密码：%1$s"
+msgstr "Impossible d'effacer le mot de passe de l'utilisateur/trice : %1$s"
 
 #: ../src/core/app_irc_event.c:199 ../src/core/app_irc_event.c:214
 #, c-format
 msgid "Failed to connect to %1$s(%2$s:%3$d): %4$s"
-msgstr "无法连接到 %1$s(%2$s:%3$d)：%4$s"
+msgstr "Impossible de se connecter à %1$s(%2$s:%3$d) : %4$s"
 
 #: ../src/lib/path.c:301
 #, c-format
 msgid "Failed to create chat logs directory: %1$s"
-msgstr "无法创建聊天日志文件夹 \"%1$s\""
+msgstr "Impossible de créer le dossier de l'historique de chat : %1$s"
 
 #: ../src/lib/path.c:281
 #, c-format
 msgid "Failed to create user cache directory: %1$s"
-msgstr "无法创建用户缓存文件夹 \"%1$s\""
+msgstr "Impossible de créer le dossier de cache utilisateur/trice : %1$s"
 
 #: ../src/lib/path.c:261
 #, c-format
 msgid "Failed to create user configuration directory: %1$s"
-msgstr "无法创建用户配置文件夹 \"%1$s\""
+msgstr ""
+"Impossible de créer le dossier de configuration de l'utilisateur/trice : %1$s"
 
 #: ../src/lib/path.c:271
 #, c-format
 msgid "Failed to create user configuration file: %1$s"
-msgstr "无法创建用户配置文件 \"%1$s\""
+msgstr ""
+"Impossible de créer le fichier de configuration de l'utilisateur/trice : %1$s"
 
 #: ../src/lib/path.c:291
 #, c-format
 msgid "Failed to create user data directory: %1$s"
-msgstr "无法创建用户数据文件夹 \"%1$s\""
+msgstr ""
+"Impossible de créer le dossier de données de l'utilisateur/trice : %1$s"
 
 #: ../src/core/chat_command.c:437
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to dettach pattern from chat \"%1$s\": %2$s"
-msgstr "无法加载主题 \"%1$s\", 原因为: %2$s"
+msgstr "Impossible de retirer le modèle du salon « %1$s » : %2$s"
 
 #: ../src/core/chat_command.c:883
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to dettach pattern from user \"%1$s\": %2$s"
-msgstr "无法加载主题 \"%1$s\", 原因为: %2$s"
+msgstr "Impossible de retirer le modèle de l'utilisateur « %1$s » : %2$s"
 
 #: ../src/core/chat_command.c:159 ../src/core/chat_command.c:293
 #, c-format
 msgid "Failed to instantiate server \"%1$s\""
-msgstr "无法实例化服务器 \"%1$s\""
+msgstr "Impossible d'instancier le serveur « %1$s »"
 
 #: ../src/core/app_url.c:146 ../src/core/app_url.c:154
 #, c-format
 msgid "Failed to join channel on server \"%1$s\": %2$s"
-msgstr "无法加入在 \"%1$s\" 服务器上的频道， 原因为: %2$s"
+msgstr "Impossible de rejoindre un salon sur le serveur « %1$s » : %2$s"
 
 #: ../src/sui/sui_common.c:133
 #, c-format
 msgid "Failed to open URL \"%1$s\": %2$s"
-msgstr "无法打开 URL \"%1$s\"：%2$s"
+msgstr "Impossible d'ouvrir l'URL « %1$s » : %2$s"
 
 #: ../src/core/app_url.c:60
 #, c-format
 msgid "Failed to parse \"%1$s\" as URL"
-msgstr "无法将 \"%1$s\" 解析为 URL"
+msgstr "Impossible d'interpréter « %1$s » comme un URL"
 
 #: ../src/core/app_ui_event.c:203
 #, c-format
 msgid "Failed to quit from server: %1$s"
-msgstr "无法从服务器退出：%1$s"
+msgstr "Impossible de quitter le serveur : %1$s"
 
 #: ../src/config/manager.c:66
 #, c-format
 msgid "Failed to read system configuration file: %1$s"
-msgstr "无法读取系统配置：%1$s"
+msgstr "Impossible de lire le fichier de configuration système : %1$s"
 
 #: ../src/config/manager.c:78
 #, c-format
 msgid "Failed to read user configuration file: %1$s"
-msgstr "无法读取用户配置：%1$s"
+msgstr ""
+"Impossible de lire le fichier de configuration de l'utilisateur/trice : %1$s"
 
 #: ../src/core/app_url.c:135 ../src/core/chat_command.c:169
 #: ../src/core/chat_command.c:306
 #, c-format
 msgid "Failed to register on server \"%1$s\""
-msgstr "无法在服务器 \"%1$s\" 上注册"
+msgstr "Impossible de s'enregistrer auprès du serveur « %1$s »"
 
 #: ../src/core/app.c:229
 #, c-format
 msgid "Failed to reload application config: %1$s"
-msgstr "重新加载应用配置失败：%1$s"
+msgstr "Impossible de recharger la configuration de l'application : %1$s"
 
 #: ../src/sui/sui_prefs_dialog.c:160
 #, c-format
 msgid "Failed to reload configuration: %s"
-msgstr "重新加载配置失败：%1$s"
+msgstr "Impossible de recharger la configuration : %s"
 
 #: ../src/core/app.c:224
 #, c-format
 msgid "Failed to reload logger config: %1$s"
-msgstr "重新加载日志配置失败 \"%1$s\""
+msgstr "Impossible de recharger la configuration de l'historique : %1$s"
 
 #: ../src/core/chat_command.c:761
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to remove regex pattern \"%1$s\": %2$s"
-msgstr "无法打开 URL \"%1$s\"：%2$s"
+msgstr "Impossible de retirer le modèle de regexp « %1$s » : %2$s"
 
 #: ../src/render/mention_renderer.c:94
 #: ../src/render/mirc_colorize_renderer.c:105
 #: ../src/render/mirc_strip_renderer.c:72 ../src/render/url_renderer.c:117
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to render markup text: %1$s"
-msgstr "无法发送消息：%1$s"
+msgstr "Impossible d'afficher le texte formatté : %1$s"
 
 #: ../src/core/chat_command.c:586
 #, c-format
 msgid "Failed to send action message: %1$s"
-msgstr "无法发送动作消息：%1$s"
+msgstr "Impossible d'envoyer le message d'action : %1$s"
 
 #: ../src/core/app_ui_event.c:261
 #, c-format
 msgid "Failed to send message: %1$s"
-msgstr "无法发送消息：%1$s"
+msgstr "Impossible d'envoyer le message : %1$s"
 
 #: ../src/sui/sui_join_panel.c:367
 #, c-format
 msgid "Failed to store channel password: %1$s"
-msgstr "无法储存频道密码：%1$s"
+msgstr "Impossible de stocker le mot de passe du salon : %1$s"
 
 #: ../src/sui/sui_connect_panel.c:492
 #, c-format
 msgid "Failed to store server password: %1$s"
-msgstr "无法储存服务器密码：%1$s"
+msgstr "Impossible de stocker le mot de passe du serveur : %1$s"
 
 #: ../src/sui/sui_connect_panel.c:539
 #, c-format
 msgid "Failed to store user password: %1$s"
-msgstr "无法储存用户密码：%1$s"
+msgstr "Impossible de stocker le mot de passe utilisateur/trice : %1$s"
 
 #: ../src/sirc/sirc_config.c:66
 msgid "False"
-msgstr "禁用"
+msgstr "Faux"
 
 #: ../src/sui/sui_message.c:261
 msgid "Forward to..."
-msgstr "转发到……"
+msgstr "Transférer à..."
 
 #: ../src/core/server_state.c:92
 msgid ""
 "Hold on, srain is connecting to the server, please do not repeat the action"
-msgstr "请稍等，正在连接服务器，请勿重复连接"
+msgstr ""
+"Un instant, srain se connecte au serveur. Merci de ne pas répéter cette "
+"action"
 
 #: ../src/sirc/sirc_config.c:37
 msgid "Invalid IRC config instance"
-msgstr "无效的聊天配置"
+msgstr "Instance de configuration IRC invalide"
 
 #: ../src/sui/sui_config.c:84
 msgid "Invalid SuiBufferConfig instance"
-msgstr "无效的面板配置"
+msgstr "Instance de configuration SuiBufferConfig invalide"
 
 #: ../src/core/chat_config.c:38
 msgid "Invalid chat config instance"
-msgstr "无效的聊天配置"
+msgstr "Instance de configuration du salon invalide"
 
 #: ../src/sirc/sirc_config.c:52
 #, c-format
 msgid "Invalid encoding in IRC config: %1$s"
-msgstr "IRC 配置中的编码无效：%1$s"
+msgstr "Encodage invalide dans la configuration IRC :%1$s"
 
 #: ../src/lib/ret.c:112
 msgid "Invalid error id, maybe this error is removed because out of date"
-msgstr "无效的错误 ID，该错误可能因为过期而被移除"
+msgstr ""
+"Identificateur d'erreur invalide, il se peut que cette erreur ait été "
+"retirée car elle n'est plus à jour"
 
 #: ../src/core/server_config.c:53
 msgid "Invalid server config instance"
-msgstr "无效的服务器配置"
+msgstr "Instance de configuration de serveur invalide"
 
 #: ../data/ui/nick_menu.glade:50
 msgid "Invite to..."
-msgstr "邀请加入……"
+msgstr "Inviter à..."
 
 #: ../src/core/app_irc_event.c:221
 #, c-format
@@ -599,65 +625,66 @@ msgid ""
 "It seems that you connect to a TLS port(%1$d) without enable TLS connection, "
 "try to enable it and reconnect"
 msgstr ""
-"看起来你似乎对一个 TLS 端口(%1$d) 使用了非 TLS 加密的连接，请尝试启用 TLS 并"
-"重新连接"
+"Il semblerait que vous vous connectiez à un port TLS (%1$d) sans activer la "
+"connexion TLS, essayez de l'activer et reconnectez-vous"
 
 #: ../data/ui/join_panel.glade:416 ../data/ui/window.glade:103
 msgid "Join"
-msgstr "加入"
+msgstr "Rejoindre"
 
 #: ../data/ui/join_panel.glade:133
 msgid "Join Channel"
-msgstr "加入频道"
+msgstr "Rejoindre un Salon"
 
 #: ../src/core/app_irc_event.c:1004
 #, c-format
 msgid "Latency between %1$s: %2$lums"
-msgstr "到 %1$s 的延迟为 %2$lu 毫秒"
+msgstr "Latence avec %1$s : %2$lums"
 
 #: ../src/sirc/sirc.c:196
 msgid "Local connection closed"
-msgstr "本地链接已关闭"
+msgstr "Connexion locale fermée"
 
 #: ../src/core/app_irc_event.c:1226 ../src/core/app_irc_event.c:1252
 #, c-format
 msgid "Logging in with %1$s as %2$s..."
-msgstr "正在通过 %1$s 以 %2$s 的身份登录……"
+msgstr "Connexion à %1$s en temps que %2$s..."
 
 #: ../src/core/app_irc_event.c:377
 #, c-format
 msgid "Logging in with %1$s..."
-msgstr "正在通过 %1$s 登录……"
+msgstr "Connexion à %1$s..."
 
 #: ../data/ui/connect_panel.glade:423
 msgid "Login certificate:"
-msgstr "登录证书:"
+msgstr "Certificat d'authentification :"
 
 #: ../data/ui/connect_panel.glade:351
 msgid "Login password:"
-msgstr "登录密码："
+msgstr "Mot de passe d'authentification :"
 
 #: ../src/sui/sui_join_panel.c:286
 msgid "Match channel name"
-msgstr "匹配频道名"
+msgstr "Chercher le nom du salon"
 
 #: ../data/ui/join_panel.glade:208
 msgid "Max users"
-msgstr "最多用户数"
+msgstr "Maximum d'utilisateurs/trices"
 
 #: ../src/sui/sui_message.c:461
 msgid "Message from unknown chat"
-msgstr "来自未知聊天的消息"
+msgstr "Message d'un salon inconnu"
 
 #: ../src/core/chat_command.c:441
 #, c-format
 msgid "Messages of chat \"%1$s\" are no longer filtered by pattern \"%2$s\""
 msgstr ""
+"Les messages du salon « %1$s » ne seront plus filtrés par le modèle « %2$s »"
 
 #: ../src/core/chat_command.c:412
 #, c-format
 msgid "Messages of chat \"%1$s\" will be filtered by pattern \"%2$s\""
-msgstr ""
+msgstr "Les messages du salon « %1$s » seront filtrés par le modèle « %2$s »"
 
 #: ../src/core/chat_command.c:887
 #, c-format
@@ -665,6 +692,8 @@ msgid ""
 "Messages of user \"%1$s\" of chat \"%2$s\" are no longer rendered by pattern "
 "\"%3$s\""
 msgstr ""
+"Les messages de l'utilisateur « %1$s » du salon « %2$s » ne seront plus "
+"filtrés par le modèle « %3$s »"
 
 #: ../src/core/chat_command.c:842
 #, c-format
@@ -672,254 +701,260 @@ msgid ""
 "Messages of user \"%1$s\" of chat \"%2$s\" will be rendered by pattern \"%3$s"
 "\""
 msgstr ""
+"Les messages de l'utilisateur « %1$s » du salon « %2$s » seront filtrés par "
+"le modèle « %3$s »"
 
 #: ../data/ui/join_panel.glade:237
 msgid "Min users"
-msgstr "最少用户数"
+msgstr "Minimum d'utilisateurs/trices"
 
 #: ../src/core/chat_command.c:240
 msgid "Missing argument <addr>"
-msgstr "缺少参数 <服务器地址>"
+msgstr "Argument <addr> manquant"
 
 #: ../src/lib/command.c:482
 #, c-format
 msgid "Missing argument, expect %1$d, actually %2$d"
-msgstr "缺少参数，%1$d 个参数中，只提供了 %2$d 个"
+msgstr "Argument manquant, %1$d attendus, mais seulement %2$d présents"
 
 #: ../src/sui/sui_config.c:32
 #, c-format
 msgid "Missing field in SuiApplicationConfig: %1$s"
-msgstr "主界面配置中缺少了如下字段：%1$s"
+msgstr "Champ manquant dans SuiApplicationConfig : %1$s"
 
 #: ../src/core/server_config.c:49
 #, c-format
 msgid "Missing field in server config: %1$s"
-msgstr "服务器配置中缺少了以下字段：%1$s"
+msgstr "Champ manquant dans la configuration du serveur : %1$s"
 
 #: ../src/core/user_config.c:71
 #, c-format
 msgid "Missing field in user config: %1$s"
-msgstr "服务器配置中缺少了以下选项：%1$s"
+msgstr "Champ manquant dans la configuration de l'utilisateur/trice : %1$s"
 
 #: ../src/lib/command.c:491
 #, c-format
 msgid "Missing value for option %1$s"
-msgstr "可选参数 %1$s 缺少参数值"
+msgstr "Valeur manquante pour l'option : %1$s"
 
 #: ../data/ui/connect_panel.glade:84
 msgid "Nickname:"
-msgstr "昵称："
+msgstr "Nick :"
 
 #: ../src/core/app_irc_event.c:1113
 msgid "No acknowledged capability"
-msgstr "没有已确认的扩展能力"
+msgstr "Aucune capacité activée"
 
 #: ../src/core/app_irc_event.c:1070
 msgid "No capability to be requested"
-msgstr "没有需要请求的扩展能力"
+msgstr "Aucune capacité à négocier"
 
 #: ../src/core/app_irc_event.c:1103
 msgid "No new capability to be requested"
-msgstr "没有需要请求的新的扩展能力"
+msgstr "Aucune nouvelle capacité à négocier"
 
 #: ../src/sui/sui_connect_panel.c:432
 msgid "No server selected"
-msgstr "没有服务器被选中"
+msgstr "Aucun serveur sélectionné"
 
 #: ../src/core/app_irc_event.c:1484
 msgid "No topic is set"
-msgstr "该频道没有设置主题"
+msgstr "Aucun topic n'est défini"
 
 #: ../src/lib/path.c:316
 msgid "Not a directory"
-msgstr "不是一个文件夹"
+msgstr "Pas un dossier"
 
 #: ../src/lib/path.c:335
 msgid "Not a regular file"
-msgstr "不是一个常规文件"
+msgstr "Pas un fichier normal"
 
 #: ../src/sui/sui_prefs_dialog.c:165
 msgid "OK"
-msgstr "确定"
+msgstr "Ok"
 
 #: ../src/sui/sui_app.c:131
 msgid "Open one or more IRC URLs"
-msgstr "打开一个或多个 IRC 链接"
+msgstr "Ouvrir une ou des URLs IRC"
 
 #: ../data/ui/connect_panel.glade:485 ../data/ui/join_panel.glade:103
 msgid "Optional"
-msgstr "可选"
+msgstr "Optionnel"
 
 #: ../data/ui/join_panel.glade:88
 msgid "Password:"
-msgstr "密码："
+msgstr "Mot de passe :"
 
 #: ../src/core/chat_command.c:392 ../src/core/chat_command.c:812
-#, fuzzy, c-format
+#, c-format
 msgid "Pattern \"%1$s\" not found"
-msgstr "用户文件 %1$s 未找到"
+msgstr "Modèle « %1$s » introuvable"
 
 #: ../src/core/app_irc_event.c:248
 msgid "Ping time out"
-msgstr "响应超时"
+msgstr "Ping timeout"
 
 #: ../src/sui/sui_join_panel.c:315
 msgid "Please connect to a server before joining any channel"
-msgstr "在加入频道之前请先连接到服务器"
+msgstr "Merci de vous connecter à un serveur avant de rejoindre un salon"
 
 #: ../src/sui/sui_join_panel.c:436
 msgid "Please connect to a server before searching any channel"
-msgstr "在搜索频道之前请先连接到服务器"
+msgstr "Merci de vous connecter à un serveur avant de chercher un salon"
 
 #: ../data/ui/connect_panel.glade:106
 msgid "Quick Mode"
-msgstr "简易模式"
+msgstr "Mode rapide"
 
 #: ../src/core/server_state.c:172 ../src/core/server_state.c:179
 msgid "Quitting the server"
-msgstr "正在退出服务器"
+msgstr "Quitter le serveur"
 
 #: ../src/core/app_irc_event.c:952
 #, c-format
 msgid "Received CTCP %1$s request form %2$s"
-msgstr "收到来自 %2$s 的 CTCP %1$s 请求"
+msgstr "Reçu une requête CTCP %1$s de %2$s"
 
 #: ../src/core/app_irc_event.c:987 ../src/core/app_irc_event.c:1007
 #, c-format
 msgid "Received CTCP %1$s response from %2$s: %3$s"
-msgstr "收到来自 %2$s 的 CTCP %1$s 响应: %3$s"
+msgstr "Reçu une réponse CTCP %1$s de %2$s : %3$s"
 
 #: ../src/core/app_irc_event.c:948
 #, c-format
 msgid "Received unsupported CTCP %1$s request form %2$s"
-msgstr "收到来自 %2$s 的不支持的 CTCP %1$s 请求"
+msgstr "Reçu une requête CTCP inconnue %1$s de %2$s"
 
 #: ../src/core/app_irc_event.c:992
 #, c-format
 msgid "Received unsupported CTCP %1$s response form %2$s"
-msgstr "收到来自 %2$s 的不支持的 CTCP %1$s 响应"
+msgstr "Reçu une réponse CTCP inconnue %1$s de %2$s"
 
 #: ../src/core/app_ui_event.c:159 ../src/core/chat_command.c:188
 msgid "Reconnection stopped"
-msgstr "已停止重新连接"
+msgstr "Reconnexion arrêtée"
 
 #: ../src/core/chat_command.c:751
 #, c-format
 msgid "Regex pattern \"%1$s\" has added"
-msgstr ""
+msgstr "Modèle de regexp « %1$s » ajouté"
 
 #: ../src/core/chat_command.c:764
 #, c-format
 msgid "Regex pattern \"%1$s\" has removed"
-msgstr ""
+msgstr "Modèle de regexp « %1$s » retiré"
 
 #: ../data/ui/prefs_dialog.glade:107
 msgid "Reload Configuration"
-msgstr "重新加载配置"
+msgstr "Recharger la configuration"
 
 #: ../data/ui/connect_panel.glade:375
 msgid "Remember login password"
-msgstr "记住登录密码"
+msgstr "Se souvenir du mot de passe de connexion"
 
 #: ../data/ui/connect_panel.glade:495 ../data/ui/join_panel.glade:113
 msgid "Remember password"
-msgstr "记住密码"
+msgstr "Se souvenir du mot de passe"
 
 #: ../src/sirc/sirc.c:209
 msgid "Remote connection closed"
-msgstr "远程连接已断开"
+msgstr "Connexion distante fermée"
 
 #: ../src/core/app_irc_event.c:1066
 #, c-format
 msgid "Requesting capabilities: %1$s"
-msgstr "正在请求扩展能力：%1$s"
+msgstr "Demande des capacités : %1$s"
 
 #: ../src/core/app_irc_event.c:1099
 #, c-format
 msgid "Requesting new capabilities: %1$s"
-msgstr "正在请求新的扩展能力：%1$s"
+msgstr "Demande de nouvelles capacités : %1$s"
 
 #: ../src/core/app_irc_event.c:1185
 msgid "SASL authentication is not supported on this server, login skipped"
-msgstr "服务器不支持 SASL 认证，登录已跳过"
+msgstr ""
+"L'authentification SASL n'est pas supporté par ce serveur, je saute "
+"l'authentification"
 
 #: ../data/ui/join_panel.glade:383
 msgid "Search Channel"
-msgstr "搜索频道"
+msgstr "Chercher un salon"
 
 #: ../data/ui/connect_panel.glade:409
 msgid "Select a certificate file"
-msgstr "请选择一个证书"
+msgstr "Sélectionner un fichier certificat"
 
 #: ../data/ui/config_panel.glade:166
 msgid "Server"
-msgstr "服务器："
+msgstr "Serveur"
 
 #: ../src/core/app.c:266
 #, c-format
 msgid "Server \"%1$s\" already exists"
-msgstr "服务器 \"%1$s\" 已存在"
+msgstr "Le serveur « %1$s » existe déjà"
 
 #: ../src/core/app_irc_event.c:1063
 #, c-format
 msgid "Server capabilities: %1$s"
-msgstr "服务器扩展能力：%1$s"
+msgstr "Capacités serveur : %1$s"
 
 #: ../src/core/app_irc_event.c:1167
 #, c-format
 msgid "Server has deleted capabilities: %1$s"
-msgstr "服务器已删除扩展能力：%1$s"
+msgstr "Le serveur a supprimé les capacités : %1$s"
 
 #: ../src/core/app_irc_event.c:1096
 #, c-format
 msgid "Server has new capabilities: %1$s"
-msgstr "服务器新增的扩展能力：%1$s"
+msgstr "Le serveur a de nouvelles capacités : %1$s"
 
 #: ../src/core/server_state.c:121
 msgid "Server is already connected"
-msgstr "服务器已连接"
+msgstr "Déjà connecté(e) au serveur"
 
 #: ../src/core/server_state.c:77
 msgid "Server is already disconnected"
-msgstr "服务器已断开"
+msgstr "Déjà déconnecté(e) du serveur"
 
 #: ../src/core/server_state.c:149 ../src/core/server_state.c:152
 #: ../src/core/server_state.c:155 ../src/core/server_state.c:158
 msgid "Server is disconnecting"
-msgstr "正在断开与服务器的连接"
+msgstr "Déconnexion du serveur"
 
 #: ../src/config/password.c:126
 msgid "Server password"
-msgstr "服务器密码"
+msgstr "Mot de passe du serveur"
 
 #: ../data/ui/connect_panel.glade:52
 msgid "Server:"
-msgstr "服务器："
+msgstr "Serveur :"
 
 #: ../data/ui/buffer_menu.glade:38
 msgid "Show _Topic"
-msgstr "显示主题 (_T)"
+msgstr "Afficher le _Topic"
 
 #: ../data/ui/buffer_menu.glade:44
 msgid "Show _User List"
-msgstr "显示用户列表 (_U)"
+msgstr "Afficher la Liste d'_Utilisateurs/trices"
 
 #: ../src/sui/sui_app.c:113
 msgid "Show version information"
-msgstr "显示版本信息"
+msgstr "Afficher les informations de version"
 
 #: ../src/sui/sui_join_panel.c:487 ../src/sui/sui_join_panel.c:584
 #, c-format
 msgid "Showing %1$d of %2$d channels"
-msgstr "正在显示 %2$d 个频道中的 %1$d 个"
+msgstr "Afficher %1$d des %2$d salons"
 
 #: ../src/lib/ret.c:94
 msgid "Some error occurred"
-msgstr "发生未知错误"
+msgstr "Une erreur est survenue"
 
 #: ../src/lib/command.c:150
 msgid "Sorry, command parsing failed, please report a bug to <"
-msgstr "抱歉，命令解析失败，请提交 bug 报告到 <"
+msgstr ""
+"Désolé, l'interprétation de la commande a échoué, veuillez signalé le "
+"problème à <"
 
 #: ../data/ui/app.glade:115 ../data/ui/app.glade:116
 msgid "Srain"
@@ -927,17 +962,17 @@ msgstr "Srain"
 
 #: ../data/ui/prefs_dialog.glade:9
 msgid "Srain Preferences"
-msgstr "Srain 首选项"
+msgstr "Préférences de Srain"
 
 #: ../src/sirc/sirc_config.c:70
 #, c-format
 msgid "TLS: %1$s, TLS verify certificate: %2$s, Encoding: %3$s"
-msgstr "TLS：%1$s，验证 TLS 证书：%2$s，编码：%3$s"
+msgstr "TLS : %1$s, vérification du certificat TLS : %2$s, encodage : %3$s"
 
 #: ../src/core/app_irc_event.c:381
 msgid ""
 "The assigned nickname does not match the requested nickname, login skipped"
-msgstr "分配的昵称和请求的昵称不匹配，登录已跳过"
+msgstr "Le nick ne correspond pas à celui demandé, je saute l'authentification"
 
 #: ../src/core/app_irc_event.c:1505
 #, c-format
@@ -945,103 +980,103 @@ msgid ""
 "The topic of this channel is:\n"
 "\t%1$s"
 msgstr ""
-"频道的主题是：\n"
+"Le topic de ce salon est :\n"
 "\t%1$s"
 
 #: ../data/ui/config_panel.glade:42
 msgid "Theme:"
-msgstr "Srain 主题文件"
+msgstr "Thème :"
 
 #: ../src/lib/command.c:500
 #, c-format
 msgid "Too many arguments, expect %1$d"
-msgstr "参数过多，需要 %1$d 个"
+msgstr "Trop d'arguments, %1$d attendu(s)"
 
 #: ../src/lib/command.c:488
 #, c-format
 msgid "Too many optional arguments (maximum allowed: %1$d)"
-msgstr "可选参数最多为 %1$d 个"
+msgstr "Trop d'arguments optionnels, %1$d attendu(s)"
 
 #: ../data/ui/join_panel.glade:327
 msgid "Topic"
-msgstr "主题"
+msgstr "Topic"
 
 #: ../src/sirc/sirc_config.c:65
 msgid "True"
-msgstr "启用"
+msgstr "Vrai"
 
 #: ../src/core/app_irc_event.c:1399
 #, c-format
 msgid "Trying nickname: \"%1$s\"..."
-msgstr "正在尝试使用昵称：\"%1$s\"……"
+msgstr "Essai du nick : « %1$s »..."
 
 #: ../src/core/app_irc_event.c:203 ../src/core/app_irc_event.c:226
 #: ../src/core/app_irc_event.c:287 ../src/core/app_irc_event.c:302
 #, c-format
 msgid "Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."
-msgstr "到 %1$s(%2$s:%3$d) 的连接已断开，%4$.1f 秒后尝试重新连接……"
+msgstr "Tentative de reconnexion à %1$s(%2$s:%3$d) après %4$.1lfs..."
 
 #: ../src/core/app_irc_event.c:1836
 #, c-format
 msgid "URL of %1$s is: %2$s"
-msgstr "%1$s 的 URL 是：%2$s"
+msgstr "L'URL de %1$s est : %2$s"
 
 #: ../src/core/server_state.c:63
 #, c-format
 msgid "Unallowed action: %1$s"
-msgstr "不允许的行为：%1$s"
+msgstr "Action interdite : %1$s"
 
 #: ../src/lib/command.c:329
 msgid "Unclosed single quotation"
-msgstr "没有闭合的单引号"
+msgstr "Guillemet ouverte mais non fermée"
 
 #: ../src/lib/command.c:140
 #, c-format
 msgid "Unknown command: %1$s"
-msgstr "未知命令：%1$s"
+msgstr "Commande inconnue : %1$s"
 
 #: ../src/core/login_config.c:53
 msgid "Unknown login method"
-msgstr "未知登陆方式：%1$s"
+msgstr "Méthode d'authentification inconnue"
 
 #: ../src/lib/command.c:485
 #, c-format
 msgid "Unknown option %1$s"
-msgstr "未知选项：%1$s"
+msgstr "Option %1$s inconnue"
 
 #: ../src/core/chat_command.c:220 ../src/lib/command.c:494
 #, c-format
 msgid "Unknown sub command: %1$s"
-msgstr "未知子命令：%1$s"
+msgstr "Sous-commande %1$s inconnue"
 
 #: ../src/sui/sui_url_previewer.c:325 ../src/sui/sui_url_previewer.c:575
 msgid "Unsupported URL content type"
-msgstr "不支持的 URL metadata 类型"
+msgstr "Type de contenu de l'URL non supporté"
 
 #: ../src/core/app_url.c:67
 #, c-format
 msgid "Unsupported protocol: %1$s"
-msgstr "不支持的协议：%1$s"
+msgstr "Protocole non supporté : %1$s"
 
 #: ../data/ui/connect_panel.glade:132
 msgid "Use secure connection"
-msgstr "使用安全连接"
+msgstr "Utiliser une connexion sécurisée"
 
 #: ../data/ui/config_panel.glade:180
 msgid "User"
-msgstr "用户数"
+msgstr "Utilisateur/trice"
 
 #: ../src/core/app.c:146
 msgid "User config not found"
-msgstr "用户文件 %1$s 未找到"
+msgstr "Configuration utilisateur/trice non trouvée"
 
 #: ../src/config/password.c:257
 msgid "User password"
-msgstr "用户密码"
+msgstr "Mot de passe d'utilisateur/trice"
 
 #: ../data/ui/join_panel.glade:309
 msgid "Users"
-msgstr "用户数"
+msgstr "Utilisateurs/trices"
 
 #: ../src/sui/sui_user_list.c:212
 #, c-format
@@ -1049,156 +1084,139 @@ msgid ""
 "Users: %d, <span color=\"#157915\">%d@</span>,<span color=\"#856117\">%d%%</"
 "span>,<span color=\"#451984\">%d+</span>"
 msgstr ""
-"在线用户: %d, <span color=\"#157915\">%d@</span>,<span color=\"#856117\">%d"
+"Membres : %d, <span color=\"#157915\">%d@</span>,<span color=\"#856117\">%d"
 "%%</span>,<span color=\"#451984\">%d+</span>"
 
 #: ../src/core/app_irc_event.c:725
 #, c-format
 msgid "You are kicked by %1$s"
-msgstr "你被 %1$s 踢出了频道"
+msgstr "%1$s vous a éjecté(e)"
 
 #: ../src/core/app_irc_event.c:722
 #, c-format
 msgid "You are kicked by %1$s: %2$s"
-msgstr "你被 %1$s 踢出了频道：%2$s"
+msgstr "%1$s vous a éjecté(e) %1$s : %2$s"
 
 #: ../src/core/app_irc_event.c:502
 #, c-format
 msgid "You have joined the channel"
-msgstr "你加入了频道"
+msgstr "Vous avez rejoint le salon"
 
 #: ../src/core/login_config.c:52
 #, c-format
 msgid "You need to set the field %2$s in order to use login method %1$s"
-msgstr "使用 %1$s 登陆方式需要填写 %2$s 选项"
+msgstr ""
+"Vous devez définir le champ %2$s pour utiliser la méthode d'authentification "
+"%1$s"
 
 #: ../src/sui/sui_app.c:132
 msgid "[URL…]"
-msgstr "[URL…]"
+msgstr "[URL...]"
 
 #: ../data/ui/app.glade:22
 msgid "_About"
-msgstr "关于"
+msgstr "À propos (_A)"
 
 #: ../data/ui/connect_panel.glade:169
 msgid "_Address:"
-msgstr "地址："
+msgstr "_Addresse :"
 
 #: ../data/ui/config_panel.glade:217
 msgid "_Apply"
-msgstr "应用"
+msgstr "_Appliquer"
 
 #: ../data/ui/config_panel.glade:203 ../data/ui/prefs_dialog.glade:29
 msgid "_Cancel"
-msgstr "取消"
+msgstr "Annuler (_C)"
 
 #: ../data/ui/nick_menu.glade:41
 msgid "_Chat"
-msgstr "发起聊天 (_C)"
+msgstr "Salon (_C)"
 
 #: ../data/ui/buffer_menu.glade:8
 msgid "_Close"
-msgstr "关闭 (_C)"
+msgstr "Fermer (_C)"
 
 #: ../data/ui/buffer_menu.glade:14
 msgid "_Disconnect"
-msgstr "断开连接 (_C)"
+msgstr "Se _déconnecter"
 
 #: ../data/ui/app.glade:37
 msgid "_Exit"
-msgstr "退出 (_E)"
+msgstr "F_ermer"
 
 #: ../data/ui/nick_menu.glade:23
 msgid "_Ignore"
-msgstr "屏蔽 (_I)"
+msgstr "_Ignorer"
 
 #: ../data/ui/nick_menu.glade:32
 msgid "_Kick"
-msgstr "踢出 (_K)"
+msgstr "_Kicker"
 
 #: ../data/ui/buffer_menu.glade:26
 msgid "_Leave"
-msgstr "离开 (_C)"
+msgstr "Partir (_L)"
 
 #: ../data/ui/connect_panel.glade:450
 msgid "_Login method:"
-msgstr "登陆方式："
+msgstr "Méthode d'authentification (_L)"
 
 #: ../data/ui/connect_panel.glade:276
 msgid "_Nickname:"
-msgstr "昵称："
+msgstr "_Nick :"
 
 #: ../data/ui/config_panel.glade:231 ../data/ui/prefs_dialog.glade:43
 msgid "_OK"
-msgstr "确定"
+msgstr "_OK"
 
 #: ../data/ui/connect_panel.glade:153
 msgid "_Password:"
-msgstr "密码："
+msgstr "Mot de _passe :"
 
 #: ../data/ui/app.glade:13 ../data/ui/app.glade:55
 msgid "_Preferences"
-msgstr "首选项"
+msgstr "_Préférences"
 
 #: ../data/ui/url_previewer.glade:26
 msgid "_Preview"
-msgstr "预览"
+msgstr "_Prévisualisation"
 
 #: ../data/ui/buffer_menu.glade:32
 msgid "_Quit"
-msgstr "退出"
+msgstr "_Quitter"
 
 #: ../data/ui/buffer_menu.glade:20
 msgid "_Reconnect"
-msgstr "重新连接 (_C)"
+msgstr "Se _reconnecter"
 
 #: ../data/ui/prefs_dialog.glade:88
 msgid "_Reload"
-msgstr "重新加载"
+msgstr "_Recharger"
 
 #: ../data/ui/connect_panel.glade:185
 msgid "_Server:"
-msgstr "服务器："
+msgstr "_Serveur :"
 
 #: ../data/ui/nick_menu.glade:14
 msgid "_Whois"
-msgstr "个人信息 (_W)"
+msgstr "_Whois"
 
 #: ../src/render/mention_renderer.c:85
 #, c-format
 msgid "g_regex_new() failed: %1$s"
-msgstr ""
+msgstr "g_regex_new() a échouté : %1$s"
 
 #: ../src/core/app_irc_event.c:577 ../src/core/app_irc_event.c:652
 #, c-format
 msgid "mode %1$s %2$s by %3$s"
-msgstr "%3$s 将 %1$s 的模式变更为 %2$s"
+msgstr "mode %1$s %2$s par %3$s"
 
 #: ../src/config/reader.c:331
 #, c-format
 msgid "server-list[%1$d] doesn't have a name"
-msgstr "server_list 中的第 %1$d 个服务器没有名字"
+msgstr "server-list[%1$d] n'a pas de nom"
 
 #: ../src/core/chat_command.c:374
 #, c-format
 msgid "user \"%1$s\" not found"
-msgstr "用户文件 %1$s 未找到"
-
-#, c-format
-#~ msgid "Invalid value in server config: %1$s"
-#~ msgstr "服务器配置中出现了无效的值：%1$s"
-
-#, c-format
-#~ msgid "Context switched to server \"%1$s\""
-#~ msgstr "无法在服务器 \"%1$s\" 上注册"
-
-#~ msgid "Missing argument <server>"
-#~ msgstr "缺少参数 <服务器名称>"
-
-#, c-format
-#~ msgid "No such chat: %1$s"
-#~ msgstr "找不到聊天：%1$s"
-
-#, c-format
-#~ msgid "No such server: %1$s"
-#~ msgstr "找不到服务器：%1$s"
+msgstr "utilisateur/trice « %1$s » non trouvé(e)"
