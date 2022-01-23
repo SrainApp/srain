@@ -1085,7 +1085,7 @@ static void irc_event_cap(SircSession *sirc, const char *event,
     bool multiline;
     bool cap_end;
     const char *cap_event;
-    const char *rawcaps;
+    char *rawcaps;
     char **caps;
     SrnServer *srv;
 
@@ -1105,6 +1105,7 @@ static void irc_event_cap(SircSession *sirc, const char *event,
         g_return_if_fail(count == 4);
         rawcaps = params[3];
     }
+    rawcaps = g_strchomp(rawcaps);
     caps = g_strsplit(rawcaps, " ", 0);
 
     /* Process CAP event */
