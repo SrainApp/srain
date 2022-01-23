@@ -97,7 +97,7 @@ SuiSideBarItem *sui_side_bar_item_new(const char *title,
 void sui_side_bar_item_update(SuiSideBarItem *self,
         const char *nick, const char *msg){
     char *text;
-    GtkWidget *row;
+    GtkWidget *row, *event_box;
 
     text = strip_markup_tag(msg);
     g_return_if_fail(text);
@@ -115,8 +115,10 @@ void sui_side_bar_item_update(SuiSideBarItem *self,
 
     self->update_time = get_time_since_first_call_ms();
 
-    /* Mark as chagned */
-    row = gtk_widget_get_parent(GTK_WIDGET(self));
+    /* Mark as changed */
+    event_box = gtk_widget_get_parent(GTK_WIDGET(self));
+    g_return_if_fail(GTK_IS_EVENT_BOX(event_box));
+    row = gtk_widget_get_parent(GTK_WIDGET(event_box));
     g_return_if_fail(GTK_IS_LIST_BOX_ROW(row));
     gtk_list_box_row_changed(GTK_LIST_BOX_ROW(row));
 }
