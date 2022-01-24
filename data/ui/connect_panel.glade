@@ -429,8 +429,49 @@
                     </child>
                   </object>
                   <packing>
-                    <property name="name">certificate</property>
+                    <property name="name">ecdsa-certificate</property>
                     <property name="position">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkGrid" id="client_cert_grid">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="row_spacing">4</property>
+                    <property name="column_spacing">4</property>
+                    <child>
+                      <object class="GtkFileChooserButton" id="client_cert_file_chooser_button">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="halign">end</property>
+                        <property name="valign">baseline</property>
+                        <property name="create_folders">False</property>
+                        <property name="filter">X509 Certificate</property>
+                        <property name="title" translatable="yes">Select a certificate file</property>
+                      </object>
+                      <packing>
+                        <property name="left_attach">1</property>
+                        <property name="top_attach">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="client_cert_label">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="halign">start</property>
+                        <property name="valign">baseline</property>
+                        <property name="hexpand">True</property>
+                        <property name="label" translatable="yes">Client certificate:</property>
+                      </object>
+                      <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">0</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="name">tls-certificate</property>
+                    <property name="position">3</property>
                   </packing>
                 </child>
               </object>
@@ -580,6 +621,7 @@
       <widget name="login_password_entry"/>
       <widget name="remember_login_password_check_button"/>
       <widget name="login_cert_file_chooser_button"/>
+      <widget name="client_cert_file_chooser_button"/>
       <widget name="login_method_combo_box"/>
       <widget name="password_entry"/>
       <widget name="remember_password_check_button"/>
