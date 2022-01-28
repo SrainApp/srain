@@ -38,7 +38,7 @@ SircMessageContext* sirc_message_context_new(GDateTime* time) {
 
 const GDateTime* sirc_message_context_get_time(const SircMessageContext *context) {
     g_return_val_if_fail(context, NULL);
-    return context->time;
+    return g_date_time_ref(context->time);
 }
 
 void sirc_message_context_free(SircMessageContext *context) {
