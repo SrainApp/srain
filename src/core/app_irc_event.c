@@ -43,88 +43,88 @@
 
 static gboolean do_period_ping(gpointer user_data);
 static void add_numeric_error_message(SrnChat *chat, int event, const char
-        *origin, const char **params, int count, const SircMessageContext *context);
+        *origin, const char **params, int count, SircMessageContext *context);
 static void rejoin_all_channels(SrnServer *srv);
 static gboolean rejoin_all_channels_cb(gpointer user_data);
 
 static void irc_event_connect(SircSession *sirc, const char *event,
-        const SircMessageContext *context);
+        SircMessageContext *context);
 static void irc_event_connect_fail(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context);
+        SircMessageContext *context);
 static void irc_event_disconnect(SircSession *sirc, const char *event,
         const char *origin, const char *params[], int count,
-        const SircMessageContext *context);
+        SircMessageContext *context);
 
 static void irc_event_nick(SircSession *sirc, const char *event,
         const char *origin, const char *params[], int count,
-        const SircMessageContext *context);
+        SircMessageContext *context);
 static void irc_event_quit(SircSession *sirc, const char *event,
         const char *origin, const char *params[], int count,
-        const SircMessageContext *context);
+        SircMessageContext *context);
 static void irc_event_join(SircSession *sirc, const char *event,
         const char *origin, const char *params[], int count,
-        const SircMessageContext *context);
+        SircMessageContext *context);
 static void irc_event_part(SircSession *sirc, const char *event,
         const char *origin, const char *params[], int count,
-        const SircMessageContext *context);
+        SircMessageContext *context);
 static void irc_event_mode(SircSession *sirc, const char *event,
         const char *origin, const char *params[], int count,
-        const SircMessageContext *context);
+        SircMessageContext *context);
 static void irc_event_umode(SircSession *sirc, const char *event,
         const char *origin, const char *params[], int count,
-        const SircMessageContext *context);
+        SircMessageContext *context);
 static void irc_event_topic(SircSession *sirc, const char *event,
         const char *origin, const char *params[], int count,
-        const SircMessageContext *context);
+        SircMessageContext *context);
 static void irc_event_kick(SircSession *sirc, const char *event,
         const char *origin, const char *params[], int count,
-        const SircMessageContext *context);
+        SircMessageContext *context);
 static void irc_event_channel(SircSession *sirc, const char *event,
         const char *origin, const char *params[], int count,
-        const SircMessageContext *context);
+        SircMessageContext *context);
 static void irc_event_privmsg(SircSession *sirc, const char *event,
         const char *origin, const char *params[], int count,
-        const SircMessageContext *context);
+        SircMessageContext *context);
 static void irc_event_notice(SircSession *sirc, const char *event,
         const char *origin, const char *params[], int count,
-        const SircMessageContext *context);
+        SircMessageContext *context);
 static void irc_event_tagmsg(SircSession *sirc, const char *event,
         const char *origin, const char *params[], int count,
-        const SircMessageContext *context);
+        SircMessageContext *context);
 static void irc_event_channel_notice(SircSession *sirc, const char *event,
         const char *origin, const char *params[], int count,
-        const SircMessageContext *context);
+        SircMessageContext *context);
 static void irc_event_invite(SircSession *sirc, const char *event,
         const char *origin, const char *params[], int count,
-        const SircMessageContext *context);
+        SircMessageContext *context);
 static void irc_event_ctcp_req(SircSession *sirc, const char *event,
         const char *origin, const char *params[], int count,
-        const SircMessageContext *context);
+        SircMessageContext *context);
 static void irc_event_ctcp_rsp(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context);
+        SircMessageContext *context);
 static void irc_event_cap(SircSession *sirc, const char *event,
         const char *origin, const char *params[], int count,
-        const SircMessageContext *context);
+        SircMessageContext *context);
 static void irc_event_authenticate(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context);
+        SircMessageContext *context);
 static void irc_event_ping(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context);
+        SircMessageContext *context);
 static void irc_event_pong(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context);
+        SircMessageContext *context);
 static void irc_event_error(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context);
+        SircMessageContext *context);
 static void irc_event_welcome(SircSession *sirc, int event,
         const char *origin, const char *params[], int count,
-        const SircMessageContext *context);
+        SircMessageContext *context);
 static void irc_event_numeric (SircSession *sirc, int event,
         const char *origin, const char *params[], int count,
-        const SircMessageContext *context);
+        SircMessageContext *context);
 
 void srn_application_init_irc_event(SrnApplication *app) {
     app->irc_events.connect = irc_event_connect;
@@ -156,7 +156,7 @@ void srn_application_init_irc_event(SrnApplication *app) {
     app->irc_events.numeric = irc_event_numeric;
 }
 
-static void irc_event_connect(SircSession *sirc, const char *event, const SircMessageContext *context){
+static void irc_event_connect(SircSession *sirc, const char *event, SircMessageContext *context){
     GList *list;
     SrnRet ret;
     SrnServer *srv;
@@ -200,7 +200,7 @@ static void irc_event_connect(SircSession *sirc, const char *event, const SircMe
 
 static void irc_event_connect_fail(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context){
+        SircMessageContext *context){
     GList *list;
     const char *msg;
     SrnRet ret;
@@ -265,7 +265,7 @@ static void irc_event_connect_fail(SircSession *sirc, const char *event,
 
 static void irc_event_disconnect(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context){
+        SircMessageContext *context){
     const char *msg;
     GList *list;
     SrnRet ret;
@@ -342,7 +342,7 @@ static void irc_event_disconnect(SircSession *sirc, const char *event,
 
 static void irc_event_welcome(SircSession *sirc, int event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context){
+        SircMessageContext *context){
     bool try_login;
     bool nick_match;
     const char *nick ;
@@ -426,7 +426,7 @@ static void irc_event_welcome(SircSession *sirc, int event,
 
 static void irc_event_nick(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context){
+        SircMessageContext *context){
     const char *old_nick;
     const char *new_nick;
     GList *lst;
@@ -463,7 +463,7 @@ static void irc_event_nick(SircSession *sirc, const char *event,
 
 static void irc_event_quit(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context){
+        SircMessageContext *context){
     char buf[512];
     const char *reason;
     GList *lst;
@@ -508,7 +508,7 @@ static void irc_event_quit(SircSession *sirc, const char *event,
 
 static void irc_event_join(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context){
+        SircMessageContext *context){
     char buf[512];
     const char *chan;
     SrnServer *srv;
@@ -549,7 +549,7 @@ static void irc_event_join(SircSession *sirc, const char *event,
 
 static void irc_event_part(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context){
+        SircMessageContext *context){
     char buf[512];
     const char *chan;
     const char *reason;
@@ -587,7 +587,7 @@ static void irc_event_part(SircSession *sirc, const char *event,
 
 static void irc_event_mode(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context){
+        SircMessageContext *context){
     const char *chan;
     GString *buf;
     GString *modes;
@@ -673,7 +673,7 @@ static void irc_event_mode(SircSession *sirc, const char *event,
 
 static void irc_event_umode(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context){
+        SircMessageContext *context){
     const char *nick;
     GString *buf;
     GString *modes;
@@ -701,7 +701,7 @@ static void irc_event_umode(SircSession *sirc, const char *event,
 
 static void irc_event_topic(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context){
+        SircMessageContext *context){
     const char *chan;
     const char *topic;
     SrnServer *srv;
@@ -736,7 +736,7 @@ static void irc_event_topic(SircSession *sirc, const char *event,
 
 static void irc_event_kick(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context){
+        SircMessageContext *context){
     char buf[512];
     const char *chan;
     const char *kicked;
@@ -789,7 +789,7 @@ static void irc_event_kick(SircSession *sirc, const char *event,
 
 static void irc_event_channel(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context){
+        SircMessageContext *context){
     const char *chan;
     const char *msg;
     SrnServer *srv;
@@ -816,7 +816,7 @@ static void irc_event_channel(SircSession *sirc, const char *event,
 
 static void irc_event_privmsg(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context){
+        SircMessageContext *context){
     const char *msg;
     SrnServer *srv;
     SrnChat *chat;
@@ -848,7 +848,7 @@ static void irc_event_privmsg(SircSession *sirc, const char *event,
 
 static void irc_event_notice(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context){
+        SircMessageContext *context){
     const char *msg;
     SrnServer *srv;
     SrnChat *chat;
@@ -880,13 +880,13 @@ static void irc_event_notice(SircSession *sirc, const char *event,
 
 static void irc_event_tagmsg(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context){
+        SircMessageContext *context){
     /* Not used yet */
 }
 
 static void irc_event_channel_notice(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context){
+        SircMessageContext *context){
     const char *chan;
     const char *msg;
     SrnServer *srv;
@@ -913,7 +913,7 @@ static void irc_event_channel_notice(SircSession *sirc, const char *event,
 
 static void irc_event_invite(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context){
+        SircMessageContext *context){
     const char *nick;
     const char *chan;
     SrnServer *srv;
@@ -945,7 +945,7 @@ static void irc_event_invite(SircSession *sirc, const char *event,
 
 static void irc_event_ctcp_req(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context){
+        SircMessageContext *context){
     const char *target;
     const char *msg;
     SrnServer *srv;
@@ -1022,7 +1022,7 @@ static void irc_event_ctcp_req(SircSession *sirc, const char *event,
 
 static void irc_event_ctcp_rsp(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context){
+        SircMessageContext *context){
     const char *msg;
     SrnServer *srv;
     SrnChat *chat;
@@ -1081,7 +1081,7 @@ static void irc_event_ctcp_rsp(SircSession *sirc, const char *event,
 
 static void irc_event_cap(SircSession *sirc, const char *event,
         const char *origin, const char *params[], int count,
-        const SircMessageContext *context){
+        SircMessageContext *context){
     bool multiline;
     bool cap_end;
     const char *cap_event;
@@ -1267,7 +1267,7 @@ static void irc_event_cap(SircSession *sirc, const char *event,
 
 static void irc_event_authenticate(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context){
+        SircMessageContext *context){
     SrnServer *srv;
 
     srv = sirc_get_ctx(sirc);
@@ -1363,13 +1363,13 @@ static void irc_event_authenticate(SircSession *sirc, const char *event,
 
 static void irc_event_ping(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context){
+        SircMessageContext *context){
     // Nothing to do for now
 }
 
 static void irc_event_pong(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context){
+        SircMessageContext *context){
     const char *msg;
     unsigned long time;
     unsigned long nowtime;
@@ -1396,7 +1396,7 @@ static void irc_event_pong(SircSession *sirc, const char *event,
 
 static void irc_event_error(SircSession *sirc, const char *event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context){
+        SircMessageContext *context){
     const char *msg;
     SrnServer *srv;
 
@@ -1412,7 +1412,7 @@ static void irc_event_error(SircSession *sirc, const char *event,
 
 static void irc_event_numeric(SircSession *sirc, int event,
         const char *origin, const char **params, int count,
-        const SircMessageContext *context){
+        SircMessageContext *context){
     SrnServer *srv;
     SrnServerUser *srv_user;
     SrnChatUser *chat_user;
@@ -2041,7 +2041,7 @@ static gboolean do_period_ping(gpointer user_data){
  * Usually the params of error message is ["<nick>", ... "<reason>"].
  */
 static void add_numeric_error_message(SrnChat *chat, int event, const char
-        *origin, const char **params, int count, const SircMessageContext *context){
+        *origin, const char **params, int count, SircMessageContext *context){
     GString *buf;
 
     g_return_if_fail(chat);

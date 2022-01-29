@@ -162,7 +162,7 @@ SrnChatUser* srn_chat_get_user(SrnChat *self, const char *nick){
 }
 
 void srn_chat_add_sent_message(SrnChat *self, const char *content,
-        const SircMessageContext *context){
+        SircMessageContext *context){
     SrnChatUser *user;
     SrnMessage *msg;
     SrnRenderFlags rflags;
@@ -190,7 +190,7 @@ cleanup:
 }
 
 void srn_chat_add_recv_message(SrnChat *self, SrnChatUser *user,
-        const char *content, const SircMessageContext *context){
+        const char *content, SircMessageContext *context){
     SrnMessage *msg;
     SrnRenderFlags rflags;
     SrnFilterFlags fflags;
@@ -220,7 +220,7 @@ cleanup:
 }
 
 void srn_chat_add_notice_message(SrnChat *self, SrnChatUser *user,
-        const char *content, const SircMessageContext *context){
+        const char *content, SircMessageContext *context){
     SrnMessage *msg;
     SrnRenderFlags rflags;
     SrnFilterFlags fflags;
@@ -250,7 +250,7 @@ cleanup:
 }
 
 void srn_chat_add_action_message(SrnChat *self, SrnChatUser *user,
-        const char *content, const SircMessageContext *context){
+        const char *content, SircMessageContext *context){
     SrnMessage *msg;
     SrnFilterFlags fflags;
     SrnRenderFlags rflags;
@@ -301,7 +301,7 @@ cleanup:
  * @param content
  */
 void srn_chat_add_misc_message(SrnChat *self, const char *content,
-        const SircMessageContext *context){
+        SircMessageContext *context){
     SrnMessage *msg;
     SrnRenderFlags rflags;
 
@@ -325,7 +325,7 @@ cleanup:
  * @param fmt
  * @param ...
  */
-void srn_chat_add_misc_message_fmt(SrnChat *self, const SircMessageContext *context, const char *fmt, ...){
+void srn_chat_add_misc_message_fmt(SrnChat *self, SircMessageContext *context, const char *fmt, ...){
     char *content;
     va_list args;
 
@@ -337,7 +337,7 @@ void srn_chat_add_misc_message_fmt(SrnChat *self, const SircMessageContext *cont
 }
 
 void srn_chat_add_misc_message_with_user(SrnChat *self, SrnChatUser *user,
-        const char *content, const SircMessageContext *context){
+        const char *content, SircMessageContext *context){
     SrnMessage *msg;
     SrnRenderFlags rflags;
     SrnFilterFlags fflags;
@@ -360,7 +360,7 @@ cleanup:
 }
 
 void srn_chat_add_misc_message_with_user_fmt(SrnChat *self, SrnChatUser *user,
-        const SircMessageContext *context, const char *fmt, ...){
+        SircMessageContext *context, const char *fmt, ...){
     char *content;
     va_list args;
 
@@ -377,7 +377,7 @@ void srn_chat_add_misc_message_with_user_fmt(SrnChat *self, SrnChatUser *user,
  * @param self
  * @param content
  */
-void srn_chat_add_error_message(SrnChat *self, const char *content, const SircMessageContext *context){
+void srn_chat_add_error_message(SrnChat *self, const char *content, SircMessageContext *context){
     SrnMessage *msg;
     SrnRenderFlags rflags;
 
@@ -401,7 +401,7 @@ cleanup:
  * @param fmt
  * @param ...
  */
-void srn_chat_add_error_message_fmt(SrnChat *self, const SircMessageContext *context,
+void srn_chat_add_error_message_fmt(SrnChat *self, SircMessageContext *context,
         const char *fmt, ...){
     char *content;
     va_list args;
@@ -414,7 +414,7 @@ void srn_chat_add_error_message_fmt(SrnChat *self, const SircMessageContext *con
 }
 
 void srn_chat_add_error_message_with_user(SrnChat *self, SrnChatUser *user,
-        const char *content, const SircMessageContext *context){
+        const char *content, SircMessageContext *context){
     SrnMessage *msg;
     SrnRenderFlags rflags;
     SrnFilterFlags fflags;
@@ -438,7 +438,7 @@ cleanup:
 }
 
 void srn_chat_add_error_message_with_user_fmt(SrnChat *self, SrnChatUser *user,
-        const SircMessageContext *context, const char *fmt, ...){
+        SircMessageContext *context, const char *fmt, ...){
     char *content;
     va_list args;
 
@@ -450,7 +450,7 @@ void srn_chat_add_error_message_with_user_fmt(SrnChat *self, SrnChatUser *user,
 }
 
 void srn_chat_set_topic(SrnChat *self, SrnChatUser *user, const char *topic,
-        const SircMessageContext *context){
+        SircMessageContext *context){
     SrnMessage *msg;
     SrnRenderFlags rflags;
 

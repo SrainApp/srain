@@ -34,9 +34,9 @@
 #include "srain.h"
 #include "log.h"
 
-static void sirc_ctcp_event_hdr(SircSession *sirc, SircMessage *imsg, const SircMessageContext *context);
+static void sirc_ctcp_event_hdr(SircSession *sirc, SircMessage *imsg, SircMessageContext *context);
 
-void _sirc_event_hdr(SircSession *sirc, SircMessage *imsg, const SircMessageContext *context);
+void _sirc_event_hdr(SircSession *sirc, SircMessage *imsg, SircMessageContext *context);
 
 void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
     GDateTime *time = NULL;
@@ -61,7 +61,7 @@ void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
     _sirc_event_hdr(sirc, imsg, context);
 }
 
-void _sirc_event_hdr(SircSession *sirc, SircMessage *imsg, const SircMessageContext *context){
+void _sirc_event_hdr(SircSession *sirc, SircMessage *imsg, SircMessageContext *context){
     int num;
     bool nullparam;
     const char *origin;
@@ -231,7 +231,7 @@ void _sirc_event_hdr(SircSession *sirc, SircMessage *imsg, const SircMessageCont
      }
 }
 
-static void sirc_ctcp_event_hdr(SircSession *sirc, SircMessage *imsg, const SircMessageContext *context) {
+static void sirc_ctcp_event_hdr(SircSession *sirc, SircMessage *imsg, SircMessageContext *context) {
     int len;
     char *ptr;
     char *tmp;

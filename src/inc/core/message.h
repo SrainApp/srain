@@ -63,7 +63,7 @@ struct _SrnMessage {
 };
 
 SrnMessage* srn_message_new(SrnChat *chat, SrnChatUser *user, const char *content,
-        SrnMessageType type, const SircMessageContext *context);
+        SrnMessageType type, SircMessageContext *context);
 void srn_message_free(SrnMessage *msg);
 char* srn_message_to_string(const SrnMessage *self);
 

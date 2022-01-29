@@ -23,15 +23,15 @@
 #endif
 
 typedef void (*SircSimpleEventCallback) (SircSession *sirc, const char *event,
-        const SircMessageContext *context);
+        SircMessageContext *context);
 
 typedef void (*SircEventCallback) (SircSession *sirc, const char *event,
         const char *origin, const char *params[], int count,
-        const SircMessageContext *context);
+        SircMessageContext *context);
 
 typedef void (*SircNumericEventCallback) (SircSession *sirc, int event,
         const char *origin, const char *params[], int count,
-        const SircMessageContext *context);
+        SircMessageContext *context);
 
 typedef struct {
     SircSimpleEventCallback     connect;
