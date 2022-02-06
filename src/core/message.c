@@ -42,7 +42,7 @@ SrnMessage* srn_message_new(SrnChat *chat, SrnChatUser *user,
     self->sender = user;
     self->chat = chat;
     self->content = g_strdup(content);
-    self->time = sirc_message_context_get_time(context);
+    self->time = g_date_time_ref(sirc_message_context_get_time(context));
 
     // Inital render
     self->rendered_sender = g_markup_escape_text(user->srv_user->nick, -1);
