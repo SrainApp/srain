@@ -47,7 +47,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Srain'
-copyright = '2021, Shengyu Zhang'
+copyright = '2022, Shengyu Zhang'
 author = 'Shengyu Zhang'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -55,7 +55,7 @@ author = 'Shengyu Zhang'
 # built documents.
 #
 # The short X.Y version.
-version = '1.3.1'
+version = '1.3.2'
 # The full version, including alpha/beta/rc tags.
 release = version
 
