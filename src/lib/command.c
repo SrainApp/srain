@@ -444,6 +444,9 @@ static SrnRet srn_command_parse(SrnCommand *cmd, void *user_data){
 
     /* Get arguments */
     for (int i = 0; i < binding->argc; i++){
+        if (!ptr){
+            goto missing_arg;
+        }
         if (i != binding->argc - 1){
             if (get_quote_arg(ptr, &cmd->argv[narg], &ptr) != SRN_OK){
                 goto missing_arg;
@@ -454,9 +457,6 @@ static SrnRet srn_command_parse(SrnCommand *cmd, void *user_data){
             }
         }
         narg++;
-        if (!ptr){
-            goto missing_arg;
-        }
     }
 
     /* Debug output */

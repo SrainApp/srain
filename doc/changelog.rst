@@ -30,6 +30,25 @@ Change Log
 
 .. _version-latest:
 
+.. _version-1.3.2:
+
+2022-02-10 Version 1.3.2
+========================
+
+- Features:
+
+  - Add French translation (:pull:`351`), by @progval
+
+- Bug fixes:
+
+  - Silence assertion failure on /part command (:pull:`348`), by @progval
+  - Silence "Unknown capability" warning on trailing whitespace (:pull:`349`), by @progval
+
+- Changes:
+
+  - Add tooltips to buttons with no text(:pull:`350`), by @progval
+  - Srain is added to offical repository of Debian, see :ref:`install-packages-debian` for details
+
 .. _version-1.3.1:
 
 2021-12-18 Version 1.3.1

@@ -395,9 +395,9 @@ msgstr "Kan patroon niet bijvoegen aan '%1$s': %2$s"
 
 #: ../src/core/chat_command.c:838
 #, c-format
-msgid "Failed to attach pattern to user %1$s\" of chat \"%2$s\": %2$s"
+msgid "Failed to attach pattern to user %1$s\" of chat \"%2$s\": %3$s"
 msgstr ""
-"Kan patroon niet bijvoegen aan gebruiker '%1$s' in gesprek '%2$s': %2$s"
+"Kan patroon niet bijvoegen aan gebruiker '%1$s' in gesprek '%2$s': %3$s"
 
 #: ../src/core/server.c:149
 #, c-format
