@@ -143,34 +143,13 @@ If you are the user of `Arch Linux CN Repository`_, try:
 Debian
 ~~~~~~
 
-There is no srain package in the official repository yet.
-
-Pre-built package
-.................
-
-We provide pre-built deb package that you can get it from `Github release page`_.
-
-Build byself
-............
-
-Copy the debian folder on `srain-contrib`_ to srain folder. Then type following
-command on your terminal:
+Srain now in `offical repository of Debian`__:
 
 .. code-block:: console
 
-    $ dpkg-buildpackage -b -us -uc
+   # apt install srain
 
-Note that the dependencies mentioned above also should be installed. The
-details could be found on `debian/crontrol`_ file.
-
-Then install the package (replace package name with the name of your package):
-
-.. parsed-literal::
-
-    $ sudo apt-get install -f ../srain\_\ |release|-1_amd64.deb
-
-.. _srain-contrib: https://github.com/SrainApp/srain-contrib/tree/master/pack/
-.. _debian/crontrol: https://github.com/SrainApp/srain-contrib/blob/master/pack/debian/control
+__ https://packages.debian.org/unstable/net/srain
 
 .. _install-packages-flatpak:
 
