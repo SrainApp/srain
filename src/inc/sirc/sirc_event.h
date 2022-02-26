@@ -60,6 +60,9 @@ typedef struct {
     SircEventCallback           ping;
     SircEventCallback           pong;
     SircEventCallback           error;
+    SircEventCallback           fail;
+    SircEventCallback           warn;
+    SircEventCallback           note;
     SircEventCallback           unknown;
 
     SircNumericEventCallback    numeric;
