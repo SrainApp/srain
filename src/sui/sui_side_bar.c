@@ -58,13 +58,14 @@ static void
 listbox_on_row_selected(GtkListBox *box, GtkListBoxRow *row, gpointer user_data){
     SuiSideBar *sidebar;
     SuiSideBarItem *item;
-    GtkWidget *child;
+    GtkWidget *child, *event_box;
 
     sidebar = SUI_SIDE_BAR(user_data);
 
     if (!row) return;
 
-    item = SUI_SIDE_BAR_ITEM(gtk_bin_get_child(GTK_BIN(row)));
+    event_box = gtk_bin_get_child(GTK_BIN(row));
+    item = SUI_SIDE_BAR_ITEM(gtk_bin_get_child(GTK_BIN(event_box)));
     child = g_object_get_data(G_OBJECT(item), "stack-child");
     gtk_stack_set_visible_child(sidebar->stack, child);
 
@@ -73,18 +74,12 @@ listbox_on_row_selected(GtkListBox *box, GtkListBoxRow *row, gpointer user_data)
 
 static gboolean
 list_box_on_popup(GtkWidget *widget, GdkEventButton *event, gpointer user_data){
-    GtkListBox *list_box;
-    GtkListBoxRow *row;
+    /* widget is the GtkEventBox containing the SuiSideBarItem */
     SuiBuffer *child;
     SuiSideBarItem *item;
 
-    list_box = GTK_LIST_BOX(widget);
-
     if (event->button == 3){
-        row = gtk_list_box_get_selected_row(list_box);
-        if (!row) return FALSE;
-
-        item = SUI_SIDE_BAR_ITEM(gtk_bin_get_child(GTK_BIN(row)));
+        item = SUI_SIDE_BAR_ITEM(gtk_bin_get_child(GTK_BIN(widget)));
         child = g_object_get_data(G_OBJECT(item), "stack-child");
 
         gtk_menu_popup(sui_buffer_get_menu(child), NULL, NULL, NULL, NULL,
@@ -101,9 +96,15 @@ static gint list_sort_func(GtkListBoxRow *row1, GtkListBoxRow *row2,
     unsigned long time2;
     SuiSideBarItem *item1;
     SuiSideBarItem *item2;
+    GtkWidget *event_box;
 
-    item1 = SUI_SIDE_BAR_ITEM(gtk_bin_get_child(GTK_BIN(row1)));
-    item2 = SUI_SIDE_BAR_ITEM(gtk_bin_get_child(GTK_BIN(row2)));
+    event_box = gtk_bin_get_child(GTK_BIN(row1));
+    g_return_val_if_fail(GTK_IS_EVENT_BOX(event_box), 0);
+    item1 = SUI_SIDE_BAR_ITEM(gtk_bin_get_child(GTK_BIN(event_box)));
+
+    event_box = gtk_bin_get_child(GTK_BIN(row2));
+    g_return_val_if_fail(GTK_IS_EVENT_BOX(event_box), 0);
+    item2 = SUI_SIDE_BAR_ITEM(gtk_bin_get_child(GTK_BIN(event_box)));
 
     time1 = sui_side_bar_item_get_update_time(item1);
     time2 = sui_side_bar_item_get_update_time(item2);
@@ -112,7 +113,8 @@ static gint list_sort_func(GtkListBoxRow *row1, GtkListBoxRow *row2,
 }
 
 static gboolean list_filter_func(GtkListBoxRow *row, gpointer user_data){
-    SuiSideBarItem *item = gtk_bin_get_child(GTK_BIN(row));
+    GtkWidget *event_box = gtk_bin_get_child(GTK_BIN(row));
+    SuiSideBarItem *item = SUI_SIDE_BAR_ITEM(gtk_bin_get_child(GTK_BIN(event_box)));
     return gtk_widget_get_visible(GTK_WIDGET(item));
 }
 
@@ -141,8 +143,6 @@ sui_side_bar_init(SuiSideBar *self){
 
     g_signal_connect(self->list, "row-selected",
             G_CALLBACK(listbox_on_row_selected), self);
-    g_signal_connect(self->list, "button-press-event",
-            G_CALLBACK(list_box_on_popup), NULL);
 
     style = gtk_widget_get_style_context(GTK_WIDGET(self));
     gtk_style_context_add_class(style, "sidebar"); // ?
@@ -157,6 +157,7 @@ add_child(GtkWidget *child, SuiSideBar *sidebar){
     SuiBuffer *buf;
     SuiSideBarItem *item;
     SrnChat *chat;
+    GtkWidget *event_box;
 
     if (g_hash_table_lookup(sidebar->rows, child))
         return;
@@ -186,12 +187,20 @@ add_child(GtkWidget *child, SuiSideBar *sidebar){
     // gtk_widget_set_halign(item, GTK_ALIGN_START);
     // gtk_widget_set_valign(item, GTK_ALIGN_CENTER);
 
+    /* The event_box is the actual row inserted in the list, and contains the child.
+     * This allows listening for right-click events and display the contextual menu. */
+    event_box = gtk_event_box_new();
+    gtk_container_add(GTK_CONTAINER(event_box), GTK_WIDGET(item));
+
     g_object_set_data(G_OBJECT(item), "stack-child", child);
 
-    row = sui_common_unfocusable_list_box_row_new(GTK_WIDGET(item));
+    row = sui_common_unfocusable_list_box_row_new(GTK_WIDGET(event_box));
     gtk_list_box_insert(sidebar->list, GTK_WIDGET(row), -1);
     gtk_list_box_select_row(sidebar->list, row);
     g_hash_table_insert(sidebar->rows, child, row);
+
+    g_signal_connect(event_box, "button-press-event",
+            G_CALLBACK(list_box_on_popup), NULL);
 
     sui_side_bar_item_update(item, NULL, "");
 }
@@ -340,7 +349,9 @@ sui_side_bar_get_item(SuiSideBar *sidebar, SuiBuffer *buf){
 
     row = g_hash_table_lookup(sidebar->rows, buf);
     g_return_val_if_fail(row, NULL);
-    return SUI_SIDE_BAR_ITEM(gtk_bin_get_child(GTK_BIN(row)));
+
+    GtkWidget *event_box = gtk_bin_get_child(GTK_BIN(row));
+    return SUI_SIDE_BAR_ITEM(gtk_bin_get_child(GTK_BIN(event_box)));
 }
 
 static GList *get_visible_rows(SuiSideBar* self) {
