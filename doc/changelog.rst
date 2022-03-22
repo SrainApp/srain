@@ -28,13 +28,6 @@ Change Log
 
       - XXX
 
-2021-12-18 Version 1.2.5
-========================
-
-- Bug fixes:
-
-  - Backport :pull:`336`, :issue:`274`
-
 .. _version-latest:
 
 .. _version-1.3.2:
@@ -66,6 +59,15 @@ Change Log
   - Fix build of macOS (:pull:`339`), by @SilverRainZ
   - Make channel messages with origin out of channels can be shown (:pull:`336`), by @progval
   - Rejoin channels after NICKSERV authentication finishes (:issue:`274`), by @SilverRainZ
+
+.. _version-1.2.5:
+
+2021-12-18 Version 1.2.5
+========================
+
+- Bug fixes:
+
+  - Backport :pull:`336`, :issue:`274`
 
 .. _version-1.3:
 
