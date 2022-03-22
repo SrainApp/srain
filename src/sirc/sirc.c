@@ -337,6 +337,19 @@ static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data
          g_signal_connect(tls_conn, "accept-certificate",
                  G_CALLBACK(on_accept_certificate), NULL);
 
+         /* Set client certificate for authentication with SASL EXTERNAL */
+         const char *cert_filename = sirc->cfg->certificate_filename;
+         if (cert_filename) {
+             g_autoptr(GTlsCertificate) cert = g_tls_certificate_new_from_file(cert_filename, &err);
+             if (err){
+                 on_connect_fail(sirc, err->message);
+                 g_error_free(err);
+                 return;
+             }
+             g_tls_connection_set_certificate(G_TLS_CONNECTION(tls_conn), cert);
+            LOG_FR("Using client TLS certificate");
+         }
+
          /* "CONNECT" event will be triggered after TLS handshake,
           * see `on_handshake_ready` */
          g_tls_connection_handshake_async(G_TLS_CONNECTION(tls_conn),

@@ -258,6 +258,7 @@ static void sasl_on_enable(SrnServerCap *scap, const char *name){
     switch (srv->cfg->user->login->method){
         case SRN_LOGIN_METHOD_SASL_PLAIN:
         case SRN_LOGIN_METHOD_SASL_ECDSA_NIST256P_CHALLENGE:
+        case SRN_LOGIN_METHOD_SASL_EXTERNAL:
             break;
         default:
             return;
@@ -275,6 +276,9 @@ static void sasl_on_enable(SrnServerCap *scap, const char *name){
             break;
         case SRN_LOGIN_METHOD_SASL_ECDSA_NIST256P_CHALLENGE:
             sirc_cmd_authenticate(srv->irc, "ECDSA-NIST256P-CHALLENGE");
+            break;
+        case SRN_LOGIN_METHOD_SASL_EXTERNAL:
+            sirc_cmd_authenticate(srv->irc, "EXTERNAL");
             break;
         default:
             g_warn_if_reached();

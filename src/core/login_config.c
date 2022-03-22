@@ -65,8 +65,12 @@ SrnRet srn_login_config_check(SrnLoginConfig *self){
             break;
         case SRN_LOGIN_METHOD_SASL_ECDSA_NIST256P_CHALLENGE:
             if (str_is_empty(self->cert_file)){
-                return RET_ERR(missing, method_str, "cerficiate");
+                return RET_ERR(missing, method_str, "certificate");
             }
+            break;
+        case SRN_LOGIN_METHOD_SASL_EXTERNAL:
+            /* Uses a client TLS certificate, that is configured in the server config
+             * rather than the user config. */
             break;
         case SRN_LOGIN_METHOD_UNKNOWN:
         default:
@@ -95,6 +99,9 @@ const char* srn_login_method_to_string(SrnLoginMethod lm){
         case SRN_LOGIN_METHOD_SASL_ECDSA_NIST256P_CHALLENGE:
             str = "sasl-ecdsa-nist256p-challenge";
             break;
+        case SRN_LOGIN_METHOD_SASL_EXTERNAL:
+            str = "sasl-external";
+            break;
         case SRN_LOGIN_METHOD_UNKNOWN:
         default:
             str = "unknown";
@@ -118,6 +125,8 @@ SrnLoginMethod srn_login_method_from_string(const char *str){
         login = SRN_LOGIN_METHOD_SASL_ECDSA_NIST256P_CHALLENGE;
     } else if (g_ascii_strcasecmp(str, "sasl-ecdsa") == 0){ // Shorter alias
         login = SRN_LOGIN_METHOD_SASL_ECDSA_NIST256P_CHALLENGE;
+    } else if (g_ascii_strcasecmp(str, "sasl-external") == 0){
+        login = SRN_LOGIN_METHOD_SASL_EXTERNAL;
     } else {
         login = SRN_LOGIN_METHOD_UNKNOWN;
     }

@@ -45,12 +45,13 @@
 #define LOGIN_METHOD_LIST_STORE_COL_ID      0
 #define LOGIN_METHOD_LIST_STORE_COL_NAME    1
 
-#define PAGE_QUICK_MODE     "quick_mode_page"
-#define PAGE_ADVANCED_MODE  "advanced_mode_page"
+#define PAGE_QUICK_MODE       "quick_mode_page"
+#define PAGE_ADVANCED_MODE    "advanced_mode_page"
 
-#define LOGIN_PAGE_NONE     "none"
-#define LOGIN_PAGE_PASSWORD "password"
-#define LOGIN_PAGE_CERT     "certificate"
+#define LOGIN_PAGE_NONE       "none"
+#define LOGIN_PAGE_PASSWORD   "password"
+#define LOGIN_PAGE_ECDSA_CERT "ecdsa-certificate"
+#define LOGIN_PAGE_TLS_CERT   "tls-certificate"
 
 struct _SuiConnectPanel {
     GtkBox parent;
@@ -76,6 +77,7 @@ struct _SuiConnectPanel {
     GtkEntry *login_password_entry;
     GtkCheckButton *remember_login_password_check_button;
     GtkFileChooserButton *login_cert_file_chooser_button;
+    GtkFileChooserButton *client_cert_file_chooser_button;
 
 
     /* Buttons */
@@ -209,6 +211,7 @@ static void sui_connect_panel_class_init(SuiConnectPanelClass *class){
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, login_password_entry);
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, remember_login_password_check_button);
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, login_cert_file_chooser_button);
+    gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, client_cert_file_chooser_button);
 
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, connect_button);
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, cancel_button);
@@ -247,6 +250,8 @@ static void update(SuiConnectPanel *self, const char *srv_name){
                 GTK_TOGGLE_BUTTON(self->remember_login_password_check_button), FALSE);
         gtk_file_chooser_set_filename(
                 GTK_FILE_CHOOSER(self->login_cert_file_chooser_button), "");
+        gtk_file_chooser_set_filename(
+                GTK_FILE_CHOOSER(self->client_cert_file_chooser_button), "");
     } else {
         SrnRet ret;
         SrnApplication *app_model;
@@ -297,6 +302,10 @@ static void update(SuiConnectPanel *self, const char *srv_name){
                 GTK_FILE_CHOOSER(self->login_cert_file_chooser_button),
                 srv_cfg->user->login->cert_file ?
                 srv_cfg->user->login->cert_file : "");
+        gtk_file_chooser_set_filename(
+                GTK_FILE_CHOOSER(self->client_cert_file_chooser_button),
+                srv_cfg->irc->certificate_filename ?
+                srv_cfg->irc->certificate_filename : "");
 
         srn_server_config_free(srv_cfg);
     }
@@ -345,6 +354,7 @@ static void refresh_login_method_list(SuiConnectPanel *self){
         SRN_LOGIN_METHOD_MSG_NICKSERV,
         SRN_LOGIN_METHOD_SASL_PLAIN,
         SRN_LOGIN_METHOD_SASL_ECDSA_NIST256P_CHALLENGE,
+        SRN_LOGIN_METHOD_SASL_EXTERNAL,
     };
 
     store = self->login_method_list_store;
@@ -398,7 +408,10 @@ static void login_method_combo_box_on_changed(GtkComboBox *combo_box,
             page = LOGIN_PAGE_PASSWORD;
             break;
         case SRN_LOGIN_METHOD_SASL_ECDSA_NIST256P_CHALLENGE:
-            page = LOGIN_PAGE_CERT;
+            page = LOGIN_PAGE_ECDSA_CERT;
+            break;
+        case SRN_LOGIN_METHOD_SASL_EXTERNAL:
+            page = LOGIN_PAGE_TLS_CERT;
             break;
         case SRN_LOGIN_METHOD_NONE:
         default:
@@ -457,6 +470,7 @@ static void connect_button_on_click(gpointer user_data){
         const char *login_passwd;
         bool rmb_login_passwd;
         const char *login_cert_file;
+        const char *client_cert_file;
 
         GtkEntry *entry;
         SrnLoginMethod method;
@@ -553,10 +567,18 @@ static void connect_button_on_click(gpointer user_data){
             }
         }
 
+        /* ECDSA cert */
         login_cert_file = gtk_file_chooser_get_filename(
                 GTK_FILE_CHOOSER(self->login_cert_file_chooser_button));
         if (!str_is_empty(login_cert_file)) {
             str_assign(&srv_cfg->user->login->cert_file, login_cert_file);
+        }
+
+        /* TLS cert */
+        client_cert_file = gtk_file_chooser_get_filename(
+                GTK_FILE_CHOOSER(self->client_cert_file_chooser_button));
+        if (!str_is_empty(client_cert_file)) {
+            str_assign(&srv_cfg->irc->certificate_filename, client_cert_file);
         }
     } else {
         g_warn_if_reached();
