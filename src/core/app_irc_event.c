@@ -929,18 +929,28 @@ static void irc_event_invite(SircSession *sirc, const char *event,
     g_return_if_fail(srn_server_is_valid(srv));
     srv_user = srn_server_add_and_get_user(srv, origin);
     g_return_if_fail(srv_user);
-    chat = srn_server_add_and_get_chat(srv, origin);
-    g_return_if_fail(chat);
+
+    // Send to room chat if already open
+    chat = srn_server_get_chat(srv, chan);
+
+    // Otherwise, fall back to creating a chat with the sender
+    if (!chat) {
+        chat = srn_server_add_and_get_chat(srv, origin);
+        g_return_if_fail(chat);
+    }
+
     chat_user = srn_chat_add_and_get_user(chat, srv_user);
     g_return_if_fail(chat_user);
 
-    if (!sirc_target_equal(srv->user->nick, nick)){
-        WARN_FR("Received a invite message to %s", nick);
-        g_return_if_reached();
+    if (sirc_target_equal(srv->user->nick, nick)){
+        srn_chat_add_misc_message_with_user_fmt(chat, chat_user, context,
+                _("%1$s invites you into %2$s"), origin, chan);
+    }
+    else {
+        srn_chat_add_misc_message_with_user_fmt(chat, chat_user, context,
+                _("%1$s invites %3$s into %2$s"), origin, chan, nick);
     }
 
-    srn_chat_add_misc_message_with_user_fmt(chat, chat_user, context,
-            _("%1$s invites you into %2$s"), origin, chan);
 }
 
 static void irc_event_ctcp_req(SircSession *sirc, const char *event,

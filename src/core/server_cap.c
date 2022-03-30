@@ -55,7 +55,7 @@ static ServerCapSupport supported_caps[] = {
     //     .offset = offsetof(EnabledCap, identify_msg),
     // },
 
-    // /* IRCv3.1 */
+    // /* IRCv3 */
     // {
     //     .name = "multi-prefix",
     //     .offset = offsetof(EnabledCap, mulit_prefix),
@@ -78,8 +78,6 @@ static ServerCapSupport supported_caps[] = {
         .is_support = sasl_is_support,
         .on_enable = sasl_on_enable,
     },
-
-    // /* IRCv3.2 */
     {
         .name = "message-tags",
         .offset = offsetof(EnabledCap, message_tags),
@@ -101,6 +99,10 @@ static ServerCapSupport supported_caps[] = {
     //     .name = "chghost",
     //     .offset = offsetof(EnabledCap, chghost),
     // },
+    {
+        .name = "invite-notify",
+        .offset = offsetof(EnabledCap, invite_notify),
+    },
 
     // /* ZNC */
     // {
