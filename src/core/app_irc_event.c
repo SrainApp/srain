@@ -945,8 +945,7 @@ static void irc_event_invite(SircSession *sirc, const char *event,
     if (sirc_target_equal(srv->user->nick, nick)){
         srn_chat_add_misc_message_with_user_fmt(chat, chat_user, context,
                 _("%1$s invites you into %2$s"), origin, chan);
-    }
-    else {
+    } else {
         srn_chat_add_misc_message_with_user_fmt(chat, chat_user, context,
                 _("%1$s invites %3$s into %2$s"), origin, chan, nick);
     }
