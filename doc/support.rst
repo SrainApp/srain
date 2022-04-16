@@ -58,7 +58,7 @@ batch               No
 chghost             No
 echo-message        No
 extended-join       No
-invite-notify       No
+invite-notify       Yes
 Monitor             No
 multi-prefix        No
 SASL v3.1           PLAIN,ECDSA-NIST256P-CHALLENGE
