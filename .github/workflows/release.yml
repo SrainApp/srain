@@ -41,7 +41,7 @@ jobs:
         INSTALL_DIR=srain-$SRAIN_TAG-mingw64-install;
         PACKAGE_DIR=srain-$SRAIN_TAG-mingw64;
         PACKAGE_NAME=$PACKAGE_DIR.zip;
-        PREFIX=a/_temp/msys/msys64/mingw64; # Hardcoded meson prefix
+        PREFIX=a/_temp/msys64/mingw64; # Hardcoded meson prefix
         mkdir -pv out;
         mkdir -pv $INSTALL_DIR;
         meson setup -Ddoc_builders=[] \
