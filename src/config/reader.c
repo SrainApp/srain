@@ -292,6 +292,8 @@ static SrnRet read_application_config_from_cfg(config_t *cfg,
             &app_cfg->ui->window.send_on_ctrl_enter);
     config_lookup_bool_ex(cfg, "exit-on-close",
             &app_cfg->ui->window.exit_on_close);
+    config_lookup_bool_ex(cfg, "server-visibility",
+            &app_cfg->ui->window.server_visibility);
 
     /* Read auto connect server list */
     config_setting_t *auto_connect;

@@ -35,6 +35,7 @@ struct _SuiWindowConfig {
     bool csd;
     bool send_on_ctrl_enter;
     bool exit_on_close;
+    bool server_visibility;
 };
 
 struct _SuiApplicationConfig {

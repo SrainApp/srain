@@ -207,8 +207,9 @@ static void sui_window_init(SuiWindow *self){
             G_BINDING_BIDIRECTIONAL);
 
     self->send_timer = 0;
+     // Will be overwritten by self->cfg->server_visibility in
+     // sui_window_constructed, since self->cfg is not inited yet.
     self->server_visibility = TRUE;
-
 
     /* Stack side bar init */
     self->side_bar = sui_side_bar_new();
@@ -320,6 +321,8 @@ static void sui_window_constructed(GObject *object){
     }
     update_header(self);
     update_title(self);
+
+    self->server_visibility = self->cfg->server_visibility;
 
     G_OBJECT_CLASS(sui_window_parent_class)->constructed(object);
 }
