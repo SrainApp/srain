@@ -438,6 +438,8 @@ For sending special IRC commands.
 
 .. versionadded:: 1.2.0
 
+.. _commands-clear:
+
 /clear
 ------
 

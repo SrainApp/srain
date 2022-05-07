@@ -14,7 +14,10 @@ Welcome to Srain documentation!
 The source code of this documentation is hosted on `GitHub`_.
 If you found any mistake, feel free to file issue or pull request.
 
+Supporting Srain through OpenCollective_.
+
 .. _GitHub: https://github.com/SrainApp/srain/tree/master/doc
+.. _OpenCollective: https://opencollective.com/srain
 
 All pages
 =========
