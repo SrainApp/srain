@@ -30,6 +30,30 @@ Change Log
 
 .. _version-latest:
 
+.. _version-1.4.0:
+
+2022-05-07 Version 1.4.0
+========================
+
+- Features:
+
+  - Add support for IRCv3 standard-replies (:pull:`354`), by @progval
+  - Add support for SASL EXTERNAL (:pull:`352`), by @progval
+  - Add support for invite-notify (:pull:`359`), by @progval
+  - Add conf item ``server-visibility`` for setting default server visiblity (:issue:`361`), by @SilverRainZ
+  - Add support for server-time (:pull:`345`), by @progval
+  - Add :ref:`commands-clear` command for clearing messages of current buffer (:issue:`268`), by @SilverRainZ
+
+- Bug fixes:
+
+  - Fix workflow for building MS Windows release artifact (:issue:`360`), by @lifeibiren
+
+- Changes:
+
+  - Make the buffer menu apply to the right-clicked item instead of the active buffer (:pull:`353`), by progval
+  - Srain now accepting donations through OpenCollective (https://opencollective.com/srain)
+  - Disable workflow for building debian release artifact since we have offical debian package (:commit:`99d9d86`)
+
 .. _version-1.3.2:
 
 2022-02-10 Version 1.3.2
