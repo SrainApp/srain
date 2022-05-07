@@ -4,7 +4,7 @@
 
 project(
   'srain', 'c',
-  version: '1.3.2',
+  version: '1.4.0',
   license: 'GPL3',
   meson_version: '>= 0.45.0'
 )
