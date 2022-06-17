@@ -1,0 +1,25 @@
+name: documentation
+on:
+  push:
+    branches:
+     - master
+     - ci
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+      with:
+        fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
+    - name: Build and Commit
+      uses: sphinx-notes/pages@print-err-log
+      with:
+        requirements_path: docs/requirements.txt
+        sphinx_version: 5.0.1
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: gh-pages

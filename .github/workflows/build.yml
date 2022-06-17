@@ -1,0 +1,79 @@
+name: build
+on:
+  push:
+    paths-ignore:
+    - "README.rst"
+    - "doc/*"
+    - "po/*"
+  pull_request:
+    paths-ignore:
+    - "README.rst"
+    - "doc/*"
+    - "po/*"
+  schedule:
+    - cron: '0 7 * * 6'
+jobs:
+  build-ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install the dependencies
+      run: |
+        sudo apt-get update;
+        sudo apt-get install meson pkg-config gettext libgtk-3-dev libsoup2.4-dev libconfig-dev libssl-dev libsecret-1-dev \
+        glib-networking libgtk3.0 libsoup2.4-1 libconfig9 libsecret-1-0;
+        # For ITS rules for metainfo
+        # ref: https://answers.launchpad.net/launchpad/+question/692788
+        sudo apt-get install appstream;
+    - name: Build
+      run: |
+        # Don't build documentation for now
+        #
+        # As of meson 0.47.0 -Dopt= and -Dopt=[] both pass an empty list,
+        # before this -Dopt= would pass a list with an empty string.
+        meson setup -Ddoc_builders=[] builddir;
+        # Meson version on ubuntu is too old, use `ninja` instead
+        ninja -C builddir;
+    - name: Install
+      run: |
+        # Meson version on ubuntu is too old, use `ninja` instead
+        sudo ninja -C builddir install;
+    - name: Validate
+      run: |
+        sudo apt-get install appstream-util desktop-file-utils;
+        appstream-util validate-relax /usr/local/share/metainfo/im.srain.Srain.metainfo.xml;
+        desktop-file-validate /usr/local/share/applications/im.srain.Srain.desktop;
+
+  build-mingw64:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+    - uses: actions/checkout@v2
+    - uses: msys2/setup-msys2@v2
+      name: Init MSYS2/MINGW64 environment
+      with:
+        update: true
+        msystem: MINGW64
+        install: base-devel mingw-w64-x86_64-meson mingw-w64-x86_64-gcc mingw-w64-x86_64-gtk3 mingw-w64-x86_64-libconfig mingw-w64-x86_64-libsoup mingw-w64-x86_64-libsecret mingw-w64-x86_64-pkg-config mingw-w64-x86_64-gettext mingw-w64-x86_64-glib-networking mingw-w64-x86_64-appstream-glib
+        # For ITS rules for metainfo
+        # ref: https://answers.launchpad.net/launchpad/+question/692788
+    - name: Build
+      run: |
+        # Don't build documentation for now
+        #
+        # As of meson 0.47.0 -Dopt= and -Dopt=[] both pass an empty list,
+        # before this -Dopt= would pass a list with an empty string.
+        meson setup -Ddoc_builders=[] \
+        --prefix=$MINGW_PREFIX \
+        --datadir=$MINGW_PREFIX/share \
+        --sysconfdir=$MINGW_PREFIX/etc \
+        builddir;
+        ninja -C builddir;
+    - name: Install
+      run: |
+        ninja -C builddir install;
+    - name: Validate
+      run: |
+        $MINGW_PREFIX/bin/srain --version;

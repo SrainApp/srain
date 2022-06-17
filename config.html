@@ -1,0 +1,511 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Configuration Manual &#8212; Srain 1.4.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/im.srain.Srain.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Development Specification" href="develop.html" />
+    <link rel="prev" title="Commands Manual" href="commands.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="configuration-manual">
+<h1>Configuration Manual<a class="headerlink" href="#configuration-manual" title="Permalink to this headline">¶</a></h1>
+<p>Srain uses <a class="reference external" href="http://www.hyperrealm.com/libconfig/">Libconfig</a> to process configuration file.</p>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#configuration-file" id="id1">Configuration File</a></p></li>
+<li><p><a class="reference internal" href="#syntax" id="id2">Syntax</a></p></li>
+<li><p><a class="reference internal" href="#priority-and-fallback" id="id3">Priority and Fallback</a></p></li>
+<li><p><a class="reference internal" href="#all-configurable-items" id="id4">All Configurable Items</a></p></li>
+</ul>
+</nav>
+<section id="configuration-file">
+<h2>Configuration File<a class="headerlink" href="#configuration-file" title="Permalink to this headline">¶</a></h2>
+<p>The path of system wide configuration file <code class="docutils literal notranslate"><span class="pre">builtin.cfg</span></code> depends on the
+compile flag <code class="docutils literal notranslate"><span class="pre">--sysconfdir</span></code>, default to be <code class="docutils literal notranslate"><span class="pre">/etc/srain</span></code>.</p>
+<p>The path of user wide configuration file <code class="docutils literal notranslate"><span class="pre">srain.cfg</span></code> is <code class="docutils literal notranslate"><span class="pre">$XDG_CONFIG_HOME/srain</span></code>,
+usually it is <code class="docutils literal notranslate"><span class="pre">~/.config/srain</span></code> (<code class="docutils literal notranslate"><span class="pre">~/.var/app/im.srain.Srain</span></code> for flatpak installs).</p>
+<p>The difference between system wide and user wide configuration file is the
+priority, <strong>The user wide configuration always overwrite the one in system wide
+configuration</strong>. For more details about priority, refer to
+<a class="reference internal" href="#config-priority-and-fallback"><span class="std std-ref">Priority and Fallback</span></a>.</p>
+</section>
+<section id="syntax">
+<h2>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h2>
+<p>For the syntax of configuration file, please refer to Libconfig’s documentation:
+<a class="reference external" href="http://www.hyperrealm.com/libconfig/libconfig_manual.html#Configuration-Files">Configuration Files</a></p>
+<p>For an example configuration, refer to <a class="reference internal" href="#config-example"><span class="std std-ref">All Configurable Items</span></a>.</p>
+</section>
+<section id="priority-and-fallback">
+<span id="config-priority-and-fallback"></span><h2>Priority and Fallback<a class="headerlink" href="#priority-and-fallback" title="Permalink to this headline">¶</a></h2>
+<p>A <strong>group</strong> is a collection of configurations. The same group in different place
+have different priority.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">server</span><span class="p">:</span> <span class="p">{</span> <span class="c1"># A top level ``server`` group</span>
+
+    <span class="c1"># ...</span>
+
+    <span class="n">user</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">default</span><span class="o">-</span><span class="n">messages</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">irc</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">chat</span> <span class="o">=</span> <span class="p">{</span> <span class="p">}</span> <span class="c1"># A ``chat`` group directly in ``server``</span>
+
+    <span class="n">chat</span><span class="o">-</span><span class="nb">list</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">{</span> <span class="p">},</span> <span class="c1"># A ``chat`` group in ``chat-list``</span>
+        <span class="c1"># ...</span>
+    <span class="p">)</span>
+<span class="p">}</span>
+
+<span class="n">server</span><span class="o">-</span><span class="nb">list</span><span class="p">:</span> <span class="p">(</span>
+    <span class="p">{</span> <span class="p">},</span> <span class="c1"># A ``server`` group in ``server-list``</span>
+    <span class="c1"># ...</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>For example, A <code class="docutils literal notranslate"><span class="pre">server</span></code> group contains the information(not all) of connection
+to IRC servers.  <code class="docutils literal notranslate"><span class="pre">server</span></code> group can appear at the top level of configuration
+file, or be an element of <code class="docutils literal notranslate"><span class="pre">server-list</span></code> list with a unique <code class="docutils literal notranslate"><span class="pre">name</span></code>. The top
+level <code class="docutils literal notranslate"><span class="pre">server</span></code> is often used to specify the global configuration, and
+<code class="docutils literal notranslate"><span class="pre">server-list</span></code> is used to specify specified IRC servers.</p>
+<p>The configuration in <code class="docutils literal notranslate"><span class="pre">server-list</span></code> can overwrite the top level <code class="docutils literal notranslate"><span class="pre">server</span></code>, and
+if an option is not specified in <code class="docutils literal notranslate"><span class="pre">server-list</span></code>, It will fallback to <code class="docutils literal notranslate"><span class="pre">server</span></code>.</p>
+<p>Another similar group is <code class="docutils literal notranslate"><span class="pre">chat</span></code>, chat contains configuration of chat panel,
+such as whether to show topic, whether to save chat log and etc. Every <code class="docutils literal notranslate"><span class="pre">server</span></code>
+group can contain a <code class="docutils literal notranslate"><span class="pre">chat</span></code> group and a <code class="docutils literal notranslate"><span class="pre">chat-list</span></code> list. Elements in
+<code class="docutils literal notranslate"><span class="pre">chat-list</span></code> are also identified with an unique <code class="docutils literal notranslate"><span class="pre">name</span></code>.</p>
+<p>As same as the relationship between top level <code class="docutils literal notranslate"><span class="pre">server</span></code> and <code class="docutils literal notranslate"><span class="pre">server-list</span></code>,
+<code class="docutils literal notranslate"><span class="pre">chat-list</span></code> is used to specify a specified chat and has higher priority.</p>
+<p>As mentioned above, The priority of user configuration is always higher than
+system’s, so we can get the priority sorting of <code class="docutils literal notranslate"><span class="pre">server</span></code> and <code class="docutils literal notranslate"><span class="pre">chat</span></code> group:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>server-list(user) &gt;
+top level server(user) &gt;
+server-list(system) &gt;
+top level server(system)
+
+chat-list in server-list(user) &gt;
+chat in server-list(user) &gt;
+chat-list in top level server(user) &gt;
+chat in top level server(user) &gt;
+chat-list in server-list(system) &gt;
+chat in server-list(system) &gt;
+chat-list in top level server(system) &gt;
+chat in top level server(system)
+</pre></div>
+</div>
+</section>
+<section id="all-configurable-items">
+<span id="config-example"></span><h2>All Configurable Items<a class="headerlink" href="#all-configurable-items" title="Permalink to this headline">¶</a></h2>
+<p>Here is the default system wide configuration file used by Srain, all
+configurable items are already listed here. you can make a copy as your user
+configuration file, but note:</p>
+<ol class="arabic simple">
+<li><p>User configuration always overwrite system’s, <strong>if you don’t know what does
+this option means, please remove it from your user configuration rather than
+overwrite it</strong></p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">server</span></code>’s <code class="docutils literal notranslate"><span class="pre">name</span></code> in <code class="docutils literal notranslate"><span class="pre">server-list</span></code> is unique, please remoeve the
+duplicated <code class="docutils literal notranslate"><span class="pre">server</span></code> in <code class="docutils literal notranslate"><span class="pre">server-list</span></code> before using</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Srain built-in configuration file</span>
+<span class="c1"># Application configuration.</span>
+
+<span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;1.0.0rc5&quot;</span>        <span class="c1"># String; Every configuration file should have a</span>
+                            <span class="c1"># version, altough it is not used yet</span>
+<span class="c1"># id = &quot;im.srain.Srain&quot;       # The identifier for Srain</span>
+<span class="n">theme</span> <span class="o">=</span> <span class="s2">&quot;default-bubble&quot;</span>    <span class="c1"># String; Theme; Available values: default</span>
+<span class="n">csd</span> <span class="o">=</span> <span class="n">true</span>                  <span class="c1"># Bool; Whether enable Client-Side Decoration</span>
+<span class="n">send</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">ctrl</span><span class="o">-</span><span class="n">enter</span> <span class="o">=</span> <span class="n">false</span>  <span class="c1"># Bool; Send messsage on CTRL+Enter pressed</span>
+<span class="n">exit</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">close</span> <span class="o">=</span> <span class="n">false</span>       <span class="c1"># Bool; Exit program on main window closed</span>
+<span class="n">auto</span><span class="o">-</span><span class="n">connect</span> <span class="o">=</span> <span class="p">[]</span>           <span class="c1"># String array; Servers that are auto connected</span>
+                            <span class="c1"># after startup</span>
+<span class="n">server</span><span class="o">-</span><span class="n">visibility</span> <span class="o">=</span> <span class="n">true</span>    <span class="c1"># Bool; Whether the server buffer is visible</span>
+
+<span class="c1"># If you want to report/fix a bug, terminal log will be helpful.</span>
+<span class="n">log</span> <span class="o">=</span>
+<span class="p">{</span>
+    <span class="n">prompt</span><span class="o">-</span><span class="n">color</span> <span class="o">=</span> <span class="n">true</span>     <span class="c1"># Bool; Colorful output</span>
+    <span class="n">prompt</span><span class="o">-</span><span class="n">file</span> <span class="o">=</span> <span class="n">false</span>     <span class="c1"># Bool; Display the filename of the file which log</span>
+                            <span class="c1"># statement is located</span>
+    <span class="n">prompt</span><span class="o">-</span><span class="n">function</span> <span class="o">=</span> <span class="n">true</span>  <span class="c1"># Bool; As aboved, function name</span>
+    <span class="n">prompt</span><span class="o">-</span><span class="n">line</span> <span class="o">=</span> <span class="n">false</span>     <span class="c1"># Bool; As aboved, line number</span>
+
+    <span class="c1"># String array; Specify the log level of a group of files</span>
+    <span class="n">debug</span><span class="o">-</span><span class="n">targets</span>   <span class="o">=</span> <span class="p">[]</span>    <span class="c1"># Files with debug log level</span>
+    <span class="n">info</span><span class="o">-</span><span class="n">targets</span>    <span class="o">=</span> <span class="p">[]</span>    <span class="c1"># Files with information log level</span>
+    <span class="n">warn</span><span class="o">-</span><span class="n">targets</span>    <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span>  <span class="c1"># Files with warning log level</span>
+    <span class="n">error</span><span class="o">-</span><span class="n">targets</span>   <span class="o">=</span> <span class="p">[]</span>    <span class="c1"># Files with error&quot; log level</span>
+<span class="p">}</span>
+
+<span class="c1"># Global IRC Server configuration, this group can also appear in server-list.</span>
+<span class="n">server</span> <span class="o">=</span>
+<span class="p">{</span>
+    <span class="n">auto</span><span class="o">-</span><span class="n">join</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># String array; Chats that are auto joined after server</span>
+                    <span class="c1"># is created</span>
+    <span class="n">auto</span><span class="o">-</span><span class="n">run</span> <span class="o">=</span> <span class="p">[]</span>   <span class="c1"># String array; Commands that are auto run after server</span>
+                    <span class="c1"># is created</span>
+
+    <span class="n">user</span> <span class="o">=</span>
+    <span class="p">{</span>
+        <span class="n">nickname</span> <span class="o">=</span> <span class="s2">&quot;SrainUser&quot;</span>
+        <span class="n">username</span> <span class="o">=</span> <span class="s2">&quot;Srain&quot;</span>
+        <span class="n">realname</span> <span class="o">=</span> <span class="s2">&quot;Can you can a can?&quot;</span>
+
+        <span class="n">login</span><span class="p">:</span>
+        <span class="p">{</span>
+            <span class="n">method</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span>     <span class="c1"># String; Login method; Available values:</span>
+                                <span class="c1"># - none: No login method, default value</span>
+                                <span class="c1"># - nickserv: Login with NICKSERV command</span>
+                                <span class="c1"># - msg-nickserv: Login with /msg NickServ identify</span>
+                                <span class="c1"># - sasl-plain: Login with SASL PLAIN mechanism</span>
+                                <span class="c1"># - sasl-ecdsa: Login with SASL</span>
+                                <span class="c1">#   ECDSA-NIST256P-CHALLENGE mechanism</span>
+                                <span class="c1"># - sasl-external: Login with SASL EXTERNAL mechanism</span>
+                                <span class="c1">#   (requires a TLS certificate set in the **server**</span>
+                                <span class="c1">#   section, not the one just below)</span>
+
+            <span class="c1"># For method &quot;sasl-ecdsa&quot;</span>
+            <span class="c1"># certificate = &quot;&quot;  # String; Path to login ECDSA certificate file, used for</span>
+                                <span class="c1"># sasl-ecdsa authentication (**not** sasl-external)</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Default messages for performing specified action</span>
+        <span class="n">part</span><span class="o">-</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Leaving.&quot;</span>
+        <span class="n">kick</span><span class="o">-</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Kick.&quot;</span>
+        <span class="n">away</span><span class="o">-</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Away from keyboard.&quot;</span>
+        <span class="n">quit</span><span class="o">-</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;El Psy Congroo.&quot;</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Chat configuration, this group can also appear in chat-list.</span>
+    <span class="n">chat</span> <span class="o">=</span>
+    <span class="p">{</span>
+        <span class="n">log</span> <span class="o">=</span> <span class="n">true</span>                      <span class="c1"># Bool; Persistent chat log to storage</span>
+        <span class="n">notify</span> <span class="o">=</span> <span class="n">true</span>                   <span class="c1"># Bool; Send notification when you are</span>
+                                        <span class="c1"># mentioned by others or receiving any</span>
+                                        <span class="c1"># ERROR message</span>
+        <span class="n">notify</span><span class="o">-</span><span class="nb">all</span> <span class="o">=</span> <span class="n">true</span>               <span class="c1"># Bool; Send notification when receiving</span>
+                                        <span class="c1"># any PRIVMSG/ACTION/NOTIFY/ERROR message</span>
+        <span class="n">show</span><span class="o">-</span><span class="n">topic</span> <span class="o">=</span> <span class="n">true</span>               <span class="c1"># Bool; Show topic</span>
+        <span class="n">show</span><span class="o">-</span><span class="n">avatar</span> <span class="o">=</span> <span class="n">false</span>             <span class="c1"># Bool; Show user avater</span>
+        <span class="n">show</span><span class="o">-</span><span class="n">user</span><span class="o">-</span><span class="nb">list</span> <span class="o">=</span> <span class="n">true</span>           <span class="c1"># Bool; Show user list</span>
+        <span class="n">render</span><span class="o">-</span><span class="n">mirc</span><span class="o">-</span><span class="n">color</span> <span class="o">=</span> <span class="n">true</span>        <span class="c1"># Bool; Render mirc color</span>
+        <span class="n">nick</span><span class="o">-</span><span class="n">completion</span><span class="o">-</span><span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;:&quot;</span>    <span class="c1"># String; Suffix of completed nick name</span>
+                                        <span class="c1"># e.g. &quot;nick: msg&quot;</span>
+
+        <span class="n">preview</span><span class="o">-</span><span class="n">url</span> <span class="o">=</span> <span class="n">true</span>          <span class="c1"># Bool; Show previewer for every URL</span>
+        <span class="n">auto</span><span class="o">-</span><span class="n">preview</span><span class="o">-</span><span class="n">url</span> <span class="o">=</span> <span class="n">true</span>     <span class="c1"># Bool; Automatically preview supported URL</span>
+
+        <span class="n">auto</span><span class="o">-</span><span class="n">run</span> <span class="o">=</span> <span class="p">[]</span>   <span class="c1"># String array; Commands that are auto run after</span>
+                        <span class="c1"># chat is created</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Specified chat configuration, every element in list should have a unique</span>
+    <span class="c1"># ``name``.</span>
+    <span class="n">chat</span><span class="o">-</span><span class="nb">list</span> <span class="o">=</span>
+    <span class="p">(</span>
+        <span class="p">{</span>
+            <span class="c1"># ``name`` is necessary for a ``chat`` group in ``chat-list``.</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;#srain&quot;</span>
+            <span class="n">show</span><span class="o">-</span><span class="n">topic</span> <span class="o">=</span> <span class="n">true</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1"># Specified server configuration, every element in list should have a unique</span>
+<span class="c1"># &quot;name&quot;.</span>
+<span class="n">server</span><span class="o">-</span><span class="nb">list</span> <span class="o">=</span>
+<span class="p">(</span>
+    <span class="p">{</span>
+        <span class="c1"># ``name``, ``addresses`` are necessary for a ``server`` group</span>
+        <span class="c1"># in ``server-list``, otherwise you can not connect to it.</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Libera Chat&quot;</span>        <span class="c1"># String; The unique name of server</span>
+        <span class="n">addresses</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;irc.libera.chat:6697&quot;</span>
+        <span class="p">]</span>                           <span class="c1"># String array; Addresses of IRC server,</span>
+                                    <span class="c1"># each address follows the format of</span>
+                                    <span class="c1"># &lt;host&gt;[:&lt;port&gt;]. The port can be omitted,</span>
+                                    <span class="c1"># default 6667 for non-TLS and 6697 for TLS</span>
+        <span class="n">tls</span> <span class="o">=</span> <span class="n">true</span>                  <span class="c1"># Bool; Connect with TLS encryption</span>
+        <span class="c1"># tls-noverify = false      # Bool; Connect with TLS encryption but without</span>
+                                    <span class="c1"># certificate verification, only used while</span>
+                                    <span class="c1"># connecting to a self-signed certificate</span>
+                                    <span class="c1"># verified server</span>
+        <span class="n">encoding</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span>          <span class="c1"># String; Encoding of IRC server, to get</span>
+                                    <span class="c1"># all available value of encoding, check the</span>
+                                    <span class="c1"># output of ``iconv --list``</span>
+        <span class="c1"># ipv6 = false              # Use IPv6 connection, not yet supported</span>
+        <span class="c1"># certificate = &quot;/home/you/.config/srain/libera.pem&quot;</span>
+                                    <span class="c1"># Client TLS certificate, that can be used for</span>
+                                    <span class="c1"># authentication with CertFP or SASL EXTERNAL (if</span>
+                                    <span class="c1"># ``method = &quot;sasl-external&quot;`` is set in the</span>
+                                    <span class="c1"># ``user`` configuration)</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;GIMPNet&quot;</span>
+        <span class="n">addresses</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;irc.gimp.org:6697&quot;</span><span class="p">,</span> <span class="s2">&quot;irc.gnome.org:6697&quot;</span><span class="p">]</span>
+        <span class="n">tls</span> <span class="o">=</span> <span class="n">true</span>
+        <span class="n">encoding</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;OFTC&quot;</span>
+        <span class="n">addresses</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;irc.oftc.net:6697&quot;</span><span class="p">]</span>
+        <span class="n">tls</span> <span class="o">=</span> <span class="n">true</span>
+        <span class="n">encoding</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;hackint&quot;</span>
+        <span class="n">addresses</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;irc.hackint.org:6697&quot;</span><span class="p">]</span>
+        <span class="n">tls</span> <span class="o">=</span> <span class="n">true</span>
+        <span class="n">encoding</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Rizon&quot;</span>
+        <span class="n">addresses</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;irc.rizon.net:6697&quot;</span><span class="p">]</span>
+
+        <span class="n">tls</span> <span class="o">=</span> <span class="n">true</span>
+        <span class="n">encoding</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;DALnet&quot;</span>
+        <span class="n">addresses</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;irc.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;agility.nl.eu.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;bifrost.ca.us.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;bitcoin.uk.eu.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;choopa.nj.us.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;diamond.hub.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;fidelity.tx.us.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;foxtrot.hub.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;halcyon.il.us.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;hash.ix.nl.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;hoon.ix.au.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;istana.ix.sg.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;jingo.ix.us.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;karsk.ix.eu.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;kiwi.ix.nz.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;koala.vc.au.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;laud.ix.us.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;loyalty.ix.us.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;merlin.hub.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;midnight.hub.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ninja.hub.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;nonstop.ix.me.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;oi.ix.au.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;oper-e.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;paradigm.hub.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;powertech.no.eu.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;punch.wa.us.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;rangers.ix.us.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;redemption.ix.us.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;renew.hub.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;smurf.hub.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;underworld.se.eu.dal.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;uworld.hub.dal.net:6697&quot;</span>
+        <span class="p">]</span>
+        <span class="n">tls</span> <span class="o">=</span> <span class="n">true</span>
+        <span class="n">encoding</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;EFnet&quot;</span>
+        <span class="n">addresses</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;irc.efnet.fr:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;efnet.port80.se:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;efnet.portlane.se:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;irc.du.se:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;irc.homelien.no:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;irc.inet.tele.dk:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;irc.nordunet.se:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;irc.underworld.no:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;irc.choopa.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;irc.colosolutions.net:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;irc.mzima.net:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;irc.prison.netirc.servercentral.net:6667&quot;</span>
+        <span class="p">]</span>
+        <span class="n">tls</span> <span class="o">=</span> <span class="n">false</span>
+        <span class="n">encoding</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;IRCnet&quot;</span>
+        <span class="n">addresses</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;irc.ssl.ircnet.com:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;irc.ircnet.com:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;irc.at.ircnet.com:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;irc.be.ircnet.com:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;irc.cz.ircnet.com:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;irc.dk.ircnet.com:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;irc.ee.ircnet.com:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;irc.fi.ircnet.com:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;irc.fr.ircnet.com:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;irc.de.ircnet.com:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;irc.hu.ircnet.com:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;irc.it.ircnet.com:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;irc.jp.ircnet.com:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;irc.nl.ircnet.com:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;irc.no.ircnet.com:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;irc.pl.ircnet.com:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;irc.si.ircnet.com:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;irc.se.ircnet.com:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;irc.us.ircnet.com:6667&quot;</span>
+        <span class="p">]</span>
+        <span class="n">tls</span> <span class="o">=</span> <span class="n">false</span>
+        <span class="n">encoding</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Undernet&quot;</span>
+        <span class="n">addresses</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;irc.undernet.org:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ix1.undernet.org:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ix2.undernet.org:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ashburn.va.us.undernet.org:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;bucharest.ro.eu.undernet.org:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;budapest.hu.eu.undernet.org:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;chicago.il.us.undernet.org:6667&quot;</span>
+        <span class="p">]</span>
+        <span class="n">tls</span> <span class="o">=</span> <span class="n">false</span>
+        <span class="n">encoding</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;QuakeNet&quot;</span>
+        <span class="n">addresses</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;irc.quakenet.org:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;dreamhack.se.quakenet.org:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;euroserv.fr.quakenet.org:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;irc.ipv6.quakenet.org:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;port80a.se.quakenet.org:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;port80b.se.quakenet.org:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;port80c.se.quakenet.org:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;portlane.se.quakenet.org:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;servercentral.il.us.quakenet.org:6667&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;underworld1.no.quakenet.org:6667&quot;</span>
+        <span class="p">]</span>
+        <span class="n">tls</span> <span class="o">=</span> <span class="n">false</span>
+        <span class="n">encoding</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;freenode&quot;</span>
+        <span class="n">addresses</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;irc.freenode.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;chat.freenode.net:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;irc.freenode.org:6697&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;chat.freenode.org:6697&quot;</span>
+        <span class="p">]</span>
+        <span class="n">tls</span> <span class="o">=</span> <span class="n">true</span>
+        <span class="n">encoding</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
+        <span class="n">addresses</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;localhost:6667&quot;</span><span class="p">,</span> <span class="s2">&quot;127.0.0.1:6667&quot;</span><span class="p">]</span>
+        <span class="n">tls</span> <span class="o">=</span> <span class="n">false</span>
+    <span class="p">}</span>
+
+<span class="c1"># TODO: More predefined servers</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/im.srain.Srain.png" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="index.html">Srain</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commands.html">Commands Manual</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="develop.html">Development Specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="misc.html">Miscellaneous</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Support Tables</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="commands.html" title="previous chapter">Commands Manual</a></li>
+      <li>Next: <a href="develop.html" title="next chapter">Development Specification</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Shengyu Zhang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/config.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
