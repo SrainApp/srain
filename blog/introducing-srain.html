@@ -1,0 +1,313 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Introducing Srain &#8212; Srain 1.4.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxnotes-strike.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/ablog-custom.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/im.srain.Srain.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+ 
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="../blog/atom.xml"
+  title="Srain"
+/>
+ 
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+             <section id="introducing-srain">
+<h1>Introducing Srain<a class="headerlink" href="#introducing-srain" title="Permalink to this headline">¶</a></h1>
+<p>Hi all, I am excited to introduce you to Srain: A modern IRC client written in GTK.</p>
+<p>Srain is my personal project since 2016. I released its first stable version recently.
+This project originated when I was new to IRC. At that time, I was active
+on <a class="reference external" href="mailto:#archlinux-cn&#37;&#52;&#48;freenode">#archlinux-cn<span>&#64;</span>freenode</a>, learned how to live with Arch Linux.
+There are many relay bots in the channel (from XMPP, telegram, Tox and etc).
+At first I felt the channel was full of chaos:</p>
+<ul class="simple">
+<li><p>Messages are usually separated into multiple lines which is inconvenient for reading (512 bytes limit of IRC message)</p></li>
+<li><p>You have to click the URL and switch to browser to see what it is (titlebot alleviates this problem)</p></li>
+<li><p>Messages sent by relay bot have various formats which make it hard to read</p></li>
+</ul>
+<p>In fact, none of thes are problems for experienced IRC users, but in another way,
+The inconveniences of IRC actually exists, improving the experience of IRC
+chatting is always good.</p>
+<p>– So I wrote a client, and now introduce to you:</p>
+<figure class="align-default" id="id3">
+<img alt="../_images/cover.png" src="../_images/cover.png" />
+<figcaption>
+<p><span class="caption-text"><a href="#id1"><span class="problematic" id="id2">:ghrepo:`SrainApp/srain`</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+<div class="legend">
+</div>
+</figcaption>
+</figure>
+<section id="free-and-cross-platform">
+<h2>Free and Cross-Platform<a class="headerlink" href="#free-and-cross-platform" title="Permalink to this headline">¶</a></h2>
+<p>Srain is fully open source under GPLv3 license.
+You can get software and <a class="reference external" href="{{site.project.url}}">source code</a> for free.
+Srain supports both Linux, Windows, BSD and macOS, please checkout
+<a class="reference external" href="http://doc.srain.im/en/latest/install.html">Installation Guide</a> for more details.</p>
+<blockquote>
+<div><p>For Linux user, Srain is available on offical repository of
+<a class="reference external" href="https://flathub.org/apps/details/im.srain.Srain">flathub</a>,
+<a class="reference external" href="https://src.fedoraproject.org/rpms/srain">fedora</a> and
+<a class="reference external" href="https://software.opensuse.org/package/Srain">openSUSE</a>.</p>
+</div></blockquote>
+</section>
+<section id="modern-ui">
+<h2>Modern UI<a class="headerlink" href="#modern-ui" title="Permalink to this headline">¶</a></h2>
+<p>Srain provides a modern graphical user interface which contains:</p>
+<ul class="simple">
+<li><p>Easy to read message bubble</p></li>
+<li><p>Convenient popovers for join server and channel</p></li>
+<li><p>Optional <a class="reference external" href="https://wiki.gnome.org/Initiatives/CSD">Client-side Decoration</a></p></li>
+<li><p>HiDPI support</p></li>
+<li><p>Custom themes support (see below)</p></li>
+</ul>
+<p>{% include image name=”main.png” %}</p>
+</section>
+<section id="themes">
+<h2>Themes<a class="headerlink" href="#themes" title="Permalink to this headline">¶</a></h2>
+<p>Srain’s theme is built on the top of GTK CSS system, so users can easily
+customize the theme by writing CSS.</p>
+<p>By default, Srain provides two
+<a class="reference external" href="https://github.com/SrainApp/srain/tree/master/data/themes">builtin themes</a>:
+<code class="docutils literal notranslate"><span class="pre">default-bubble</span></code> and <code class="docutils literal notranslate"><span class="pre">default-bubble-dark</span></code> which works well with most popular
+GTK themes.</p>
+<p>{% include image name=”theme.png” %}</p>
+</section>
+<section id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<section id="url-preview">
+<h3>URL Preview<a class="headerlink" href="#url-preview" title="Permalink to this headline">¶</a></h3>
+<p>Srain is able to parse the URL in IRC message, detect its content type and show you a preview.</p>
+<p>For now, only HTTP URL which points to image can be previewed.</p>
+<blockquote>
+<div><p>For convenience, the URL preview function is enabled by default.
+Note that it may <strong>leaks your client IP</strong>, you can disable it in
+<a class="reference external" href="http://doc.srain.im/en/stable/config.html">configuration</a>.</p>
+</div></blockquote>
+</section>
+<section id="command-system">
+<h3>Command System<a class="headerlink" href="#command-system" title="Permalink to this headline">¶</a></h3>
+<p>Like most IRC clients, Srain provides a command system.
+Most operations can be done through both GUI and commands.
+Please refers to <a class="reference external" href="http://doc.srain.im/en/stable/commands.html">Commands Manual</a>
+for more details.</p>
+</section>
+<section id="message-filter-and-renderer">
+<h3>Message Filter and Renderer<a class="headerlink" href="#message-filter-and-renderer" title="Permalink to this headline">¶</a></h3>
+<p>Srain provdes regex based message render and filter mechanisms.</p>
+<p>Message filter allows ignore one’s message by regular expression match.
+(<a class="reference external" href="http://doc.srain.im/en/stable/commands.html#ignore-unignore">Ignore by nickname</a>
+is supported of course).
+Please refers to <cite>`</cite>/filter`` &lt;<a class="reference external" href="http://doc.srain.im/en/stable/commands.html#commands-filter">http://doc.srain.im/en/stable/commands.html#commands-filter</a>&gt;`_.</p>
+<p>Message renderer allows user modify one’s message by regular expression group capture.
+Please refers to <cite>`</cite>/render`` &lt;<a class="reference external" href="http://doc.srain.im/en/stable/commands.html#commands-render">http://doc.srain.im/en/stable/commands.html#commands-render</a>&gt;`_.</p>
+<p><strong>One of the application of message renderer is “relay message transform”</strong>.</p>
+<p>There are many relay bots forward messages from other IM to IRC network,
+“relay message transform” makes these messages easier to read.
+For example, there is a telegram bot named “telegram”, the words in brackets
+is the named of the telegram user.</p>
+<p>{% include image name=”render-message-before.png” %}</p>
+<p>Run command <code class="docutils literal notranslate"><span class="pre">/pattern</span> <span class="pre">add</span> <span class="pre">normal-relay</span> <span class="pre">\[(?&lt;sender&gt;[^:]+?)\]</span> <span class="pre">(?&lt;content&gt;.*)</span></code>
+and <code class="docutils literal notranslate"><span class="pre">/render</span> <span class="pre">telegram</span> <span class="pre">normal-relay</span></code>.
+<code class="docutils literal notranslate"><span class="pre">\[(?&lt;sender&gt;[^:]+?)\]</span> <span class="pre">(?&lt;content&gt;.*)</span></code> is a regular expression, which has two
+named group <code class="docutils literal notranslate"><span class="pre">sender</span></code> and <code class="docutils literal notranslate"><span class="pre">content</span></code>, when an IRC message matched by this expression:</p>
+<ul class="simple">
+<li><p>The text in <code class="docutils literal notranslate"><span class="pre">sender</span></code> group will become the sender of rendered messsage,</p></li>
+<li><p>The text in <code class="docutils literal notranslate"><span class="pre">content</span></code> group will become the content of rendered messsage.</p></li>
+<li><p>The orginal message sender will become the remark of rendered messsage.</p></li>
+</ul>
+<p>The meaning of first command is creating a pattern(regular expression) named
+“normal-relay”, the second command applies this pattern to the bot “telegram”:
+all message sent by this bot will be rendered by the aboved pattern.</p>
+<p>So, after running the commands, the message from “telegram” looks like the
+following figure:</p>
+<p>{% include image name=”render-message-after.png” %}</p>
+</section>
+</section>
+<section id="next-development">
+<h2>Next development<a class="headerlink" href="#next-development" title="Permalink to this headline">¶</a></h2>
+<p>The two main aims of next development are: use experience improvement and plugin system.</p>
+<section id="use-experience-improvement">
+<h3>Use Experience Improvement<a class="headerlink" href="#use-experience-improvement" title="Permalink to this headline">¶</a></h3>
+<p>In most cases, Srain has better user experience than previous clients, but
+still has some shortcomings – which will be improved the future.</p>
+<p>The improvement of use experience is strongly based on user’s feedback.
+If you have any suggestion, please <a class="reference external" href="{{site.project.url}}/issue">file an issue</a>
+or <a class="reference external" href="ircs://chat.freenode.net/#srain">disscuss in channel #srain</a>.</p>
+</section>
+<section id="plugin-system">
+<h3>Plugin System<a class="headerlink" href="#plugin-system" title="Permalink to this headline">¶</a></h3>
+<p>Traditional IRC protocol is too simple to meet the needs of modern IM users.
+So client should do more, plugin system is a good idea to provide extra functions.</p>
+<p>As Srain is a GTK application, I plan to use <a class="reference external" href="https://wiki.gnome.org/Projects/Libpeas">Libpeas</a>
+to construct Srain’s plugin system and provide at least tow kind of plugin:
+auto-pastebin(paste your file/image and return URL to your input entry) and
+message renderer(render IRC message as as you wish).</p>
+<p>You can trace the progress of plugin system at {% include issue id=199 %}.</p>
+</section>
+<section id="energy-and-time">
+<h3>Energy and Time<a class="headerlink" href="#energy-and-time" title="Permalink to this headline">¶</a></h3>
+<p>In fact, I am quite busy with both my work and my life, so I can only develop
+Srain in my free time. The progress of development may not be too fast,
+but it will continue.  If anyone wants to get involved, feel free to contcat me,
+you can find contact details on <a class="reference external" href="https://silverrainz.me/">my homepage</a>.</p>
+</section>
+</section>
+</section>
+
+<div class="section">
+    
+
+<div class="section">
+  <span style="float: left">
+     
+    <a href="../changelog.html#version-1-0-0">
+      <i class="fa fa-arrow-circle-left"></i> 2020-02-24 Version 1.0.0
+    </a>
+    
+  </span>
+  <span>&nbsp;</span>
+  <span style="float: right">
+     
+    <a href="../changelog.html#version-1-0-1">
+      2020-03-14 Version 1.0.1 <i
+        class="fa fa-arrow-circle-right"
+      ></i
+      >
+    </a>
+    
+  </span>
+</div>
+  
+</div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/im.srain.Srain.png" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="../index.html">Srain</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../commands.html">Commands Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../config.html">Configuration Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../develop.html">Development Specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../misc.html">Miscellaneous</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../support.html">Support Tables</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Shengyu Zhang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/blog/introducing-srain.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
