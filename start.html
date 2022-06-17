@@ -1,0 +1,554 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Quick Start &#8212; Srain 1.4.0 documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxnotes-strike.css" />
+    <link rel="stylesheet" type="text/css" href="_static/ablog-custom.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
+    <link rel="shortcut icon" href="_static/im.srain.Srain.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="install.html" />
+    <link rel="prev" title="Srain" href="intro.html" /> 
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en">
+    
+
+    <!-- Google Analytics -->
+     
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="blog/atom.xml"
+  title="Srain"
+/>
+ 
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top"><div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="_static/im.srain.Srain.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">Srain 1.4.0 documentation</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="intro.html">
+   Introduction
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Quick Start
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="install.html">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="commands.html">
+   Commands Manual
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="config.html">
+   Configuration Manual
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="develop.html">
+   Development Specification
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="misc.html">
+   Miscellaneous
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="faq.html">
+   Frequently Asked Questions
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="changelog.html">
+   Change Log
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="support.html">
+   Support Tables
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav></div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
+            
+            <div class="navbar_extra_footer">
+            Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
+            </div>
+            
+        </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
+
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+<a href="https://github.com/SrainApp/srain"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="bottom"
+title="Source repository"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#start-srain">
+   Start Srain
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#connect-to-irc-server">
+   Connect to IRC server
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#predefined-server">
+     Predefined Server
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#custom-server">
+     Custom Server
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#using-command">
+     Using Command
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#join-channel">
+   Join Channel
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#directly-join">
+     Directly Join
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#search-channel">
+     Search Channel
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id1">
+     Using Command
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+    </nav>
+</div>
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Quick Start</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#start-srain">
+   Start Srain
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#connect-to-irc-server">
+   Connect to IRC server
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#predefined-server">
+     Predefined Server
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#custom-server">
+     Custom Server
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#using-command">
+     Using Command
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#join-channel">
+   Join Channel
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#directly-join">
+     Directly Join
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#search-channel">
+     Search Channel
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id1">
+     Using Command
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <main id="main-content" role="main">
+                
+              <div>
+                 <section id="quick-start">
+<h1>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">#</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For your information, the following screenshots are taken under
+GNOME 3.34.4 with Wayland backed with <a class="reference external" href="https://github.com/arc-design/arc-theme">Arc GTK theme</a> and
+<a class="reference external" href="https://github.com/KDE/breeze-icons">Breeze icon theme</a>.</p>
+</div>
+<section id="start-srain">
+<h2>Start Srain<a class="headerlink" href="#start-srain" title="Permalink to this headline">#</a></h2>
+<p>After the <a class="reference internal" href="install.html"><span class="doc">Installation</span></a> of Srain, you will find Srain in your
+applications list, if not, just type <code class="docutils literal notranslate"><span class="pre">srain</span></code> in your shell to run it. Then you
+will see Srain’s initial interface.</p>
+<figure class="align-default">
+<img alt="_images/srain-startup.png" src="_images/srain-startup.png" />
+</figure>
+</section>
+<section id="connect-to-irc-server">
+<h2>Connect to IRC server<a class="headerlink" href="#connect-to-irc-server" title="Permalink to this headline">#</a></h2>
+<p><a class="reference external" href="https://freenode.net/">freenode</a> is a famous IRC network, the official channel of Srain <a class="reference external" href="ircs://chat.freenode.org:6697/srain">#srain</a> is
+also hosted on it. Let’s start by connecting to freenode.</p>
+<section id="predefined-server">
+<h3>Predefined Server<a class="headerlink" href="#predefined-server" title="Permalink to this headline">#</a></h3>
+<p>Srain has a predefined list of commonly used IRC servers,
+freenode is one of it. If you want to add server into this list, refer to
+<a class="reference internal" href="config.html"><span class="doc">Configuration Manual</span></a>.</p>
+<p>Click the connection button on the Srain header bar, select the page “Quick Mode”,
+select the item “freenode” from candidate box with label “Server”,
+enter your nickname, then click the “Connect” button:</p>
+<figure class="align-default">
+<img alt="_images/srain-connect-predefined-server.png" src="_images/srain-connect-predefined-server.png" />
+</figure>
+<p>If everything goes well, Srain should connected to freenode, then your would see
+some message from freenode’s server:</p>
+<figure class="align-default">
+<img alt="_images/srain-connected-server.png" src="_images/srain-connected-server.png" />
+</figure>
+</section>
+<section id="custom-server">
+<h3>Custom Server<a class="headerlink" href="#custom-server" title="Permalink to this headline">#</a></h3>
+<p>While the server your want to connect to is not listed in the predefined list,
+switch to the page “Advanced Mode”, enter the hostname, port, and etc.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>If the port is a TLS port, make sure that the option
+“Use secure connection” is checked.</p></li>
+<li><p>If the server’s certificate is untrusted and you insist on continuing,
+check the option “Do not verify certificate”.</p></li>
+</ul>
+</div>
+<p>Then click the “Connect” button:</p>
+<figure class="align-default">
+<img alt="_images/srain-connect-custom-server.png" src="_images/srain-connect-custom-server.png" />
+</figure>
+</section>
+<section id="using-command">
+<h3>Using Command<a class="headerlink" href="#using-command" title="Permalink to this headline">#</a></h3>
+<p>Refer to <a class="reference internal" href="commands.html#commands-server"><span class="std std-ref">/server</span></a> and <a class="reference internal" href="commands.html#commands-connect"><span class="std std-ref">/connect</span></a>.</p>
+<p>If you want to automatically execute commands at each time Srain starts, please
+refer to <a class="reference internal" href="commands.html#commands-playground"><span class="std std-ref">Playground</span></a>.</p>
+</section>
+</section>
+<section id="join-channel">
+<h2>Join Channel<a class="headerlink" href="#join-channel" title="Permalink to this headline">#</a></h2>
+<p>After connecting to freenode, now let’s try to join <a class="reference external" href="ircs://chat.freenode.org:6697/srain">#srain</a>, the official
+channel of Srain.</p>
+<section id="directly-join">
+<h3>Directly Join<a class="headerlink" href="#directly-join" title="Permalink to this headline">#</a></h3>
+<p>While your has a clear channel to join, such as <a class="reference external" href="ircs://chat.freenode.org:6697/srain">#srain</a>, just click the join
+button, select the page “Join Channel”, enter the channel name in the input
+entry with label “Channel”, then click the “Join” button:</p>
+<figure class="align-default">
+<img alt="_images/srain-join-channel.png" src="_images/srain-join-channel.png" />
+</figure>
+<p>Now you should joined the channel:</p>
+<figure class="align-default">
+<img alt="_images/srain-joined-channel.png" src="_images/srain-joined-channel.png" />
+</figure>
+</section>
+<section id="search-channel">
+<h3>Search Channel<a class="headerlink" href="#search-channel" title="Permalink to this headline">#</a></h3>
+<p>While you don’t know the exact name of the channel, click the join button,
+switch to page “Search Channel”, click the button with “refresh” icon, Srain
+should start receiving channel list from server.</p>
+<p>Then you can enter the keyword or specify the filter conditions to search
+channel. For example we enter “#s”, select the channel you want to join from
+channe list, then click “Join” button to join it.</p>
+<figure class="align-default">
+<img alt="_images/srain-search-channel.png" src="_images/srain-search-channel.png" />
+</figure>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the channel requires a join password, try double click the row
+of channel.</p>
+</div>
+</section>
+<section id="id1">
+<h3>Using Command<a class="headerlink" href="#id1" title="Permalink to this headline">#</a></h3>
+<p>Refer to <a class="reference internal" href="commands.html#commands-join"><span class="std std-ref">/join</span></a>.</p>
+</section>
+</section>
+</section>
+
+<div class="section">
+   
+</div>
+
+              </div>
+              
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="intro.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Srain</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="install.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Installation</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+            </footer>
+        </div>
+    </div>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By Shengyu Zhang<br/>
+  
+      &copy; Copyright 2022, Shengyu Zhang.<br/>
+</p>
+        </footer>
+    </div>
+    
+</div>
+
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
+
+  </body>
+</html>

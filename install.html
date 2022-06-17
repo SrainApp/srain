@@ -1,0 +1,812 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Installation &#8212; Srain 1.4.0 documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxnotes-strike.css" />
+    <link rel="stylesheet" type="text/css" href="_static/ablog-custom.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
+    <link rel="shortcut icon" href="_static/im.srain.Srain.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Commands Manual" href="commands.html" />
+    <link rel="prev" title="Quick Start" href="start.html" /> 
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en">
+    
+
+    <!-- Google Analytics -->
+     
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="blog/atom.xml"
+  title="Srain"
+/>
+ 
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top"><div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="_static/im.srain.Srain.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">Srain 1.4.0 documentation</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="intro.html">
+   Introduction
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="start.html">
+   Quick Start
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="commands.html">
+   Commands Manual
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="config.html">
+   Configuration Manual
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="develop.html">
+   Development Specification
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="misc.html">
+   Miscellaneous
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="faq.html">
+   Frequently Asked Questions
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="changelog.html">
+   Change Log
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="support.html">
+   Support Tables
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav></div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
+            
+            <div class="navbar_extra_footer">
+            Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
+            </div>
+            
+        </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
+
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+<a href="https://github.com/SrainApp/srain"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="bottom"
+title="Source repository"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#dependencies">
+   Dependencies
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#building">
+   Building
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#play-with-meson">
+     Play with Meson
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#makefile-helper">
+     Makefile Helper
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#distribution-packages">
+   Distribution Packages
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#gnu-linux">
+     GNU/Linux
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#arch-linux">
+       Arch Linux
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#debian">
+       Debian
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#fedora">
+       Fedora
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#flatpak">
+       Flatpak
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#gentoo">
+       Gentoo
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#opensuse">
+       openSUSE
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#windows">
+     Windows
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#pre-built-package">
+       Pre-built package
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#build-byself">
+       Build byself
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#macos">
+     macOS
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#bsd">
+     BSD
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#openbsd">
+       OpenBSD
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+    </nav>
+</div>
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Installation</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#dependencies">
+   Dependencies
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#building">
+   Building
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#play-with-meson">
+     Play with Meson
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#makefile-helper">
+     Makefile Helper
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#distribution-packages">
+   Distribution Packages
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#gnu-linux">
+     GNU/Linux
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#arch-linux">
+       Arch Linux
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#debian">
+       Debian
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#fedora">
+       Fedora
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#flatpak">
+       Flatpak
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#gentoo">
+       Gentoo
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#opensuse">
+       openSUSE
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#windows">
+     Windows
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#pre-built-package">
+       Pre-built package
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#build-byself">
+       Build byself
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#macos">
+     macOS
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#bsd">
+     BSD
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#openbsd">
+       OpenBSD
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <main id="main-content" role="main">
+                
+              <div>
+                 <section id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">#</a></h1>
+<p>Srain is available on <a class="reference internal" href="#install-packages-gnu-linux"><span class="std std-ref">GNU/Linux</span></a>,
+<a class="reference internal" href="#install-packages-windows"><span class="std std-ref">Windows</span></a>, <a class="reference internal" href="#install-packages-macos"><span class="std std-ref">macOS</span></a> and
+<a class="reference internal" href="#install-packages-bsd"><span class="std std-ref">BSD</span></a>.</p>
+<section id="dependencies">
+<span id="install-dependencies"></span><h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">#</a></h2>
+<table class="table">
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 65%" />
+<col style="width: 10%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Notes</p></th>
+<th class="head"><p>Version</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>meson</p></td>
+<td><p>Only for Building</p></td>
+<td><p>&gt; 0.45.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>make</p></td>
+<td><p>Optional, only for development</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>appstream</p></td>
+<td><p>Only for building, on Debian-based distributions</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>coreutils</p></td>
+<td><p>Only for building</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>gcc</p></td>
+<td><p>Only for building</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>pkg-config</p></td>
+<td><p>Only for building</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>gettext</p></td>
+<td><p>Only for building</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>glib2</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>glib-networking</p></td>
+<td><p>Optional, for TLS connection support</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>gtk+3</p></td>
+<td></td>
+<td><p>&gt;= 3.18</p></td>
+</tr>
+<tr class="row-even"><td><p>libsoup</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>libconfig</p></td>
+<td></td>
+<td><p>&gt;= 1.5</p></td>
+</tr>
+<tr class="row-even"><td><p>libsecret</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>openssl</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>python-sphinx</p></td>
+<td><p>Optional, for building documentation</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>adwaita-icon-theme</p></td>
+<td><p>Or other icon themes</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="building">
+<span id="install-building"></span><h2>Building<a class="headerlink" href="#building" title="Permalink to this headline">#</a></h2>
+<p>You should install the aboved <a class="reference internal" href="#install-dependencies"><span class="std std-ref">Dependencies</span></a> on your platform
+before the following steps.</p>
+<p>Firstly, download source code of srain,
+you can get source code of latest release:</p>
+<pre class="literal-block">$ wget <a class="reference external" href="https://github.com/SrainApp/srain/archive/">https://github.com/SrainApp/srain/archive/</a>1.4.0.tar.gz
+$ tar -xvzf 1.4.0.tar.gz
+$ cd srain-1.4.0</pre>
+<p>Or get git version:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git clone https://github.com/SrainApp/srain.git
+<span class="gp">$ </span><span class="nb">cd</span> srain
+</pre></div>
+</div>
+<section id="play-with-meson">
+<h3>Play with Meson<a class="headerlink" href="#play-with-meson" title="Permalink to this headline">#</a></h3>
+<p>Srain use <a class="reference external" href="https://mesonbuild.com">Meson</a> with ninja backend as its build system.
+You can build it via the following commands:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>meson setup builddir
+<span class="gp">$ </span><span class="nb">cd</span> builddir
+<span class="gp">$ </span>ninja
+</pre></div>
+</div>
+<p>Install(root privileges required):</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span> builddir
+<span class="gp"># </span>ninja install
+</pre></div>
+</div>
+<p>HTML documentation and manpage are built and installed by default,
+if you don’t need them, just set meson option <code class="docutils literal notranslate"><span class="pre">doc_builders</span></code> to an empty array
+when setup:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>meson setup -Ddoc_builders<span class="o">=[]</span> builddir
+</pre></div>
+</div>
+</section>
+<section id="makefile-helper">
+<h3>Makefile Helper<a class="headerlink" href="#makefile-helper" title="Permalink to this headline">#</a></h3>
+<p>We also provide a simple Makefile helper to simplify meson commands.
+It is convenient for development.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>make           <span class="c1"># Build srain</span>
+<span class="gp">$ </span>make build     <span class="c1"># Same as above</span>
+<span class="gp">$ </span>make install   <span class="c1"># Install srain to prefix under project root</span>
+<span class="gp">$ </span>make run       <span class="c1"># Run srain with isolated $HOME and XDG Directory</span>
+<span class="gp">$ </span>make debug     <span class="c1"># Same as `make run`, but with GDB attached</span>
+<span class="gp">$ </span>make inspect   <span class="c1"># Same as `make run`, but with GtkInspector</span>
+<span class="gp">$ </span>make clean     <span class="c1"># Remove all compilation and installation result</span>
+<span class="gp">$ </span>make doc       <span class="c1"># View installed HTML documentation</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="distribution-packages">
+<h2>Distribution Packages<a class="headerlink" href="#distribution-packages" title="Permalink to this headline">#</a></h2>
+<section id="gnu-linux">
+<span id="install-packages-gnu-linux"></span><h3>GNU/Linux<a class="headerlink" href="#gnu-linux" title="Permalink to this headline">#</a></h3>
+<section id="arch-linux">
+<h4>Arch Linux<a class="headerlink" href="#arch-linux" title="Permalink to this headline">#</a></h4>
+<p>Packages <a class="reference external" href="https://aur.archlinux.org/packages/srain">srain</a> and <a class="reference external" href="https://aur.archlinux.org/packages/srain-git">srain-git</a> (git version) are available on AUR,
+it is quite easy to install using AUR helper(yay as an example):</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>yay -S srain
+<span class="gp">$ </span>yay -S srain-git <span class="c1"># git version</span>
+</pre></div>
+</div>
+<p>If you are the user of <a class="reference external" href="https://www.archlinuxcn.org/archlinux-cn-repo-and-mirror">Arch Linux CN Repository</a>, try:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>pacman -S archlinuxcn/srain
+<span class="gp"># </span>pacman -S archlinuxcn/srain-git <span class="c1"># git version</span>
+</pre></div>
+</div>
+</section>
+<section id="debian">
+<span id="install-packages-debian"></span><h4>Debian<a class="headerlink" href="#debian" title="Permalink to this headline">#</a></h4>
+<p>Srain now in <a class="reference external" href="https://packages.debian.org/unstable/net/srain">offical repository of Debian</a>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>apt install srain
+</pre></div>
+</div>
+</section>
+<section id="fedora">
+<span id="install-packages-flatpak"></span><h4>Fedora<a class="headerlink" href="#fedora" title="Permalink to this headline">#</a></h4>
+<p>Srain now in <a class="reference external" href="https://apps.fedoraproject.org/packages/srain">offical repository of fedora</a>, use <code class="docutils literal notranslate"><span class="pre">dnf</span></code> to install it.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>dnf install srain
+</pre></div>
+</div>
+</section>
+<section id="flatpak">
+<h4>Flatpak<a class="headerlink" href="#flatpak" title="Permalink to this headline">#</a></h4>
+<a class="reference external image-reference" href="https://flathub.org/apps/details/im.srain.Srain"><img alt="https://flathub.org/assets/badges/flathub-badge-i-en.svg" src="https://flathub.org/assets/badges/flathub-badge-i-en.svg" width="240" /></a>
+<p><a class="reference external" href="https://github.com/cpba">cpba</a> is maintaining <a class="reference external" href="https://github.com/SrainApp/srain-contrib/tree/master/pack/flatpak">Flatpak manifest for Srain</a> and The built package is
+available on <a class="reference external" href="https://flathub.org">Flathub</a>, just execute the following commands to install if
+you already have flatpak installed:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+<span class="gp">$ </span>flatpak install flathub im.srain.Srain
+</pre></div>
+</div>
+</section>
+<section id="gentoo">
+<span id="install-packages-gentoo"></span><h4>Gentoo<a class="headerlink" href="#gentoo" title="Permalink to this headline">#</a></h4>
+<p>Please refers to <a class="reference external" href="https://gpo.zugaina.org/net-im/srain">gentoo portage overlays</a>.</p>
+</section>
+<section id="opensuse">
+<span id="install-packages-opensuse"></span><h4>openSUSE<a class="headerlink" href="#opensuse" title="Permalink to this headline">#</a></h4>
+<p><a class="reference external" href="https://build.opensuse.org/user/show/alois">alois</a> is maintaining <a class="reference external" href="https://software.opensuse.org/package/Srain">openSUSE package for Srain</a>,
+following this link to install it.</p>
+</section>
+</section>
+<section id="windows">
+<span id="install-packages-windows"></span><h3>Windows<a class="headerlink" href="#windows" title="Permalink to this headline">#</a></h3>
+<p>Srain requires Windows 7 or later.</p>
+<section id="pre-built-package">
+<h4>Pre-built package<a class="headerlink" href="#pre-built-package" title="Permalink to this headline">#</a></h4>
+<p>After <a class="reference internal" href="changelog.html#version-1-1-2"><span class="std std-ref">2020-08-10 Version 1.1.2</span></a>, we provide Windows portable binary that you can
+get it from <a class="reference external" href="https://github.com/SrainApp/srain/releases">Github release page</a>.</p>
+</section>
+<section id="build-byself">
+<h4>Build byself<a class="headerlink" href="#build-byself" title="Permalink to this headline">#</a></h4>
+<p>If you want to build Srain on Windows youself,
+you should use the toolchains provided by <a class="reference external" href="http://www.msys2.org/">MSYS2 project</a>.</p>
+<p>Firstly install MSYS2, then open a MSYS2 shell, install the basic build tools:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pacman -S base-devel
+<span class="gp">$ </span>pacman -S mingw-w64-i686-toolchain     <span class="c1"># For 32-bit Windows</span>
+<span class="gp">$ </span>pacman -S mingw-w64-x86_64-toolchain   <span class="c1"># For 64-bit Windows</span>
+</pre></div>
+</div>
+<p>Then download the package script from <a class="reference external" href="https://github.com/SrainApp/srain-contrib/tree/master/pack/mingw">MinGW PKGBUILD for Srain</a>,
+run the following commands at the directory of PKGBUILD:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nv">MINGW_INSTALLS</span><span class="o">=</span>mingw32 makepkg-mingw -fsi <span class="c1"># For 32-bit Windows</span>
+<span class="gp">$ </span><span class="nv">MINGW_INSTALLS</span><span class="o">=</span>mingw64 makepkg-mingw -fsi <span class="c1"># For 64-bit Windows</span>
+</pre></div>
+</div>
+<p>If everything goes well, Srain is installed under your MinGW prefix.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you suffer the
+“error while loading shared libraries: xxxx.dll: cannot open shared object file: No such file or directory”
+problem when running, please run it in cmd but not msys2 shell,
+and it will show you real missing library. <a class="footnote-reference brackets" href="#alexpux-mingw-packages-issue-3939" id="id3">1</a></p>
+</div>
+<dl class="footnote brackets">
+<dt class="label" id="alexpux-mingw-packages-issue-3939"><span class="brackets"><a class="fn-backref" href="#id3">1</a></span></dt>
+<dd><p><a class="reference external" href="https://github.com/Alexpux/MINGW-packages/issues/3939#issuecomment-397988379">https://github.com/Alexpux/MINGW-packages/issues/3939#issuecomment-397988379</a></p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="macos">
+<span id="install-packages-macos"></span><h3>macOS<a class="headerlink" href="#macos" title="Permalink to this headline">#</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>macOS support of Srain is still experimental.</p>
+</div>
+<p>There is not a distribution package or package script for Srain on macOS,
+you should build Srain by yourself.</p>
+<p>Firstly install <a class="reference external" href="https://brew.sh/">Homebrew</a>, run the following commands to install dependencies:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>brew install coreutils gcc pkg-config <span class="c1"># building</span>
+<span class="gp">$ </span>brew install gettext glib-networking gtk+3 libsoup libconfig openssl adwaita-icon-theme
+</pre></div>
+</div>
+<p>Next, tell <cite>pkg-config</cite> where to find the libraries we just installed:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:&quot;/usr/local/opt/icu4c/lib/pkgconfig&quot;</span>
+<span class="go">export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:&quot;/usr/local/opt/openssl@3/lib/pkgconfig&quot;</span>
+</pre></div>
+</div>
+<p>Then follow the steps in <a class="reference internal" href="#install-building"><span class="std std-ref">Building</span></a>.</p>
+</section>
+<section id="bsd">
+<span id="install-packages-bsd"></span><h3>BSD<a class="headerlink" href="#bsd" title="Permalink to this headline">#</a></h3>
+<section id="openbsd">
+<h4>OpenBSD<a class="headerlink" href="#openbsd" title="Permalink to this headline">#</a></h4>
+<p>Please refers to <a class="reference external" href="https://openports.se/net/srain">OpenBSD Ports</a>.</p>
+</section>
+</section>
+</section>
+</section>
+
+<div class="section">
+   
+</div>
+
+              </div>
+              
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="start.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Quick Start</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="commands.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Commands Manual</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+            </footer>
+        </div>
+    </div>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By Shengyu Zhang<br/>
+  
+      &copy; Copyright 2022, Shengyu Zhang.<br/>
+</p>
+        </footer>
+    </div>
+    
+</div>
+
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
+
+  </body>
+</html>

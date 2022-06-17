@@ -1,0 +1,1364 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Change Log &#8212; Srain 1.4.0 documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxnotes-strike.css" />
+    <link rel="stylesheet" type="text/css" href="_static/ablog-custom.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
+    <link rel="shortcut icon" href="_static/im.srain.Srain.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Support Tables" href="support.html" />
+    <link rel="prev" title="Frequently Asked Questions" href="faq.html" /> 
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en">
+    
+
+    <!-- Google Analytics -->
+     
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="blog/atom.xml"
+  title="Srain"
+/>
+ 
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top">
+<h3>
+  <a href="blog.html">Recent Posts</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="blog/introducing-srain.html"
+      >29 February - Introducing Srain</a
+    >
+  </li>
+  
+</ul>
+
+<h3>
+  <a href="blog/category.html">Categories</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="blog/category/announcement.html">announcement (1)</a>
+  </li>
+    
+  <li>
+    <a href="blog/category/release.html">release (33)</a>
+  </li>
+   
+</ul>
+
+<h3>
+  <a href="blog/archive.html">Archives</a>
+</h3>
+<ul>
+   
+  <li>
+    <a href="blog/2022.html">2022 (2)</a>
+  </li>
+    
+  <li>
+    <a href="blog/2021.html">2021 (8)</a>
+  </li>
+    
+  <li>
+    <a href="blog/2020.html">2020 (8)</a>
+  </li>
+    
+  <li>
+    <a href="blog/2019.html">2019 (5)</a>
+  </li>
+    
+  <li>
+    <a href="blog/2018.html">2018 (2)</a>
+  </li>
+    
+  <li>
+    <a href="blog/2017.html">2017 (4)</a>
+  </li>
+    
+  <li>
+    <a href="blog/2016.html">2016 (5)</a>
+  </li>
+   
+</ul>
+</div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
+            
+            <div class="navbar_extra_footer">
+            Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
+            </div>
+            
+        </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
+
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+<a href="https://github.com/SrainApp/srain"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="bottom"
+title="Source repository"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-4-0">
+   2022-05-07 Version 1.4.0
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-3-2">
+   2022-02-10 Version 1.3.2
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-3-1">
+   2021-12-18 Version 1.3.1
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-2-5">
+   2021-12-18 Version 1.2.5
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-3-0">
+   2021-09-23 Version 1.3.0
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-2-4">
+   2021-07-18 Version 1.2.4
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-2-3">
+   2021-06-26 Version 1.2.3
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-2-2">
+   2021-05-30 Version 1.2.2
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-2-1">
+   2021-04-02 Version 1.2.1
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-2-0">
+   2021-02-28 Version 1.2.0
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-1-3">
+   2020-10-01 Version 1.1.3
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-1-2">
+   2020-08-10 Version 1.1.2
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-1-1">
+   2020-06-27 Version 1.1.1
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-1-0">
+   2020-05-24 Version 1.1.0
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-0-2">
+   2020-04-11 Version 1.0.2
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-0-1">
+   2020-03-14 Version 1.0.1
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-0-0">
+   2020-02-24 Version 1.0.0
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-0-0rc9999">
+   2019-10-07 Version 1.0.0rc9999
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-0-0rc5">
+   2019-06-14 Version 1.0.0rc5
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-0-0rc4">
+   2019-05-13 Version 1.0.0rc4
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-0-0rc3">
+   2019-04-14 Version 1.0.0rc3
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-0-0rc2">
+   2019-01-24 Version 1.0.0rc2
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-0-0rc1">
+   2018-09-10 Version 1.0.0rc1
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-0-06-4">
+   2018-02-28 Version 0.06.4
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-0-06-3">
+   2017-12-22 Version 0.06.3
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-0-06-2">
+   2017-09-12 Version 0.06.2
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-0-06-1">
+   2017-08-18 Version 0.06.1
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-0-06">
+   2017-07-29 Version 0.06
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-0-05-1">
+   2016-09-19 Version 0.05.1
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-0-05">
+   2016-08-27 Version 0.05
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-0-03">
+   2016-04-30 Version 0.03
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-0-02">
+   2016-04-13 Version 0.02
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-0-01">
+   2016-04-07 Version 0.01
+  </a>
+ </li>
+</ul>
+
+    </nav>
+</div>
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Change Log</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-4-0">
+   2022-05-07 Version 1.4.0
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-3-2">
+   2022-02-10 Version 1.3.2
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-3-1">
+   2021-12-18 Version 1.3.1
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-2-5">
+   2021-12-18 Version 1.2.5
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-3-0">
+   2021-09-23 Version 1.3.0
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-2-4">
+   2021-07-18 Version 1.2.4
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-2-3">
+   2021-06-26 Version 1.2.3
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-2-2">
+   2021-05-30 Version 1.2.2
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-2-1">
+   2021-04-02 Version 1.2.1
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-2-0">
+   2021-02-28 Version 1.2.0
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-1-3">
+   2020-10-01 Version 1.1.3
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-1-2">
+   2020-08-10 Version 1.1.2
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-1-1">
+   2020-06-27 Version 1.1.1
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-1-0">
+   2020-05-24 Version 1.1.0
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-0-2">
+   2020-04-11 Version 1.0.2
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-0-1">
+   2020-03-14 Version 1.0.1
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-0-0">
+   2020-02-24 Version 1.0.0
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-0-0rc9999">
+   2019-10-07 Version 1.0.0rc9999
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-0-0rc5">
+   2019-06-14 Version 1.0.0rc5
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-0-0rc4">
+   2019-05-13 Version 1.0.0rc4
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-0-0rc3">
+   2019-04-14 Version 1.0.0rc3
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-0-0rc2">
+   2019-01-24 Version 1.0.0rc2
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-0-0rc1">
+   2018-09-10 Version 1.0.0rc1
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-0-06-4">
+   2018-02-28 Version 0.06.4
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-0-06-3">
+   2017-12-22 Version 0.06.3
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-0-06-2">
+   2017-09-12 Version 0.06.2
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-0-06-1">
+   2017-08-18 Version 0.06.1
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-0-06">
+   2017-07-29 Version 0.06
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-0-05-1">
+   2016-09-19 Version 0.05.1
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-0-05">
+   2016-08-27 Version 0.05
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-0-03">
+   2016-04-30 Version 0.03
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-0-02">
+   2016-04-13 Version 0.02
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-0-01">
+   2016-04-07 Version 0.01
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <main id="main-content" role="main">
+                
+              <div>
+                 <section id="change-log">
+<h1>Change Log<a class="headerlink" href="#change-log" title="Permalink to this headline">#</a></h1>
+<section id="version-1-4-0">
+<span id="version-latest"></span><span id="id1"></span><h2>2022-05-07 Version 1.4.0<a class="headerlink" href="#version-1-4-0" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Features:</p>
+<ul>
+<li><p>Add support for IRCv3 standard-replies (<a class="reference external" href="https://github.com/SrainApp/srain/pull/354">#354</a>), by &#64;progval</p></li>
+<li><p>Add support for SASL EXTERNAL (<a class="reference external" href="https://github.com/SrainApp/srain/pull/352">#352</a>), by &#64;progval</p></li>
+<li><p>Add support for invite-notify (<a class="reference external" href="https://github.com/SrainApp/srain/pull/359">#359</a>), by &#64;progval</p></li>
+<li><p>Add conf item <code class="docutils literal notranslate"><span class="pre">server-visibility</span></code> for setting default server visiblity (<a class="reference external" href="https://github.com/SrainApp/srain/issues/361">#361</a>), by &#64;SilverRainZ</p></li>
+<li><p>Add support for server-time (<a class="reference external" href="https://github.com/SrainApp/srain/pull/345">#345</a>), by &#64;progval</p></li>
+<li><p>Add <a class="reference internal" href="commands.html#commands-clear"><span class="std std-ref">/clear</span></a> command for clearing messages of current buffer (<a class="reference external" href="https://github.com/SrainApp/srain/issues/268">#268</a>), by &#64;SilverRainZ</p></li>
+</ul>
+</li>
+<li><p>Bug fixes:</p>
+<ul>
+<li><p>Fix workflow for building MS Windows release artifact (<a class="reference external" href="https://github.com/SrainApp/srain/issues/360">#360</a>), by &#64;lifeibiren</p></li>
+</ul>
+</li>
+<li><p>Changes:</p>
+<ul>
+<li><p>Make the buffer menu apply to the right-clicked item instead of the active buffer (<a class="reference external" href="https://github.com/SrainApp/srain/pull/353">#353</a>), by progval</p></li>
+<li><p>Srain now accepting donations through OpenCollective (<a class="reference external" href="https://opencollective.com/srain">https://opencollective.com/srain</a>)</p></li>
+<li><p>Disable workflow for building debian release artifact since we have offical debian package (<a class="reference external" href="https://github.com/SrainApp/srain/commit/99d9d86">99d9d86</a>)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="version-1-3-2">
+<span id="id2"></span><h2>2022-02-10 Version 1.3.2<a class="headerlink" href="#version-1-3-2" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Features:</p>
+<ul>
+<li><p>Add French translation (<a class="reference external" href="https://github.com/SrainApp/srain/pull/351">#351</a>), by &#64;progval</p></li>
+</ul>
+</li>
+<li><p>Bug fixes:</p>
+<ul>
+<li><p>Silence assertion failure on /part command (<a class="reference external" href="https://github.com/SrainApp/srain/pull/348">#348</a>), by &#64;progval</p></li>
+<li><p>Silence “Unknown capability” warning on trailing whitespace (<a class="reference external" href="https://github.com/SrainApp/srain/pull/349">#349</a>), by &#64;progval</p></li>
+</ul>
+</li>
+<li><p>Changes:</p>
+<ul>
+<li><p>Add tooltips to buttons with no text(<a class="reference external" href="https://github.com/SrainApp/srain/pull/350">#350</a>), by &#64;progval</p></li>
+<li><p>Srain is added to offical repository of Debian, see <a class="reference internal" href="install.html#install-packages-debian"><span class="std std-ref">Debian</span></a> for details</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="version-1-3-1">
+<span id="id3"></span><h2>2021-12-18 Version 1.3.1<a class="headerlink" href="#version-1-3-1" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Bug fixes:</p>
+<ul>
+<li><p>Fix build of macOS (<a class="reference external" href="https://github.com/SrainApp/srain/pull/339">#339</a>), by &#64;SilverRainZ</p></li>
+<li><p>Make channel messages with origin out of channels can be shown (<a class="reference external" href="https://github.com/SrainApp/srain/pull/336">#336</a>), by &#64;progval</p></li>
+<li><p>Rejoin channels after NICKSERV authentication finishes (<a class="reference external" href="https://github.com/SrainApp/srain/issues/274">#274</a>), by &#64;SilverRainZ</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="version-1-2-5">
+<span id="id4"></span><h2>2021-12-18 Version 1.2.5<a class="headerlink" href="#version-1-2-5" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Bug fixes:</p>
+<ul>
+<li><p>Backport <a class="reference external" href="https://github.com/SrainApp/srain/pull/336">#336</a>, <a class="reference external" href="https://github.com/SrainApp/srain/issues/274">#274</a></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="version-1-3-0">
+<span id="version-1-3"></span><h2>2021-09-23 Version 1.3.0<a class="headerlink" href="#version-1-3-0" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Features:</p>
+<ul>
+<li><p>Implement ISUPPORT parsing + the UTF8ONLY IRCv3 specification (<a class="reference external" href="https://github.com/SrainApp/srain/pull/331">#331</a>), thanks to &#64;progval</p></li>
+<li><p>Add support for RPL_UMODEIS (<a class="reference external" href="https://github.com/SrainApp/srain/pull/331">#331</a>), thanks to &#64;progval</p></li>
+<li><p>Make nick completion case-insensitive (<a class="reference external" href="https://github.com/SrainApp/srain/pull/333">#333</a>), thanks to &#64;progval</p></li>
+<li><p>Add button for inserting emoji (<a class="reference external" href="https://github.com/SrainApp/srain/issues/279">#279</a>)</p></li>
+</ul>
+</li>
+<li><p>Bug fixes:</p>
+<ul>
+<li><p>Fix configuration syntax errors caused by trailing commas (<a class="reference external" href="https://github.com/SrainApp/srain/pull/330">#330</a>), thanks to &#64;progval</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="version-1-2-4">
+<span id="id5"></span><h2>2021-07-18 Version 1.2.4<a class="headerlink" href="#version-1-2-4" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Bug fixes:</p>
+<ul>
+<li><p>Fix bug casued by <a class="reference external" href="https://github.com/SrainApp/srain/pull/316">#316</a> (<a class="reference external" href="https://github.com/SrainApp/srain/issues/319">#319</a>)</p></li>
+<li><p>Fix crach when URL preview async task failed (<a class="reference external" href="https://github.com/SrainApp/srain/issues/322">#322</a>)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="version-1-2-3">
+<span id="id6"></span><h2>2021-06-26 Version 1.2.3<a class="headerlink" href="#version-1-2-3" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Bug fixes:</p>
+<ul>
+<li><p>Eliminate GDK warning (<a class="reference external" href="https://github.com/SrainApp/srain/pull/316">#316</a>)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="version-1-2-2">
+<span id="id7"></span><h2>2021-05-30 Version 1.2.2<a class="headerlink" href="#version-1-2-2" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Changed:</p>
+<ul>
+<li><p>Add libera.chat IRC network (<a class="reference external" href="https://github.com/SrainApp/srain/pull/311">#311</a>)</p></li>
+<li><p>Updated Dutch translation (<a class="reference external" href="https://github.com/SrainApp/srain/commit/b6830e9">b6830e9</a>)</p></li>
+</ul>
+</li>
+<li><p>Bug fixes:</p>
+<ul>
+<li><p>Fix windows build (<a class="reference external" href="https://github.com/SrainApp/srain/pull/300">#300</a>, <a class="reference external" href="https://github.com/SrainApp/srain/pull/303">#303</a>)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="version-1-2-1">
+<span id="id8"></span><h2>2021-04-02 Version 1.2.1<a class="headerlink" href="#version-1-2-1" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Features:</p>
+<ul>
+<li><p>Add Ukrainian translations (<a class="reference external" href="https://github.com/SrainApp/srain/pull/292">#292</a>), thanks to <a class="reference external" href="https://github.com/andmizyk">&#64;andmizyk</a></p></li>
+</ul>
+</li>
+<li><p>Bug fixes:</p>
+<ul>
+<li><p>Minor fixes (<a class="reference external" href="https://github.com/SrainApp/srain/issues/290">#290</a>)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="version-1-2-0">
+<span id="id9"></span><h2>2021-02-28 Version 1.2.0<a class="headerlink" href="#version-1-2-0" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>Features:</p>
+<ul class="simple">
+<li><p>Switch build system from Make to Meson (<a class="reference external" href="https://github.com/SrainApp/srain/pull/266">#266</a>)</p></li>
+<li><p>Add FreeBSD implementations for <code class="docutils literal notranslate"><span class="pre">srn_get_executable_{path,dir}</span></code>,
+thanks to <a class="reference external" href="https://github.com/wahjava">&#64;wahjava</a></p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">/quote</span></code> command for sending special IRC commands,
+thanks to <a class="reference external" href="https://github.com/hno">&#64;hno</a> (<a class="reference external" href="https://github.com/SrainApp/srain/pull/283">#283</a>)</p></li>
+<li><p>Add support for hiding server buffer (<a class="reference external" href="https://github.com/SrainApp/srain/pull/287">#287</a>)</p></li>
+</ul>
+</li>
+<li><p>Bug fixes:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Fix an use-after-free BUG (<a class="reference external" href="https://github.com/SrainApp/srain/pull/267">#267</a>)</p></li>
+<li><p>Fix implicit declaration error on some systems,
+thanks to <a class="reference external" href="https://github.com/lgbaldoni">&#64;lgbaldoni</a> (<a class="reference external" href="https://github.com/SrainApp/srain/pull/270">#270</a>)</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</section>
+<section id="version-1-1-3">
+<span id="id10"></span><h2>2020-10-01 Version 1.1.3<a class="headerlink" href="#version-1-1-3" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>Bug fixes:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Fix an use-after-free BUG (<a class="reference external" href="https://github.com/SrainApp/srain/pull/267">#267</a>)</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</section>
+<section id="version-1-1-2">
+<span id="id11"></span><h2>2020-08-10 Version 1.1.2<a class="headerlink" href="#version-1-1-2" title="Permalink to this headline">#</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This release contains only improvement for MS Windows,
+user of other platform can ignore it.</p>
+</div>
+<ul class="simple">
+<li><p>Features:</p>
+<ul>
+<li><p>Binary for MS Windows now can automatically built via Github Actions,
+thanks to <a class="reference external" href="https://github.com/lifeibiren">&#64;lifeibiren</a> (<a class="reference external" href="https://github.com/SrainApp/srain/pull/259">#259</a>), please refer to
+<a class="reference internal" href="install.html#install-packages-windows"><span class="std std-ref">Windows</span></a> for more details</p></li>
+</ul>
+</li>
+<li><p>Changes:</p>
+<ul>
+<li><p>For ease of running on windows, Srain’s executable path is added to the
+search paths of {configuration,data} file. Thanks to <a class="reference external" href="https://github.com/lifeibiren">&#64;lifeibiren</a>
+(<a class="reference external" href="https://github.com/SrainApp/srain/pull/259">#259</a>)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="version-1-1-1">
+<span id="id12"></span><h2>2020-06-27 Version 1.1.1<a class="headerlink" href="#version-1-1-1" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Changes:</p>
+<ul>
+<li><p>Improve auto-scroll policy of message list (<a class="reference external" href="https://github.com/SrainApp/srain/pull/255">#255</a>)</p></li>
+</ul>
+</li>
+<li><p>Bug fixes:</p>
+<ul>
+<li><p>Fix TLS certificate verification error on glib-networking 2.64.3 (<a class="reference external" href="https://github.com/SrainApp/srain/issues/251">#251</a>)</p></li>
+<li><p>Fix crash when connecting to an invalid host (<a class="reference external" href="https://github.com/SrainApp/srain/issues/234">#234</a>)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="version-1-1-0">
+<span id="id13"></span><h2>2020-05-24 Version 1.1.0<a class="headerlink" href="#version-1-1-0" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Features:</p>
+<ul>
+<li><p>Support multiple selection of message (<a class="reference external" href="https://github.com/SrainApp/srain/issues/138">#138</a>)</p></li>
+<li><p>Support jump to mentioned message (<a class="reference external" href="https://github.com/SrainApp/srain/pull/243">#243</a>)</p></li>
+<li><p>Nickname will be highlighted when mentioned (<a class="reference external" href="https://github.com/SrainApp/srain/pull/243">#243</a>)</p></li>
+<li><p>Auto build deb package (<a class="reference external" href="https://github.com/SrainApp/srain/pull/238">#238</a>)</p></li>
+</ul>
+</li>
+<li><p>Changes:</p>
+<ul>
+<li><p>Improve fcous control of UI</p></li>
+<li><p>Replace appdata with metainfo (<a class="reference external" href="https://github.com/SrainApp/srain/pull/240">#240</a>)</p></li>
+<li><p>Validate metainfo with appstream-util (<a class="reference external" href="https://github.com/SrainApp/srain/issues/242">#242</a>)</p></li>
+</ul>
+</li>
+<li><p>Bug fixes:</p>
+<ul>
+<li><p>Some implicit declarations fixes (<a class="reference external" href="https://github.com/SrainApp/srain/pull/236">#236</a>)</p></li>
+<li><p>Some typo fixes (<a class="reference external" href="https://github.com/SrainApp/srain/pull/239">#239</a>)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="version-1-0-2">
+<span id="id14"></span><h2>2020-04-11 Version 1.0.2<a class="headerlink" href="#version-1-0-2" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Features:</p>
+<ul>
+<li><p>Add MAN documentation (<a class="reference external" href="https://github.com/SrainApp/srain/commit/deaf723">deaf723</a>)</p></li>
+<li><p>Add more predefined IRC networks: DALnet, EFnet, IRCnet, Undernet and QuakeNet (<a class="reference external" href="https://github.com/SrainApp/srain/pull/228">#228</a>)</p></li>
+</ul>
+</li>
+<li><p>Changes:</p>
+<ul>
+<li><p>Build: Allow setting CC variable via environment (<a class="reference external" href="https://github.com/SrainApp/srain/pull/224">#224</a>)</p></li>
+<li><p>Add channel related messages to corresponding buffer as possible (<a class="reference external" href="https://github.com/SrainApp/srain/issues/149">#149</a>)</p></li>
+<li><p>Improve widget focus control (<a class="reference external" href="https://github.com/SrainApp/srain/pull/229">#229</a>)</p></li>
+<li><p>Drop unused icons (<a class="reference external" href="https://github.com/SrainApp/srain/commit/6239fe5">6239fe5</a>)</p></li>
+<li><p>Provide clearer error message when connecting (<a class="reference external" href="https://github.com/SrainApp/srain/pull/233">#233</a>)</p></li>
+<li><p>Update gentoo installation documentation <a class="reference internal" href="install.html#install-packages-gentoo"><span class="std std-ref">Gentoo</span></a> (<a class="reference external" href="https://github.com/SrainApp/srain/commit/ceb5ca3">ceb5ca3</a>)</p></li>
+</ul>
+</li>
+<li><p>Bug fixes:</p>
+<ul>
+<li><p>Truncate long message before sendisg (<a class="reference external" href="https://github.com/SrainApp/srain/pull/227">#227</a>)</p></li>
+<li><p>Deal with invalid UTF-8 string (<a class="reference external" href="https://github.com/SrainApp/srain/commit/50e7757">50e7757</a>)</p></li>
+<li><p>Fix incorrect user number of channel user list (<a class="reference external" href="https://github.com/SrainApp/srain/pull/230">#230</a>)</p></li>
+<li><p>Fix incorrect icon install path (<a class="reference external" href="https://github.com/SrainApp/srain/commit/9f07380">9f07380</a>)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="version-1-0-1">
+<span id="id15"></span><h2>2020-03-14 Version 1.0.1<a class="headerlink" href="#version-1-0-1" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Features:</p>
+<ul>
+<li><p>Auto rename to original nick when ghost quit (<a class="reference external" href="https://github.com/SrainApp/srain/pull/198">#198</a>)</p></li>
+<li><p>Add hackint IRC network (<a class="reference external" href="https://github.com/SrainApp/srain/pull/201">#201</a>), thanks to <a class="reference external" href="https://github.com/kpcyrd">&#64;kpcyrd</a></p></li>
+<li><p>Add Dutch translation (<a class="reference external" href="https://github.com/SrainApp/srain/pull/215">#215</a>), thanks to <a class="reference external" href="https://github.com/Vistaus">&#64;Vistaus</a></p></li>
+<li><p>Add two FAQs to documentation (<a class="reference external" href="https://github.com/SrainApp/srain/pull/217">#217</a>)</p></li>
+<li><p>Add debian pack script (<a class="reference external" href="https://github.com/SrainApp/srain-contrib/pull/1">contrib#1</a>), thanks to <a class="reference external" href="https://github.com/tomac4t">&#64;tomac4t</a>.
+Please refer to <a class="reference internal" href="install.html#install-packages-debian"><span class="std std-ref">Debian</span></a> to build a deb package</p></li>
+</ul>
+</li>
+<li><p>Changes:</p>
+<ul>
+<li><p>Move continuous integration from travis CI to github actions
+(<a class="reference external" href="https://github.com/SrainApp/srain/pull/203">#203</a>, <a class="reference external" href="https://github.com/SrainApp/srain/pull/204">#204</a>), thanks to <a class="reference external" href="https://github.com/tomac4t">&#64;tomac4t</a></p></li>
+<li><p>Make header bar buttons repect default belief (<a class="reference external" href="https://github.com/SrainApp/srain/pull/205">#205</a>, <a class="reference external" href="https://github.com/SrainApp/srain/pull/218">#218</a>)</p></li>
+</ul>
+</li>
+<li><p>Bug fixes:</p>
+<ul>
+<li><p>Fix case sensitivity issue for IRC messages (<a class="reference external" href="https://github.com/SrainApp/srain/pull/202">#202</a>),
+thanks to <a class="reference external" href="https://github.com/hhirtz">&#64;hhirtz</a></p></li>
+<li><p>Fix invalid changelog section of appdata file (<a class="reference external" href="https://github.com/SrainApp/srain/pull/214">#214</a>)</p></li>
+<li><p>Fix missing dependences in documentation (<a class="reference external" href="https://github.com/SrainApp/srain/pull/216">#216</a>),
+thanks to <a class="reference external" href="https://github.com/avoidr">&#64;avoidr</a></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="version-1-0-0">
+<span id="id16"></span><h2>2020-02-24 Version 1.0.0<a class="headerlink" href="#version-1-0-0" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Changes:</p>
+<ul>
+<li><p>Some code cleanup</p></li>
+<li><p>Update <a class="reference internal" href="start.html"><span class="doc">Quick Start</span></a> documentation</p></li>
+</ul>
+</li>
+<li><p>Bug fixes:</p>
+<ul>
+<li><p>Allow Srain runs without dbus secrets service (<a class="reference external" href="https://github.com/SrainApp/srain/issues/195">#195</a>)</p></li>
+<li><p>Fix nick generation logical (<a class="reference external" href="https://github.com/SrainApp/srain/commit/39ced08">39ced08</a>)</p></li>
+</ul>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>1.0.0 is the first stable release of Srain, enjoy!</p>
+</div>
+</section>
+<section id="version-1-0-0rc9999">
+<span id="id17"></span><h2>2019-10-07 Version 1.0.0rc9999<a class="headerlink" href="#version-1-0-0rc9999" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Features:</p>
+<ul>
+<li><p>Activate corresponding buffer when channel URL is clicked (<a class="reference external" href="https://github.com/SrainApp/srain/pull/190">#190</a>)</p></li>
+<li><p>Command alias support (<a class="reference external" href="https://github.com/SrainApp/srain/issues/188">#188</a>)</p></li>
+<li><p>List predefined servers via command, see <a class="reference internal" href="commands.html#commands-server"><span class="std std-ref">/server</span></a> for details
+(<a class="reference external" href="https://github.com/SrainApp/srain/commit/656f3e5">656f3e5</a>)</p></li>
+</ul>
+</li>
+<li><p>Changes:</p>
+<ul>
+<li><p>Replace all icons with freedesktop standard icons (<a class="reference external" href="https://github.com/SrainApp/srain/issues/120">#120</a>)</p></li>
+</ul>
+</li>
+<li><p>Bug fixes:</p>
+<ul>
+<li><p>Fix wrong usage of GError (<a class="reference external" href="https://github.com/SrainApp/srain/issues/179">#179</a>)</p></li>
+<li><p>Fix image preview problem when image is hard to detect type (<a class="reference external" href="https://github.com/SrainApp/srain/issues/163">#163</a>)</p></li>
+<li><p>Fix memory leak of pattern filter (<a class="reference external" href="https://github.com/SrainApp/srain/commit/9464a9e">9464a9e</a>)</p></li>
+<li><p>Fix the breaking “abort sending” icon (<a class="reference external" href="https://github.com/SrainApp/srain/pull/144">#144</a>)</p></li>
+<li><p>Fix the invite menu of user (<a class="reference external" href="https://github.com/SrainApp/srain/commit/9f98cbb">9f98cbb</a>)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="version-1-0-0rc5">
+<span id="id18"></span><h2>2019-06-14 Version 1.0.0rc5<a class="headerlink" href="#version-1-0-0rc5" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>Added:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Regular expression pattern management using <a class="reference internal" href="commands.html#commands-pattern"><span class="std std-ref">/pattern</span></a> command</p></li>
+<li><p>Add command <a class="reference internal" href="commands.html#commands-filter"><span class="std std-ref">/filter &amp; /unfilter</span></a> for filtering message via pattern</p></li>
+<li><p>Add command <a class="reference internal" href="commands.html#commands-render"><span class="std std-ref">/render &amp; /unrender</span></a> for rendering message via pattern</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Changed:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Refactor detector module and rename it to render</p></li>
+<li><p>Refactor filter module</p></li>
+<li><p>Change project description</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Removed:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Drop command <a class="reference internal" href="commands.html#commands-rignore"><span class="std std-ref">/rignore &amp; /unrignore</span></a></p></li>
+<li><p>Drop command <a class="reference internal" href="commands.html#commands-relay"><span class="std std-ref">/relay &amp; /unrelay</span></a></p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</section>
+<section id="version-1-0-0rc4">
+<span id="id19"></span><h2>2019-05-13 Version 1.0.0rc4<a class="headerlink" href="#version-1-0-0rc4" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>Added:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>New dependency <code class="docutils literal notranslate"><span class="pre">libsecret</span></code></p></li>
+<li><p>Add password storage support</p></li>
+<li><p>Add command line options <code class="docutils literal notranslate"><span class="pre">--no-auto</span></code>, used to require Srain not to
+automatically connect to servers</p></li>
+<li><p>Add russian translation, thanks to &#64;tim77</p></li>
+<li><p>Allow user send slash(<code class="docutils literal notranslate"><span class="pre">/</span></code>) prefixed message</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Removed:</p>
+<ul class="simple">
+<li><p>Drop all password fields in configuration file</p></li>
+</ul>
+</li>
+<li><p>Changed:</p>
+<ul class="simple">
+<li><p>Enable CSD(Client-Side Decoration) by default</p></li>
+<li><p>Update chinese translation</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="version-1-0-0rc3">
+<span id="id20"></span><h2>2019-04-14 Version 1.0.0rc3<a class="headerlink" href="#version-1-0-0rc3" title="Permalink to this headline">#</a></h2>
+</section>
+<section id="version-1-0-0rc2">
+<span id="id21"></span><h2>2019-01-24 Version 1.0.0rc2<a class="headerlink" href="#version-1-0-0rc2" title="Permalink to this headline">#</a></h2>
+</section>
+<section id="version-1-0-0rc1">
+<span id="id22"></span><h2>2018-09-10 Version 1.0.0rc1<a class="headerlink" href="#version-1-0-0rc1" title="Permalink to this headline">#</a></h2>
+</section>
+<section id="version-0-06-4">
+<span id="id23"></span><h2>2018-02-28 Version 0.06.4<a class="headerlink" href="#version-0-06-4" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>Changed:</p>
+<ul class="simple">
+<li><p>Change default application ID to <code class="docutils literal notranslate"><span class="pre">im.srain.Srain</span></code></p></li>
+</ul>
+</li>
+<li><p>Added:</p>
+<ul>
+<li><p>CTCP support, including request &amp; response CLIENTINFO, FINGER, PING,
+SOURCE, TIME, VERSION, USERINFO messages. DCC message is <strong>not</strong> yet
+supported. Use command <a class="reference internal" href="commands.html#commands-ctcp"><span class="std std-ref">/ctcp</span></a> for sending a CTCP request</p></li>
+<li><p>Login method support, you can specify it by configuration file option
+<code class="docutils literal notranslate"><span class="pre">server.login_method</span></code>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">sasl_plain</span></code>: SASL PLAIN authentication support, will use
+<code class="docutils literal notranslate"><span class="pre">server.user.username</span></code> as identity, and use <code class="docutils literal notranslate"><span class="pre">server.user.passwd</span></code> as
+password</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Added documentation <a class="reference internal" href="support.html"><span class="doc">Support Tables</span></a> used to show Srain’s features,
+inspried by <a class="reference external" href="https://ircv3.net/software/clients.html">https://ircv3.net/software/clients.html</a></p></li>
+<li><p>Added a semantic version parser, not yet used</p></li>
+<li><p>Added appdata file which requier by application store, thanks to &#64;cpba</p></li>
+<li><p>openSUSE package is available, please refer to
+<a class="reference internal" href="install.html#install-packages-opensuse"><span class="std std-ref">openSUSE</span></a> for details, thanks to &#64;alois</p></li>
+<li><p>Flatpak package is available, please refer to
+<a class="reference internal" href="install.html#install-packages-flatpak"><span class="std std-ref">Fedora</span></a> for details, thanks to &#64;cpba</p></li>
+</ul>
+</li>
+<li><p>Improved:</p>
+<ul class="simple">
+<li><p>Fixed a logical error in IRC message parser: all parameters are equal
+whether matched by <code class="docutils literal notranslate"><span class="pre">&lt;middle&gt;</span></code> or <code class="docutils literal notranslate"><span class="pre">&lt;trailing&gt;</span></code>, thanks to &#64;DanielOaks</p></li>
+<li><p>Improved connection state control, you can smoothly disconnect/quit from
+server even it is unresponsive</p></li>
+<li><p>Fixed truncated message output by <a class="reference internal" href="commands.html#commands-server"><span class="std std-ref">/server</span></a> <code class="docutils literal notranslate"><span class="pre">list</span></code>
+subcommand</p></li>
+<li><p>Fixed crash at <code class="docutils literal notranslate"><span class="pre">g_type_check_instance()</span></code> under GLib 2.54.3+</p></li>
+<li><p>Fixed: Do not free a SrianServerBuffer which has non-empty buffer</p></li>
+<li><p>Ensure the QUIT message can be sent before application shutdown</p></li>
+<li><p>Removed entry from desktop file, thanks to &#64;TingPing</p></li>
+<li><p>Fixed grammer of join message, thanks to &#64;raindev</p></li>
+<li><p>Re-enable CI for Srain: <a class="reference external" href="https://travis-ci.org/SrainApp/srain"><img alt="ci-status" src="https://travis-ci.org/SrainApp/srain.svg?branch=master" /></a></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="version-0-06-3">
+<h2>2017-12-22 Version 0.06.3<a class="headerlink" href="#version-0-06-3" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Changed:</p>
+<ul>
+<li><p>Configurable file option <code class="docutils literal notranslate"><span class="pre">tls_not_verify</span></code> in <code class="docutils literal notranslate"><span class="pre">irc</span></code> block in <code class="docutils literal notranslate"><span class="pre">server</span></code>
+block is renamed to <code class="docutils literal notranslate"><span class="pre">tls_noverify</span></code>, old option name is still supported</p></li>
+<li><p>Command option <code class="docutils literal notranslate"><span class="pre">tls-not-verify</span></code> for <a class="reference internal" href="commands.html#commands-server"><span class="std std-ref">/server</span></a> and
+<a class="reference internal" href="commands.html#commands-connect"><span class="std std-ref">/connect</span></a> is renamed to <code class="docutils literal notranslate"><span class="pre">tls-noverify</span></code>, old option name
+is still supported</p></li>
+</ul>
+</li>
+<li><p>Added:</p>
+<ul>
+<li><p>Connect popover supports connect to predefined server</p></li>
+<li><p>Join popover supports channel search</p></li>
+</ul>
+</li>
+<li><p>Improved:</p>
+<ul>
+<li><p>Modified margin and padding of some widgets</p></li>
+<li><p>Improved the style of unread message counter</p></li>
+<li><p>Fixed markup parse error of decorator</p></li>
+<li><p>Fixed crashing while connecting from connect popover</p></li>
+<li><p>Fixed use after free while removing user</p></li>
+<li><p>Improved the performance and extensibility of user list</p></li>
+<li><p>Improved compatibility with older versions of GTK(&gt; 3.16)</p></li>
+<li><p>Refactor the code of chat panel, helpful for the next development</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="version-0-06-2">
+<span id="id24"></span><h2>2017-09-12 Version 0.06.2<a class="headerlink" href="#version-0-06-2" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Added:</p>
+<ul>
+<li><p>mIRC color support, can be disabled via setting <code class="docutils literal notranslate"><span class="pre">render_mirc_color</span></code>
+option in <code class="docutils literal notranslate"><span class="pre">chat</span></code> block in <code class="docutils literal notranslate"><span class="pre">server</span></code> block to <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+</ul>
+</li>
+<li><p>Improved:</p>
+<ul>
+<li><p>Better error reporting while operating the UI</p></li>
+<li><p>IRC URL can be opened directly within the application</p></li>
+<li><p>Text in input entry, connection panel and join panel will not be cleared
+while operation is not successful</p></li>
+<li><p>Fixed: in some cases, nickname registration will case infinity loop</p></li>
+<li><p>Decorator and filter now can process xml message</p></li>
+<li><p>Imporved the handling of channel topic</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="version-0-06-1">
+<h2>2017-08-18 Version 0.06.1<a class="headerlink" href="#version-0-06-1" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Added:</p>
+<ul>
+<li><p>Added GPL copyright statements</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RPL_CHANNEL_URL</span></code> (328) message support</p></li>
+<li><p>Command line options support, type <code class="docutils literal notranslate"><span class="pre">srain</span> <span class="pre">-h</span></code> for help message</p></li>
+<li><p>Support for Creating server and joining channel from IRC URL</p></li>
+<li><p>New dependency libsoup</p></li>
+<li><p>Add reconnect timer: if connection fails, Srain will wait for 5 seconds
+then try to connect again. If it still fails, waiting time will increase by
+5 second</p></li>
+</ul>
+</li>
+<li><p>Improved:</p>
+<ul>
+<li><p>Fixed the crash when QUIT</p></li>
+<li><p>Fixed: avoid sending empty password</p></li>
+<li><p>More empty parameters checks</p></li>
+<li><p>Imporve server connection status control</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="version-0-06">
+<h2>2017-07-29 Version 0.06<a class="headerlink" href="#version-0-06" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Changed:</p>
+<ul>
+<li><p>The third time of refactor ;-)</p></li>
+<li><p>New command parser, for the syntax, refer to <a class="reference internal" href="commands.html#commands-syntax"><span class="std std-ref">Syntax</span></a>.</p></li>
+<li><p>Changed the format of Chat log</p></li>
+<li><p>The <a class="reference internal" href="commands.html#commands-relay"><span class="std std-ref">/relay &amp; /unrelay</span></a> command doesn’t support custom delimiter, this function will
+be implemented as python plugin in the future</p></li>
+<li><p>Use reStructuredText for document instead of Markdown</p></li>
+</ul>
+</li>
+<li><p>Added:</p>
+<ul>
+<li><p>Message filter: mechanism for filtering message</p></li>
+<li><p>Message Decorator: mechanism for changing message</p></li>
+<li><p>Install script for Gentoo, thanks to &#64;rtlanceroad !</p></li>
+<li><p>New command <a class="reference internal" href="commands.html#commands-rignore"><span class="std std-ref">/rignore &amp; /unrignore</span></a> for ignore message using regular
+expression, thanks to &#64;zwindl !</p></li>
+<li><p>Config file support</p></li>
+<li><p>Configurable log module, more convenient for developing and reporting issue</p></li>
+<li><p>New Return value type, for more friendly error reporting</p></li>
+<li><p>New command <a class="reference internal" href="commands.html#commands-server"><span class="std std-ref">/server</span></a> for IRC servers management</p></li>
+<li><p>Srain home page is available at: <a class="reference external" href="https://srain.im">https://srain.im</a> [expired]</p></li>
+<li><p>Srain help documentation is available at: <a class="reference external" href="https://doc.srain.im">https://doc.srain.im</a> [expired]</p></li>
+</ul>
+</li>
+<li><p>Removed:</p>
+<ul>
+<li><p>Remove libircclient dependence</p></li>
+</ul>
+</li>
+<li><p>Improved:</p>
+<ul>
+<li><p>Improve reconnection stuff: auto reconnect when ping time out</p></li>
+<li><p>More accurate message mention</p></li>
+<li><p>Display preview image in correct size</p></li>
+<li><p>Any number of image links in message can be previewed</p></li>
+<li><p>HTTP(and some other protocols) link, domain name, email address and IRC
+channel name in topic and messages can be rendered as hyper link</p></li>
+<li><p>The sent message can be merged to last sent message</p></li>
+<li><p>Fixed some bugs</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="version-0-05-1">
+<h2>2016-09-19 Version 0.05.1<a class="headerlink" href="#version-0-05-1" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Create missing directory: <code class="docutils literal notranslate"><span class="pre">$XDG_CACHE_HOME/srain/avatars</span></code></p></li>
+</ul>
+</section>
+<section id="version-0-05">
+<h2>2016-08-27 Version 0.05<a class="headerlink" href="#version-0-05" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Changed:</p>
+<ul>
+<li><p>Port to libircclient</p>
+<ul>
+<li><p>SSL connection support</p></li>
+<li><p>Server password support</p></li>
+<li><p>Channel password support</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Added:</p>
+<ul>
+<li><p>Convenience GtkPopover for connecting and joining</p></li>
+<li><p>Nick popmenu</p></li>
+<li><p>Translations: zh_CN</p></li>
+<li><p>Forward message</p></li>
+<li><p>Chat log</p></li>
+<li><p>Colorful user list icon</p></li>
+<li><p>Mentioned highlight</p></li>
+<li><p>Desktop notification</p></li>
+</ul>
+</li>
+<li><p>Improved:</p>
+<ul>
+<li><p>More friendly User interface</p></li>
+<li><p>Stronger {upload,avatar} plugin</p></li>
+<li><p>Fixed a lot of bugs</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="version-0-03">
+<h2>2016-04-30 Version 0.03<a class="headerlink" href="#version-0-03" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>New interface between UI and IRC module</p></li>
+<li><p>Multi-server support</p></li>
+<li><p>Channel name is not case sensitive now</p></li>
+<li><p>/quit command will close all SrainChan of a server</p></li>
+<li><p>Fix GTK-Warning when close a SrainCHan</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>0.03 is a pre-release, some functions are no completed yet.
+it also has some undetected bugs.</p>
+</div>
+</section>
+<section id="version-0-02">
+<h2>2016-04-13 Version 0.02<a class="headerlink" href="#version-0-02" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Bugs fixed</p></li>
+<li><p>Port to GTK+-3.20</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>0.02 is a pre-release, some functions are no completed yet.
+it also has some undetected bugs.</p>
+</div>
+</section>
+<section id="version-0-01">
+<h2>2016-04-07 Version 0.01<a class="headerlink" href="#version-0-01" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Implement basic functions of a IRC client</p></li>
+<li><p>Themes: Silver Rain (light)</p></li>
+<li><p>Simple python plugin support:</p>
+<ul>
+<li><p>Auto upload image to pastebin (img.vim-cn.org)</p></li>
+<li><p>Get github avatar according nickname</p></li>
+<li><p>NB: plugin will separated from this repo in the future</p></li>
+</ul>
+</li>
+<li><p>Image preview from URL</p></li>
+<li><p>Relay bot message transfrom</p></li>
+<li><p>Nick auto completion</p></li>
+<li><p>Combine message from same person</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>0.01 is a pre-release, some functions are no completed yet.
+it also has some undetected bugs.</p>
+</div>
+</section>
+</section>
+
+<div class="section">
+   
+</div>
+
+              </div>
+              
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="faq.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Frequently Asked Questions</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="support.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Support Tables</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+            </footer>
+        </div>
+    </div>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By Shengyu Zhang<br/>
+  
+      &copy; Copyright 2022, Shengyu Zhang.<br/>
+</p>
+        </footer>
+    </div>
+    
+</div>
+
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
+
+  </body>
+</html>

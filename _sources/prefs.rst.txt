@@ -1,0 +1,1 @@
+Redirect to :doc:`config`.

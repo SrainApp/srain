@@ -1,0 +1,1044 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Commands Manual &#8212; Srain 1.4.0 documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxnotes-strike.css" />
+    <link rel="stylesheet" type="text/css" href="_static/ablog-custom.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
+    <link rel="shortcut icon" href="_static/im.srain.Srain.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Configuration Manual" href="config.html" />
+    <link rel="prev" title="Installation" href="install.html" /> 
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en">
+    
+
+    <!-- Google Analytics -->
+     
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="blog/atom.xml"
+  title="Srain"
+/>
+ 
+<style type="text/css">
+  ul.ablog-archive {
+    list-style: none;
+    overflow: auto;
+    margin-left: 0px;
+  }
+  ul.ablog-archive li {
+    float: left;
+    margin-right: 5px;
+    font-size: 80%;
+  }
+  ul.postlist a {
+    font-style: italic;
+  }
+  ul.postlist-style-disc {
+    list-style-type: disc;
+  }
+  ul.postlist-style-none {
+    list-style-type: none;
+  }
+  ul.postlist-style-circle {
+    list-style-type: circle;
+  }
+</style>
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top"><div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="_static/im.srain.Srain.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">Srain 1.4.0 documentation</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="intro.html">
+   Introduction
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="start.html">
+   Quick Start
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="install.html">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Commands Manual
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="config.html">
+   Configuration Manual
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="develop.html">
+   Development Specification
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="misc.html">
+   Miscellaneous
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="faq.html">
+   Frequently Asked Questions
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="changelog.html">
+   Change Log
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="support.html">
+   Support Tables
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav></div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
+            
+            <div class="navbar_extra_footer">
+            Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
+            </div>
+            
+        </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
+
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+<a href="https://github.com/SrainApp/srain"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="bottom"
+title="Source repository"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#playground">
+   Playground
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#syntax">
+   Syntax
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#available-commands">
+   Available Commands
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#reload">
+     /reload
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#server">
+     /server
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#connect">
+     /connect
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#ignore-unignore">
+     /ignore &amp; /unignore
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#query-unquery">
+     /query &amp; /unquery
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#join">
+     /join
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#part">
+     /part
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#quit">
+     /quit
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#topic">
+     /topic
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#msg">
+     /msg
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#me">
+     /me
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#nick">
+     /nick
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#whois">
+     /whois
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#invite">
+     /invite
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#kick">
+     /kick
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mode">
+     /mode
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#ctcp">
+     /ctcp
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#pattern">
+     /pattern
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#filter-unfilter">
+     /filter &amp; /unfilter
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#render-unrender">
+     /render &amp; /unrender
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#quote">
+     /quote
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#clear">
+     /clear
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#obsoleted-commands">
+   Obsoleted Commands
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#rignore-unrignore">
+     /rignore &amp; /unrignore
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#relay-unrelay">
+     /relay &amp; /unrelay
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+    </nav>
+</div>
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Commands Manual</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#playground">
+   Playground
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#syntax">
+   Syntax
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#available-commands">
+   Available Commands
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#reload">
+     /reload
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#server">
+     /server
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#connect">
+     /connect
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#ignore-unignore">
+     /ignore &amp; /unignore
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#query-unquery">
+     /query &amp; /unquery
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#join">
+     /join
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#part">
+     /part
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#quit">
+     /quit
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#topic">
+     /topic
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#msg">
+     /msg
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#me">
+     /me
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#nick">
+     /nick
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#whois">
+     /whois
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#invite">
+     /invite
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#kick">
+     /kick
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mode">
+     /mode
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#ctcp">
+     /ctcp
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#pattern">
+     /pattern
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#filter-unfilter">
+     /filter &amp; /unfilter
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#render-unrender">
+     /render &amp; /unrender
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#quote">
+     /quote
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#clear">
+     /clear
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#obsoleted-commands">
+   Obsoleted Commands
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#rignore-unrignore">
+     /rignore &amp; /unrignore
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#relay-unrelay">
+     /relay &amp; /unrelay
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <main id="main-content" role="main">
+                
+              <div>
+                 <section id="commands-manual">
+<h1>Commands Manual<a class="headerlink" href="#commands-manual" title="Permalink to this headline">#</a></h1>
+<section id="playground">
+<span id="commands-playground"></span><h2>Playground<a class="headerlink" href="#playground" title="Permalink to this headline">#</a></h2>
+<p>User can run commands in two ways, the one way is typing them into the input
+entry of chat buffer.</p>
+<p>The another way is writing the commands to the <code class="docutils literal notranslate"><span class="pre">server.auto-run</span></code> and
+<code class="docutils literal notranslate"><span class="pre">chat.auto-run</span></code> configuration items. For more details, please refer to
+<a class="reference internal" href="config.html"><span class="doc">Configuration Manual</span></a>.</p>
+</section>
+<section id="syntax">
+<span id="commands-syntax"></span><h2>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">#</a></h2>
+<p>A command is a line of string that has the following format, different elements
+are separated by whitespace:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/&lt;</span><span class="n">name</span><span class="o">|</span><span class="n">alias</span><span class="o">&gt;</span> <span class="p">[</span><span class="n">subcommand</span><span class="p">]</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">option</span><span class="o">&gt;</span> <span class="p">[</span><span class="n">value</span><span class="p">]]</span><span class="o">...</span> <span class="p">[</span><span class="n">argument</span><span class="p">]</span><span class="o">...</span>
+</pre></div>
+</div>
+<p>User should use <code class="docutils literal notranslate"><span class="pre">name</span></code> to invoke a command.
+The command’s <code class="docutils literal notranslate"><span class="pre">name</span></code> starts with a slash <code class="docutils literal notranslate"><span class="pre">/</span></code> and doesn’t contain any
+whitespace, such as: <code class="docutils literal notranslate"><span class="pre">/join</span></code>.
+Some commands have <code class="docutils literal notranslate"><span class="pre">alias</span></code> that can be used instead of <code class="docutils literal notranslate"><span class="pre">name</span></code>,
+for example, user can use <code class="docutils literal notranslate"><span class="pre">/j</span></code> instead of <code class="docutils literal notranslate"><span class="pre">/join</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When you want to send a message starts with a slash, please prepend
+another slash to the message.
+For example, you want to send “/this is a slash prefixed message”, you need
+to type “//this is a slash prefixed message”.</p>
+</div>
+<p>A <code class="docutils literal notranslate"><span class="pre">subcommand</span></code> is a instruction behind the command name, it is optional.</p>
+<p>An <code class="docutils literal notranslate"><span class="pre">option</span></code>, as its name, is optional too, starts with a hyphen <code class="docutils literal notranslate"><span class="pre">-</span></code> and may
+has a <code class="docutils literal notranslate"><span class="pre">value</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">option</span></code> is often used as the switch of a flag or a way to change some
+default values. For example, The command <code class="docutils literal notranslate"><span class="pre">/connect</span> <span class="pre">-tls</span> <span class="pre">-port</span> <span class="pre">6697</span></code>,
+option <code class="docutils literal notranslate"><span class="pre">-tls</span></code> is just a flag that tells srain use secure connections with TLS.
+And <code class="docutils literal notranslate"><span class="pre">-port</span></code> requires a <code class="docutils literal notranslate"><span class="pre">value</span></code>, if <code class="docutils literal notranslate"><span class="pre">-port</span></code> is not specified, program will
+use the default value <code class="docutils literal notranslate"><span class="pre">6667</span></code>. Check <a class="reference internal" href="#commands-connect"><span class="std std-ref">/connect</span></a> for more details.</p>
+<p>If a <code class="docutils literal notranslate"><span class="pre">value</span></code> starts with a hyphen <code class="docutils literal notranslate"><span class="pre">-</span></code> or contains whitespaces, it should be
+enclosed by single quotation mark <code class="docutils literal notranslate"><span class="pre">'</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All <code class="docutils literal notranslate"><span class="pre">option</span></code> should appear behind <code class="docutils literal notranslate"><span class="pre">subcommand</span></code> (If any), and before
+<code class="docutils literal notranslate"><span class="pre">argument</span></code>.</p>
+</div>
+<p>An <code class="docutils literal notranslate"><span class="pre">argument</span></code> is similar to <code class="docutils literal notranslate"><span class="pre">value</span></code>, but commonly it doesn’t have a default
+value so it can not be omitted (actually it depends on the implement of the
+command). If the first <code class="docutils literal notranslate"><span class="pre">argument</span></code> starts with a hyphen <code class="docutils literal notranslate"><span class="pre">-</span></code>, it should be
+enclosed by single quotation mark <code class="docutils literal notranslate"><span class="pre">'</span></code>. If an <code class="docutils literal notranslate"><span class="pre">argument</span></code> contains whitespaces,
+it should be quoted too. Specially, the last argument can contain whitespace
+without quoted.</p>
+<p>If you want to use a single quotation mark in a quoted text, use backslash <code class="docutils literal notranslate"><span class="pre">\</span></code>
+to escape it. For backslash itself, use double backslash <code class="docutils literal notranslate"><span class="pre">\\</span></code>.</p>
+</section>
+<section id="available-commands">
+<h2>Available Commands<a class="headerlink" href="#available-commands" title="Permalink to this headline">#</a></h2>
+<section id="reload">
+<h3>/reload<a class="headerlink" href="#reload" title="Permalink to this headline">#</a></h3>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">reload</span>
+</pre></div>
+</div>
+<p>Reload user configuration.</p>
+</section>
+<section id="server">
+<span id="commands-server"></span><h3>/server<a class="headerlink" href="#server" title="Permalink to this headline">#</a></h3>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">server</span> <span class="p">[</span><span class="n">connect</span><span class="o">|</span><span class="n">disconnect</span><span class="o">|</span><span class="nb">list</span><span class="p">]</span> <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Predefined IRC server management.</p>
+<p>Sub commands:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">connect</span></code>: connect to specified predefined server</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">disconnect</span></code>: disconnect from specified predefined server</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">list</span></code>: list all predefined servers</p></li>
+</ul>
+<p>Arguments:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: unique name of server</p></li>
+</ul>
+</section>
+<section id="connect">
+<span id="commands-connect"></span><h3>/connect<a class="headerlink" href="#connect" title="Permalink to this headline">#</a></h3>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">connect</span> <span class="p">[</span><span class="o">-</span><span class="n">port</span> <span class="o">&lt;</span><span class="n">port</span><span class="o">&gt;</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">pwd</span> <span class="o">&lt;</span><span class="n">password</span><span class="o">&gt;</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">tls</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">tls</span><span class="o">-</span><span class="n">noverify</span><span class="p">]</span>
+    <span class="p">[</span><span class="o">-</span><span class="n">user</span> <span class="o">&lt;</span><span class="n">username</span><span class="o">&gt;</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">real</span> <span class="o">&lt;</span><span class="n">realname</span><span class="o">&gt;</span><span class="p">]</span> <span class="o">&lt;</span><span class="n">host</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">nick</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Create a IRC server and connect to it immediately.</p>
+<p>Options:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-port</span></code>: server port, default <code class="docutils literal notranslate"><span class="pre">6667</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-pwd</span></code>: connection password, default empty</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-tls</span></code>: use secure connections with TLS</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-tls-noverify</span></code>: use TLS connection without certificate verification</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-user</span></code>: specify username, default same as nickname</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-real</span></code>: specify realname, default same as nickname</p></li>
+</ul>
+<p>Arguments:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">host</span></code>: server host</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nick</span></code>: specify nickname</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">connect</span> <span class="o">-</span><span class="n">real</span> <span class="s1">&#39;I am srainbot&#39;</span> <span class="o">-</span><span class="n">tls</span> <span class="o">-</span><span class="n">port</span> <span class="mi">6697</span> <span class="n">chat</span><span class="o">.</span><span class="n">freenode</span><span class="o">.</span><span class="n">org</span> <span class="n">srainbot</span>
+<span class="o">/</span><span class="n">connect</span> <span class="mf">127.0.0.1</span> <span class="n">srainbot</span>
+</pre></div>
+</div>
+</section>
+<section id="ignore-unignore">
+<h3>/ignore &amp; /unignore<a class="headerlink" href="#ignore-unignore" title="Permalink to this headline">#</a></h3>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">ignore</span> <span class="p">[</span><span class="o">-</span><span class="n">cur</span><span class="p">]</span> <span class="o">&lt;</span><span class="n">nick</span><span class="o">&gt;</span>
+<span class="o">/</span><span class="n">unignore</span> <span class="p">[</span><span class="o">-</span><span class="n">cur</span><span class="p">]</span> <span class="o">&lt;</span><span class="n">nick</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Ignore/unignore somebody’s message.</p>
+<p>Options:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-cur</span></code>: only ignore in current chat</p></li>
+</ul>
+</section>
+<section id="query-unquery">
+<h3>/query &amp; /unquery<a class="headerlink" href="#query-unquery" title="Permalink to this headline">#</a></h3>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">query</span><span class="o">|</span><span class="n">q</span> <span class="o">&lt;</span><span class="n">nick</span><span class="o">&gt;</span>
+<span class="o">/</span><span class="n">unquery</span> <span class="p">[</span><span class="n">nick</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Start/stop private chat with somebody. For <code class="docutils literal notranslate"><span class="pre">/unquery</span></code> , If no <code class="docutils literal notranslate"><span class="pre">nick</span></code> is
+specified, it stops the current private chat.</p>
+</section>
+<section id="join">
+<span id="commands-join"></span><h3>/join<a class="headerlink" href="#join" title="Permalink to this headline">#</a></h3>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">join</span><span class="o">|</span><span class="n">j</span> <span class="o">&lt;</span><span class="n">channel</span><span class="o">&gt;</span><span class="p">[,</span><span class="o">&lt;</span><span class="n">channel</span><span class="o">&gt;</span><span class="p">]</span><span class="o">...</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">passwd</span><span class="o">&gt;</span><span class="p">[,</span><span class="o">&lt;</span><span class="n">passwd</span><span class="o">&gt;</span><span class="p">]]</span><span class="o">...</span>
+</pre></div>
+</div>
+<p>Join specified channel(s), channels are separated by commas <code class="docutils literal notranslate"><span class="pre">,</span></code>.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">join</span> <span class="c1">#archinux-cn,#gzlug,#linuxba</span>
+<span class="o">/</span><span class="n">join</span> <span class="c1">#channel1,#channe2 passwd1</span>
+</pre></div>
+</div>
+</section>
+<section id="part">
+<h3>/part<a class="headerlink" href="#part" title="Permalink to this headline">#</a></h3>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">part</span><span class="o">|</span><span class="n">leave</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">channel</span><span class="o">&gt;</span><span class="p">[,</span><span class="o">&lt;</span><span class="n">channel</span><span class="o">&gt;</span><span class="p">]]</span><span class="o">...</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">reason</span><span class="o">&gt;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Leave specified channel(s) with optional reason, channels are separated by
+commas <code class="docutils literal notranslate"><span class="pre">,</span></code>. If no <code class="docutils literal notranslate"><span class="pre">channel</span></code> is specified, it leaves the current channel.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">part</span> <span class="c1">#archinux-cn Zzz...</span>
+<span class="o">/</span><span class="n">part</span> <span class="c1">#archlinux-cn,#tuna</span>
+<span class="o">/</span><span class="n">part</span>
+</pre></div>
+</div>
+</section>
+<section id="quit">
+<h3>/quit<a class="headerlink" href="#quit" title="Permalink to this headline">#</a></h3>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">quit</span> <span class="p">[</span><span class="n">reason</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Quit current server with optional reason.</p>
+</section>
+<section id="topic">
+<h3>/topic<a class="headerlink" href="#topic" title="Permalink to this headline">#</a></h3>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">topic</span> <span class="p">[</span><span class="o">-</span><span class="n">rm</span><span class="o">|&lt;</span><span class="n">topic</span><span class="o">&gt;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Set the current channel’s topic. If no <code class="docutils literal notranslate"><span class="pre">topic</span></code> specified, it just displays
+the current channel’s topic.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-rm</span></code>: remove current channel’s topic</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># Just view the topic
+/topic
+# Set the topic to &quot;Welcome to Srain!&quot;
+/topic Welcome to Srain!
+# Clear the topic
+/topic -rm
+</pre></div>
+</div>
+</section>
+<section id="msg">
+<h3>/msg<a class="headerlink" href="#msg" title="Permalink to this headline">#</a></h3>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">msg</span><span class="o">|</span><span class="n">m</span> <span class="o">&lt;</span><span class="n">target</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">message</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Send message to a target, the target can be channel or somebody’s nick. If you
+want to send a message to channel, you should <a class="reference internal" href="#commands-join"><span class="std std-ref">/join</span></a> it first.</p>
+</section>
+<section id="me">
+<h3>/me<a class="headerlink" href="#me" title="Permalink to this headline">#</a></h3>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">me</span> <span class="o">&lt;</span><span class="n">message</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Send an action message to the current target.</p>
+</section>
+<section id="nick">
+<h3>/nick<a class="headerlink" href="#nick" title="Permalink to this headline">#</a></h3>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">nick</span> <span class="o">&lt;</span><span class="n">new_nick</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Change your nickname.</p>
+</section>
+<section id="whois">
+<h3>/whois<a class="headerlink" href="#whois" title="Permalink to this headline">#</a></h3>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">whois</span> <span class="o">&lt;</span><span class="n">nick</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Get somebody’s information on the server.</p>
+</section>
+<section id="invite">
+<h3>/invite<a class="headerlink" href="#invite" title="Permalink to this headline">#</a></h3>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">invite</span> <span class="o">&lt;</span><span class="n">nick</span><span class="o">&gt;</span> <span class="p">[</span><span class="n">channel</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Invite somebody to join a channel. If no <code class="docutils literal notranslate"><span class="pre">channel</span></code> is specified, it falls
+back to current channel.</p>
+</section>
+<section id="kick">
+<h3>/kick<a class="headerlink" href="#kick" title="Permalink to this headline">#</a></h3>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">kick</span> <span class="o">&lt;</span><span class="n">nick</span><span class="o">&gt;</span> <span class="p">[</span><span class="n">channel</span><span class="p">]</span> <span class="p">[</span><span class="n">reason</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Kick somebody from a channel, with optional reason. If no <code class="docutils literal notranslate"><span class="pre">channel</span></code> is
+specified, it falls back to current channel.</p>
+</section>
+<section id="mode">
+<h3>/mode<a class="headerlink" href="#mode" title="Permalink to this headline">#</a></h3>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">mode</span> <span class="o">&lt;</span><span class="n">target</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">mode</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Change <code class="docutils literal notranslate"><span class="pre">target</span></code> ‘s mode.</p>
+</section>
+<section id="ctcp">
+<span id="commands-ctcp"></span><h3>/ctcp<a class="headerlink" href="#ctcp" title="Permalink to this headline">#</a></h3>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">ctcp</span> <span class="o">&lt;</span><span class="n">target</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">command</span><span class="o">&gt;</span> <span class="p">[</span><span class="n">message</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Send a CTCP request to <code class="docutils literal notranslate"><span class="pre">target</span></code>. The commonly used commands are:
+CLIENTINFO, FINGER, PING, SOURCE, TIME, VERSION, USERINFO. For the detail of
+each command, please refer to <a class="reference external" href="https://modern.ircdocs.horse/ctcp.html">https://modern.ircdocs.horse/ctcp.html</a> .</p>
+<p>If you send a CTCP PING request without <code class="docutils literal notranslate"><span class="pre">message</span></code>, you will get the latency
+between the <code class="docutils literal notranslate"><span class="pre">target</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>DCC is not yet supported.</p>
+</div>
+</section>
+<section id="pattern">
+<span id="commands-pattern"></span><h3>/pattern<a class="headerlink" href="#pattern" title="Permalink to this headline">#</a></h3>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">pattern</span> <span class="n">add</span> <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">pattern</span><span class="o">&gt;</span>
+<span class="o">/</span><span class="n">pattern</span> <span class="n">rm</span> <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span>
+<span class="o">/</span><span class="n">pattern</span> <span class="nb">list</span>
+</pre></div>
+</div>
+<p>Regular expression pattern management.
+The added pattern can be used elsewhere in the application, such as
+<a class="reference internal" href="#commands-filter"><span class="std std-ref">/filter &amp; /unfilter</span></a> and <a class="reference internal" href="#commands-render"><span class="std std-ref">/render &amp; /unrender</span></a>.</p>
+<p>Sub commands:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">add</span></code>: add a pattern with given name</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rm</span></code>: remove a pattern with given name</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">list</span></code>: list all availables patterns</p></li>
+</ul>
+<p>Arguments:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: unique name of pattern</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pattern</span></code>: a valid <a class="reference external" href="https://developer.gnome.org/glib/stable/glib-regex-syntax.html">Perl-compatible Regular Expression</a></p></li>
+</ul>
+</section>
+<section id="filter-unfilter">
+<span id="commands-filter"></span><h3>/filter &amp; /unfilter<a class="headerlink" href="#filter-unfilter" title="Permalink to this headline">#</a></h3>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="nb">filter</span> <span class="p">[</span><span class="o">-</span><span class="n">cur</span><span class="p">]</span> <span class="o">&lt;</span><span class="n">pattern</span><span class="o">&gt;</span>
+<span class="o">/</span><span class="n">unfilter</span> <span class="p">[</span><span class="o">-</span><span class="n">cur</span><span class="p">]</span> <span class="o">&lt;</span><span class="n">pattern</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Filter message whose content matches specified pattern.</p>
+<p>Options:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-cur</span></code>: only ignore in current chat</p></li>
+</ul>
+<p>Arguments:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pattern</span></code>: name of regular expression pattern which is managed by
+<a class="reference internal" href="#commands-pattern"><span class="std std-ref">/pattern</span></a></p></li>
+</ul>
+<p>Example:</p>
+<p>This filter message that content is “Why GTK and not Qt?”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>/pattern add troll ^Why GTK and not Qt\?$
+/filter troll
+</pre></div>
+</div>
+<p>To cancel the filter of these kind of message, use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">unfilter</span> <span class="n">troll</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Pattern <strong>NO NEED</strong> to consider the case where the mIRC color code is
+included in the message.</p>
+</div>
+</section>
+<section id="render-unrender">
+<span id="commands-render"></span><h3>/render &amp; /unrender<a class="headerlink" href="#render-unrender" title="Permalink to this headline">#</a></h3>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">render</span> <span class="p">[</span><span class="o">-</span><span class="n">cur</span><span class="p">]</span> <span class="o">&lt;</span><span class="n">nick</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">pattern</span><span class="o">&gt;</span>
+<span class="o">/</span><span class="n">unrender</span> <span class="p">[</span><span class="o">-</span><span class="n">cur</span><span class="p">]</span> <span class="o">&lt;</span><span class="n">nick</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">pattern</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Render message of specific user via specific pattern.</p>
+<p>The given pattern should contains specific <a class="reference external" href="https://developer.gnome.org/glib/stable/glib-regex-syntax.html#id-1.5.25.13">Named Subpatterns</a> used for
+capturing message fragment from original message content and become part of
+rendered message.</p>
+<p>There are list of available named subpatterns:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">(?&lt;sender&gt;)</span></code>: match name of sender, once this subpatterns is matched,
+the original sender will be displayed as message remark</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">(?&lt;content&gt;)</span></code>: match content of rendered message</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">(?&lt;time&gt;)</span></code>: match time of rendered message</p></li>
+</ul>
+<p>Arguments:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">nick</span></code>: nickname of user</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pattern</span></code>: name of regular expression pattern which is managed by
+<a class="reference internal" href="#commands-pattern"><span class="std std-ref">/pattern</span></a></p></li>
+</ul>
+<p>Options:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-cur</span></code>: only effects the user under current chat</p></li>
+</ul>
+<p>Example:</p>
+<p>We assume that there is a IRC bot named “xmppbot”.
+It forwards message between XMPP and IRC.
+On IRC side, the forwarded message looks like “&lt;xmppbot&gt; [xmpp_user] xmpp_message”,
+you can render it to a more easy-to-read format via the following commands:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>/pattern add xmpp \[(?&lt;sender&gt;[^:]+?)\] (?&lt;content&gt;.*)
+/render xmppbot xmpp
+</pre></div>
+</div>
+<p>The forwarded meessage will look like “&lt;xmpp_user&gt; xmpp_message”, and the
+original message sender “xmppbot” will be displayed as message remark.
+Please refer to <a class="reference internal" href="faq.html#faq-relay-message-transform"><span class="std std-ref">What is “relay message transform”?</span></a> see its effect.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Pattern <strong>SHOULD</strong> consider the case where the mIRC color code is
+included in the message.</p>
+</div>
+</section>
+<section id="quote">
+<h3>/quote<a class="headerlink" href="#quote" title="Permalink to this headline">#</a></h3>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">quote</span> <span class="o">&lt;</span><span class="n">raw</span> <span class="n">message</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>For sending special IRC commands.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.2.0.</span></p>
+</div>
+</section>
+<section id="clear">
+<span id="commands-clear"></span><h3>/clear<a class="headerlink" href="#clear" title="Permalink to this headline">#</a></h3>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">clear</span>
+</pre></div>
+</div>
+<p>Clear all messages in current buffer.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.4.</span></p>
+</div>
+</section>
+</section>
+<section id="obsoleted-commands">
+<h2>Obsoleted Commands<a class="headerlink" href="#obsoleted-commands" title="Permalink to this headline">#</a></h2>
+<section id="rignore-unrignore">
+<span id="commands-rignore"></span><h3>/rignore &amp; /unrignore<a class="headerlink" href="#rignore-unrignore" title="Permalink to this headline">#</a></h3>
+<p>This command has been dropped since <a class="reference internal" href="changelog.html#version-1-0-0rc5"><span class="std std-ref">2019-06-14 Version 1.0.0rc5</span></a>,
+please use <a class="reference internal" href="#commands-filter"><span class="std std-ref">/filter &amp; /unfilter</span></a> instead.</p>
+</section>
+<section id="relay-unrelay">
+<span id="commands-relay"></span><h3>/relay &amp; /unrelay<a class="headerlink" href="#relay-unrelay" title="Permalink to this headline">#</a></h3>
+<p>This command has been dropped since <a class="reference internal" href="changelog.html#version-1-0-0rc5"><span class="std std-ref">2019-06-14 Version 1.0.0rc5</span></a>,
+please use <a class="reference internal" href="#commands-render"><span class="std std-ref">/render &amp; /unrender</span></a> instead.</p>
+</section>
+</section>
+</section>
+
+<div class="section">
+   
+</div>
+
+              </div>
+              
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="install.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Installation</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="config.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Configuration Manual</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+            </footer>
+        </div>
+    </div>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By Shengyu Zhang<br/>
+  
+      &copy; Copyright 2022, Shengyu Zhang.<br/>
+</p>
+        </footer>
+    </div>
+    
+</div>
+
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
+
+  </body>
+</html>

@@ -1,0 +1,1241 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+  <id>https://srain.silverrainz.me/</id>
+  <title>Srain</title>
+  <updated>2022-06-17T16:56:37.251036+00:00</updated>
+  <link href="https://srain.silverrainz.me/"/>
+  <link href="https://srain.silverrainz.me/blog/atom.xml" rel="self"/>
+  <generator uri="https://ablog.readthedocs.org/" version="0.10.25">ABlog</generator>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-0-01</id>
+    <title>2016-04-07 Version 0.01</title>
+    <updated>2016-04-07T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-0-01"&gt;
+
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Implement basic functions of a IRC client&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Themes: Silver Rain (light)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Simple python plugin support:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Auto upload image to pastebin (img.vim-cn.org)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Get github avatar according nickname&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;NB: plugin will separated from this repo in the future&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Image preview from URL&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Relay bot message transfrom&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Nick auto completion&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Combine message from same person&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="admonition note"&gt;
+&lt;p class="admonition-title"&gt;Note&lt;/p&gt;
+&lt;p&gt;0.01 is a pre-release, some functions are no completed yet.
+it also has some undetected bugs.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-0-01" rel="alternate"/>
+    <summary>Implement basic functions of a IRC client</summary>
+    <published>2016-04-07T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-0-02</id>
+    <title>2016-04-13 Version 0.02</title>
+    <updated>2016-04-13T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-0-02"&gt;
+
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Bugs fixed&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Port to GTK+-3.20&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="admonition note"&gt;
+&lt;p class="admonition-title"&gt;Note&lt;/p&gt;
+&lt;p&gt;0.02 is a pre-release, some functions are no completed yet.
+it also has some undetected bugs.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-0-02" rel="alternate"/>
+    <summary>Bugs fixed</summary>
+    <published>2016-04-13T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-0-03</id>
+    <title>2016-04-30 Version 0.03</title>
+    <updated>2016-04-30T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-0-03"&gt;
+
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;New interface between UI and IRC module&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Multi-server support&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Channel name is not case sensitive now&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;/quit command will close all SrainChan of a server&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Fix GTK-Warning when close a SrainCHan&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="admonition note"&gt;
+&lt;p class="admonition-title"&gt;Note&lt;/p&gt;
+&lt;p&gt;0.03 is a pre-release, some functions are no completed yet.
+it also has some undetected bugs.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-0-03" rel="alternate"/>
+    <summary>New interface between UI and IRC module</summary>
+    <published>2016-04-30T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-0-05</id>
+    <title>2016-08-27 Version 0.05</title>
+    <updated>2016-08-27T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-0-05"&gt;
+
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Changed:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Port to libircclient&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;SSL connection support&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Server password support&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Channel password support&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Added:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Convenience GtkPopover for connecting and joining&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Nick popmenu&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Translations: zh_CN&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Forward message&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Chat log&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Colorful user list icon&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Mentioned highlight&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Desktop notification&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Improved:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;More friendly User interface&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Stronger {upload,avatar} plugin&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Fixed a lot of bugs&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-0-05" rel="alternate"/>
+    <summary>Changed:</summary>
+    <published>2016-08-27T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-0-05-1</id>
+    <title>2016-09-19 Version 0.05.1</title>
+    <updated>2016-09-19T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-0-05-1"&gt;
+
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Create missing directory: &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;$XDG_CACHE_HOME/srain/avatars&lt;/span&gt;&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-0-05-1" rel="alternate"/>
+    <summary>Create missing directory: $XDG_CACHE_HOME/srain/avatars</summary>
+    <published>2016-09-19T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-0-06</id>
+    <title>2017-07-29 Version 0.06</title>
+    <updated>2017-07-29T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-0-06"&gt;
+
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Changed:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;The third time of refactor ;-)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;New command parser, for the syntax, refer to &lt;a class="reference internal" href="commands.html#commands-syntax"&gt;&lt;span class="std std-ref"&gt;Syntax&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Changed the format of Chat log&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;The &lt;a class="reference internal" href="commands.html#commands-relay"&gt;&lt;span class="std std-ref"&gt;/relay &amp;amp; /unrelay&lt;/span&gt;&lt;/a&gt; command doesn’t support custom delimiter, this function will
+be implemented as python plugin in the future&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Use reStructuredText for document instead of Markdown&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Added:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Message filter: mechanism for filtering message&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Message Decorator: mechanism for changing message&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Install script for Gentoo, thanks to &amp;#64;rtlanceroad !&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;New command &lt;a class="reference internal" href="commands.html#commands-rignore"&gt;&lt;span class="std std-ref"&gt;/rignore &amp;amp; /unrignore&lt;/span&gt;&lt;/a&gt; for ignore message using regular
+expression, thanks to &amp;#64;zwindl !&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Config file support&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Configurable log module, more convenient for developing and reporting issue&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;New Return value type, for more friendly error reporting&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;New command &lt;a class="reference internal" href="commands.html#commands-server"&gt;&lt;span class="std std-ref"&gt;/server&lt;/span&gt;&lt;/a&gt; for IRC servers management&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Srain home page is available at: &lt;a class="reference external" href="https://srain.im"&gt;https://srain.im&lt;/a&gt; [expired]&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Srain help documentation is available at: &lt;a class="reference external" href="https://doc.srain.im"&gt;https://doc.srain.im&lt;/a&gt; [expired]&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Removed:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Remove libircclient dependence&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Improved:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Improve reconnection stuff: auto reconnect when ping time out&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;More accurate message mention&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Display preview image in correct size&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Any number of image links in message can be previewed&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;HTTP(and some other protocols) link, domain name, email address and IRC
+channel name in topic and messages can be rendered as hyper link&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;The sent message can be merged to last sent message&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Fixed some bugs&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-0-06" rel="alternate"/>
+    <summary>Changed:</summary>
+    <published>2017-07-29T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-0-06-1</id>
+    <title>2017-08-18 Version 0.06.1</title>
+    <updated>2017-08-18T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-0-06-1"&gt;
+
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Added:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Added GPL copyright statements&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;RPL_CHANNEL_URL&lt;/span&gt;&lt;/code&gt; (328) message support&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Command line options support, type &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;srain&lt;/span&gt; &lt;span class="pre"&gt;-h&lt;/span&gt;&lt;/code&gt; for help message&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Support for Creating server and joining channel from IRC URL&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;New dependency libsoup&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Add reconnect timer: if connection fails, Srain will wait for 5 seconds
+then try to connect again. If it still fails, waiting time will increase by
+5 second&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Improved:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Fixed the crash when QUIT&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Fixed: avoid sending empty password&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;More empty parameters checks&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Imporve server connection status control&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-0-06-1" rel="alternate"/>
+    <summary>Added:</summary>
+    <published>2017-08-18T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-0-06-2</id>
+    <title>2017-09-12 Version 0.06.2</title>
+    <updated>2017-09-12T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-0-06-2"&gt;
+&lt;span id="id24"&gt;&lt;/span&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Added:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;mIRC color support, can be disabled via setting &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;render_mirc_color&lt;/span&gt;&lt;/code&gt;
+option in &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;chat&lt;/span&gt;&lt;/code&gt; block in &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;server&lt;/span&gt;&lt;/code&gt; block to &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;false&lt;/span&gt;&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Improved:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Better error reporting while operating the UI&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;IRC URL can be opened directly within the application&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Text in input entry, connection panel and join panel will not be cleared
+while operation is not successful&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Fixed: in some cases, nickname registration will case infinity loop&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Decorator and filter now can process xml message&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Imporved the handling of channel topic&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-0-06-2" rel="alternate"/>
+    <summary>Added:</summary>
+    <published>2017-09-12T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-0-06-3</id>
+    <title>2017-12-22 Version 0.06.3</title>
+    <updated>2017-12-22T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-0-06-3"&gt;
+
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Changed:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Configurable file option &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;tls_not_verify&lt;/span&gt;&lt;/code&gt; in &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;irc&lt;/span&gt;&lt;/code&gt; block in &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;server&lt;/span&gt;&lt;/code&gt;
+block is renamed to &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;tls_noverify&lt;/span&gt;&lt;/code&gt;, old option name is still supported&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Command option &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;tls-not-verify&lt;/span&gt;&lt;/code&gt; for &lt;a class="reference internal" href="commands.html#commands-server"&gt;&lt;span class="std std-ref"&gt;/server&lt;/span&gt;&lt;/a&gt; and
+&lt;a class="reference internal" href="commands.html#commands-connect"&gt;&lt;span class="std std-ref"&gt;/connect&lt;/span&gt;&lt;/a&gt; is renamed to &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;tls-noverify&lt;/span&gt;&lt;/code&gt;, old option name
+is still supported&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Added:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Connect popover supports connect to predefined server&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Join popover supports channel search&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Improved:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Modified margin and padding of some widgets&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Improved the style of unread message counter&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Fixed markup parse error of decorator&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Fixed crashing while connecting from connect popover&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Fixed use after free while removing user&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Improved the performance and extensibility of user list&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Improved compatibility with older versions of GTK(&amp;gt; 3.16)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Refactor the code of chat panel, helpful for the next development&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-0-06-3" rel="alternate"/>
+    <summary>Changed:</summary>
+    <published>2017-12-22T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-0-06-4</id>
+    <title>2018-02-28 Version 0.06.4</title>
+    <updated>2018-02-28T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-0-06-4"&gt;
+&lt;span id="id23"&gt;&lt;/span&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Changed:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Change default application ID to &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;im.srain.Srain&lt;/span&gt;&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Added:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;CTCP support, including request &amp;amp; response CLIENTINFO, FINGER, PING,
+SOURCE, TIME, VERSION, USERINFO messages. DCC message is &lt;strong&gt;not&lt;/strong&gt; yet
+supported. Use command &lt;a class="reference internal" href="commands.html#commands-ctcp"&gt;&lt;span class="std std-ref"&gt;/ctcp&lt;/span&gt;&lt;/a&gt; for sending a CTCP request&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Login method support, you can specify it by configuration file option
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;server.login_method&lt;/span&gt;&lt;/code&gt;:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;div&gt;&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;sasl_plain&lt;/span&gt;&lt;/code&gt;: SASL PLAIN authentication support, will use
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;server.user.username&lt;/span&gt;&lt;/code&gt; as identity, and use &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;server.user.passwd&lt;/span&gt;&lt;/code&gt; as
+password&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Added documentation &lt;a class="reference internal" href="support.html"&gt;&lt;span class="doc"&gt;Support Tables&lt;/span&gt;&lt;/a&gt; used to show Srain’s features,
+inspried by &lt;a class="reference external" href="https://ircv3.net/software/clients.html"&gt;https://ircv3.net/software/clients.html&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Added a semantic version parser, not yet used&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Added appdata file which requier by application store, thanks to &amp;#64;cpba&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;openSUSE package is available, please refer to
+&lt;a class="reference internal" href="install.html#install-packages-opensuse"&gt;&lt;span class="std std-ref"&gt;openSUSE&lt;/span&gt;&lt;/a&gt; for details, thanks to &amp;#64;alois&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Flatpak package is available, please refer to
+&lt;a class="reference internal" href="install.html#install-packages-flatpak"&gt;&lt;span class="std std-ref"&gt;Fedora&lt;/span&gt;&lt;/a&gt; for details, thanks to &amp;#64;cpba&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Improved:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Fixed a logical error in IRC message parser: all parameters are equal
+whether matched by &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;&amp;lt;middle&amp;gt;&lt;/span&gt;&lt;/code&gt; or &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;&amp;lt;trailing&amp;gt;&lt;/span&gt;&lt;/code&gt;, thanks to &amp;#64;DanielOaks&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Improved connection state control, you can smoothly disconnect/quit from
+server even it is unresponsive&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Fixed truncated message output by &lt;a class="reference internal" href="commands.html#commands-server"&gt;&lt;span class="std std-ref"&gt;/server&lt;/span&gt;&lt;/a&gt; &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;list&lt;/span&gt;&lt;/code&gt;
+subcommand&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Fixed crash at &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;g_type_check_instance()&lt;/span&gt;&lt;/code&gt; under GLib 2.54.3+&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Fixed: Do not free a SrianServerBuffer which has non-empty buffer&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Ensure the QUIT message can be sent before application shutdown&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Removed entry from desktop file, thanks to &amp;#64;TingPing&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Fixed grammer of join message, thanks to &amp;#64;raindev&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Re-enable CI for Srain: &lt;a class="reference external" href="https://travis-ci.org/SrainApp/srain"&gt;&lt;img alt="ci-status" src="https://travis-ci.org/SrainApp/srain.svg?branch=master" /&gt;&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-0-06-4" rel="alternate"/>
+    <summary>Changed:ci-status</summary>
+    <published>2018-02-28T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-1-0-0rc1</id>
+    <title>2018-09-10 Version 1.0.0rc1</title>
+    <updated>2018-09-10T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-1-0-0rc1"&gt;
+&lt;span id="id22"&gt;&lt;/span&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-1-0-0rc1" rel="alternate"/>
+    <published>2018-09-10T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-1-0-0rc2</id>
+    <title>2019-01-24 Version 1.0.0rc2</title>
+    <updated>2019-01-24T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-1-0-0rc2"&gt;
+&lt;span id="id21"&gt;&lt;/span&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-1-0-0rc2" rel="alternate"/>
+    <published>2019-01-24T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-1-0-0rc3</id>
+    <title>2019-04-14 Version 1.0.0rc3</title>
+    <updated>2019-04-14T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-1-0-0rc3"&gt;
+&lt;span id="id20"&gt;&lt;/span&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-1-0-0rc3" rel="alternate"/>
+    <published>2019-04-14T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-1-0-0rc4</id>
+    <title>2019-05-13 Version 1.0.0rc4</title>
+    <updated>2019-05-13T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-1-0-0rc4"&gt;
+&lt;span id="id19"&gt;&lt;/span&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Added:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;div&gt;&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;New dependency &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;libsecret&lt;/span&gt;&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Add password storage support&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Add command line options &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;--no-auto&lt;/span&gt;&lt;/code&gt;, used to require Srain not to
+automatically connect to servers&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Add russian translation, thanks to &amp;#64;tim77&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Allow user send slash(&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;/&lt;/span&gt;&lt;/code&gt;) prefixed message&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Removed:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Drop all password fields in configuration file&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Changed:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Enable CSD(Client-Side Decoration) by default&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Update chinese translation&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-1-0-0rc4" rel="alternate"/>
+    <summary>Added:</summary>
+    <published>2019-05-13T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-1-0-0rc5</id>
+    <title>2019-06-14 Version 1.0.0rc5</title>
+    <updated>2019-06-14T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-1-0-0rc5"&gt;
+&lt;span id="id18"&gt;&lt;/span&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Added:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;div&gt;&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Regular expression pattern management using &lt;a class="reference internal" href="commands.html#commands-pattern"&gt;&lt;span class="std std-ref"&gt;/pattern&lt;/span&gt;&lt;/a&gt; command&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Add command &lt;a class="reference internal" href="commands.html#commands-filter"&gt;&lt;span class="std std-ref"&gt;/filter &amp;amp; /unfilter&lt;/span&gt;&lt;/a&gt; for filtering message via pattern&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Add command &lt;a class="reference internal" href="commands.html#commands-render"&gt;&lt;span class="std std-ref"&gt;/render &amp;amp; /unrender&lt;/span&gt;&lt;/a&gt; for rendering message via pattern&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Changed:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;div&gt;&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Refactor detector module and rename it to render&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Refactor filter module&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Change project description&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Removed:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;div&gt;&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Drop command &lt;a class="reference internal" href="commands.html#commands-rignore"&gt;&lt;span class="std std-ref"&gt;/rignore &amp;amp; /unrignore&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Drop command &lt;a class="reference internal" href="commands.html#commands-relay"&gt;&lt;span class="std std-ref"&gt;/relay &amp;amp; /unrelay&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-1-0-0rc5" rel="alternate"/>
+    <summary>Added:</summary>
+    <published>2019-06-14T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-1-0-0rc9999</id>
+    <title>2019-10-07 Version 1.0.0rc9999</title>
+    <updated>2019-10-07T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-1-0-0rc9999"&gt;
+&lt;span id="id17"&gt;&lt;/span&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Features:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Activate corresponding buffer when channel URL is clicked (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/190"&gt;#190&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Command alias support (&lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/188"&gt;#188&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;List predefined servers via command, see &lt;a class="reference internal" href="commands.html#commands-server"&gt;&lt;span class="std std-ref"&gt;/server&lt;/span&gt;&lt;/a&gt; for details
+(&lt;a class="reference external" href="https://github.com/SrainApp/srain/commit/656f3e5"&gt;656f3e5&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Changes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Replace all icons with freedesktop standard icons (&lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/120"&gt;#120&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Fix wrong usage of GError (&lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/179"&gt;#179&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Fix image preview problem when image is hard to detect type (&lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/163"&gt;#163&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Fix memory leak of pattern filter (&lt;a class="reference external" href="https://github.com/SrainApp/srain/commit/9464a9e"&gt;9464a9e&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Fix the breaking “abort sending” icon (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/144"&gt;#144&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Fix the invite menu of user (&lt;a class="reference external" href="https://github.com/SrainApp/srain/commit/9f98cbb"&gt;9f98cbb&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-1-0-0rc9999" rel="alternate"/>
+    <summary>Features:</summary>
+    <published>2019-10-07T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-1-0-0</id>
+    <title>2020-02-24 Version 1.0.0</title>
+    <updated>2020-02-24T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-1-0-0"&gt;
+&lt;span id="id16"&gt;&lt;/span&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Changes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Some code cleanup&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Update &lt;a class="reference internal" href="start.html"&gt;&lt;span class="doc"&gt;Quick Start&lt;/span&gt;&lt;/a&gt; documentation&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Allow Srain runs without dbus secrets service (&lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/195"&gt;#195&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Fix nick generation logical (&lt;a class="reference external" href="https://github.com/SrainApp/srain/commit/39ced08"&gt;39ced08&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="admonition note"&gt;
+&lt;p class="admonition-title"&gt;Note&lt;/p&gt;
+&lt;p&gt;1.0.0 is the first stable release of Srain, enjoy!&lt;/p&gt;
+&lt;/div&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-1-0-0" rel="alternate"/>
+    <summary>Changes:</summary>
+    <published>2020-02-24T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/blog/introducing-srain.html</id>
+    <title>Introducing Srain</title>
+    <updated>2020-02-29T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="introducing-srain"&gt;
+
+&lt;p&gt;Hi all, I am excited to introduce you to Srain: A modern IRC client written in GTK.&lt;/p&gt;
+&lt;p&gt;Srain is my personal project since 2016. I released its first stable version recently.
+This project originated when I was new to IRC. At that time, I was active
+on &lt;a class="reference external" href="mailto:#archlinux-cn&amp;#37;&amp;#52;&amp;#48;freenode"&gt;#archlinux-cn&lt;span&gt;&amp;#64;&lt;/span&gt;freenode&lt;/a&gt;, learned how to live with Arch Linux.
+There are many relay bots in the channel (from XMPP, telegram, Tox and etc).
+At first I felt the channel was full of chaos:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Messages are usually separated into multiple lines which is inconvenient for reading (512 bytes limit of IRC message)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;You have to click the URL and switch to browser to see what it is (titlebot alleviates this problem)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Messages sent by relay bot have various formats which make it hard to read&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In fact, none of thes are problems for experienced IRC users, but in another way,
+The inconveniences of IRC actually exists, improving the experience of IRC
+chatting is always good.&lt;/p&gt;
+&lt;p&gt;– So I wrote a client, and now introduce to you:&lt;/p&gt;
+&lt;figure class="align-default" id="id1"&gt;
+&lt;img alt="_images/cover.png" src="_images/cover.png" /&gt;
+&lt;figcaption&gt;
+&lt;p&gt;&lt;span class="caption-text"&gt;&lt;a class="reference external" href="https://github.com/SrainApp/srain"&gt;⛺SrainApp/srain&lt;/a&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;section id="free-and-cross-platform"&gt;
+&lt;h2&gt;Free and Cross-Platform&lt;/h2&gt;
+&lt;p&gt;Srain is fully open source under GPLv3 license.
+You can get software and &lt;a class="reference external" href="{{site.project.url}}"&gt;source code&lt;/a&gt; for free.
+Srain supports both Linux, Windows, BSD and macOS, please checkout
+&lt;a class="reference external" href="http://doc.srain.im/en/latest/install.html"&gt;Installation Guide&lt;/a&gt; for more details.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;div&gt;&lt;p&gt;For Linux user, Srain is available on offical repository of
+&lt;a class="reference external" href="https://flathub.org/apps/details/im.srain.Srain"&gt;flathub&lt;/a&gt;,
+&lt;a class="reference external" href="https://src.fedoraproject.org/rpms/srain"&gt;fedora&lt;/a&gt; and
+&lt;a class="reference external" href="https://software.opensuse.org/package/Srain"&gt;openSUSE&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;&lt;/blockquote&gt;
+&lt;/section&gt;
+&lt;section id="modern-ui"&gt;
+&lt;h2&gt;Modern UI&lt;/h2&gt;
+&lt;p&gt;Srain provides a modern graphical user interface which contains:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Easy to read message bubble&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Convenient popovers for join server and channel&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Optional &lt;a class="reference external" href="https://wiki.gnome.org/Initiatives/CSD"&gt;Client-side Decoration&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;HiDPI support&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Custom themes support (see below)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;{% include image name=”main.png” %}&lt;/p&gt;
+&lt;/section&gt;
+&lt;section id="themes"&gt;
+&lt;h2&gt;Themes&lt;/h2&gt;
+&lt;p&gt;Srain’s theme is built on the top of GTK CSS system, so users can easily
+customize the theme by writing CSS.&lt;/p&gt;
+&lt;p&gt;By default, Srain provides two
+&lt;a class="reference external" href="https://github.com/SrainApp/srain/tree/master/data/themes"&gt;builtin themes&lt;/a&gt;:
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;default-bubble&lt;/span&gt;&lt;/code&gt; and &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;default-bubble-dark&lt;/span&gt;&lt;/code&gt; which works well with most popular
+GTK themes.&lt;/p&gt;
+&lt;p&gt;{% include image name=”theme.png” %}&lt;/p&gt;
+&lt;/section&gt;
+&lt;section id="features"&gt;
+&lt;h2&gt;Features&lt;/h2&gt;
+&lt;section id="url-preview"&gt;
+&lt;h3&gt;URL Preview&lt;/h3&gt;
+&lt;p&gt;Srain is able to parse the URL in IRC message, detect its content type and show you a preview.&lt;/p&gt;
+&lt;p&gt;For now, only HTTP URL which points to image can be previewed.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;div&gt;&lt;p&gt;For convenience, the URL preview function is enabled by default.
+Note that it may &lt;strong&gt;leaks your client IP&lt;/strong&gt;, you can disable it in
+&lt;a class="reference external" href="http://doc.srain.im/en/stable/config.html"&gt;configuration&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;&lt;/blockquote&gt;
+&lt;/section&gt;
+&lt;section id="command-system"&gt;
+&lt;h3&gt;Command System&lt;/h3&gt;
+&lt;p&gt;Like most IRC clients, Srain provides a command system.
+Most operations can be done through both GUI and commands.
+Please refers to &lt;a class="reference external" href="http://doc.srain.im/en/stable/commands.html"&gt;Commands Manual&lt;/a&gt;
+for more details.&lt;/p&gt;
+&lt;/section&gt;
+&lt;section id="message-filter-and-renderer"&gt;
+&lt;h3&gt;Message Filter and Renderer&lt;/h3&gt;
+&lt;p&gt;Srain provdes regex based message render and filter mechanisms.&lt;/p&gt;
+&lt;p&gt;Message filter allows ignore one’s message by regular expression match.
+(&lt;a class="reference external" href="http://doc.srain.im/en/stable/commands.html#ignore-unignore"&gt;Ignore by nickname&lt;/a&gt;
+is supported of course).
+Please refers to &lt;cite&gt;`&lt;/cite&gt;/filter`` &amp;lt;&lt;a class="reference external" href="http://doc.srain.im/en/stable/commands.html#commands-filter"&gt;http://doc.srain.im/en/stable/commands.html#commands-filter&lt;/a&gt;&amp;gt;`_.&lt;/p&gt;
+&lt;p&gt;Message renderer allows user modify one’s message by regular expression group capture.
+Please refers to &lt;cite&gt;`&lt;/cite&gt;/render`` &amp;lt;&lt;a class="reference external" href="http://doc.srain.im/en/stable/commands.html#commands-render"&gt;http://doc.srain.im/en/stable/commands.html#commands-render&lt;/a&gt;&amp;gt;`_.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;One of the application of message renderer is “relay message transform”&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;There are many relay bots forward messages from other IM to IRC network,
+“relay message transform” makes these messages easier to read.
+For example, there is a telegram bot named “telegram”, the words in brackets
+is the named of the telegram user.&lt;/p&gt;
+&lt;p&gt;{% include image name=”render-message-before.png” %}&lt;/p&gt;
+&lt;p&gt;Run command &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;/pattern&lt;/span&gt; &lt;span class="pre"&gt;add&lt;/span&gt; &lt;span class="pre"&gt;normal-relay&lt;/span&gt; &lt;span class="pre"&gt;\[(?&amp;lt;sender&amp;gt;[^:]+?)\]&lt;/span&gt; &lt;span class="pre"&gt;(?&amp;lt;content&amp;gt;.*)&lt;/span&gt;&lt;/code&gt;
+and &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;/render&lt;/span&gt; &lt;span class="pre"&gt;telegram&lt;/span&gt; &lt;span class="pre"&gt;normal-relay&lt;/span&gt;&lt;/code&gt;.
+&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;\[(?&amp;lt;sender&amp;gt;[^:]+?)\]&lt;/span&gt; &lt;span class="pre"&gt;(?&amp;lt;content&amp;gt;.*)&lt;/span&gt;&lt;/code&gt; is a regular expression, which has two
+named group &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;sender&lt;/span&gt;&lt;/code&gt; and &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;content&lt;/span&gt;&lt;/code&gt;, when an IRC message matched by this expression:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;The text in &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;sender&lt;/span&gt;&lt;/code&gt; group will become the sender of rendered messsage,&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;The text in &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;content&lt;/span&gt;&lt;/code&gt; group will become the content of rendered messsage.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;The orginal message sender will become the remark of rendered messsage.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The meaning of first command is creating a pattern(regular expression) named
+“normal-relay”, the second command applies this pattern to the bot “telegram”:
+all message sent by this bot will be rendered by the aboved pattern.&lt;/p&gt;
+&lt;p&gt;So, after running the commands, the message from “telegram” looks like the
+following figure:&lt;/p&gt;
+&lt;p&gt;{% include image name=”render-message-after.png” %}&lt;/p&gt;
+&lt;/section&gt;
+&lt;/section&gt;
+&lt;section id="next-development"&gt;
+&lt;h2&gt;Next development&lt;/h2&gt;
+&lt;p&gt;The two main aims of next development are: use experience improvement and plugin system.&lt;/p&gt;
+&lt;section id="use-experience-improvement"&gt;
+&lt;h3&gt;Use Experience Improvement&lt;/h3&gt;
+&lt;p&gt;In most cases, Srain has better user experience than previous clients, but
+still has some shortcomings – which will be improved the future.&lt;/p&gt;
+&lt;p&gt;The improvement of use experience is strongly based on user’s feedback.
+If you have any suggestion, please &lt;a class="reference external" href="{{site.project.url}}/issue"&gt;file an issue&lt;/a&gt;
+or &lt;a class="reference external" href="ircs://chat.freenode.net/#srain"&gt;disscuss in channel #srain&lt;/a&gt;.&lt;/p&gt;
+&lt;/section&gt;
+&lt;section id="plugin-system"&gt;
+&lt;h3&gt;Plugin System&lt;/h3&gt;
+&lt;p&gt;Traditional IRC protocol is too simple to meet the needs of modern IM users.
+So client should do more, plugin system is a good idea to provide extra functions.&lt;/p&gt;
+&lt;p&gt;As Srain is a GTK application, I plan to use &lt;a class="reference external" href="https://wiki.gnome.org/Projects/Libpeas"&gt;Libpeas&lt;/a&gt;
+to construct Srain’s plugin system and provide at least tow kind of plugin:
+auto-pastebin(paste your file/image and return URL to your input entry) and
+message renderer(render IRC message as as you wish).&lt;/p&gt;
+&lt;p&gt;You can trace the progress of plugin system at {% include issue id=199 %}.&lt;/p&gt;
+&lt;/section&gt;
+&lt;section id="energy-and-time"&gt;
+&lt;h3&gt;Energy and Time&lt;/h3&gt;
+&lt;p&gt;In fact, I am quite busy with both my work and my life, so I can only develop
+Srain in my free time. The progress of development may not be too fast,
+but it will continue.  If anyone wants to get involved, feel free to contcat me,
+you can find contact details on &lt;a class="reference external" href="https://silverrainz.me/"&gt;my homepage&lt;/a&gt;.&lt;/p&gt;
+&lt;/section&gt;
+&lt;/section&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/blog/introducing-srain.html" rel="alternate"/>
+    <summary>Hi all, I am excited to introduce you to Srain: A modern IRC client written in GTK.</summary>
+    <published>2020-02-29T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-1-0-1</id>
+    <title>2020-03-14 Version 1.0.1</title>
+    <updated>2020-03-14T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-1-0-1"&gt;
+&lt;span id="id15"&gt;&lt;/span&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Features:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Auto rename to original nick when ghost quit (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/198"&gt;#198&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Add hackint IRC network (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/201"&gt;#201&lt;/a&gt;), thanks to &lt;a class="reference external" href="https://github.com/kpcyrd"&gt;&amp;#64;kpcyrd&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Add Dutch translation (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/215"&gt;#215&lt;/a&gt;), thanks to &lt;a class="reference external" href="https://github.com/Vistaus"&gt;&amp;#64;Vistaus&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Add two FAQs to documentation (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/217"&gt;#217&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Add debian pack script (&lt;a class="reference external" href="https://github.com/SrainApp/srain-contrib/pull/1"&gt;contrib#1&lt;/a&gt;), thanks to &lt;a class="reference external" href="https://github.com/tomac4t"&gt;&amp;#64;tomac4t&lt;/a&gt;.
+Please refer to &lt;a class="reference internal" href="install.html#install-packages-debian"&gt;&lt;span class="std std-ref"&gt;Debian&lt;/span&gt;&lt;/a&gt; to build a deb package&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Changes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Move continuous integration from travis CI to github actions
+(&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/203"&gt;#203&lt;/a&gt;, &lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/204"&gt;#204&lt;/a&gt;), thanks to &lt;a class="reference external" href="https://github.com/tomac4t"&gt;&amp;#64;tomac4t&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Make header bar buttons repect default belief (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/205"&gt;#205&lt;/a&gt;, &lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/218"&gt;#218&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Fix case sensitivity issue for IRC messages (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/202"&gt;#202&lt;/a&gt;),
+thanks to &lt;a class="reference external" href="https://github.com/hhirtz"&gt;&amp;#64;hhirtz&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Fix invalid changelog section of appdata file (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/214"&gt;#214&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Fix missing dependences in documentation (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/216"&gt;#216&lt;/a&gt;),
+thanks to &lt;a class="reference external" href="https://github.com/avoidr"&gt;&amp;#64;avoidr&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-1-0-1" rel="alternate"/>
+    <summary>Features:</summary>
+    <published>2020-03-14T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-1-0-2</id>
+    <title>2020-04-11 Version 1.0.2</title>
+    <updated>2020-04-11T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-1-0-2"&gt;
+&lt;span id="id14"&gt;&lt;/span&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Features:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Add MAN documentation (&lt;a class="reference external" href="https://github.com/SrainApp/srain/commit/deaf723"&gt;deaf723&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Add more predefined IRC networks: DALnet, EFnet, IRCnet, Undernet and QuakeNet (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/228"&gt;#228&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Changes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Build: Allow setting CC variable via environment (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/224"&gt;#224&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Add channel related messages to corresponding buffer as possible (&lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/149"&gt;#149&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Improve widget focus control (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/229"&gt;#229&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Drop unused icons (&lt;a class="reference external" href="https://github.com/SrainApp/srain/commit/6239fe5"&gt;6239fe5&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Provide clearer error message when connecting (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/233"&gt;#233&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Update gentoo installation documentation &lt;a class="reference internal" href="install.html#install-packages-gentoo"&gt;&lt;span class="std std-ref"&gt;Gentoo&lt;/span&gt;&lt;/a&gt; (&lt;a class="reference external" href="https://github.com/SrainApp/srain/commit/ceb5ca3"&gt;ceb5ca3&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Truncate long message before sendisg (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/227"&gt;#227&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Deal with invalid UTF-8 string (&lt;a class="reference external" href="https://github.com/SrainApp/srain/commit/50e7757"&gt;50e7757&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Fix incorrect user number of channel user list (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/230"&gt;#230&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Fix incorrect icon install path (&lt;a class="reference external" href="https://github.com/SrainApp/srain/commit/9f07380"&gt;9f07380&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-1-0-2" rel="alternate"/>
+    <summary>Features:</summary>
+    <published>2020-04-11T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-1-1-0</id>
+    <title>2020-05-24 Version 1.1.0</title>
+    <updated>2020-05-24T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-1-1-0"&gt;
+&lt;span id="id13"&gt;&lt;/span&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Features:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Support multiple selection of message (&lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/138"&gt;#138&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Support jump to mentioned message (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/243"&gt;#243&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Nickname will be highlighted when mentioned (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/243"&gt;#243&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Auto build deb package (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/238"&gt;#238&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Changes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Improve fcous control of UI&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Replace appdata with metainfo (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/240"&gt;#240&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Validate metainfo with appstream-util (&lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/242"&gt;#242&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Some implicit declarations fixes (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/236"&gt;#236&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Some typo fixes (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/239"&gt;#239&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-1-1-0" rel="alternate"/>
+    <summary>Features:</summary>
+    <published>2020-05-24T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-1-1-1</id>
+    <title>2020-06-27 Version 1.1.1</title>
+    <updated>2020-06-27T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-1-1-1"&gt;
+&lt;span id="id12"&gt;&lt;/span&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Changes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Improve auto-scroll policy of message list (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/255"&gt;#255&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Fix TLS certificate verification error on glib-networking 2.64.3 (&lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/251"&gt;#251&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Fix crash when connecting to an invalid host (&lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/234"&gt;#234&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-1-1-1" rel="alternate"/>
+    <summary>Changes:</summary>
+    <published>2020-06-27T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-1-1-2</id>
+    <title>2020-08-10 Version 1.1.2</title>
+    <updated>2020-08-10T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-1-1-2"&gt;
+&lt;span id="id11"&gt;&lt;/span&gt;
+&lt;div class="admonition note"&gt;
+&lt;p class="admonition-title"&gt;Note&lt;/p&gt;
+&lt;p&gt;This release contains only improvement for MS Windows,
+user of other platform can ignore it.&lt;/p&gt;
+&lt;/div&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Features:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Binary for MS Windows now can automatically built via Github Actions,
+thanks to &lt;a class="reference external" href="https://github.com/lifeibiren"&gt;&amp;#64;lifeibiren&lt;/a&gt; (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/259"&gt;#259&lt;/a&gt;), please refer to
+&lt;a class="reference internal" href="install.html#install-packages-windows"&gt;&lt;span class="std std-ref"&gt;Windows&lt;/span&gt;&lt;/a&gt; for more details&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Changes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;For ease of running on windows, Srain’s executable path is added to the
+search paths of {configuration,data} file. Thanks to &lt;a class="reference external" href="https://github.com/lifeibiren"&gt;&amp;#64;lifeibiren&lt;/a&gt;
+(&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/259"&gt;#259&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-1-1-2" rel="alternate"/>
+    <summary>This release contains only improvement for MS Windows,
+user of other platform can ignore it.</summary>
+    <published>2020-08-10T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-1-1-3</id>
+    <title>2020-10-01 Version 1.1.3</title>
+    <updated>2020-10-01T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-1-1-3"&gt;
+&lt;span id="id10"&gt;&lt;/span&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;div&gt;&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Fix an use-after-free BUG (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/267"&gt;#267&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-1-1-3" rel="alternate"/>
+    <summary>Bug fixes:</summary>
+    <published>2020-10-01T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-1-2-0</id>
+    <title>2021-02-28 Version 1.2.0</title>
+    <updated>2021-02-28T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-1-2-0"&gt;
+&lt;span id="id9"&gt;&lt;/span&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Features:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Switch build system from Make to Meson (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/266"&gt;#266&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Add FreeBSD implementations for &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;srn_get_executable_{path,dir}&lt;/span&gt;&lt;/code&gt;,
+thanks to &lt;a class="reference external" href="https://github.com/wahjava"&gt;&amp;#64;wahjava&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Add &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;/quote&lt;/span&gt;&lt;/code&gt; command for sending special IRC commands,
+thanks to &lt;a class="reference external" href="https://github.com/hno"&gt;&amp;#64;hno&lt;/a&gt; (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/283"&gt;#283&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Add support for hiding server buffer (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/287"&gt;#287&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;div&gt;&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Fix an use-after-free BUG (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/267"&gt;#267&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Fix implicit declaration error on some systems,
+thanks to &lt;a class="reference external" href="https://github.com/lgbaldoni"&gt;&amp;#64;lgbaldoni&lt;/a&gt; (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/270"&gt;#270&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-1-2-0" rel="alternate"/>
+    <summary>Features:</summary>
+    <published>2021-02-28T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-1-2-1</id>
+    <title>2021-04-02 Version 1.2.1</title>
+    <updated>2021-04-02T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-1-2-1"&gt;
+&lt;span id="id8"&gt;&lt;/span&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Features:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Add Ukrainian translations (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/292"&gt;#292&lt;/a&gt;), thanks to &lt;a class="reference external" href="https://github.com/andmizyk"&gt;&amp;#64;andmizyk&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Minor fixes (&lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/290"&gt;#290&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-1-2-1" rel="alternate"/>
+    <summary>Features:</summary>
+    <published>2021-04-02T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-1-2-2</id>
+    <title>2021-05-30 Version 1.2.2</title>
+    <updated>2021-05-30T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-1-2-2"&gt;
+&lt;span id="id7"&gt;&lt;/span&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Changed:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Add libera.chat IRC network (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/311"&gt;#311&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Updated Dutch translation (&lt;a class="reference external" href="https://github.com/SrainApp/srain/commit/b6830e9"&gt;b6830e9&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Fix windows build (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/300"&gt;#300&lt;/a&gt;, &lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/303"&gt;#303&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-1-2-2" rel="alternate"/>
+    <summary>Changed:</summary>
+    <published>2021-05-30T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-1-2-3</id>
+    <title>2021-06-26 Version 1.2.3</title>
+    <updated>2021-06-26T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-1-2-3"&gt;
+&lt;span id="id6"&gt;&lt;/span&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Eliminate GDK warning (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/316"&gt;#316&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-1-2-3" rel="alternate"/>
+    <summary>Bug fixes:</summary>
+    <published>2021-06-26T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-1-2-4</id>
+    <title>2021-07-18 Version 1.2.4</title>
+    <updated>2021-07-18T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-1-2-4"&gt;
+&lt;span id="id5"&gt;&lt;/span&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Fix bug casued by &lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/316"&gt;#316&lt;/a&gt; (&lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/319"&gt;#319&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Fix crach when URL preview async task failed (&lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/322"&gt;#322&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-1-2-4" rel="alternate"/>
+    <summary>Bug fixes:</summary>
+    <published>2021-07-18T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-1-3-0</id>
+    <title>2021-09-23 Version 1.3.0</title>
+    <updated>2021-09-23T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-1-3-0"&gt;
+&lt;span id="version-1-3"&gt;&lt;/span&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Features:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Implement ISUPPORT parsing + the UTF8ONLY IRCv3 specification (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/331"&gt;#331&lt;/a&gt;), thanks to &amp;#64;progval&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Add support for RPL_UMODEIS (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/331"&gt;#331&lt;/a&gt;), thanks to &amp;#64;progval&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Make nick completion case-insensitive (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/333"&gt;#333&lt;/a&gt;), thanks to &amp;#64;progval&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Add button for inserting emoji (&lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/279"&gt;#279&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Fix configuration syntax errors caused by trailing commas (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/330"&gt;#330&lt;/a&gt;), thanks to &amp;#64;progval&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-1-3-0" rel="alternate"/>
+    <summary>Features:</summary>
+    <published>2021-09-23T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-1-2-5</id>
+    <title>2021-12-18 Version 1.2.5</title>
+    <updated>2021-12-18T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-1-2-5"&gt;
+&lt;span id="id4"&gt;&lt;/span&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Backport &lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/336"&gt;#336&lt;/a&gt;, &lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/274"&gt;#274&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-1-2-5" rel="alternate"/>
+    <summary>Bug fixes:</summary>
+    <published>2021-12-18T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-1-3-1</id>
+    <title>2021-12-18 Version 1.3.1</title>
+    <updated>2021-12-18T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-1-3-1"&gt;
+&lt;span id="id3"&gt;&lt;/span&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Fix build of macOS (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/339"&gt;#339&lt;/a&gt;), by &amp;#64;SilverRainZ&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Make channel messages with origin out of channels can be shown (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/336"&gt;#336&lt;/a&gt;), by &amp;#64;progval&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Rejoin channels after NICKSERV authentication finishes (&lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/274"&gt;#274&lt;/a&gt;), by &amp;#64;SilverRainZ&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-1-3-1" rel="alternate"/>
+    <summary>Bug fixes:</summary>
+    <published>2021-12-18T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-1-3-2</id>
+    <title>2022-02-10 Version 1.3.2</title>
+    <updated>2022-02-10T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-1-3-2"&gt;
+&lt;span id="id2"&gt;&lt;/span&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Features:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Add French translation (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/351"&gt;#351&lt;/a&gt;), by &amp;#64;progval&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Silence assertion failure on /part command (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/348"&gt;#348&lt;/a&gt;), by &amp;#64;progval&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Silence “Unknown capability” warning on trailing whitespace (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/349"&gt;#349&lt;/a&gt;), by &amp;#64;progval&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Changes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Add tooltips to buttons with no text(&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/350"&gt;#350&lt;/a&gt;), by &amp;#64;progval&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Srain is added to offical repository of Debian, see &lt;a class="reference internal" href="install.html#install-packages-debian"&gt;&lt;span class="std std-ref"&gt;Debian&lt;/span&gt;&lt;/a&gt; for details&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-1-3-2" rel="alternate"/>
+    <summary>Features:</summary>
+    <published>2022-02-10T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-1-4-0</id>
+    <title>2022-05-07 Version 1.4.0</title>
+    <updated>2022-05-07T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-1-4-0"&gt;
+&lt;span id="version-latest"&gt;&lt;/span&gt;&lt;span id="id1"&gt;&lt;/span&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Features:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Add support for IRCv3 standard-replies (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/354"&gt;#354&lt;/a&gt;), by &amp;#64;progval&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Add support for SASL EXTERNAL (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/352"&gt;#352&lt;/a&gt;), by &amp;#64;progval&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Add support for invite-notify (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/359"&gt;#359&lt;/a&gt;), by &amp;#64;progval&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Add conf item &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;server-visibility&lt;/span&gt;&lt;/code&gt; for setting default server visiblity (&lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/361"&gt;#361&lt;/a&gt;), by &amp;#64;SilverRainZ&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Add support for server-time (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/345"&gt;#345&lt;/a&gt;), by &amp;#64;progval&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Add &lt;a class="reference internal" href="commands.html#commands-clear"&gt;&lt;span class="std std-ref"&gt;/clear&lt;/span&gt;&lt;/a&gt; command for clearing messages of current buffer (&lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/268"&gt;#268&lt;/a&gt;), by &amp;#64;SilverRainZ&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Fix workflow for building MS Windows release artifact (&lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/360"&gt;#360&lt;/a&gt;), by &amp;#64;lifeibiren&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Changes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Make the buffer menu apply to the right-clicked item instead of the active buffer (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/353"&gt;#353&lt;/a&gt;), by progval&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Srain now accepting donations through OpenCollective (&lt;a class="reference external" href="https://opencollective.com/srain"&gt;https://opencollective.com/srain&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Disable workflow for building debian release artifact since we have offical debian package (&lt;a class="reference external" href="https://github.com/SrainApp/srain/commit/99d9d86"&gt;99d9d86&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-1-4-0" rel="alternate"/>
+    <summary>Features:</summary>
+    <published>2022-05-07T00:00:00+00:00</published>
+  </entry>
+</feed>
