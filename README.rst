@@ -2,22 +2,18 @@
 Srain
 =====
 
-|ci-status| |doc-status| |channel|
+|ci-status| |docs-status| |channel|
 
 .. |ci-status| image:: https://github.com/SrainApp/srain/workflows/build/badge.svg?branch=master
    :target: https://github.com/SrainApp/srain/actions
 
-.. |doc-status| image:: https://readthedocs.org/projects/srain/badge/?version=latest
+.. |docs-status| image:: https://github.com/SrainApp/srain/actions/workflows/pages.yml/badge.svg
     :target: https://srain.silverrainz.me/
 
 .. |channel| image:: https://img.shields.io/badge/channel-%23srain-brightgreen.svg
    :target: ircs://irc.libera.chat/#srain
 
 Modern IRC client written in GTK.
-
-`Source code`_
-
-.. _Source code: https://github.com/SrainApp/srain
 
 .. image:: https://srain.silverrainz.me/assets/images/cover.png
 
