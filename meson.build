@@ -45,4 +45,4 @@ srcs = []
 subdir('data')
 subdir('po')
 subdir('src')
-subdir('doc')
+subdir('docs')
