@@ -20,7 +20,7 @@
 /**
  * @file version.c
  * @brief Semantic version parser
- * @author Shengyu Zhang <i@srain.im>
+ * @author Shengyu Zhang <i@srain.silverrainz.me>
  * @version 0.06.3
  * @date 2018-01-28
  *

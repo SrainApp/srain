@@ -14,7 +14,7 @@ app_name = meson.project_name()
 app_pretty_name = 'Srain'
 app_generic_name = 'Srain IRC Client'
 app_desc = 'Modern IRC client written in GTK'
-app_url = 'https://srain.im'
+app_url = 'https://srain.silverrainz.me'
 app_bugreport = 'https://github.com/SrainApp/' + app_name + '/issues/new'
 app_exec = app_name
 
@@ -45,4 +45,4 @@ srcs = []
 subdir('data')
 subdir('po')
 subdir('src')
-subdir('doc')
+subdir('docs')

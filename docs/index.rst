@@ -19,6 +19,15 @@ Supporting Srain through OpenCollective_.
 .. _GitHub: https://github.com/SrainApp/srain/tree/master/doc
 .. _OpenCollective: https://opencollective.com/srain
 
+Recnet posts
+============
+
+.. postlist:: 10
+   :format: {title}
+   :list-style: disc
+
+:ref:`All posts…  <blog-posts>`
+
 All pages
 =========
 
@@ -35,8 +44,3 @@ All pages
     faq
     changelog
     support
-
-Indices and Tables
-==================
-
-* :ref:`search`

@@ -18,7 +18,6 @@ GPATH
 
 # Precompiled Headers
 *.gch
-*.pch
 
 # Libraries
 *.lib
@@ -46,3 +45,6 @@ GPATH
 # Meson
 builddir/
 prefix/
+
+# Sphinx
+_build/

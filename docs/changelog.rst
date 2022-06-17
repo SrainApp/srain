@@ -14,6 +14,9 @@ Change Log
     YYYY-MM-DD Version X.X.X
     ========================
 
+   .. post:: YYYY-MM-DD
+      :category: release
+
     - Features:
 
       - XXX (:pull:`PULL_REQUEST_ID`)
@@ -34,6 +37,9 @@ Change Log
 
 2022-05-07 Version 1.4.0
 ========================
+
+.. post:: 2020-05-07
+   :category: release
 
 - Features:
 
@@ -59,6 +65,9 @@ Change Log
 2022-02-10 Version 1.3.2
 ========================
 
+.. post:: 2022-02-10
+   :category: release
+
 - Features:
 
   - Add French translation (:pull:`351`), by @progval
@@ -78,6 +87,9 @@ Change Log
 2021-12-18 Version 1.3.1
 ========================
 
+.. post:: 2021-12-18
+   :category: release
+
 - Bug fixes:
 
   - Fix build of macOS (:pull:`339`), by @SilverRainZ
@@ -89,6 +101,9 @@ Change Log
 2021-12-18 Version 1.2.5
 ========================
 
+.. post:: 2021-12-18
+   :category: release
+
 - Bug fixes:
 
   - Backport :pull:`336`, :issue:`274`
@@ -97,6 +112,9 @@ Change Log
 
 2021-09-23 Version 1.3.0
 ========================
+
+.. post:: 2021-09-23
+   :category: release
 
 - Features:
 
@@ -114,6 +132,9 @@ Change Log
 2021-07-18 Version 1.2.4
 ========================
 
+.. post:: 2021-07-18
+   :category: release
+
 - Bug fixes:
 
   - Fix bug casued by :pull:`316` (:issue:`319`)
@@ -124,6 +145,9 @@ Change Log
 2021-06-26 Version 1.2.3
 ========================
 
+.. post:: 2021-06-26
+   :category: release
+
 - Bug fixes:
 
   - Eliminate GDK warning (:pull:`316`)
@@ -132,6 +156,9 @@ Change Log
 
 2021-05-30 Version 1.2.2
 ========================
+
+.. post:: 2021-05-30
+   :category: release
 
 - Changed:
 
@@ -147,6 +174,9 @@ Change Log
 2021-04-02 Version 1.2.1
 ========================
 
+.. post:: 2021-04-02
+   :category: release
+
 - Features:
 
   - Add Ukrainian translations (:pull:`292`), thanks to :people:`andmizyk`
@@ -159,6 +189,9 @@ Change Log
 
 2021-02-28 Version 1.2.0
 ========================
+
+.. post:: 2021-02-28
+   :category: release
 
 - Features:
 
@@ -181,6 +214,9 @@ Change Log
 2020-10-01 Version 1.1.3
 ========================
 
+.. post:: 2020-10-01
+   :category: release
+
 - Bug fixes:
 
    - Fix an use-after-free BUG (:pull:`267`)
@@ -189,6 +225,9 @@ Change Log
 
 2020-08-10 Version 1.1.2
 ========================
+
+.. post:: 2020-08-10
+   :category: release
 
 .. note::
 
@@ -212,6 +251,9 @@ Change Log
 2020-06-27 Version 1.1.1
 ========================
 
+.. post:: 2020-06-27
+   :category: release
+
 - Changes:
 
   - Improve auto-scroll policy of message list (:pull:`255`)
@@ -225,6 +267,9 @@ Change Log
 
 2020-05-24 Version 1.1.0
 ========================
+
+.. post:: 2020-05-24
+   :category: release
 
 - Features:
 
@@ -248,6 +293,9 @@ Change Log
 
 2020-04-11 Version 1.0.2
 ========================
+
+.. post:: 2020-04-11
+   :category: release
 
 - Features:
 
@@ -274,6 +322,9 @@ Change Log
 
 2020-03-14 Version 1.0.1
 ========================
+
+.. post:: 2020-03-14
+   :category: release
 
 - Features:
 
@@ -303,6 +354,9 @@ Change Log
 2020-02-24 Version 1.0.0
 ========================
 
+.. post:: 2020-02-24
+   :category: release
+
 - Changes:
 
   - Some code cleanup
@@ -321,6 +375,9 @@ Change Log
 
 2019-10-07 Version 1.0.0rc9999
 ==============================
+
+.. post:: 2019-10-07
+   :category: release
 
 - Features:
 
@@ -346,6 +403,9 @@ Change Log
 2019-06-14 Version 1.0.0rc5
 ===========================
 
+.. post:: 2019-06-14
+   :category: release
+
 - Added:
 
    - Regular expression pattern management using :ref:`commands-pattern` command
@@ -367,6 +427,9 @@ Change Log
 
 2019-05-13 Version 1.0.0rc4
 ===========================
+
+.. post:: 2019-05-13
+   :category: release
 
 - Added:
 
@@ -391,20 +454,31 @@ Change Log
 2019-04-14 Version 1.0.0rc3
 ===========================
 
+.. post:: 2019-04-14
+   :category: release
+
 .. _version-1.0.0rc2:
 
 2019-01-24 Version 1.0.0rc2
 ===========================
 
+.. post:: 2019-01-24
+   :category: release
 .. _version-1.0.0rc1:
 
 2018-09-10 Version 1.0.0rc1
 ===========================
 
+.. post:: 2018-09-10
+   :category: release
+
 .. _version-0.06.4:
 
 2018-02-28 Version 0.06.4
 =========================
+
+.. post:: 2018-02-28
+   :category: release
 
 - Changed:
 
@@ -452,6 +526,9 @@ Change Log
 2017-12-22 Version 0.06.3
 =========================
 
+.. post:: 2017-12-22
+   :category: release
+
 - Changed:
 
   - Configurable file option ``tls_not_verify`` in ``irc`` block in ``server``
@@ -481,6 +558,9 @@ Change Log
 2017-09-12 Version 0.06.2
 =========================
 
+.. post:: 2017-09-12
+   :category: release
+
 - Added:
 
   - mIRC color support, can be disabled via setting ``render_mirc_color``
@@ -498,6 +578,9 @@ Change Log
 
 2017-08-18 Version 0.06.1
 =========================
+
+.. post:: 2017-08-18
+   :category: release
 
 - Added:
 
@@ -520,6 +603,9 @@ Change Log
 2017-07-29 Version 0.06
 =======================
 
+.. post:: 2017-07-29
+   :category: release
+
 - Changed:
 
   - The third time of refactor ;-)
@@ -540,8 +626,8 @@ Change Log
   - Configurable log module, more convenient for developing and reporting issue
   - New Return value type, for more friendly error reporting
   - New command :ref:`commands-server` for IRC servers management
-  - Srain home page is available at: https://srain.im
-  - Srain help documentation is available at: https://doc.srain.im
+  - Srain home page is available at: https://srain.im [expired]
+  - Srain help documentation is available at: https://doc.srain.im [expired]
 
 - Removed:
 
@@ -561,10 +647,16 @@ Change Log
 2016-09-19 Version 0.05.1
 =========================
 
+.. post:: 2016-09-19
+   :category: release
+
 - Create missing directory: ``$XDG_CACHE_HOME/srain/avatars``
 
 2016-08-27 Version 0.05
 =======================
+
+.. post:: 2016-08-27
+   :category: release
 
 - Changed:
 
@@ -594,6 +686,9 @@ Change Log
 2016-04-30 Version 0.03
 =======================
 
+.. post:: 2016-04-30
+   :category: release
+
 - New interface between UI and IRC module
 - Multi-server support
 - Channel name is not case sensitive now
@@ -608,6 +703,9 @@ Change Log
 2016-04-13 Version 0.02
 =======================
 
+.. post:: 2016-04-13
+   :category: release
+
 - Bugs fixed
 - Port to GTK+-3.20
 
@@ -618,6 +716,9 @@ Change Log
 
 2016-04-07 Version 0.01
 =======================
+
+.. post:: 2016-04-07
+   :category: release
 
 - Implement basic functions of a IRC client
 - Themes: Silver Rain (light)
