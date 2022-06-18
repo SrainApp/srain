@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 =====
-Srain 
+Srain
 =====
 
 Modern IRC client written in GTK.
