@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
   <id>https://srain.silverrainz.me/</id>
   <title>Srain</title>
-  <updated>2022-06-18T03:49:56.292909+00:00</updated>
+  <updated>2022-06-18T04:43:18.585557+00:00</updated>
   <link href="https://srain.silverrainz.me/"/>
   <link href="https://srain.silverrainz.me/blog/atom.xml" rel="self"/>
   <generator uri="https://ablog.readthedocs.org/" version="0.10.25">ABlog</generator>
@@ -165,7 +165,7 @@ it also has some undetected bugs.&lt;/p&gt;
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-0-06"&gt;
-
+&lt;span id="id25"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Changed:&lt;/p&gt;
 &lt;ul&gt;
@@ -188,8 +188,8 @@ expression, thanks to &amp;#64;zwindl !&lt;/p&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;Configurable log module, more convenient for developing and reporting issue&lt;/p&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;New Return value type, for more friendly error reporting&lt;/p&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;New command &lt;a class="reference internal" href="commands.html#commands-server"&gt;&lt;span class="std std-ref"&gt;/server&lt;/span&gt;&lt;/a&gt; for IRC servers management&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Srain home page is available at: &lt;a class="reference external" href="https://srain.im"&gt;https://srain.im&lt;/a&gt; [expired]&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Srain help documentation is available at: &lt;a class="reference external" href="https://doc.srain.im"&gt;https://doc.srain.im&lt;/a&gt; [expired]&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Srain home page is available at: &lt;span class="sphinxnotes-strike"&gt;https://srain.im&lt;/span&gt; (expired, use &lt;a class="reference external" href="https://srain.silverrainz.me"&gt;https://srain.silverrainz.me&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Srain help documentation is available at: &lt;span class="sphinxnotes-strike"&gt;https://doc.srain.im&lt;/span&gt; (expired, use &lt;a class="reference external" href="https://srain.silverrainz.me"&gt;https://srain.silverrainz.me&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;li&gt;&lt;p&gt;Removed:&lt;/p&gt;
@@ -615,7 +615,7 @@ At first I felt the channel was full of chaos:&lt;/p&gt;
 The inconveniences of IRC actually exists, improving the experience of IRC
 chatting is always good.&lt;/p&gt;
 &lt;p&gt;– So I wrote a client, and now introduce to you:&lt;/p&gt;
-&lt;figure class="align-default" id="id1"&gt;
+&lt;figure class="align-default" id="id10"&gt;
 &lt;img alt="_images/cover.png" src="_images/cover.png" /&gt;
 &lt;figcaption&gt;
 &lt;p&gt;&lt;span class="caption-text"&gt;&lt;a class="reference external" href="https://github.com/SrainApp/srain"&gt;⛺SrainApp/srain&lt;/a&gt;&lt;/span&gt;&lt;/p&gt;
@@ -624,15 +624,14 @@ chatting is always good.&lt;/p&gt;
 &lt;section id="free-and-cross-platform"&gt;
 &lt;h2&gt;Free and Cross-Platform&lt;/h2&gt;
 &lt;p&gt;Srain is fully open source under GPLv3 license.
-You can get software and &lt;a class="reference external" href="{{site.project.url}}"&gt;source code&lt;/a&gt; for free.
+You can get software and &lt;a class="reference external" href="https://github.com/SrainApp/srain.im"&gt;source code&lt;/a&gt; for free.
 Srain supports both Linux, Windows, BSD and macOS, please checkout
-&lt;a class="reference external" href="http://doc.srain.im/en/latest/install.html"&gt;Installation Guide&lt;/a&gt; for more details.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;div&gt;&lt;p&gt;For Linux user, Srain is available on offical repository of
-&lt;a class="reference external" href="https://flathub.org/apps/details/im.srain.Srain"&gt;flathub&lt;/a&gt;,
-&lt;a class="reference external" href="https://src.fedoraproject.org/rpms/srain"&gt;fedora&lt;/a&gt; and
-&lt;a class="reference external" href="https://software.opensuse.org/package/Srain"&gt;openSUSE&lt;/a&gt;.&lt;/p&gt;
-&lt;/div&gt;&lt;/blockquote&gt;
+&lt;a class="reference internal" href="install.html"&gt;&lt;span class="doc"&gt;Installation&lt;/span&gt;&lt;/a&gt; for more details.&lt;/p&gt;
+&lt;div class="admonition hint"&gt;
+&lt;p class="admonition-title"&gt;Hint&lt;/p&gt;
+&lt;p&gt;For Linux user, Srain is available on offical repository of
+&lt;a class="reference external" href="https://flathub.org/apps/details/im.srain.Srain"&gt;flathub&lt;/a&gt;, &lt;a class="reference external" href="https://src.fedoraproject.org/rpms/srain"&gt;fedora&lt;/a&gt; and &lt;a class="reference external" href="https://software.opensuse.org/package/Srain"&gt;openSUSE&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
 &lt;/section&gt;
 &lt;section id="modern-ui"&gt;
 &lt;h2&gt;Modern UI&lt;/h2&gt;
@@ -644,17 +643,24 @@ Srain supports both Linux, Windows, BSD and macOS, please checkout
 &lt;li&gt;&lt;p&gt;HiDPI support&lt;/p&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;Custom themes support (see below)&lt;/p&gt;&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;{% include image name=”main.png” %}&lt;/p&gt;
+&lt;figure class="align-default" id="id11"&gt;
+&lt;img alt="_images/main.png" src="_images/main.png" /&gt;
+&lt;figcaption&gt;
+&lt;p&gt;&lt;span class="caption-text"&gt;Main UI&lt;/span&gt;&lt;/p&gt;
+&lt;/figcaption&gt;
+&lt;/figure&gt;
 &lt;/section&gt;
 &lt;section id="themes"&gt;
 &lt;h2&gt;Themes&lt;/h2&gt;
 &lt;p&gt;Srain’s theme is built on the top of GTK CSS system, so users can easily
 customize the theme by writing CSS.&lt;/p&gt;
-&lt;p&gt;By default, Srain provides two
-&lt;a class="reference external" href="https://github.com/SrainApp/srain/tree/master/data/themes"&gt;builtin themes&lt;/a&gt;:
-&lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;default-bubble&lt;/span&gt;&lt;/code&gt; and &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;default-bubble-dark&lt;/span&gt;&lt;/code&gt; which works well with most popular
-GTK themes.&lt;/p&gt;
-&lt;p&gt;{% include image name=”theme.png” %}&lt;/p&gt;
+&lt;p&gt;By default, Srain provides two &lt;a class="reference external" href="https://github.com/SrainApp/srain/tree/master/data/themes"&gt;builtin themes&lt;/a&gt;: &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;default-bubble&lt;/span&gt;&lt;/code&gt; and &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;default-bubble-dark&lt;/span&gt;&lt;/code&gt; which works well with most popular GTK themes.&lt;/p&gt;
+&lt;figure class="align-default" id="id12"&gt;
+&lt;img alt="_images/theme.png" src="_images/theme.png" /&gt;
+&lt;figcaption&gt;
+&lt;p&gt;&lt;span class="caption-text"&gt;Themes&lt;/span&gt;&lt;/p&gt;
+&lt;/figcaption&gt;
+&lt;/figure&gt;
 &lt;/section&gt;
 &lt;section id="features"&gt;
 &lt;h2&gt;Features&lt;/h2&gt;
@@ -662,34 +668,38 @@ GTK themes.&lt;/p&gt;
 &lt;h3&gt;URL Preview&lt;/h3&gt;
 &lt;p&gt;Srain is able to parse the URL in IRC message, detect its content type and show you a preview.&lt;/p&gt;
 &lt;p&gt;For now, only HTTP URL which points to image can be previewed.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;div&gt;&lt;p&gt;For convenience, the URL preview function is enabled by default.
+&lt;div class="admonition hint"&gt;
+&lt;p class="admonition-title"&gt;Hint&lt;/p&gt;
+&lt;p&gt;For convenience, the URL preview function is enabled by default.
 Note that it may &lt;strong&gt;leaks your client IP&lt;/strong&gt;, you can disable it in
-&lt;a class="reference external" href="http://doc.srain.im/en/stable/config.html"&gt;configuration&lt;/a&gt;.&lt;/p&gt;
-&lt;/div&gt;&lt;/blockquote&gt;
+&lt;a class="reference internal" href="config.html"&gt;&lt;span class="doc"&gt;Configuration Manual&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
 &lt;/section&gt;
 &lt;section id="command-system"&gt;
 &lt;h3&gt;Command System&lt;/h3&gt;
 &lt;p&gt;Like most IRC clients, Srain provides a command system.
 Most operations can be done through both GUI and commands.
-Please refers to &lt;a class="reference external" href="http://doc.srain.im/en/stable/commands.html"&gt;Commands Manual&lt;/a&gt;
-for more details.&lt;/p&gt;
+Please refers to &lt;a class="reference internal" href="commands.html"&gt;&lt;span class="doc"&gt;Commands Manual&lt;/span&gt;&lt;/a&gt; for more details.&lt;/p&gt;
 &lt;/section&gt;
 &lt;section id="message-filter-and-renderer"&gt;
 &lt;h3&gt;Message Filter and Renderer&lt;/h3&gt;
 &lt;p&gt;Srain provdes regex based message render and filter mechanisms.&lt;/p&gt;
 &lt;p&gt;Message filter allows ignore one’s message by regular expression match.
-(&lt;a class="reference external" href="http://doc.srain.im/en/stable/commands.html#ignore-unignore"&gt;Ignore by nickname&lt;/a&gt;
-is supported of course).
-Please refers to &lt;cite&gt;`&lt;/cite&gt;/filter`` &amp;lt;&lt;a class="reference external" href="http://doc.srain.im/en/stable/commands.html#commands-filter"&gt;http://doc.srain.im/en/stable/commands.html#commands-filter&lt;/a&gt;&amp;gt;`_.&lt;/p&gt;
+(&lt;a class="reference internal" href="commands.html#commands-ignore"&gt;&lt;span class="std std-ref"&gt;Ignore by nickname&lt;/span&gt;&lt;/a&gt; is supported of course).
+Please refers to &lt;a class="reference internal" href="commands.html#commands-filter"&gt;&lt;span class="std std-ref"&gt;/filter &amp;amp; /unfilter&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;Message renderer allows user modify one’s message by regular expression group capture.
-Please refers to &lt;cite&gt;`&lt;/cite&gt;/render`` &amp;lt;&lt;a class="reference external" href="http://doc.srain.im/en/stable/commands.html#commands-render"&gt;http://doc.srain.im/en/stable/commands.html#commands-render&lt;/a&gt;&amp;gt;`_.&lt;/p&gt;
+Please refers to &lt;a class="reference internal" href="commands.html#commands-render"&gt;&lt;span class="std std-ref"&gt;/render &amp;amp; /unrender&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;One of the application of message renderer is “relay message transform”&lt;/strong&gt;.&lt;/p&gt;
 &lt;p&gt;There are many relay bots forward messages from other IM to IRC network,
 “relay message transform” makes these messages easier to read.
 For example, there is a telegram bot named “telegram”, the words in brackets
 is the named of the telegram user.&lt;/p&gt;
-&lt;p&gt;{% include image name=”render-message-before.png” %}&lt;/p&gt;
+&lt;figure class="align-default" id="id13"&gt;
+&lt;img alt="_images/render-message-before.png" src="_images/render-message-before.png" /&gt;
+&lt;figcaption&gt;
+&lt;p&gt;&lt;span class="caption-text"&gt;Before render&lt;/span&gt;&lt;/p&gt;
+&lt;/figcaption&gt;
+&lt;/figure&gt;
 &lt;p&gt;Run command &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;/pattern&lt;/span&gt; &lt;span class="pre"&gt;add&lt;/span&gt; &lt;span class="pre"&gt;normal-relay&lt;/span&gt; &lt;span class="pre"&gt;\[(?&amp;lt;sender&amp;gt;[^:]+?)\]&lt;/span&gt; &lt;span class="pre"&gt;(?&amp;lt;content&amp;gt;.*)&lt;/span&gt;&lt;/code&gt;
 and &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;/render&lt;/span&gt; &lt;span class="pre"&gt;telegram&lt;/span&gt; &lt;span class="pre"&gt;normal-relay&lt;/span&gt;&lt;/code&gt;.
 &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre"&gt;\[(?&amp;lt;sender&amp;gt;[^:]+?)\]&lt;/span&gt; &lt;span class="pre"&gt;(?&amp;lt;content&amp;gt;.*)&lt;/span&gt;&lt;/code&gt; is a regular expression, which has two
@@ -704,7 +714,12 @@ named group &lt;code class="docutils literal notranslate"&gt;&lt;span class="pre
 all message sent by this bot will be rendered by the aboved pattern.&lt;/p&gt;
 &lt;p&gt;So, after running the commands, the message from “telegram” looks like the
 following figure:&lt;/p&gt;
-&lt;p&gt;{% include image name=”render-message-after.png” %}&lt;/p&gt;
+&lt;figure class="align-default" id="id14"&gt;
+&lt;img alt="_images/render-message-after.png" src="_images/render-message-after.png" /&gt;
+&lt;figcaption&gt;
+&lt;p&gt;&lt;span class="caption-text"&gt;After render&lt;/span&gt;&lt;/p&gt;
+&lt;/figcaption&gt;
+&lt;/figure&gt;
 &lt;/section&gt;
 &lt;/section&gt;
 &lt;section id="next-development"&gt;
@@ -715,8 +730,8 @@ following figure:&lt;/p&gt;
 &lt;p&gt;In most cases, Srain has better user experience than previous clients, but
 still has some shortcomings – which will be improved the future.&lt;/p&gt;
 &lt;p&gt;The improvement of use experience is strongly based on user’s feedback.
-If you have any suggestion, please &lt;a class="reference external" href="{{site.project.url}}/issue"&gt;file an issue&lt;/a&gt;
-or &lt;a class="reference external" href="ircs://chat.freenode.net/#srain"&gt;disscuss in channel #srain&lt;/a&gt;.&lt;/p&gt;
+If you have any suggestion, please &lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/new"&gt;file an issue&lt;/a&gt;
+or &lt;a class="reference external" href="ircs://chat.freenode.net/#srain"&gt;disscuss in channel #srain&lt;/a&gt;&lt;/p&gt;
 &lt;/section&gt;
 &lt;section id="plugin-system"&gt;
 &lt;h3&gt;Plugin System&lt;/h3&gt;
@@ -1237,5 +1252,24 @@ thanks to &lt;a class="reference external" href="https://github.com/lgbaldoni"&g
     <link href="https://srain.silverrainz.me/changelog.html#version-1-4-0" rel="alternate"/>
     <summary>Features:</summary>
     <published>2022-05-07T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/blog/migrate-domain.html</id>
+    <title>Migrate domain name to srain.silverrainz.me</title>
+    <updated>2022-06-18T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="migrate-domain-name-to-srain-silverrainz-me"&gt;
+
+&lt;p&gt;Since &lt;a class="reference internal" href="changelog.html#version-0-06"&gt;&lt;span class="std std-ref"&gt;2017-07-29 Version 0.06&lt;/span&gt;&lt;/a&gt;, We use srain.im as domain name of this project, 5 years have passed, I decided to stop renewing for srain.im&lt;/p&gt;
+&lt;p&gt;As you see, the domain name is now migrated to &lt;strong&gt;srain.silverrainz.me&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;Meanwhile, our homepage/blog (&lt;span class="sphinxnotes-strike"&gt;srain.im&lt;/span&gt;) and documentation (&lt;span class="sphinxnotes-strike"&gt;doc.srain.im&lt;/span&gt;) are merged. We now only have a single site (it is srain.silverrainz.me) powered by Sphinx. And we use &lt;a class="reference external" href="https://ablog.readthedocs.io/en/latest/"&gt;ABlog&lt;/a&gt; extension to provide blog function. The &lt;a class="reference external" href="https://github.com/SrainApp/srain.im"&gt;⛺SrainApp/srain.im&lt;/a&gt; repository will be archived.&lt;/p&gt;
+&lt;p&gt;The srain.im TLD expires after &lt;strong&gt;19th June 2022&lt;/strong&gt;, please update your bookmarks as soon as possible, thank you.&lt;/p&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/blog/migrate-domain.html" rel="alternate"/>
+    <summary>Since version-0.06, We use srain.im as domain name of this project, 5 years have passed, I decided to stop renewing for srain.im</summary>
+    <published>2022-06-18T00:00:00+00:00</published>
   </entry>
 </feed>
