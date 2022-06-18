@@ -89,19 +89,16 @@ todo_include_todos = False
 #
 # HTML theme configuration
 html_theme = 'sphinx_book_theme'
+
+# Theme options are theme-specific and customize the look and feel of a theme
+# further.  For a list of options available for each theme, see the
+# documentation.
 html_theme_options = {
         'repository_url': 'https://github.com/SrainApp/srain',
         "use_repository_button": True,
         "use_download_button": False,
         "show_toc_level": 2,
 }
-
-
-# Theme options are theme-specific and customize the look and feel of a theme
-# further.  For a list of options available for each theme, see the
-# documentation.
-#
-# html_theme_options = {}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -110,11 +107,11 @@ html_static_path = ['_static']
 
 html_css_files = []
 
+html_baseurl = baseurl
+
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
 #
-# This is required for the alabaster theme
-# refs: http://alabaster.readthedocs.io/en/latest/installation.html#sidebars
 blog_post_page = [ # Provided by sphinx_book_theme
                   'sidebar-logo.html', 'search-field.html',
                   # Provided by ABlog
