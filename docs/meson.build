@@ -8,7 +8,12 @@ sphinx_build_dir = meson.current_build_dir()
 
 # Build documentation
 foreach b: doc_builders
-  run_command(sphinx, '-b', b, sphinx_source_dir, join_paths(sphinx_build_dir, b))
+  run_command(
+    sphinx,
+    '-b', b,
+    sphinx_source_dir,
+    join_paths(sphinx_build_dir, b),
+    check: true)
 endforeach
 
 # `in` operator requires meson 0.49.0

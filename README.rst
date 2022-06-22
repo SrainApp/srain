@@ -15,7 +15,7 @@ Srain
 
 Modern IRC client written in GTK.
 
-.. image:: https://srain.silverrainz.me/assets/images/cover.png
+.. image:: https://srain.silverrainz.me/_images/main.png
 
 Packaging Status
 ================

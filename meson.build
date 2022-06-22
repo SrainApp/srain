@@ -6,7 +6,7 @@ project(
   'srain', 'c',
   version: '1.4.0',
   license: 'GPL3',
-  meson_version: '>= 0.45.0'
+  meson_version: '>= 0.47.0'
 )
 
 app_id = 'im.srain.Srain'
