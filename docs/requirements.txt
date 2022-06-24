@@ -2,3 +2,6 @@ sphinx-book-theme
 ablog
 sphinxnotes-strike
 sphinxnotes-mock
+sphinx_sitemap
+sphinxcontrib.gtagjs
+sphinxext.opengraph

@@ -220,3 +220,14 @@ html_css_files.append('ablog-custom.css')
 extensions.append('sphinxnotes.mock')
 mock_directives = []
 mock_directives.append('contents') # Theme has built-in local-toc, see html_theme
+
+extensions.append('sphinx_sitemap')
+sitemap_filename = "sitemap.xml"
+sitemap_url_scheme = "{link}"
+
+extensions.append('sphinxcontrib.gtagjs')
+gtagjs_ids = ['G-2DT9E2VM4B']
+
+extensions.append('sphinxext.opengraph')
+ogp_site_url = baseurl
+ogp_site_name = project
