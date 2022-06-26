@@ -226,7 +226,7 @@ sitemap_filename = "sitemap.xml"
 sitemap_url_scheme = "{link}"
 
 extensions.append('sphinxcontrib.gtagjs')
-gtagjs_ids = ['G-2DT9E2VM4B']
+gtagjs_ids = ['G-6DC73T8933']
 
 extensions.append('sphinxext.opengraph')
 ogp_site_url = baseurl
