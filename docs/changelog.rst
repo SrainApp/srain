@@ -33,6 +33,20 @@ Change Log
 
 .. _version-latest:
 
+2022-07-30 Version 1.4.1
+========================
+
+.. post:: 2022-07-30
+   :category: Release
+
+- Changes:
+
+  - New website__, move domain name from ``srain.im`` to ``srain.silverrainz.me``,
+    see :doc:`blog/migrate-domain`
+  - Require mesion >= 0.47.0
+
+__ https://srain.silverrainz.me
+
 .. _version-1.4.0:
 
 2022-05-07 Version 1.4.0
