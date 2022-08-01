@@ -18,7 +18,7 @@ Dependencies
 =================== =================================================== ========
 Name                Notes                                               Version
 =================== =================================================== ========
-meson               Only for Building                                   > 0.45.0
+meson               Only for Building                                   > 0.47.0
 make                Optional, only for development
 appstream           Only for building, on Debian-based distributions
 coreutils           Only for building
