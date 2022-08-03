@@ -1051,14 +1051,14 @@ static void irc_event_ctcp_req(SircSession *sirc, const char *event,
     } else if (strcmp(event, "SOURCE") == 0) {
         sirc_cmd_ctcp_rsp(srv->irc, origin, event, PACKAGE_WEBSITE);
     } else if (strcmp(event, "TIME") == 0) {
-        GTimeVal val;
-        g_get_current_time(&val);
+        GDateTime *val = g_date_time_new_now_local();
         // ISO 8601 is recommend
-        char *time = g_time_val_to_iso8601(&val);
+        char *time = g_date_time_format_iso8601(val);
         if (time){
             sirc_cmd_ctcp_rsp(srv->irc, origin, event, time);
             g_free(time);
         }
+        g_date_time_unref(val);
     } else if (strcmp(event, "VERSION") == 0) {
         sirc_cmd_ctcp_rsp(srv->irc, origin, event,
                 PACKAGE_NAME " " PACKAGE_VERSION "-" PACKAGE_BUILD);
