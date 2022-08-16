@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
   <id>https://srain.silverrainz.me/</id>
   <title>Srain</title>
-  <updated>2022-08-01T11:57:11.268508+00:00</updated>
+  <updated>2022-08-16T16:08:47.938915+00:00</updated>
   <link href="https://srain.silverrainz.me/"/>
   <link href="https://srain.silverrainz.me/blog/atom.xml" rel="self"/>
-  <generator uri="https://ablog.readthedocs.org/" version="0.10.27">ABlog</generator>
+  <generator uri="https://ablog.readthedocs.org/" version="0.10.29">ABlog</generator>
   <entry>
     <id>https://srain.silverrainz.me/changelog.html#version-0-01</id>
     <title>2016-04-07 Version 0.01</title>
