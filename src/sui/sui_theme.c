@@ -151,7 +151,8 @@ static void update_setting(SuiThemeManager *self){
         // Guess if the current theme is dark
         self->dark |= g_strstr_len(lowercase, -1, "dark") != NULL
             || g_strstr_len(lowercase, -1, "nokto") != NULL
-            || g_strstr_len(lowercase, -1, "inverse") != NULL;
+            || g_strstr_len(lowercase, -1, "inverse") != NULL
+            || g_strstr_len(lowercase, -1, "nordic") != NULL;
 
         g_free(lowercase);
         g_free(sys_theme_name);
