@@ -68,6 +68,9 @@
   </content_rating>
 
 <releases>
+  <release version="1.4.1" date="2022-07-30">
+      <url>https://srain.silverrainz.me/changelog.html#version-1-4-1</url>
+  </release>
   <release version="1.4.0" date="2022-05-07">
       <url>https://srain.silverrainz.me/changelog.html#version-1-4-0</url>
   </release>
