@@ -115,7 +115,6 @@ void nick_menu_popup(GtkWidget *widget, GdkEventButton *event, const char *nick)
         g_object_unref(invite_submenu);
     }
 
-    gtk_menu_popup(nick_menu, NULL, NULL, NULL, NULL,
-            event->button, event->time);
+    gtk_menu_popup_at_pointer(nick_menu, (GdkEvent*) event);
     g_object_unref(builder);
 }

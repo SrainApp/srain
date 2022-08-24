@@ -82,8 +82,7 @@ list_box_on_popup(GtkWidget *widget, GdkEventButton *event, gpointer user_data){
         item = SUI_SIDE_BAR_ITEM(gtk_bin_get_child(GTK_BIN(widget)));
         child = g_object_get_data(G_OBJECT(item), "stack-child");
 
-        gtk_menu_popup(sui_buffer_get_menu(child), NULL, NULL, NULL, NULL,
-                event->button, event->time);
+        gtk_menu_popup_at_pointer(sui_buffer_get_menu(child), (GdkEvent *)event);
 
         return TRUE;
     }
