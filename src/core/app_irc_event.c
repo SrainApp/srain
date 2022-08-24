@@ -377,7 +377,7 @@ static void irc_event_welcome(SircSession *sirc, int event,
     // Set your actually nick
     srn_server_rename_user(srv, srv->user, nick);
     // Whether the assigned nick match the requested nick,
-    nick_match = !g_strcasecmp(srv->cfg->user->nick, nick);
+    nick_match = !g_ascii_strcasecmp(srv->cfg->user->nick, nick);
 
     /* Try login */
     try_login = FALSE;
