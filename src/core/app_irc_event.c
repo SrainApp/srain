@@ -933,7 +933,7 @@ static void irc_event_note(SircSession *sirc, const char *event,
     const char *description = params[count-1];
     SrnServer *srv = sirc_get_ctx(sirc);
     SrnChat *chat = srn_server_get_chat(srv, origin);
-    srn_chat_add_misc_message_fmt(srv->chat, context, _("NOTE[%1$s] %2$s: %3$s"), command, code, description);
+    srn_chat_add_misc_message_fmt(chat, context, _("NOTE[%1$s] %2$s: %3$s"), command, code, description);
 }
 
 static void irc_event_channel_notice(SircSession *sirc, const char *event,
