@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
   <id>https://srain.silverrainz.me/</id>
   <title>Srain</title>
-  <updated>2022-08-20T17:07:50.139616+00:00</updated>
+  <updated>2022-09-01T16:12:23.546279+00:00</updated>
   <link href="https://srain.silverrainz.me/"/>
   <link href="https://srain.silverrainz.me/blog/atom.xml" rel="self"/>
   <generator uri="https://ablog.readthedocs.org/" version="0.10.29">ABlog</generator>
@@ -188,8 +188,8 @@ expression, thanks to &amp;#64;zwindl !&lt;/p&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;Configurable log module, more convenient for developing and reporting issue&lt;/p&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;New Return value type, for more friendly error reporting&lt;/p&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;New command &lt;a class="reference internal" href="commands.html#commands-server"&gt;&lt;span class="std std-ref"&gt;/server&lt;/span&gt;&lt;/a&gt; for IRC servers management&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Srain home page is available at: &lt;span class="sphinxnotes-strike"&gt;https://srain.im&lt;/span&gt; (expired, use &lt;a class="reference external" href="https://srain.silverrainz.me"&gt;https://srain.silverrainz.me&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Srain help documentation is available at: &lt;span class="sphinxnotes-strike"&gt;https://doc.srain.im&lt;/span&gt; (expired, use &lt;a class="reference external" href="https://srain.silverrainz.me"&gt;https://srain.silverrainz.me&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Srain home page is available at: &lt;span class="sphinxnotes-strike" style="text-decoration: line-through;"&gt;https://srain.im&lt;/span&gt; (expired, use &lt;a class="reference external" href="https://srain.silverrainz.me"&gt;https://srain.silverrainz.me&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Srain help documentation is available at: &lt;span class="sphinxnotes-strike" style="text-decoration: line-through;"&gt;https://doc.srain.im&lt;/span&gt; (expired, use &lt;a class="reference external" href="https://srain.silverrainz.me"&gt;https://srain.silverrainz.me&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;li&gt;&lt;p&gt;Removed:&lt;/p&gt;
@@ -1264,7 +1264,7 @@ thanks to &lt;a class="reference external" href="https://github.com/lgbaldoni"&g
 
 &lt;p&gt;Since &lt;a class="reference internal" href="changelog.html#version-0-06"&gt;&lt;span class="std std-ref"&gt;2017-07-29 Version 0.06&lt;/span&gt;&lt;/a&gt;, We use srain.im as domain name of this project, 5 years have passed, I decided to stop renewing for srain.im&lt;/p&gt;
 &lt;p&gt;As you see, the domain name is now migrated to &lt;strong&gt;srain.silverrainz.me&lt;/strong&gt;.&lt;/p&gt;
-&lt;p&gt;Meanwhile, our homepage/blog (&lt;span class="sphinxnotes-strike"&gt;srain.im&lt;/span&gt;) and documentation (&lt;span class="sphinxnotes-strike"&gt;doc.srain.im&lt;/span&gt;) are merged. We now only have a single site (it is srain.silverrainz.me) powered by Sphinx. And we use &lt;a class="reference external" href="https://ablog.readthedocs.io/en/latest/"&gt;ABlog&lt;/a&gt; extension to provide blog function. The &lt;a class="reference external" href="https://github.com/SrainApp/srain.im"&gt;⛺SrainApp/srain.im&lt;/a&gt; repository will be archived.&lt;/p&gt;
+&lt;p&gt;Meanwhile, our homepage/blog (&lt;span class="sphinxnotes-strike" style="text-decoration: line-through;"&gt;srain.im&lt;/span&gt;) and documentation (&lt;span class="sphinxnotes-strike" style="text-decoration: line-through;"&gt;doc.srain.im&lt;/span&gt;) are merged. We now only have a single site (it is srain.silverrainz.me) powered by Sphinx. And we use &lt;a class="reference external" href="https://ablog.readthedocs.io/en/latest/"&gt;ABlog&lt;/a&gt; extension to provide blog function. The &lt;a class="reference external" href="https://github.com/SrainApp/srain.im"&gt;⛺SrainApp/srain.im&lt;/a&gt; repository will be archived.&lt;/p&gt;
 &lt;p&gt;The srain.im TLD expires after &lt;strong&gt;19th June 2022&lt;/strong&gt;, please update your bookmarks as soon as possible, thank you.&lt;/p&gt;
 &lt;/section&gt;
 </content>
