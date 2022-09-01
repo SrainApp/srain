@@ -36,8 +36,6 @@ static void finalize(void);
 static SrnRet render(SrnMessage *msg);
 static void text(GMarkupParseContext *context, const gchar *text,
         gsize text_len, gpointer user_data, GError **error);
-static bool on_regex_replace(const GMatchInfo *match_info, GString *result,
-        gpointer user_data);
 
 static SrnMarkupRenderer *markup_renderer;
 

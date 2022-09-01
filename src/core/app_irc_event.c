@@ -377,7 +377,7 @@ static void irc_event_welcome(SircSession *sirc, int event,
     // Set your actually nick
     srn_server_rename_user(srv, srv->user, nick);
     // Whether the assigned nick match the requested nick,
-    nick_match = !g_strcasecmp(srv->cfg->user->nick, nick);
+    nick_match = !g_ascii_strcasecmp(srv->cfg->user->nick, nick);
 
     /* Try login */
     try_login = FALSE;
@@ -933,7 +933,7 @@ static void irc_event_note(SircSession *sirc, const char *event,
     const char *description = params[count-1];
     SrnServer *srv = sirc_get_ctx(sirc);
     SrnChat *chat = srn_server_get_chat(srv, origin);
-    srn_chat_add_misc_message_fmt(srv->chat, context, _("NOTE[%1$s] %2$s: %3$s"), command, code, description);
+    srn_chat_add_misc_message_fmt(chat, context, _("NOTE[%1$s] %2$s: %3$s"), command, code, description);
 }
 
 static void irc_event_channel_notice(SircSession *sirc, const char *event,
@@ -1051,14 +1051,14 @@ static void irc_event_ctcp_req(SircSession *sirc, const char *event,
     } else if (strcmp(event, "SOURCE") == 0) {
         sirc_cmd_ctcp_rsp(srv->irc, origin, event, PACKAGE_WEBSITE);
     } else if (strcmp(event, "TIME") == 0) {
-        GTimeVal val;
-        g_get_current_time(&val);
+        GDateTime *val = g_date_time_new_now_local();
         // ISO 8601 is recommend
-        char *time = g_time_val_to_iso8601(&val);
+        char *time = g_date_time_format_iso8601(val);
         if (time){
             sirc_cmd_ctcp_rsp(srv->irc, origin, event, time);
             g_free(time);
         }
+        g_date_time_unref(val);
     } else if (strcmp(event, "VERSION") == 0) {
         sirc_cmd_ctcp_rsp(srv->irc, origin, event,
                 PACKAGE_NAME " " PACKAGE_VERSION "-" PACKAGE_BUILD);

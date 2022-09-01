@@ -124,7 +124,7 @@ SrnRet srn_filter_attach_pattern(SrnExtraData *extra_data, const char *pattern){
 
     lst = *patterns;
     while (lst) {
-        if (g_strcasecmp(lst->data, pattern) == 0) {
+        if (g_ascii_strcasecmp(lst->data, pattern) == 0) {
             return SRN_ERR;
         }
         lst = g_list_next(lst);
@@ -152,7 +152,7 @@ SrnRet srn_filter_detach_pattern(SrnExtraData *extra_data, const char *pattern){
 
     lst = *patterns;
     while (lst) {
-        if (g_strcasecmp(lst->data, pattern) == 0) {
+        if (g_ascii_strcasecmp(lst->data, pattern) == 0) {
             break;
         }
         lst = g_list_next(lst);

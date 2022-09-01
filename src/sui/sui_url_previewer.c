@@ -90,7 +90,6 @@ static void sui_url_previewer_set_mime_type(SuiUrlPreviewer *self,
         const char *mime_type);
 
 static void cancel_preview(SuiUrlPreviewer *self);
-static void preview_text(SuiUrlPreviewer *self, const char *text);
 static void preview_error_text(SuiUrlPreviewer *self,
         const char *text);
 static void preview_image(SuiUrlPreviewer *self, GdkPixbuf *pixbuf);
@@ -398,12 +397,6 @@ static void cancel_preview(SuiUrlPreviewer *self){
     gtk_stack_set_visible_child_name(self->stack, STACK_PAGE_PRELOAD);
 
     g_cancellable_cancel(self->cancel);
-}
-
-static void preview_text(SuiUrlPreviewer *self, const char *text){
-    self->previewed = TRUE;
-    gtk_stack_set_visible_child_name(self->stack, STACK_PAGE_TEXT);
-    gtk_label_set_text(self->text_label, text);
 }
 
 static void preview_error_text(SuiUrlPreviewer *self,

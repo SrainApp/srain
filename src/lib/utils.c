@@ -53,14 +53,6 @@ unsigned long get_time_since_first_call_ms(void){
     return ret;
 }
 
-time_t get_current_time_s(void){
-    GTimeVal val;
-
-    g_get_current_time(&val);
-
-    return val.tv_sec + val.tv_usec / 1e6;
-}
-
 void time_to_str(time_t time, char *timestr, size_t size, const char *fmt){
     strftime(timestr, size - 1, fmt, localtime(&time));
 
