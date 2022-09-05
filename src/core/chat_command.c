@@ -445,12 +445,20 @@ SrnRet on_command_unfilter(SrnCommand *cmd, void *user_data){
 SrnRet on_command_query(SrnCommand *cmd, void *user_data){
     const char *nick;
     SrnServer *srv;
+    SrnChat *chat;
 
     srv = ctx_get_server(user_data);
     g_return_val_if_fail(srv, SRN_ERR);
 
     nick = srn_command_get_arg(cmd, 0);
     g_return_val_if_fail(nick, SRN_ERR);
+
+    // If chat already exists, activate its buffer.
+    chat = srn_server_add_and_get_chat(srv, nick);
+    if (chat) {
+        sui_activate_buffer(chat->ui);
+        return SRN_OK;
+    }
 
     return srn_server_add_chat(srv, nick);
 }
