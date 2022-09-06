@@ -308,11 +308,19 @@ static SrnRet ui_event_part(SuiBuffer *sui, SuiEvent event, GVariantDict *params
 static SrnRet ui_event_query(SuiBuffer *sui, SuiEvent event, GVariantDict *params){
     const char *nick = NULL;
     SrnServer *srv;
+    SrnChat *chat;
 
     srv = ctx_get_server(sui);
     g_return_val_if_fail(srn_server_is_valid(srv), SRN_ERR);
 
     g_variant_dict_lookup(params, "nick", SUI_EVENT_PARAM_STRING, &nick);
+
+    // If chat already exists, activate its buffer.
+    chat = srn_server_add_and_get_chat(srv, nick);
+    if (chat) {
+        sui_activate_buffer(chat->ui);
+        return SRN_OK;
+    }
 
     return srn_server_add_chat(srv, nick);
 }
