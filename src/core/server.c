@@ -53,6 +53,7 @@ SrnServer* srn_server_new(const char *name, SrnServerConfig *cfg){
     srv->last_action = SRN_SERVER_ACTION_DISCONNECT; // It should be OK
     srv->negotiated = FALSE;
     srv->registered = FALSE;
+    srv->conn_fail_once = FALSE;
 
     srv->cap = srn_server_cap_new();
     srv->cap->srv = srv;
