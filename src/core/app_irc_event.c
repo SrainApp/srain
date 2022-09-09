@@ -223,7 +223,7 @@ static void irc_event_connect_fail(SircSession *sirc, const char *event,
     bool conn_fail_once;
 
     conn_fail_msg = _("Failed to connect to %1$s(%2$s:%3$d): %4$s");
-    reconn_msg = _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs...");
+    reconn_msg = _("Trying to reconnect to %1$s(%2$s:%3$d) after %4$.1lfs...");
 
     g_return_if_fail(count == 1);
     msg = params[0];
@@ -350,7 +350,7 @@ static void irc_event_disconnect(SircSession *sirc, const char *event,
                 srv->name, srv->addr->host, srv->addr->port, msg);
         if (srv->state == SRN_SERVER_STATE_RECONNECTING){
             srn_chat_add_misc_message_fmt(chat, context,
-                    _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
+                    _("Trying to reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
                     srv->name,
                     srv->addr->host,
                     srv->addr->port,
@@ -365,7 +365,7 @@ static void irc_event_disconnect(SircSession *sirc, const char *event,
             srv->name, srv->addr->host, srv->addr->port, msg);
     if (srv->state == SRN_SERVER_STATE_RECONNECTING){
         srn_chat_add_misc_message_fmt(srv->chat, context,
-                _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
+                _("Trying to reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
                 srv->name,
                 srv->addr->host,
                 srv->addr->port,
