@@ -100,9 +100,12 @@ struct _SrnServer {
     /* Status */
     SrnServerState state;
     SrnServerAction last_action;
-    bool negotiated;    // Client capability negotiation has finished
-    bool registered;    // User has a nickname
-    bool loggedin;      // User has identified as a certain account
+    bool negotiated;        // Client capability negotiation has finished
+    bool registered;        // User has a nickname
+    bool loggedin;          // User has identified as a certain account
+    bool conn_fail_once;    // Default be TRUE,
+                            // If the connection failed once, set to TRUE;
+                            // If connection established, set to FALSE.
 
     /* Keep alive */
     unsigned long last_pong;        // Last pong time, in ms

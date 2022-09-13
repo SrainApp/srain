@@ -184,6 +184,7 @@ static void irc_event_connect(SircSession *sirc, const char *event, const SircMe
     srv->registered = FALSE;
     srv->loggedin = FALSE;
     srv->negotiated = FALSE;
+    srv->conn_fail_once = FALSE;
 
     srn_chat_add_misc_message_fmt(srv->chat, context,
             _("Connected to %1$s(%2$s:%3$d)"),
@@ -217,6 +218,12 @@ static void irc_event_connect_fail(SircSession *sirc, const char *event,
     const char *msg;
     SrnRet ret;
     SrnServer *srv;
+    const char *conn_fail_msg;
+    const char *reconn_msg;
+    bool conn_fail_once;
+
+    conn_fail_msg = _("Failed to connect to %1$s(%2$s:%3$d): %4$s");
+    reconn_msg = _("Trying to reconnect to %1$s(%2$s:%3$d) after %4$.1lfs...");
 
     g_return_if_fail(count == 1);
     msg = params[0];
@@ -234,17 +241,22 @@ static void irc_event_connect_fail(SircSession *sirc, const char *event,
         return;
     }
 
+    // Save previous conn_fail_once state for later usage.
+    conn_fail_once = srv->conn_fail_once;
+    // If the connection fails for the first time, filp the state.
+    if (!conn_fail_once) {
+        srv->conn_fail_once = TRUE;
+    }
+
     list = srv->chat_list;
     while (list){
         SrnChat *chat;
 
         chat = list->data;
-        srn_chat_add_misc_message_fmt(chat, context,
-                _("Failed to connect to %1$s(%2$s:%3$d): %4$s"),
+        srn_chat_add_misc_message_fmt(chat, context, conn_fail_msg,
                 srv->name, srv->addr->host, srv->addr->port, msg);
         if (srv->state == SRN_SERVER_STATE_RECONNECTING){
-            srn_chat_add_misc_message_fmt(chat, context,
-                    _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
+            srn_chat_add_misc_message_fmt(chat, context, reconn_msg,
                     srv->name,
                     srv->addr->host,
                     srv->addr->port,
@@ -254,20 +266,29 @@ static void irc_event_connect_fail(SircSession *sirc, const char *event,
         list = g_list_next(list);
     }
 
-    srn_chat_add_error_message_fmt(srv->chat, context,
-            _("Failed to connect to %1$s(%2$s:%3$d): %4$s"),
-            srv->name, srv->addr->host, srv->addr->port, msg);
+    if (!conn_fail_once) {
+        srn_chat_add_error_message_fmt(srv->chat, context, conn_fail_msg,
+                srv->name, srv->addr->host, srv->addr->port, msg);
+    } else {
+        srn_chat_add_misc_message_fmt(srv->chat, context, conn_fail_msg,
+                srv->name, srv->addr->host, srv->addr->port, msg);
+    }
+
     /* If user trying connect to a TLS port via non-TLS connection, it will
      * be reset, give user some hints. */
     if (!srv->cfg->irc->tls
             && (srv->addr->port == 6697 || srv->addr->port == 7000)) {
-        srn_chat_add_error_message_fmt(srv->chat, context,
-                _("It seems that you connect to a TLS port(%1$d) without enable TLS connection, try to enable it and reconnect"),
-                srv->addr->port);
+        const char *tls_hint_msg;
+
+        tls_hint_msg = _("It seems that you connect to a TLS port(%1$d) without enable TLS connection, try to enable it and reconnect");
+        if (!conn_fail_once) {
+            srn_chat_add_error_message_fmt(srv->chat, context, tls_hint_msg, srv->addr->port);
+        } else {
+            srn_chat_add_misc_message_fmt(srv->chat, context, tls_hint_msg, srv->addr->port);
+        }
     }
     if (srv->state == SRN_SERVER_STATE_RECONNECTING){
-        srn_chat_add_misc_message_fmt(srv->chat, context,
-                _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
+        srn_chat_add_misc_message_fmt(srv->chat, context, reconn_msg,
                 srv->name,
                 srv->addr->host,
                 srv->addr->port,
@@ -329,7 +350,7 @@ static void irc_event_disconnect(SircSession *sirc, const char *event,
                 srv->name, srv->addr->host, srv->addr->port, msg);
         if (srv->state == SRN_SERVER_STATE_RECONNECTING){
             srn_chat_add_misc_message_fmt(chat, context,
-                    _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
+                    _("Trying to reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
                     srv->name,
                     srv->addr->host,
                     srv->addr->port,
@@ -344,7 +365,7 @@ static void irc_event_disconnect(SircSession *sirc, const char *event,
             srv->name, srv->addr->host, srv->addr->port, msg);
     if (srv->state == SRN_SERVER_STATE_RECONNECTING){
         srn_chat_add_misc_message_fmt(srv->chat, context,
-                _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
+                _("Trying to reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
                 srv->name,
                 srv->addr->host,
                 srv->addr->port,
