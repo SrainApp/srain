@@ -1766,7 +1766,6 @@ static void irc_event_numeric(SircSession *sirc, int event,
                 msg = params[3];
 
                 srv->loggedin = TRUE;
-                sirc_cmd_cap_end(sirc); // End negotiation
                 srn_chat_add_recv_message(srv->chat, chat_user, msg);
                 break;
             }
@@ -1777,6 +1776,8 @@ static void irc_event_numeric(SircSession *sirc, int event,
                 g_return_if_fail(count >= 2);
                 msg = params[1];
 
+                // See also: https://github.com/SrainApp/srain/issues/371
+                sirc_cmd_cap_end(sirc); // End negotiation
                 srn_chat_add_recv_message(srv->chat, chat_user, msg);
                 break;
             }
