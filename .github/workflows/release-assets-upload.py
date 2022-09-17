@@ -1,6 +1,10 @@
 #!/usr/bin/python3
 # A python script to upload the release assets via the GitHub Release API.
-import sys, os, json, requests, mimetypes
+import json
+import mimetypes
+import os
+import requests
+import sys
 
 # Written for Github actions when release created event is triggered.
 # It must set the env variables in the GitHub actions file:
@@ -8,102 +12,123 @@ import sys, os, json, requests, mimetypes
 #        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 #        GH_REPO: ${{ github.repository }}
 #        GH_REF: ${{ github.ref }}
-GITHUB_TOKEN = os.environ["GH_TOKEN"];
-GITHUB_REPOSITORY = os.environ["GH_REPO"];
-GITHUB_REF = os.environ["GH_REF"];
-GITHUB_TAGNAME = GITHUB_REF.replace(u'refs/tags/','');
+GithubToken = os.environ["GH_TOKEN"]
+GithubRepository = os.environ["GH_REPO"]
+GithubRef = os.environ["GH_REF"]
+GithubTagname = GithubRef.replace(u'refs/tags/','')
 
 # List releases for a repository:
 # https://developer.github.com/v3/repos/releases/#list-releases-for-a-repository
-RELEASES_API = "https://api.github.com/repos/" + GITHUB_REPOSITORY + "/releases";
+releasesAPI = "https://api.github.com/repos/" + GithubRepository + "/releases"
 
-# The path of assets, eg. "out/".
-OUT_FILES_PATH = "out/";
+# The hardcoded path of assets, eg. "out/".
+outputFilePath = "out/"
 
 def get_uploadurl():
-  global UPLOAD_URL;
+  global uploadURL
 
-  print("Releases API: " + RELEASES_API);
+  print("Releases API: " + releasesAPI)
 
   headers = {
-    'Authorization': 'token ' + GITHUB_TOKEN,
-  };
+    'Authorization': 'token ' + GithubToken,
+  }
 
-  response = requests.get(RELEASES_API, headers=headers);
+  response = requests.get(releasesAPI, headers=headers)
 
-  print("debug: " + str(response.status_code));
+  print("API status code: " + str(response.status_code))
 
-  RELEASES = response.json();
-  RELEASES_LEN = len(RELEASES);
+  releases = response.json()
+  releasesLength = len(releases)
 
-  for i in range (0, RELEASES_LEN):
-    if RELEASES[i]["tag_name"] == GITHUB_TAGNAME:
-      RELEASES_NUMBER = i;
-      break;
+  for i in range (0, releasesLength):
+    if releases[i]["tag_name"] == GithubTagname:
+      releasesNumber = i
+      break
 
   try:
-    print("Found the target tagname, " + str(RELEASES_NUMBER));
+    print("Found the target tagname, continue... " + str(releasesNumber))
 
-  except:
-    print("Can't found the target tagname.");
-    sys.exit(1);
+  # In case the tag was deleted before this python script running.
+  except Exception:
+    print("Can't found the target tagname, exit.")
+    sys.exit(1)
 
-  UPLOAD_URL = RELEASES[RELEASES_NUMBER]["upload_url"].replace(u'{?name,label}','');
+  uploadURL = releases[releasesNumber]["upload_url"].split(u"{")[0]
 
-  print("Upload URL: " + UPLOAD_URL);
+  print("Upload URL: " + uploadURL)
 
 def upload_assets():
-  OUT_FILES = os.listdir(OUT_FILES_PATH);
-  OUT_FILES_NUMBER = len(OUT_FILES);
-  print("Assets: " + str(OUT_FILES) + "\nAssets number: " + str(OUT_FILES_NUMBER));
+  outputFiles = os.listdir(outputFilePath)
+  outputFilesNumber = len(outputFiles)
+  print("Assets: " + str(outputFiles) + "\nAssets number: " + str(outputFilesNumber))
 
-  FAILURE_MARK = "0";
+  ifFailure = False;
 
-  for i in range (0, OUT_FILES_NUMBER):
-    FILENAME = OUT_FILES[i];
-    print("Current asset: " + FILENAME);
+  for i in range (0, outputFilesNumber):
+    filename = outputFiles[i]
+    print("Current asset: " + filename)
 
     # Upload a release asset:
     # https://developer.github.com/v3/repos/releases/#upload-a-release-asset
 
-    # `Content-Type` is required, use `mimtypes` to guess the file's mimetype.
-    MIMETYPE = mimetypes.guess_type(OUT_FILES_PATH + FILENAME)[0];
+    # `Content-Type` is required, use `mimetypes` to guess the file's mimetype.
+    mimetype = mimetypes.guess_type(outputFilePath + filename)[0]
 
-    # Use `application/octet-stream` for an unknown file type.
-    if MIMETYPE is None:
-      MIMETYPE = "application/octet-stream";
+    # Use `application/octet-stream` for an unknown filetype.
+    if mimetype is None:
+      mimetype = "application/octet-stream"
 
-    print("Mimetype: " + MIMETYPE);
+    print("Mimetype: " + mimetype)
 
     headers = {
-      'Authorization': 'token ' + GITHUB_TOKEN,
-      'Content-Type': MIMETYPE,
-    };
+      'Authorization': 'token ' + GithubToken,
+      'Content-Type': mimetype,
+    }
 
-    params = (
-      ('name', FILENAME),
-    );
+    params = (('name', filename),)
 
-    data = open(OUT_FILES_PATH + FILENAME, 'rb').read();
+    data = open(outputFilePath + filename, 'rb').read();
 
-    response = requests.post(UPLOAD_URL, headers=headers, params=params, data=data);
+    response = requests.post(uploadURL, headers=headers, params=params, data=data)
 
-    print("debug: " + str(response.status_code) + "\ndebug:\n" + str(response.text));
+    # For debugging.
+    print("API status code: " + str(response.status_code))
+    #print("API response:\n" + str(response.text))
 
     # Response for successful upload: 201 Created
     # https://developer.github.com/v3/repos/releases/#response-for-successful-upload
     if response.status_code == 201:
-      print("\033[1;32;40m" + FILENAME + ": success. " + str(i+1) + "/" + str(OUT_FILES_NUMBER) + "\033[0m");
+      print("Asset download url: " + response.json()["browser_download_url"])
+      print(
+        "\033[1;32;40m["
+        + str(i + 1)
+        + "/"
+        + str(outputFilesNumber)
+        + "]"
+        + filename
+        + ": success. "
+        + "\033[0m"
+      )
 
     else:
-      print("\033[1;31;40m" + FILENAME + ": fail. " + str(i+1) + "/" + str(OUT_FILES_NUMBER) +  "\033[0m");
-      FAILURE_MARK = "1";
+      print(
+        "\033[1;31;40m["
+        + str(i + 1)
+        + "/"
+        + str(outputFilesNumber)
+        + "]"
+        + filename
+        + ": fail. "
+        + "\033[0m"
+      )
+      ifFailure = True
 
-  if FAILURE_MARK == "1":
-    sys.exit(1);
+  if ifFailure == True:
+    sys.exit(1)
 
-  elif FAILURE_MARK == "0":
-    sys.exit(0);
+  elif ifFailure == False:
+    sys.exit(0)
 
-get_uploadurl();
-upload_assets();
+if __name__ == '__main__':
+  get_uploadurl()
+  upload_assets()
