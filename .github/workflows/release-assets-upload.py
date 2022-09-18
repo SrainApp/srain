@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 # A python script to upload the release assets via the GitHub Release API.
-import json
 import mimetypes
 import os
 import requests
