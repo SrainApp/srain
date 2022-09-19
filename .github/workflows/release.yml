@@ -3,21 +3,21 @@ on:
   release:
     types: [created]
 jobs:
-  # debiab-buster:
-  #   runs-on: ubuntu-latest
-  #   container: debian:buster
-  #   env:
-  #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #     GH_REPO: ${{ github.repository }}
-  #     GH_REF: ${{ github.ref }}
-  #   steps:
-  #   - name: upgrade the packages
-  #     run: apt-get update && apt-get upgrade -y && apt-get install -y git
-  #   - uses: actions/checkout@v2
-  #   - name: build
-  #     run: .github/workflows/release-debian-package.sh
-  #   - name: upload the assets
-  #     run: .github/workflows/release-assets-upload.py
+  debian-bullseye:
+    runs-on: ubuntu-latest
+    container: debian:bullseye
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_REPO: ${{ github.repository }}
+      GH_REF: ${{ github.ref }}
+    steps:
+    - name: upgrade the packages
+      run: apt-get update && apt-get upgrade -y && apt-get install -y git
+    - uses: actions/checkout@v2
+    - name: build
+      run: .github/workflows/pack-debian.sh
+    - name: upload the assets
+      run: /usr/bin/python3 .github/workflows/release-assets-upload.py
   mingw64:
     runs-on: windows-latest
     defaults:
