@@ -189,16 +189,16 @@ texinfo_documents = [
 extensions.append('sphinx.ext.extlinks')
 
 extlinks = {
-    'issue': ('https://github.com/SrainApp/srain/issues/%s', '#'),
-    'pull': ('https://github.com/SrainApp/srain/pull/%s', '#'),
-    'commit': ('https://github.com/SrainApp/srain/commit/%s', ''),
+    'issue': ('https://github.com/SrainApp/srain/issues/%s', '#%s'),
+    'pull': ('https://github.com/SrainApp/srain/pull/%s', '#%s'),
+    'commit': ('https://github.com/SrainApp/srain/commit/%s', '%s'),
 
-    'contrib-issue': ('https://github.com/SrainApp/srain-contrib/issues/%s', 'contrib#'),
-    'contrib-pull': ('https://github.com/SrainApp/srain-contrib/pull/%s', 'contrib#'),
-    'contrib-commit': ('https://github.com/SrainApp/srain/commit/%s', ''),
+    'contrib-issue': ('https://github.com/SrainApp/contrib/issues/%s', 'contrib#%s'),
+    'contrib-pull': ('https://github.com/SrainApp/contrib/pull/%s', 'contrib#%s'),
+    'contrib-commit': ('https://github.com/SrainApp/srain/commit/%s', '%s'),
 
-    'people': ('https://github.com/%s', '@'),
-    'ghrepo': ('https://github.com/%s', '⛺'),
+    'people': ('https://github.com/%s', '@%s'),
+    'ghrepo': ('https://github.com/%s', '⛺ %s'),
 }
 
 if CI:
