@@ -14,7 +14,7 @@ Change Log
     YYYY-MM-DD Version X.X.X
     ========================
 
-   .. post:: YYYY-MM-DD
+    .. post:: YYYY-MM-DD
       :category: Release
 
     - Features:
@@ -32,6 +32,35 @@ Change Log
       - XXX
 
 .. _version-latest:
+
+.. _version-1.5.0:
+
+2022-10-02 Version 1.5.0
+========================
+
+.. post:: 2022-10-02
+   :category: Release
+
+- Features:
+
+  - Able to identify `Nordic GTK Theme`__ as dark theme (:pull:`372`)
+  - Activate the corresponding buffer to a response user query (:issue:`381`)
+
+- Changes:
+
+  - No additional sphinx extensions are required to build documentation (:issue:`368`)
+  - Cleanup deprecated APIs (:pull:`369`)
+  - Suppress error message when connection keeps failing (:pull:`386`)
+  - Enable debian release build , thanks to @tomac4t (:issue:`387`)
+
+- Bug fixes:
+
+  - Fix SASL authentication error when connecting to Soju__ (:issue:`371`)
+
+__ https://github.com/EliverLara/Nordic
+__ https://soju.im/
+
+.. _version-1.4.1:
 
 2022-07-30 Version 1.4.1
 ========================
