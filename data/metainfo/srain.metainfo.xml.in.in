@@ -26,15 +26,15 @@
   <screenshots>
     <screenshot type="default">
       <caption>Main User Interface</caption>
-      <image>https://srain.im/assets/images/cover.png</image>
+      <image>https://srain.silverrainz.me/assets/images/cover.png</image>
     </screenshot>
     <screenshot>
       <caption>Login User Interface</caption>
-      <image>https://doc.srain.im/en/latest/_images/srain-startup.png</image>
+      <image>https://srain.silverrainz.me/en/latest/_images/srain-startup.png</image>
     </screenshot>
     <screenshot>
       <caption>Search Channel</caption>
-      <image>https://doc.srain.im/en/latest/_images/srain-search-channel.png</image>
+      <image>https://srain.silverrainz.me/en/latest/_images/srain-search-channel.png</image>
     </screenshot>
   </screenshots>
 
@@ -69,37 +69,37 @@
 
 <releases>
   <release version="1.3.2" date="2022-02-10">
-      <url>https://doc.srain.im/en/latest/changelog.html#version-1-3-2</url>
+      <url>https://srain.silverrainz.me/en/latest/changelog.html#version-1-3-2</url>
   </release>
   <release version="1.3.1" date="2021-12-18">
-      <url>https://doc.srain.im/en/latest/changelog.html#version-1-3-1</url>
+      <url>https://srain.silverrainz.me/en/latest/changelog.html#version-1-3-1</url>
   </release>
   <release version="1.3" date="2021-09-21">
-      <url>https://doc.srain.im/en/latest/changelog.html#version-1-3-0</url>
+      <url>https://srain.silverrainz.me/en/latest/changelog.html#version-1-3-0</url>
   </release>
   <release version="1.2.4" date="2021-07-18">
-      <url>https://doc.srain.im/en/latest/changelog.html#version-1-2-4</url>
+      <url>https://srain.silverrainz.me/en/latest/changelog.html#version-1-2-4</url>
   </release>
   <release version="1.2.0" date="2021-02-28">
-      <url>https://doc.srain.im/en/latest/changelog.html#version-1-2-0</url>
+      <url>https://srain.silverrainz.me/en/latest/changelog.html#version-1-2-0</url>
   </release>
   <release version="1.1.2" date="2020-08-10">
-      <url>https://doc.srain.im/en/latest/changelog.html#version-1-1-2</url>
+      <url>https://srain.silverrainz.me/en/latest/changelog.html#version-1-1-2</url>
   </release>
   <release version="1.1.1" date="2020-06-27">
-      <url>https://doc.srain.im/en/latest/changelog.html#version-1-1-1</url>
+      <url>https://srain.silverrainz.me/en/latest/changelog.html#version-1-1-1</url>
   </release>
   <release version="1.1.0" date="2020-05-24">
-      <url>https://doc.srain.im/en/latest/changelog.html#version-1-1-0</url>
+      <url>https://srain.silverrainz.me/en/latest/changelog.html#version-1-1-0</url>
   </release>
   <release version="1.0.2" date="2020-04-11">
-      <url>https://doc.srain.im/en/latest/changelog.html#version-1-0-2</url>
+      <url>https://srain.silverrainz.me/en/latest/changelog.html#version-1-0-2</url>
   </release>
   <release version="1.0.1" date="2020-03-14">
-      <url>https://doc.srain.im/en/latest/changelog.html#version-1-0-1</url>
+      <url>https://srain.silverrainz.me/en/latest/changelog.html#version-1-0-1</url>
   </release>
   <release version="1.0.0" date="2020-02-24">
-      <url>https://doc.srain.im/en/latest/changelog.html#version-1-0-0</url>
+      <url>https://srain.silverrainz.me/en/latest/changelog.html#version-1-0-0</url>
   </release>
 </releases>
 </component>

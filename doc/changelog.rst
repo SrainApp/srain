@@ -507,8 +507,8 @@ Change Log
   - Configurable log module, more convenient for developing and reporting issue
   - New Return value type, for more friendly error reporting
   - New command :ref:`commands-server` for IRC servers management
-  - Srain home page is available at: https://srain.im
-  - Srain help documentation is available at: https://doc.srain.im
+  - Srain home page is available at: https://srain.silverrainz.me
+  - Srain help documentation is available at: https://srain.silverrainz.me
 
 - Removed:
 
