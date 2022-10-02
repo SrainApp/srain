@@ -24,9 +24,9 @@
   
 <meta property="og:site_name" content="Srain" />
   
-<meta property="og:description" content="2022-07-30 Version 1.4.1: Changes:- New website, move domain name from srain.im to srain.silverrainz.me, see Migrate domain name to srain.silverrainz.me, Require mesion >= 0.47.0.. 2022-05-07 Versi..." />
+<meta property="og:description" content="2022-10-02 Version 1.5.0: Features:- Able to identify Nordic GTK Theme as dark theme (#372), Activate the corresponding buffer to a response user query (#381)., Changes:- No additional sphinx exten..." />
   
-    <title>Change Log &#8212; Srain 1.4.1 documentation</title>
+    <title>Change Log &#8212; Srain 1.5.0 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -133,7 +133,7 @@
       <img src="_static/im.srain.Srain.png" class="logo" alt="logo">
       
       
-      <h1 class="site-logo" id="site-title">Srain 1.4.1 documentation</h1>
+      <h1 class="site-logo" id="site-title">Srain 1.5.0 documentation</h1>
       
     </a>
 </div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
@@ -169,7 +169,7 @@
   </li>
     
   <li>
-    <a href="blog/category/release.html">Release (34)</a>
+    <a href="blog/category/release.html">Release (37)</a>
   </li>
    
 </ul>
@@ -180,7 +180,7 @@
 <ul>
    
   <li>
-    <a href="blog/2022.html">2022 (4)</a>
+    <a href="blog/2022.html">2022 (7)</a>
   </li>
     
   <li>
@@ -304,6 +304,21 @@ title="Source repository"
     </div>
     <nav id="bd-toc-nav" aria-label="Page">
         <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-5-0">
+   2022-10-02 Version 1.5.0
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-4-2">
+   2022-10-02 Version 1.4.2
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-3-3">
+   2022-10-02 Version 1.3.3
+  </a>
+ </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#version-1-4-1">
    2022-07-30 Version 1.4.1
@@ -494,6 +509,21 @@ title="Source repository"
                         <nav aria-label="Page">
                             <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-5-0">
+   2022-10-02 Version 1.5.0
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-4-2">
+   2022-10-02 Version 1.4.2
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-1-3-3">
+   2022-10-02 Version 1.3.3
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#version-1-4-1">
    2022-07-30 Version 1.4.1
   </a>
@@ -674,8 +704,45 @@ title="Source repository"
               <div>
                  <section id="change-log">
 <h1>Change Log<a class="headerlink" href="#change-log" title="Permalink to this headline">#</a></h1>
+<section id="version-1-5-0">
+<span id="version-latest"></span><span id="id1"></span><h2>2022-10-02 Version 1.5.0<a class="headerlink" href="#version-1-5-0" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Features:</p>
+<ul>
+<li><p>Able to identify <a class="reference external" href="https://github.com/EliverLara/Nordic">Nordic GTK Theme</a> as dark theme (<a class="reference external" href="https://github.com/SrainApp/srain/pull/372">#372</a>)</p></li>
+<li><p>Activate the corresponding buffer to a response user query (<a class="reference external" href="https://github.com/SrainApp/srain/issues/381">#381</a>)</p></li>
+</ul>
+</li>
+<li><p>Changes:</p>
+<ul>
+<li><p>No additional sphinx extensions are required to build documentation (<a class="reference external" href="https://github.com/SrainApp/srain/issues/368">#368</a>)</p></li>
+<li><p>Cleanup deprecated APIs (<a class="reference external" href="https://github.com/SrainApp/srain/pull/369">#369</a>)</p></li>
+<li><p>Suppress error message when connection keeps failing (<a class="reference external" href="https://github.com/SrainApp/srain/pull/386">#386</a>)</p></li>
+<li><p>Enable debian release build , thanks to &#64;tomac4t (<a class="reference external" href="https://github.com/SrainApp/srain/issues/387">#387</a>)</p></li>
+</ul>
+</li>
+<li><p>Bug fixes:</p>
+<ul>
+<li><p>Fix SASL authentication error when connecting to <a class="reference external" href="https://soju.im/">Soju</a> (<a class="reference external" href="https://github.com/SrainApp/srain/issues/371">#371</a>)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="version-1-4-2">
+<span id="id4"></span><h2>2022-10-02 Version 1.4.2<a class="headerlink" href="#version-1-4-2" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Backport <a class="reference external" href="https://github.com/SrainApp/srain/issues/371">#371</a></p></li>
+</ul>
+</section>
+<section id="version-1-3-3">
+<span id="id5"></span><h2>2022-10-02 Version 1.3.3<a class="headerlink" href="#version-1-3-3" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Backport domain name change, see <a class="reference internal" href="#version-1-4-0"><span class="std std-ref">2022-05-07 Version 1.4.0</span></a></p></li>
+<li><p>Backport <a class="reference external" href="https://github.com/SrainApp/srain/issues/371">#371</a></p></li>
+</ul>
+</section>
 <section id="version-1-4-1">
-<span id="version-latest"></span><h2>2022-07-30 Version 1.4.1<a class="headerlink" href="#version-1-4-1" title="Permalink to this headline">#</a></h2>
+<span id="id6"></span><h2>2022-07-30 Version 1.4.1<a class="headerlink" href="#version-1-4-1" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
 <li><p>Changes:</p>
 <ul>
@@ -687,7 +754,7 @@ see <a class="reference internal" href="blog/migrate-domain.html"><span class="d
 </ul>
 </section>
 <section id="version-1-4-0">
-<span id="id2"></span><h2>2022-05-07 Version 1.4.0<a class="headerlink" href="#version-1-4-0" title="Permalink to this headline">#</a></h2>
+<span id="id8"></span><h2>2022-05-07 Version 1.4.0<a class="headerlink" href="#version-1-4-0" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
 <li><p>Features:</p>
 <ul>
@@ -714,7 +781,7 @@ see <a class="reference internal" href="blog/migrate-domain.html"><span class="d
 </ul>
 </section>
 <section id="version-1-3-2">
-<span id="id3"></span><h2>2022-02-10 Version 1.3.2<a class="headerlink" href="#version-1-3-2" title="Permalink to this headline">#</a></h2>
+<span id="id9"></span><h2>2022-02-10 Version 1.3.2<a class="headerlink" href="#version-1-3-2" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
 <li><p>Features:</p>
 <ul>
@@ -736,7 +803,7 @@ see <a class="reference internal" href="blog/migrate-domain.html"><span class="d
 </ul>
 </section>
 <section id="version-1-3-1">
-<span id="id4"></span><h2>2021-12-18 Version 1.3.1<a class="headerlink" href="#version-1-3-1" title="Permalink to this headline">#</a></h2>
+<span id="id10"></span><h2>2021-12-18 Version 1.3.1<a class="headerlink" href="#version-1-3-1" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
 <li><p>Bug fixes:</p>
 <ul>
@@ -748,7 +815,7 @@ see <a class="reference internal" href="blog/migrate-domain.html"><span class="d
 </ul>
 </section>
 <section id="version-1-2-5">
-<span id="id5"></span><h2>2021-12-18 Version 1.2.5<a class="headerlink" href="#version-1-2-5" title="Permalink to this headline">#</a></h2>
+<span id="id11"></span><h2>2021-12-18 Version 1.2.5<a class="headerlink" href="#version-1-2-5" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
 <li><p>Bug fixes:</p>
 <ul>
@@ -776,7 +843,7 @@ see <a class="reference internal" href="blog/migrate-domain.html"><span class="d
 </ul>
 </section>
 <section id="version-1-2-4">
-<span id="id6"></span><h2>2021-07-18 Version 1.2.4<a class="headerlink" href="#version-1-2-4" title="Permalink to this headline">#</a></h2>
+<span id="id12"></span><h2>2021-07-18 Version 1.2.4<a class="headerlink" href="#version-1-2-4" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
 <li><p>Bug fixes:</p>
 <ul>
@@ -787,7 +854,7 @@ see <a class="reference internal" href="blog/migrate-domain.html"><span class="d
 </ul>
 </section>
 <section id="version-1-2-3">
-<span id="id7"></span><h2>2021-06-26 Version 1.2.3<a class="headerlink" href="#version-1-2-3" title="Permalink to this headline">#</a></h2>
+<span id="id13"></span><h2>2021-06-26 Version 1.2.3<a class="headerlink" href="#version-1-2-3" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
 <li><p>Bug fixes:</p>
 <ul>
@@ -797,7 +864,7 @@ see <a class="reference internal" href="blog/migrate-domain.html"><span class="d
 </ul>
 </section>
 <section id="version-1-2-2">
-<span id="id8"></span><h2>2021-05-30 Version 1.2.2<a class="headerlink" href="#version-1-2-2" title="Permalink to this headline">#</a></h2>
+<span id="id14"></span><h2>2021-05-30 Version 1.2.2<a class="headerlink" href="#version-1-2-2" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
 <li><p>Changed:</p>
 <ul>
@@ -813,7 +880,7 @@ see <a class="reference internal" href="blog/migrate-domain.html"><span class="d
 </ul>
 </section>
 <section id="version-1-2-1">
-<span id="id9"></span><h2>2021-04-02 Version 1.2.1<a class="headerlink" href="#version-1-2-1" title="Permalink to this headline">#</a></h2>
+<span id="id15"></span><h2>2021-04-02 Version 1.2.1<a class="headerlink" href="#version-1-2-1" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
 <li><p>Features:</p>
 <ul>
@@ -828,7 +895,7 @@ see <a class="reference internal" href="blog/migrate-domain.html"><span class="d
 </ul>
 </section>
 <section id="version-1-2-0">
-<span id="id10"></span><h2>2021-02-28 Version 1.2.0<a class="headerlink" href="#version-1-2-0" title="Permalink to this headline">#</a></h2>
+<span id="id16"></span><h2>2021-02-28 Version 1.2.0<a class="headerlink" href="#version-1-2-0" title="Permalink to this headline">#</a></h2>
 <ul>
 <li><p>Features:</p>
 <ul class="simple">
@@ -852,7 +919,7 @@ thanks to <a class="reference external" href="https://github.com/lgbaldoni">&#64
 </ul>
 </section>
 <section id="version-1-1-3">
-<span id="id11"></span><h2>2020-10-01 Version 1.1.3<a class="headerlink" href="#version-1-1-3" title="Permalink to this headline">#</a></h2>
+<span id="id17"></span><h2>2020-10-01 Version 1.1.3<a class="headerlink" href="#version-1-1-3" title="Permalink to this headline">#</a></h2>
 <ul>
 <li><p>Bug fixes:</p>
 <blockquote>
@@ -864,7 +931,7 @@ thanks to <a class="reference external" href="https://github.com/lgbaldoni">&#64
 </ul>
 </section>
 <section id="version-1-1-2">
-<span id="id12"></span><h2>2020-08-10 Version 1.1.2<a class="headerlink" href="#version-1-1-2" title="Permalink to this headline">#</a></h2>
+<span id="id18"></span><h2>2020-08-10 Version 1.1.2<a class="headerlink" href="#version-1-1-2" title="Permalink to this headline">#</a></h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This release contains only improvement for MS Windows,
@@ -888,7 +955,7 @@ search paths of {configuration,data} file. Thanks to <a class="reference externa
 </ul>
 </section>
 <section id="version-1-1-1">
-<span id="id13"></span><h2>2020-06-27 Version 1.1.1<a class="headerlink" href="#version-1-1-1" title="Permalink to this headline">#</a></h2>
+<span id="id19"></span><h2>2020-06-27 Version 1.1.1<a class="headerlink" href="#version-1-1-1" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
 <li><p>Changes:</p>
 <ul>
@@ -904,7 +971,7 @@ search paths of {configuration,data} file. Thanks to <a class="reference externa
 </ul>
 </section>
 <section id="version-1-1-0">
-<span id="id14"></span><h2>2020-05-24 Version 1.1.0<a class="headerlink" href="#version-1-1-0" title="Permalink to this headline">#</a></h2>
+<span id="id20"></span><h2>2020-05-24 Version 1.1.0<a class="headerlink" href="#version-1-1-0" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
 <li><p>Features:</p>
 <ul>
@@ -930,7 +997,7 @@ search paths of {configuration,data} file. Thanks to <a class="reference externa
 </ul>
 </section>
 <section id="version-1-0-2">
-<span id="id15"></span><h2>2020-04-11 Version 1.0.2<a class="headerlink" href="#version-1-0-2" title="Permalink to this headline">#</a></h2>
+<span id="id21"></span><h2>2020-04-11 Version 1.0.2<a class="headerlink" href="#version-1-0-2" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
 <li><p>Features:</p>
 <ul>
@@ -959,7 +1026,7 @@ search paths of {configuration,data} file. Thanks to <a class="reference externa
 </ul>
 </section>
 <section id="version-1-0-1">
-<span id="id16"></span><h2>2020-03-14 Version 1.0.1<a class="headerlink" href="#version-1-0-1" title="Permalink to this headline">#</a></h2>
+<span id="id22"></span><h2>2020-03-14 Version 1.0.1<a class="headerlink" href="#version-1-0-1" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
 <li><p>Features:</p>
 <ul>
@@ -967,7 +1034,7 @@ search paths of {configuration,data} file. Thanks to <a class="reference externa
 <li><p>Add hackint IRC network (<a class="reference external" href="https://github.com/SrainApp/srain/pull/201">#201</a>), thanks to <a class="reference external" href="https://github.com/kpcyrd">&#64;kpcyrd</a></p></li>
 <li><p>Add Dutch translation (<a class="reference external" href="https://github.com/SrainApp/srain/pull/215">#215</a>), thanks to <a class="reference external" href="https://github.com/Vistaus">&#64;Vistaus</a></p></li>
 <li><p>Add two FAQs to documentation (<a class="reference external" href="https://github.com/SrainApp/srain/pull/217">#217</a>)</p></li>
-<li><p>Add debian pack script (<a class="reference external" href="https://github.com/SrainApp/srain-contrib/pull/1">contrib#1</a>), thanks to <a class="reference external" href="https://github.com/tomac4t">&#64;tomac4t</a>.
+<li><p>Add debian pack script (<a class="reference external" href="https://github.com/SrainApp/contrib/pull/1">contrib#1</a>), thanks to <a class="reference external" href="https://github.com/tomac4t">&#64;tomac4t</a>.
 Please refer to <a class="reference internal" href="install.html#install-packages-debian"><span class="std std-ref">Debian</span></a> to build a deb package</p></li>
 </ul>
 </li>
@@ -990,7 +1057,7 @@ thanks to <a class="reference external" href="https://github.com/avoidr">&#64;av
 </ul>
 </section>
 <section id="version-1-0-0">
-<span id="id17"></span><h2>2020-02-24 Version 1.0.0<a class="headerlink" href="#version-1-0-0" title="Permalink to this headline">#</a></h2>
+<span id="id23"></span><h2>2020-02-24 Version 1.0.0<a class="headerlink" href="#version-1-0-0" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
 <li><p>Changes:</p>
 <ul>
@@ -1011,7 +1078,7 @@ thanks to <a class="reference external" href="https://github.com/avoidr">&#64;av
 </div>
 </section>
 <section id="version-1-0-0rc9999">
-<span id="id18"></span><h2>2019-10-07 Version 1.0.0rc9999<a class="headerlink" href="#version-1-0-0rc9999" title="Permalink to this headline">#</a></h2>
+<span id="id24"></span><h2>2019-10-07 Version 1.0.0rc9999<a class="headerlink" href="#version-1-0-0rc9999" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
 <li><p>Features:</p>
 <ul>
@@ -1038,7 +1105,7 @@ thanks to <a class="reference external" href="https://github.com/avoidr">&#64;av
 </ul>
 </section>
 <section id="version-1-0-0rc5">
-<span id="id19"></span><h2>2019-06-14 Version 1.0.0rc5<a class="headerlink" href="#version-1-0-0rc5" title="Permalink to this headline">#</a></h2>
+<span id="id25"></span><h2>2019-06-14 Version 1.0.0rc5<a class="headerlink" href="#version-1-0-0rc5" title="Permalink to this headline">#</a></h2>
 <ul>
 <li><p>Added:</p>
 <blockquote>
@@ -1069,7 +1136,7 @@ thanks to <a class="reference external" href="https://github.com/avoidr">&#64;av
 </ul>
 </section>
 <section id="version-1-0-0rc4">
-<span id="id20"></span><h2>2019-05-13 Version 1.0.0rc4<a class="headerlink" href="#version-1-0-0rc4" title="Permalink to this headline">#</a></h2>
+<span id="id26"></span><h2>2019-05-13 Version 1.0.0rc4<a class="headerlink" href="#version-1-0-0rc4" title="Permalink to this headline">#</a></h2>
 <ul>
 <li><p>Added:</p>
 <blockquote>
@@ -1097,16 +1164,16 @@ automatically connect to servers</p></li>
 </ul>
 </section>
 <section id="version-1-0-0rc3">
-<span id="id21"></span><h2>2019-04-14 Version 1.0.0rc3<a class="headerlink" href="#version-1-0-0rc3" title="Permalink to this headline">#</a></h2>
+<span id="id27"></span><h2>2019-04-14 Version 1.0.0rc3<a class="headerlink" href="#version-1-0-0rc3" title="Permalink to this headline">#</a></h2>
 </section>
 <section id="version-1-0-0rc2">
-<span id="id22"></span><h2>2019-01-24 Version 1.0.0rc2<a class="headerlink" href="#version-1-0-0rc2" title="Permalink to this headline">#</a></h2>
+<span id="id28"></span><h2>2019-01-24 Version 1.0.0rc2<a class="headerlink" href="#version-1-0-0rc2" title="Permalink to this headline">#</a></h2>
 </section>
 <section id="version-1-0-0rc1">
-<span id="id23"></span><h2>2018-09-10 Version 1.0.0rc1<a class="headerlink" href="#version-1-0-0rc1" title="Permalink to this headline">#</a></h2>
+<span id="id29"></span><h2>2018-09-10 Version 1.0.0rc1<a class="headerlink" href="#version-1-0-0rc1" title="Permalink to this headline">#</a></h2>
 </section>
 <section id="version-0-06-4">
-<span id="id24"></span><h2>2018-02-28 Version 0.06.4<a class="headerlink" href="#version-0-06-4" title="Permalink to this headline">#</a></h2>
+<span id="id30"></span><h2>2018-02-28 Version 0.06.4<a class="headerlink" href="#version-0-06-4" title="Permalink to this headline">#</a></h2>
 <ul>
 <li><p>Changed:</p>
 <ul class="simple">
@@ -1189,7 +1256,7 @@ is still supported</p></li>
 </ul>
 </section>
 <section id="version-0-06-2">
-<span id="id25"></span><h2>2017-09-12 Version 0.06.2<a class="headerlink" href="#version-0-06-2" title="Permalink to this headline">#</a></h2>
+<span id="id31"></span><h2>2017-09-12 Version 0.06.2<a class="headerlink" href="#version-0-06-2" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
 <li><p>Added:</p>
 <ul>
@@ -1236,7 +1303,7 @@ then try to connect again. If it still fails, waiting time will increase by
 </ul>
 </section>
 <section id="version-0-06">
-<span id="id26"></span><h2>2017-07-29 Version 0.06<a class="headerlink" href="#version-0-06" title="Permalink to this headline">#</a></h2>
+<span id="id32"></span><h2>2017-07-29 Version 0.06<a class="headerlink" href="#version-0-06" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
 <li><p>Changed:</p>
 <ul>

@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
   <id>https://srain.silverrainz.me/</id>
   <title>Srain</title>
-  <updated>2022-09-19T12:00:28.850227+00:00</updated>
+  <updated>2022-10-02T14:08:17.886691+00:00</updated>
   <link href="https://srain.silverrainz.me/"/>
   <link href="https://srain.silverrainz.me/blog/atom.xml" rel="self"/>
   <generator uri="https://ablog.readthedocs.org/" version="0.10.29">ABlog</generator>
@@ -165,7 +165,7 @@ it also has some undetected bugs.&lt;/p&gt;
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-0-06"&gt;
-&lt;span id="id26"&gt;&lt;/span&gt;
+&lt;span id="id32"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Changed:&lt;/p&gt;
 &lt;ul&gt;
@@ -261,7 +261,7 @@ then try to connect again. If it still fails, waiting time will increase by
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-0-06-2"&gt;
-&lt;span id="id25"&gt;&lt;/span&gt;
+&lt;span id="id31"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Added:&lt;/p&gt;
 &lt;ul&gt;
@@ -339,7 +339,7 @@ is still supported&lt;/p&gt;&lt;/li&gt;
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-0-06-4"&gt;
-&lt;span id="id24"&gt;&lt;/span&gt;
+&lt;span id="id30"&gt;&lt;/span&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;p&gt;Changed:&lt;/p&gt;
 &lt;ul class="simple"&gt;
@@ -402,7 +402,7 @@ subcommand&lt;/p&gt;&lt;/li&gt;
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-0-0rc1"&gt;
-&lt;span id="id23"&gt;&lt;/span&gt;
+&lt;span id="id29"&gt;&lt;/span&gt;
 &lt;/section&gt;
 </content>
     <link href="https://srain.silverrainz.me/changelog.html#version-1-0-0rc1" rel="alternate"/>
@@ -416,7 +416,7 @@ subcommand&lt;/p&gt;&lt;/li&gt;
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-0-0rc2"&gt;
-&lt;span id="id22"&gt;&lt;/span&gt;
+&lt;span id="id28"&gt;&lt;/span&gt;
 &lt;/section&gt;
 </content>
     <link href="https://srain.silverrainz.me/changelog.html#version-1-0-0rc2" rel="alternate"/>
@@ -430,7 +430,7 @@ subcommand&lt;/p&gt;&lt;/li&gt;
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-0-0rc3"&gt;
-&lt;span id="id21"&gt;&lt;/span&gt;
+&lt;span id="id27"&gt;&lt;/span&gt;
 &lt;/section&gt;
 </content>
     <link href="https://srain.silverrainz.me/changelog.html#version-1-0-0rc3" rel="alternate"/>
@@ -444,7 +444,7 @@ subcommand&lt;/p&gt;&lt;/li&gt;
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-0-0rc4"&gt;
-&lt;span id="id20"&gt;&lt;/span&gt;
+&lt;span id="id26"&gt;&lt;/span&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;p&gt;Added:&lt;/p&gt;
 &lt;blockquote&gt;
@@ -484,7 +484,7 @@ automatically connect to servers&lt;/p&gt;&lt;/li&gt;
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-0-0rc5"&gt;
-&lt;span id="id19"&gt;&lt;/span&gt;
+&lt;span id="id25"&gt;&lt;/span&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;p&gt;Added:&lt;/p&gt;
 &lt;blockquote&gt;
@@ -527,7 +527,7 @@ automatically connect to servers&lt;/p&gt;&lt;/li&gt;
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-0-0rc9999"&gt;
-&lt;span id="id18"&gt;&lt;/span&gt;
+&lt;span id="id24"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Features:&lt;/p&gt;
 &lt;ul&gt;
@@ -566,7 +566,7 @@ automatically connect to servers&lt;/p&gt;&lt;/li&gt;
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-0-0"&gt;
-&lt;span id="id17"&gt;&lt;/span&gt;
+&lt;span id="id23"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Changes:&lt;/p&gt;
 &lt;ul&gt;
@@ -618,7 +618,7 @@ chatting is always good.&lt;/p&gt;
 &lt;figure class="align-default" id="id10"&gt;
 &lt;img alt="_images/cover.png" src="_images/cover.png" /&gt;
 &lt;figcaption&gt;
-&lt;p&gt;&lt;span class="caption-text"&gt;&lt;a class="reference external" href="https://github.com/SrainApp/srain"&gt;⛺SrainApp/srain&lt;/a&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span class="caption-text"&gt;&lt;a class="reference external" href="https://github.com/SrainApp/srain"&gt;⛺ SrainApp/srain&lt;/a&gt;&lt;/span&gt;&lt;/p&gt;
 &lt;/figcaption&gt;
 &lt;/figure&gt;
 &lt;section id="free-and-cross-platform"&gt;
@@ -765,7 +765,7 @@ you can find contact details on &lt;a class="reference external" href="https://s
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-0-1"&gt;
-&lt;span id="id16"&gt;&lt;/span&gt;
+&lt;span id="id22"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Features:&lt;/p&gt;
 &lt;ul&gt;
@@ -773,7 +773,7 @@ you can find contact details on &lt;a class="reference external" href="https://s
 &lt;li&gt;&lt;p&gt;Add hackint IRC network (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/201"&gt;#201&lt;/a&gt;), thanks to &lt;a class="reference external" href="https://github.com/kpcyrd"&gt;&amp;#64;kpcyrd&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;Add Dutch translation (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/215"&gt;#215&lt;/a&gt;), thanks to &lt;a class="reference external" href="https://github.com/Vistaus"&gt;&amp;#64;Vistaus&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;Add two FAQs to documentation (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/217"&gt;#217&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Add debian pack script (&lt;a class="reference external" href="https://github.com/SrainApp/srain-contrib/pull/1"&gt;contrib#1&lt;/a&gt;), thanks to &lt;a class="reference external" href="https://github.com/tomac4t"&gt;&amp;#64;tomac4t&lt;/a&gt;.
+&lt;li&gt;&lt;p&gt;Add debian pack script (&lt;a class="reference external" href="https://github.com/SrainApp/contrib/pull/1"&gt;contrib#1&lt;/a&gt;), thanks to &lt;a class="reference external" href="https://github.com/tomac4t"&gt;&amp;#64;tomac4t&lt;/a&gt;.
 Please refer to &lt;a class="reference internal" href="install.html#install-packages-debian"&gt;&lt;span class="std std-ref"&gt;Debian&lt;/span&gt;&lt;/a&gt; to build a deb package&lt;/p&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
@@ -808,7 +808,7 @@ thanks to &lt;a class="reference external" href="https://github.com/avoidr"&gt;&
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-0-2"&gt;
-&lt;span id="id15"&gt;&lt;/span&gt;
+&lt;span id="id21"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Features:&lt;/p&gt;
 &lt;ul&gt;
@@ -849,7 +849,7 @@ thanks to &lt;a class="reference external" href="https://github.com/avoidr"&gt;&
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-1-0"&gt;
-&lt;span id="id14"&gt;&lt;/span&gt;
+&lt;span id="id20"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Features:&lt;/p&gt;
 &lt;ul&gt;
@@ -887,7 +887,7 @@ thanks to &lt;a class="reference external" href="https://github.com/avoidr"&gt;&
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-1-1"&gt;
-&lt;span id="id13"&gt;&lt;/span&gt;
+&lt;span id="id19"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Changes:&lt;/p&gt;
 &lt;ul&gt;
@@ -915,7 +915,7 @@ thanks to &lt;a class="reference external" href="https://github.com/avoidr"&gt;&
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-1-2"&gt;
-&lt;span id="id12"&gt;&lt;/span&gt;
+&lt;span id="id18"&gt;&lt;/span&gt;
 &lt;div class="admonition note"&gt;
 &lt;p class="admonition-title"&gt;Note&lt;/p&gt;
 &lt;p&gt;This release contains only improvement for MS Windows,
@@ -952,7 +952,7 @@ user of other platform can ignore it.</summary>
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-1-3"&gt;
-&lt;span id="id11"&gt;&lt;/span&gt;
+&lt;span id="id17"&gt;&lt;/span&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
 &lt;blockquote&gt;
@@ -976,7 +976,7 @@ user of other platform can ignore it.</summary>
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-2-0"&gt;
-&lt;span id="id10"&gt;&lt;/span&gt;
+&lt;span id="id16"&gt;&lt;/span&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;p&gt;Features:&lt;/p&gt;
 &lt;ul class="simple"&gt;
@@ -1012,7 +1012,7 @@ thanks to &lt;a class="reference external" href="https://github.com/lgbaldoni"&g
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-2-1"&gt;
-&lt;span id="id9"&gt;&lt;/span&gt;
+&lt;span id="id15"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Features:&lt;/p&gt;
 &lt;ul&gt;
@@ -1039,7 +1039,7 @@ thanks to &lt;a class="reference external" href="https://github.com/lgbaldoni"&g
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-2-2"&gt;
-&lt;span id="id8"&gt;&lt;/span&gt;
+&lt;span id="id14"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Changed:&lt;/p&gt;
 &lt;ul&gt;
@@ -1067,7 +1067,7 @@ thanks to &lt;a class="reference external" href="https://github.com/lgbaldoni"&g
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-2-3"&gt;
-&lt;span id="id7"&gt;&lt;/span&gt;
+&lt;span id="id13"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
 &lt;ul&gt;
@@ -1089,7 +1089,7 @@ thanks to &lt;a class="reference external" href="https://github.com/lgbaldoni"&g
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-2-4"&gt;
-&lt;span id="id6"&gt;&lt;/span&gt;
+&lt;span id="id12"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
 &lt;ul&gt;
@@ -1142,7 +1142,7 @@ thanks to &lt;a class="reference external" href="https://github.com/lgbaldoni"&g
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-2-5"&gt;
-&lt;span id="id5"&gt;&lt;/span&gt;
+&lt;span id="id11"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
 &lt;ul&gt;
@@ -1164,7 +1164,7 @@ thanks to &lt;a class="reference external" href="https://github.com/lgbaldoni"&g
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-3-1"&gt;
-&lt;span id="id4"&gt;&lt;/span&gt;
+&lt;span id="id10"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
 &lt;ul&gt;
@@ -1188,7 +1188,7 @@ thanks to &lt;a class="reference external" href="https://github.com/lgbaldoni"&g
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-3-2"&gt;
-&lt;span id="id3"&gt;&lt;/span&gt;
+&lt;span id="id9"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Features:&lt;/p&gt;
 &lt;ul&gt;
@@ -1222,7 +1222,7 @@ thanks to &lt;a class="reference external" href="https://github.com/lgbaldoni"&g
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-4-0"&gt;
-&lt;span id="id2"&gt;&lt;/span&gt;
+&lt;span id="id8"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Features:&lt;/p&gt;
 &lt;ul&gt;
@@ -1264,7 +1264,7 @@ thanks to &lt;a class="reference external" href="https://github.com/lgbaldoni"&g
 
 &lt;p&gt;Since &lt;a class="reference internal" href="changelog.html#version-0-06"&gt;&lt;span class="std std-ref"&gt;2017-07-29 Version 0.06&lt;/span&gt;&lt;/a&gt;, We use srain.im as domain name of this project, 5 years have passed, I decided to stop renewing for srain.im&lt;/p&gt;
 &lt;p&gt;As you see, the domain name is now migrated to &lt;strong&gt;srain.silverrainz.me&lt;/strong&gt;.&lt;/p&gt;
-&lt;p&gt;Meanwhile, our homepage/blog (&lt;span class="sphinxnotes-strike" style="text-decoration: line-through;"&gt;srain.im&lt;/span&gt;) and documentation (&lt;span class="sphinxnotes-strike" style="text-decoration: line-through;"&gt;doc.srain.im&lt;/span&gt;) are merged. We now only have a single site (it is srain.silverrainz.me) powered by Sphinx. And we use &lt;a class="reference external" href="https://ablog.readthedocs.io/en/latest/"&gt;ABlog&lt;/a&gt; extension to provide blog function. The &lt;a class="reference external" href="https://github.com/SrainApp/srain.im"&gt;⛺SrainApp/srain.im&lt;/a&gt; repository will be archived.&lt;/p&gt;
+&lt;p&gt;Meanwhile, our homepage/blog (&lt;span class="sphinxnotes-strike" style="text-decoration: line-through;"&gt;srain.im&lt;/span&gt;) and documentation (&lt;span class="sphinxnotes-strike" style="text-decoration: line-through;"&gt;doc.srain.im&lt;/span&gt;) are merged. We now only have a single site (it is srain.silverrainz.me) powered by Sphinx. And we use &lt;a class="reference external" href="https://ablog.readthedocs.io/en/latest/"&gt;ABlog&lt;/a&gt; extension to provide blog function. The &lt;a class="reference external" href="https://github.com/SrainApp/srain.im"&gt;⛺ SrainApp/srain.im&lt;/a&gt; repository will be archived.&lt;/p&gt;
 &lt;p&gt;The srain.im TLD expires after &lt;strong&gt;19th June 2022&lt;/strong&gt;, please update your bookmarks as soon as possible, thank you.&lt;/p&gt;
 &lt;/section&gt;
 </content>
@@ -1280,7 +1280,7 @@ thanks to &lt;a class="reference external" href="https://github.com/lgbaldoni"&g
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-4-1"&gt;
-&lt;span id="version-latest"&gt;&lt;/span&gt;
+&lt;span id="id6"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Changes:&lt;/p&gt;
 &lt;ul&gt;
@@ -1295,5 +1295,78 @@ see &lt;a class="reference internal" href="blog/migrate-domain.html"&gt;&lt;span
     <link href="https://srain.silverrainz.me/changelog.html#version-1-4-1" rel="alternate"/>
     <summary>Changes:</summary>
     <published>2022-07-30T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-1-3-3</id>
+    <title>2022-10-02 Version 1.3.3</title>
+    <updated>2022-10-02T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-1-3-3"&gt;
+&lt;span id="id5"&gt;&lt;/span&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Backport domain name change, see &lt;a class="reference internal" href="changelog.html#version-1-4-0"&gt;&lt;span class="std std-ref"&gt;2022-05-07 Version 1.4.0&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Backport &lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/371"&gt;#371&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-1-3-3" rel="alternate"/>
+    <summary>Backport domain name change, see version-1.4.0</summary>
+    <published>2022-10-02T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-1-4-2</id>
+    <title>2022-10-02 Version 1.4.2</title>
+    <updated>2022-10-02T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-1-4-2"&gt;
+&lt;span id="id4"&gt;&lt;/span&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Backport &lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/371"&gt;#371&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-1-4-2" rel="alternate"/>
+    <summary>Backport #371</summary>
+    <published>2022-10-02T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-1-5-0</id>
+    <title>2022-10-02 Version 1.5.0</title>
+    <updated>2022-10-02T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-1-5-0"&gt;
+&lt;span id="version-latest"&gt;&lt;/span&gt;&lt;span id="id1"&gt;&lt;/span&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Features:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Able to identify &lt;a class="reference external" href="https://github.com/EliverLara/Nordic"&gt;Nordic GTK Theme&lt;/a&gt; as dark theme (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/372"&gt;#372&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Activate the corresponding buffer to a response user query (&lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/381"&gt;#381&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Changes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;No additional sphinx extensions are required to build documentation (&lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/368"&gt;#368&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Cleanup deprecated APIs (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/369"&gt;#369&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Suppress error message when connection keeps failing (&lt;a class="reference external" href="https://github.com/SrainApp/srain/pull/386"&gt;#386&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Enable debian release build , thanks to &amp;#64;tomac4t (&lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/387"&gt;#387&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Fix SASL authentication error when connecting to &lt;a class="reference external" href="https://soju.im/"&gt;Soju&lt;/a&gt; (&lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/371"&gt;#371&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-1-5-0" rel="alternate"/>
+    <summary>Features:</summary>
+    <published>2022-10-02T00:00:00+00:00</published>
   </entry>
 </feed>
