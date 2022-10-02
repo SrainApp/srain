@@ -60,6 +60,27 @@ Change Log
 __ https://github.com/EliverLara/Nordic
 __ https://soju.im/
 
+.. _version-1.4.2:
+
+2022-10-02 Version 1.4.2
+========================
+
+.. post:: 2022-10-02
+   :category: Release
+
+- Backport :issue:`371`
+
+.. _version-1.3.3:
+
+2022-10-02 Version 1.3.3
+========================
+
+.. post:: 2022-10-02
+   :category: Release
+
+- Backport domain name change, see :ref:`version-1.4.0`
+- Backport :issue:`371`
+
 .. _version-1.4.1:
 
 2022-07-30 Version 1.4.1
