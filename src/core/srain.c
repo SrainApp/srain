@@ -35,7 +35,7 @@
 #include "filter/filter.h"
 #include "render/render.h"
 
-int main(int argc, char *argv[]){
+int c_main(int argc, char *argv[]){
     SrnLogger *logger;
     SrnLoggerConfig *logger_cfg;
     SrnApplication *app;
