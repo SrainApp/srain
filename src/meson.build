@@ -11,7 +11,7 @@ meta_h.set_quoted('PACKAGE_WEBSITE', app_url)
 meta_h.set_quoted('PACKAGE_BUGREPORT', app_bugreport)
 meta_h.set_quoted('PACKAGE_AUTHOR', 'Shengyu Zhang')
 meta_h.set_quoted('PACKAGE_EMAIL', 'i@silverrainz.me')
-meta_h.set_quoted('PACKAGE_COPYRIGHT_DATES', '2016 - 2022')
+meta_h.set_quoted('PACKAGE_COPYRIGHT_DATES', '2016 - 2023')
 meta_h.set_quoted('PACKAGE_DATA_DIR', data_dir)
 meta_h.set_quoted('PACKAGE_CONFIG_DIR', sys_conf_dir)
 
