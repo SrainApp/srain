@@ -15,17 +15,13 @@
             gtag('config', 'G-6DC73T8933');
             
         </script>
-    
-<meta property="og:title" content="Installation" />
-  
+    <meta property="og:title" content="Installation" />
 <meta property="og:type" content="website" />
-  
 <meta property="og:url" content="https://srain.silverrainz.me/install.html" />
-  
 <meta property="og:site_name" content="Srain" />
-  
 <meta property="og:description" content="Srain is available on GNU/Linux, Windows, macOS and BSD. Dependencies:,,, Name, Notes, Version,,, meson, Only for Building,> 0.47.0,, make, Optional, only for development,,, appstream, Only for bui..." />
-  
+<meta name="description" content="Srain is available on GNU/Linux, Windows, macOS and BSD. Dependencies:,,, Name, Notes, Version,,, meson, Only for Building,> 0.47.0,, make, Optional, only for development,,, appstream, Only for bui..." />
+
     <title>Installation &#8212; Srain 1.5.0 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
@@ -616,28 +612,28 @@ you can get source code of latest release:</p>
 $ tar -xvzf 1.5.0.tar.gz
 $ cd srain-1.5.0</pre>
 <p>Or get git version:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git clone https://github.com/SrainApp/srain.git
-<span class="gp">$ </span><span class="nb">cd</span> srain
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/SrainApp/srain.git
+<span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>srain
 </pre></div>
 </div>
 <section id="play-with-meson">
 <h3>Play with Meson<a class="headerlink" href="#play-with-meson" title="Permalink to this headline">#</a></h3>
 <p>Srain use <a class="reference external" href="https://mesonbuild.com">Meson</a> with ninja backend as its build system.
 You can build it via the following commands:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>meson setup builddir
-<span class="gp">$ </span><span class="nb">cd</span> builddir
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>meson<span class="w"> </span>setup<span class="w"> </span>builddir
+<span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>builddir
 <span class="gp">$ </span>ninja
 </pre></div>
 </div>
 <p>Install(root privileges required):</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span> builddir
-<span class="gp"># </span>ninja install
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>builddir
+<span class="gp"># </span>ninja<span class="w"> </span>install
 </pre></div>
 </div>
 <p>HTML documentation and manpage are built and installed by default,
 if you don’t need them, just set meson option <code class="docutils literal notranslate"><span class="pre">doc_builders</span></code> to an empty array
 when setup:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>meson setup -Ddoc_builders<span class="o">=[]</span> builddir
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>meson<span class="w"> </span>setup<span class="w"> </span>-Ddoc_builders<span class="o">=[]</span><span class="w"> </span>builddir
 </pre></div>
 </div>
 </section>
@@ -645,14 +641,14 @@ when setup:</p>
 <h3>Makefile Helper<a class="headerlink" href="#makefile-helper" title="Permalink to this headline">#</a></h3>
 <p>We also provide a simple Makefile helper to simplify meson commands.
 It is convenient for development.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>make           <span class="c1"># Build srain</span>
-<span class="gp">$ </span>make build     <span class="c1"># Same as above</span>
-<span class="gp">$ </span>make install   <span class="c1"># Install srain to prefix under project root</span>
-<span class="gp">$ </span>make run       <span class="c1"># Run srain with isolated $HOME and XDG Directory</span>
-<span class="gp">$ </span>make debug     <span class="c1"># Same as `make run`, but with GDB attached</span>
-<span class="gp">$ </span>make inspect   <span class="c1"># Same as `make run`, but with GtkInspector</span>
-<span class="gp">$ </span>make clean     <span class="c1"># Remove all compilation and installation result</span>
-<span class="gp">$ </span>make doc       <span class="c1"># View installed HTML documentation</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>make<span class="w">           </span><span class="c1"># Build srain</span>
+<span class="gp">$ </span>make<span class="w"> </span>build<span class="w">     </span><span class="c1"># Same as above</span>
+<span class="gp">$ </span>make<span class="w"> </span>install<span class="w">   </span><span class="c1"># Install srain to prefix under project root</span>
+<span class="gp">$ </span>make<span class="w"> </span>run<span class="w">       </span><span class="c1"># Run srain with isolated $HOME and XDG Directory</span>
+<span class="gp">$ </span>make<span class="w"> </span>debug<span class="w">     </span><span class="c1"># Same as `make run`, but with GDB attached</span>
+<span class="gp">$ </span>make<span class="w"> </span>inspect<span class="w">   </span><span class="c1"># Same as `make run`, but with GtkInspector</span>
+<span class="gp">$ </span>make<span class="w"> </span>clean<span class="w">     </span><span class="c1"># Remove all compilation and installation result</span>
+<span class="gp">$ </span>make<span class="w"> </span>doc<span class="w">       </span><span class="c1"># View installed HTML documentation</span>
 </pre></div>
 </div>
 </section>
@@ -665,27 +661,27 @@ It is convenient for development.</p>
 <h4>Arch Linux<a class="headerlink" href="#arch-linux" title="Permalink to this headline">#</a></h4>
 <p>Packages <a class="reference external" href="https://aur.archlinux.org/packages/srain">srain</a> and <a class="reference external" href="https://aur.archlinux.org/packages/srain-git">srain-git</a> (git version) are available on AUR,
 it is quite easy to install using AUR helper(yay as an example):</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>yay -S srain
-<span class="gp">$ </span>yay -S srain-git <span class="c1"># git version</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>yay<span class="w"> </span>-S<span class="w"> </span>srain
+<span class="gp">$ </span>yay<span class="w"> </span>-S<span class="w"> </span>srain-git<span class="w"> </span><span class="c1"># git version</span>
 </pre></div>
 </div>
 <p>If you are the user of <a class="reference external" href="https://www.archlinuxcn.org/archlinux-cn-repo-and-mirror">Arch Linux CN Repository</a>, try:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>pacman -S archlinuxcn/srain
-<span class="gp"># </span>pacman -S archlinuxcn/srain-git <span class="c1"># git version</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>pacman<span class="w"> </span>-S<span class="w"> </span>archlinuxcn/srain
+<span class="gp"># </span>pacman<span class="w"> </span>-S<span class="w"> </span>archlinuxcn/srain-git<span class="w"> </span><span class="c1"># git version</span>
 </pre></div>
 </div>
 </section>
 <section id="debian">
 <span id="install-packages-debian"></span><h4>Debian<a class="headerlink" href="#debian" title="Permalink to this headline">#</a></h4>
 <p>Srain now in <a class="reference external" href="https://packages.debian.org/unstable/net/srain">offical repository of Debian</a>:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>apt install srain
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>apt<span class="w"> </span>install<span class="w"> </span>srain
 </pre></div>
 </div>
 </section>
 <section id="fedora">
 <span id="install-packages-flatpak"></span><h4>Fedora<a class="headerlink" href="#fedora" title="Permalink to this headline">#</a></h4>
 <p>Srain now in <a class="reference external" href="https://apps.fedoraproject.org/packages/srain">offical repository of fedora</a>, use <code class="docutils literal notranslate"><span class="pre">dnf</span></code> to install it.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>dnf install srain
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>dnf<span class="w"> </span>install<span class="w"> </span>srain
 </pre></div>
 </div>
 </section>
@@ -695,8 +691,8 @@ it is quite easy to install using AUR helper(yay as an example):</p>
 <p><a class="reference external" href="https://github.com/cpba">cpba</a> is maintaining <a class="reference external" href="https://github.com/SrainApp/srain-contrib/tree/master/pack/flatpak">Flatpak manifest for Srain</a> and The built package is
 available on <a class="reference external" href="https://flathub.org">Flathub</a>, just execute the following commands to install if
 you already have flatpak installed:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-<span class="gp">$ </span>flatpak install flathub im.srain.Srain
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>flatpak<span class="w"> </span>remote-add<span class="w"> </span>--if-not-exists<span class="w"> </span>flathub<span class="w"> </span>https://dl.flathub.org/repo/flathub.flatpakrepo
+<span class="gp">$ </span>flatpak<span class="w"> </span>install<span class="w"> </span>flathub<span class="w"> </span>im.srain.Srain
 </pre></div>
 </div>
 </section>
@@ -723,15 +719,15 @@ get it from <a class="reference external" href="https://github.com/SrainApp/srai
 <p>If you want to build Srain on Windows youself,
 you should use the toolchains provided by <a class="reference external" href="http://www.msys2.org/">MSYS2 project</a>.</p>
 <p>Firstly install MSYS2, then open a MSYS2 shell, install the basic build tools:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pacman -S base-devel
-<span class="gp">$ </span>pacman -S mingw-w64-i686-toolchain     <span class="c1"># For 32-bit Windows</span>
-<span class="gp">$ </span>pacman -S mingw-w64-x86_64-toolchain   <span class="c1"># For 64-bit Windows</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pacman<span class="w"> </span>-S<span class="w"> </span>base-devel
+<span class="gp">$ </span>pacman<span class="w"> </span>-S<span class="w"> </span>mingw-w64-i686-toolchain<span class="w">     </span><span class="c1"># For 32-bit Windows</span>
+<span class="gp">$ </span>pacman<span class="w"> </span>-S<span class="w"> </span>mingw-w64-x86_64-toolchain<span class="w">   </span><span class="c1"># For 64-bit Windows</span>
 </pre></div>
 </div>
 <p>Then download the package script from <a class="reference external" href="https://github.com/SrainApp/srain-contrib/tree/master/pack/mingw">MinGW PKGBUILD for Srain</a>,
 run the following commands at the directory of PKGBUILD:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nv">MINGW_INSTALLS</span><span class="o">=</span>mingw32 makepkg-mingw -fsi <span class="c1"># For 32-bit Windows</span>
-<span class="gp">$ </span><span class="nv">MINGW_INSTALLS</span><span class="o">=</span>mingw64 makepkg-mingw -fsi <span class="c1"># For 64-bit Windows</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nv">MINGW_INSTALLS</span><span class="o">=</span>mingw32<span class="w"> </span>makepkg-mingw<span class="w"> </span>-fsi<span class="w"> </span><span class="c1"># For 32-bit Windows</span>
+<span class="gp">$ </span><span class="nv">MINGW_INSTALLS</span><span class="o">=</span>mingw64<span class="w"> </span>makepkg-mingw<span class="w"> </span>-fsi<span class="w"> </span><span class="c1"># For 64-bit Windows</span>
 </pre></div>
 </div>
 <p>If everything goes well, Srain is installed under your MinGW prefix.</p>
@@ -758,8 +754,8 @@ and it will show you real missing library. <a class="footnote-reference brackets
 <p>There is not a distribution package or package script for Srain on macOS,
 you should build Srain by yourself.</p>
 <p>Firstly install <a class="reference external" href="https://brew.sh/">Homebrew</a>, run the following commands to install dependencies:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>brew install coreutils gcc pkg-config <span class="c1"># building</span>
-<span class="gp">$ </span>brew install gettext glib-networking gtk+3 libsoup libconfig openssl adwaita-icon-theme
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>brew<span class="w"> </span>install<span class="w"> </span>coreutils<span class="w"> </span>gcc<span class="w"> </span>pkg-config<span class="w"> </span><span class="c1"># building</span>
+<span class="gp">$ </span>brew<span class="w"> </span>install<span class="w"> </span>gettext<span class="w"> </span>glib-networking<span class="w"> </span>gtk+3<span class="w"> </span>libsoup<span class="w"> </span>libconfig<span class="w"> </span>openssl<span class="w"> </span>adwaita-icon-theme
 </pre></div>
 </div>
 <p>Next, tell <cite>pkg-config</cite> where to find the libraries we just installed:</p>
