@@ -48,6 +48,9 @@ mingw64_dlls+=$ret
 get_dll $gdbus
 mingw64_dlls+=$ret
 
+# helper program to open browser link
+help_program=$prefix/bin/gspawn-win64-helper.exe
+
 mingw64_dlls=$(echo $mingw64_dlls | tr ' ' '\n' | sort -u)
 
 mkdir -pv $dst_bin
@@ -65,6 +68,7 @@ touch $dst_bin/srain.cfg
 echo 'Finished installing Srain'
 
 cp -rfv $gdbus $dst_bin/
+cp -rfv $help_program $dst_bin/
 cp -rfv $mingw64_dlls $dst_bin/
 cp -rfv $prefix/lib/gio $dst_lib/
 cp -rfv $prefix/lib/gdk-pixbuf-2.0 $dst_lib/
