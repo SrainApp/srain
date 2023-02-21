@@ -14,6 +14,9 @@ Change Log
     YYYY-MM-DD Version X.X.X
     ========================
 
+    .. post:: YYYY-MM-DD
+      :category: Release
+
     - Features:
 
       - XXX (:pull:`PULL_REQUEST_ID`)
@@ -30,10 +33,104 @@ Change Log
 
 .. _version-latest:
 
+.. _version-1.5.0:
+
+2022-10-02 Version 1.5.0
+========================
+
+.. post:: 2022-10-02
+   :category: Release
+
+- Features:
+
+  - Able to identify `Nordic GTK Theme`__ as dark theme (:pull:`372`)
+  - Activate the corresponding buffer to a response user query (:issue:`381`)
+
+- Changes:
+
+  - No additional sphinx extensions are required to build documentation (:issue:`368`)
+  - Cleanup deprecated APIs (:pull:`369`)
+  - Suppress error message when connection keeps failing (:pull:`386`)
+  - Enable debian release build , thanks to @tomac4t (:issue:`387`)
+
+- Bug fixes:
+
+  - Fix SASL authentication error when connecting to Soju__ (:issue:`371`)
+
+__ https://github.com/EliverLara/Nordic
+__ https://soju.im/
+
+.. _version-1.4.2:
+
+2022-10-02 Version 1.4.2
+========================
+
+.. post:: 2022-10-02
+   :category: Release
+
+- Backport :issue:`371`
+
+.. _version-1.3.3:
+
+2022-10-02 Version 1.3.3
+========================
+
+.. post:: 2022-10-02
+   :category: Release
+
+- Backport domain name change, see :ref:`version-1.4.0`
+- Backport :issue:`371`
+
+.. _version-1.4.1:
+
+2022-07-30 Version 1.4.1
+========================
+
+.. post:: 2022-07-30
+   :category: Release
+
+- Changes:
+
+  - New website__, move domain name from ``srain.im`` to ``srain.silverrainz.me``,
+    see :doc:`blog/migrate-domain`
+  - Require mesion >= 0.47.0
+
+__ https://srain.silverrainz.me
+
+.. _version-1.4.0:
+
+2022-05-07 Version 1.4.0
+========================
+
+.. post:: 2022-05-07
+   :category: Release
+
+- Features:
+
+  - Add support for IRCv3 standard-replies (:pull:`354`), by @progval
+  - Add support for SASL EXTERNAL (:pull:`352`), by @progval
+  - Add support for invite-notify (:pull:`359`), by @progval
+  - Add conf item ``server-visibility`` for setting default server visiblity (:issue:`361`), by @SilverRainZ
+  - Add support for server-time (:pull:`345`), by @progval
+  - Add :ref:`commands-clear` command for clearing messages of current buffer (:issue:`268`), by @SilverRainZ
+
+- Bug fixes:
+
+  - Fix workflow for building MS Windows release artifact (:issue:`360`), by @lifeibiren
+
+- Changes:
+
+  - Make the buffer menu apply to the right-clicked item instead of the active buffer (:pull:`353`), by progval
+  - Srain now accepting donations through OpenCollective (https://opencollective.com/srain)
+  - Disable workflow for building debian release artifact since we have offical debian package (:commit:`99d9d86`)
+
 .. _version-1.3.2:
 
 2022-02-10 Version 1.3.2
 ========================
+
+.. post:: 2022-02-10
+   :category: Release
 
 - Features:
 
@@ -54,6 +151,9 @@ Change Log
 2021-12-18 Version 1.3.1
 ========================
 
+.. post:: 2021-12-18
+   :category: Release
+
 - Bug fixes:
 
   - Fix build of macOS (:pull:`339`), by @SilverRainZ
@@ -65,6 +165,9 @@ Change Log
 2021-12-18 Version 1.2.5
 ========================
 
+.. post:: 2021-12-18
+   :category: Release
+
 - Bug fixes:
 
   - Backport :pull:`336`, :issue:`274`
@@ -73,6 +176,9 @@ Change Log
 
 2021-09-23 Version 1.3.0
 ========================
+
+.. post:: 2021-09-23
+   :category: Release
 
 - Features:
 
@@ -90,6 +196,9 @@ Change Log
 2021-07-18 Version 1.2.4
 ========================
 
+.. post:: 2021-07-18
+   :category: Release
+
 - Bug fixes:
 
   - Fix bug casued by :pull:`316` (:issue:`319`)
@@ -100,6 +209,9 @@ Change Log
 2021-06-26 Version 1.2.3
 ========================
 
+.. post:: 2021-06-26
+   :category: Release
+
 - Bug fixes:
 
   - Eliminate GDK warning (:pull:`316`)
@@ -108,6 +220,9 @@ Change Log
 
 2021-05-30 Version 1.2.2
 ========================
+
+.. post:: 2021-05-30
+   :category: Release
 
 - Changed:
 
@@ -123,6 +238,9 @@ Change Log
 2021-04-02 Version 1.2.1
 ========================
 
+.. post:: 2021-04-02
+   :category: Release
+
 - Features:
 
   - Add Ukrainian translations (:pull:`292`), thanks to :people:`andmizyk`
@@ -135,6 +253,9 @@ Change Log
 
 2021-02-28 Version 1.2.0
 ========================
+
+.. post:: 2021-02-28
+   :category: Release
 
 - Features:
 
@@ -157,6 +278,9 @@ Change Log
 2020-10-01 Version 1.1.3
 ========================
 
+.. post:: 2020-10-01
+   :category: Release
+
 - Bug fixes:
 
    - Fix an use-after-free BUG (:pull:`267`)
@@ -165,6 +289,9 @@ Change Log
 
 2020-08-10 Version 1.1.2
 ========================
+
+.. post:: 2020-08-10
+   :category: Release
 
 .. note::
 
@@ -188,6 +315,9 @@ Change Log
 2020-06-27 Version 1.1.1
 ========================
 
+.. post:: 2020-06-27
+   :category: Release
+
 - Changes:
 
   - Improve auto-scroll policy of message list (:pull:`255`)
@@ -201,6 +331,9 @@ Change Log
 
 2020-05-24 Version 1.1.0
 ========================
+
+.. post:: 2020-05-24
+   :category: Release
 
 - Features:
 
@@ -224,6 +357,9 @@ Change Log
 
 2020-04-11 Version 1.0.2
 ========================
+
+.. post:: 2020-04-11
+   :category: Release
 
 - Features:
 
@@ -250,6 +386,9 @@ Change Log
 
 2020-03-14 Version 1.0.1
 ========================
+
+.. post:: 2020-03-14
+   :category: Release
 
 - Features:
 
@@ -279,6 +418,9 @@ Change Log
 2020-02-24 Version 1.0.0
 ========================
 
+.. post:: 2020-02-24
+   :category: Release
+
 - Changes:
 
   - Some code cleanup
@@ -297,6 +439,9 @@ Change Log
 
 2019-10-07 Version 1.0.0rc9999
 ==============================
+
+.. post:: 2019-10-07
+   :category: Release
 
 - Features:
 
@@ -322,6 +467,9 @@ Change Log
 2019-06-14 Version 1.0.0rc5
 ===========================
 
+.. post:: 2019-06-14
+   :category: Release
+
 - Added:
 
    - Regular expression pattern management using :ref:`commands-pattern` command
@@ -343,6 +491,9 @@ Change Log
 
 2019-05-13 Version 1.0.0rc4
 ===========================
+
+.. post:: 2019-05-13
+   :category: Release
 
 - Added:
 
@@ -367,20 +518,31 @@ Change Log
 2019-04-14 Version 1.0.0rc3
 ===========================
 
+.. post:: 2019-04-14
+   :category: Release
+
 .. _version-1.0.0rc2:
 
 2019-01-24 Version 1.0.0rc2
 ===========================
 
+.. post:: 2019-01-24
+   :category: Release
 .. _version-1.0.0rc1:
 
 2018-09-10 Version 1.0.0rc1
 ===========================
 
+.. post:: 2018-09-10
+   :category: Release
+
 .. _version-0.06.4:
 
 2018-02-28 Version 0.06.4
 =========================
+
+.. post:: 2018-02-28
+   :category: Release
 
 - Changed:
 
@@ -428,6 +590,9 @@ Change Log
 2017-12-22 Version 0.06.3
 =========================
 
+.. post:: 2017-12-22
+   :category: Release
+
 - Changed:
 
   - Configurable file option ``tls_not_verify`` in ``irc`` block in ``server``
@@ -457,6 +622,9 @@ Change Log
 2017-09-12 Version 0.06.2
 =========================
 
+.. post:: 2017-09-12
+   :category: Release
+
 - Added:
 
   - mIRC color support, can be disabled via setting ``render_mirc_color``
@@ -474,6 +642,9 @@ Change Log
 
 2017-08-18 Version 0.06.1
 =========================
+
+.. post:: 2017-08-18
+   :category: Release
 
 - Added:
 
@@ -493,8 +664,13 @@ Change Log
   - More empty parameters checks
   - Imporve server connection status control
 
+.. _version-0.06:
+
 2017-07-29 Version 0.06
 =======================
+
+.. post:: 2017-07-29
+   :category: Release
 
 - Changed:
 
@@ -516,8 +692,8 @@ Change Log
   - Configurable log module, more convenient for developing and reporting issue
   - New Return value type, for more friendly error reporting
   - New command :ref:`commands-server` for IRC servers management
-  - Srain home page is available at: https://srain.im
-  - Srain help documentation is available at: https://doc.srain.im
+  - Srain home page is available at: :del:`https://srain.im` (expired, use https://srain.silverrainz.me)
+  - Srain help documentation is available at: :del:`https://doc.srain.im` (expired, use https://srain.silverrainz.me)
 
 - Removed:
 
@@ -537,10 +713,16 @@ Change Log
 2016-09-19 Version 0.05.1
 =========================
 
+.. post:: 2016-09-19
+   :category: Release
+
 - Create missing directory: ``$XDG_CACHE_HOME/srain/avatars``
 
 2016-08-27 Version 0.05
 =======================
+
+.. post:: 2016-08-27
+   :category: Release
 
 - Changed:
 
@@ -570,6 +752,9 @@ Change Log
 2016-04-30 Version 0.03
 =======================
 
+.. post:: 2016-04-30
+   :category: Release
+
 - New interface between UI and IRC module
 - Multi-server support
 - Channel name is not case sensitive now
@@ -584,6 +769,9 @@ Change Log
 2016-04-13 Version 0.02
 =======================
 
+.. post:: 2016-04-13
+   :category: Release
+
 - Bugs fixed
 - Port to GTK+-3.20
 
@@ -594,6 +782,9 @@ Change Log
 
 2016-04-07 Version 0.01
 =======================
+
+.. post:: 2016-04-07
+   :category: Release
 
 - Implement basic functions of a IRC client
 - Themes: Silver Rain (light)

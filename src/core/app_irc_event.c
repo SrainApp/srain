@@ -184,6 +184,7 @@ static void irc_event_connect(SircSession *sirc, const char *event, const SircMe
     srv->registered = FALSE;
     srv->loggedin = FALSE;
     srv->negotiated = FALSE;
+    srv->conn_fail_once = FALSE;
 
     srn_chat_add_misc_message_fmt(srv->chat, context,
             _("Connected to %1$s(%2$s:%3$d)"),
@@ -217,6 +218,12 @@ static void irc_event_connect_fail(SircSession *sirc, const char *event,
     const char *msg;
     SrnRet ret;
     SrnServer *srv;
+    const char *conn_fail_msg;
+    const char *reconn_msg;
+    bool conn_fail_once;
+
+    conn_fail_msg = _("Failed to connect to %1$s(%2$s:%3$d): %4$s");
+    reconn_msg = _("Trying to reconnect to %1$s(%2$s:%3$d) after %4$.1lfs...");
 
     g_return_if_fail(count == 1);
     msg = params[0];
@@ -234,17 +241,22 @@ static void irc_event_connect_fail(SircSession *sirc, const char *event,
         return;
     }
 
+    // Save previous conn_fail_once state for later usage.
+    conn_fail_once = srv->conn_fail_once;
+    // If the connection fails for the first time, filp the state.
+    if (!conn_fail_once) {
+        srv->conn_fail_once = TRUE;
+    }
+
     list = srv->chat_list;
     while (list){
         SrnChat *chat;
 
         chat = list->data;
-        srn_chat_add_misc_message_fmt(chat, context,
-                _("Failed to connect to %1$s(%2$s:%3$d): %4$s"),
+        srn_chat_add_misc_message_fmt(chat, context, conn_fail_msg,
                 srv->name, srv->addr->host, srv->addr->port, msg);
         if (srv->state == SRN_SERVER_STATE_RECONNECTING){
-            srn_chat_add_misc_message_fmt(chat, context,
-                    _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
+            srn_chat_add_misc_message_fmt(chat, context, reconn_msg,
                     srv->name,
                     srv->addr->host,
                     srv->addr->port,
@@ -254,20 +266,29 @@ static void irc_event_connect_fail(SircSession *sirc, const char *event,
         list = g_list_next(list);
     }
 
-    srn_chat_add_error_message_fmt(srv->chat, context,
-            _("Failed to connect to %1$s(%2$s:%3$d): %4$s"),
-            srv->name, srv->addr->host, srv->addr->port, msg);
+    if (!conn_fail_once) {
+        srn_chat_add_error_message_fmt(srv->chat, context, conn_fail_msg,
+                srv->name, srv->addr->host, srv->addr->port, msg);
+    } else {
+        srn_chat_add_misc_message_fmt(srv->chat, context, conn_fail_msg,
+                srv->name, srv->addr->host, srv->addr->port, msg);
+    }
+
     /* If user trying connect to a TLS port via non-TLS connection, it will
      * be reset, give user some hints. */
     if (!srv->cfg->irc->tls
             && (srv->addr->port == 6697 || srv->addr->port == 7000)) {
-        srn_chat_add_error_message_fmt(srv->chat, context,
-                _("It seems that you connect to a TLS port(%1$d) without enable TLS connection, try to enable it and reconnect"),
-                srv->addr->port);
+        const char *tls_hint_msg;
+
+        tls_hint_msg = _("It seems that you connect to a TLS port(%1$d) without enable TLS connection, try to enable it and reconnect");
+        if (!conn_fail_once) {
+            srn_chat_add_error_message_fmt(srv->chat, context, tls_hint_msg, srv->addr->port);
+        } else {
+            srn_chat_add_misc_message_fmt(srv->chat, context, tls_hint_msg, srv->addr->port);
+        }
     }
     if (srv->state == SRN_SERVER_STATE_RECONNECTING){
-        srn_chat_add_misc_message_fmt(srv->chat, context,
-                _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
+        srn_chat_add_misc_message_fmt(srv->chat, context, reconn_msg,
                 srv->name,
                 srv->addr->host,
                 srv->addr->port,
@@ -329,7 +350,7 @@ static void irc_event_disconnect(SircSession *sirc, const char *event,
                 srv->name, srv->addr->host, srv->addr->port, msg);
         if (srv->state == SRN_SERVER_STATE_RECONNECTING){
             srn_chat_add_misc_message_fmt(chat, context,
-                    _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
+                    _("Trying to reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
                     srv->name,
                     srv->addr->host,
                     srv->addr->port,
@@ -344,7 +365,7 @@ static void irc_event_disconnect(SircSession *sirc, const char *event,
             srv->name, srv->addr->host, srv->addr->port, msg);
     if (srv->state == SRN_SERVER_STATE_RECONNECTING){
         srn_chat_add_misc_message_fmt(srv->chat, context,
-                _("Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
+                _("Trying to reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."),
                 srv->name,
                 srv->addr->host,
                 srv->addr->port,
@@ -377,7 +398,7 @@ static void irc_event_welcome(SircSession *sirc, int event,
     // Set your actually nick
     srn_server_rename_user(srv, srv->user, nick);
     // Whether the assigned nick match the requested nick,
-    nick_match = !g_strcasecmp(srv->cfg->user->nick, nick);
+    nick_match = !g_ascii_strcasecmp(srv->cfg->user->nick, nick);
 
     /* Try login */
     try_login = FALSE;
@@ -933,7 +954,7 @@ static void irc_event_note(SircSession *sirc, const char *event,
     const char *description = params[count-1];
     SrnServer *srv = sirc_get_ctx(sirc);
     SrnChat *chat = srn_server_get_chat(srv, origin);
-    srn_chat_add_misc_message_fmt(srv->chat, context, _("NOTE[%1$s] %2$s: %3$s"), command, code, description);
+    srn_chat_add_misc_message_fmt(chat, context, _("NOTE[%1$s] %2$s: %3$s"), command, code, description);
 }
 
 static void irc_event_channel_notice(SircSession *sirc, const char *event,
@@ -1051,14 +1072,14 @@ static void irc_event_ctcp_req(SircSession *sirc, const char *event,
     } else if (strcmp(event, "SOURCE") == 0) {
         sirc_cmd_ctcp_rsp(srv->irc, origin, event, PACKAGE_WEBSITE);
     } else if (strcmp(event, "TIME") == 0) {
-        GTimeVal val;
-        g_get_current_time(&val);
+        GDateTime *val = g_date_time_new_now_local();
         // ISO 8601 is recommend
-        char *time = g_time_val_to_iso8601(&val);
+        char *time = g_date_time_format_iso8601(val);
         if (time){
             sirc_cmd_ctcp_rsp(srv->irc, origin, event, time);
             g_free(time);
         }
+        g_date_time_unref(val);
     } else if (strcmp(event, "VERSION") == 0) {
         sirc_cmd_ctcp_rsp(srv->irc, origin, event,
                 PACKAGE_NAME " " PACKAGE_VERSION "-" PACKAGE_BUILD);
@@ -1918,7 +1939,6 @@ static void irc_event_numeric(SircSession *sirc, int event,
                 msg = params[3];
 
                 srv->loggedin = TRUE;
-                sirc_cmd_cap_end(sirc); // End negotiation
                 srn_chat_add_recv_message(srv->chat, chat_user, msg, context);
                 break;
             }
@@ -1929,6 +1949,8 @@ static void irc_event_numeric(SircSession *sirc, int event,
                 g_return_if_fail(count >= 2);
                 msg = params[1];
 
+                // See also: https://github.com/SrainApp/srain/issues/371
+                sirc_cmd_cap_end(sirc); // End negotiation
                 srn_chat_add_recv_message(srv->chat, chat_user, msg, context);
                 break;
             }

@@ -135,6 +135,8 @@ Example::
     /connect -real 'I am srainbot' -tls -port 6697 chat.freenode.org srainbot
     /connect 127.0.0.1 srainbot
 
+.. _commands-ignore:
+
 /ignore & /unignore
 -------------------
 
@@ -437,6 +439,8 @@ Usage::
 For sending special IRC commands.
 
 .. versionadded:: 1.2.0
+
+.. _commands-clear:
 
 /clear
 ------
