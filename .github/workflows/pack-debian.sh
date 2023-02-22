@@ -1,5 +1,8 @@
 #!/bin/bash
 set -ex
+# Silence all safe.directory errors:
+#   fatal: detected dubious ownership in repository at '/__w/srain/srain'
+git config --global --add safe.directory '*';
 # Fetch all tags.
 git fetch origin +refs/tags/*:refs/tags/*;
 git tag;

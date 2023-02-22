@@ -135,8 +135,11 @@ incdirs = [
   include_directories('sui'),
 ]
 
-executable(app_exec, srcs,
+executable(
+  app_exec, srcs,
   include_directories: incdirs,
   dependencies: deps,
   install: true,
-  install_dir: bin_dir)
+  install_dir: bin_dir,
+  gui_app: true
+)
