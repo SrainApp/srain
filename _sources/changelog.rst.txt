@@ -32,6 +32,17 @@ Change Log
       - XXX
 
 .. _version-latest:
+.. _version-1.5.1:
+
+2023-03-26 Version 1.5.1
+========================
+
+.. post:: 2022-03-26
+   :category: Release
+
+- Bug fixes:
+
+  - Fix the problem that the URL cannot be opened on MS Windows (:issue:`391`)
 
 .. _version-1.5.0:
 

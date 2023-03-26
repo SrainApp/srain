@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
   <id>https://srain.silverrainz.me/</id>
   <title>Srain</title>
-  <updated>2023-02-22T04:54:46.829428+00:00</updated>
+  <updated>2023-03-26T04:50:19.653995+00:00</updated>
   <link href="https://srain.silverrainz.me/"/>
   <link href="https://srain.silverrainz.me/blog/atom.xml" rel="self"/>
   <generator uri="https://ablog.readthedocs.org/" version="0.10.33.post1">ABlog</generator>
@@ -165,7 +165,7 @@ it also has some undetected bugs.&lt;/p&gt;
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-0-06"&gt;
-&lt;span id="id32"&gt;&lt;/span&gt;
+&lt;span id="id33"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Changed:&lt;/p&gt;
 &lt;ul&gt;
@@ -261,7 +261,7 @@ then try to connect again. If it still fails, waiting time will increase by
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-0-06-2"&gt;
-&lt;span id="id31"&gt;&lt;/span&gt;
+&lt;span id="id32"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Added:&lt;/p&gt;
 &lt;ul&gt;
@@ -339,7 +339,7 @@ is still supported&lt;/p&gt;&lt;/li&gt;
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-0-06-4"&gt;
-&lt;span id="id30"&gt;&lt;/span&gt;
+&lt;span id="id31"&gt;&lt;/span&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;p&gt;Changed:&lt;/p&gt;
 &lt;ul class="simple"&gt;
@@ -402,7 +402,7 @@ subcommand&lt;/p&gt;&lt;/li&gt;
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-0-0rc1"&gt;
-&lt;span id="id29"&gt;&lt;/span&gt;
+&lt;span id="id30"&gt;&lt;/span&gt;
 &lt;/section&gt;
 </content>
     <link href="https://srain.silverrainz.me/changelog.html#version-1-0-0rc1" rel="alternate"/>
@@ -416,7 +416,7 @@ subcommand&lt;/p&gt;&lt;/li&gt;
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-0-0rc2"&gt;
-&lt;span id="id28"&gt;&lt;/span&gt;
+&lt;span id="id29"&gt;&lt;/span&gt;
 &lt;/section&gt;
 </content>
     <link href="https://srain.silverrainz.me/changelog.html#version-1-0-0rc2" rel="alternate"/>
@@ -430,7 +430,7 @@ subcommand&lt;/p&gt;&lt;/li&gt;
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-0-0rc3"&gt;
-&lt;span id="id27"&gt;&lt;/span&gt;
+&lt;span id="id28"&gt;&lt;/span&gt;
 &lt;/section&gt;
 </content>
     <link href="https://srain.silverrainz.me/changelog.html#version-1-0-0rc3" rel="alternate"/>
@@ -444,7 +444,7 @@ subcommand&lt;/p&gt;&lt;/li&gt;
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-0-0rc4"&gt;
-&lt;span id="id26"&gt;&lt;/span&gt;
+&lt;span id="id27"&gt;&lt;/span&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;p&gt;Added:&lt;/p&gt;
 &lt;blockquote&gt;
@@ -484,7 +484,7 @@ automatically connect to servers&lt;/p&gt;&lt;/li&gt;
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-0-0rc5"&gt;
-&lt;span id="id25"&gt;&lt;/span&gt;
+&lt;span id="id26"&gt;&lt;/span&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;p&gt;Added:&lt;/p&gt;
 &lt;blockquote&gt;
@@ -527,7 +527,7 @@ automatically connect to servers&lt;/p&gt;&lt;/li&gt;
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-0-0rc9999"&gt;
-&lt;span id="id24"&gt;&lt;/span&gt;
+&lt;span id="id25"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Features:&lt;/p&gt;
 &lt;ul&gt;
@@ -566,7 +566,7 @@ automatically connect to servers&lt;/p&gt;&lt;/li&gt;
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-0-0"&gt;
-&lt;span id="id23"&gt;&lt;/span&gt;
+&lt;span id="id24"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Changes:&lt;/p&gt;
 &lt;ul&gt;
@@ -765,7 +765,7 @@ you can find contact details on &lt;a class="reference external" href="https://s
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-0-1"&gt;
-&lt;span id="id22"&gt;&lt;/span&gt;
+&lt;span id="id23"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Features:&lt;/p&gt;
 &lt;ul&gt;
@@ -808,7 +808,7 @@ thanks to &lt;a class="reference external" href="https://github.com/avoidr"&gt;&
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-0-2"&gt;
-&lt;span id="id21"&gt;&lt;/span&gt;
+&lt;span id="id22"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Features:&lt;/p&gt;
 &lt;ul&gt;
@@ -849,7 +849,7 @@ thanks to &lt;a class="reference external" href="https://github.com/avoidr"&gt;&
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-1-0"&gt;
-&lt;span id="id20"&gt;&lt;/span&gt;
+&lt;span id="id21"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Features:&lt;/p&gt;
 &lt;ul&gt;
@@ -887,7 +887,7 @@ thanks to &lt;a class="reference external" href="https://github.com/avoidr"&gt;&
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-1-1"&gt;
-&lt;span id="id19"&gt;&lt;/span&gt;
+&lt;span id="id20"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Changes:&lt;/p&gt;
 &lt;ul&gt;
@@ -915,7 +915,7 @@ thanks to &lt;a class="reference external" href="https://github.com/avoidr"&gt;&
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-1-2"&gt;
-&lt;span id="id18"&gt;&lt;/span&gt;
+&lt;span id="id19"&gt;&lt;/span&gt;
 &lt;div class="admonition note"&gt;
 &lt;p class="admonition-title"&gt;Note&lt;/p&gt;
 &lt;p&gt;This release contains only improvement for MS Windows,
@@ -952,7 +952,7 @@ user of other platform can ignore it.</summary>
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-1-3"&gt;
-&lt;span id="id17"&gt;&lt;/span&gt;
+&lt;span id="id18"&gt;&lt;/span&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
 &lt;blockquote&gt;
@@ -976,7 +976,7 @@ user of other platform can ignore it.</summary>
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-2-0"&gt;
-&lt;span id="id16"&gt;&lt;/span&gt;
+&lt;span id="id17"&gt;&lt;/span&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;p&gt;Features:&lt;/p&gt;
 &lt;ul class="simple"&gt;
@@ -1012,7 +1012,7 @@ thanks to &lt;a class="reference external" href="https://github.com/lgbaldoni"&g
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-2-1"&gt;
-&lt;span id="id15"&gt;&lt;/span&gt;
+&lt;span id="id16"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Features:&lt;/p&gt;
 &lt;ul&gt;
@@ -1039,7 +1039,7 @@ thanks to &lt;a class="reference external" href="https://github.com/lgbaldoni"&g
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-2-2"&gt;
-&lt;span id="id14"&gt;&lt;/span&gt;
+&lt;span id="id15"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Changed:&lt;/p&gt;
 &lt;ul&gt;
@@ -1067,7 +1067,7 @@ thanks to &lt;a class="reference external" href="https://github.com/lgbaldoni"&g
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-2-3"&gt;
-&lt;span id="id13"&gt;&lt;/span&gt;
+&lt;span id="id14"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
 &lt;ul&gt;
@@ -1089,7 +1089,7 @@ thanks to &lt;a class="reference external" href="https://github.com/lgbaldoni"&g
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-2-4"&gt;
-&lt;span id="id12"&gt;&lt;/span&gt;
+&lt;span id="id13"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
 &lt;ul&gt;
@@ -1142,7 +1142,7 @@ thanks to &lt;a class="reference external" href="https://github.com/lgbaldoni"&g
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-2-5"&gt;
-&lt;span id="id11"&gt;&lt;/span&gt;
+&lt;span id="id12"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
 &lt;ul&gt;
@@ -1164,7 +1164,7 @@ thanks to &lt;a class="reference external" href="https://github.com/lgbaldoni"&g
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-3-1"&gt;
-&lt;span id="id10"&gt;&lt;/span&gt;
+&lt;span id="id11"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
 &lt;ul&gt;
@@ -1188,7 +1188,7 @@ thanks to &lt;a class="reference external" href="https://github.com/lgbaldoni"&g
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-3-2"&gt;
-&lt;span id="id9"&gt;&lt;/span&gt;
+&lt;span id="id10"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Features:&lt;/p&gt;
 &lt;ul&gt;
@@ -1215,6 +1215,28 @@ thanks to &lt;a class="reference external" href="https://github.com/lgbaldoni"&g
     <published>2022-02-10T00:00:00+00:00</published>
   </entry>
   <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-1-5-1</id>
+    <title>2023-03-26 Version 1.5.1</title>
+    <updated>2022-03-26T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-1-5-1"&gt;
+&lt;span id="version-latest"&gt;&lt;/span&gt;&lt;span id="id1"&gt;&lt;/span&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Fix the problem that the URL cannot be opened on MS Windows (&lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/391"&gt;#391&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-1-5-1" rel="alternate"/>
+    <summary>Bug fixes:</summary>
+    <published>2022-03-26T00:00:00+00:00</published>
+  </entry>
+  <entry>
     <id>https://srain.silverrainz.me/changelog.html#version-1-4-0</id>
     <title>2022-05-07 Version 1.4.0</title>
     <updated>2022-05-07T00:00:00+00:00</updated>
@@ -1222,7 +1244,7 @@ thanks to &lt;a class="reference external" href="https://github.com/lgbaldoni"&g
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-4-0"&gt;
-&lt;span id="id8"&gt;&lt;/span&gt;
+&lt;span id="id9"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Features:&lt;/p&gt;
 &lt;ul&gt;
@@ -1280,7 +1302,7 @@ thanks to &lt;a class="reference external" href="https://github.com/lgbaldoni"&g
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-4-1"&gt;
-&lt;span id="id6"&gt;&lt;/span&gt;
+&lt;span id="id7"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Changes:&lt;/p&gt;
 &lt;ul&gt;
@@ -1304,7 +1326,7 @@ see &lt;a class="reference internal" href="blog/migrate-domain.html"&gt;&lt;span
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-3-3"&gt;
-&lt;span id="id5"&gt;&lt;/span&gt;
+&lt;span id="id6"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Backport domain name change, see &lt;a class="reference internal" href="changelog.html#version-1-4-0"&gt;&lt;span class="std std-ref"&gt;2022-05-07 Version 1.4.0&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;Backport &lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/371"&gt;#371&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
@@ -1323,7 +1345,7 @@ see &lt;a class="reference internal" href="blog/migrate-domain.html"&gt;&lt;span
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-4-2"&gt;
-&lt;span id="id4"&gt;&lt;/span&gt;
+&lt;span id="id5"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Backport &lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/371"&gt;#371&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
 &lt;/ul&gt;
@@ -1341,7 +1363,7 @@ see &lt;a class="reference internal" href="blog/migrate-domain.html"&gt;&lt;span
       <name>Shengyu Zhang</name>
     </author>
     <content type="html">&lt;section id="version-1-5-0"&gt;
-&lt;span id="version-latest"&gt;&lt;/span&gt;&lt;span id="id1"&gt;&lt;/span&gt;
+&lt;span id="id2"&gt;&lt;/span&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;p&gt;Features:&lt;/p&gt;
 &lt;ul&gt;
