@@ -1,4 +1,4 @@
-sphinx-book-theme
+sphinx-book-theme==0.3.3
 ablog
 sphinxnotes-strike
 sphinxnotes-mock
