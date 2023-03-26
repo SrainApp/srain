@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
   <id>https://srain.silverrainz.me/</id>
   <title>Srain</title>
-  <updated>2023-03-26T04:50:19.653995+00:00</updated>
+  <updated>2023-03-26T05:05:23.009306+00:00</updated>
   <link href="https://srain.silverrainz.me/"/>
   <link href="https://srain.silverrainz.me/blog/atom.xml" rel="self"/>
   <generator uri="https://ablog.readthedocs.org/" version="0.10.33.post1">ABlog</generator>
@@ -1215,28 +1215,6 @@ thanks to &lt;a class="reference external" href="https://github.com/lgbaldoni"&g
     <published>2022-02-10T00:00:00+00:00</published>
   </entry>
   <entry>
-    <id>https://srain.silverrainz.me/changelog.html#version-1-5-1</id>
-    <title>2023-03-26 Version 1.5.1</title>
-    <updated>2022-03-26T00:00:00+00:00</updated>
-    <author>
-      <name>Shengyu Zhang</name>
-    </author>
-    <content type="html">&lt;section id="version-1-5-1"&gt;
-&lt;span id="version-latest"&gt;&lt;/span&gt;&lt;span id="id1"&gt;&lt;/span&gt;
-&lt;ul class="simple"&gt;
-&lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;Fix the problem that the URL cannot be opened on MS Windows (&lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/391"&gt;#391&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/section&gt;
-</content>
-    <link href="https://srain.silverrainz.me/changelog.html#version-1-5-1" rel="alternate"/>
-    <summary>Bug fixes:</summary>
-    <published>2022-03-26T00:00:00+00:00</published>
-  </entry>
-  <entry>
     <id>https://srain.silverrainz.me/changelog.html#version-1-4-0</id>
     <title>2022-05-07 Version 1.4.0</title>
     <updated>2022-05-07T00:00:00+00:00</updated>
@@ -1390,5 +1368,27 @@ see &lt;a class="reference internal" href="blog/migrate-domain.html"&gt;&lt;span
     <link href="https://srain.silverrainz.me/changelog.html#version-1-5-0" rel="alternate"/>
     <summary>Features:</summary>
     <published>2022-10-02T00:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://srain.silverrainz.me/changelog.html#version-1-5-1</id>
+    <title>2023-03-26 Version 1.5.1</title>
+    <updated>2023-03-26T00:00:00+00:00</updated>
+    <author>
+      <name>Shengyu Zhang</name>
+    </author>
+    <content type="html">&lt;section id="version-1-5-1"&gt;
+&lt;span id="version-latest"&gt;&lt;/span&gt;&lt;span id="id1"&gt;&lt;/span&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;p&gt;Bug fixes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Fix the problem that the URL cannot be opened on MS Windows (&lt;a class="reference external" href="https://github.com/SrainApp/srain/issues/391"&gt;#391&lt;/a&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;
+</content>
+    <link href="https://srain.silverrainz.me/changelog.html#version-1-5-1" rel="alternate"/>
+    <summary>Bug fixes:</summary>
+    <published>2023-03-26T00:00:00+00:00</published>
   </entry>
 </feed>
