@@ -37,7 +37,7 @@ Change Log
 2023-03-26 Version 1.5.1
 ========================
 
-.. post:: 2022-03-26
+.. post:: 2023-03-26
    :category: Release
 
 - Bug fixes:
