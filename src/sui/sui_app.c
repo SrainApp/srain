@@ -96,7 +96,7 @@ static void on_activate_exit(GSimpleAction *action, GVariant  *parameter,
 static void on_toggle_server_visibility(GSimpleAction *action, GVariant  *parameter,
         gpointer user_data);
 
-#ifdef ENABLE_APP_INDICATOR
+#ifndef ENABLE_APP_INDICATOR
 static void tray_icon_on_click(GtkStatusIcon *status_icon, gpointer user_data);
 static void tray_icon_on_popup_menu(GtkStatusIcon *status_icon, guint button,
        guint activate_time, gpointer user_data);
