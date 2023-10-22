@@ -24,14 +24,16 @@
  * @date 2016-03-01
  */
 
+#include "meta.h"
+
 #include <gtk/gtk.h>
 
+/* NOTE: Behind meta.h because ENABLE_APP_INDICATOR declared there */
 #ifdef ENABLE_APP_INDICATOR
 #include <libayatana-appindicator/app-indicator.h>
 #endif
 
 #include "sui/sui.h"
-#include "meta.h"
 #include "log.h"
 #include "i18n.h"
 
@@ -93,8 +95,9 @@ static void on_activate_exit(GSimpleAction *action, GVariant  *parameter,
         gpointer user_data);
 static void on_toggle_server_visibility(GSimpleAction *action, GVariant  *parameter,
         gpointer user_data);
-static void tray_icon_on_click(GtkStatusIcon *status_icon, gpointer user_data);
+
 #ifdef ENABLE_APP_INDICATOR
+static void tray_icon_on_click(GtkStatusIcon *status_icon, gpointer user_data);
 static void tray_icon_on_popup_menu(GtkStatusIcon *status_icon, guint button,
        guint activate_time, gpointer user_data);
 #endif
@@ -353,8 +356,10 @@ void sui_application_send_notification(SuiApplication *self,
 }
 
 void sui_application_highlight_tray_icon(SuiApplication *self, bool highlight){
+#ifndef ENABLE_APP_INDICATOR
     gtk_status_icon_set_from_icon_name(self->tray_icon,
             highlight ? "srain-red": PACKAGE);
+#endif
 }
 
 SuiApplication* sui_application_get_instance(){
@@ -477,8 +482,8 @@ static void on_startup(SuiApplication *self){
     app_indicator_set_menu(self->tray_icon, self->menu);
 #else
     self->tray_icon = gtk_status_icon_new_from_icon_name(PACKAGE_APPID);
+    g_signal_connect(self->tray_icon, "activate", G_CALLBACK(tray_icon_on_click), self);
 #endif
-    gtk_widget_set_tooltip_text(GTK_WIDGET(self->tray_icon), PACKAGE);
 
     // Attach to any widget to connect to action
     gtk_menu_attach_to_widget(self->menu, GTK_WIDGET(self->popover_menu), NULL);
@@ -486,9 +491,6 @@ static void on_startup(SuiApplication *self){
     // Add resource to icon search path
     gtk_icon_theme_add_resource_path(gtk_icon_theme_get_default(),
             "/im/srain/Srain/icons");
-
-    g_signal_connect(self->tray_icon, "activate",
-            G_CALLBACK(tray_icon_on_click), self);
 
     ret = sui_theme_manager_apply(self->theme, self->cfg->theme);
     if (!RET_IS_OK(ret)){
@@ -604,6 +606,7 @@ static void on_toggle_server_visibility(GSimpleAction *action, GVariant  *parame
     sui_window_toggle_server_visibility(win);
 }
 
+#ifndef ENABLE_APP_INDICATOR
 static void tray_icon_on_click(GtkStatusIcon *status_icon, gpointer user_data){
     GList *wins;
     SuiApplication *self;
@@ -619,7 +622,6 @@ static void tray_icon_on_click(GtkStatusIcon *status_icon, gpointer user_data){
     }
 }
 
-#ifndef ENABLE_APP_INDICATOR
 static void tray_icon_on_popup_menu(GtkStatusIcon *status_icon, guint button,
         guint activate_time, gpointer user_data){
     SuiApplication *self;
