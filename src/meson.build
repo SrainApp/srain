@@ -121,9 +121,12 @@ deps = [
   dependency('libsoup-2.4'),
   dependency('openssl'),
   dependency('libsecret-1'),
-  dependency('ayatana-appindicator3-0.1'),
   generated_meta_h,
 ]
+
+if get_option('app_indicator')
+  deps += [dependency('ayatana-appindicator3-0.1')]
+endif
 
 incdirs = [
   include_directories('inc'),

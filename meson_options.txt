@@ -1,1 +1,2 @@
 option('doc_builders', type : 'array', choices : ['html', 'man'], value : [])
+option('app_indicator', type : 'boolean', value : true)

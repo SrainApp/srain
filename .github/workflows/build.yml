@@ -67,10 +67,11 @@ jobs:
         # before this -Dopt= would pass a list with an empty string.
         meson setup \
           -Ddoc_builders=[] \
+          -Dapp_indicator=false \
           --prefix=$MINGW_PREFIX \
           --datadir=$MINGW_PREFIX/share \
           --sysconfdir=$MINGW_PREFIX/etc \
-        builddir;
+          builddir;
         ninja -C builddir;
     - name: Install
       run: |

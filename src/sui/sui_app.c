@@ -25,7 +25,10 @@
  */
 
 #include <gtk/gtk.h>
+
+#ifdef ENABLE_APP_INDICATOR
 #include <libayatana-appindicator/app-indicator.h>
+#endif
 
 #include "sui/sui.h"
 #include "meta.h"
@@ -42,7 +45,12 @@
 struct _SuiApplication {
     GtkApplication parent;
 
+#ifdef ENABLE_APP_INDICATOR
     AppIndicator *tray_icon;
+#else
+    GtkStatusIcon *tray_icon;
+#endif
+
     // GtkPopover can not shown at outside of GtkWindow on X11,
     // so we need another traditional menu as tray icon menu.
     GtkMenu *menu;
@@ -86,6 +94,10 @@ static void on_activate_exit(GSimpleAction *action, GVariant  *parameter,
 static void on_toggle_server_visibility(GSimpleAction *action, GVariant  *parameter,
         gpointer user_data);
 static void tray_icon_on_click(GtkStatusIcon *status_icon, gpointer user_data);
+#ifdef ENABLE_APP_INDICATOR
+static void tray_icon_on_popup_menu(GtkStatusIcon *status_icon, guint button,
+       guint activate_time, gpointer user_data);
+#endif
 
 /*****************************************************************************
  * GObject functions
@@ -457,11 +469,16 @@ static void on_startup(SuiApplication *self){
         gtk_builder_get_object(builder, "popover_menu")));
     g_object_unref(builder);
 
+#ifdef ENABLE_APP_INDICATOR
     self->tray_icon = app_indicator_new(PACKAGE_APPID, PACKAGE_APPID,
             APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
     app_indicator_set_status(self->tray_icon, APP_INDICATOR_STATUS_ACTIVE);
     app_indicator_set_attention_icon(self->tray_icon, "srain-red");
     app_indicator_set_menu(self->tray_icon, self->menu);
+#else
+    self->tray_icon = gtk_status_icon_new_from_icon_name(PACKAGE_APPID);
+#endif
+    gtk_widget_set_tooltip_text(GTK_WIDGET(self->tray_icon), PACKAGE);
 
     // Attach to any widget to connect to action
     gtk_menu_attach_to_widget(self->menu, GTK_WIDGET(self->popover_menu), NULL);
@@ -601,3 +618,14 @@ static void tray_icon_on_click(GtkStatusIcon *status_icon, gpointer user_data){
         gtk_widget_set_visible(win, !gtk_widget_get_visible(win));
     }
 }
+
+#ifndef ENABLE_APP_INDICATOR
+static void tray_icon_on_popup_menu(GtkStatusIcon *status_icon, guint button,
+        guint activate_time, gpointer user_data){
+    SuiApplication *self;
+
+    self = user_data;
+
+    gtk_menu_popup(self->menu, NULL, NULL, NULL, NULL, button, activate_time);
+}
+#endif
