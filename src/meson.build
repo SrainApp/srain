@@ -121,7 +121,7 @@ deps = [
   dependency('libsoup-2.4'),
   dependency('openssl'),
   dependency('libsecret-1'),
-  dependency('appindicator3-0.1'),
+  dependency('ayatana-appindicator3-0.1'),
   generated_meta_h,
 ]
 

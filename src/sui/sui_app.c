@@ -25,7 +25,7 @@
  */
 
 #include <gtk/gtk.h>
-#include <libappindicator/app-indicator.h>
+#include <libayatana-appindicator/app-indicator.h>
 
 #include "sui/sui.h"
 #include "meta.h"
