@@ -15,6 +15,10 @@ meta_h.set_quoted('PACKAGE_COPYRIGHT_DATES', '2016 - 2023')
 meta_h.set_quoted('PACKAGE_DATA_DIR', data_dir)
 meta_h.set_quoted('PACKAGE_CONFIG_DIR', sys_conf_dir)
 
+if get_option('app_indicator')
+  meta_h.set('ENABLE_APP_INDICATOR', 1)
+endif
+
 build_id_generator = [
   join_paths(meson.source_root() , 'script', 'gen-build-id.sh'),
   meson.source_root(),
