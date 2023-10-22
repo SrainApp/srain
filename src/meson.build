@@ -124,6 +124,10 @@ deps = [
   generated_meta_h,
 ]
 
+if get_option('app_indicator')
+  deps += [dependency('ayatana-appindicator3-0.1')]
+endif
+
 incdirs = [
   include_directories('inc'),
   include_directories('config'),
