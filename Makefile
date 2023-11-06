@@ -51,7 +51,14 @@ doc:
 	xdg-open $(PREFIX)/share/doc/srain/html/index.html
 
 $(BUILDDIR): meson.build | $(PREFIX)
-	$(MESON) setup --prefix=$(PREFIX) --buildtype=debug $@
+	if [[ "$$OSTYPE" == "darwin"* ]]; then \
+		source ./script/macos-pkgconfig-path.sh; \
+	fi; \
+    if [[ "$$OSTYPE" == "linux-gnu"* ]]; then \
+		$(MESON) setup --prefix=$(PREFIX) --buildtype=debug $@; \
+	else \
+		$(MESON) setup --prefix=$(PREFIX) --buildtype=debug -Dapp_indicator=false $@; \
+	fi
 
 $(PREFIX):
 	$(MKDIR) $@
