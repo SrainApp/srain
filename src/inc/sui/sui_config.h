@@ -36,6 +36,7 @@ struct _SuiWindowConfig {
     bool send_on_ctrl_enter;
     bool exit_on_close;
     bool server_visibility;
+    bool scroll_on_new_message;
 };
 
 struct _SuiApplicationConfig {
