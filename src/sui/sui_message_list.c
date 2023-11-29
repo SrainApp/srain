@@ -313,7 +313,7 @@ static void smart_scroll(SuiMessageList *self){
     buf = sui_window_get_cur_buffer(win);
     g_return_if_fail(SUI_IS_BUFFER(buf));
 
-    if (sui_window_get_config(win)->scroll_on_new_message &&
+    if (!sui_window_get_config(win)->scroll_on_new_message &&
         !sui_window_is_active(win))
     {
         return;
