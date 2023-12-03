@@ -22,7 +22,7 @@ Packaging Status
 
 |pkgstat|
 
-.. |pkgstat| image:: https://repology.org/badge/vertical-allrepos/srain.svg
+.. |pkgstat| image:: https://repology.org/badge/vertical-allrepos/srain.svg?columns=3
    :target: https://repology.org/project/srain/versions
 
 Features
