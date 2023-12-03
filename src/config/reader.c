@@ -294,6 +294,8 @@ static SrnRet read_application_config_from_cfg(config_t *cfg,
             &app_cfg->ui->window.exit_on_close);
     config_lookup_bool_ex(cfg, "server-visibility",
             &app_cfg->ui->window.server_visibility);
+    config_lookup_bool_ex(cfg, "scroll-on-new-message",
+            &app_cfg->ui->window.scroll_on_new_message);
 
     /* Read auto connect server list */
     config_setting_t *auto_connect;

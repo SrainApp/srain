@@ -296,7 +296,8 @@ static gboolean scroll_to_bottom_timeout(gpointer user_data){
  *
  * This function called when a message added to ``SuiMessageList``.
  * If:
- * - The top-level window is active;
+ * - The top-level window is active
+ *   (Can be changed with the "scroll_on_new_message" config option)
  * - And the SuiMessageList itself is child of current ``SuiBuffer``;
  * - The scroll bar is near the bottom of the list box
  *   (If not, the user may be browsing previous messages).
@@ -312,7 +313,9 @@ static void smart_scroll(SuiMessageList *self){
     buf = sui_window_get_cur_buffer(win);
     g_return_if_fail(SUI_IS_BUFFER(buf));
 
-    if (!sui_window_is_active(win)) {
+    if (!sui_window_get_config(win)->scroll_on_new_message &&
+        !sui_window_is_active(win))
+    {
         return;
     }
     if (sui_buffer_get_message_list(buf) != self){
