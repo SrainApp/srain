@@ -44,6 +44,10 @@
 #include "sui_window.h"
 #include "sui_prefs_dialog.h"
 
+// See also $PROJECT_ROOT/data/icons/meson.build.
+#define APP_ICON PACKAGE_APPID
+#define APP_ATTENTION_ICON PACKAGE_APPID ".Red"
+
 struct _SuiApplication {
     GtkApplication parent;
 
@@ -356,9 +360,12 @@ void sui_application_send_notification(SuiApplication *self,
 }
 
 void sui_application_highlight_tray_icon(SuiApplication *self, bool highlight){
-#ifndef ENABLE_APP_INDICATOR
+#ifdef ENABLE_APP_INDICATOR
+    app_indicator_set_status(self->tray_icon, highlight ?
+            APP_INDICATOR_STATUS_ATTENTION : APP_INDICATOR_STATUS_ACTIVE);
+#else
     gtk_status_icon_set_from_icon_name(self->tray_icon,
-            highlight ? "srain-red": PACKAGE);
+            highlight ? APP_ATTENTION_ICON : APP_ICON);
 #endif
 }
 
@@ -457,7 +464,7 @@ static void show_about_dialog(SuiApplication *self){
             "comments", PACKAGE_DESC,
             "authors", authors,
             "documenters", documentors,
-            "logo-icon-name", PACKAGE,
+            "logo-icon-name", APP_ICON,
             "title", _("About Srain"),
             "translator-credits", translators,
             NULL);
@@ -475,14 +482,17 @@ static void on_startup(SuiApplication *self){
     g_object_unref(builder);
 
 #ifdef ENABLE_APP_INDICATOR
-    self->tray_icon = app_indicator_new(PACKAGE_APPID, PACKAGE_APPID,
-            APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
+    self->tray_icon = app_indicator_new(PACKAGE_APPID, APP_ICON,
+            APP_INDICATOR_CATEGORY_COMMUNICATIONS);
     app_indicator_set_status(self->tray_icon, APP_INDICATOR_STATUS_ACTIVE);
-    app_indicator_set_attention_icon(self->tray_icon, "srain-red");
+    app_indicator_set_attention_icon_full(self->tray_icon, APP_ATTENTION_ICON, _("Srain Icon for Attention"));
     app_indicator_set_menu(self->tray_icon, self->menu);
+    app_indicator_set_title(self->tray_icon, PACKAGE);
 #else
     self->tray_icon = gtk_status_icon_new_from_icon_name(PACKAGE_APPID);
     g_signal_connect(self->tray_icon, "activate", G_CALLBACK(tray_icon_on_click), self);
+    g_signal_connect(self->tray_icon, "popup-menu", G_CALLBACK(tray_icon_on_popup_menu), self);
+    gtk_status_icon_set_tooltip_text(self->tray_icon, PACKAGE);
 #endif
 
     // Attach to any widget to connect to action
