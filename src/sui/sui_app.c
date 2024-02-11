@@ -91,13 +91,15 @@ static int on_handle_local_options(SuiApplication *self, GVariantDict *options,
         gpointer user_data);
 static int on_command_line(SuiApplication *self,
         GApplicationCommandLine *cmdline, gpointer user_data);
-static void on_activate_about(GSimpleAction *action, GVariant  *parameter,
+static void on_action_about(GSimpleAction *action, GVariant *parameter,
         gpointer user_data);
-static void on_activate_prefs(GSimpleAction *action, GVariant  *parameter,
+static void on_action_prefs(GSimpleAction *action, GVariant *parameter,
         gpointer user_data);
-static void on_activate_exit(GSimpleAction *action, GVariant  *parameter,
+static void on_action_exit(GSimpleAction *action, GVariant *parameter,
         gpointer user_data);
-static void on_toggle_server_visibility(GSimpleAction *action, GVariant  *parameter,
+static void on_action_toggle_server_visibility(GSimpleAction *action,
+        GVariant *parameter, gpointer user_data);
+static void on_action_activate(GSimpleAction *action, GVariant *parameter,
         gpointer user_data);
 
 #ifndef ENABLE_APP_INDICATOR
@@ -157,19 +159,23 @@ static const GOptionEntry option_entries[] = {
 static const GActionEntry action_entries[] = {
     {
         .name = "about",
-        .activate = on_activate_about,
+        .activate = on_action_about,
     },
     {
         .name = "preferences",
-        .activate = on_activate_prefs,
+        .activate = on_action_prefs,
     },
     {
         .name = "exit",
-        .activate = on_activate_exit,
+        .activate = on_action_exit,
     },
     {
         .name = "toggle-server-visibility",
-        .activate = on_toggle_server_visibility,
+        .activate = on_action_toggle_server_visibility,
+    },
+    {
+        .name = "activate",
+        .activate = on_action_activate,
     },
     { NULL },
 };
@@ -361,6 +367,7 @@ void sui_application_send_notification(SuiApplication *self,
 
 void sui_application_highlight_tray_icon(SuiApplication *self, bool highlight){
 #ifdef ENABLE_APP_INDICATOR
+    // TODO: works on KDE, but doesn't work on waybar.
     app_indicator_set_status(self->tray_icon, highlight ?
             APP_INDICATOR_STATUS_ATTENTION : APP_INDICATOR_STATUS_ACTIVE);
 #else
@@ -488,6 +495,23 @@ static void on_startup(SuiApplication *self){
     app_indicator_set_attention_icon_full(self->tray_icon, APP_ATTENTION_ICON, _("Srain Icon for Attention"));
     app_indicator_set_menu(self->tray_icon, self->menu);
     app_indicator_set_title(self->tray_icon, PACKAGE);
+
+    // Show "Activate" menu item because we can not activate application
+    // by left-clicking the app indicator.
+    GList *menu_items;
+    menu_items = gtk_container_get_children(GTK_CONTAINER(self->menu));
+    for (GList *iter = menu_items; iter != NULL; iter = g_list_next(iter)) {
+        GtkWidget *item;
+        const char *name;
+
+        item = GTK_WIDGET(iter->data);
+        name = gtk_widget_get_name(item);
+        if (g_strcmp0(name, "activate_menu_item") == 0) {
+            gtk_widget_set_visible(item, TRUE);
+            break;
+        }
+    }
+    g_list_free(menu_items);
 #else
     self->tray_icon = gtk_status_icon_new_from_icon_name(PACKAGE_APPID);
     g_signal_connect(self->tray_icon, "activate", G_CALLBACK(tray_icon_on_click), self);
@@ -572,7 +596,7 @@ static int on_command_line(SuiApplication *self,
     return 0;
 }
 
-static void on_activate_about(GSimpleAction *action, GVariant  *parameter,
+static void on_action_about(GSimpleAction *action, GVariant  *parameter,
         gpointer user_data){
     SuiApplication *self;
 
@@ -580,7 +604,7 @@ static void on_activate_about(GSimpleAction *action, GVariant  *parameter,
     show_about_dialog(self);
 }
 
-static void on_activate_prefs(GSimpleAction *action, GVariant  *parameter,
+static void on_action_prefs(GSimpleAction *action, GVariant  *parameter,
         gpointer user_data){
     SuiApplication *self;
     SuiPrefsDialog *dialog;
@@ -597,7 +621,7 @@ static void on_activate_prefs(GSimpleAction *action, GVariant  *parameter,
     gtk_widget_destroy(GTK_WIDGET(dialog));
 }
 
-static void on_activate_exit(GSimpleAction *action, GVariant  *parameter,
+static void on_action_exit(GSimpleAction *action, GVariant  *parameter,
         gpointer user_data){
     SuiApplication *self;
 
@@ -606,7 +630,7 @@ static void on_activate_exit(GSimpleAction *action, GVariant  *parameter,
 }
 
 
-static void on_toggle_server_visibility(GSimpleAction *action, GVariant  *parameter,
+static void on_action_toggle_server_visibility(GSimpleAction *action, GVariant  *parameter,
         gpointer user_data){
     SuiApplication *self;
     SuiWindow *win;
@@ -614,6 +638,14 @@ static void on_toggle_server_visibility(GSimpleAction *action, GVariant  *parame
     self = user_data;
     win = sui_application_get_cur_window(self);
     sui_window_toggle_server_visibility(win);
+}
+
+static void on_action_activate(GSimpleAction *action, GVariant  *parameter,
+        gpointer user_data){
+    SuiApplication *self;
+
+    self = user_data;
+    g_application_activate(G_APPLICATION(self));
 }
 
 #ifndef ENABLE_APP_INDICATOR
@@ -638,6 +670,6 @@ static void tray_icon_on_popup_menu(GtkStatusIcon *status_icon, guint button,
 
     self = user_data;
 
-    gtk_menu_popup(self->menu, NULL, NULL, NULL, NULL, button, activate_time);
+    gtk_menu_popup_at_pointer(self->menu, NULL);
 }
 #endif
