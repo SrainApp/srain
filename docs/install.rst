@@ -34,11 +34,9 @@ libsecret
 openssl
 python-sphinx            Optional, for building documentation
 adwaita-icon-theme       Or any other icon themes
-libayatana-appindicator_ Optional application indicators support, can be 
+libayatana-appindicator  Optional application indicator support, can be
                          disabled by meson options ``-Dapp_indicator=false``
 ======================== =================================================== ========
-
-.. _libayatana-appindicator: https://github.com/AyatanaIndicators/libayatana-appindicator
 
 .. _install-building:
 

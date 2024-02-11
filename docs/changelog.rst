@@ -32,6 +32,32 @@ Change Log
       - XXX
 
 .. _version-latest:
+.. _version-1.6.0:
+
+2024-02-11 Version 1.6.0
+========================
+
+.. post:: 2024-02-11
+   :category: Release
+
+- Features:
+
+  - Use new app indicator provided by libayatana-appindicator_, which has better
+    compatibility than ``GtkStatusIcon`` (:pull:`374`, :pull:`401`)
+
+    .. note:: User can still use ``GtkStatusIcon`` if they have trouble installing
+       libayatana-appindicator, see :doc:`./install` for more details.
+
+  - Add conf item ``scroll-on-new-message`` to automatically scroll down the
+    message list when a new message is incoming even if the application is
+    inactive (:issue:`382`)
+
+- Bug fixes:
+
+  - Let conf item ``chat.log`` works as expected (:issue:`402`)
+
+.. _libayatana-appindicator: https://github.com/AyatanaIndicators/libayatana-appindicator
+
 .. _version-1.5.1:
 
 2023-03-26 Version 1.5.1
