@@ -491,6 +491,7 @@ static SrnRet read_server_config_from_cfg(config_t *cfg, SrnServerConfig *srv_cf
 }
 
 static SrnRet read_chat_config_from_chat(config_setting_t *chat, SrnChatConfig *cfg){
+    config_setting_lookup_bool_ex(chat, "log", &cfg->log);
     config_setting_lookup_bool_ex(chat, "notify", &cfg->ui->notify);
     config_setting_lookup_bool_ex(chat, "show-topic", &cfg->ui->show_topic);
     config_setting_lookup_bool_ex(chat, "show-avatar", &cfg->ui->show_avatar);

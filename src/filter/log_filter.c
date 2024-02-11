@@ -53,6 +53,10 @@ bool filter(const SrnMessage *msg) {
     char *file;
     GString *basename;
 
+    if (!msg->chat->cfg->log) {
+        return TRUE;
+    }
+
     date_str = g_date_time_format(msg->time, "%F");
     g_return_val_if_fail(date_str, TRUE);
 
