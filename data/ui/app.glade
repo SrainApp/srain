@@ -6,10 +6,12 @@
     <property name="visible">True</property>
     <property name="can-focus">False</property>
     <child>
-      <object class="GtkMenuItem" id="show_window_menu_item">
-        <property name="visible">True</property>
+      <object class="GtkMenuItem" id="activate_menu_item">
+        <property name="name">activate_menu_item</property>
+        <property name="visible">False</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="yes">_Show window</property>
+        <property name="action-name">app.activate</property>
+        <property name="label" translatable="yes">_Activate</property>
         <property name="use-underline">True</property>
       </object>
     </child>
@@ -27,7 +29,7 @@
         <property name="visible">True</property>
         <property name="can-focus">False</property>
         <property name="action-name">app.about</property>
-        <property name="label" translatable="yes">_About</property>
+        <property name="label" translatable="yes">About</property>
         <property name="use-underline">True</property>
       </object>
     </child>
