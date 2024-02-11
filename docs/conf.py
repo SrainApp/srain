@@ -53,7 +53,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Srain'
-copyright = '2022, Shengyu Zhang'
+copyright = '2024, Shengyu Zhang'
 author = 'Shengyu Zhang'
 baseurl = 'https://srain.silverrainz.me/'
 
@@ -62,7 +62,7 @@ baseurl = 'https://srain.silverrainz.me/'
 # built documents.
 #
 # The short X.Y version.
-version = '1.5.1'
+version = '1.6.0'
 # The full version, including alpha/beta/rc tags.
 release = version
 
