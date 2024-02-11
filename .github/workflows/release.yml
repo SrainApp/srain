@@ -46,6 +46,7 @@ jobs:
         mkdir -pv $INSTALL_DIR;
         meson setup -Ddoc_builders=[] \
           --buildtype=release \
+          -Dapp_indicator=false \
           builddir && \
         ninja -C builddir && \
         DESTDIR=$PWD/$INSTALL_DIR ninja -C builddir install && \
