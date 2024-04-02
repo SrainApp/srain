@@ -53,7 +53,7 @@ struct _SuiUrlPreviewer {
     SuiUrlContentType content_type;
 
     bool previewed;
-    SoupURI *uri;
+    GUri *uri;
     SoupSession *session;
     SoupMessage *msg;
     GCancellable *cancel;
@@ -168,10 +168,9 @@ static void sui_url_previewer_init(SuiUrlPreviewer *self){
 
     /* All SuiUrlPreviewers share one SoupSession instance */
     if (!SOUP_IS_SESSION(default_session)){
-        default_session = soup_session_new_with_options(
-                SOUP_SESSION_USER_AGENT, PACKAGE_NAME "/" PACKAGE_VERSION,
-                SOUP_SESSION_ACCEPT_LANGUAGE_AUTO, TRUE,
-                NULL);
+        default_session = soup_session_new();
+        soup_session_set_user_agent(default_session, PACKAGE_NAME "/" PACKAGE_VERSION);
+        soup_session_set_accept_language_auto(default_session, TRUE);
     }
     self->session = default_session;
 
@@ -204,7 +203,7 @@ static void sui_url_previewer_finalize(GObject *object){
     str_assign(&self->url, NULL);
     str_assign(&self->mime_type, NULL);
     if (self->uri) {
-        soup_uri_free(self->uri);
+        g_uri_unref(self->uri);
     }
     g_cancellable_cancel(self->cancel);
     g_object_unref(self->cancel);
@@ -270,7 +269,7 @@ static void sui_url_previewer_class_init(SuiUrlPreviewerClass *class){
 SuiUrlPreviewer* sui_url_previewer_new_from_cache(const char *url){
     static GList *instance_list = NULL;
     GList *lst;
-    SoupURI *uri;
+    GUri *uri;
     SuiUrlPreviewer *instance;
 
     while (g_list_length(instance_list) > MAX_INSTANCE_COUNT){
@@ -283,7 +282,7 @@ SuiUrlPreviewer* sui_url_previewer_new_from_cache(const char *url){
     }
 
     instance = NULL;
-    uri = soup_uri_new(url);
+    uri = g_uri_parse(url, SOUP_HTTP_URI_FLAGS, NULL);
     lst = instance_list;
     while (lst){
         SuiUrlPreviewer *cur;
@@ -301,7 +300,7 @@ SuiUrlPreviewer* sui_url_previewer_new_from_cache(const char *url){
         instance_list = g_list_append(instance_list, g_object_ref(instance));
     }
 
-    soup_uri_free(uri);
+    g_uri_unref(uri);
     return instance;
 }
 
@@ -333,8 +332,8 @@ void sui_url_previewer_preview(SuiUrlPreviewer *self){
 
     g_cancellable_reset(self->cancel);
     self->msg = soup_message_new_from_uri("GET", self->uri);
-    soup_session_send_async(self->session, self->msg, self->cancel,
-            session_send_ready, self);
+    soup_session_send_async(self->session, self->msg, 0, // io_priority, TODO: OK for 0?
+            self->cancel, session_send_ready, self);
 }
 
 const char* sui_url_previewer_get_url(SuiUrlPreviewer *self){
@@ -354,14 +353,14 @@ static void sui_url_previewer_set_url(SuiUrlPreviewer *self, const char *url){
     const char *scheme;
 
     str_assign(&self->url, url);
-    self->uri = soup_uri_new(url);
+    self->uri = g_uri_parse(url, SOUP_HTTP_URI_FLAGS, NULL);
 
     if (!self->uri){
         sui_url_previewer_set_content_type(self, SUI_URL_CONTENT_TYPE_UNSUPPORTED);
         return;
     }
 
-    scheme = soup_uri_get_scheme(self->uri);
+    scheme = g_uri_get_scheme(self->uri);
     if (g_ascii_strcasecmp(scheme, "http") != 0
             && g_ascii_strcasecmp(scheme, "https") != 0){
         // Unsupported protocol
@@ -539,7 +538,7 @@ static void session_send_ready(GObject *object, GAsyncResult *result,
     // Freeze notify because PROP_CONTENT_TYPE may be modified here
     g_object_freeze_notify(G_OBJECT(self));
 
-    headers = self->msg->response_headers;
+    headers = soup_message_get_response_headers(self->msg);
     // TODO: chunked encoding support
     len = soup_message_headers_get_content_length(headers);
     if (len > MAX_CONTENT_LENGTH) {

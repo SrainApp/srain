@@ -44,7 +44,7 @@ SrnRet srn_application_open_url(SrnApplication *app, const char *url){
     int port;
     const char *path;
     const char *fragment;
-    SoupURI *suri;
+    GUri *uri;
     SrnRet ret;
     SrnServer *srv;
     SrnServerConfig *cfg;
@@ -55,25 +55,25 @@ SrnRet srn_application_open_url(SrnApplication *app, const char *url){
     cfg = NULL;
     addr = NULL;
 
-    suri = soup_uri_new(url);
-    if (!suri){
+    uri = g_uri_parse(url,  SOUP_HTTP_URI_FLAGS, NULL);
+    if (!uri){
         ret = RET_ERR(_("Failed to parse \"%1$s\" as URL"), url);
         goto FIN;
     }
 
-    scheme = soup_uri_get_scheme(suri);
+    scheme = g_uri_get_scheme(uri);
     if (g_ascii_strcasecmp(scheme, "irc") != 0
             && g_ascii_strcasecmp(scheme, "ircs") != 0){
         ret = RET_ERR(_("Unsupported protocol: %1$s"), scheme);
         goto FIN;
     }
 
-    nick = soup_uri_get_user(suri);
-    passwd = soup_uri_get_password(suri);
-    host = soup_uri_get_host(suri);
-    port = soup_uri_get_port(suri);
-    path = soup_uri_get_path(suri);
-    fragment = soup_uri_get_fragment(suri);
+    nick = g_uri_get_user(uri);
+    passwd = g_uri_get_password(uri);
+    host = g_uri_get_host(uri);
+    port = g_uri_get_port(uri);
+    path = g_uri_get_path(uri);
+    fragment = g_uri_get_fragment(uri);
 
     addr = srn_server_addr_new(host, port);
     // Try looking for server with the same address in server list
@@ -159,8 +159,8 @@ SrnRet srn_application_open_url(SrnApplication *app, const char *url){
 
     ret = SRN_OK;
 FIN:
-    if (suri){
-        soup_uri_free(suri);
+    if (uri){
+        g_uri_unref(uri);
     }
     if (addr){
         srn_server_addr_free(addr);

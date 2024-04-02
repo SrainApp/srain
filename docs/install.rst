@@ -28,7 +28,7 @@ gettext                  Only for building
 glib2
 glib-networking          Optional, for TLS connection support
 gtk+3                                                                        >= 3.18
-libsoup
+libsoup3                                                                     >= 3.0
 libconfig                                                                    >= 1.5
 libsecret
 openssl
