@@ -6,6 +6,9 @@
   <project_license>GPL-3.0</project_license>
   <name>@app_pretty_name@</name>
   <summary>@app_desc@</summary>
+  <developer id="me.silverrainz.srain">
+      <name>Shengyu Zhang</name>
+  </developer>
   <update_contact>cpbadosa_AT_gmail.com</update_contact>
   <translation type="gettext">@gettext_package@</translation>
 
