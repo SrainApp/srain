@@ -32,6 +32,19 @@ Change Log
       - XXX
 
 .. _version-latest:
+.. _version-1.7.0:
+
+2024-04-26 Version 1.7.0
+========================
+
+.. post:: 2024-04-26
+   :category: Release
+
+- Changes:
+
+  - Remove GIMPNet (:pull:`408`)
+  - Migrate to libsoup3 (:issue:`409`)
+
 .. _version-1.6.1:
 
 2024-04-26 Version 1.6.1
