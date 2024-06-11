@@ -76,7 +76,7 @@ You can build it via the following commands:
 
 .. warning::
 
-If building on macOS or another system where you might not have ayatana-appindicator, you have to somehow install that manually or disable it (it is optional) by running `meson setup builddir -Dapp_indicator=false`
+   If building on macOS or another system where you might not have ayatana-appindicator, you have to somehow install that manually or disable it (it is optional) by running ``meson setup builddir -Dapp_indicator=false``
 
 Install(root privileges required):
 
