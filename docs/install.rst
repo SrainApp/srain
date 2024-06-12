@@ -74,6 +74,10 @@ You can build it via the following commands:
    $ cd builddir
    $ ninja
 
+.. warning::
+
+   If building on macOS or another system where you might not have ayatana-appindicator, you have to somehow install that manually or disable it (it is optional) by running ``meson setup builddir -Dapp_indicator=false``
+
 Install(root privileges required):
 
 .. code-block:: console
@@ -272,7 +276,7 @@ Firstly install `Homebrew`_, run the following commands to install dependencies:
 .. code-block:: console
 
    $ brew install coreutils gcc pkg-config # building
-   $ brew install gettext glib-networking gtk+3 libsoup libconfig openssl adwaita-icon-theme
+   $ brew install gettext glib-networking gtk+3 libsoup libconfig openssl adwaita-icon-theme libsecret
 
 Next, tell `pkg-config` where to find the libraries we just installed:
 
