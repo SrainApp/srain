@@ -34,7 +34,7 @@ jobs:
       with:
         update: true
         msystem: MINGW64
-        install: base-devel git curl zip mingw-w64-x86_64-python-requests mingw-w64-x86_64-gcc mingw-w64-x86_64-gtk3 mingw-w64-x86_64-libconfig mingw-w64-x86_64-libsoup mingw-w64-x86_64-libsecret mingw-w64-x86_64-pkg-config mingw-w64-x86_64-gettext mingw-w64-x86_64-glib-networking mingw-w64-x86_64-meson mingw-w64-x86_64-appstream-glib
+        install: base-devel git curl zip mingw-w64-x86_64-python-requests mingw-w64-x86_64-gcc mingw-w64-x86_64-gtk3 mingw-w64-x86_64-libconfig mingw-w64-x86_64-libsoup3 mingw-w64-x86_64-libsecret mingw-w64-x86_64-pkg-config mingw-w64-x86_64-gettext mingw-w64-x86_64-glib-networking mingw-w64-x86_64-meson mingw-w64-x86_64-appstream-glib
     - name: Build
       run: |
         SRAIN_TAG=`git describe --tags`;
