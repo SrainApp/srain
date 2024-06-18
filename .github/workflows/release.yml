@@ -2,6 +2,8 @@ name: release assets
 on:
   release:
     types: [created]
+  push:
+
 jobs:
   debian-bullseye:
     runs-on: ubuntu-latest
