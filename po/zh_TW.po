@@ -1,0 +1,1173 @@
+# Chinese translations for Srain package.
+# Copyright (C) 2024 THE Srain'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the Srain package.
+# Peter Dave Hello <hsu@peterdavehello.org>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Srain 1.1.1\n"
+"Report-Msgid-Bugs-To: i@silverrainz.me\n"
+"POT-Creation-Date: 2020-08-02 16:09+0800\n"
+"PO-Revision-Date: 2024-06-28 07:25+0800\n"
+"Last-Translator: Peter Dave Hello <hsu@peterdavehello.org>\n"
+"Language-Team: Peter Dave Hello <hsu@peterdavehello.org>\n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../src/core/app_ui_event.c:380 ../src/core/chat_command.c:352
+#, c-format
+msgid "\"%1$s\" has ignored"
+msgstr "\"%1$s\" 已忽略"
+
+#: ../src/core/app_ui_event.c:383 ../src/core/chat_command.c:377
+#, c-format
+msgid "\"%1$s\" has unignored"
+msgstr "\"%1$s\" 已取消忽略"
+
+#: ../src/core/chat_command.c:349
+#, c-format
+msgid "\"%1$s\" is already ignored"
+msgstr "\"%1$s\" 已經被忽略"
+
+#: ../src/core/chat_command.c:212
+#, c-format
+msgid "%1$d available server(s):%2$s"
+msgstr "%1$d 個可用的伺服器：%2$s"
+
+#: ../src/core/app_irc_event.c:1618
+#, c-format
+msgid "%1$s %2$s"
+msgstr "%1$s %2$s"
+
+#: ../src/core/app_irc_event.c:1605
+#, c-format
+msgid "%1$s %2$s %3$s"
+msgstr "%1$s %2$s %3$s"
+
+#: ../src/sui/sui_message.c:455
+#, c-format
+msgid "%1$s %2$s @ %3$s"
+msgstr "%1$s %2$s @ %3$s"
+
+#: ../src/core/app_irc_event.c:1548
+#, c-format
+msgid "%1$s <%2$s@%3$s> %4$s"
+msgstr "%1$s <%2$s@%3$s> %4$s"
+
+#: ../src/sui/sui_message.c:510
+#, c-format
+msgid "%1$s <fwd %2$s@%3$s>"
+msgstr "%1$s <轉發 %2$s@%3$s>"
+
+#: ../src/sui/sui_message.c:450
+#, c-format
+msgid "%1$s @ %2$s"
+msgstr "%1$s @ %2$s"
+
+#: ../src/core/app_irc_event.c:734
+#, c-format
+msgid "%1$s are kicked by %2$s"
+msgstr "%1$s 被 %2$s 踢出"
+
+#: ../src/core/app_irc_event.c:731
+#, c-format
+msgid "%1$s are kicked by %2$s: %3$s"
+msgstr "%1$s 被 %2$s 踢出：%3$s"
+
+#: ../src/core/app_irc_event.c:690
+#, c-format
+msgid ""
+"%1$s changed topic to:\n"
+"\t%2$s"
+msgstr "%1$s 更改主題為：\n\t%2$s"
+
+#: ../src/core/app_irc_event.c:686
+#, c-format
+msgid "%1$s cleared topic"
+msgstr "%1$s 清除主題"
+
+#: ../src/core/app_irc_event.c:506
+#, c-format
+msgid "%1$s has joined"
+msgstr "%1$s 已加入"
+
+#: ../src/core/app_irc_event.c:540
+#, c-format
+msgid "%1$s has left"
+msgstr "%1$s 已離開"
+
+#: ../src/core/app_irc_event.c:538
+#, c-format
+msgid "%1$s has left: %2$s"
+msgstr "%1$s 已離開：%2$s"
+
+#: ../src/core/app_irc_event.c:452
+#, c-format
+msgid "%1$s has quit"
+msgstr "%1$s 已退出"
+
+#: ../src/core/app_irc_event.c:450
+#, c-format
+msgid "%1$s has quit: %2$s"
+msgstr "%1$s 已退出：%2$s"
+
+#: ../src/core/app_irc_event.c:877
+#, c-format
+msgid "%1$s invites you into %2$s"
+msgstr "%1$s 邀請你進入 %2$s"
+
+#: ../src/core/app_irc_event.c:1561
+#, c-format
+msgid "%1$s is a member of %2$s"
+msgstr "%1$s 是 %2$s 的成員"
+
+#: ../src/core/app_irc_event.c:1573
+#, c-format
+msgid "%1$s is attached to %2$s at \"%3$s\""
+msgstr "%1$s 連線到 %2$s 在 \"%3$s\""
+
+#: ../src/core/app_irc_event.c:1795
+#, c-format
+msgid "%1$s is away: %2$s"
+msgstr "%1$s 離開：%2$s"
+
+#: ../src/core/app_irc_event.c:1592
+#, c-format
+msgid "%1$s is idle for %2$s seconds since %3$s"
+msgstr "%1$s 自 %3$s 起閒置 %2$s 秒"
+
+#: ../src/core/app_irc_event.c:421 ../src/core/app_irc_event.c:426
+#, c-format
+msgid "%1$s is now known as %2$s"
+msgstr "%1$s 現在被稱為 %2$s"
+
+#: ../src/sui/sui_app.c:415
+#, c-format
+msgid ""
+"%1$s%2$s\n"
+"Running against GTK+ %3$d.%4$d.%5$d"
+msgstr "%1$s%2$s\n於 GTK+ %3$d.%4$d.%5$d 運作"
+
+#: ../src/core/app_irc_event.c:1669 ../src/core/app_irc_event.c:1689
+#, c-format
+msgid "%1$s: %2$s"
+msgstr "%1$s：%2$s"
+
+#: ../src/core/app_irc_event.c:1525 ../src/core/app_irc_event.c:1590
+msgid "%Y-%m-%d %T"
+msgstr "%Y-%m-%d %T"
+
+#: ../data/ui/window.glade:320
+msgid "<big>Welcome to Srain!</big>"
+msgstr "<big>歡迎使用 Srain！</big>"
+
+#: ../src/core/chat_command.c:561
+#, c-format
+msgid "A message has been sent to \"%1$s\""
+msgstr "訊息已傳送至 \"%1$s\""
+
+#: ../data/ui/app.glade:69
+msgid "About"
+msgstr "關於"
+
+#: ../src/sui/sui_app.c:437
+msgid "About Srain"
+msgstr "關於 Srain"
+
+#: ../src/core/app_irc_event.c:1110
+#, c-format
+msgid "Acknowledged capabilities: %1$s"
+msgstr "已確認的功能：%1$s"
+
+#: ../data/ui/connect_panel.glade:521
+msgid "Advanced Mode"
+msgstr "進階模式"
+
+#: ../src/core/app.c:220
+msgid "All config reloaded"
+msgstr "所有設定已重新載入"
+
+#: ../src/core/app_ui_event.c:178
+msgid "Already reconnecting"
+msgstr "已在重新連線"
+
+#: ../data/ui/config_panel.glade:122
+msgid "Appearance"
+msgstr "外觀"
+
+#: ../data/ui/config_panel.glade:141
+msgid "Application"
+msgstr "應用程式"
+
+#: ../src/config/manager.c:99
+#, c-format
+msgid "At line %1$d: %2$s"
+msgstr "在第 %1$d 行：%2$s"
+
+#: ../src/core/app.c:321 ../src/core/app.c:325 ../src/core/server.c:283
+#: ../src/core/server.c:287
+#, c-format
+msgid "Autorun command: %1$s"
+msgstr "自動執行指令：%1$s"
+
+#: ../src/core/chat_command.c:770
+msgid "Available regex patterns:"
+msgstr "可用的正則表達式規則："
+
+#: ../src/core/app_irc_event.c:1526
+#, c-format
+msgid "By %1$s at %2$s"
+msgstr "由 %1$s 在 %2$s"
+
+#: ../data/ui/connect_panel.glade:540 ../data/ui/join_panel.glade:401
+msgid "Cancel"
+msgstr "取消"
+
+#: ../src/core/chat_command.c:181
+msgid "Cannot disconnect from a unconnected server"
+msgstr "無法從未連線的伺服器中斷連線"
+
+#: ../src/core/app_ui_event.c:251 ../src/core/chat_command.c:581
+msgid "Cannot send message directly to a server"
+msgstr "無法直接傳送訊息到伺服器"
+
+#: ../data/ui/join_panel.glade:290
+msgid "Channel"
+msgstr "頻道"
+
+#: ../src/config/password.c:190
+msgid "Channel password"
+msgstr "頻道密碼"
+
+#: ../data/ui/join_panel.glade:62
+msgid "Channel:"
+msgstr "頻道："
+
+#: ../src/sui/sui_prefs_dialog.c:165
+msgid "Configuration is reloaded"
+msgstr "設定已重新載入"
+
+#: ../data/ui/connect_panel.glade:554 ../data/ui/window.glade:88
+msgid "Connect"
+msgstr "連線"
+
+#: ../src/core/app_irc_event.c:146 ../src/core/app_irc_event.c:152
+#, c-format
+msgid "Connected to %1$s(%2$s:%3$d)"
+msgstr "已連線到 %1$s(%2$s:%3$d)"
+
+#: ../src/sui/sui_message.c:254
+msgid "Copy message"
+msgstr "複製訊息"
+
+#: ../src/core/app_irc_event.c:283 ../src/core/app_irc_event.c:298
+#, c-format
+msgid "Disconnected from %1$s(%2$s:%3$d): %4$s"
+msgstr "已從 %1$s(%2$s:%3$d) 中斷連線：%4$s"
+
+#: ../data/ui/connect_panel.glade:117
+msgid "Do not verify certificate"
+msgstr "不驗證憑證"
+
+#: ../src/sui/sui_app.c:122
+msgid "Don't auto connect to servers"
+msgstr "不要自動連線到伺服器"
+
+#: ../src/core/app_irc_event.c:1335
+#, c-format
+msgid "ERROR: %1$s"
+msgstr "錯誤：%1$s"
+
+#: ../src/core/app_irc_event.c:1867 ../src/core/app_irc_event.c:1963
+#, c-format
+msgid "ERROR[%1$3d] %2$s"
+msgstr "錯誤[%1$3d] %2$s"
+
+#: ../data/ui/config_panel.glade:81
+msgid "Enable CSD:"
+msgstr "啟用 CSD："
+
+#: ../data/ui/config_panel.glade:77
+msgid "Enable Client-Side Decorations, this will take effect after restart."
+msgstr "啟用客戶端裝飾，這將在重啟後生效。"
+
+#: ../src/core/server_cap.c:211
+msgid "Enabled capabilities:"
+msgstr "已啟用的功能："
+
+#: ../src/core/app.c:76 ../src/core/app.c:84 ../src/core/app.c:298
+#: ../src/core/app.c:409 ../src/sui/sui_app.c:469 ../src/sui/sui_app.c:488
+#: ../src/sui/sui_app.c:527 ../src/sui/sui_common.c:134
+#: ../src/sui/sui_connect_panel.c:494 ../src/sui/sui_connect_panel.c:503
+#: ../src/sui/sui_connect_panel.c:541 ../src/sui/sui_connect_panel.c:550
+#: ../src/sui/sui_connect_panel.c:596 ../src/sui/sui_join_panel.c:314
+#: ../src/sui/sui_join_panel.c:369 ../src/sui/sui_join_panel.c:380
+#: ../src/sui/sui_join_panel.c:397 ../src/sui/sui_join_panel.c:436
+#: ../src/sui/sui_join_panel.c:442 ../src/sui/sui_misc_message.c:188
+#: ../src/sui/sui_prefs_dialog.c:162
+msgid "Error"
+msgstr "錯誤"
+
+#: ../src/config/reader.c:228
+#, c-format
+msgid "Error occurred while looking up channel password: %1$s"
+msgstr "查詢頻道密碼時發生錯誤：%1$s"
+
+#: ../src/config/reader.c:143
+#, c-format
+msgid "Error occurred while looking up server password: %1$s"
+msgstr "查詢伺服器密碼時發生錯誤：%1$s"
+
+#: ../src/config/reader.c:149
+#, c-format
+msgid "Error occurred while looking up user password: %1$s"
+msgstr "查詢使用者密碼時發生錯誤：%1$s"
+
+#: ../src/config/reader.c:91 ../src/config/reader.c:97
+#, c-format
+msgid "Error occurred while reading application config in %1$s: %2$s"
+msgstr "讀取 %1$s 中的應用程式設定時發生錯誤：%2$s"
+
+#: ../src/config/reader.c:212 ../src/config/reader.c:219
+#, c-format
+msgid "Error occurred while reading chat config in %1$s: %2$s"
+msgstr "讀取 %1$s 中的聊天設定時發生錯誤：%2$s"
+
+#: ../src/config/reader.c:71 ../src/config/reader.c:77
+#, c-format
+msgid "Error occurred while reading log config in %1$s: %2$s"
+msgstr "讀取 %1$s 中的日誌設定時發生錯誤：%2$s"
+
+#: ../src/config/reader.c:131 ../src/config/reader.c:137
+#, c-format
+msgid "Error occurred while reading server config in %1$s: %2$s"
+msgstr "讀取 %1$s 中的伺服器設定時發生錯誤：%2$s"
+
+#: ../src/config/reader.c:111 ../src/config/reader.c:117
+#, c-format
+msgid "Error occurred while reading server list config in %1$s: %2$s"
+msgstr "讀取 %1$s 中的伺服器列表設定時發生錯誤：%2$s"
+
+#: ../src/sui/sui_url_previewer.c:553
+msgid "Exceed max content length"
+msgstr "超過最大內容長度"
+
+#: ../data/ui/app.glade:94
+msgid "Exit"
+msgstr "退出"
+
+#: ../data/ui/config_panel.glade:107
+msgid "Expand message:"
+msgstr "展開訊息："
+
+#: ../src/core/app.c:296
+#, c-format
+msgid "Failed to add chat \"%1$s\": %2$s"
+msgstr "新增聊天 \"%1$s\" 失敗：%2$s"
+
+#: ../src/core/chat_command.c:748
+#, c-format
+msgid "Failed to add regex pattern \"%1$s\": %2$s"
+msgstr "新增正則表達式規則 \"%1$s\" 失敗：%2$s"
+
+#: ../src/core/app.c:407 ../src/core/app_url.c:119
+#, c-format
+msgid "Failed to add server \"%1$s\": %2$s"
+msgstr "新增伺服器 \"%1$s\" 失敗：%2$s"
+
+#: ../src/sui/sui_theme.c:102
+#, c-format
+msgid "Failed to apply theme from file \"%1$s\": %2$s"
+msgstr "從檔案 \"%1$s\" 套用主題失敗：%2$s"
+
+#: ../src/core/chat_command.c:408
+#, c-format
+msgid "Failed to attach pattern to chat \"%1$s\": %2$s"
+msgstr "附加規則到聊天 \"%1$s\" 失敗：%2$s"
+
+#: ../src/core/chat_command.c:838
+#, c-format
+msgid "Failed to attach pattern to user %1$s\" of chat \"%2$s\": %3$s"
+msgstr "附加規則到使用者 %1$s\" 的聊天 \"%2$s\" 失敗：%3$s"
+
+#: ../src/core/server.c:149
+#, c-format
+msgid "Failed to chat config \"%1$s\" of server config \"%2$s\": %3$s"
+msgstr "伺服器設定 \"%2$s\" 的聊天設定 \"%1$s\" 失敗：%3$s"
+
+#: ../src/sui/sui_join_panel.c:378
+#, c-format
+msgid "Failed to clear channel password: %1$s"
+msgstr "清除頻道密碼失敗：%1$s"
+
+#: ../src/sui/sui_connect_panel.c:501
+#, c-format
+msgid "Failed to clear server password: %1$s"
+msgstr "清除伺服器密碼失敗：%1$s"
+
+#: ../src/sui/sui_connect_panel.c:548
+#, c-format
+msgid "Failed to clear user password: 1$%s"
+msgstr "清除使用者密碼失敗：1$%s"
+
+#: ../src/core/app_irc_event.c:199 ../src/core/app_irc_event.c:214
+#, c-format
+msgid "Failed to connect to %1$s(%2$s:%3$d): %4$s"
+msgstr "連線到 %1$s(%2$s:%3$d) 失敗：%4$s"
+
+#: ../src/lib/path.c:301
+#, c-format
+msgid "Failed to create chat logs directory: %1$s"
+msgstr "建立聊天日誌目錄失敗：%1$s"
+
+#: ../src/lib/path.c:281
+#, c-format
+msgid "Failed to create user cache directory: %1$s"
+msgstr "建立使用者快取目錄失敗：%1$s"
+
+#: ../src/lib/path.c:261
+#, c-format
+msgid "Failed to create user configuration directory: %1$s"
+msgstr "建立使用者設定目錄失敗：%1$s"
+
+#: ../src/lib/path.c:271
+#, c-format
+msgid "Failed to create user configuration file: %1$s"
+msgstr "建立使用者設定檔案失敗：%1$s"
+
+#: ../src/lib/path.c:291
+#, c-format
+msgid "Failed to create user data directory: %1$s"
+msgstr "建立使用者資料目錄失敗：%1$s"
+
+#: ../src/core/chat_command.c:437
+#, c-format
+msgid "Failed to dettach pattern from chat \"%1$s\": %2$s"
+msgstr "從聊天 \"%1$s\" 分離規則失敗：%2$s"
+
+#: ../src/core/chat_command.c:883
+#, c-format
+msgid "Failed to dettach pattern from user \"%1$s\": %2$s"
+msgstr "從使用者 \"%1$s\" 分離規則失敗：%2$s"
+
+#: ../src/core/chat_command.c:159 ../src/core/chat_command.c:293
+#, c-format
+msgid "Failed to instantiate server \"%1$s\""
+msgstr "建立伺服器 \"%1$s\" 失敗"
+
+#: ../src/core/app_url.c:146 ../src/core/app_url.c:154
+#, c-format
+msgid "Failed to join channel on server \"%1$s\": %2$s"
+msgstr "加入伺服器 \"%1$s\" 的頻道失敗：%2$s"
+
+#: ../src/sui/sui_common.c:133
+#, c-format
+msgid "Failed to open URL \"%1$s\": %2$s"
+msgstr "開啟 URL \"%1$s\" 失敗：%2$s"
+
+#: ../src/core/app_url.c:60
+#, c-format
+msgid "Failed to parse \"%1$s\" as URL"
+msgstr "解析 \"%1$s\" 為 URL 失敗"
+
+#: ../src/core/app_ui_event.c:203
+#, c-format
+msgid "Failed to quit from server: %1$s"
+msgstr "從伺服器退出失敗：%1$s"
+
+#: ../src/config/manager.c:66
+#, c-format
+msgid "Failed to read system configuration file: %1$s"
+msgstr "讀取系統設定檔案失敗：%1$s"
+
+#: ../src/config/manager.c:78
+#, c-format
+msgid "Failed to read user configuration file: %1$s"
+msgstr "讀取使用者設定檔案失敗：%1$s"
+
+#: ../src/core/app_url.c:135 ../src/core/chat_command.c:169
+#: ../src/core/chat_command.c:306
+#, c-format
+msgid "Failed to register on server \"%1$s\""
+msgstr "在伺服器 \"%1$s\" 註冊失敗"
+
+#: ../src/core/app.c:229
+#, c-format
+msgid "Failed to reload application config: %1$s"
+msgstr "重新載入應用程式設定失敗：%1$s"
+
+#: ../src/sui/sui_prefs_dialog.c:160
+#, c-format
+msgid "Failed to reload configuration: %s"
+msgstr "重新載入設定失敗：%s"
+
+#: ../src/core/app.c:224
+#, c-format
+msgid "Failed to reload logger config: %1$s"
+msgstr "重新載入日誌設定失敗：%1$s"
+
+#: ../src/core/chat_command.c:761
+#, c-format
+msgid "Failed to remove regex pattern \"%1$s\": %2$s"
+msgstr "移除正則表達式規則 \"%1$s\" 失敗：%2$s"
+
+#: ../src/render/mention_renderer.c:94
+#: ../src/render/mirc_colorize_renderer.c:105
+#: ../src/render/mirc_strip_renderer.c:72 ../src/render/url_renderer.c:117
+#, c-format
+msgid "Failed to render markup text: %1$s"
+msgstr "渲染標記文字失敗：%1$s"
+
+#: ../src/core/chat_command.c:586
+#, c-format
+msgid "Failed to send action message: %1$s"
+msgstr "傳送動作訊息失敗：%1$s"
+
+#: ../src/core/app_ui_event.c:261
+#, c-format
+msgid "Failed to send message: %1$s"
+msgstr "傳送訊息失敗：%1$s"
+
+#: ../src/sui/sui_join_panel.c:367
+#, c-format
+msgid "Failed to store channel password: %1$s"
+msgstr "儲存頻道密碼失敗：%1$s"
+
+#: ../src/sui/sui_connect_panel.c:492
+#, c-format
+msgid "Failed to store server password: %1$s"
+msgstr "儲存伺服器密碼失敗：%1$s"
+
+#: ../src/sui/sui_connect_panel.c:539
+#, c-format
+msgid "Failed to store user password: %1$s"
+msgstr "儲存使用者密碼失敗：%1$s"
+
+#: ../src/sirc/sirc_config.c:66
+msgid "False"
+msgstr "錯誤"
+
+#: ../src/sui/sui_message.c:261
+msgid "Forward to..."
+msgstr "轉發到..."
+
+#: ../src/core/server_state.c:92
+msgid ""
+"Hold on, srain is connecting to the server, please do not repeat the action"
+msgstr "請稍候，Srain 正在連線伺服器，請勿重複操作"
+
+#: ../src/sirc/sirc_config.c:37
+msgid "Invalid IRC config instance"
+msgstr "無效的 IRC 設定選項"
+
+#: ../src/sui/sui_config.c:84
+msgid "Invalid SuiBufferConfig instance"
+msgstr "無效的 SuiBufferConfig 選項"
+
+#: ../src/core/chat_config.c:38
+msgid "Invalid chat config instance"
+msgstr "無效的聊天設定選項"
+
+#: ../src/sirc/sirc_config.c:52
+#, c-format
+msgid "Invalid encoding in IRC config: %1$s"
+msgstr "IRC 設定中的編碼無效：%1$s"
+
+#: ../src/lib/ret.c:112
+msgid "Invalid error id, maybe this error is removed because out of date"
+msgstr "無效的錯誤 ID，可能因為過期而被移除"
+
+#: ../src/core/server_config.c:53
+msgid "Invalid server config instance"
+msgstr "無效的伺服器設定選項"
+
+#: ../data/ui/nick_menu.glade:50
+msgid "Invite to..."
+msgstr "邀請到..."
+
+#: ../src/core/app_irc_event.c:221
+#, c-format
+msgid ""
+"It seems that you connect to a TLS port(%1$d) without enable TLS connection, "
+"try to enable it and reconnect"
+msgstr "看起來你連線到 TLS 連接埠(%1$d) 但未啟用 TLS 連線，請嘗試啟用並重新連線"
+
+#: ../data/ui/join_panel.glade:416 ../data/ui/window.glade:103
+msgid "Join"
+msgstr "加入"
+
+#: ../data/ui/join_panel.glade:133
+msgid "Join Channel"
+msgstr "加入頻道"
+
+#: ../src/core/app_irc_event.c:1004
+#, c-format
+msgid "Latency between %1$s: %2$lums"
+msgstr "%1$s 之間的延遲：%2$lums"
+
+#: ../src/sirc/sirc.c:196
+msgid "Local connection closed"
+msgstr "本機連線已關閉"
+
+#: ../src/core/app_irc_event.c:1226 ../src/core/app_irc_event.c:1252
+#, c-format
+msgid "Logging in with %1$s as %2$s..."
+msgstr "使用 %1$s 登入為 %2$s..."
+
+#: ../src/core/app_irc_event.c:377
+#, c-format
+msgid "Logging in with %1$s..."
+msgstr "使用 %1$s 登入中..."
+
+#: ../data/ui/connect_panel.glade:423
+msgid "Login certificate:"
+msgstr "登入憑證："
+
+#: ../data/ui/connect_panel.glade:351
+msgid "Login password:"
+msgstr "登入密碼："
+
+#: ../src/sui/sui_join_panel.c:286
+msgid "Match channel name"
+msgstr "符合頻道名稱"
+
+#: ../data/ui/join_panel.glade:208
+msgid "Max users"
+msgstr "最大使用者數"
+
+#: ../src/sui/sui_message.c:461
+msgid "Message from unknown chat"
+msgstr "來自未知聊天的訊息"
+
+#: ../src/core/chat_command.c:441
+#, c-format
+msgid "Messages of chat \"%1$s\" are no longer filtered by pattern \"%2$s\""
+msgstr "聊天 \"%1$s\" 的訊息不再被規則 \"%2$s\" 過濾"
+
+#: ../src/core/chat_command.c:412
+#, c-format
+msgid "Messages of chat \"%1$s\" will be filtered by pattern \"%2$s\""
+msgstr "聊天 \"%1$s\" 的訊息將被規則 \"%2$s\" 過濾"
+
+#: ../src/core/chat_command.c:887
+#, c-format
+msgid ""
+"Messages of user \"%1$s\" of chat \"%2$s\" are no longer rendered by pattern "
+"\"%3$s\""
+msgstr "聊天 \"%2$s\" 的使用者 \"%1$s\" 的訊息不再由規則 \"%3$s\" 渲染"
+
+#: ../src/core/chat_command.c:842
+#, c-format
+msgid ""
+"Messages of user \"%1$s\" of chat \"%2$s\" will be rendered by pattern "
+"\"%3$s\""
+msgstr "聊天 \"%2$s\" 的使用者 \"%1$s\" 的訊息將由規則 \"%3$s\" 渲染"
+
+#: ../data/ui/join_panel.glade:237
+msgid "Min users"
+msgstr "最小使用者數"
+
+#: ../src/core/chat_command.c:240
+msgid "Missing argument <addr>"
+msgstr "缺少參數 <addr>"
+
+#: ../src/lib/command.c:482
+#, c-format
+msgid "Missing argument, expect %1$d, actually %2$d"
+msgstr "缺少參數，預期 %1$d，實際 %2$d"
+
+#: ../src/sui/sui_config.c:32
+#, c-format
+msgid "Missing field in SuiApplicationConfig: %1$s"
+msgstr "SuiApplicationConfig 中缺少欄位：%1$s"
+
+#: ../src/core/server_config.c:49
+#, c-format
+msgid "Missing field in server config: %1$s"
+msgstr "伺服器設定中缺少欄位：%1$s"
+
+#: ../src/core/user_config.c:71
+#, c-format
+msgid "Missing field in user config: %1$s"
+msgstr "使用者設定中缺少欄位：%1$s"
+
+#: ../src/lib/command.c:491
+#, c-format
+msgid "Missing value for option %1$s"
+msgstr "選項 %1$s 缺少值"
+
+#: ../data/ui/connect_panel.glade:84
+msgid "Nickname:"
+msgstr "暱稱："
+
+#: ../src/core/app_irc_event.c:1113
+msgid "No acknowledged capability"
+msgstr "無已確認的功能"
+
+#: ../src/core/app_irc_event.c:1070
+msgid "No capability to be requested"
+msgstr "無需請求的功能"
+
+#: ../src/core/app_irc_event.c:1103
+msgid "No new capability to be requested"
+msgstr "無需請求的新功能"
+
+#: ../src/sui/sui_connect_panel.c:432
+msgid "No server selected"
+msgstr "未選擇伺服器"
+
+#: ../src/core/app_irc_event.c:1484
+msgid "No topic is set"
+msgstr "未設定主題"
+
+#: ../src/lib/path.c:316
+msgid "Not a directory"
+msgstr "不是目錄"
+
+#: ../src/lib/path.c:335
+msgid "Not a regular file"
+msgstr "不是常規檔案"
+
+#: ../src/sui/sui_prefs_dialog.c:165
+msgid "OK"
+msgstr "確定"
+
+#: ../src/sui/sui_app.c:131
+msgid "Open one or more IRC URLs"
+msgstr "開啟一個或多個 IRC URL"
+
+#: ../data/ui/connect_panel.glade:485 ../data/ui/join_panel.glade:103
+msgid "Optional"
+msgstr "可選"
+
+#: ../data/ui/join_panel.glade:88
+msgid "Password:"
+msgstr "密碼："
+
+#: ../src/core/chat_command.c:392 ../src/core/chat_command.c:812
+#, c-format
+msgid "Pattern \"%1$s\" not found"
+msgstr "未找到規則 \"%1$s\""
+
+#: ../src/core/app_irc_event.c:248
+msgid "Ping time out"
+msgstr "Ping 超時"
+
+#: ../src/sui/sui_join_panel.c:315
+msgid "Please connect to a server before joining any channel"
+msgstr "請先連線到伺服器再加入任何頻道"
+
+#: ../src/sui/sui_join_panel.c:436
+msgid "Please connect to a server before searching any channel"
+msgstr "請先連線到伺服器再搜尋任何頻道"
+
+#: ../data/ui/connect_panel.glade:106
+msgid "Quick Mode"
+msgstr "快速模式"
+
+#: ../src/core/server_state.c:172 ../src/core/server_state.c:179
+msgid "Quitting the server"
+msgstr "正在退出伺服器"
+
+#: ../src/core/app_irc_event.c:952
+#, c-format
+msgid "Received CTCP %1$s request form %2$s"
+msgstr "收到來自 %2$s 的 CTCP %1$s 請求"
+
+#: ../src/core/app_irc_event.c:987 ../src/core/app_irc_event.c:1007
+#, c-format
+msgid "Received CTCP %1$s response from %2$s: %3$s"
+msgstr "收到來自 %2$s 的 CTCP %1$s 回應：%3$s"
+
+#: ../src/core/app_irc_event.c:948
+#, c-format
+msgid "Received unsupported CTCP %1$s request form %2$s"
+msgstr "收到不支援的 CTCP %1$s 請求來自 %2$s"
+
+#: ../src/core/app_irc_event.c:992
+#, c-format
+msgid "Received unsupported CTCP %1$s response form %2$s"
+msgstr "收到不支援的 CTCP %1$s 回應來自 %2$s"
+
+#: ../src/core/app_ui_event.c:159 ../src/core/chat_command.c:188
+msgid "Reconnection stopped"
+msgstr "重新連線已停止"
+
+#: ../src/core/chat_command.c:751
+#, c-format
+msgid "Regex pattern \"%1$s\" has added"
+msgstr "正則表達式規則 \"%1$s\" 已新增"
+
+#: ../src/core/chat_command.c:764
+#, c-format
+msgid "Regex pattern \"%1$s\" has removed"
+msgstr "正則表達式規則 \"%1$s\" 已移除"
+
+#: ../data/ui/prefs_dialog.glade:107
+msgid "Reload Configuration"
+msgstr "重新載入設定"
+
+#: ../data/ui/connect_panel.glade:375
+msgid "Remember login password"
+msgstr "記住登入密碼"
+
+#: ../data/ui/connect_panel.glade:495 ../data/ui/join_panel.glade:113
+msgid "Remember password"
+msgstr "記住密碼"
+
+#: ../src/sirc/sirc.c:209
+msgid "Remote connection closed"
+msgstr "遠端連線已關閉"
+
+#: ../src/core/app_irc_event.c:1066
+#, c-format
+msgid "Requesting capabilities: %1$s"
+msgstr "請求功能：%1$s"
+
+#: ../src/core/app_irc_event.c:1099
+#, c-format
+msgid "Requesting new capabilities: %1$s"
+msgstr "請求新功能：%1$s"
+
+#: ../src/core/app_irc_event.c:1185
+msgid "SASL authentication is not supported on this server, login skipped"
+msgstr "此伺服器不支援 SASL 驗證，登入已跳過"
+
+#: ../data/ui/join_panel.glade:383
+msgid "Search Channel"
+msgstr "搜尋頻道"
+
+#: ../data/ui/connect_panel.glade:409
+msgid "Select a certificate file"
+msgstr "選擇憑證檔案"
+
+#: ../data/ui/config_panel.glade:166
+msgid "Server"
+msgstr "伺服器"
+
+#: ../src/core/app.c:266
+#, c-format
+msgid "Server \"%1$s\" already exists"
+msgstr "伺服器 \"%1$s\" 已存在"
+
+#: ../src/core/app_irc_event.c:1063
+#, c-format
+msgid "Server capabilities: %1$s"
+msgstr "伺服器功能：%1$s"
+
+#: ../src/core/app_irc_event.c:1167
+#, c-format
+msgid "Server has deleted capabilities: %1$s"
+msgstr "伺服器已刪除功能：%1$s"
+
+#: ../src/core/app_irc_event.c:1096
+#, c-format
+msgid "Server has new capabilities: %1$s"
+msgstr "伺服器有新功能：%1$s"
+
+#: ../src/core/server_state.c:121
+msgid "Server is already connected"
+msgstr "伺服器已連線"
+
+#: ../src/core/server_state.c:77
+msgid "Server is already disconnected"
+msgstr "伺服器已中斷連線"
+
+#: ../src/core/server_state.c:149 ../src/core/server_state.c:152
+#: ../src/core/server_state.c:155 ../src/core/server_state.c:158
+msgid "Server is disconnecting"
+msgstr "伺服器正在中斷連線"
+
+#: ../src/config/password.c:126
+msgid "Server password"
+msgstr "伺服器密碼"
+
+#: ../data/ui/connect_panel.glade:52
+msgid "Server:"
+msgstr "伺服器："
+
+#: ../data/ui/buffer_menu.glade:38
+msgid "Show _Topic"
+msgstr "顯示主題(_T)"
+
+#: ../data/ui/buffer_menu.glade:44
+msgid "Show _User List"
+msgstr "顯示使用者列表(_U)"
+
+#: ../src/sui/sui_app.c:113
+msgid "Show version information"
+msgstr "顯示版本資訊"
+
+#: ../src/sui/sui_join_panel.c:487 ../src/sui/sui_join_panel.c:584
+#, c-format
+msgid "Showing %1$d of %2$d channels"
+msgstr "顯示 %2$d 個頻道中的 %1$d 個"
+
+#: ../src/lib/ret.c:94
+msgid "Some error occurred"
+msgstr "發生了一些錯誤"
+
+#: ../src/lib/command.c:150
+msgid "Sorry, command parsing failed, please report a bug to <"
+msgstr "抱歉，指令解析失敗，請回報錯誤至 <"
+
+#: ../data/ui/app.glade:115 ../data/ui/app.glade:116
+msgid "Srain"
+msgstr "Srain"
+
+#: ../data/ui/prefs_dialog.glade:9
+msgid "Srain Preferences"
+msgstr "Srain 偏好設定"
+
+#: ../src/sirc/sirc_config.c:70
+#, c-format
+msgid "TLS: %1$s, TLS verify certificate: %2$s, Encoding: %3$s"
+msgstr "TLS：%1$s，TLS 驗證憑證：%2$s，編碼：%3$s"
+
+#: ../src/core/app_irc_event.c:381
+msgid ""
+"The assigned nickname does not match the requested nickname, login skipped"
+msgstr "分配的暱稱與請求的暱稱不符合，登入已跳過"
+
+#: ../src/core/app_irc_event.c:1505
+#, c-format
+msgid ""
+"The topic of this channel is:\n"
+"\t%1$s"
+msgstr "此頻道的主題是：\n\t%1$s"
+
+#: ../data/ui/config_panel.glade:42
+msgid "Theme:"
+msgstr "主題："
+
+#: ../src/lib/command.c:500
+#, c-format
+msgid "Too many arguments, expect %1$d"
+msgstr "參數過多，預期 %1$d"
+
+#: ../src/lib/command.c:488
+#, c-format
+msgid "Too many optional arguments (maximum allowed: %1$d)"
+msgstr "可選參數過多（最多允許：%1$d）"
+
+#: ../data/ui/join_panel.glade:327
+msgid "Topic"
+msgstr "主題"
+
+#: ../src/sirc/sirc_config.c:65
+msgid "True"
+msgstr "正確"
+
+#: ../src/core/app_irc_event.c:1399
+#, c-format
+msgid "Trying nickname: \"%1$s\"..."
+msgstr "嘗試暱稱：\"%1$s\"..."
+
+#: ../src/core/app_irc_event.c:203 ../src/core/app_irc_event.c:226
+#: ../src/core/app_irc_event.c:287 ../src/core/app_irc_event.c:302
+#, c-format
+msgid "Trying reconnect to %1$s(%2$s:%3$d) after %4$.1lfs..."
+msgstr "在 %4$.1lfs 後嘗試重新連線到 %1$s(%2$s:%3$d)..."
+
+#: ../src/core/app_irc_event.c:1836
+#, c-format
+msgid "URL of %1$s is: %2$s"
+msgstr "%1$s 的 URL 是：%2$s"
+
+#: ../src/core/server_state.c:63
+#, c-format
+msgid "Unallowed action: %1$s"
+msgstr "不允許的操作：%1$s"
+
+#: ../src/lib/command.c:329
+msgid "Unclosed single quotation"
+msgstr "未閉合的單引號"
+
+#: ../src/lib/command.c:140
+#, c-format
+msgid "Unknown command: %1$s"
+msgstr "未知指令：%1$s"
+
+#: ../src/core/login_config.c:53
+msgid "Unknown login method"
+msgstr "未知的登入方法"
+
+#: ../src/lib/command.c:485
+#, c-format
+msgid "Unknown option %1$s"
+msgstr "未知選項 %1$s"
+
+#: ../src/core/chat_command.c:220 ../src/lib/command.c:494
+#, c-format
+msgid "Unknown sub command: %1$s"
+msgstr "未知子指令：%1$s"
+
+#: ../src/sui/sui_url_previewer.c:325 ../src/sui/sui_url_previewer.c:575
+msgid "Unsupported URL content type"
+msgstr "不支援的 URL 內容類型"
+
+#: ../src/core/app_url.c:67
+#, c-format
+msgid "Unsupported protocol: %1$s"
+msgstr "不支援的協議：%1$s"
+
+#: ../data/ui/connect_panel.glade:132
+msgid "Use secure connection"
+msgstr "使用安全連線"
+
+#: ../data/ui/config_panel.glade:180
+msgid "User"
+msgstr "使用者"
+
+#: ../src/core/app.c:146
+msgid "User config not found"
+msgstr "未找到使用者設定"
+
+#: ../src/config/password.c:257
+msgid "User password"
+msgstr "使用者密碼"
+
+#: ../data/ui/join_panel.glade:309
+msgid "Users"
+msgstr "使用者"
+
+#: ../src/sui/sui_user_list.c:212
+#, c-format
+msgid ""
+"Users: %d, <span color=\"#157915\">%d@</span>,<span color=\"#856117\">%d%%</"
+"span>,<span color=\"#451984\">%d+</span>"
+msgstr "使用者：%d，<span color=\"#157915\">%d@</span>，<span color=\"#856117\">%d%%</span>，<span color=\"#451984\">%d+</span>"
+
+#: ../src/core/app_irc_event.c:725
+#, c-format
+msgid "You are kicked by %1$s"
+msgstr "你被 %1$s 踢出"
+
+#: ../src/core/app_irc_event.c:722
+#, c-format
+msgid "You are kicked by %1$s: %2$s"
+msgstr "你被 %1$s 踢出：%2$s"
+
+#: ../src/core/app_irc_event.c:502
+#, c-format
+msgid "You have joined the channel"
+msgstr "你已加入頻道"
+
+#: ../src/core/login_config.c:52
+#, c-format
+msgid "You need to set the field %2$s in order to use login method %1$s"
+msgstr "你需要設定欄位 %2$s 以使用登入方法 %1$s"
+
+#: ../src/sui/sui_app.c:132
+msgid "[URL…]"
+msgstr "[URL…]"
+
+#: ../data/ui/app.glade:22
+msgid "_About"
+msgstr "關於(_A)"
+
+#: ../data/ui/connect_panel.glade:169
+msgid "_Address:"
+msgstr "地址(_A)："
+
+#: ../data/ui/config_panel.glade:217
+msgid "_Apply"
+msgstr "套用(_A)"
+
+#: ../data/ui/config_panel.glade:203 ../data/ui/prefs_dialog.glade:29
+msgid "_Cancel"
+msgstr "取消(_C)"
+
+#: ../data/ui/nick_menu.glade:41
+msgid "_Chat"
+msgstr "聊天(_C)"
+
+#: ../data/ui/buffer_menu.glade:8
+msgid "_Close"
+msgstr "關閉(_C)"
+
+#: ../data/ui/buffer_menu.glade:14
+msgid "_Disconnect"
+msgstr "中斷連線(_D)"
+
+#: ../data/ui/app.glade:37
+msgid "_Exit"
+msgstr "退出(_E)"
+
+#: ../data/ui/nick_menu.glade:23
+msgid "_Ignore"
+msgstr "忽略(_I)"
+
+#: ../data/ui/nick_menu.glade:32
+msgid "_Kick"
+msgstr "踢出(_K)"
+
+#: ../data/ui/buffer_menu.glade:26
+msgid "_Leave"
+msgstr "離開(_L)"
+
+#: ../data/ui/connect_panel.glade:450
+msgid "_Login method:"
+msgstr "登入方法(_L)："
+
+#: ../data/ui/connect_panel.glade:276
+msgid "_Nickname:"
+msgstr "暱稱(_N)："
+
+#: ../data/ui/config_panel.glade:231 ../data/ui/prefs_dialog.glade:43
+msgid "_OK"
+msgstr "確定(_O)"
+
+#: ../data/ui/connect_panel.glade:153
+msgid "_Password:"
+msgstr "密碼(_P)："
+
+#: ../data/ui/app.glade:13 ../data/ui/app.glade:55
+msgid "_Preferences"
+msgstr "偏好設定(_P)"
+
+#: ../data/ui/url_previewer.glade:26
+msgid "_Preview"
+msgstr "預覽(_P)"
+
+#: ../data/ui/buffer_menu.glade:32
+msgid "_Quit"
+msgstr "退出(_Q)"
+
+#: ../data/ui/buffer_menu.glade:20
+msgid "_Reconnect"
+msgstr "重新連線(_R)"
+
+#: ../data/ui/prefs_dialog.glade:88
+msgid "_Reload"
+msgstr "重新載入(_R)"
+
+#: ../data/ui/connect_panel.glade:185
+msgid "_Server:"
+msgstr "伺服器(_S)："
+
+#: ../data/ui/nick_menu.glade:14
+msgid "_Whois"
+msgstr "_Whois"
+
+#: ../src/render/mention_renderer.c:85
+#, c-format
+msgid "g_regex_new() failed: %1$s"
+msgstr "g_regex_new() 失敗：%1$s"
+
+#: ../src/core/app_irc_event.c:577 ../src/core/app_irc_event.c:652
+#, c-format
+msgid "mode %1$s %2$s by %3$s"
+msgstr "模式 %1$s %2$s 由 %3$s"
+
+#: ../src/config/reader.c:331
+#, c-format
+msgid "server-list[%1$d] doesn't have a name"
+msgstr "server-list[%1$d] 沒有名稱"
+
+#: ../src/core/chat_command.c:374
+#, c-format
+msgid "user \"%1$s\" not found"
+msgstr "沒有找到使用者 \"%1$s\""
