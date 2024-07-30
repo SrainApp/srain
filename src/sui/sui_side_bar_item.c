@@ -158,6 +158,10 @@ unsigned long sui_side_bar_item_get_update_time(SuiSideBarItem *self){
     return self->update_time;
 }
 
+const gchar *sui_side_bar_item_get_title(SuiSideBarItem *self){
+    return gtk_label_get_text(self->title_label);
+}
+
 /*****************************************************************************
  * Static functions
  *****************************************************************************/

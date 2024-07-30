@@ -37,6 +37,7 @@ struct _SuiWindowConfig {
     bool exit_on_close;
     bool server_visibility;
     bool scroll_on_new_message;
+    char *sidebar_sort;
 };
 
 struct _SuiApplicationConfig {
