@@ -296,6 +296,8 @@ static SrnRet read_application_config_from_cfg(config_t *cfg,
             &app_cfg->ui->window.server_visibility);
     config_lookup_bool_ex(cfg, "scroll-on-new-message",
             &app_cfg->ui->window.scroll_on_new_message);
+    config_lookup_string_ex(cfg, "sidebar-sort",
+            &app_cfg->ui->window.sidebar_sort);
 
     /* Read auto connect server list */
     config_setting_t *auto_connect;

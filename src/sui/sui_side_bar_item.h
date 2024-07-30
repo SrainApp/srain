@@ -37,6 +37,7 @@ void sui_side_bar_item_inc_count(SuiSideBarItem *self);
 void sui_side_bar_item_clear_count(SuiSideBarItem *self);
 
 unsigned long sui_side_bar_item_get_update_time(SuiSideBarItem *self);
+const gchar *sui_side_bar_item_get_title(SuiSideBarItem *self);
 
 #endif /* __SUI_SIDE_BAR_ITEM_H */
 
