@@ -96,6 +96,7 @@ static gint list_sort_func(GtkListBoxRow *row1, GtkListBoxRow *row2,
     SuiSideBarItem *item1;
     SuiSideBarItem *item2;
     GtkWidget *event_box;
+    SuiWindowConfig* cfg;
 
     event_box = gtk_bin_get_child(GTK_BIN(row1));
     g_return_val_if_fail(GTK_IS_EVENT_BOX(event_box), 0);
@@ -104,6 +105,14 @@ static gint list_sort_func(GtkListBoxRow *row1, GtkListBoxRow *row2,
     event_box = gtk_bin_get_child(GTK_BIN(row2));
     g_return_val_if_fail(GTK_IS_EVENT_BOX(event_box), 0);
     item2 = SUI_SIDE_BAR_ITEM(gtk_bin_get_child(GTK_BIN(event_box)));
+
+    cfg = sui_window_get_config(sui_common_get_cur_window());
+    if (g_strcmp0(cfg->chat_list_order, CHAT_LIST_ORDER_ALPHABET) == 0){
+        return g_strcmp0(
+                sui_side_bar_item_get_title(item1),
+                sui_side_bar_item_get_title(item2)
+                );
+    }
 
     time1 = sui_side_bar_item_get_update_time(item1);
     time2 = sui_side_bar_item_get_update_time(item2);

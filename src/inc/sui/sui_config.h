@@ -37,7 +37,11 @@ struct _SuiWindowConfig {
     bool exit_on_close;
     bool server_visibility;
     bool scroll_on_new_message;
+    char *chat_list_order;
 };
+
+#define CHAT_LIST_ORDER_RECENT   "recent"
+#define CHAT_LIST_ORDER_ALPHABET "alphabet"
 
 struct _SuiApplicationConfig {
     char *theme;
