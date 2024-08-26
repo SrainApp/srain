@@ -922,6 +922,19 @@ SrnRet on_command_clear(SrnCommand *cmd, void *user_data){
     return SRN_OK;
 }
 
+SrnRet on_command_pass(SrnCommand *cmd, void *user_data){
+    SrnServer *srv;
+    const char *msg;
+
+    srv = ctx_get_server(user_data);
+    g_return_val_if_fail(srv, SRN_ERR);
+
+    msg = srn_command_get_arg(cmd, 0);
+    g_return_val_if_fail(msg, SRN_ERR);
+
+    return sirc_cmd_raw(srv->irc, "PASS %s\r\n", msg);
+}
+
 /*******************************************************************************
  * Misc
  ******************************************************************************/
