@@ -68,6 +68,7 @@ SrnRet sui_window_config_check(SuiWindowConfig *cfg){
 void sui_window_config_free(SuiWindowConfig *cfg){
     g_return_if_fail(cfg);
 
+    g_free(cfg->chat_list_order);
     g_free(cfg);
 }
 
