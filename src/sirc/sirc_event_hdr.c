@@ -40,16 +40,22 @@ void _sirc_event_hdr(SircSession *sirc, SircMessage *imsg, const SircMessageCont
 
 void sirc_event_hdr(SircSession *sirc, SircMessage *imsg){
     GDateTime *time = NULL;
+    GDateTime *utc_time = NULL;
+    GTimeZone *local_tz = NULL;
 
+    local_tz = g_time_zone_new_local();
     for (size_t i=0; i<imsg->ntags; i++) {
         if (!g_strcmp0(imsg->tags[i].key, "time") && imsg->tags[i].value) {
             /* https://ircv3.net/specs/extensions/server-time requires the
              * timezone to be explicitly UTC in the timestamp, so we don't
              * need to provide default_tz */
-            time = g_date_time_new_from_iso8601(imsg->tags[i].value, NULL);
+            utc_time = g_date_time_new_from_iso8601(imsg->tags[i].value, NULL);
+            time = g_date_time_to_timezone(utc_time, local_tz);
+            g_date_time_unref(utc_time);
             break;
         }
     }
+    g_time_zone_unref(local_tz);
 
     if (!time) {
         /* Either not provided by the server, or could not be parsed */
