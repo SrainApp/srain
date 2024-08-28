@@ -429,6 +429,8 @@ Please refer to :ref:`faq-relay-message-transform` see its effect.
    Pattern **SHOULD** consider the case where the mIRC color code is
    included in the message.
 
+.. _commands-quote:
+
 /quote
 ------
 
@@ -452,6 +454,17 @@ Usage::
 Clear all messages in current buffer.
 
 .. versionadded:: 1.4
+
+/pass
+------
+
+Usage::
+
+    /pass <password>
+
+Equivalent to using :ref:`commands-quote` `PASS <password>`.
+
+.. versionadded:: 1.8
 
 Obsoleted Commands
 ==================
