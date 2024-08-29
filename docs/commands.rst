@@ -462,7 +462,7 @@ Usage::
 
     /pass <password>
 
-Equivalent to using :ref:`commands-quote` `PASS <password>`.
+Send connection password to the server.
 
 .. versionadded:: 1.8
 
