@@ -700,7 +700,7 @@ static gboolean CTRL_J_K_on_press(GtkAccelGroup *group, GObject *obj,
 
 static gboolean CTRL_Q_on_press(GtkAccelGroup *group, GObject *obj,
         guint keyval, GdkModifierType mod, gpointer user_data){
-    SuiWindow *self;
+    SuiApplication *app;
 
     if (mod != GDK_CONTROL_MASK) return FALSE;
     if (keyval != GDK_KEY_q){
