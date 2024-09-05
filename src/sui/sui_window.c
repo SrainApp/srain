@@ -708,7 +708,7 @@ static gboolean CTRL_Q_on_press(GtkAccelGroup *group, GObject *obj,
         return FALSE;
     }
 
-    self = SUI_WINDOW(user_data);
+    app = sui_application_get_instance();
     gtk_widget_destroy(GTK_WIDGET(self));
 
     return TRUE;
