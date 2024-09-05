@@ -127,6 +127,8 @@ static void popover_button_on_click(GtkButton *button, gpointer user_data);
 static void join_button_on_click(GtkButton *button, gpointer user_data);
 static gboolean CTRL_J_K_on_press(GtkAccelGroup *group, GObject *obj,
         guint keyval, GdkModifierType mod, gpointer user_data);
+static gboolean CTRL_Q_on_press(GtkAccelGroup *group, GObject *obj,
+        guint keyval, GdkModifierType mod, gpointer user_data);
 static gboolean input_text_view_on_key_press(GtkTextView *text_view,
         GdkEventKey *event, gpointer user_data);
 static void send_button_on_clicked(GtkWidget *widget, gpointer user_data);
@@ -192,6 +194,7 @@ static void sui_window_get_property(GObject *object, guint property_id,
 static void sui_window_init(SuiWindow *self){
     GClosure *closure_j;
     GClosure *closure_k;
+    GClosure *closure_q;
     GtkAccelGroup *accel;
 
     gtk_widget_init_template(GTK_WIDGET(self));
@@ -252,23 +255,28 @@ static void sui_window_init(SuiWindow *self){
     g_signal_connect(self->insert_emoji_button, "clicked",
             G_CALLBACK(insert_emoji_button_on_clicked), self);
 
-    /* shortcut <C-j> and <C-k> */
+    /* shortcuts <C-j>, <C-k> and <C-q> */
     accel = gtk_accel_group_new();
 
     closure_j = g_cclosure_new(G_CALLBACK(CTRL_J_K_on_press),
             self->side_bar, NULL);
     closure_k = g_cclosure_new(G_CALLBACK(CTRL_J_K_on_press),
             self->side_bar, NULL);
+    closure_q = g_cclosure_new(G_CALLBACK(CTRL_Q_on_press),
+            self, NULL);
 
     gtk_accel_group_connect(accel, GDK_KEY_j, GDK_CONTROL_MASK,
             GTK_ACCEL_VISIBLE, closure_j);
     gtk_accel_group_connect(accel, GDK_KEY_k, GDK_CONTROL_MASK,
             GTK_ACCEL_VISIBLE, closure_k);
+    gtk_accel_group_connect(accel, GDK_KEY_q, GDK_CONTROL_MASK,
+            GTK_ACCEL_VISIBLE, closure_q);
 
     gtk_window_add_accel_group(GTK_WINDOW(self), accel);
 
     g_closure_unref(closure_j);
     g_closure_unref(closure_k);
+    g_closure_unref(closure_q);
 
 #if GTK_CHECK_VERSION(3, 22, 27)
     // Show insert_emoji_button when it is available
@@ -686,6 +694,22 @@ static gboolean CTRL_J_K_on_press(GtkAccelGroup *group, GObject *obj,
             ERR_FR("unknown keyval %d", keyval);
             return FALSE;
     }
+
+    return TRUE;
+}
+
+static gboolean CTRL_Q_on_press(GtkAccelGroup *group, GObject *obj,
+        guint keyval, GdkModifierType mod, gpointer user_data){
+    SuiApplication *app;
+
+    if (mod != GDK_CONTROL_MASK) return FALSE;
+    if (keyval != GDK_KEY_q){
+        ERR_FR("unknown keyval %d", keyval);
+        return FALSE;
+    }
+
+    app = sui_application_get_instance();
+    sui_application_exit(app);
 
     return TRUE;
 }
