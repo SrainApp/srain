@@ -709,7 +709,7 @@ static gboolean CTRL_Q_on_press(GtkAccelGroup *group, GObject *obj,
     }
 
     app = sui_application_get_instance();
-    gtk_widget_destroy(GTK_WIDGET(self));
+    sui_application_exit(app);
 
     return TRUE;
 }
