@@ -334,9 +334,8 @@ Sub commands:
 Arguments:
 
 * ``name``: unique name of pattern
-* ``pattern``: a valid `Perl-compatible Regular Expression`_
-
-.. _Perl-compatible Regular Expression: https://developer.gnome.org/glib/stable/glib-regex-syntax.html
+* ``pattern``: a valid Perl-compatible Regular Expression,
+  see :manpage:`pcrepattern(3)`
 
 .. _commands-filter:
 

@@ -81,6 +81,8 @@ exclude_patterns = ['.build', 'Thumbs.db', '.DS_Store']
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
 
+# A URL to cross-reference manpage directives.
+manpages_url = 'https://man7.org/linux/man-pages/man{section}/{page}.{section}.html'
 
 # -- Options for HTML output ----------------------------------------------
 
