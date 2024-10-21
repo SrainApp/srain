@@ -2,7 +2,7 @@ name: release assets
 on:
   release:
     types: [created]
-  push:
+# push:
 
 jobs:
   debian-bullseye:
@@ -31,8 +31,8 @@ jobs:
       GH_REF: ${{ github.ref }}
     steps:
     - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0 # for `git describe --tags`
+      # with:
+        # fetch-depth: 0 # for on-push + `git describe --tags`
     - uses: msys2/setup-msys2@v2
       name: Init MSYS2/MINGW64 environment
       with:
