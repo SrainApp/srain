@@ -2,10 +2,12 @@ name: release assets
 on:
   release:
     types: [created]
+# push:
+
 jobs:
   debian-bullseye:
     runs-on: ubuntu-latest
-    container: debian:bullseye
+    container: debian:bookworm
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GH_REPO: ${{ github.repository }}
@@ -13,7 +15,7 @@ jobs:
     steps:
     - name: upgrade the packages
       run: apt-get update && apt-get upgrade -y && apt-get install -y git
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: build
       run: .github/workflows/pack-debian.sh
     - name: upload the assets
@@ -28,13 +30,15 @@ jobs:
       GH_REPO: ${{ github.repository }}
       GH_REF: ${{ github.ref }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
+      # with:
+        # fetch-depth: 0 # for on-push + `git describe --tags`
     - uses: msys2/setup-msys2@v2
       name: Init MSYS2/MINGW64 environment
       with:
         update: true
         msystem: MINGW64
-        install: base-devel git curl zip mingw-w64-x86_64-python-requests mingw-w64-x86_64-gcc mingw-w64-x86_64-gtk3 mingw-w64-x86_64-libconfig mingw-w64-x86_64-libsoup mingw-w64-x86_64-libsecret mingw-w64-x86_64-pkg-config mingw-w64-x86_64-gettext mingw-w64-x86_64-glib-networking mingw-w64-x86_64-meson mingw-w64-x86_64-appstream-glib
+        install: base-devel git curl zip mingw-w64-x86_64-python-requests mingw-w64-x86_64-gcc mingw-w64-x86_64-gtk3 mingw-w64-x86_64-libconfig mingw-w64-x86_64-libsoup3 mingw-w64-x86_64-libsecret mingw-w64-x86_64-pkg-config mingw-w64-x86_64-gettext mingw-w64-x86_64-glib-networking mingw-w64-x86_64-meson mingw-w64-x86_64-appstream-glib
     - name: Build
       run: |
         SRAIN_TAG=`git describe --tags`;
