@@ -15,7 +15,7 @@ jobs:
     steps:
     - name: upgrade the packages
       run: apt-get update && apt-get upgrade -y && apt-get install -y git
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: build
       run: .github/workflows/pack-debian.sh
     - name: upload the assets
@@ -30,7 +30,9 @@ jobs:
       GH_REPO: ${{ github.repository }}
       GH_REF: ${{ github.ref }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # for `git describe --tags`
     - uses: msys2/setup-msys2@v2
       name: Init MSYS2/MINGW64 environment
       with:
