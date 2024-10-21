@@ -18,7 +18,7 @@ SRAIN_TAG_DATE=`git log $SRAIN_TAG -n 1 --pretty=format:"%ad" --date=format:'%a,
 # Make dependencies: gettext, libconfig-dev, libgtk-3-dev, libsecret-1-dev, libsoup2.4-dev, libssl-dev, pkg-config
 # Runtime dependencies: glib-networking, libgtk-3-0, libsecret-1-0, libconfig9, libsoup2.4
 # Python3 script: python3 python3-requests
-apt-get install -y debhelper dpkg-dev gettext libconfig-dev libgtk-3-dev libsecret-1-dev libsoup-3.0-dev libssl-dev pkg-config glib-networking libgtk-3-0 libsecret-1-0 libconfig9 libsoup-3.0 python3 python3-requests meson libayatana-appindicator3-dev;
+apt-get install -y debhelper dpkg-dev gettext libconfig-dev libgtk-3-dev libsecret-1-dev libsoup-3.0-dev libssl-dev pkg-config glib-networking libgtk-3-0 libsecret-1-0 libconfig9 libsoup-3.0-0 python3 python3-requests meson libayatana-appindicator3-dev;
 # Download the debian files.
 git clone https://github.com/SrainApp/srain-contrib.git --depth 1;
 cd srain-contrib;
