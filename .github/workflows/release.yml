@@ -7,7 +7,7 @@ on:
 jobs:
   debian-bullseye:
     runs-on: ubuntu-latest
-    container: debian:bullseye
+    container: debian:bookworm
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GH_REPO: ${{ github.repository }}
