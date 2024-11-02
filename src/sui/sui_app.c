@@ -460,7 +460,7 @@ static void show_about_dialog(SuiApplication *self){
         "Artem Polishchuk <ego.cordatus@gmail.com> (ru)\n" \
         "Andrij Mizyk <andmizyk@gmail.com> (uk)\n" \
         "Shengyu Zhang <i@silverrainz.me> (zh_CN)\n" \
-        "Jianqiu Zhang <zhangjianqiu13@gmail.com> (zh_CN)" \
+        "Jianqiu Zhang <zhangjianqiu13@gmail.com> (zh_CN)\n" \
         "Peter Dave Hello <hsu@peterdavehello.org> (zh_TW)";
 
     gtk_show_about_dialog(window,
