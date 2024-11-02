@@ -32,6 +32,30 @@ Change Log
       - XXX
 
 .. _version-latest:
+.. _version-1.8.0:
+
+2024-11-02 Version 1.8.0
+========================
+
+.. post:: 2024-11-02
+   :category: Release
+
+- Features:
+
+  - Add zh_TW Traditional Chinese translation, thanks to @PeterDaveHello (:pull:`417`)
+  - Add :doc:`configuration <config>` ``chat-list-order = "recent|alphabet"`` for changing chat list order, thanks to @Exagone313 (:pull:`421`)
+  - Add :kbd:`ctrl+q` :ref:`hot-keys` for quitting Srain, thanks to @Exagone313 (:issue:`223`)
+  - Add :ref:`commands-pass` command for sending connection password to server , thanks to @Exagone313 (:pull:`423`)
+
+- Changes:
+
+  - docs: Fix and update macos instructions, thanks to @step21 (:pull:`414`)
+
+- Bug fixes:
+
+  - Convert IRCv3 received server-time to local timezone (:issue:`379`), thanks to @Exagone313
+  - Fix release assets (:pull:`427`)
+
 .. _version-1.7.0:
 
 2024-04-26 Version 1.7.0

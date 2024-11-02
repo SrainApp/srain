@@ -62,7 +62,7 @@ baseurl = 'https://srain.silverrainz.me/'
 # built documents.
 #
 # The short X.Y version.
-version = '1.7.0'
+version = '1.8.0'
 # The full version, including alpha/beta/rc tags.
 release = version
 
@@ -189,6 +189,10 @@ texinfo_documents = [
 # -- Options for sphinx.ext.extlinks --------------------------------------
 
 extensions.append('sphinx.ext.extlinks')
+extensions.append('sphinxnotes.mock')
+mock_directives = []
+mock_directives.append('contents') # Theme has built-in local-toc, see html_theme
+mock_directives.append('post') # Theme has built-in local-toc, see html_theme
 
 extlinks = {
     'issue': ('https://github.com/SrainApp/srain/issues/%s', '#%s'),
@@ -210,6 +214,7 @@ if CI:
     blog_path = 'blog'
     blog_title = project
     blog_baseurl = baseurl
+    blog_date_format = '%Y-%m-%d'
     blog_authors = {
         author: (author, blog_baseurl),
     }

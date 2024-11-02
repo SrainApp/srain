@@ -454,6 +454,8 @@ Clear all messages in current buffer.
 
 .. versionadded:: 1.4
 
+.. _commands-pass:
+
 /pass
 ------
 
