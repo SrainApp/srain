@@ -71,6 +71,12 @@
   </content_rating>
 
 <releases>
+  <release version="1.8.0" date="2024-11-02">
+      <url>https://srain.silverrainz.me/changelog.html#version-1-8-0</url>
+  </release>
+  <release version="1.7.0" date="2024-04-26">
+      <url>https://srain.silverrainz.me/changelog.html#version-1-7-0</url>
+  </release>
   <release version="1.6.0" date="2024-02-11">
       <url>https://srain.silverrainz.me/changelog.html#version-1-6-0</url>
   </release>
