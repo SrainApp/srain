@@ -40,6 +40,7 @@ jobs:
         sudo ninja -C builddir install;
     - name: Validate
       run: |
+        set -x;
         sudo apt-get install appstream-util desktop-file-utils;
         appstreamcli validate /usr/local/share/metainfo/im.srain.Srain.metainfo.xml;
         desktop-file-validate /usr/local/share/applications/im.srain.Srain.desktop;
