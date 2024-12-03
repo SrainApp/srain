@@ -234,7 +234,7 @@ SrnRet srn_application_add_server(SrnApplication *app, const char *name){
     SrnRet ret;
     SrnServerConfig *srv_cfg;
 
-    srv_cfg = srn_server_config_new(name);
+    srv_cfg = srn_server_config_new();
     ret = srn_config_manager_read_server_config(app->cfg_mgr, srv_cfg, name);
     if (!RET_IS_OK(ret)){
         goto ERR;

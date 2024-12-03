@@ -22,7 +22,9 @@
 #include <stdint.h>
 #include <glib.h>
 
+#if defined __STDC_VERSION__ && __STDC_VERSION__ <= 201710L
 typedef gboolean bool;
+#endif
 
 /* General result value */
 #define SRN_OK      0

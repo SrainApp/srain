@@ -32,7 +32,7 @@ typedef struct _SrnMessageFilter SrnMessageFilter;
 struct _SrnMessageFilter {
     const char *name;
     void (*init) (void);
-    SrnRet (*filter) (const SrnMessage *msg);
+    bool (*filter) (const SrnMessage *msg);
     void (*finalize) (void);
 };
 
