@@ -21,7 +21,7 @@ Supporting Srain through OpenCollective_.
 .. _GitHub: https://github.com/SrainApp/srain/tree/master/docs
 .. _OpenCollective: https://opencollective.com/srain
 
-Recnet posts
+Recent posts
 ============
 
 .. postlist:: 5
