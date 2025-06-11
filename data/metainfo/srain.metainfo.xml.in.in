@@ -52,6 +52,9 @@
   <content_rating type="oars-1.1"/>
 
 <releases>
+  <release version="1.8.1" date="2025-06-11">
+      <url>https://srain.silverrainz.me/changelog.html#version-1-8-1</url>
+  </release>
   <release version="1.8.0" date="2024-11-02">
       <url>https://srain.silverrainz.me/changelog.html#version-1-8-0</url>
   </release>
