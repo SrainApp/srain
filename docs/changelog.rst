@@ -32,6 +32,22 @@ Change Log
       - XXX
 
 .. _version-latest:
+.. _version-1.8.1:
+
+2025-06-11 Version 1.8.1
+========================
+
+.. post:: 2025-06-11
+   :category: Release
+
+- Changes:
+
+  - Update metainfo, thanks to @yakushabb (:pull:`#429`)
+
+- Bug fixes:
+
+  - Remove bool typedef in C23, thanks to @pastalian (:pull:`430`)
+
 .. _version-1.8.0:
 
 2024-11-02 Version 1.8.0
