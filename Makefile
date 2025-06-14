@@ -55,7 +55,7 @@ $(BUILDDIR): meson.build | $(PREFIX)
 		source ./script/macos-pkgconfig-path.sh; \
 	fi; \
     if [[ "$$OSTYPE" == "linux-gnu"* ]]; then \
-		$(MESON) setup --prefix=$(PREFIX) --buildtype=debug $@; \
+		CC='zig cc' $(MESON) setup --prefix=$(PREFIX) --buildtype=debug $@; \
 	else \
 		$(MESON) setup --prefix=$(PREFIX) --buildtype=debug -Dapp_indicator=false $@; \
 	fi
