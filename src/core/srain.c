@@ -35,11 +35,14 @@
 #include "filter/filter.h"
 #include "render/render.h"
 
+extern void zig_hello(void);
+
 int main(int argc, char *argv[]){
     SrnLogger *logger;
     SrnLoggerConfig *logger_cfg;
     SrnApplication *app;
 
+    zig_hello();
     ret_init();
     i18n_init();
     srn_filter_init();

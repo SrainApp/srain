@@ -143,8 +143,10 @@ incdirs = [
   include_directories('sui'),
 ]
 
+subdir('zig')
+
 executable(
-  app_exec, srcs,
+  app_exec, srcs + zig_objs,
   include_directories: incdirs,
   dependencies: deps,
   install: true,
