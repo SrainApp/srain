@@ -48,10 +48,21 @@ mingw64_dlls+=$ret
 get_dll $gdbus
 mingw64_dlls+=$ret
 
+### Dynamically Loaded DLLs Begin
+# The DLLs couldn't be seen by ldd
+
+# libxml2
+mingw64_dlls+='/mingw64/bin/libxml2-2.dll '
+
+# librsvg-2-2
+mingw64_dlls+='/mingw64/bin/librsvg-2-2.dll '
+
+### Dynamically Loaded DLLs End
+
 # helper program to open browser link
 help_program=$prefix/bin/gspawn-win64-helper.exe
 
-mingw64_dlls=$(echo $mingw64_dlls | tr ' ' '\n' | sort -u)
+mingw64_dlls=$(echo $mingw64_dlls | tr ' ' '\n' | sort -u | uniq)
 
 mkdir -pv $dst_bin
 mkdir -pv $dst_lib
