@@ -2,7 +2,7 @@ name: release assets
 on:
   release:
     types: [created]
-# push:
+  push:
 
 jobs:
   debian-bullseye:
