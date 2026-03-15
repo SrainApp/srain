@@ -37,6 +37,7 @@
 #include "sui_message.h"
 #include "sui_url_previewer.h"
 
+#include "gtk_compat.h"
 #include "log.h"
 #include "i18n.h"
 #include "meta.h"
@@ -109,11 +110,8 @@ static void sui_message_get_property(GObject *object, guint property_id,
 }
 
 static void sui_message_init(SuiMessage *self){
-    GtkStyleContext *style_context;
-
-    style_context = gtk_widget_get_style_context(GTK_WIDGET(self));
-    gtk_style_context_add_class(style_context, "sui-message-head");
-    gtk_style_context_add_class(style_context, "sui-message-tail");
+    srn_gtk_widget_add_css_class(GTK_WIDGET(self), "sui-message-head");
+    srn_gtk_widget_add_css_class(GTK_WIDGET(self), "sui-message-tail");
 }
 
 static void sui_message_constructed(GObject *object){
@@ -589,4 +587,3 @@ static char* label_get_selection(GtkLabel *label){
 
     return sel_msg;
 }
-

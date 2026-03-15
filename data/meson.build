@@ -23,6 +23,24 @@ gnome = import('gnome')
 
 srcs += gnome.compile_resources('srain-resources', 'srain.gresource.xml')
 
+if get_option('gtk4_experimental')
+  blueprint_compiler = find_program('blueprint-compiler')
+  gtk4_blueprints = custom_target('gtk4-blueprints',
+    input: files(
+      'ui-gtk4/side_bar_item.blp',
+    ),
+    output: '.',
+    command: [
+      blueprint_compiler,
+      'batch-compile',
+      '@OUTPUT@',
+      '@CURRENT_SOURCE_DIR@',
+      '@INPUT@',
+    ],
+    build_by_default: true,
+  )
+endif
+
 subdir('metainfo')
 subdir('icons')
 

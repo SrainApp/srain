@@ -38,6 +38,7 @@
 #include "sui_event_hdr.h"
 #include "sui_side_bar.h"
 
+#include "gtk_compat.h"
 #include "log.h"
 
 struct _SuiSideBar {
@@ -129,7 +130,6 @@ static gboolean list_filter_func(GtkListBoxRow *row, gpointer user_data){
 static void
 sui_side_bar_init(SuiSideBar *self){
     GtkWidget *sw;
-    GtkStyleContext *style;
 
     sw = gtk_scrolled_window_new(NULL, NULL);
     gtk_widget_show(sw);
@@ -152,8 +152,7 @@ sui_side_bar_init(SuiSideBar *self){
     g_signal_connect(self->list, "row-selected",
             G_CALLBACK(listbox_on_row_selected), self);
 
-    style = gtk_widget_get_style_context(GTK_WIDGET(self));
-    gtk_style_context_add_class(style, "sidebar"); // ?
+    srn_gtk_widget_add_css_class(GTK_WIDGET(self), "sidebar"); // ?
 
     self->rows = g_hash_table_new(NULL, NULL);
 }

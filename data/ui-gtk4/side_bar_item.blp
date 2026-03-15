@@ -1,0 +1,67 @@
+using Gtk 4.0;
+
+template $SuiSideBarItem : Gtk.Box {
+  visible: true;
+  can-focus: false;
+  orientation: vertical;
+  styles ["sui-side-bar-item"]
+
+  Gtk.Box title_box {
+    visible: true;
+    can-focus: false;
+
+    Gtk.Image image {
+      width-request: 16;
+      height-request: 16;
+      visible: true;
+      can-focus: false;
+    }
+
+    Gtk.Label title_label {
+      visible: true;
+      can-focus: false;
+      label: "<buffer>";
+      ellipsize: end;
+      single-line-mode: true;
+      max-width-chars: 32;
+      styles ["sui-title"]
+    }
+
+    Gtk.Label subtitle_label {
+      visible: true;
+      can-focus: false;
+      label: "<server>";
+      ellipsize: end;
+      hexpand: true;
+      halign: end;
+      styles ["sui-subtitle"]
+    }
+  }
+
+  Gtk.Box message_box {
+    visible: true;
+    can-focus: false;
+
+    Gtk.Label recent_message_label {
+      visible: true;
+      can-focus: false;
+      label: "<user>: <message excerpt>";
+      ellipsize: end;
+      hexpand: true;
+      styles ["dim-label"]
+    }
+
+    Gtk.Label unread_count_label {
+      visible: true;
+      can-focus: false;
+      label: "<unread count>";
+      justify: right;
+      ellipsize: end;
+      width-chars: 1;
+      single-line-mode: true;
+      max-width-chars: 3;
+      halign: end;
+      styles ["sui-unread-count"]
+    }
+  }
+}

@@ -29,6 +29,7 @@
 #include "sui_common.h"
 #include "sui_misc_message.h"
 
+#include "gtk_compat.h"
 #include "utils.h"
 #include "i18n.h"
 
@@ -236,12 +237,9 @@ SuiMiscMessageStyle sui_misc_message_get_style(SuiMiscMessage *self){
 
 static void sui_misc_message_set_style(SuiMiscMessage *self,
         SuiMiscMessageStyle style) {
-    GtkStyleContext *style_context;
     const char *class;
 
     self->style = style;
-
-    style_context = gtk_widget_get_style_context(GTK_WIDGET(self));
     switch (self->style) {
         case SUI_MISC_MESSAGE_STYLE_ACTION:
             class = "sui-misc-message-action";
@@ -252,5 +250,5 @@ static void sui_misc_message_set_style(SuiMiscMessage *self,
         default:
             return;
     }
-    gtk_style_context_add_class(style_context, class);
+    srn_gtk_widget_add_css_class(GTK_WIDGET(self), class);
 }

@@ -28,6 +28,7 @@
 #include <gtk/gtk.h>
 #include <assert.h>
 
+#include "gtk_compat.h"
 #include "i18n.h"
 #include "log.h"
 
@@ -203,14 +204,12 @@ void sui_common_popdown_panel(GtkWidget *child){
  */
 void sui_common_popup_panel(GtkWidget *relative_to, GtkWidget *child){
     GtkPopover *popover;
-    GtkStyleContext *style_context;
 
     popover = GTK_POPOVER(gtk_popover_new(NULL));
     gtk_popover_set_relative_to(popover, relative_to);
     gtk_container_add(GTK_CONTAINER(popover), child);
 
-    style_context = gtk_widget_get_style_context(GTK_WIDGET(popover));
-    gtk_style_context_add_class(style_context, "sui-panel");
+    srn_gtk_widget_add_css_class(GTK_WIDGET(popover), "sui-panel");
 
     g_signal_connect(popover, "hide",
             G_CALLBACK(popover_on_hide), NULL);

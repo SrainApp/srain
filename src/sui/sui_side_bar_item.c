@@ -30,6 +30,7 @@
 
 #include "sui_side_bar_item.h"
 
+#include "gtk_compat.h"
 #include "meta.h"
 #include "log.h"
 #include "utils.h"
@@ -89,7 +90,7 @@ SuiSideBarItem *sui_side_bar_item_new(const char *title,
     self->update_time = get_time_since_first_call_ms();
     gtk_label_set_text(self->title_label, title);
     gtk_label_set_text(self->subtitle_label, subtitle);
-    gtk_image_set_from_icon_name(self->image, icon, GTK_ICON_SIZE_BUTTON);
+    srn_gtk_image_set_icon_name(self->image, icon);
 
     return self;
 }
@@ -124,34 +125,29 @@ void sui_side_bar_item_update(SuiSideBarItem *self,
 }
 
 void sui_side_bar_item_highlight(SuiSideBarItem *self){
-    GtkStyleContext *style_context;
-
-    style_context = gtk_widget_get_style_context(GTK_WIDGET(self->unread_count_label));
-    gtk_style_context_add_class(style_context, "highlighted");
+    srn_gtk_widget_add_css_class(GTK_WIDGET(self->unread_count_label),
+            "highlighted");
 }
 
 void sui_side_bar_item_inc_count(SuiSideBarItem *self){
     int count;
     char *buf;
-    GtkStyleContext *ctx;
-
     count = atoi(gtk_label_get_text(self->unread_count_label));
     buf = g_strdup_printf("%d", count + 1);
     gtk_label_set_text(self->unread_count_label, buf);
     g_free(buf);
 
-    ctx = gtk_widget_get_style_context(GTK_WIDGET(self->unread_count_label));
-    gtk_style_context_add_class(ctx, "sui-message-count-label");
+    srn_gtk_widget_add_css_class(GTK_WIDGET(self->unread_count_label),
+            "sui-message-count-label");
 }
 
 void sui_side_bar_item_clear_count(SuiSideBarItem *self){
-    GtkStyleContext *ctx;
-
     gtk_label_set_text(self->unread_count_label, "");
 
-    ctx = gtk_widget_get_style_context(GTK_WIDGET(self->unread_count_label));
-    gtk_style_context_remove_class(ctx, "sui-message-count-label");
-    gtk_style_context_remove_class(ctx, "highlighted");
+    srn_gtk_widget_remove_css_class(GTK_WIDGET(self->unread_count_label),
+            "sui-message-count-label");
+    srn_gtk_widget_remove_css_class(GTK_WIDGET(self->unread_count_label),
+            "highlighted");
 }
 
 unsigned long sui_side_bar_item_get_update_time(SuiSideBarItem *self){
