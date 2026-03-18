@@ -5,6 +5,17 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$repo_root"
 
+paths=(
+  "src"
+  "data"
+)
+
+globs=(
+  "!builddir/**"
+  "!builddir-gtk4-exp/**"
+  "!src/inc/gtk_compat.h"
+)
+
 patterns=(
   "GtkMenu\\b"
   "GtkTreeView\\b"
@@ -23,7 +34,7 @@ patterns=(
 )
 
 for pattern in "${patterns[@]}"; do
-  count="$(rg -n "$pattern" src data -g '!builddir/**' || true)"
+  count="$(rg -n "$pattern" "${paths[@]}" "${globs[@]/#/-g }" || true)"
   count="$(printf '%s\n' "$count" | sed '/^$/d' | wc -l)"
   printf '%-32s %s\n' "$pattern" "$count"
 done
