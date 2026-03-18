@@ -98,6 +98,7 @@ static void update(SuiConnectPanel *self, const char *srv_name);
 static void refresh_server_list(SuiConnectPanel *self);
 static void refresh_login_method_list(SuiConnectPanel *self);
 static void update_focus(SuiConnectPanel *self);
+static GtkEntry *server_combo_box_get_entry(SuiConnectPanel *self);
 
 static void server_combo_box_on_changed(GtkComboBox *combo_box,
         gpointer user_data);
@@ -116,6 +117,44 @@ static void stack_on_child_changed(GtkWidget *widget, GParamSpec *pspec,
  *****************************************************************************/
 
 G_DEFINE_TYPE(SuiConnectPanel, sui_connect_panel, GTK_TYPE_BOX);
+
+static GtkWidget *find_entry_in_widget(GtkWidget *widget){
+#if GTK_MAJOR_VERSION >= 4
+    GtkWidget *child;
+
+    if (widget == NULL){
+        return NULL;
+    }
+    if (GTK_IS_ENTRY(widget)){
+        return widget;
+    }
+
+    for (child = gtk_widget_get_first_child(widget);
+            child != NULL;
+            child = gtk_widget_get_next_sibling(child)){
+        GtkWidget *entry;
+
+        entry = find_entry_in_widget(child);
+        if (entry != NULL){
+            return entry;
+        }
+    }
+#endif
+
+    return widget;
+}
+
+static GtkEntry *server_combo_box_get_entry(SuiConnectPanel *self){
+    GtkWidget *child;
+
+    child = srn_gtk_widget_get_child(GTK_WIDGET(self->server_combo_box));
+#if GTK_MAJOR_VERSION >= 4
+    child = find_entry_in_widget(child);
+#endif
+    g_return_val_if_fail(GTK_IS_ENTRY(child), NULL);
+
+    return (GtkEntry *)child;
+}
 
 static void sui_connect_panel_init(SuiConnectPanel *self){
     gtk_widget_init_template(GTK_WIDGET(self));
@@ -155,7 +194,7 @@ static void sui_connect_panel_init(SuiConnectPanel *self){
 
     g_signal_connect(self->quick_server_combo_box, "changed",
             G_CALLBACK(server_combo_box_on_changed), self);
-    g_signal_connect(GTK_ENTRY(srn_gtk_widget_get_child(GTK_WIDGET(self->server_combo_box))),
+    g_signal_connect(server_combo_box_get_entry(self),
             "changed", G_CALLBACK(server_combo_box_on_changed), self);
     g_signal_connect(self->nick_entry, "changed",
             G_CALLBACK(nick_entry_on_changed), self);
@@ -188,8 +227,13 @@ static void sui_connect_panel_class_init(SuiConnectPanelClass *class){
     GtkWidgetClass *widget_class;
 
     widget_class = GTK_WIDGET_CLASS(class);
+#if GTK_MAJOR_VERSION >= 4
+    gtk_widget_class_set_template_from_resource(widget_class,
+            "/im/srain/Srain/connect_panel.ui");
+#else
     gtk_widget_class_set_template_from_resource(widget_class,
             "/im/srain/Srain/connect_panel.glade");
+#endif
 
     gtk_widget_class_bind_template_child(widget_class, SuiConnectPanel, stack);
 
@@ -249,10 +293,10 @@ static void update(SuiConnectPanel *self, const char *srv_name){
         srn_gtk_entry_set_text(self->login_password_entry, "");
         gtk_toggle_button_set_active(
                 GTK_TOGGLE_BUTTON(self->remember_login_password_check_button), FALSE);
-        srn_gtk_file_chooser_set_filename(
-                GTK_FILE_CHOOSER(self->login_cert_file_chooser_button), "");
-        srn_gtk_file_chooser_set_filename(
-                GTK_FILE_CHOOSER(self->client_cert_file_chooser_button), "");
+        srn_gtk_file_selector_set_filename(
+                self->login_cert_file_chooser_button, "");
+        srn_gtk_file_selector_set_filename(
+                self->client_cert_file_chooser_button, "");
     } else {
         SrnRet ret;
         SrnApplication *app_model;
@@ -299,12 +343,12 @@ static void update(SuiConnectPanel *self, const char *srv_name){
         srn_gtk_entry_set_text(self->login_password_entry,
                 srv_cfg->user->login->password ?
                 srv_cfg->user->login->password : "");
-        srn_gtk_file_chooser_set_filename(
-                GTK_FILE_CHOOSER(self->login_cert_file_chooser_button),
+        srn_gtk_file_selector_set_filename(
+                self->login_cert_file_chooser_button,
                 srv_cfg->user->login->cert_file ?
                 srv_cfg->user->login->cert_file : "");
-        srn_gtk_file_chooser_set_filename(
-                GTK_FILE_CHOOSER(self->client_cert_file_chooser_button),
+        srn_gtk_file_selector_set_filename(
+                self->client_cert_file_chooser_button,
                 srv_cfg->irc->certificate_filename ?
                 srv_cfg->irc->certificate_filename : "");
 
@@ -377,7 +421,7 @@ static void server_combo_box_on_changed(GtkComboBox *combo_box,
     SuiConnectPanel *self;
 
     self = SUI_CONNECT_PANEL(user_data);
-    entry = GTK_ENTRY(srn_gtk_widget_get_child(GTK_WIDGET(self->server_combo_box)));
+    entry = server_combo_box_get_entry(self);
     srv_name = srn_gtk_entry_get_text(entry);
     update(self, srv_name);
 }
@@ -476,7 +520,7 @@ static void connect_button_on_click(gpointer user_data){
         GtkEntry *entry;
         SrnLoginMethod method;
 
-        entry = GTK_ENTRY(srn_gtk_widget_get_child(GTK_WIDGET(self->server_combo_box)));
+        entry = server_combo_box_get_entry(self);
         srv_name = srn_gtk_entry_get_text(entry);
 
         srv_cfg = srn_server_config_new();
@@ -569,15 +613,15 @@ static void connect_button_on_click(gpointer user_data){
         }
 
         /* ECDSA cert */
-        login_cert_file = srn_gtk_file_chooser_get_filename(
-                GTK_FILE_CHOOSER(self->login_cert_file_chooser_button));
+        login_cert_file = srn_gtk_file_selector_get_filename(
+                self->login_cert_file_chooser_button);
         if (!str_is_empty(login_cert_file)) {
             str_assign(&srv_cfg->user->login->cert_file, login_cert_file);
         }
 
         /* TLS cert */
-        client_cert_file = srn_gtk_file_chooser_get_filename(
-                GTK_FILE_CHOOSER(self->client_cert_file_chooser_button));
+        client_cert_file = srn_gtk_file_selector_get_filename(
+                self->client_cert_file_chooser_button);
         if (!str_is_empty(client_cert_file)) {
             str_assign(&srv_cfg->irc->certificate_filename, client_cert_file);
         }
@@ -644,7 +688,7 @@ static void nick_entry_on_changed(GtkEditable *editable, gpointer user_data) {
     cfg_mgr = app_model->cfg_mgr;
 
     srv_name = srn_gtk_entry_get_text(
-            GTK_ENTRY(srn_gtk_widget_get_child(GTK_WIDGET(self->server_combo_box))));
+            server_combo_box_get_entry(self));
     user_name = srn_gtk_entry_get_text(entry);
 
     // Clear login password when user name is not valid

@@ -4,15 +4,18 @@
     <gresource prefix="/im/srain/Srain">
         <file alias="window.glade" preprocess="xml-stripblanks">ui/window.glade</file>
         <file alias="buffer.glade" preprocess="xml-stripblanks">ui/buffer.glade</file>
+        <file alias="buffer.ui" preprocess="xml-stripblanks">ui-gtk4/buffer.ui</file>
         <file alias="misc_message.glade" preprocess="xml-stripblanks">ui/misc_message.glade</file>
         <file alias="send_message.glade" preprocess="xml-stripblanks">ui/send_message.glade</file>
         <file alias="recv_message.glade" preprocess="xml-stripblanks">ui/recv_message.glade</file>
         <file alias="url_previewer.glade" preprocess="xml-stripblanks">ui/url_previewer.glade</file>
         <file alias="image_window.glade" preprocess="xml-stripblanks">ui/image_window.glade</file>
+        <file alias="image_window.ui" preprocess="xml-stripblanks">ui-gtk4/image_window.ui</file>
         <file alias="side_bar_item.glade" preprocess="xml-stripblanks">ui/side_bar_item.glade</file>
         <file alias="message_list.glade" preprocess="xml-stripblanks">ui/message_list.glade</file>
         <file alias="user_list.glade" preprocess="xml-stripblanks">ui/user_list.glade</file>
         <file alias="connect_panel.glade" preprocess="xml-stripblanks">ui/connect_panel.glade</file>
+        <file alias="connect_panel.ui" preprocess="xml-stripblanks">ui-gtk4/connect_panel.ui</file>
         <file alias="join_panel.glade" preprocess="xml-stripblanks">ui/join_panel.glade</file>
         <file alias="prefs_dialog.glade" preprocess="xml-stripblanks">ui/prefs_dialog.glade</file>
         <file alias="window.ui" preprocess="xml-stripblanks">ui-gtk4/window.ui</file>

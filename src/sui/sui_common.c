@@ -203,8 +203,8 @@ void sui_common_popup_panel(GtkWidget *relative_to, GtkWidget *child){
     popover = GTK_POPOVER(gtk_popover_new());
 #else
     popover = GTK_POPOVER(gtk_popover_new(NULL));
-    gtk_popover_set_relative_to(popover, relative_to);
 #endif
+    srn_gtk_popover_set_relative_to(popover, relative_to);
     srn_gtk_widget_add_child(GTK_WIDGET(popover), child);
 
     srn_gtk_widget_add_css_class(GTK_WIDGET(popover), "sui-panel");
@@ -228,8 +228,8 @@ void sui_common_popup_panel_at_point(GtkWidget *relative_to, GtkWidget *child,
     popover = GTK_POPOVER(gtk_popover_new());
 #else
     popover = GTK_POPOVER(gtk_popover_new(NULL));
-    gtk_popover_set_relative_to(popover, relative_to);
 #endif
+    srn_gtk_popover_set_relative_to(popover, relative_to);
     gtk_popover_set_pointing_to(popover, &rect);
     srn_gtk_widget_add_child(GTK_WIDGET(popover), child);
 
@@ -252,5 +252,9 @@ static void popover_on_hide(GtkWidget *widget, gpointer user_data){
     if (child){
         srn_gtk_widget_remove_child(GTK_WIDGET(popover), child);
     }
+#if GTK_MAJOR_VERSION >= 4
+    gtk_widget_unparent(GTK_WIDGET(popover));
+#else
     g_object_unref(popover); // Free popover itself
+#endif
 }

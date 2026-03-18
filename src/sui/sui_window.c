@@ -119,8 +119,12 @@ static void setup_button_icons(SuiWindow *self);
 static void on_destroy(SuiWindow *self);
 static void on_notify_is_active(GObject *object, GParamSpec *pspec,
         gpointer data);
+#if GTK_MAJOR_VERSION >= 4
+static gboolean on_close_request(GtkWindow *window, gpointer user_data);
+#else
 static gboolean on_delete_event(GtkWidget *widget, GdkEvent *event,
             gpointer user_data);
+#endif
 
 static void window_stack_on_child_changed(GtkWidget *widget, GParamSpec *pspec,
         gpointer user_data);
@@ -253,8 +257,13 @@ static void sui_window_init(SuiWindow *self){
             G_CALLBACK(on_destroy), NULL);
     g_signal_connect(self, "notify::is-active",
             G_CALLBACK(on_notify_is_active), NULL);
+#if GTK_MAJOR_VERSION >= 4
+    g_signal_connect(self, "close-request",
+            G_CALLBACK(on_close_request), NULL);
+#else
     g_signal_connect(self, "delete-event",
             G_CALLBACK(on_delete_event), NULL);
+#endif
 
     // Click to show/hide GtkPopover
     g_signal_connect(self->connect_button, "clicked",
@@ -742,6 +751,20 @@ static void on_notify_is_active(GObject *object, GParamSpec *pspec,
     }
 }
 
+#if GTK_MAJOR_VERSION >= 4
+static gboolean on_close_request(GtkWindow *window, gpointer user_data){
+    SuiWindow *self;
+
+    self = SUI_WINDOW(window);
+
+    if (self->cfg->exit_on_close) {
+        return FALSE;
+    } else {
+        gtk_widget_set_visible(GTK_WIDGET(window), FALSE);
+        return TRUE;
+    }
+}
+#else
 static gboolean on_delete_event(GtkWidget *widget, GdkEvent *event,
             gpointer user_data){
     SuiWindow *self;
@@ -755,6 +778,7 @@ static gboolean on_delete_event(GtkWidget *widget, GdkEvent *event,
         return TRUE;
     }
 }
+#endif
 
 static void popover_button_on_click(GtkButton *button, gpointer user_data){
     GtkWidget *panel;

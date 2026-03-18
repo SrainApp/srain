@@ -487,7 +487,7 @@ static void image_event_box_on_click(GtkGestureClick *gesture, int n_press,
     }
 
     self = SUI_URL_PREVIEWER(user_data);
-    builder = gtk_builder_new_from_resource("/im/srain/Srain/image_window.glade");
+    builder = gtk_builder_new_from_resource("/im/srain/Srain/image_window.ui");
     iwin = GTK_WINDOW(gtk_builder_get_object(builder, "image_window"));
     image = GTK_IMAGE(gtk_builder_get_object(builder, "image"));
 
@@ -507,6 +507,8 @@ static void image_event_box_on_click(GtkGestureClick *gesture, int n_press,
             GDK_INTERP_BILINEAR);
 
     gtk_image_set_from_pixbuf(image, scaled_pixbuf);
+    gtk_window_set_transient_for(iwin,
+            GTK_WINDOW(sui_common_get_cur_window()));
 
     g_object_unref(scaled_pixbuf);
     g_object_unref(builder);

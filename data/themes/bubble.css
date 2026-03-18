@@ -126,10 +126,9 @@
 }
 
 .sui-message-list {
-    background-image: -gtk-gradient(linear,
-    left top, right bottom,
-    from(@sui_message_list_bg_color1),
-    to(@sui_message_list_bg_color2 ));
+    background-image: linear-gradient(to bottom right,
+    @sui_message_list_bg_color1,
+    @sui_message_list_bg_color2);
 }
 
 /* vim: se fdm=marker: */

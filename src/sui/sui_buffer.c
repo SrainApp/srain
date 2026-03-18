@@ -207,8 +207,13 @@ static void sui_buffer_class_init(SuiBufferClass *class){
     widget_class = GTK_WIDGET_CLASS(class);
 
     /* Bind child */
+#if GTK_MAJOR_VERSION >= 4
+    gtk_widget_class_set_template_from_resource(
+            widget_class, "/im/srain/Srain/buffer.ui");
+#else
     gtk_widget_class_set_template_from_resource(
             widget_class, "/im/srain/Srain/buffer.glade");
+#endif
 
     gtk_widget_class_bind_template_child(widget_class, SuiBuffer, menu);
     gtk_widget_class_bind_template_child(widget_class, SuiBuffer, topic_revealer);

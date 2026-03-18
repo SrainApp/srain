@@ -74,6 +74,15 @@ static inline GtkPopover *srn_gtk_popover_new_from_menu_model(
 #endif
 }
 
+static inline void srn_gtk_popover_set_relative_to(GtkPopover *popover,
+        GtkWidget *relative_to){
+#if GTK_MAJOR_VERSION >= 4
+    gtk_widget_set_parent(GTK_WIDGET(popover), relative_to);
+#else
+    gtk_popover_set_relative_to(popover, relative_to);
+#endif
+}
+
 static inline GtkWidget *srn_gtk_menu_item_new_with_mnemonic(
         const char *label){
 #if GTK_MAJOR_VERSION >= 4
@@ -313,6 +322,32 @@ static inline void srn_gtk_file_chooser_set_filename(GtkFileChooser *chooser,
 #endif
 }
 
+static inline char *srn_gtk_file_selector_get_filename(GtkWidget *widget){
+#if GTK_MAJOR_VERSION >= 4
+    if (GTK_IS_EDITABLE(widget)){
+        const char *text;
+
+        text = gtk_editable_get_text(GTK_EDITABLE(widget));
+        if (text == NULL || text[0] == '\0'){
+            return NULL;
+        }
+        return g_strdup(text);
+    }
+#endif
+    return srn_gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
+}
+
+static inline void srn_gtk_file_selector_set_filename(GtkWidget *widget,
+        const char *filename){
+#if GTK_MAJOR_VERSION >= 4
+    if (GTK_IS_EDITABLE(widget)){
+        gtk_editable_set_text(GTK_EDITABLE(widget), filename ? filename : "");
+        return;
+    }
+#endif
+    srn_gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(widget), filename);
+}
+
 static inline void srn_gtk_box_pack_start(GtkBox *box, GtkWidget *child,
         gboolean expand, gboolean fill, guint padding){
 #if GTK_MAJOR_VERSION >= 4
@@ -450,7 +485,15 @@ static inline void srn_gtk_header_bar_set_custom_title(
 static inline void srn_gtk_menu_button_set_popup(GtkMenuButton *button,
         GtkWidget *popup){
 #if GTK_MAJOR_VERSION >= 4
-    gtk_menu_button_set_popover(button, popup);
+    GtkPopover *popover;
+
+    if (GTK_IS_POPOVER(popup)){
+        popover = GTK_POPOVER(popup);
+    } else {
+        popover = GTK_POPOVER(gtk_popover_new());
+        gtk_popover_set_child(popover, popup);
+    }
+    gtk_menu_button_set_popover(button, GTK_WIDGET(popover));
 #else
     gtk_menu_button_set_popup(button, popup);
 #endif

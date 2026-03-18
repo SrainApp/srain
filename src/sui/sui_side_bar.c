@@ -60,6 +60,8 @@ on_stack_child_added(GtkWidget *container, GtkWidget *widget, SuiSideBar *sideba
 static void
 on_stack_child_removed(GtkWidget *container, GtkWidget *widget, SuiSideBar *sidebar);
 static void
+on_stack_pages_changed(GObject *object, GParamSpec *pspec, SuiSideBar *sidebar);
+static void
 on_child_changed(GtkWidget *widget, GParamSpec *pspec, SuiSideBar *sidebar);
 
 static void
@@ -323,26 +325,39 @@ on_child_changed(GtkWidget *widget, GParamSpec *pspec, SuiSideBar *sidebar){
 
 static void
 on_stack_child_added(GtkWidget *container, GtkWidget *widget, SuiSideBar *sidebar){
-    add_child(widget, sidebar);
+    populate_sidebar(sidebar);
 }
 
 static void
 on_stack_child_removed(GtkWidget *container, GtkWidget *widget, SuiSideBar *sidebar){
-    remove_child(widget, sidebar);
+    clear_sidebar(sidebar);
+    populate_sidebar(sidebar);
+}
+
+static void
+on_stack_pages_changed(GObject *object, GParamSpec *pspec, SuiSideBar *sidebar){
+    clear_sidebar(sidebar);
+    populate_sidebar(sidebar);
 }
 
 static void
 disconnect_stack_signals(SuiSideBar *sidebar){
     g_signal_handlers_disconnect_by_func(sidebar->stack, on_stack_child_added, sidebar);
     g_signal_handlers_disconnect_by_func(sidebar->stack, on_stack_child_removed, sidebar);
+    g_signal_handlers_disconnect_by_func(sidebar->stack, on_stack_pages_changed, sidebar);
     g_signal_handlers_disconnect_by_func(sidebar->stack, on_child_changed, sidebar);
     g_signal_handlers_disconnect_by_func(sidebar->stack, disconnect_stack_signals, sidebar);
 }
 
 static void
 connect_stack_signals(SuiSideBar *sidebar){
+#if GTK_MAJOR_VERSION >= 4
+    g_signal_connect_after(sidebar->stack, "notify::pages",
+            G_CALLBACK(on_stack_pages_changed), sidebar);
+#else
     g_signal_connect_after(sidebar->stack, "add", G_CALLBACK(on_stack_child_added), sidebar);
     g_signal_connect_after(sidebar->stack, "remove", G_CALLBACK(on_stack_child_removed), sidebar);
+#endif
     g_signal_connect(sidebar->stack, "notify::visible-child", G_CALLBACK(on_child_changed), sidebar);
     g_signal_connect_swapped(sidebar->stack, "destroy", G_CALLBACK(disconnect_stack_signals), sidebar);
 }

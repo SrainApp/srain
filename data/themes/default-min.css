@@ -14,19 +14,19 @@
 
 /* Side bar {{{1 */
 .sui-side-bar-item > * {
-    margin-bottom: 6px
+    margin-bottom: 6px;
 }
 
 .sui-side-bar-item > *:last-child {
-    margin-bottom: 0px
+    margin-bottom: 0px;
 }
 
 .sui-side-bar-item > * > *{
-    margin-left: 6px
+    margin-left: 6px;
 }
 
 .sui-side-bar-item > * > *:last-child {
-    margin-left: 0px
+    margin-left: 0px;
 }
 
 .sui-side-bar-item {
@@ -51,7 +51,7 @@
 .sui-title {}
 
 .sui-subtitle {
-    opacity: 0.5
+    opacity: 0.5;
 }
 
 .sui-buffer-topic {
