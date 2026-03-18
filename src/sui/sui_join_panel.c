@@ -90,8 +90,10 @@ struct _SuiJoinPanel {
 #endif
     /* Channel list models */
     GtkTreeModel *chan_tree_model;
+#if GTK_MAJOR_VERSION < 4
     GtkTreeModelFilter *chan_tree_model_filter;
     GtkTreeModelSort *chan_tree_model_sorter;
+#endif
     /* Status */
     GtkLabel *status_label;
     GtkSpinner *status_spinner;
@@ -285,9 +287,13 @@ void sui_join_panel_clear(SuiJoinPanel *self){
 }
 
 void sui_join_panel_set_model(SuiJoinPanel *self, GtkTreeModel *model){
+#if GTK_MAJOR_VERSION >= 4
+    g_return_if_fail(!self->chan_tree_model);
+#else
     g_return_if_fail(!self->chan_tree_model
             && !self->chan_tree_model_filter
             && !self->chan_tree_model_sorter);
+#endif
 
     /* Init model */
     self->chan_tree_model = model;
@@ -296,6 +302,9 @@ void sui_join_panel_set_model(SuiJoinPanel *self, GtkTreeModel *model){
     g_signal_connect(self->chan_tree_model, "row-changed",
             G_CALLBACK(chan_tree_model_on_row_changed), self);
 
+#if GTK_MAJOR_VERSION >= 4
+    rebuild_chan_list_box(self);
+#else
     /* Init filter */
     self->chan_tree_model_filter =
         GTK_TREE_MODEL_FILTER(gtk_tree_model_filter_new(model, NULL));
@@ -306,10 +315,6 @@ void sui_join_panel_set_model(SuiJoinPanel *self, GtkTreeModel *model){
     self->chan_tree_model_sorter =
         GTK_TREE_MODEL_SORT(gtk_tree_model_sort_new_with_model(
                     GTK_TREE_MODEL(self->chan_tree_model_filter)));
-
-#if GTK_MAJOR_VERSION >= 4
-    rebuild_chan_list_box(self);
-#else
     gtk_tree_view_set_model(self->chan_tree_view,
             GTK_TREE_MODEL(self->chan_tree_model_sorter));
 #endif
@@ -592,22 +597,31 @@ static void chan_tree_view_on_row_activate(GtkTreeView *view,
 static void chan_tree_model_filter_refilter(gpointer user_data){
     char *status;
     GtkTreeModel *model;
-    GtkTreeModelFilter *filter;
     SuiJoinPanel *self;
+    int cur;
+    int max;
 
     self = user_data;
-    filter = self->chan_tree_model_filter;
     model = self->chan_tree_model;
 
-    gtk_tree_model_filter_refilter(GTK_TREE_MODEL_FILTER(filter));
-#if GTK_MAJOR_VERSION >= 4
-    rebuild_chan_list_box(self);
-#endif
+#if GTK_MAJOR_VERSION < 4
+    GtkTreeModelFilter *filter;
 
+    filter = self->chan_tree_model_filter;
+    gtk_tree_model_filter_refilter(GTK_TREE_MODEL_FILTER(filter));
     /* Update status while all channels have loaded */
-    status = g_strdup_printf(_("Showing %1$d of %2$d channels"),
-                gtk_tree_model_iter_n_children(GTK_TREE_MODEL(filter), NULL),
-                gtk_tree_model_iter_n_children(model, NULL));
+    cur = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(filter), NULL);
+#else
+    rebuild_chan_list_box(self);
+    cur = gtk_widget_get_first_child(GTK_WIDGET(self->chan_list_box)) ? 0 : 0;
+    for (GtkWidget *child = gtk_widget_get_first_child(GTK_WIDGET(self->chan_list_box));
+            child != NULL;
+            child = gtk_widget_get_next_sibling(child)){
+        cur++;
+    }
+#endif
+    max = model ? gtk_tree_model_iter_n_children(model, NULL) : 0;
+    status = g_strdup_printf(_("Showing %1$d of %2$d channels"), cur, max);
     gtk_label_set_text(self->status_label, status);
     g_free(status);
 }
@@ -697,9 +711,19 @@ static void update_status(SuiJoinPanel *self){
     }
 
     if (self->chan_tree_model) {
+#if GTK_MAJOR_VERSION >= 4
+        cur = 0;
+        for (GtkWidget *child = gtk_widget_get_first_child(GTK_WIDGET(self->chan_list_box));
+                child != NULL;
+                child = gtk_widget_get_next_sibling(child)){
+            cur++;
+        }
+        max = gtk_tree_model_iter_n_children(self->chan_tree_model, NULL);
+#else
         cur = gtk_tree_model_iter_n_children(
                 GTK_TREE_MODEL(self->chan_tree_model_filter), NULL);
         max = gtk_tree_model_iter_n_children(self->chan_tree_model, NULL);
+#endif
     } else {
         cur = 0;
         max = 0;
@@ -787,11 +811,11 @@ static void rebuild_chan_list_box(SuiJoinPanel *self){
                 gtk_widget_get_first_child(GTK_WIDGET(self->chan_list_box)));
     }
 
-    if (!self->chan_tree_model_sorter){
+    if (!self->chan_tree_model){
         return;
     }
 
-    model = GTK_TREE_MODEL(self->chan_tree_model_sorter);
+    model = self->chan_tree_model;
     if (!gtk_tree_model_get_iter_first(model, &iter)){
         return;
     }
@@ -806,7 +830,7 @@ static void rebuild_chan_list_box(SuiJoinPanel *self){
                 CHANNEL_LIST_STORE_COL_USERS, &users,
                 CHANNEL_LIST_STORE_COL_TOPIC, &topic,
                 -1);
-        if (chan){
+        if (chan && chan_tree_visible_func(model, &iter, self)){
             gtk_list_box_insert(self->chan_list_box,
                     new_channel_row(chan, users, topic), -1);
         }
