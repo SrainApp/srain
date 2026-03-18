@@ -82,14 +82,8 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkComboBox" id="match_combo_box">
-                        <property name="active">0</property>
-                        <child>
-                          <object class="GtkCellRendererText"/>
-                          <attributes>
-                            <attribute name="text">1</attribute>
-                          </attributes>
-                        </child>
+                      <object class="GtkDropDown" id="match_combo_box">
+                        <property name="selected">0</property>
                       </object>
                     </child>
                   </object>

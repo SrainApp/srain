@@ -72,7 +72,11 @@ struct _SuiJoinPanel {
     GtkEntry *search_entry;
     GtkButton *refresh_button;
     /* Filter */
+#if GTK_MAJOR_VERSION >= 4
+    GtkDropDown *match_combo_box;
+#else
     GtkComboBox *match_combo_box;
+#endif
     GtkSpinButton *min_users_spin_button;
     GtkSpinButton *max_users_spin_button;
     /* Channel list */
@@ -97,7 +101,11 @@ struct _SuiJoinPanel {
     GtkButton *join_button;
 
     /* Data model */
+#if GTK_MAJOR_VERSION >= 4
+    GtkStringList *match_list_store;
+#else
     GtkListStore *match_list_store;
+#endif
 };
 
 struct _SuiJoinPanelClass {
@@ -110,8 +118,15 @@ static void match_combo_box_set_model(SuiJoinPanel *self);
 
 static void cancel_button_on_click(gpointer user_data);
 static void join_button_on_click(gpointer user_data);
+#if GTK_MAJOR_VERSION >= 4
+static void match_combo_box_on_changed(GObject *object, GParamSpec *pspec,
+        gpointer user_data);
+static void match_combo_box_refilter_on_changed(GObject *object,
+        GParamSpec *pspec, gpointer user_data);
+#else
 static void match_combo_box_on_changed(GtkComboBox *combobox,
         gpointer user_data);
+#endif
 static void refresh_button_on_clicked(gpointer user_data);
 #if GTK_MAJOR_VERSION >= 4
 static void chan_list_box_on_row_activated(GtkListBox *box, GtkListBoxRow *row,
@@ -136,6 +151,10 @@ static void stack_on_child_changed(GtkWidget *widget, GParamSpec *pspec,
 
 static void update_status(SuiJoinPanel *self);
 static void update_focus(SuiJoinPanel *self);
+
+static const int match_modes[] = {
+    MATCH_CHANNEL,
+};
 
 /*****************************************************************************
  * GObject functions
@@ -164,8 +183,13 @@ static void sui_join_panel_init(SuiJoinPanel *self){
 
     g_signal_connect_swapped(self->refresh_button, "clicked",
             G_CALLBACK(refresh_button_on_clicked), self);
+#if GTK_MAJOR_VERSION >= 4
+    g_signal_connect(self->match_combo_box, "notify::selected",
+            G_CALLBACK(match_combo_box_on_changed), self);
+#else
     g_signal_connect(self->match_combo_box, "changed",
             G_CALLBACK(match_combo_box_on_changed), self);
+#endif
 #if GTK_MAJOR_VERSION >= 4
     g_signal_connect(self->chan_list_box, "row-activated",
             G_CALLBACK(chan_list_box_on_row_activated), self);
@@ -179,8 +203,13 @@ static void sui_join_panel_init(SuiJoinPanel *self){
     /* Filter condition changed */
     g_signal_connect_swapped(self->search_entry, "changed",
             G_CALLBACK(chan_tree_model_filter_refilter), self);
+#if GTK_MAJOR_VERSION >= 4
+    g_signal_connect(self->match_combo_box, "notify::selected",
+            G_CALLBACK(match_combo_box_refilter_on_changed), self);
+#else
     g_signal_connect_swapped(self->match_combo_box, "changed",
             G_CALLBACK(chan_tree_model_filter_refilter), self);
+#endif
     g_signal_connect_swapped(self->min_users_spin_button, "changed",
             G_CALLBACK(chan_tree_model_filter_refilter), self);
     g_signal_connect_swapped(self->max_users_spin_button, "changed",
@@ -246,8 +275,8 @@ void sui_join_panel_clear(SuiJoinPanel *self){
     /* Clear join channel page input */
     srn_gtk_entry_set_text(self->chan_entry, "");
     srn_gtk_entry_set_text(self->password_entry, "");
-    gtk_toggle_button_set_active(
-            GTK_TOGGLE_BUTTON(self->remember_password_check_button), FALSE);
+    srn_gtk_check_button_set_active(
+            self->remember_password_check_button, FALSE);
 
     /* Clear search channel page input */
     srn_gtk_entry_set_text(self->search_entry, "");
@@ -300,17 +329,37 @@ bool sui_join_panel_get_is_adding(SuiJoinPanel *self){
  *****************************************************************************/
 
 static void match_combo_box_set_model(SuiJoinPanel *self){
+#if GTK_MAJOR_VERSION >= 4
+    GtkStringList *store;
+    GtkDropDown *combobox;
+    GtkExpression *expression;
+#else
     GtkListStore *store;
     GtkComboBox *combobox;
     GtkTreeIter iter;
+#endif
 
     /* 2 columns: index, comment */
+#if GTK_MAJOR_VERSION >= 4
+    self->match_list_store = gtk_string_list_new(NULL);
+#else
     self->match_list_store = gtk_list_store_new(2,
             G_TYPE_INT,
             G_TYPE_STRING);
+#endif
     store = self->match_list_store;
     combobox = self->match_combo_box;
 
+#if GTK_MAJOR_VERSION >= 4
+    gtk_string_list_append(store, _("Match channel name"));
+
+    expression = gtk_property_expression_new(GTK_TYPE_STRING_OBJECT, NULL,
+            "string");
+    gtk_drop_down_set_model(combobox, G_LIST_MODEL(store));
+    gtk_drop_down_set_expression(combobox, expression);
+    gtk_drop_down_set_selected(combobox, 0);
+    gtk_expression_unref(expression);
+#else
     gtk_list_store_append(store, &iter);
     gtk_list_store_set(store, &iter,
             MATCH_LIST_STORE_COL_INDEX, MATCH_CHANNEL,
@@ -326,6 +375,7 @@ static void match_combo_box_set_model(SuiJoinPanel *self){
     */
 
     gtk_combo_box_set_model(combobox, GTK_TREE_MODEL(store));
+#endif
 }
 
 static void join_button_on_click(gpointer user_data){
@@ -351,8 +401,8 @@ static void join_button_on_click(gpointer user_data){
     if (g_strcmp0(page, PAGE_JOIN_CHANNEL) == 0){
         chan = srn_gtk_entry_get_text(self->chan_entry);
         passwd = srn_gtk_entry_get_text(self->password_entry);
-        rmb_passwd = gtk_toggle_button_get_active(
-                GTK_TOGGLE_BUTTON(self->remember_password_check_button));
+        rmb_passwd = srn_gtk_check_button_get_active(
+                self->remember_password_check_button);
     } else if (g_strcmp0(page, PAGE_SEARCH_CHANNEL) == 0){
         const char *selected_chan;
 
@@ -430,6 +480,36 @@ static void cancel_button_on_click(gpointer user_data){
     sui_join_panel_clear(self);
 }
 
+#if GTK_MAJOR_VERSION >= 4
+static void match_combo_box_on_changed(GObject *object, GParamSpec *pspec,
+        gpointer user_data){
+    guint position;
+    SuiJoinPanel *self;
+
+    (void)object;
+    (void)pspec;
+
+    self = user_data;
+    position = gtk_drop_down_get_selected(self->match_combo_box);
+    if (position == GTK_INVALID_LIST_POSITION ||
+            position >= G_N_ELEMENTS(match_modes)){
+        ERR_FR("No active item");
+        return;
+    }
+
+    self->match = match_modes[position];
+
+    DBG_FR("Selected index: %d", self->match);
+}
+
+static void match_combo_box_refilter_on_changed(GObject *object,
+        GParamSpec *pspec, gpointer user_data){
+    (void)object;
+    (void)pspec;
+
+    chan_tree_model_filter_refilter(user_data);
+}
+#else
 static void match_combo_box_on_changed(GtkComboBox *combobox,
         gpointer user_data){
     int match;
@@ -449,6 +529,7 @@ static void match_combo_box_on_changed(GtkComboBox *combobox,
 
     DBG_FR("Selected index: %d", match);
 }
+#endif
 
 static void refresh_button_on_clicked(gpointer user_data){
     SrnRet ret;

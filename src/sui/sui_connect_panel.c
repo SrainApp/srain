@@ -120,6 +120,7 @@ static GtkEntry *server_combo_box_get_entry(SuiConnectPanel *self);
 #if GTK_MAJOR_VERSION >= 4
 static void server_combo_box_on_changed(GObject *object, GParamSpec *pspec,
         gpointer user_data);
+static void server_entry_on_changed(GtkEditable *editable, gpointer user_data);
 static void login_method_combo_box_on_changed(GObject *object,
         GParamSpec *pspec, gpointer user_data);
 #else
@@ -289,7 +290,7 @@ static void sui_connect_panel_init(SuiConnectPanel *self){
             G_LIST_MODEL(self->login_method_list_store));
     gtk_drop_down_set_expression(self->login_method_combo_box, expression);
 
-    g_object_unref(expression);
+    gtk_expression_unref(expression);
 #else
     self->server_list_store = gtk_list_store_new(1, G_TYPE_STRING);
     gtk_combo_box_set_model(self->quick_server_combo_box,
@@ -327,8 +328,13 @@ static void sui_connect_panel_init(SuiConnectPanel *self){
     g_signal_connect(self->quick_server_combo_box, "changed",
             G_CALLBACK(server_combo_box_on_changed), self);
 #endif
+#if GTK_MAJOR_VERSION >= 4
+    g_signal_connect(server_combo_box_get_entry(self),
+            "changed", G_CALLBACK(server_entry_on_changed), self);
+#else
     g_signal_connect(server_combo_box_get_entry(self),
             "changed", G_CALLBACK(server_combo_box_on_changed), self);
+#endif
     g_signal_connect(self->nick_entry, "changed",
             G_CALLBACK(nick_entry_on_changed), self);
 #if GTK_MAJOR_VERSION >= 4
@@ -424,12 +430,12 @@ static void update(SuiConnectPanel *self, const char *srv_name){
         srn_gtk_entry_set_text(self->host_entry, "");
         srn_gtk_entry_set_text(self->port_entry, "");
         srn_gtk_entry_set_text(self->password_entry, "");
-        gtk_toggle_button_set_active(
-                GTK_TOGGLE_BUTTON(self->remember_password_check_button), FALSE);
-        gtk_toggle_button_set_active(
-                GTK_TOGGLE_BUTTON(self->tls_check_button), FALSE);
-        gtk_toggle_button_set_active(
-                GTK_TOGGLE_BUTTON(self->tls_noverify_check_button), FALSE);
+        srn_gtk_check_button_set_active(
+                self->remember_password_check_button, FALSE);
+        srn_gtk_check_button_set_active(
+                self->tls_check_button, FALSE);
+        srn_gtk_check_button_set_active(
+                self->tls_noverify_check_button, FALSE);
 
         srn_gtk_entry_set_text(self->nick_entry, "");
 #if GTK_MAJOR_VERSION >= 4
@@ -439,8 +445,8 @@ static void update(SuiConnectPanel *self, const char *srv_name){
         gtk_combo_box_set_active_iter(self->login_method_combo_box, NULL);
 #endif
         srn_gtk_entry_set_text(self->login_password_entry, "");
-        gtk_toggle_button_set_active(
-                GTK_TOGGLE_BUTTON(self->remember_login_password_check_button), FALSE);
+        srn_gtk_check_button_set_active(
+                self->remember_login_password_check_button, FALSE);
         srn_gtk_file_selector_set_filename(
                 self->login_cert_file_chooser_button, "");
         srn_gtk_file_selector_set_filename(
@@ -476,12 +482,10 @@ static void update(SuiConnectPanel *self, const char *srv_name){
         if (srv_cfg->password) {
             srn_gtk_entry_set_text(self->password_entry, srv_cfg->password);
         }
-        gtk_toggle_button_set_active(
-                GTK_TOGGLE_BUTTON(self->tls_check_button),
-                srv_cfg->irc->tls);
-        gtk_toggle_button_set_active(
-                GTK_TOGGLE_BUTTON(self->tls_noverify_check_button),
-                srv_cfg->irc->tls_noverify);
+        srn_gtk_check_button_set_active(
+                self->tls_check_button, srv_cfg->irc->tls);
+        srn_gtk_check_button_set_active(
+                self->tls_noverify_check_button, srv_cfg->irc->tls_noverify);
 
         srn_gtk_entry_set_text(server_combo_box_get_entry(self), srv_name);
 #if GTK_MAJOR_VERSION >= 4
@@ -619,6 +623,17 @@ static void server_combo_box_on_changed(GObject *object, GParamSpec *pspec,
         update(self, srv_name);
         return;
     }
+
+    quick_server_combo_box_set_active_id(self, srv_name);
+    update(self, srv_name);
+}
+
+static void server_entry_on_changed(GtkEditable *editable, gpointer user_data){
+    SuiConnectPanel *self;
+    const char *srv_name;
+
+    self = SUI_CONNECT_PANEL(user_data);
+    srv_name = gtk_editable_get_text(editable);
 
     quick_server_combo_box_set_active_id(self, srv_name);
     update(self, srv_name);
@@ -772,8 +787,8 @@ static void connect_button_on_click(gpointer user_data){
         // Always overwrite password
         str_assign(&srv_cfg->password, passwd);
 
-        rmb_passwd = gtk_toggle_button_get_active(
-                GTK_TOGGLE_BUTTON(self->remember_password_check_button));
+        rmb_passwd = srn_gtk_check_button_get_active(
+                self->remember_password_check_button);
         if (rmb_passwd) {
             if (strlen(passwd)) {  // Reqeust to store password
                 ret = srn_config_manager_store_server_password(
@@ -796,12 +811,12 @@ static void connect_button_on_click(gpointer user_data){
             }
         }
 
-        tls_noverify = gtk_toggle_button_get_active(
-                GTK_TOGGLE_BUTTON(self->tls_noverify_check_button));
+        tls_noverify = srn_gtk_check_button_get_active(
+                self->tls_noverify_check_button);
         srv_cfg->irc->tls_noverify = tls_noverify;
 
-        tls = gtk_toggle_button_get_active(
-                GTK_TOGGLE_BUTTON(self->tls_check_button));
+        tls = srn_gtk_check_button_get_active(
+                self->tls_check_button);
         // TODO: Let tls_check_button to be toggled when
         // tls_noverify_check_button is toggled.
         srv_cfg->irc->tls = tls || tls_noverify;
@@ -823,8 +838,8 @@ static void connect_button_on_click(gpointer user_data){
         // Always overwrite password
         str_assign(&srv_cfg->user->login->password, login_passwd);
 
-        rmb_login_passwd = gtk_toggle_button_get_active(
-                GTK_TOGGLE_BUTTON(self->remember_login_password_check_button));
+        rmb_login_passwd = srn_gtk_check_button_get_active(
+                self->remember_login_password_check_button);
         if (rmb_login_passwd) {
             if (strlen(login_passwd)) { // Reqeust to store password
                 ret = srn_config_manager_store_user_password(

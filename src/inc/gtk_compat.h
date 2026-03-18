@@ -204,6 +204,23 @@ static inline bool srn_gtk_check_menu_item_get_active(GtkWidget *item){
 #endif
 }
 
+static inline void srn_gtk_check_button_set_active(GtkCheckButton *button,
+        bool active){
+#if GTK_MAJOR_VERSION >= 4
+    gtk_check_button_set_active(button, active);
+#else
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), active);
+#endif
+}
+
+static inline bool srn_gtk_check_button_get_active(GtkCheckButton *button){
+#if GTK_MAJOR_VERSION >= 4
+    return gtk_check_button_get_active(button);
+#else
+    return gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button));
+#endif
+}
+
 static inline void srn_gtk_check_menu_item_toggled(GtkWidget *item){
 #if GTK_MAJOR_VERSION >= 4
     g_signal_emit_by_name(item, "toggled");
