@@ -88,26 +88,13 @@ static void sui_server_buffer_get_property(GObject *object, guint property_id,
 }
 
 static void sui_server_buffer_init(SuiServerBuffer *self){
-    GtkBuilder *builder;
-    
     /* Init menus */
-    builder = gtk_builder_new_from_resource("/im/srain/Srain/buffer_menu.glade");
-    self->disconn_menu_item =
-        (GtkMenuItem *)gtk_builder_get_object(builder, "disconn_menu_item");
-    gtk_menu_shell_append(
-            GTK_MENU_SHELL(sui_buffer_get_menu(SUI_BUFFER(self))),
-            GTK_WIDGET(self->disconn_menu_item));
-    self->quit_menu_item =
-        (GtkMenuItem *)gtk_builder_get_object(builder, "quit_menu_item");
-    gtk_menu_shell_append(
-            GTK_MENU_SHELL(sui_buffer_get_menu(SUI_BUFFER(self))),
-            GTK_WIDGET(self->quit_menu_item));
-    self->reconn_menu_item =
-        (GtkMenuItem *)gtk_builder_get_object(builder, "reconn_menu_item");
-    gtk_menu_shell_append(
-            GTK_MENU_SHELL(sui_buffer_get_menu(SUI_BUFFER(self))),
-            GTK_WIDGET(self->reconn_menu_item));
-    g_object_unref(builder);
+    self->disconn_menu_item = sui_buffer_append_menu_item(SUI_BUFFER(self),
+            _("_Disconnect"));
+    self->quit_menu_item = sui_buffer_append_menu_item(SUI_BUFFER(self),
+            _("_Quit"));
+    self->reconn_menu_item = sui_buffer_append_menu_item(SUI_BUFFER(self),
+            _("_Reconnect"));
 
     self->buffer_list = NULL;
 

@@ -50,6 +50,7 @@ static void sui_buffer_set_ctx(SuiBuffer *self, void *ctx);
 static void sui_buffer_set_events(SuiBuffer *self, SuiBufferEvents *events);
 
 static void topic_menu_item_on_toggled(GtkWidget* widget, gpointer user_data);
+static void append_menu_widget(SuiBuffer *self, GtkWidget *widget);
 
 /*****************************************************************************
  * GObject functions
@@ -119,18 +120,11 @@ static void sui_buffer_get_property(GObject *object, guint property_id,
 }
 
 static void sui_buffer_init(SuiBuffer *self){
-    GtkBuilder *builder;
-
     gtk_widget_init_template(GTK_WIDGET(self));
 
     /* Init menus */
-    builder = gtk_builder_new_from_resource("/im/srain/Srain/buffer_menu.glade");
-    self->topic_menu_item =
-        (GtkCheckMenuItem *)gtk_builder_get_object(builder, "topic_menu_item");
-    gtk_menu_shell_append(
-            GTK_MENU_SHELL(self->menu),
-            GTK_WIDGET(self->topic_menu_item));
-    g_object_unref(builder);
+    self->topic_menu_item = sui_buffer_append_check_menu_item(self,
+            _("Show _Topic"));
 
     /* Init msg list */
     self->msg_list = sui_message_list_new();
@@ -437,6 +431,29 @@ void sui_buffer_set_topic_setter(SuiBuffer *self, const char *setter){
     gtk_widget_set_tooltip_text(GTK_WIDGET(self->topic_label), setter);
 }
 
+GtkMenuItem* sui_buffer_append_menu_item(SuiBuffer *self, const char *label){
+    GtkMenuItem *item;
+
+    g_return_val_if_fail(SUI_IS_BUFFER(self), NULL);
+
+    item = GTK_MENU_ITEM(gtk_menu_item_new_with_mnemonic(label));
+    append_menu_widget(self, GTK_WIDGET(item));
+
+    return item;
+}
+
+GtkCheckMenuItem* sui_buffer_append_check_menu_item(SuiBuffer *self,
+        const char *label){
+    GtkCheckMenuItem *item;
+
+    g_return_val_if_fail(SUI_IS_BUFFER(self), NULL);
+
+    item = GTK_CHECK_MENU_ITEM(gtk_check_menu_item_new_with_mnemonic(label));
+    append_menu_widget(self, GTK_WIDGET(item));
+
+    return item;
+}
+
 SuiMessageList* sui_buffer_get_message_list(SuiBuffer *self){
     g_return_val_if_fail(SUI_IS_BUFFER(self), NULL);
 
@@ -465,6 +482,11 @@ static void sui_buffer_set_ctx(SuiBuffer *self, void *ctx){
 
 static void sui_buffer_set_events(SuiBuffer *self, SuiBufferEvents *events){
     self->events = events;
+}
+
+static void append_menu_widget(SuiBuffer *self, GtkWidget *widget){
+    gtk_menu_shell_append(GTK_MENU_SHELL(self->menu), widget);
+    gtk_widget_show(widget);
 }
 
 static void topic_menu_item_on_toggled(GtkWidget* widget, gpointer user_data){

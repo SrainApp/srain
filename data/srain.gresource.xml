@@ -4,7 +4,6 @@
     <gresource prefix="/im/srain/Srain">
         <file alias="window.glade" preprocess="xml-stripblanks">ui/window.glade</file>
         <file alias="buffer.glade" preprocess="xml-stripblanks">ui/buffer.glade</file>
-        <file alias="buffer_menu.glade" preprocess="xml-stripblanks">ui/buffer_menu.glade</file>
         <file alias="misc_message.glade" preprocess="xml-stripblanks">ui/misc_message.glade</file>
         <file alias="send_message.glade" preprocess="xml-stripblanks">ui/send_message.glade</file>
         <file alias="recv_message.glade" preprocess="xml-stripblanks">ui/recv_message.glade</file>

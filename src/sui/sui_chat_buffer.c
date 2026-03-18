@@ -30,6 +30,7 @@
 #include "sui_buffer.h"
 #include "sui_chat_buffer.h"
 
+#include "i18n.h"
 #include "log.h"
 
 #define MIN_NICK_COMPLETION_LEN     1
@@ -106,23 +107,14 @@ static void sui_chat_buffer_constructed(GObject *object){
 }
 
 static void sui_chat_buffer_init(SuiChatBuffer *self){
-    GtkBuilder *builder;
-
     /* Init menus */
-    builder = gtk_builder_new_from_resource("/im/srain/Srain/buffer_menu.glade");
-    self->user_list_menu_item =
-        (GtkCheckMenuItem *)gtk_builder_get_object(builder, "user_list_menu_item");
-    gtk_menu_shell_append(
-            GTK_MENU_SHELL(sui_buffer_get_menu(SUI_BUFFER(self))),
-            GTK_WIDGET(self->user_list_menu_item));
-    g_object_unref(builder);
+    self->user_list_menu_item = sui_buffer_append_check_menu_item(
+            SUI_BUFFER(self), _("Show _User List"));
     
     /* Init user list*/
     self->user_list = sui_user_list_new();
     gtk_container_add(GTK_CONTAINER(self->parent.user_list_revealer), // FIXME
             GTK_WIDGET(self->user_list));
-
-    gtk_widget_show(GTK_WIDGET(self->user_list_menu_item));
 
     g_signal_connect(self->user_list_menu_item, "toggled",
             G_CALLBACK(user_list_menu_item_on_toggled), self);

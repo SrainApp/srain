@@ -29,6 +29,8 @@ What is in place now
   ``GMenuModel`` instead of Glade-defined ``GtkMenuItem`` trees.
 - ``data/ui-gtk4/app_menu.blp`` now captures the GTK4 Blueprint shape for the
   application popover menu and shared menu models.
+- ``buffer_menu.glade`` has been removed; buffer and chat menu items are now
+  created in code, which isolates the remaining menu migration to runtime APIs.
 
 Recommended order
 =================
