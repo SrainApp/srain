@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+
+  <template class="SuiJoinPanel" parent="GtkBox">
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="GtkStack" id="stack">
+        <property name="transition-type">crossfade</property>
+        <child>
+          <object class="GtkStackPage">
+            <property name="name">join_channel_page</property>
+            <property name="child">
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <property name="spacing">8</property>
+                <child>
+                  <object class="GtkEntry" id="chan_entry">
+                    <property name="placeholder-text" translatable="yes">Channel</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkPasswordEntry" id="password_entry">
+                    <property name="placeholder-text" translatable="yes">Password</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="remember_password_check_button">
+                    <property name="label" translatable="yes">Remember password</property>
+                  </object>
+                </child>
+              </object>
+            </property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkStackPage">
+            <property name="name">search_channel_page</property>
+            <property name="child">
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <property name="spacing">8</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="spacing">6</property>
+                    <child>
+                      <object class="GtkEntry" id="search_entry">
+                        <property name="hexpand">True</property>
+                        <property name="placeholder-text" translatable="yes">Search channel</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="refresh_button">
+                        <property name="label" translatable="yes">Refresh</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="spacing">6</property>
+                    <child>
+                      <object class="GtkSpinButton" id="min_users_spin_button">
+                        <property name="adjustment">
+                          <object class="GtkAdjustment">
+                            <property name="lower">-1</property>
+                            <property name="upper">100000</property>
+                            <property name="step-increment">1</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSpinButton" id="max_users_spin_button">
+                        <property name="adjustment">
+                          <object class="GtkAdjustment">
+                            <property name="lower">-1</property>
+                            <property name="upper">100000</property>
+                            <property name="step-increment">1</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkComboBox" id="match_combo_box">
+                        <property name="active">0</property>
+                        <child>
+                          <object class="GtkCellRendererText"/>
+                          <attributes>
+                            <attribute name="text">1</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkScrolledWindow">
+                    <property name="hexpand">True</property>
+                    <property name="vexpand">True</property>
+                    <property name="min-content-height">200</property>
+                    <child>
+                      <object class="GtkListBox" id="chan_list_box">
+                        <property name="selection-mode">browse</property>
+                        <style>
+                          <class name="boxed-list"/>
+                        </style>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="spacing">6</property>
+                    <child>
+                      <object class="GtkLabel" id="status_label"/>
+                    </child>
+                    <child>
+                      <object class="GtkSpinner" id="status_spinner"/>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="halign">end</property>
+        <property name="spacing">6</property>
+        <child>
+          <object class="GtkButton" id="cancel_button">
+            <property name="label" translatable="yes">Cancel</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="join_button">
+            <property name="label" translatable="yes">Join</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>
