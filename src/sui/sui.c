@@ -314,8 +314,11 @@ void sui_set_topic_setter(SuiBuffer *buf, const char *setter){
 }
 
 void sui_message_box(const char *title, const char *msg){
+    SuiApplication *app;
+    SuiWindow *win;
     GtkMessageDialog *dia;
     char *markuped_msg;
+    GtkDialogFlags flags;
 
 #if GTK_MAJOR_VERSION >= 4
     gtk_init(); // FIXME: config
@@ -323,9 +326,13 @@ void sui_message_box(const char *title, const char *msg){
     gtk_init(0, NULL); // FIXME: config
 #endif
 
+    app = sui_application_get_instance();
+    win = app ? sui_application_get_cur_window(app) : NULL;
+    flags = win ? (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT) : 0;
+
     dia = GTK_MESSAGE_DIALOG(
-            gtk_message_dialog_new(GTK_WINDOW(sui_common_get_cur_window()),
-                GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+            gtk_message_dialog_new(GTK_WINDOW(win),
+                flags,
                 GTK_MESSAGE_INFO,
                 GTK_BUTTONS_OK,
                 NULL
