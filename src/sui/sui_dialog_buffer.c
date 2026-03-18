@@ -30,6 +30,7 @@
 #include "sui_event_hdr.h"
 #include "sui_chat_buffer.h"
 #include "sui_dialog_buffer.h"
+#include "gtk_compat.h"
 
 #include "i18n.h"
 #include "log.h"
@@ -37,7 +38,7 @@
 struct _SuiDialogBuffer {
     SuiChatBuffer parent;
 
-    GtkMenuItem *close_menu_item;
+    GtkWidget *close_menu_item;
 };
 
 struct _SuiDialogBufferClass {
@@ -57,7 +58,7 @@ static void sui_dialog_buffer_init(SuiDialogBuffer *self){
     self->close_menu_item = sui_buffer_append_menu_item(SUI_BUFFER(self),
             _("_Close"));
 
-    g_signal_connect(self->close_menu_item, "activate",
+    srn_gtk_menu_item_connect_activate(self->close_menu_item,
             G_CALLBACK(close_menu_item_on_activate), self);
 }
 

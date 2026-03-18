@@ -241,28 +241,32 @@ SuiNotification* sui_message_new_notification(SuiMessage *self){
 void sui_message_label_on_popup(GtkLabel *label, GtkWidget *menu, gpointer user_data){
     int n;
     GList *lst;
-    GtkMenuItem *copy_menu_item;
-    GtkMenuItem *forward_menu_item;
-    GtkMenu *forward_submenu;
+    GtkWidget *copy_menu_item;
+    GtkWidget *forward_menu_item;
+#if GTK_MAJOR_VERSION < 4
+    GtkWidget *forward_submenu;
+#endif
     SuiMessage *self;
 
     self = SUI_MESSAGE(user_data);
 
     /* Create menuitem copy_menu_item */
-    copy_menu_item = GTK_MENU_ITEM(gtk_menu_item_new_with_label(_("Copy message")));
-    gtk_widget_show(GTK_WIDGET(copy_menu_item));
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), GTK_WIDGET(copy_menu_item));
-    g_signal_connect(copy_menu_item, "activate",
+    copy_menu_item = srn_gtk_menu_item_new_with_label(_("Copy message"));
+    gtk_widget_show(copy_menu_item);
+    srn_gtk_menu_append(menu, copy_menu_item);
+    srn_gtk_menu_item_connect_activate(copy_menu_item,
                 G_CALLBACK(copy_menu_item_on_activate), self);
 
     /* Create menuitem forward_menu_item */
-    forward_menu_item = GTK_MENU_ITEM(gtk_menu_item_new_with_label(_("Forward to...")));
-    gtk_widget_show(GTK_WIDGET(forward_menu_item));
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), GTK_WIDGET(forward_menu_item));
+    forward_menu_item = srn_gtk_menu_item_new_with_label(_("Forward to..."));
+    gtk_widget_show(forward_menu_item);
+    srn_gtk_menu_append(menu, forward_menu_item);
 
     /* Create submenu of forward_menu_item */
     n = 0;
-    forward_submenu = GTK_MENU(gtk_menu_new());
+#if GTK_MAJOR_VERSION < 4
+    forward_submenu = gtk_menu_new();
+#endif
     if (SUI_IS_SERVER_BUFFER(self->buf)){
         lst = sui_server_buffer_get_buffer_list(SUI_SERVER_BUFFER(self->buf));
     } else if (SUI_IS_CHAT_BUFFER(self->buf)){
@@ -273,25 +277,36 @@ void sui_message_label_on_popup(GtkLabel *label, GtkWidget *menu, gpointer user_
         g_warn_if_reached();
     }
     while (lst){
-        GtkMenuItem *item;
+        GtkWidget *item;
 
-        item = GTK_MENU_ITEM(gtk_menu_item_new_with_label(
-                    sui_buffer_get_name(SUI_BUFFER(lst->data))));
-        gtk_widget_show(GTK_WIDGET(item));
-        g_signal_connect(item, "activate",
+        item = srn_gtk_menu_item_new_with_label(
+                sui_buffer_get_name(SUI_BUFFER(lst->data)));
+        gtk_widget_show(item);
+        gtk_widget_set_name(item, sui_buffer_get_name(SUI_BUFFER(lst->data)));
+        srn_gtk_menu_item_connect_activate(item,
                 G_CALLBACK(froward_submenu_item_on_activate), self);
-        gtk_menu_shell_append(GTK_MENU_SHELL(forward_submenu), GTK_WIDGET(item));
+#if GTK_MAJOR_VERSION >= 4
+        srn_gtk_menu_append(menu, item);
+#else
+        srn_gtk_menu_append(forward_submenu, item);
+#endif
 
         n++;
         lst = g_list_next(lst);
     }
 
+#if GTK_MAJOR_VERSION >= 4
+    if (n == 0) {
+        gtk_widget_set_sensitive(forward_menu_item, FALSE);
+    }
+#else
     if (n > 0) {
-        gtk_menu_item_set_submenu(forward_menu_item, GTK_WIDGET(forward_submenu));
+        gtk_menu_item_set_submenu(GTK_MENU_ITEM(forward_menu_item), forward_submenu);
     } else {
         g_object_ref_sink(forward_submenu); // remove the floating reference
         g_object_unref(forward_submenu);
     }
+#endif
 }
 
 const char* sui_message_get_time(SuiMessage *self){
@@ -332,7 +347,7 @@ static void sui_message_real_update(SuiMessage *self){
     if (self->buf->cfg->preview_url) {
         GList *children;
         GList *urls;
-        children = gtk_container_get_children(GTK_CONTAINER(self->content_box));
+        children = srn_gtk_widget_get_children(GTK_WIDGET(self->content_box));
         urls = self->ctx->urls;
 
         for (GList *url = urls; url; url = g_list_next(url)) {
@@ -359,7 +374,7 @@ static void sui_message_real_update(SuiMessage *self){
                     g_object_unref(pvr);
                 } else {
                     // Add previewer on to message
-                    gtk_box_pack_start(self->content_box, GTK_WIDGET(pvr),
+                    srn_gtk_box_pack_start(self->content_box, GTK_WIDGET(pvr),
                             TRUE, FALSE, 4);
 
                     // Auto preview if needed
@@ -474,15 +489,19 @@ static void sui_message_set_ctx(SuiMessage *self, void *ctx){
 
 static void copy_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
     char* copied;
-    GtkClipboard *cb;
     SuiMessage *self;
 
     self = SUI_MESSAGE(user_data);
 
     // Get the clipboard object
-    cb = gtk_widget_get_clipboard(GTK_WIDGET(self), GDK_SELECTION_CLIPBOARD);
     copied = srn_message_to_string(self->ctx);
-    gtk_clipboard_set_text(cb, copied, -1);
+#if GTK_MAJOR_VERSION >= 4
+    gdk_clipboard_set_text(gtk_widget_get_clipboard(GTK_WIDGET(self)), copied);
+#else
+    gtk_clipboard_set_text(
+            gtk_widget_get_clipboard(GTK_WIDGET(self), GDK_SELECTION_CLIPBOARD),
+            copied, -1);
+#endif
     g_free(copied);
 }
 
@@ -494,7 +513,7 @@ static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_da
     SuiMessage *self;
 
     self = SUI_MESSAGE(user_data);
-    target = gtk_menu_item_get_label(GTK_MENU_ITEM(widget));
+    target = gtk_widget_get_name(widget);
 
     sel = label_get_selection(self->message_label);
     if (!sel){
@@ -547,16 +566,16 @@ static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_da
 
 static void url_previewer_on_notify_content_type(GObject *object,
         GParamSpec *pspec, gpointer data){
-    GtkContainer *container;
+    GtkWidget *container;
     SuiUrlPreviewer *pvr;
 
     pvr = SUI_URL_PREVIEWER(object);
-    container = GTK_CONTAINER(data);
+    container = GTK_WIDGET(data);
 
     switch (sui_url_previewer_get_content_type(pvr)){
         case SUI_URL_CONTENT_TYPE_UNSUPPORTED:
         case SUI_URL_CONTENT_TYPE_UNKNOWN:
-            gtk_container_remove(container, GTK_WIDGET(pvr));
+            srn_gtk_widget_remove_child(container, GTK_WIDGET(pvr));
             break;
         default:
             gtk_widget_show(GTK_WIDGET(pvr));

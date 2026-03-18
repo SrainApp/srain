@@ -54,13 +54,15 @@ struct _SuiApplication {
 
 #ifdef ENABLE_APP_INDICATOR
     AppIndicator *tray_icon;
+#elif GTK_MAJOR_VERSION >= 4
+    gpointer tray_icon;
 #else
     GtkStatusIcon *tray_icon;
 #endif
 
     // GtkPopover can not shown at outside of GtkWindow on X11,
     // so we need another traditional menu as tray icon menu.
-    GtkMenu *menu;
+    GtkWidget *menu;
     GtkPopover *popover_menu;
     // The parsed startup commandline options, should be valid after
     // "handle-local-options" signal.
@@ -104,7 +106,7 @@ static void on_action_toggle_server_visibility(GSimpleAction *action,
 static void on_action_activate(GSimpleAction *action, GVariant *parameter,
         gpointer user_data);
 
-#ifndef ENABLE_APP_INDICATOR
+#if !defined(ENABLE_APP_INDICATOR) && GTK_MAJOR_VERSION < 4
 static void tray_icon_on_click(GtkStatusIcon *status_icon, gpointer user_data);
 static void tray_icon_on_popup_menu(GtkStatusIcon *status_icon, guint button,
        guint activate_time, gpointer user_data);
@@ -251,9 +253,13 @@ static void sui_application_finalize(GObject *object){
 
     self = SUI_APPLICATION(object);
 
-    g_object_unref(self->tray_icon);
-    g_object_unref(self->menu);
-    g_object_unref(self->popover_menu);
+#if defined(ENABLE_APP_INDICATOR) || GTK_MAJOR_VERSION < 4
+    g_clear_object(&self->tray_icon);
+#else
+    self->tray_icon = NULL;
+#endif
+    g_clear_object(&self->menu);
+    g_clear_object(&self->popover_menu);
 
     // NOTE: SuiApplicationConfig is hold via SrnApplicationConfig so
     // should not be freed here.
@@ -372,9 +378,12 @@ void sui_application_highlight_tray_icon(SuiApplication *self, bool highlight){
     // TODO: works on KDE, but doesn't work on waybar.
     app_indicator_set_status(self->tray_icon, highlight ?
             APP_INDICATOR_STATUS_ATTENTION : APP_INDICATOR_STATUS_ACTIVE);
-#else
+#elif GTK_MAJOR_VERSION < 4
     gtk_status_icon_set_from_icon_name(self->tray_icon,
             highlight ? APP_ATTENTION_ICON : APP_ICON);
+#else
+    (void)self;
+    (void)highlight;
 #endif
 }
 
@@ -520,7 +529,7 @@ static void on_startup(SuiApplication *self){
     tray_menu_model = new_app_menu_model(TRUE);
     popover_menu_model = new_app_menu_model(FALSE);
 
-    self->menu = GTK_MENU(gtk_menu_new_from_model(tray_menu_model));
+    self->menu = GTK_WIDGET(srn_gtk_popover_new_from_menu_model(tray_menu_model));
     self->popover_menu = srn_gtk_popover_new_from_menu_model(
             popover_menu_model);
     srn_gtk_widget_add_css_class(GTK_WIDGET(self->popover_menu), "sui-panel");
@@ -532,21 +541,26 @@ static void on_startup(SuiApplication *self){
             APP_INDICATOR_CATEGORY_COMMUNICATIONS);
     app_indicator_set_status(self->tray_icon, APP_INDICATOR_STATUS_ACTIVE);
     app_indicator_set_attention_icon_full(self->tray_icon, APP_ATTENTION_ICON, _("Srain Icon for Attention"));
-    app_indicator_set_menu(self->tray_icon, self->menu);
+    app_indicator_set_menu(self->tray_icon, GTK_MENU(self->menu));
     app_indicator_set_title(self->tray_icon, PACKAGE);
-#else
+#elif GTK_MAJOR_VERSION < 4
     self->tray_icon = gtk_status_icon_new_from_icon_name(PACKAGE_APPID);
     g_signal_connect(self->tray_icon, "activate", G_CALLBACK(tray_icon_on_click), self);
     g_signal_connect(self->tray_icon, "popup-menu", G_CALLBACK(tray_icon_on_popup_menu), self);
     gtk_status_icon_set_tooltip_text(self->tray_icon, PACKAGE);
+#else
+    self->tray_icon = NULL;
 #endif
 
-    // Attach to any widget to connect to action
-    gtk_menu_attach_to_widget(self->menu, GTK_WIDGET(self->popover_menu), NULL);
-
     // Add resource to icon search path
+#if GTK_MAJOR_VERSION >= 4
+    gtk_icon_theme_add_resource_path(
+            gtk_icon_theme_get_for_display(gdk_display_get_default()),
+            "/im/srain/Srain/icons");
+#else
     gtk_icon_theme_add_resource_path(gtk_icon_theme_get_default(),
             "/im/srain/Srain/icons");
+#endif
 
     ret = sui_theme_manager_apply(self->theme, self->cfg->theme);
     if (!RET_IS_OK(ret)){
@@ -634,13 +648,13 @@ static void on_action_prefs(GSimpleAction *action, GVariant  *parameter,
     self = SUI_APPLICATION(user_data);
 
     dialog = sui_prefs_dialog_new(self, sui_application_get_cur_window(self));
-    switch (gtk_dialog_run(GTK_DIALOG(dialog))){
+    switch (srn_gtk_dialog_run(GTK_DIALOG(dialog))){
         // TODO(SilverRainZ): Determine whether to write the configuration
         // back to the file based on the GTK response.
         default:
             break;
     }
-    gtk_widget_destroy(GTK_WIDGET(dialog));
+    gtk_window_destroy(GTK_WINDOW(dialog));
 }
 
 static void on_action_exit(GSimpleAction *action, GVariant  *parameter,
@@ -670,7 +684,7 @@ static void on_action_activate(GSimpleAction *action, GVariant  *parameter,
     g_application_activate(G_APPLICATION(self));
 }
 
-#ifndef ENABLE_APP_INDICATOR
+#if !defined(ENABLE_APP_INDICATOR) && GTK_MAJOR_VERSION < 4
 static void tray_icon_on_click(GtkStatusIcon *status_icon, gpointer user_data){
     GList *wins;
     SuiApplication *self;
@@ -692,6 +706,6 @@ static void tray_icon_on_popup_menu(GtkStatusIcon *status_icon, guint button,
 
     self = user_data;
 
-    gtk_menu_popup_at_pointer(self->menu, NULL);
+    gtk_menu_popup_at_pointer(GTK_MENU(self->menu), NULL);
 }
 #endif

@@ -47,9 +47,10 @@
 #include "sui_misc_message.h"
 #include "sui_send_message.h"
 #include "sui_recv_message.h"
+#include "gtk_compat.h"
 
 void sui_proc_pending_event(){
-    while (gtk_events_pending()) gtk_main_iteration();
+    srn_gtk_process_pending_events();
 }
 
 SuiApplication* sui_new_application(const char *id, void *ctx,
@@ -147,7 +148,7 @@ void sui_buffer_add_message(SuiBuffer *buf, SuiMessage *msg){
     }
 
     /* Update side bar */
-    win = SUI_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(buf)));
+    win = SUI_WINDOW(srn_gtk_widget_get_window_root(GTK_WIDGET(buf)));
     g_return_if_fail(SUI_IS_WINDOW(win));
 
     sidebar = sui_window_get_side_bar(win);
@@ -173,7 +174,7 @@ void sui_buffer_clear_message(SuiBuffer *buf){
     sui_message_list_clear_message(list);
 
     /* Update side bar */
-    win = SUI_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(buf)));
+    win = SUI_WINDOW(srn_gtk_widget_get_window_root(GTK_WIDGET(buf)));
     g_return_if_fail(SUI_IS_WINDOW(win));
 
     sidebar = sui_window_get_side_bar(win);
@@ -316,7 +317,11 @@ void sui_message_box(const char *title, const char *msg){
     GtkMessageDialog *dia;
     char *markuped_msg;
 
+#if GTK_MAJOR_VERSION >= 4
+    gtk_init(); // FIXME: config
+#else
     gtk_init(0, NULL); // FIXME: config
+#endif
 
     dia = GTK_MESSAGE_DIALOG(
             gtk_message_dialog_new(GTK_WINDOW(sui_common_get_cur_window()),
@@ -336,8 +341,8 @@ void sui_message_box(const char *title, const char *msg){
     /* Without this, message dialog cannot be displayed on the center of screen */
     sui_proc_pending_event();
 
-    gtk_dialog_run(GTK_DIALOG(dia));
-    gtk_widget_destroy(GTK_WIDGET(dia));
+    srn_gtk_dialog_run(GTK_DIALOG(dia));
+    gtk_window_destroy(GTK_WINDOW(dia));
 }
 
 void sui_chan_list_start(SuiBuffer *buf){

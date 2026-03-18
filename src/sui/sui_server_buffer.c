@@ -29,6 +29,7 @@
 #include "sui_event_hdr.h"
 #include "sui_buffer.h"
 #include "sui_server_buffer.h"
+#include "gtk_compat.h"
 
 #include "log.h"
 #include "i18n.h"
@@ -38,9 +39,9 @@ struct _SuiServerBuffer {
 
     GList *buffer_list;
 
-    GtkMenuItem *disconn_menu_item;
-    GtkMenuItem *quit_menu_item;
-    GtkMenuItem *reconn_menu_item;
+    GtkWidget *disconn_menu_item;
+    GtkWidget *quit_menu_item;
+    GtkWidget *reconn_menu_item;
 
     GtkListStore *chan_list_store;
     SuiJoinPanel *join_panel;
@@ -107,12 +108,12 @@ static void sui_server_buffer_init(SuiServerBuffer *self){
     sui_join_panel_set_model(self->join_panel,
             GTK_TREE_MODEL(self->chan_list_store));
 
-    g_signal_connect(self->disconn_menu_item, "activate",
-            G_CALLBACK(disconn_menu_item_on_activate),self);
-    g_signal_connect(self->quit_menu_item, "activate",
-            G_CALLBACK(quit_menu_item_on_activate),self);
-    g_signal_connect(self->reconn_menu_item, "activate",
-            G_CALLBACK(reconn_menu_item_on_activate),self);
+    srn_gtk_menu_item_connect_activate(self->disconn_menu_item,
+            G_CALLBACK(disconn_menu_item_on_activate), self);
+    srn_gtk_menu_item_connect_activate(self->quit_menu_item,
+            G_CALLBACK(quit_menu_item_on_activate), self);
+    srn_gtk_menu_item_connect_activate(self->reconn_menu_item,
+            G_CALLBACK(reconn_menu_item_on_activate), self);
 }
 
 static void sui_server_buffer_finalize(GObject *object){

@@ -146,7 +146,9 @@ void sui_user_update(SuiUser *self, GtkStyleContext *style_context,
         cairo_surface_t *icon = new_user_icon_from_type(self->ctx->type,
                 style_context, surface);
         gtk_list_store_set(self->list, (GtkTreeIter *)self, COL_ICON, icon, -1);
-        cairo_surface_destroy(icon);
+        if (icon) {
+            cairo_surface_destroy(icon);
+        }
     }
 }
 
@@ -176,6 +178,9 @@ const char* sui_user_get_nickname(SuiUser *self){
 
 static cairo_surface_t* new_user_icon_from_type(SrnChatUserType type,
         GtkStyleContext *style_context, GdkSurface *gdk_surface){
+#if GTK_MAJOR_VERSION >= 4
+    return NULL;
+#else
     const char *color_str;
     GError *err;
     GdkRGBA fg_color;
@@ -242,4 +247,5 @@ static cairo_surface_t* new_user_icon_from_type(SrnChatUserType type,
             gdk_surface_get_scale_factor(gdk_surface), gdk_surface);
     g_object_unref(pixbuf);
     return icon_surface;
+#endif
 }

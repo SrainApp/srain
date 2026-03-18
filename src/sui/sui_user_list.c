@@ -33,6 +33,7 @@
 #include "core/core.h"
 
 #include "sui_user_list.h"
+#include "gtk_compat.h"
 #include "nick_menu.h"
 
 #include "log.h"
@@ -63,8 +64,13 @@ static void stat_label_update_stat(SuiUserList *self);
 static int user_list_store_sort_func(GtkTreeModel *model,
         GtkTreeIter *iter1, GtkTreeIter *iter2, gpointer user_data);
 
+#if GTK_MAJOR_VERSION >= 4
+static void user_tree_view_on_popup(GtkGestureClick *gesture, int n_press,
+        double x, double y, gpointer user_data);
+#else
 static gboolean user_tree_view_on_popup(GtkWidget *widget,
         GdkEventButton *event, gpointer user_data);
+#endif
 static void user_list_store_on_row_changed(GtkTreeModel *tree_model,
         GtkTreePath *path, GtkTreeIter *iter, gpointer user_data);
 static void on_style_updated(SuiUserList *self, gpointer user_data);
@@ -76,13 +82,25 @@ static void on_style_updated(SuiUserList *self, gpointer user_data);
 G_DEFINE_TYPE(SuiUserList, sui_user_list, GTK_TYPE_BOX);
 
 static void sui_user_list_init(SuiUserList *self){
+#if GTK_MAJOR_VERSION >= 4
+    GtkGesture *click;
+#endif
+
     gtk_widget_init_template(GTK_WIDGET(self));
 
     user_tree_view_set_model(self);
     stat_label_update_stat(self);
 
+#if GTK_MAJOR_VERSION >= 4
+    click = gtk_gesture_click_new();
+    gtk_widget_add_controller(GTK_WIDGET(self->user_tree_view),
+            GTK_EVENT_CONTROLLER(click));
+    g_signal_connect(click, "pressed",
+            G_CALLBACK(user_tree_view_on_popup), NULL);
+#else
     g_signal_connect(self->user_tree_view, "button-press-event",
             G_CALLBACK(user_tree_view_on_popup), NULL);
+#endif
     g_signal_connect(self->user_list_store, "row-changed",
             G_CALLBACK(user_list_store_on_row_changed), self);
     g_signal_connect(self, "style-updated",
@@ -135,7 +153,7 @@ void sui_user_list_rm_user(SuiUserList *self, SuiUser *user){
 void sui_user_list_update_user(SuiUserList *self, SuiUser *user){
     sui_user_update(user,
             gtk_widget_get_style_context(GTK_WIDGET(self)),
-            gtk_widget_get_window(GTK_WIDGET(self)));
+            srn_gtk_widget_get_surface(GTK_WIDGET(self)));
 }
 
 void sui_user_list_clear(SuiUserList *self){
@@ -243,6 +261,46 @@ static int user_list_store_sort_func(GtkTreeModel *model,
     return ret;
 }
 
+#if GTK_MAJOR_VERSION >= 4
+static void user_tree_view_on_popup(GtkGestureClick *gesture, int n_press,
+        double x, double y, gpointer user_data){
+    GtkWidget *widget;
+    guint button;
+    GtkTreeView *view;
+    GtkTreeModel *model;
+    GtkTreeModel *child_model;
+    GtkTreeIter iter;
+    GtkTreeIter child_iter;
+    GtkTreeSelection *selection;
+    SuiUser *user;
+    SrnChatUser *chat_user;
+
+    button = gtk_gesture_single_get_current_button(GTK_GESTURE_SINGLE(gesture));
+    if (button != GDK_BUTTON_SECONDARY){
+        return;
+    }
+
+    widget = gtk_event_controller_get_widget(GTK_EVENT_CONTROLLER(gesture));
+    view = GTK_TREE_VIEW(widget);
+    model = gtk_tree_view_get_model(view);
+    selection = gtk_tree_view_get_selection(view);
+    if (!gtk_tree_selection_get_selected(selection, &model, &iter)){
+        return;
+    }
+    child_model = gtk_tree_model_filter_get_model(GTK_TREE_MODEL_FILTER(model));
+    gtk_tree_model_filter_convert_iter_to_child_iter(
+            GTK_TREE_MODEL_FILTER(model), &child_iter, &iter);
+
+    user = sui_user_new_from_iter(GTK_LIST_STORE(child_model), &child_iter);
+    chat_user = sui_user_get_ctx(user);
+    g_return_if_fail(chat_user);
+
+    // TODO: impl SuiUserPanel
+    nick_menu_popup(widget, chat_user->srv_user->nick);
+
+    sui_user_free(user);
+}
+#else
 static gboolean user_tree_view_on_popup(GtkWidget *widget,
         GdkEventButton *event, gpointer user_data){
     GtkTreeView *view;
@@ -274,12 +332,13 @@ static gboolean user_tree_view_on_popup(GtkWidget *widget,
     g_return_val_if_fail(chat_user, FALSE);
 
     // TODO: impl SuiUserPanel
-    nick_menu_popup(widget, event, chat_user->srv_user->nick);
+    nick_menu_popup(widget, chat_user->srv_user->nick);
 
     sui_user_free(user);
 
     return TRUE;
 }
+#endif
 
 static void user_list_store_on_row_changed(GtkTreeModel *tree_model,
         GtkTreePath *path, GtkTreeIter *iter, gpointer user_data){

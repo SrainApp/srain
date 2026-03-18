@@ -41,6 +41,7 @@
 #include "sui_join_panel.h"
 #include "sui_side_bar.h"
 #include "sui_server_buffer.h"
+#include "gtk_compat.h"
 
 #define SEND_MESSAGE_INTERVAL       100
 
@@ -125,12 +126,21 @@ static void buffer_stack_on_child_changed(GtkWidget *widget, GParamSpec *pspec,
         gpointer user_data);
 static void popover_button_on_click(GtkButton *button, gpointer user_data);
 static void join_button_on_click(GtkButton *button, gpointer user_data);
+#if GTK_MAJOR_VERSION >= 4
+static gboolean window_on_key_pressed(GtkEventControllerKey *controller,
+        guint keyval, guint keycode, GdkModifierType state,
+        gpointer user_data);
+static gboolean input_text_view_on_key_press(GtkEventControllerKey *controller,
+        guint keyval, guint keycode, GdkModifierType state,
+        gpointer user_data);
+#else
 static gboolean CTRL_J_K_on_press(GtkAccelGroup *group, GObject *obj,
         guint keyval, GdkModifierType mod, gpointer user_data);
 static gboolean CTRL_Q_on_press(GtkAccelGroup *group, GObject *obj,
         guint keyval, GdkModifierType mod, gpointer user_data);
 static gboolean input_text_view_on_key_press(GtkTextView *text_view,
         GdkEventKey *event, gpointer user_data);
+#endif
 static void send_button_on_clicked(GtkWidget *widget, gpointer user_data);
 static gboolean send_message_timeout(gpointer user_data);
 static void insert_emoji_button_on_clicked(GtkWidget *widget, gpointer user_data);
@@ -192,10 +202,15 @@ static void sui_window_get_property(GObject *object, guint property_id,
 }
 
 static void sui_window_init(SuiWindow *self){
+#if GTK_MAJOR_VERSION >= 4
+    GtkEventController *input_key_controller;
+    GtkEventController *window_key_controller;
+#else
     GClosure *closure_j;
     GClosure *closure_k;
     GClosure *closure_q;
     GtkAccelGroup *accel;
+#endif
 
     gtk_widget_init_template(GTK_WIDGET(self));
 
@@ -216,7 +231,7 @@ static void sui_window_init(SuiWindow *self){
 
     /* Stack side bar init */
     self->side_bar = sui_side_bar_new();
-    gtk_box_pack_start(self->side_box, GTK_WIDGET(self->side_bar),
+    srn_gtk_box_pack_start(self->side_box, GTK_WIDGET(self->side_bar),
             TRUE, TRUE, 0);
     sui_side_bar_set_stack(self->side_bar, self->buffer_stack);
     gtk_widget_show(GTK_WIDGET(self->side_bar));
@@ -248,13 +263,27 @@ static void sui_window_init(SuiWindow *self){
     g_signal_connect(self->buffer_stack, "notify::visible-child",
             G_CALLBACK(buffer_stack_on_child_changed), self);
 
+#if GTK_MAJOR_VERSION >= 4
+    input_key_controller = gtk_event_controller_key_new();
+    gtk_widget_add_controller(GTK_WIDGET(self->input_text_view),
+            input_key_controller);
+    g_signal_connect(input_key_controller, "key-pressed",
+            G_CALLBACK(input_text_view_on_key_press), self);
+#else
     g_signal_connect(self->input_text_view, "key-press-event",
             G_CALLBACK(input_text_view_on_key_press), self);
+#endif
     g_signal_connect(self->send_button, "clicked",
             G_CALLBACK(send_button_on_clicked), self);
     g_signal_connect(self->insert_emoji_button, "clicked",
             G_CALLBACK(insert_emoji_button_on_clicked), self);
 
+#if GTK_MAJOR_VERSION >= 4
+    window_key_controller = gtk_event_controller_key_new();
+    gtk_widget_add_controller(GTK_WIDGET(self), window_key_controller);
+    g_signal_connect(window_key_controller, "key-pressed",
+            G_CALLBACK(window_on_key_pressed), self);
+#else
     /* shortcuts <C-j>, <C-k> and <C-q> */
     accel = gtk_accel_group_new();
 
@@ -277,6 +306,7 @@ static void sui_window_init(SuiWindow *self){
     g_closure_unref(closure_j);
     g_closure_unref(closure_k);
     g_closure_unref(closure_q);
+#endif
 
 #if GTK_CHECK_VERSION(3, 22, 27)
     // Show insert_emoji_button when it is available
@@ -294,27 +324,30 @@ static void sui_window_constructed(GObject *object){
         gtk_widget_show(GTK_WIDGET(self->header_box));
 
         /* Move side header widgets from side_header_bar to side_header_box */
-        gtk_container_remove(GTK_CONTAINER(self->side_header_bar),
+        srn_gtk_widget_remove_child(GTK_WIDGET(self->side_header_bar),
                 GTK_WIDGET(self->side_left_header_box));
-        gtk_container_remove(GTK_CONTAINER(self->side_header_bar),
+        srn_gtk_widget_remove_child(GTK_WIDGET(self->side_header_bar),
                 GTK_WIDGET(self->side_right_header_box));
-        gtk_box_pack_start(self->side_header_box,
+        srn_gtk_box_pack_start(self->side_header_box,
                 GTK_WIDGET(self->side_left_header_box), TRUE, TRUE, 0);
-        gtk_box_pack_end(self->side_header_box,
+        srn_gtk_box_pack_end(self->side_header_box,
                 GTK_WIDGET(self->side_right_header_box), TRUE, TRUE, 0);
-        gtk_container_child_set(GTK_CONTAINER(self->side_header_box),
-                GTK_WIDGET(self->side_right_header_box), "expand", FALSE, NULL);
+        gtk_widget_set_hexpand(GTK_WIDGET(self->side_right_header_box), FALSE);
 
         /* Move buffer header widgets from buffer_header_bar to buffer_header_box */
-        gtk_header_bar_set_custom_title(self->buffer_header_bar, NULL);
-        gtk_container_remove(GTK_CONTAINER(self->buffer_header_bar),
+        srn_gtk_header_bar_set_custom_title(self->buffer_header_bar, NULL);
+        srn_gtk_widget_remove_child(GTK_WIDGET(self->buffer_header_bar),
                 GTK_WIDGET(self->buffer_menu_button));
+#if GTK_MAJOR_VERSION >= 4
+        srn_gtk_box_pack_start(self->buffer_header_box,
+                GTK_WIDGET(self->buffer_title_box), TRUE, TRUE, 0);
+#else
         gtk_box_set_center_widget(self->buffer_header_box,
                 GTK_WIDGET(self->buffer_title_box));
-        gtk_box_pack_end(self->buffer_header_box,
+#endif
+        srn_gtk_box_pack_end(self->buffer_header_box,
                 GTK_WIDGET(self->buffer_menu_button), TRUE, TRUE, 0);
-        gtk_container_child_set(GTK_CONTAINER(self->buffer_header_box),
-                GTK_WIDGET(self->buffer_menu_button), "expand", FALSE, NULL);
+        gtk_widget_set_hexpand(GTK_WIDGET(self->buffer_menu_button), FALSE);
 
         // Hide the titlebar node
         gtk_window_set_titlebar(GTK_WINDOW(self), NULL);
@@ -324,8 +357,7 @@ static void sui_window_constructed(GObject *object){
         gtk_widget_hide(GTK_WIDGET(self->header_box));
 
         // Use appliaction icon instead of standard icon when CSD enabled
-        gtk_image_set_from_icon_name(self->start_image, PACKAGE,
-                GTK_ICON_SIZE_BUTTON);
+        srn_gtk_image_set_icon_name(self->start_image, PACKAGE);
     }
     update_header(self);
     update_title(self);
@@ -435,7 +467,8 @@ void sui_window_add_buffer(SuiWindow *self, SuiBuffer *buf){
 }
 
 void sui_window_rm_buffer(SuiWindow *self, SuiBuffer *buf){
-    gtk_container_remove(GTK_CONTAINER(self->buffer_stack), GTK_WIDGET(buf));
+    srn_gtk_widget_remove_child(GTK_WIDGET(self->buffer_stack),
+            GTK_WIDGET(buf));
 
     if (get_buffer_count(self) == 0){
         gtk_stack_set_visible_child_name(
@@ -522,26 +555,28 @@ static void update_header(SuiWindow *self){
         gtk_widget_set_visible(GTK_WIDGET(self->join_button), FALSE);
         if (self->cfg->csd){
             gtk_widget_set_visible(GTK_WIDGET(self->buffer_header_bar), FALSE);
-            gtk_header_bar_set_show_close_button(self->side_header_bar, TRUE);
+            srn_gtk_header_bar_set_show_close_button(
+                    self->side_header_bar, TRUE);
         } else {
             gtk_widget_set_visible(GTK_WIDGET(self->buffer_header_box), FALSE);
         }
 
         // Add connect panel to welcome page
-        gtk_box_pack_start(self->welcome_connect_box,
+        srn_gtk_box_pack_start(self->welcome_connect_box,
                 GTK_WIDGET(self->connect_panel), TRUE, TRUE, 0);
     } else if (g_strcmp0(page, WINDOW_STACK_PAGE_MAIN) == 0){
         gtk_widget_set_visible(GTK_WIDGET(self->connect_button), TRUE);
         gtk_widget_set_visible(GTK_WIDGET(self->join_button), TRUE);
         if (self->cfg->csd){
-            gtk_header_bar_set_show_close_button(self->side_header_bar, FALSE);
+            srn_gtk_header_bar_set_show_close_button(
+                    self->side_header_bar, FALSE);
             gtk_widget_set_visible(GTK_WIDGET(self->buffer_header_bar), TRUE);
         } else {
             gtk_widget_set_visible(GTK_WIDGET(self->buffer_header_box), TRUE);
         }
 
         // Remove connect panel to welcome page
-        gtk_container_remove(GTK_CONTAINER(self->welcome_connect_box),
+        srn_gtk_widget_remove_child(GTK_WIDGET(self->welcome_connect_box),
                 GTK_WIDGET(self->connect_panel));
     } else {
         g_warn_if_reached();
@@ -555,7 +590,7 @@ static void update_title(SuiWindow *self){
     if (g_strcmp0(page, WINDOW_STACK_PAGE_WELCOME) == 0){
         gtk_window_set_title(GTK_WINDOW(self), PACKAGE_NAME);
         if (self->cfg->csd){
-            gtk_header_bar_set_title(self->side_header_bar, PACKAGE_NAME);
+            srn_gtk_header_bar_set_title(self->side_header_bar, PACKAGE_NAME);
         }
     } else if (g_strcmp0(page, WINDOW_STACK_PAGE_MAIN) == 0){
         char *title;
@@ -566,8 +601,8 @@ static void update_title(SuiWindow *self){
                 PACKAGE_NAME);
         gtk_window_set_title(GTK_WINDOW(self), title);
         if (self->cfg->csd){
-            gtk_header_bar_set_title(self->side_header_bar, NULL);
-            gtk_header_bar_set_title(self->buffer_header_bar, title);
+            srn_gtk_header_bar_set_title(self->side_header_bar, NULL);
+            srn_gtk_header_bar_set_title(self->buffer_header_bar, title);
         }
         g_free(title);
     } else {
@@ -589,36 +624,54 @@ static void update_focus(SuiWindow *self){
 }
 
 static int get_buffer_count(SuiWindow *self){
-    return g_list_length(
-            gtk_container_get_children(GTK_CONTAINER(self->buffer_stack)));
+    GList *children;
+    int count;
+
+    children = srn_gtk_widget_get_children(GTK_WIDGET(self->buffer_stack));
+    count = g_list_length(children);
+    g_list_free(children);
+
+    return count;
 }
 
 static void send_message(SuiWindow *self){
+    GtkWidget *image;
+
     g_return_if_fail(!self->send_timer);
 
     gtk_text_view_set_editable(self->input_text_view, FALSE); // Lock text view
     self->send_timer = g_timeout_add(
             SEND_MESSAGE_INTERVAL, send_message_timeout, self);
 
-    gtk_image_set_from_icon_name(
-            GTK_IMAGE(gtk_button_get_image(self->send_button)),
-            "document-revert-symbolic", GTK_ICON_SIZE_BUTTON);
+    image = srn_gtk_button_get_child(self->send_button);
+    if (GTK_IS_IMAGE(image)){
+        srn_gtk_image_set_icon_name(GTK_IMAGE(image),
+                "document-revert-symbolic");
+    }
 }
 
 static void send_message_cancel(SuiWindow *self){
+    GtkWidget *image;
+
     g_return_if_fail(self->send_timer);
 
     g_source_remove(self->send_timer);
     self->send_timer = 0;
     gtk_text_view_set_editable(self->input_text_view, TRUE); // Unlock text view
 
-    gtk_image_set_from_icon_name(
-            GTK_IMAGE(gtk_button_get_image(self->send_button)),
-            "document-send-symbolic", GTK_ICON_SIZE_BUTTON);
+    image = srn_gtk_button_get_child(self->send_button);
+    if (GTK_IS_IMAGE(image)){
+        srn_gtk_image_set_icon_name(GTK_IMAGE(image),
+                "document-send-symbolic");
+    }
 }
 
 static void set_server_visibility(SuiWindow* self){
-    GList *lst = gtk_container_get_children(GTK_CONTAINER(self->buffer_stack));
+    GList *children;
+    GList *lst;
+
+    children = srn_gtk_widget_get_children(GTK_WIDGET(self->buffer_stack));
+    lst = children;
     while (lst) {
         if (SUI_IS_SERVER_BUFFER(lst->data)) {
             SuiBuffer *buf = SUI_BUFFER(lst->data);
@@ -629,6 +682,7 @@ static void set_server_visibility(SuiWindow* self){
         }
         lst = g_list_next(lst);
     }
+    g_list_free(children);
 }
 
 static void on_destroy(SuiWindow *self){
@@ -676,6 +730,34 @@ static void join_button_on_click(GtkButton *button, gpointer user_data){
     sui_common_popup_panel(GTK_WIDGET(button), GTK_WIDGET(panel));
 }
 
+#if GTK_MAJOR_VERSION >= 4
+static gboolean window_on_key_pressed(GtkEventControllerKey *controller,
+        guint keyval, guint keycode, GdkModifierType state,
+        gpointer user_data){
+    SuiWindow *self;
+
+    self = SUI_WINDOW(user_data);
+    if (state != GDK_CONTROL_MASK){
+        return FALSE;
+    }
+
+    switch (keyval){
+        case GDK_KEY_j:
+            sui_side_bar_next(self->side_bar);
+            break;
+        case GDK_KEY_k:
+            sui_side_bar_prev(self->side_bar);
+            break;
+        case GDK_KEY_q:
+            sui_application_exit(sui_application_get_instance());
+            break;
+        default:
+            return FALSE;
+    }
+
+    return TRUE;
+}
+#else
 static gboolean CTRL_J_K_on_press(GtkAccelGroup *group, GObject *obj,
         guint keyval, GdkModifierType mod, gpointer user_data){
     SuiSideBar *side_bar;
@@ -713,7 +795,83 @@ static gboolean CTRL_Q_on_press(GtkAccelGroup *group, GObject *obj,
 
     return TRUE;
 }
+#endif
 
+#if GTK_MAJOR_VERSION >= 4
+static gboolean input_text_view_on_key_press(GtkEventControllerKey *controller,
+        guint keyval, guint keycode, GdkModifierType state,
+        gpointer user_data){
+    SuiWindow *self;
+
+    self = SUI_WINDOW(user_data);
+
+    switch (keyval) {
+        case GDK_KEY_Tab:
+            {
+                SuiBuffer *buf;
+
+                if (!gtk_text_view_get_editable(self->input_text_view)){
+                    return FALSE;
+                }
+
+                buf = sui_window_get_cur_buffer(self);
+                g_return_val_if_fail(buf, FALSE);
+                sui_buffer_complete(buf);
+                break;
+            }
+        case GDK_KEY_Return:
+            {
+                if ((self->cfg->send_on_ctrl_enter)
+                        ^ (state & GDK_CONTROL_MASK)){
+                    // TODO: filter SHIFT, ALT and META?
+                    return FALSE;
+                }
+                srn_gtk_button_clicked(self->send_button);
+                break;
+            }
+        case GDK_KEY_Up:
+        case GDK_KEY_Down:
+            {
+                int cursor_pos;
+                int nline;
+                int cursor_line;
+                GtkTextBuffer *text_buf;
+                GtkTextIter cursor;
+                SuiBuffer *buf;
+
+                if (!gtk_text_view_get_editable(self->input_text_view)){
+                    return FALSE;
+                }
+
+                buf = sui_window_get_cur_buffer(self);
+                g_return_val_if_fail(buf, FALSE);
+                text_buf = gtk_text_view_get_buffer(self->input_text_view);
+
+                g_object_get(text_buf, "cursor-position", &cursor_pos, NULL);
+                gtk_text_buffer_get_iter_at_offset(text_buf, &cursor, cursor_pos);
+                cursor_line = gtk_text_iter_get_line(&cursor);
+                nline = gtk_text_buffer_get_line_count(text_buf);
+
+                if (keyval == GDK_KEY_Up){
+                    if (cursor_line != 0) {
+                        return FALSE;
+                    }
+                    sui_buffer_browse_prev_input(buf);
+                } else {
+                    if (cursor_line != nline - 1) {
+                        return FALSE;
+                    }
+                    sui_buffer_browse_next_input(buf);
+                }
+            }
+            break;
+        default:
+            return FALSE;
+    }
+
+    return TRUE;
+}
+#else
 static gboolean input_text_view_on_key_press(GtkTextView *text_view,
         GdkEventKey *event, gpointer user_data){
     SuiWindow *self;
@@ -786,6 +944,7 @@ static gboolean input_text_view_on_key_press(GtkTextView *text_view,
 
     return TRUE;
 }
+#endif
 
 static void send_button_on_clicked(GtkWidget *widget, gpointer user_data){
     SuiWindow *self;
@@ -853,6 +1012,6 @@ static void buffer_stack_on_child_changed(GtkWidget *widget, GParamSpec *pspec,
     update_title(self);
     gtk_text_view_set_buffer(self->input_text_view,
             sui_buffer_get_input_text_buffer(buf));
-    gtk_menu_button_set_popup(self->buffer_menu_button,
+    srn_gtk_menu_button_set_popup(self->buffer_menu_button,
             GTK_WIDGET(sui_buffer_get_menu(buf)));
 }

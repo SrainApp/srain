@@ -30,6 +30,7 @@
 #include "sui_common.h"
 #include "sui_window.h"
 #include "sui_message_list.h"
+#include "gtk_compat.h"
 
 #include "i18n.h"
 #include "log.h"
@@ -100,8 +101,10 @@ static void sui_message_list_init(SuiMessageList *self){
 
     // Tell GtkScrolledWindow scrolls to show a row of GtkListBox when it is
     // focused. It is required by gtk_container_set_focus_child().
+#if GTK_MAJOR_VERSION < 4
     gtk_container_set_focus_vadjustment(GTK_CONTAINER(self->list_box),
             gtk_scrolled_window_get_vadjustment(self->scrolled_window));
+#endif
 }
 
 static void sui_message_list_finalize(GObject *object){
@@ -200,7 +203,7 @@ void sui_message_list_prepend_message(SuiMessageList *self, SuiMessage *msg,
     }
 
     box = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0));
-    gtk_box_pack_start(box, GTK_WIDGET(msg), TRUE, TRUE, 0);
+    srn_gtk_box_pack_start(box, GTK_WIDGET(msg), TRUE, TRUE, 0);
     gtk_widget_set_halign(GTK_WIDGET(msg), halign);
     row = sui_common_unfocusable_list_box_row_new(GTK_WIDGET(box));
     gtk_list_box_prepend(self->list_box, GTK_WIDGET(row));
@@ -222,7 +225,7 @@ GList *sui_message_list_get_recent_messages(SuiMessageList *self, int limit){
     GList *lst;
     GList *msgs;
 
-    rows = gtk_container_get_children(GTK_CONTAINER(self->list_box));
+    rows = srn_gtk_widget_get_children(GTK_WIDGET(self->list_box));
     lst = g_list_last(rows);
     msgs = NULL;
 
@@ -231,7 +234,7 @@ GList *sui_message_list_get_recent_messages(SuiMessageList *self, int limit){
         SuiMessage *msg;
 
         row = GTK_LIST_BOX_ROW(lst->data);
-        msg = SUI_MESSAGE(gtk_bin_get_child(GTK_BIN(row)));
+        msg = SUI_MESSAGE(srn_gtk_widget_get_child(GTK_WIDGET(row)));
         msgs = g_list_append(msgs, msg);
 
         lst = g_list_previous(lst);
@@ -255,10 +258,10 @@ void sui_message_list_clear_message(SuiMessageList *self){
     self->last_row = NULL;
 
     // Remove all messages
-    for (GList *lst = gtk_container_get_children(GTK_CONTAINER(self->list_box));
+    for (GList *lst = srn_gtk_widget_get_children(GTK_WIDGET(self->list_box));
             lst != NULL;
             lst = g_list_next(lst)){
-        gtk_container_remove(GTK_CONTAINER(self->list_box), GTK_WIDGET(lst->data));
+        srn_gtk_widget_remove_child(GTK_WIDGET(self->list_box), GTK_WIDGET(lst->data));
     }
 }
 
@@ -281,8 +284,12 @@ static gboolean scroll_to_bottom_timeout(gpointer user_data){
 
     self = SUI_MESSAGE_LIST(user_data);
     // Scroll to bottom by setting focus to last row
+#if GTK_MAJOR_VERSION >= 4
+    gtk_widget_grab_focus(GTK_WIDGET(self->last_row));
+#else
     gtk_container_set_focus_child(GTK_CONTAINER(self->list_box),
             GTK_WIDGET(self->last_row));
+#endif
     self->scroll_timer = 0;
 
     return G_SOURCE_REMOVE;
@@ -429,12 +436,16 @@ static void go_next_mentioned_row(SuiMessageList *self, GtkDirectionType dir) {
         SuiMessage *msg;
 
         row = gtk_list_box_get_row_at_index(self->list_box, i);
-        msg = SUI_MESSAGE(gtk_bin_get_child(GTK_BIN(row)));
+        msg = SUI_MESSAGE(srn_gtk_widget_get_child(GTK_WIDGET(row)));
         if (sui_message_is_mentioned(msg)) {
             // Focus and select
             gtk_list_box_unselect_all(self->list_box);
             gtk_list_box_select_row(self->list_box, row);
+#if GTK_MAJOR_VERSION >= 4
+            gtk_widget_grab_focus(GTK_WIDGET(row));
+#else
             gtk_container_set_focus_child(GTK_CONTAINER(self->list_box), GTK_WIDGET(row));
+#endif
             break;
         }
     }

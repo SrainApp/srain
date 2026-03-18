@@ -69,7 +69,7 @@ struct _SuiUrlPreviewer {
     /* Page text */
     GtkLabel *text_label;
     /* Page image */
-    GtkEventBox *image_event_box;
+    GtkWidget *image_event_box;
     GdkPixbuf *pixbuf;
     GtkImage *image;
 };
@@ -97,8 +97,13 @@ static void preview_image(SuiUrlPreviewer *self, GdkPixbuf *pixbuf);
 static void on_notify_visible(GObject *object, GParamSpec *pspec, gpointer data);
 static void preview_button_on_clicked(GtkWidget *widget, gpointer user_data);
 static void cancel_button_on_clicked(GtkWidget *widget, gpointer user_data);
+#if GTK_MAJOR_VERSION >= 4
+static void image_event_box_on_click(GtkGestureClick *gesture, int n_press,
+        double x, double y, gpointer user_data);
+#else
 static void image_event_box_on_button_release(GtkWidget *widget,
         GdkEventButton *event, gpointer user_data);
+#endif
 static void session_send_ready(GObject *object, GAsyncResult *result,
         gpointer user_data);
 static void buffered_stream_fill_ready(GObject *object, GAsyncResult *result,
@@ -161,6 +166,10 @@ static void sui_url_previewer_get_property(GObject *object, guint property_id,
 }
 
 static void sui_url_previewer_init(SuiUrlPreviewer *self){
+#if GTK_MAJOR_VERSION >= 4
+    GtkGesture *click;
+#endif
+
     gtk_widget_init_template(GTK_WIDGET(self));
 
     self->previewed = FALSE;
@@ -180,8 +189,16 @@ static void sui_url_previewer_init(SuiUrlPreviewer *self){
             G_CALLBACK(preview_button_on_clicked), self);
     g_signal_connect(self->cancel_button, "clicked",
             G_CALLBACK(cancel_button_on_clicked), self);
+#if GTK_MAJOR_VERSION >= 4
+    click = gtk_gesture_click_new();
+    gtk_widget_add_controller(self->image_event_box,
+            GTK_EVENT_CONTROLLER(click));
+    g_signal_connect(click, "released",
+            G_CALLBACK(image_event_box_on_click), self);
+#else
     g_signal_connect(self->image_event_box, "button-release-event",
             G_CALLBACK(image_event_box_on_button_release), self);
+#endif
 }
 
 static void sui_url_previewer_constructed(GObject *object){
@@ -448,6 +465,55 @@ static void cancel_button_on_clicked(GtkWidget *widget, gpointer user_data){
     cancel_preview(self);
 }
 
+#if GTK_MAJOR_VERSION >= 4
+static void image_event_box_on_click(GtkGestureClick *gesture, int n_press,
+        double x, double y, gpointer user_data){
+    int width;
+    int height;
+    GdkDisplay *display;
+    GdkMonitor *monitor;
+    GdkSurface *surface;
+    GdkRectangle rect;
+    GdkPixbuf *pixbuf;
+    GdkPixbuf *scaled_pixbuf;
+    GtkImage *image;
+    GtkWindow *iwin;
+    GtkBuilder *builder;
+    SuiUrlPreviewer *self;
+
+    if (gtk_gesture_single_get_current_button(GTK_GESTURE_SINGLE(gesture))
+            != GDK_BUTTON_PRIMARY){
+        return;
+    }
+
+    self = SUI_URL_PREVIEWER(user_data);
+    builder = gtk_builder_new_from_resource("/im/srain/Srain/image_window.glade");
+    iwin = GTK_WINDOW(gtk_builder_get_object(builder, "image_window"));
+    image = GTK_IMAGE(gtk_builder_get_object(builder, "image"));
+
+    display = gdk_display_get_default();
+    surface = gtk_native_get_surface(GTK_NATIVE(sui_common_get_cur_window()));
+    monitor = gdk_display_get_monitor_at_surface(display, surface);
+    gdk_monitor_get_geometry(monitor, &rect);
+
+    rect.height -= 20;
+    rect.width -= 20;
+    pixbuf = self->pixbuf;
+    width = gdk_pixbuf_get_width(pixbuf);
+    height = gdk_pixbuf_get_height(pixbuf);
+    sui_common_scale_size(gdk_pixbuf_get_width(pixbuf), gdk_pixbuf_get_height(pixbuf),
+            rect.width, rect.height, &width, &height);
+    scaled_pixbuf = gdk_pixbuf_scale_simple(pixbuf, width, height,
+            GDK_INTERP_BILINEAR);
+
+    gtk_image_set_from_pixbuf(image, scaled_pixbuf);
+
+    g_object_unref(scaled_pixbuf);
+    g_object_unref(builder);
+
+    gtk_window_present(iwin);
+}
+#else
 static void image_event_box_on_button_release(GtkWidget *widget,
         GdkEventButton *event, gpointer user_data){
     int width;
@@ -512,6 +578,7 @@ static void image_event_box_on_button_release(GtkWidget *widget,
 
     gtk_window_present(iwin);
 }
+#endif
 
 static void session_send_ready(GObject *object, GAsyncResult *result,
         gpointer user_data){

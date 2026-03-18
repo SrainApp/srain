@@ -36,6 +36,7 @@
 #include "sui_event_hdr.h"
 #include "sui_buffer.h"
 #include "sui_recv_message.h"
+#include "gtk_compat.h"
 
 #include "log.h"
 #include "i18n.h"
@@ -128,7 +129,7 @@ static void sui_buffer_init(SuiBuffer *self){
 
     /* Init msg list */
     self->msg_list = sui_message_list_new();
-    gtk_box_pack_start(self->msg_list_box, GTK_WIDGET(self->msg_list),
+    srn_gtk_box_pack_start(self->msg_list_box, GTK_WIDGET(self->msg_list),
             TRUE, TRUE, 0);
     gtk_widget_show(GTK_WIDGET(self->msg_list));
 
@@ -254,7 +255,7 @@ void sui_buffer_insert_text(SuiBuffer *self, const char *text, int line, int off
 void sui_buffer_show_topic(SuiBuffer *self, bool isshow){
     g_return_if_fail(SUI_IS_BUFFER(self));
 
-    gtk_check_menu_item_set_active(self->topic_menu_item, isshow);
+    srn_gtk_check_menu_item_set_active(self->topic_menu_item, isshow);
 }
 
 /**
@@ -422,7 +423,7 @@ void sui_buffer_set_topic(SuiBuffer *self, const char *topic){
     g_return_if_fail(SUI_IS_BUFFER(self));
 
     gtk_label_set_markup(self->topic_label, topic);
-    gtk_check_menu_item_toggled(self->topic_menu_item);
+    srn_gtk_check_menu_item_toggled(self->topic_menu_item);
 }
 
 void sui_buffer_set_topic_setter(SuiBuffer *self, const char *setter){
@@ -436,7 +437,7 @@ GtkWidget* sui_buffer_append_menu_item(SuiBuffer *self, const char *label){
 
     g_return_val_if_fail(SUI_IS_BUFFER(self), NULL);
 
-    item = gtk_menu_item_new_with_mnemonic(label);
+    item = srn_gtk_menu_item_new_with_mnemonic(label);
     append_menu_widget(self, item);
 
     return item;
@@ -448,7 +449,7 @@ GtkWidget* sui_buffer_append_check_menu_item(SuiBuffer *self,
 
     g_return_val_if_fail(SUI_IS_BUFFER(self), NULL);
 
-    item = gtk_check_menu_item_new_with_mnemonic(label);
+    item = srn_gtk_check_menu_item_new_with_mnemonic(label);
     append_menu_widget(self, item);
 
     return item;
@@ -485,16 +486,15 @@ static void sui_buffer_set_events(SuiBuffer *self, SuiBufferEvents *events){
 }
 
 static void append_menu_widget(SuiBuffer *self, GtkWidget *widget){
-    gtk_menu_shell_append(GTK_MENU_SHELL(self->menu), widget);
+    srn_gtk_menu_append(self->menu, widget);
     gtk_widget_show(widget);
 }
 
 static void topic_menu_item_on_toggled(GtkWidget* widget, gpointer user_data){
     bool active;
     SuiBuffer *self = SUI_BUFFER(user_data);
-    GtkCheckMenuItem *item = GTK_CHECK_MENU_ITEM(widget);
 
-    active = gtk_check_menu_item_get_active(item);
+    active = srn_gtk_check_menu_item_get_active(widget);
     gtk_revealer_set_reveal_child(self->topic_revealer, active);
 
     // If topic is empty, do not show it anyway

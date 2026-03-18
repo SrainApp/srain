@@ -76,9 +76,10 @@ void sui_theme_manager_free(SuiThemeManager *self){
 SrnRet sui_theme_manager_apply(SuiThemeManager *self, const char *theme){
     char *name;
     char *file;
+#if GTK_MAJOR_VERSION < 4
     GError *err;
+#endif
     GtkCssProvider *css;
-    GdkScreen *screen;
     SrnRet ret;
 
     if (!self->settings) {
@@ -96,6 +97,9 @@ SrnRet sui_theme_manager_apply(SuiThemeManager *self, const char *theme){
     }
 
     css = gtk_css_provider_new();
+#if GTK_MAJOR_VERSION >= 4
+    gtk_css_provider_load_from_path(css, file);
+#else
     err = NULL;
     gtk_css_provider_load_from_path(css, file, &err);
     if (err) {
@@ -104,19 +108,29 @@ SrnRet sui_theme_manager_apply(SuiThemeManager *self, const char *theme){
         g_object_unref(css);
         goto FIN;
     }
-
-    screen = gdk_screen_get_default();
+#endif
 
     if (self->provider) { // Clear prevsiou theme
         str_assign(&self->theme, NULL);
-        gtk_style_context_remove_provider_for_screen(screen, self->provider);
+#if GTK_MAJOR_VERSION >= 4
+        gtk_style_context_remove_provider_for_display(gdk_display_get_default(),
+                self->provider);
+#else
+        gtk_style_context_remove_provider_for_screen(gdk_screen_get_default(),
+                self->provider);
+#endif
         g_object_unref(self->provider);
         self->provider = NULL;
     }
 
     self->provider = GTK_STYLE_PROVIDER(g_object_ref(css));
-    gtk_style_context_add_provider_for_screen(screen, self->provider,
-            GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+#if GTK_MAJOR_VERSION >= 4
+    gtk_style_context_add_provider_for_display(gdk_display_get_default(),
+            self->provider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+#else
+    gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
+            self->provider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+#endif
     str_assign(&self->theme, theme);
 
     ret = SRN_OK;

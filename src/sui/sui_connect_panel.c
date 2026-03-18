@@ -38,6 +38,7 @@
 
 #include "sui_common.h"
 #include "sui_event_hdr.h"
+#include "gtk_compat.h"
 #include "sui_window.h"
 #include "sui_connect_panel.h"
 
@@ -76,8 +77,8 @@ struct _SuiConnectPanel {
     GtkStack *login_method_stack;
     GtkEntry *login_password_entry;
     GtkCheckButton *remember_login_password_check_button;
-    GtkFileChooserButton *login_cert_file_chooser_button;
-    GtkFileChooserButton *client_cert_file_chooser_button;
+    GtkWidget *login_cert_file_chooser_button;
+    GtkWidget *client_cert_file_chooser_button;
 
 
     /* Buttons */
@@ -154,7 +155,7 @@ static void sui_connect_panel_init(SuiConnectPanel *self){
 
     g_signal_connect(self->quick_server_combo_box, "changed",
             G_CALLBACK(server_combo_box_on_changed), self);
-    g_signal_connect(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(self->server_combo_box))),
+    g_signal_connect(GTK_ENTRY(srn_gtk_widget_get_child(GTK_WIDGET(self->server_combo_box))),
             "changed", G_CALLBACK(server_combo_box_on_changed), self);
     g_signal_connect(self->nick_entry, "changed",
             G_CALLBACK(nick_entry_on_changed), self);
@@ -233,9 +234,9 @@ static void update(SuiConnectPanel *self, const char *srv_name){
     if (!srv_name || !strlen(srv_name)){
         gtk_combo_box_set_active_iter(self->server_combo_box, NULL);
 
-        gtk_entry_set_text(self->host_entry, "");
-        gtk_entry_set_text(self->port_entry, "");
-        gtk_entry_set_text(self->password_entry, "");
+        srn_gtk_entry_set_text(self->host_entry, "");
+        srn_gtk_entry_set_text(self->port_entry, "");
+        srn_gtk_entry_set_text(self->password_entry, "");
         gtk_toggle_button_set_active(
                 GTK_TOGGLE_BUTTON(self->remember_password_check_button), FALSE);
         gtk_toggle_button_set_active(
@@ -243,14 +244,14 @@ static void update(SuiConnectPanel *self, const char *srv_name){
         gtk_toggle_button_set_active(
                 GTK_TOGGLE_BUTTON(self->tls_noverify_check_button), FALSE);
 
-        gtk_entry_set_text(self->nick_entry, "");
+        srn_gtk_entry_set_text(self->nick_entry, "");
         gtk_combo_box_set_active_iter(self->login_method_combo_box, NULL);
-        gtk_entry_set_text(self->login_password_entry, "");
+        srn_gtk_entry_set_text(self->login_password_entry, "");
         gtk_toggle_button_set_active(
                 GTK_TOGGLE_BUTTON(self->remember_login_password_check_button), FALSE);
-        gtk_file_chooser_set_filename(
+        srn_gtk_file_chooser_set_filename(
                 GTK_FILE_CHOOSER(self->login_cert_file_chooser_button), "");
-        gtk_file_chooser_set_filename(
+        srn_gtk_file_chooser_set_filename(
                 GTK_FILE_CHOOSER(self->client_cert_file_chooser_button), "");
     } else {
         SrnRet ret;
@@ -276,12 +277,12 @@ static void update(SuiConnectPanel *self, const char *srv_name){
 
             addr = srv_cfg->addrs->data;
             port = g_strdup_printf("%d", addr->port);
-            gtk_entry_set_text(self->host_entry, addr->host);
-            gtk_entry_set_text(self->port_entry, port);
+            srn_gtk_entry_set_text(self->host_entry, addr->host);
+            srn_gtk_entry_set_text(self->port_entry, port);
             g_free(port);
         }
         if (srv_cfg->password) {
-            gtk_entry_set_text(self->password_entry, srv_cfg->password);
+            srn_gtk_entry_set_text(self->password_entry, srv_cfg->password);
         }
         gtk_toggle_button_set_active(
                 GTK_TOGGLE_BUTTON(self->tls_check_button),
@@ -290,19 +291,19 @@ static void update(SuiConnectPanel *self, const char *srv_name){
                 GTK_TOGGLE_BUTTON(self->tls_noverify_check_button),
                 srv_cfg->irc->tls_noverify);
 
-        gtk_entry_set_text(self->nick_entry,
+        srn_gtk_entry_set_text(self->nick_entry,
                 srv_cfg->user->nick? srv_cfg->user->nick: "");
 
         gtk_combo_box_set_active_id(self->login_method_combo_box,
                 srn_login_method_to_string(srv_cfg->user->login->method));
-        gtk_entry_set_text(self->login_password_entry,
+        srn_gtk_entry_set_text(self->login_password_entry,
                 srv_cfg->user->login->password ?
                 srv_cfg->user->login->password : "");
-        gtk_file_chooser_set_filename(
+        srn_gtk_file_chooser_set_filename(
                 GTK_FILE_CHOOSER(self->login_cert_file_chooser_button),
                 srv_cfg->user->login->cert_file ?
                 srv_cfg->user->login->cert_file : "");
-        gtk_file_chooser_set_filename(
+        srn_gtk_file_chooser_set_filename(
                 GTK_FILE_CHOOSER(self->client_cert_file_chooser_button),
                 srv_cfg->irc->certificate_filename ?
                 srv_cfg->irc->certificate_filename : "");
@@ -376,8 +377,8 @@ static void server_combo_box_on_changed(GtkComboBox *combo_box,
     SuiConnectPanel *self;
 
     self = SUI_CONNECT_PANEL(user_data);
-    entry = GTK_ENTRY(gtk_bin_get_child(GTK_BIN(self->server_combo_box)));
-    srv_name = gtk_entry_get_text(entry);
+    entry = GTK_ENTRY(srn_gtk_widget_get_child(GTK_WIDGET(self->server_combo_box)));
+    srv_name = srn_gtk_entry_get_text(entry);
     update(self, srv_name);
 }
 
@@ -453,7 +454,7 @@ static void connect_button_on_click(gpointer user_data){
             goto FIN;
         }
 
-        nick = gtk_entry_get_text(self->quick_nick_entry);
+        nick = srn_gtk_entry_get_text(self->quick_nick_entry);
 
         if (!str_is_empty(nick)) {
             str_assign(&srv_cfg->user->nick, nick);
@@ -475,8 +476,8 @@ static void connect_button_on_click(gpointer user_data){
         GtkEntry *entry;
         SrnLoginMethod method;
 
-        entry = GTK_ENTRY(gtk_bin_get_child(GTK_BIN(self->server_combo_box)));
-        srv_name = gtk_entry_get_text(entry);
+        entry = GTK_ENTRY(srn_gtk_widget_get_child(GTK_WIDGET(self->server_combo_box)));
+        srv_name = srn_gtk_entry_get_text(entry);
 
         srv_cfg = srn_server_config_new();
         ret = srn_config_manager_read_server_config(
@@ -485,14 +486,14 @@ static void connect_button_on_click(gpointer user_data){
             goto FIN;
         }
 
-        host = gtk_entry_get_text(self->host_entry);
-        port = g_ascii_strtoll(gtk_entry_get_text(self->port_entry), NULL, 10);
+        host = srn_gtk_entry_get_text(self->host_entry);
+        port = g_ascii_strtoll(srn_gtk_entry_get_text(self->port_entry), NULL, 10);
         if (!str_is_empty(host)) {
             srn_server_config_clear_addr(srv_cfg);
             srn_server_config_add_addr(srv_cfg, srn_server_addr_new(host, port));
         }
 
-        passwd = gtk_entry_get_text(self->password_entry);
+        passwd = srn_gtk_entry_get_text(self->password_entry);
         // Always overwrite password
         str_assign(&srv_cfg->password, passwd);
 
@@ -530,7 +531,7 @@ static void connect_button_on_click(gpointer user_data){
         // tls_noverify_check_button is toggled.
         srv_cfg->irc->tls = tls || tls_noverify;
 
-        nick = gtk_entry_get_text(self->nick_entry);
+        nick = srn_gtk_entry_get_text(self->nick_entry);
         if (!str_is_empty(nick)) {
             str_assign(&srv_cfg->user->nick, nick);
         }
@@ -539,7 +540,7 @@ static void connect_button_on_click(gpointer user_data){
         method = srn_login_method_from_string(method_str);
         srv_cfg->user->login->method = method;
 
-        login_passwd = gtk_entry_get_text(self->login_password_entry);
+        login_passwd = srn_gtk_entry_get_text(self->login_password_entry);
         // Always overwrite password
         str_assign(&srv_cfg->user->login->password, login_passwd);
 
@@ -568,14 +569,14 @@ static void connect_button_on_click(gpointer user_data){
         }
 
         /* ECDSA cert */
-        login_cert_file = gtk_file_chooser_get_filename(
+        login_cert_file = srn_gtk_file_chooser_get_filename(
                 GTK_FILE_CHOOSER(self->login_cert_file_chooser_button));
         if (!str_is_empty(login_cert_file)) {
             str_assign(&srv_cfg->user->login->cert_file, login_cert_file);
         }
 
         /* TLS cert */
-        client_cert_file = gtk_file_chooser_get_filename(
+        client_cert_file = srn_gtk_file_chooser_get_filename(
                 GTK_FILE_CHOOSER(self->client_cert_file_chooser_button));
         if (!str_is_empty(client_cert_file)) {
             str_assign(&srv_cfg->irc->certificate_filename, client_cert_file);
@@ -642,13 +643,13 @@ static void nick_entry_on_changed(GtkEditable *editable, gpointer user_data) {
     app_model = sui_application_get_ctx(sui_application_get_instance());
     cfg_mgr = app_model->cfg_mgr;
 
-    srv_name = gtk_entry_get_text(
-            GTK_ENTRY(gtk_bin_get_child(GTK_BIN(self->server_combo_box))));
-    user_name = gtk_entry_get_text(entry);
+    srv_name = srn_gtk_entry_get_text(
+            GTK_ENTRY(srn_gtk_widget_get_child(GTK_WIDGET(self->server_combo_box))));
+    user_name = srn_gtk_entry_get_text(entry);
 
     // Clear login password when user name is not valid
     if (str_is_empty(user_name)) {
-        gtk_entry_set_text(self->login_password_entry, "");
+        srn_gtk_entry_set_text(self->login_password_entry, "");
         return;
     }
 
@@ -672,7 +673,7 @@ static void on_password_lookup(GObject *source, GAsyncResult *result,
         return;
     }
 
-    gtk_entry_set_text(entry, passwd);
+    srn_gtk_entry_set_text(entry, passwd);
     secret_password_free(passwd);
 }
 

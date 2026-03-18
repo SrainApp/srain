@@ -26,6 +26,7 @@
 #include "sui_event_hdr.h"
 #include "sui_window.h"
 #include "sui_buffer.h"
+#include "gtk_compat.h"
 
 static void nick_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
     const char *nick;
@@ -60,72 +61,87 @@ static void nick_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
     g_variant_dict_unref(params);
 }
 
-static GtkMenuItem *new_nick_menu_item(const char *name, const char *label,
+static GtkWidget *new_nick_menu_item(const char *name, const char *label,
         const char *nick){
-    GtkMenuItem *item;
+    GtkWidget *item;
 
-    item = GTK_MENU_ITEM(gtk_menu_item_new_with_mnemonic(label));
-    gtk_widget_set_name(GTK_WIDGET(item), name);
-    gtk_widget_show(GTK_WIDGET(item));
-    g_signal_connect(item, "activate",
+    item = srn_gtk_menu_item_new_with_mnemonic(label);
+    gtk_widget_set_name(item, name);
+    gtk_widget_show(item);
+    srn_gtk_menu_item_connect_activate(item,
             G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
 
     return item;
 }
 
-void nick_menu_popup(GtkWidget *widget, GdkEventButton *event, const char *nick){
+void nick_menu_popup(GtkWidget *widget, const char *nick){
     int n;
     GList *lst;
-    GtkMenu *nick_menu;
-    GtkMenuItem *whois_menu_item;
-    GtkMenuItem *ignore_menu_item;
-    GtkMenuItem *kick_menu_item;
-    GtkMenuItem *chat_menu_item;
-    GtkMenuItem *invite_menu_item;
-    GtkMenu *invite_submenu;
+    GtkWidget *nick_menu;
+    GtkWidget *whois_menu_item;
+    GtkWidget *ignore_menu_item;
+    GtkWidget *kick_menu_item;
+    GtkWidget *chat_menu_item;
+    GtkWidget *invite_menu_item;
+#if GTK_MAJOR_VERSION < 4
+    GtkWidget *invite_submenu;
+#endif
 
-    nick_menu = GTK_MENU(gtk_menu_new());
+#if GTK_MAJOR_VERSION >= 4
+    nick_menu = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+#else
+    nick_menu = gtk_menu_new();
+#endif
     whois_menu_item = new_nick_menu_item("whois_menu_item", _("_Whois"), nick);
     ignore_menu_item = new_nick_menu_item("ignore_menu_item", _("_Ignore"), nick);
     kick_menu_item = new_nick_menu_item("kick_menu_item", _("_Kick"), nick);
     chat_menu_item = new_nick_menu_item("chat_menu_item", _("_Chat"), nick);
-    invite_menu_item = GTK_MENU_ITEM(gtk_menu_item_new_with_mnemonic(_("Invite to...")));
-    gtk_widget_set_name(GTK_WIDGET(invite_menu_item), "invite_menu_item");
-    gtk_widget_show(GTK_WIDGET(invite_menu_item));
+    invite_menu_item = srn_gtk_menu_item_new_with_mnemonic(_("Invite to..."));
+    gtk_widget_set_name(invite_menu_item, "invite_menu_item");
+    gtk_widget_show(invite_menu_item);
 
-    gtk_menu_shell_append(GTK_MENU_SHELL(nick_menu), GTK_WIDGET(whois_menu_item));
-    gtk_menu_shell_append(GTK_MENU_SHELL(nick_menu), GTK_WIDGET(ignore_menu_item));
-    gtk_menu_shell_append(GTK_MENU_SHELL(nick_menu), GTK_WIDGET(kick_menu_item));
-    gtk_menu_shell_append(GTK_MENU_SHELL(nick_menu), GTK_WIDGET(chat_menu_item));
-    gtk_menu_shell_append(GTK_MENU_SHELL(nick_menu), GTK_WIDGET(invite_menu_item));
+    srn_gtk_menu_append(nick_menu, whois_menu_item);
+    srn_gtk_menu_append(nick_menu, ignore_menu_item);
+    srn_gtk_menu_append(nick_menu, kick_menu_item);
+    srn_gtk_menu_append(nick_menu, chat_menu_item);
+    srn_gtk_menu_append(nick_menu, invite_menu_item);
 
     /* Create subitems for invite_menu_item */
     n = 0;
     lst = sui_server_buffer_get_buffer_list(sui_common_get_cur_server_buffer());
-    invite_submenu = GTK_MENU(gtk_menu_new());
+#if GTK_MAJOR_VERSION < 4
+    invite_submenu = gtk_menu_new();
+#endif
     while (lst){
-        GtkMenuItem *item;
+        GtkWidget *item;
 
-        item = GTK_MENU_ITEM(gtk_menu_item_new_with_label(
-                    sui_buffer_get_name(lst->data)));
-        gtk_widget_show(GTK_WIDGET(item));
-        gtk_widget_set_name(GTK_WIDGET(item), "invite_submenu_item");
-        g_signal_connect(item, "activate",
+        item = srn_gtk_menu_item_new_with_label(sui_buffer_get_name(lst->data));
+        gtk_widget_show(item);
+        gtk_widget_set_name(item, "invite_submenu_item");
+        srn_gtk_menu_item_connect_activate(item,
                 G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
-        gtk_menu_shell_append(GTK_MENU_SHELL(invite_submenu), GTK_WIDGET(item));
+#if GTK_MAJOR_VERSION >= 4
+        srn_gtk_menu_append(nick_menu, item);
+#else
+        srn_gtk_menu_append(invite_submenu, item);
+#endif
 
         n++;
         lst = g_list_next(lst);
     }
 
+#if GTK_MAJOR_VERSION >= 4
+    if (n == 0) {
+        gtk_widget_set_sensitive(invite_menu_item, FALSE);
+    }
+#else
     if (n > 0) {
-        gtk_menu_item_set_submenu(invite_menu_item, GTK_WIDGET(invite_submenu));
+        gtk_menu_item_set_submenu(GTK_MENU_ITEM(invite_menu_item), invite_submenu);
     } else {
         g_object_ref_sink(invite_submenu); // remove the floating reference
         g_object_unref(invite_submenu);
     }
+#endif
 
-    gtk_menu_popup_at_pointer(nick_menu, (GdkEvent*) event);
-    g_object_ref_sink(nick_menu);
-    g_object_unref(nick_menu);
+    sui_common_popup_panel(widget, nick_menu);
 }

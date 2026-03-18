@@ -38,6 +38,7 @@
 #include "sui_window.h"
 #include "sui_buffer.h"
 #include "sui_chat_buffer.h"
+#include "gtk_compat.h"
 #include "sui_join_panel.h"
 
 #define PAGE_JOIN_CHANNEL           "join_channel_page"
@@ -217,13 +218,13 @@ SuiJoinPanel* sui_join_panel_new(){
 
 void sui_join_panel_clear(SuiJoinPanel *self){
     /* Clear join channel page input */
-    gtk_entry_set_text(self->chan_entry, "");
-    gtk_entry_set_text(self->password_entry, "");
+    srn_gtk_entry_set_text(self->chan_entry, "");
+    srn_gtk_entry_set_text(self->password_entry, "");
     gtk_toggle_button_set_active(
             GTK_TOGGLE_BUTTON(self->remember_password_check_button), FALSE);
 
     /* Clear search channel page input */
-    gtk_entry_set_text(self->search_entry, "");
+    srn_gtk_entry_set_text(self->search_entry, "");
     gtk_spin_button_set_value(self->min_users_spin_button, -1);
     gtk_spin_button_set_value(self->max_users_spin_button, -1);
 }
@@ -318,8 +319,8 @@ static void join_button_on_click(gpointer user_data){
 
     page = gtk_stack_get_visible_child_name(self->stack);
     if (g_strcmp0(page, PAGE_JOIN_CHANNEL) == 0){
-        chan = gtk_entry_get_text(self->chan_entry);
-        passwd = gtk_entry_get_text(self->password_entry);
+        chan = srn_gtk_entry_get_text(self->chan_entry);
+        passwd = srn_gtk_entry_get_text(self->password_entry);
         rmb_passwd = gtk_toggle_button_get_active(
                 GTK_TOGGLE_BUTTON(self->remember_password_check_button));
     } else if (g_strcmp0(page, PAGE_SEARCH_CHANNEL) == 0){
@@ -337,7 +338,7 @@ static void join_button_on_click(gpointer user_data){
             chan = _chan;
         } else {
             /* else, use value from search_entry */
-            chan = gtk_entry_get_text(self->search_entry);
+            chan = srn_gtk_entry_get_text(self->search_entry);
         }
         passwd = "";
         rmb_passwd = FALSE;
@@ -392,7 +393,7 @@ static void join_button_on_click(gpointer user_data){
     g_variant_dict_unref(params);
 
     if (RET_IS_OK(ret)){
-        gtk_button_clicked(self->cancel_button);
+        srn_gtk_button_clicked(self->cancel_button);
     } else {
         sui_message_box(_("Error"), RET_MSG(ret));
     }
@@ -465,7 +466,7 @@ static void chan_tree_view_on_row_activate(GtkTreeView *view,
 
     /* If a row is activated, set the value of chan_entry and switch to
      * PAGE_JOIN_CHANNEL. */
-    gtk_entry_set_text(self->chan_entry, chan);
+    srn_gtk_entry_set_text(self->chan_entry, chan);
     gtk_stack_set_visible_child_name(self->stack, PAGE_JOIN_CHANNEL);
 
     g_free(chan);
@@ -518,7 +519,7 @@ gboolean chan_tree_visible_func(GtkTreeModel *model, GtkTreeIter *iter,
 
     min_users = gtk_spin_button_get_value(self->min_users_spin_button);
     max_users = gtk_spin_button_get_value(self->max_users_spin_button);
-    input = gtk_entry_get_text(self->search_entry);
+    input = srn_gtk_entry_get_text(self->search_entry);
 
     /* Filter users */
     if (min_users != - 1 && users < min_users){
@@ -604,11 +605,11 @@ static void chan_entry_on_changed(GtkEditable *editable, gpointer user_data) {
     chat = sui_buffer_get_ctx(sui_common_get_cur_buffer());
     srv_name = chat->srv->name;
 
-    chan_name = gtk_entry_get_text(entry);
+    chan_name = srn_gtk_entry_get_text(entry);
 
     // Clear channel password when channel name is not valid
     if (str_is_empty(chan_name)) {
-        gtk_entry_set_text(self->password_entry, "");
+        srn_gtk_entry_set_text(self->password_entry, "");
         return;
     }
 
@@ -632,7 +633,7 @@ static void on_password_lookup(GObject *source, GAsyncResult *result,
         return;
     }
 
-    gtk_entry_set_text(entry, passwd);
+    srn_gtk_entry_set_text(entry, passwd);
     secret_password_free(passwd);
 }
 

@@ -29,6 +29,7 @@
 
 #include "sui_buffer.h"
 #include "sui_chat_buffer.h"
+#include "gtk_compat.h"
 
 #include "i18n.h"
 #include "log.h"
@@ -113,7 +114,7 @@ static void sui_chat_buffer_init(SuiChatBuffer *self){
     
     /* Init user list*/
     self->user_list = sui_user_list_new();
-    gtk_container_add(GTK_CONTAINER(self->parent.user_list_revealer), // FIXME
+    srn_gtk_widget_add_child(GTK_WIDGET(self->parent.user_list_revealer), // FIXME
             GTK_WIDGET(self->user_list));
 
     g_signal_connect(self->user_list_menu_item, "toggled",
@@ -226,7 +227,7 @@ SuiUserList* sui_chat_buffer_get_user_list(SuiChatBuffer *self){
 }
 
 void sui_chat_buffer_show_user_list(SuiChatBuffer *self, bool isshow){
-    gtk_check_menu_item_set_active(self->user_list_menu_item, isshow);
+    srn_gtk_check_menu_item_set_active(self->user_list_menu_item, isshow);
 }
 
 /*****************************************************************************
@@ -236,8 +237,7 @@ void sui_chat_buffer_show_user_list(SuiChatBuffer *self, bool isshow){
 static void user_list_menu_item_on_toggled(GtkWidget* widget, gpointer user_data){
     bool active;
     SuiChatBuffer *self = SUI_CHAT_BUFFER(user_data);
-    GtkCheckMenuItem *item = GTK_CHECK_MENU_ITEM(widget);
 
-    active = gtk_check_menu_item_get_active(item);
+    active = srn_gtk_check_menu_item_get_active(widget);
     gtk_revealer_set_reveal_child(self->parent.user_list_revealer, active);
 }

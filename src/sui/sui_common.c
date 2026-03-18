@@ -58,7 +58,7 @@ GtkListBoxRow* sui_common_unfocusable_list_box_row_new(GtkWidget *widget){
 
     row = GTK_LIST_BOX_ROW(gtk_list_box_row_new());
     gtk_widget_set_can_focus(GTK_WIDGET(row), FALSE);
-    gtk_container_add(GTK_CONTAINER(row), widget);
+    srn_gtk_widget_add_child(GTK_WIDGET(row), widget);
     gtk_widget_show(GTK_WIDGET(row));
     gtk_widget_show(GTK_WIDGET(widget));
 
@@ -107,7 +107,6 @@ gboolean sui_common_activate_gtk_label_link(GtkLabel *label, const char *url, gp
 }
 
 SrnRet sui_common_open_url(const char *url){
-    int event_time;
     const char *urls[]  = {url, NULL};
     GError *err;
     GVariantDict *params;
@@ -123,13 +122,8 @@ SrnRet sui_common_open_url(const char *url){
         goto FIN;
     }
 
-    event_time = gtk_get_current_event_time();
     err = NULL;
-#if GTK_CHECK_VERSION(3, 22, 0)
-    gtk_show_uri_on_window(GTK_WINDOW(sui_common_get_cur_window()), url, event_time, &err);
-#else
-    gtk_show_uri(NULL, url, event_time, &err);
-#endif
+    g_app_info_launch_default_for_uri(url, NULL, &err);
     if (err) {
         ret = RET_ERR(_("Failed to open URL \"%1$s\": %2$s"), url, err->message);
         sui_message_box(_("Error"), RET_MSG(ret));
@@ -205,9 +199,13 @@ void sui_common_popdown_panel(GtkWidget *child){
 void sui_common_popup_panel(GtkWidget *relative_to, GtkWidget *child){
     GtkPopover *popover;
 
+#if GTK_MAJOR_VERSION >= 4
+    popover = GTK_POPOVER(gtk_popover_new());
+#else
     popover = GTK_POPOVER(gtk_popover_new(NULL));
     gtk_popover_set_relative_to(popover, relative_to);
-    gtk_container_add(GTK_CONTAINER(popover), child);
+#endif
+    srn_gtk_widget_add_child(GTK_WIDGET(popover), child);
 
     srn_gtk_widget_add_css_class(GTK_WIDGET(popover), "sui-panel");
 
@@ -226,11 +224,14 @@ void sui_common_popup_panel_at_point(GtkWidget *relative_to, GtkWidget *child,
     rect.y = y;
     rect.width = rect.height = 1;
 
+#if GTK_MAJOR_VERSION >= 4
+    popover = GTK_POPOVER(gtk_popover_new());
+#else
     popover = GTK_POPOVER(gtk_popover_new(NULL));
     gtk_popover_set_relative_to(popover, relative_to);
+#endif
     gtk_popover_set_pointing_to(popover, &rect);
-    gtk_container_add(GTK_CONTAINER(popover), child);
-    gtk_container_set_border_width(GTK_CONTAINER(popover), 6);
+    srn_gtk_widget_add_child(GTK_WIDGET(popover), child);
 
     g_signal_connect(popover, "hide",
             G_CALLBACK(popover_on_hide), NULL);
@@ -247,7 +248,9 @@ static void popover_on_hide(GtkWidget *widget, gpointer user_data){
     GtkPopover *popover;
 
     popover = GTK_POPOVER(widget);
-    child = gtk_bin_get_child(GTK_BIN(popover));
-    gtk_container_remove(GTK_CONTAINER(popover), child);
+    child = srn_gtk_widget_get_child(GTK_WIDGET(popover));
+    if (child){
+        srn_gtk_widget_remove_child(GTK_WIDGET(popover), child);
+    }
     g_object_unref(popover); // Free popover itself
 }

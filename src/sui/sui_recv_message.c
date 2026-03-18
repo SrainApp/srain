@@ -30,6 +30,7 @@
 #include "sui_common.h"
 #include "nick_menu.h"
 #include "sui_recv_message.h"
+#include "gtk_compat.h"
 
 #include "i18n.h"
 
@@ -37,10 +38,15 @@ static void sui_recv_message_update(SuiMessage *msg);
 static void sui_recv_message_compose_prev(SuiMessage *_self, SuiMessage *_prev);
 static void sui_recv_message_compose_next(SuiMessage *_self, SuiMessage *_next);
 
+#if GTK_MAJOR_VERSION >= 4
+static void sender_event_box_on_click(GtkGestureClick *gesture, int n_press,
+        double x, double y, gpointer user_data);
+#else
 static void sender_event_box_on_button_press(GtkWidget *widget,
         GdkEventButton *event, gpointer user_data);
 static void sender_event_box_on_button_release(GtkWidget *widget,
         GdkEventButton *event, gpointer user_data);
+#endif
 
 /*****************************************************************************
  * GObject functions
@@ -49,16 +55,28 @@ static void sender_event_box_on_button_release(GtkWidget *widget,
 G_DEFINE_TYPE(SuiRecvMessage, sui_recv_message, SUI_TYPE_MESSAGE);
 
 static void sui_recv_message_init(SuiRecvMessage *self){
+#if GTK_MAJOR_VERSION >= 4
+    GtkGesture *click;
+#endif
+
     gtk_widget_init_template(GTK_WIDGET(self));
 
     g_signal_connect(SUI_MESSAGE(self)->message_label, "activate-link",
             G_CALLBACK(sui_common_activate_gtk_label_link), self);
     g_signal_connect(SUI_MESSAGE(self)->message_label, "populate-popup",
             G_CALLBACK(sui_message_label_on_popup), self);
+#if GTK_MAJOR_VERSION >= 4
+    click = gtk_gesture_click_new();
+    gtk_widget_add_controller(self->sender_event_box,
+            GTK_EVENT_CONTROLLER(click));
+    g_signal_connect(click, "released",
+            G_CALLBACK(sender_event_box_on_click), self);
+#else
     g_signal_connect(self->sender_event_box, "button-press-event",
             G_CALLBACK(sender_event_box_on_button_press), self);
     g_signal_connect(self->sender_event_box, "button-release-event",
             G_CALLBACK(sender_event_box_on_button_release), self);
+#endif
 
 }
 
@@ -143,6 +161,33 @@ SuiRecvMessage *sui_recv_message_new(void *ctx){
  * Static functions
  *****************************************************************************/
 
+#if GTK_MAJOR_VERSION >= 4
+static void sender_event_box_on_click(GtkGestureClick *gesture, int n_press,
+        double x, double y, gpointer user_data){
+    char *insert_text;
+    guint button;
+    SuiBuffer *buf;
+    SuiRecvMessage *self;
+    GtkWidget *widget;
+
+    button = gtk_gesture_single_get_current_button(GTK_GESTURE_SINGLE(gesture));
+    self = SUI_RECV_MESSAGE(user_data);
+    widget = gtk_event_controller_get_widget(GTK_EVENT_CONTROLLER(gesture));
+
+    if (button == GDK_BUTTON_SECONDARY){
+        nick_menu_popup(widget, gtk_label_get_text(self->sender_label));
+        return;
+    }
+    if (button != GDK_BUTTON_PRIMARY){
+        return;
+    }
+
+    insert_text = g_strdup_printf("%s: ", gtk_label_get_text(self->sender_label));
+    buf = sui_message_get_buffer(SUI_MESSAGE(self));
+    sui_buffer_insert_text(buf, insert_text, -1, 0);
+    g_free(insert_text);
+}
+#else
 static void sender_event_box_on_button_press(GtkWidget *widget,
         GdkEventButton *event, gpointer user_data){
     SuiRecvMessage *self;
@@ -152,7 +197,7 @@ static void sender_event_box_on_button_press(GtkWidget *widget,
     }
 
     self = SUI_RECV_MESSAGE(user_data);
-    nick_menu_popup(widget, event, gtk_label_get_text(self->sender_label));
+    nick_menu_popup(widget, gtk_label_get_text(self->sender_label));
 }
 
 static void sender_event_box_on_button_release(GtkWidget *widget,
@@ -171,3 +216,4 @@ static void sender_event_box_on_button_release(GtkWidget *widget,
     sui_buffer_insert_text(buf, insert_text, -1, 0);
     g_free(insert_text);
 }
+#endif
