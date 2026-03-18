@@ -153,6 +153,11 @@ void sui_buffer_add_message(SuiBuffer *buf, SuiMessage *msg){
 
     sidebar = sui_window_get_side_bar(win);
     item = sui_side_bar_get_item(sidebar, buf);
+    if (!item){
+        WARN_FR("Missing side bar item for buffer %s",
+                sui_buffer_get_name(buf));
+        return;
+    }
     sui_message_update_side_bar_item(msg, item);
 
     if (buf == sui_common_get_cur_buffer()){
@@ -179,6 +184,11 @@ void sui_buffer_clear_message(SuiBuffer *buf){
 
     sidebar = sui_window_get_side_bar(win);
     item = sui_side_bar_get_item(sidebar, buf);
+    if (!item){
+        WARN_FR("Missing side bar item for buffer %s",
+                sui_buffer_get_name(buf));
+        return;
+    }
     sui_side_bar_item_update(item, "", "");
     sui_side_bar_item_clear_count(item);
 }

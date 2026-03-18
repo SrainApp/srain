@@ -45,6 +45,9 @@ struct _SuiSideBar {
     GtkBox parent;
     GtkListBox *list;
     GtkStack *stack;
+#if GTK_MAJOR_VERSION >= 4
+    GtkSelectionModel *pages;
+#endif
     GHashTable *rows;
 };
 
@@ -60,7 +63,8 @@ on_stack_child_added(GtkWidget *container, GtkWidget *widget, SuiSideBar *sideba
 static void
 on_stack_child_removed(GtkWidget *container, GtkWidget *widget, SuiSideBar *sidebar);
 static void
-on_stack_pages_changed(GObject *object, GParamSpec *pspec, SuiSideBar *sidebar);
+on_stack_pages_changed(GObject *object, guint position, guint removed,
+        guint added, SuiSideBar *sidebar);
 static void
 on_child_changed(GtkWidget *widget, GParamSpec *pspec, SuiSideBar *sidebar);
 
@@ -329,7 +333,13 @@ on_stack_child_removed(GtkWidget *container, GtkWidget *widget, SuiSideBar *side
 }
 
 static void
-on_stack_pages_changed(GObject *object, GParamSpec *pspec, SuiSideBar *sidebar){
+on_stack_pages_changed(GObject *object, guint position, guint removed,
+        guint added, SuiSideBar *sidebar){
+    (void)object;
+    (void)position;
+    (void)removed;
+    (void)added;
+
     clear_sidebar(sidebar);
     populate_sidebar(sidebar);
 }
@@ -338,15 +348,22 @@ static void
 disconnect_stack_signals(SuiSideBar *sidebar){
     g_signal_handlers_disconnect_by_func(sidebar->stack, on_stack_child_added, sidebar);
     g_signal_handlers_disconnect_by_func(sidebar->stack, on_stack_child_removed, sidebar);
-    g_signal_handlers_disconnect_by_func(sidebar->stack, on_stack_pages_changed, sidebar);
     g_signal_handlers_disconnect_by_func(sidebar->stack, on_child_changed, sidebar);
     g_signal_handlers_disconnect_by_func(sidebar->stack, disconnect_stack_signals, sidebar);
+#if GTK_MAJOR_VERSION >= 4
+    if (sidebar->pages){
+        g_signal_handlers_disconnect_by_func(sidebar->pages,
+                on_stack_pages_changed, sidebar);
+        g_clear_object(&sidebar->pages);
+    }
+#endif
 }
 
 static void
 connect_stack_signals(SuiSideBar *sidebar){
 #if GTK_MAJOR_VERSION >= 4
-    g_signal_connect_after(sidebar->stack, "notify::pages",
+    sidebar->pages = g_object_ref(gtk_stack_get_pages(sidebar->stack));
+    g_signal_connect_after(sidebar->pages, "items-changed",
             G_CALLBACK(on_stack_pages_changed), sidebar);
 #else
     g_signal_connect_after(sidebar->stack, "add", G_CALLBACK(on_stack_child_added), sidebar);
