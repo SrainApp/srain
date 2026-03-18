@@ -23,8 +23,7 @@
 #ifndef __SUI_SIDE_BAR_H
 #define __SUI_SIDE_BAR_H
 
-#include <gtk/gtkbin.h>
-#include <gtk/gtkstack.h>
+#include <gtk/gtk.h>
 
 #include "sui_buffer.h"
 #include "sui_side_bar_item.h"

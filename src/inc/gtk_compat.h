@@ -48,7 +48,7 @@ static inline void srn_gtk_widget_remove_css_class(GtkWidget *widget,
 static inline void srn_gtk_image_set_icon_name(GtkImage *image,
         const char *icon_name){
 #if GTK_MAJOR_VERSION >= 4
-    gtk_image_set_icon_name(image, icon_name);
+    gtk_image_set_from_icon_name(image, icon_name);
 #else
     gtk_image_set_from_icon_name(image, icon_name, GTK_ICON_SIZE_BUTTON);
 #endif

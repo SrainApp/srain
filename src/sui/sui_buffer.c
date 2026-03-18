@@ -431,25 +431,25 @@ void sui_buffer_set_topic_setter(SuiBuffer *self, const char *setter){
     gtk_widget_set_tooltip_text(GTK_WIDGET(self->topic_label), setter);
 }
 
-GtkMenuItem* sui_buffer_append_menu_item(SuiBuffer *self, const char *label){
-    GtkMenuItem *item;
+GtkWidget* sui_buffer_append_menu_item(SuiBuffer *self, const char *label){
+    GtkWidget *item;
 
     g_return_val_if_fail(SUI_IS_BUFFER(self), NULL);
 
-    item = GTK_MENU_ITEM(gtk_menu_item_new_with_mnemonic(label));
-    append_menu_widget(self, GTK_WIDGET(item));
+    item = gtk_menu_item_new_with_mnemonic(label);
+    append_menu_widget(self, item);
 
     return item;
 }
 
-GtkCheckMenuItem* sui_buffer_append_check_menu_item(SuiBuffer *self,
+GtkWidget* sui_buffer_append_check_menu_item(SuiBuffer *self,
         const char *label){
-    GtkCheckMenuItem *item;
+    GtkWidget *item;
 
     g_return_val_if_fail(SUI_IS_BUFFER(self), NULL);
 
-    item = GTK_CHECK_MENU_ITEM(gtk_check_menu_item_new_with_mnemonic(label));
-    append_menu_widget(self, GTK_WIDGET(item));
+    item = gtk_check_menu_item_new_with_mnemonic(label);
+    append_menu_widget(self, item);
 
     return item;
 }
@@ -460,7 +460,7 @@ SuiMessageList* sui_buffer_get_message_list(SuiBuffer *self){
     return self->msg_list;
 }
 
-GtkMenu* sui_buffer_get_menu(SuiBuffer *self){
+GtkWidget* sui_buffer_get_menu(SuiBuffer *self){
     g_return_val_if_fail(SUI_IS_BUFFER(self), NULL);
 
     return self->menu;

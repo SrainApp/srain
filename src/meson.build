@@ -15,7 +15,7 @@ meta_h.set_quoted('PACKAGE_COPYRIGHT_DATES', '2016 - 2024')
 meta_h.set_quoted('PACKAGE_DATA_DIR', data_dir)
 meta_h.set_quoted('PACKAGE_CONFIG_DIR', sys_conf_dir)
 
-if get_option('app_indicator')
+if get_option('app_indicator') and not get_option('gtk4_experimental')
   meta_h.set('ENABLE_APP_INDICATOR', 1)
 endif
 
@@ -118,8 +118,16 @@ srcs += [
   'sui/sui_window.c',
 ]
 
+gtk_dep_name = 'gtk+-3.0'
+gtk_dep_version = '>= 3.22.15'
+
+if get_option('gtk4_experimental')
+  gtk_dep_name = 'gtk4'
+  gtk_dep_version = '>= 4.10'
+endif
+
 deps = [
-  dependency('gtk+-3.0', version: '>= 3.22.15'),
+  dependency(gtk_dep_name, version: gtk_dep_version),
   dependency('glib-2.0', version: '>= 2.39.3'),
   dependency('libconfig', version: '>= 1.5'),
   dependency('libsoup-3.0'),
@@ -128,7 +136,7 @@ deps = [
   generated_meta_h,
 ]
 
-if get_option('app_indicator')
+if get_option('app_indicator') and not get_option('gtk4_experimental')
   deps += [dependency('ayatana-appindicator3-0.1')]
 endif
 

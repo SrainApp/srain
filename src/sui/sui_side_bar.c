@@ -42,18 +42,18 @@
 #include "log.h"
 
 struct _SuiSideBar {
-    GtkBin parent;
+    GtkBox parent;
     GtkListBox *list;
     GtkStack *stack;
     GHashTable *rows;
 };
 
 struct _SuiSideBarClass {
-    GtkBinClass parent_class;
+    GtkBoxClass parent_class;
 };
 
 
-G_DEFINE_TYPE(SuiSideBar, sui_side_bar, GTK_TYPE_BIN)
+G_DEFINE_TYPE(SuiSideBar, sui_side_bar, GTK_TYPE_BOX)
 
 static void
 listbox_on_row_selected(GtkListBox *box, GtkListBoxRow *row, gpointer user_data){

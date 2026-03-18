@@ -37,7 +37,7 @@ struct _SuiRecvMessage {
     GtkLabel *time_label;
 
     GtkBox *sender_box;
-    GtkEventBox *sender_event_box;
+    GtkWidget *sender_event_box;
     GtkLabel *sender_label;
     GtkLabel *remark_label;
 };

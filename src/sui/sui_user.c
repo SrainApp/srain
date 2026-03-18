@@ -49,7 +49,7 @@ struct _SuiUser {
 };
 
 static cairo_surface_t* new_user_icon_from_type(SrnChatUserType type,
-        GtkStyleContext *style_context, GdkWindow *window);
+        GtkStyleContext *style_context, GdkSurface *surface);
 
 /*****************************************************************************
  * Expored functions
@@ -96,7 +96,7 @@ int sui_user_compare(SuiUser *user1, SuiUser *user2){
 }
 
 void sui_user_update(SuiUser *self, GtkStyleContext *style_context,
-        GdkWindow *window){
+        GdkSurface *surface){
     g_return_if_fail(self->list);
     g_return_if_fail(self->stat);
     g_return_if_fail(self->ctx);
@@ -141,10 +141,10 @@ void sui_user_update(SuiUser *self, GtkStyleContext *style_context,
             COL_TYPE, self->ctx->type,
             -1);
 
-    // Update icon only when GdkWindow available
-    if (window) {
+    // Update icon only when GdkSurface available
+    if (surface) {
         cairo_surface_t *icon = new_user_icon_from_type(self->ctx->type,
-                style_context, window);
+                style_context, surface);
         gtk_list_store_set(self->list, (GtkTreeIter *)self, COL_ICON, icon, -1);
         cairo_surface_destroy(icon);
     }
@@ -175,13 +175,13 @@ const char* sui_user_get_nickname(SuiUser *self){
  *****************************************************************************/
 
 static cairo_surface_t* new_user_icon_from_type(SrnChatUserType type,
-        GtkStyleContext *style_context, GdkWindow *window){
+        GtkStyleContext *style_context, GdkSurface *gdk_surface){
     const char *color_str;
     GError *err;
     GdkRGBA fg_color;
     GdkPixbuf *pixbuf;
     GtkIconInfo *icon_info;
-    cairo_surface_t *surface;
+    cairo_surface_t *icon_surface;
 
     switch (type){
         case SRN_CHAT_USER_TYPE_ADMIN:
@@ -210,14 +210,14 @@ static cairo_surface_t* new_user_icon_from_type(SrnChatUserType type,
             gtk_icon_theme_get_default(),
             "user-available",
             16,
-            gdk_window_get_scale_factor(window),
+            gdk_surface_get_scale_factor(gdk_surface),
             GTK_ICON_LOOKUP_FORCE_SYMBOLIC);
     if (!icon_info) {
         icon_info = gtk_icon_theme_lookup_icon_for_scale(
                 gtk_icon_theme_get_default(),
                 "user-available",
                 16,
-                gdk_window_get_scale_factor(window),
+                gdk_surface_get_scale_factor(gdk_surface),
                 0);
     }
     g_return_val_if_fail(icon_info, NULL);
@@ -238,8 +238,8 @@ static cairo_surface_t* new_user_icon_from_type(SrnChatUserType type,
     }
 
     g_return_val_if_fail(pixbuf, NULL);
-    surface = gdk_cairo_surface_create_from_pixbuf(pixbuf,
-            gdk_window_get_scale_factor(window), window);
+    icon_surface = gdk_cairo_surface_create_from_pixbuf(pixbuf,
+            gdk_surface_get_scale_factor(gdk_surface), gdk_surface);
     g_object_unref(pixbuf);
-    return surface;
+    return icon_surface;
 }

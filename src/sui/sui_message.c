@@ -238,7 +238,7 @@ SuiNotification* sui_message_new_notification(SuiMessage *self){
     return class->new_notification(self);
 }
 
-void sui_message_label_on_popup(GtkLabel *label, GtkMenu *menu, gpointer user_data){
+void sui_message_label_on_popup(GtkLabel *label, GtkWidget *menu, gpointer user_data){
     int n;
     GList *lst;
     GtkMenuItem *copy_menu_item;
