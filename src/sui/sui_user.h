@@ -32,13 +32,17 @@ struct _SuiUserStat {
 };
 
 SuiUser *sui_user_new(void *ctx);
+#if GTK_MAJOR_VERSION < 4
 SuiUser *sui_user_new_from_iter(GtkListStore *list_store, GtkTreeIter *iter);
+#endif
 void sui_user_free(SuiUser *self);
 
 void sui_user_update(SuiUser *self, GtkStyleContext *style_context, GdkSurface *surface);
 int sui_user_compare(SuiUser *user1, SuiUser *user2);
 
+#if GTK_MAJOR_VERSION < 4
 void sui_user_set_list(SuiUser *self, GtkListStore *list);
+#endif
 void sui_user_set_stat(SuiUser *self, SuiUserStat *stat);
 void* sui_user_get_ctx(SuiUser *self);
 const char* sui_user_get_nickname(SuiUser *self);

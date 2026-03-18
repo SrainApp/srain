@@ -39,12 +39,16 @@
  * @brief SuiUser is a iterator of SuiUserList.
  */
 struct _SuiUser {
+#if GTK_MAJOR_VERSION < 4
     GtkTreeIter iter; // Can be used as a GtkTreeIter
+#endif
 
     SrnChatUser *ctx;
     SrnChatUserType type;
 
+#if GTK_MAJOR_VERSION < 4
     GtkListStore *list;
+#endif
     SuiUserStat *stat;
 };
 
@@ -65,6 +69,7 @@ SuiUser *sui_user_new(void *ctx){
     return self;
 }
 
+#if GTK_MAJOR_VERSION < 4
 SuiUser *sui_user_new_from_iter(GtkListStore *list, GtkTreeIter *iter){
     SuiUser *self;
 
@@ -78,6 +83,7 @@ SuiUser *sui_user_new_from_iter(GtkListStore *list, GtkTreeIter *iter){
 
     return self;
 }
+#endif
 
 void sui_user_free(SuiUser *self){
     g_free(self);
@@ -97,7 +103,6 @@ int sui_user_compare(SuiUser *user1, SuiUser *user2){
 
 void sui_user_update(SuiUser *self, GtkStyleContext *style_context,
         GdkSurface *surface){
-    g_return_if_fail(self->list);
     g_return_if_fail(self->stat);
     g_return_if_fail(self->ctx);
 
@@ -135,6 +140,7 @@ void sui_user_update(SuiUser *self, GtkStyleContext *style_context,
         }
     }
     self->type = self->ctx->type;
+#if GTK_MAJOR_VERSION < 4
     gtk_list_store_set(self->list, (GtkTreeIter *)self,
             COL_NAME, self->ctx->srv_user->nick,
             COL_USER, self->ctx,
@@ -150,13 +156,19 @@ void sui_user_update(SuiUser *self, GtkStyleContext *style_context,
             cairo_surface_destroy(icon);
         }
     }
+#else
+    (void)style_context;
+    (void)surface;
+#endif
 }
 
+#if GTK_MAJOR_VERSION < 4
 void sui_user_set_list(SuiUser *self, GtkListStore *list){
     // One of theme is NULL
     g_return_if_fail((self->list == NULL) ^ (list == NULL));
     self->list = list;
 }
+#endif
 
 void sui_user_set_stat(SuiUser *self, SuiUserStat *stat){
     // One of theme is NULL
