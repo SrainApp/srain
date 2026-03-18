@@ -196,9 +196,14 @@ void sui_user_list_rm_user(SuiUserList *self, SuiUser *user){
 }
 
 void sui_user_list_update_user(SuiUserList *self, SuiUser *user){
+#if GTK_MAJOR_VERSION >= 4
+    sui_user_update(user, NULL,
+            srn_gtk_widget_get_surface(GTK_WIDGET(self)));
+#else
     sui_user_update(user,
             gtk_widget_get_style_context(GTK_WIDGET(self)),
             srn_gtk_widget_get_surface(GTK_WIDGET(self)));
+#endif
 #if GTK_MAJOR_VERSION >= 4
     update_user_row(self, user);
 #endif

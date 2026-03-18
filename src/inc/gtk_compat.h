@@ -48,12 +48,46 @@ static inline void srn_gtk_widget_remove_css_class(GtkWidget *widget,
 #endif
 }
 
+static inline void srn_gtk_widget_show(GtkWidget *widget){
+#if GTK_MAJOR_VERSION >= 4
+    gtk_widget_set_visible(widget, TRUE);
+#else
+    gtk_widget_show(widget);
+#endif
+}
+
+static inline void srn_gtk_widget_hide(GtkWidget *widget){
+#if GTK_MAJOR_VERSION >= 4
+    gtk_widget_set_visible(widget, FALSE);
+#else
+    gtk_widget_hide(widget);
+#endif
+}
+
 static inline void srn_gtk_image_set_icon_name(GtkImage *image,
         const char *icon_name){
 #if GTK_MAJOR_VERSION >= 4
     gtk_image_set_from_icon_name(image, icon_name);
 #else
     gtk_image_set_from_icon_name(image, icon_name, GTK_ICON_SIZE_BUTTON);
+#endif
+}
+
+static inline void srn_gtk_image_set_from_pixbuf(GtkImage *image,
+        GdkPixbuf *pixbuf){
+#if GTK_MAJOR_VERSION >= 4
+    GdkTexture *texture;
+
+    if (!pixbuf){
+        gtk_image_clear(image);
+        return;
+    }
+
+    texture = gdk_texture_new_for_pixbuf(pixbuf);
+    gtk_image_set_from_paintable(image, GDK_PAINTABLE(texture));
+    g_object_unref(texture);
+#else
+    gtk_image_set_from_pixbuf(image, pixbuf);
 #endif
 }
 

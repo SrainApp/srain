@@ -316,9 +316,7 @@ void sui_set_topic_setter(SuiBuffer *buf, const char *setter){
 void sui_message_box(const char *title, const char *msg){
     SuiApplication *app;
     SuiWindow *win;
-    GtkMessageDialog *dia;
     char *markuped_msg;
-    GtkDialogFlags flags;
 
 #if GTK_MAJOR_VERSION >= 4
     gtk_init(); // FIXME: config
@@ -328,28 +326,48 @@ void sui_message_box(const char *title, const char *msg){
 
     app = sui_application_get_instance();
     win = app ? sui_application_get_cur_window(app) : NULL;
-    flags = win ? (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT) : 0;
-
-    dia = GTK_MESSAGE_DIALOG(
-            gtk_message_dialog_new(GTK_WINDOW(win),
-                flags,
-                GTK_MESSAGE_INFO,
-                GTK_BUTTONS_OK,
-                NULL
-                )
-            );
-
-    gtk_window_set_title(GTK_WINDOW(dia), title);
-    // TODO: accpet markuped message
     markuped_msg = g_markup_escape_text(msg, -1);
-    gtk_message_dialog_set_markup(GTK_MESSAGE_DIALOG(dia), markuped_msg);
-    g_free(markuped_msg);
 
     /* Without this, message dialog cannot be displayed on the center of screen */
     sui_proc_pending_event();
 
-    srn_gtk_dialog_run(GTK_DIALOG(dia));
-    gtk_window_destroy(GTK_WINDOW(dia));
+#if GTK_MAJOR_VERSION >= 4
+    {
+        GtkAlertDialog *dia;
+        const char *buttons[] = {_("OK"), NULL};
+
+        dia = gtk_alert_dialog_new("%s", title);
+        gtk_alert_dialog_set_modal(dia, TRUE);
+        gtk_alert_dialog_set_detail(dia, markuped_msg);
+        gtk_alert_dialog_set_buttons(dia, buttons);
+        gtk_alert_dialog_set_default_button(dia, 0);
+        gtk_alert_dialog_set_cancel_button(dia, 0);
+        gtk_alert_dialog_show(dia, GTK_WINDOW(win));
+        g_object_unref(dia);
+    }
+#else
+    {
+        GtkMessageDialog *dia;
+        GtkDialogFlags flags;
+
+        flags = win ? (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT) : 0;
+        dia = GTK_MESSAGE_DIALOG(
+                gtk_message_dialog_new(GTK_WINDOW(win),
+                    flags,
+                    GTK_MESSAGE_INFO,
+                    GTK_BUTTONS_OK,
+                    NULL
+                    )
+                );
+
+        gtk_window_set_title(GTK_WINDOW(dia), title);
+        // TODO: accpet markuped message
+        gtk_message_dialog_set_markup(GTK_MESSAGE_DIALOG(dia), markuped_msg);
+        srn_gtk_dialog_run(GTK_DIALOG(dia));
+        gtk_window_destroy(GTK_WINDOW(dia));
+    }
+#endif
+    g_free(markuped_msg);
 }
 
 void sui_chan_list_start(SuiBuffer *buf){

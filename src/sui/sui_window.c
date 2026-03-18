@@ -242,7 +242,7 @@ static void sui_window_init(SuiWindow *self){
     srn_gtk_box_pack_start(self->side_box, GTK_WIDGET(self->side_bar),
             TRUE, TRUE, 0);
     sui_side_bar_set_stack(self->side_bar, self->buffer_stack);
-    gtk_widget_show(GTK_WIDGET(self->side_bar));
+    srn_gtk_widget_show(GTK_WIDGET(self->side_bar));
 
     // Setup menu button
     gtk_menu_button_set_popover(
@@ -325,7 +325,7 @@ static void sui_window_init(SuiWindow *self){
     // Show insert_emoji_button when it is available
     //
     // ref: https://docs.gtk.org/gtk3/signal.TextView.insert-emoji.html
-    gtk_widget_show(GTK_WIDGET(self->insert_emoji_button));
+    srn_gtk_widget_show(GTK_WIDGET(self->insert_emoji_button));
 #endif
 }
 
@@ -334,7 +334,7 @@ static void sui_window_constructed(GObject *object){
 
     self = SUI_WINDOW(object);
     if (!self->cfg->csd){
-        gtk_widget_show(GTK_WIDGET(self->header_box));
+        srn_gtk_widget_show(GTK_WIDGET(self->header_box));
 
         /* Move side header widgets from side_header_bar to side_header_box */
         srn_gtk_widget_remove_child(GTK_WIDGET(self->side_header_bar),
@@ -365,9 +365,9 @@ static void sui_window_constructed(GObject *object){
         // Hide the titlebar node
         gtk_window_set_titlebar(GTK_WINDOW(self), NULL);
         // Show the seperator
-        gtk_widget_show(GTK_WIDGET(self->header_separator));
+        srn_gtk_widget_show(GTK_WIDGET(self->header_separator));
     } else {
-        gtk_widget_hide(GTK_WIDGET(self->header_box));
+        srn_gtk_widget_hide(GTK_WIDGET(self->header_box));
 
         // Use appliaction icon instead of standard icon when CSD enabled
         srn_gtk_image_set_icon_name(self->start_image, PACKAGE);

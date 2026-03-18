@@ -28,6 +28,7 @@
 
 #include "sui_common.h"
 #include "sui_send_message.h"
+#include "gtk_compat.h"
 
 static void sui_send_message_update(SuiMessage *msg);
 static void sui_send_message_compose_prev(SuiMessage *_self, SuiMessage *_prev);
@@ -105,7 +106,7 @@ static void sui_send_message_compose_next(SuiMessage *_self, SuiMessage *_next){
 
     self = SUI_SEND_MESSAGE(_self);
 
-    gtk_widget_hide(GTK_WIDGET(self->time_label));
+    srn_gtk_widget_hide(GTK_WIDGET(self->time_label));
 
     SUI_MESSAGE_CLASS(sui_send_message_parent_class)->compose_next(_self, _next);
 }

@@ -166,7 +166,7 @@ sui_side_bar_init(SuiSideBar *self){
 #else
         gtk_scrolled_window_new(NULL, NULL);
 #endif
-    gtk_widget_show(sw);
+    srn_gtk_widget_show(sw);
 #if GTK_MAJOR_VERSION < 4
     gtk_widget_set_no_show_all(sw, TRUE);
 #endif
@@ -176,7 +176,7 @@ sui_side_bar_init(SuiSideBar *self){
     srn_gtk_widget_add_child(GTK_WIDGET(self), sw);
 
     self->list = GTK_LIST_BOX(gtk_list_box_new());
-    gtk_widget_show(GTK_WIDGET(self->list));
+    srn_gtk_widget_show(GTK_WIDGET(self->list));
 
     srn_gtk_widget_add_child(sw, GTK_WIDGET(self->list));
 

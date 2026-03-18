@@ -59,8 +59,8 @@ GtkListBoxRow* sui_common_unfocusable_list_box_row_new(GtkWidget *widget){
     row = GTK_LIST_BOX_ROW(gtk_list_box_row_new());
     gtk_widget_set_can_focus(GTK_WIDGET(row), FALSE);
     srn_gtk_widget_add_child(GTK_WIDGET(row), widget);
-    gtk_widget_show(GTK_WIDGET(row));
-    gtk_widget_show(GTK_WIDGET(widget));
+    srn_gtk_widget_show(GTK_WIDGET(row));
+    srn_gtk_widget_show(GTK_WIDGET(widget));
 
     return row;
 }

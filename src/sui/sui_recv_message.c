@@ -132,7 +132,7 @@ static void sui_recv_message_compose_prev(SuiMessage *_self, SuiMessage *_prev){
 
     self = SUI_RECV_MESSAGE(_self);
 
-    gtk_widget_hide(GTK_WIDGET(self->sender_box));
+    srn_gtk_widget_hide(GTK_WIDGET(self->sender_box));
 
     SUI_MESSAGE_CLASS(sui_recv_message_parent_class)->compose_prev(_self, _prev);
 }
@@ -142,7 +142,7 @@ static void sui_recv_message_compose_next(SuiMessage *_self, SuiMessage *_next){
 
     self = SUI_RECV_MESSAGE(_self);
 
-    gtk_widget_hide(GTK_WIDGET(self->time_label));
+    srn_gtk_widget_hide(GTK_WIDGET(self->time_label));
 
     SUI_MESSAGE_CLASS(sui_recv_message_parent_class)->compose_next(_self, _next);
 }

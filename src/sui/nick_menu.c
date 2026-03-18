@@ -67,7 +67,7 @@ static GtkWidget *new_nick_menu_item(const char *name, const char *label,
 
     item = srn_gtk_menu_item_new_with_mnemonic(label);
     gtk_widget_set_name(item, name);
-    gtk_widget_show(item);
+    srn_gtk_widget_show(item);
     srn_gtk_menu_item_connect_activate(item,
             G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
 
@@ -98,7 +98,7 @@ void nick_menu_popup(GtkWidget *widget, const char *nick){
     chat_menu_item = new_nick_menu_item("chat_menu_item", _("_Chat"), nick);
     invite_menu_item = srn_gtk_menu_item_new_with_mnemonic(_("Invite to..."));
     gtk_widget_set_name(invite_menu_item, "invite_menu_item");
-    gtk_widget_show(invite_menu_item);
+    srn_gtk_widget_show(invite_menu_item);
 
     srn_gtk_menu_append(nick_menu, whois_menu_item);
     srn_gtk_menu_append(nick_menu, ignore_menu_item);
@@ -116,7 +116,7 @@ void nick_menu_popup(GtkWidget *widget, const char *nick){
         GtkWidget *item;
 
         item = srn_gtk_menu_item_new_with_label(sui_buffer_get_name(lst->data));
-        gtk_widget_show(item);
+        srn_gtk_widget_show(item);
         gtk_widget_set_name(item, "invite_submenu_item");
         srn_gtk_menu_item_connect_activate(item,
                 G_CALLBACK(nick_menu_item_on_activate), (char *)nick);

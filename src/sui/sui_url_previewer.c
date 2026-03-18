@@ -31,6 +31,7 @@
 
 #include "sui_common.h"
 #include "sui_url_previewer.h"
+#include "gtk_compat.h"
 
 #include "log.h"
 #include "utils.h"
@@ -437,7 +438,7 @@ static void preview_image(SuiUrlPreviewer *self, GdkPixbuf *pixbuf){
             GDK_INTERP_BILINEAR);
 
     self->pixbuf = g_object_ref(pixbuf);
-    gtk_image_set_from_pixbuf(self->image, scaled_pixbuf);
+    srn_gtk_image_set_from_pixbuf(self->image, scaled_pixbuf);
     g_object_unref(scaled_pixbuf);
 }
 
@@ -506,7 +507,7 @@ static void image_event_box_on_click(GtkGestureClick *gesture, int n_press,
     scaled_pixbuf = gdk_pixbuf_scale_simple(pixbuf, width, height,
             GDK_INTERP_BILINEAR);
 
-    gtk_image_set_from_pixbuf(image, scaled_pixbuf);
+    srn_gtk_image_set_from_pixbuf(image, scaled_pixbuf);
     gtk_window_set_transient_for(iwin,
             GTK_WINDOW(sui_common_get_cur_window()));
 
@@ -568,7 +569,7 @@ static void image_event_box_on_button_release(GtkWidget *widget,
     scaled_pixbuf = gdk_pixbuf_scale_simple(pixbuf, width, height,
             GDK_INTERP_BILINEAR);
 
-    gtk_image_set_from_pixbuf(image, scaled_pixbuf);
+    srn_gtk_image_set_from_pixbuf(image, scaled_pixbuf);
 
     g_signal_connect_swapped(iwin, "button-release-event",
             G_CALLBACK(gtk_widget_destroy), iwin);

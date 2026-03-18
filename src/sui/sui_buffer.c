@@ -132,7 +132,7 @@ static void sui_buffer_init(SuiBuffer *self){
     self->msg_list = sui_message_list_new();
     srn_gtk_box_pack_start(self->msg_list_box, GTK_WIDGET(self->msg_list),
             TRUE, TRUE, 0);
-    gtk_widget_show(GTK_WIDGET(self->msg_list));
+    srn_gtk_widget_show(GTK_WIDGET(self->msg_list));
 
     /* Setup completion */
     self->completion = sui_completion_new(self->input_text_buffer);
@@ -492,7 +492,7 @@ static void sui_buffer_set_events(SuiBuffer *self, SuiBufferEvents *events){
 
 static void append_menu_widget(SuiBuffer *self, GtkWidget *widget){
     srn_gtk_menu_append(self->menu, widget);
-    gtk_widget_show(widget);
+    srn_gtk_widget_show(widget);
 }
 
 static void topic_menu_item_on_toggled(GtkWidget* widget, gpointer user_data){
@@ -504,9 +504,9 @@ static void topic_menu_item_on_toggled(GtkWidget* widget, gpointer user_data){
 
     // If topic is empty, do not show it anyway
     if (strlen(gtk_label_get_text(self->topic_label)) != 0){
-        gtk_widget_show(GTK_WIDGET(self->topic_label));
+        srn_gtk_widget_show(GTK_WIDGET(self->topic_label));
     } else {
-        gtk_widget_hide(GTK_WIDGET(self->topic_label));
+        srn_gtk_widget_hide(GTK_WIDGET(self->topic_label));
     }
 }
 

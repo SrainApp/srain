@@ -252,14 +252,14 @@ void sui_message_label_on_popup(GtkLabel *label, GtkWidget *menu, gpointer user_
 
     /* Create menuitem copy_menu_item */
     copy_menu_item = srn_gtk_menu_item_new_with_label(_("Copy message"));
-    gtk_widget_show(copy_menu_item);
+    srn_gtk_widget_show(copy_menu_item);
     srn_gtk_menu_append(menu, copy_menu_item);
     srn_gtk_menu_item_connect_activate(copy_menu_item,
                 G_CALLBACK(copy_menu_item_on_activate), self);
 
     /* Create menuitem forward_menu_item */
     forward_menu_item = srn_gtk_menu_item_new_with_label(_("Forward to..."));
-    gtk_widget_show(forward_menu_item);
+    srn_gtk_widget_show(forward_menu_item);
     srn_gtk_menu_append(menu, forward_menu_item);
 
     /* Create submenu of forward_menu_item */
@@ -281,7 +281,7 @@ void sui_message_label_on_popup(GtkLabel *label, GtkWidget *menu, gpointer user_
 
         item = srn_gtk_menu_item_new_with_label(
                 sui_buffer_get_name(SUI_BUFFER(lst->data)));
-        gtk_widget_show(item);
+        srn_gtk_widget_show(item);
         gtk_widget_set_name(item, sui_buffer_get_name(SUI_BUFFER(lst->data)));
         srn_gtk_menu_item_connect_activate(item,
                 G_CALLBACK(froward_submenu_item_on_activate), self);
@@ -338,8 +338,6 @@ bool sui_message_is_mentioned(SuiMessage *self){
  *****************************************************************************/
 
 static void sui_message_real_update(SuiMessage *self){
-    GtkStyleContext *style_context;
-
     // Update message content
     gtk_label_set_markup(self->message_label, self->ctx->rendered_content);
 
@@ -381,7 +379,7 @@ static void sui_message_real_update(SuiMessage *self){
                     if (self->buf->cfg->auto_preview_url){
                         // Hide previewer to prevent many loading previewers
                         // from appearing in the message.
-                        gtk_widget_hide(GTK_WIDGET(pvr));
+                        srn_gtk_widget_hide(GTK_WIDGET(pvr));
                         // Previewer will be shown via this callback when
                         // previewer's content type is supported
                         g_signal_connect(pvr, "notify::content-type",
@@ -408,13 +406,10 @@ static void sui_message_real_update_side_bar_item(SuiMessage *self,
 }
 
 static void sui_message_real_compose_prev(SuiMessage *self, SuiMessage *prev){
-    GtkStyleContext *style_context;
-
     g_return_if_fail(!self->prev);
     self->prev = prev;
 
-    style_context = gtk_widget_get_style_context(GTK_WIDGET(self));
-    gtk_style_context_remove_class(style_context, "sui-message-head");
+    srn_gtk_widget_remove_css_class(GTK_WIDGET(self), "sui-message-head");
 
     if (!self->size_group && !prev->size_group) {
         self->size_group = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
@@ -430,13 +425,10 @@ static void sui_message_real_compose_prev(SuiMessage *self, SuiMessage *prev){
 }
 
 static void sui_message_real_compose_next(SuiMessage *self, SuiMessage *next){
-    GtkStyleContext *style_context;
-
     g_return_if_fail(!self->next);
     self->next = next;
 
-    style_context = gtk_widget_get_style_context(GTK_WIDGET(self));
-    gtk_style_context_remove_class(style_context, "sui-message-tail");
+    srn_gtk_widget_remove_css_class(GTK_WIDGET(self), "sui-message-tail");
 
     if (!self->size_group && !next->size_group) {
         self->size_group = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
@@ -578,7 +570,7 @@ static void url_previewer_on_notify_content_type(GObject *object,
             srn_gtk_widget_remove_child(container, GTK_WIDGET(pvr));
             break;
         default:
-            gtk_widget_show(GTK_WIDGET(pvr));
+            srn_gtk_widget_show(GTK_WIDGET(pvr));
             break;
     }
 }
