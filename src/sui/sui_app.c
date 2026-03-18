@@ -43,6 +43,7 @@
 #include "sui_app.h"
 #include "sui_window.h"
 #include "sui_prefs_dialog.h"
+#include "gtk_compat.h"
 
 // See also $PROJECT_ROOT/data/icons/meson.build.
 #define APP_ICON PACKAGE_APPID
@@ -60,7 +61,7 @@ struct _SuiApplication {
     // GtkPopover can not shown at outside of GtkWindow on X11,
     // so we need another traditional menu as tray icon menu.
     GtkMenu *menu;
-    GtkPopoverMenu *popover_menu;
+    GtkPopover *popover_menu;
     // The parsed startup commandline options, should be valid after
     // "handle-local-options" signal.
 
@@ -83,6 +84,7 @@ static void sui_application_set_events(SuiApplication *self,
         SuiApplicationEvents *events);
 
 static void show_about_dialog(SuiApplication *self);
+static GMenuModel *new_app_menu_model(bool tray_menu);
 
 static void on_startup(SuiApplication *self);
 static void on_activate(SuiApplication *self);
@@ -393,7 +395,7 @@ SuiWindow* sui_application_get_cur_window(SuiApplication *self){
 }
 
 GtkPopover* sui_application_get_popover_menu(SuiApplication *self){
-    return GTK_POPOVER(self->popover_menu);
+    return self->popover_menu;
 }
 
 void* sui_application_get_ctx(SuiApplication *self){
@@ -478,16 +480,52 @@ static void show_about_dialog(SuiApplication *self){
             NULL);
 }
 
+static GMenuModel *new_app_menu_model(bool tray_menu){
+    GMenu *menu;
+    GMenu *section;
+
+    menu = g_menu_new();
+
+    if (tray_menu){
+        section = g_menu_new();
+        g_menu_append(section, _("Activate"), "app.activate");
+        g_menu_append(section, _("Preferences"), "app.preferences");
+        g_menu_append(section, _("About"), "app.about");
+        g_menu_append(section, _("Exit"), "app.exit");
+        g_menu_append_section(menu, NULL, G_MENU_MODEL(section));
+        g_object_unref(section);
+    } else {
+        section = g_menu_new();
+        g_menu_append(section, _("Toggle server visibility"),
+                "app.toggle-server-visibility");
+        g_menu_append_section(menu, NULL, G_MENU_MODEL(section));
+        g_object_unref(section);
+
+        section = g_menu_new();
+        g_menu_append(section, _("Preferences"), "app.preferences");
+        g_menu_append(section, _("About"), "app.about");
+        g_menu_append(section, _("Exit"), "app.exit");
+        g_menu_append_section(menu, NULL, G_MENU_MODEL(section));
+        g_object_unref(section);
+    }
+
+    return G_MENU_MODEL(menu);
+}
+
 static void on_startup(SuiApplication *self){
     SrnRet ret;
-    GtkBuilder *builder;
+    GMenuModel *tray_menu_model;
+    GMenuModel *popover_menu_model;
 
-    builder = gtk_builder_new_from_resource("/im/srain/Srain/app.glade");
-    self->menu = GTK_MENU(g_object_ref_sink(
-            gtk_builder_get_object(builder, "menu")));
-    self->popover_menu = GTK_POPOVER_MENU(g_object_ref_sink(
-        gtk_builder_get_object(builder, "popover_menu")));
-    g_object_unref(builder);
+    tray_menu_model = new_app_menu_model(TRUE);
+    popover_menu_model = new_app_menu_model(FALSE);
+
+    self->menu = GTK_MENU(gtk_menu_new_from_model(tray_menu_model));
+    self->popover_menu = srn_gtk_popover_new_from_menu_model(
+            popover_menu_model);
+    srn_gtk_widget_add_css_class(GTK_WIDGET(self->popover_menu), "sui-panel");
+    g_object_unref(tray_menu_model);
+    g_object_unref(popover_menu_model);
 
 #ifdef ENABLE_APP_INDICATOR
     self->tray_icon = app_indicator_new(PACKAGE_APPID, APP_ICON,
@@ -496,23 +534,6 @@ static void on_startup(SuiApplication *self){
     app_indicator_set_attention_icon_full(self->tray_icon, APP_ATTENTION_ICON, _("Srain Icon for Attention"));
     app_indicator_set_menu(self->tray_icon, self->menu);
     app_indicator_set_title(self->tray_icon, PACKAGE);
-
-    // Show "Activate" menu item because we can not activate application
-    // by left-clicking the app indicator.
-    GList *menu_items;
-    menu_items = gtk_container_get_children(GTK_CONTAINER(self->menu));
-    for (GList *iter = menu_items; iter != NULL; iter = g_list_next(iter)) {
-        GtkWidget *item;
-        const char *name;
-
-        item = GTK_WIDGET(iter->data);
-        name = gtk_widget_get_name(item);
-        if (g_strcmp0(name, "activate_menu_item") == 0) {
-            gtk_widget_set_visible(item, TRUE);
-            break;
-        }
-    }
-    g_list_free(menu_items);
 #else
     self->tray_icon = gtk_status_icon_new_from_icon_name(PACKAGE_APPID);
     g_signal_connect(self->tray_icon, "activate", G_CALLBACK(tray_icon_on_click), self);

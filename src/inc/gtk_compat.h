@@ -54,4 +54,13 @@ static inline void srn_gtk_image_set_icon_name(GtkImage *image,
 #endif
 }
 
+static inline GtkPopover *srn_gtk_popover_new_from_menu_model(
+        GMenuModel *model){
+#if GTK_MAJOR_VERSION >= 4
+    return GTK_POPOVER(gtk_popover_menu_new_from_model(model));
+#else
+    return GTK_POPOVER(gtk_popover_new_from_model(NULL, model));
+#endif
+}
+
 #endif /* __GTK_COMPAT_H */

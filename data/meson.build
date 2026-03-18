@@ -27,6 +27,7 @@ if get_option('gtk4_experimental')
   blueprint_compiler = find_program('blueprint-compiler')
   gtk4_blueprints = custom_target('gtk4-blueprints',
     input: files(
+      'ui-gtk4/app_menu.blp',
       'ui-gtk4/side_bar_item.blp',
     ),
     output: '.',

@@ -2,7 +2,6 @@
 <gresources>
     <!-- GTK UI design files, FIXME: prefix -->
     <gresource prefix="/im/srain/Srain">
-        <file alias="app.glade" preprocess="xml-stripblanks">ui/app.glade</file>
         <file alias="window.glade" preprocess="xml-stripblanks">ui/window.glade</file>
         <file alias="buffer.glade" preprocess="xml-stripblanks">ui/buffer.glade</file>
         <file alias="buffer_menu.glade" preprocess="xml-stripblanks">ui/buffer_menu.glade</file>

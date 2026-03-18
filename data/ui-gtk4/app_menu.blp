@@ -1,0 +1,28 @@
+using Gtk 4.0;
+
+menu tray_menu_model {
+  section {
+    item (_("Activate"), "app.activate")
+    item (_("Preferences"), "app.preferences")
+    item (_("About"), "app.about")
+    item (_("Exit"), "app.exit")
+  }
+}
+
+menu app_menu_model {
+  section {
+    item (_("Toggle server visibility"), "app.toggle-server-visibility")
+  }
+
+  section {
+    item (_("Preferences"), "app.preferences")
+    item (_("About"), "app.about")
+    item (_("Exit"), "app.exit")
+  }
+}
+
+Gtk.PopoverMenu app_popover_menu {
+  menu-model: app_menu_model;
+  has-arrow: false;
+  styles ["sui-panel"]
+}
