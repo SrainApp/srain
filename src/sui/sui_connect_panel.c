@@ -60,11 +60,19 @@ struct _SuiConnectPanel {
     GtkStack *stack;
 
     /* Quick mode */
+#if GTK_MAJOR_VERSION >= 4
+    GtkDropDown *quick_server_combo_box;
+#else
     GtkComboBox *quick_server_combo_box;
+#endif
     GtkEntry *quick_nick_entry;
 
     /* Advance mode */
+#if GTK_MAJOR_VERSION >= 4
+    GtkEntry *server_combo_box;
+#else
     GtkComboBox *server_combo_box;
+#endif
     GtkEntry *host_entry;
     GtkEntry *port_entry;
     GtkEntry *password_entry;
@@ -73,7 +81,11 @@ struct _SuiConnectPanel {
     GtkCheckButton *tls_noverify_check_button;
 
     GtkEntry *nick_entry;
+#if GTK_MAJOR_VERSION >= 4
+    GtkDropDown *login_method_combo_box;
+#else
     GtkComboBox *login_method_combo_box;
+#endif
     GtkStack *login_method_stack;
     GtkEntry *login_password_entry;
     GtkCheckButton *remember_login_password_check_button;
@@ -86,8 +98,13 @@ struct _SuiConnectPanel {
     GtkButton *cancel_button;
 
     /* Data model */
+#if GTK_MAJOR_VERSION >= 4
+    GtkStringList *server_list_store;
+    GtkStringList *login_method_list_store;
+#else
     GtkListStore *server_list_store;
     GtkListStore *login_method_list_store;
+#endif
 };
 
 struct _SuiConnectPanelClass {
@@ -100,10 +117,17 @@ static void refresh_login_method_list(SuiConnectPanel *self);
 static void update_focus(SuiConnectPanel *self);
 static GtkEntry *server_combo_box_get_entry(SuiConnectPanel *self);
 
+#if GTK_MAJOR_VERSION >= 4
+static void server_combo_box_on_changed(GObject *object, GParamSpec *pspec,
+        gpointer user_data);
+static void login_method_combo_box_on_changed(GObject *object,
+        GParamSpec *pspec, gpointer user_data);
+#else
 static void server_combo_box_on_changed(GtkComboBox *combo_box,
         gpointer user_data);
 static void login_method_combo_box_on_changed(GtkComboBox *combo_box,
         gpointer user_data);
+#endif
 static void connect_button_on_click(gpointer user_data);
 static void cancel_button_on_click(gpointer user_data);
 static void nick_entry_on_changed(GtkEditable *editable, gpointer user_data);
@@ -112,11 +136,90 @@ static void on_password_lookup(GObject *source, GAsyncResult *result,
 static void stack_on_child_changed(GtkWidget *widget, GParamSpec *pspec,
         gpointer user_data);
 
+static const SrnLoginMethod login_methods[] = {
+    SRN_LOGIN_METHOD_NONE,
+    SRN_LOGIN_METHOD_NICKSERV,
+    SRN_LOGIN_METHOD_MSG_NICKSERV,
+    SRN_LOGIN_METHOD_SASL_PLAIN,
+    SRN_LOGIN_METHOD_SASL_ECDSA_NIST256P_CHALLENGE,
+    SRN_LOGIN_METHOD_SASL_EXTERNAL,
+};
+
 /*****************************************************************************
  * GObject functions
  *****************************************************************************/
 
 G_DEFINE_TYPE(SuiConnectPanel, sui_connect_panel, GTK_TYPE_BOX);
+
+#if GTK_MAJOR_VERSION >= 4
+static guint string_list_find(GtkStringList *store, const char *text){
+    guint i;
+    guint n_items;
+
+    if (text == NULL || text[0] == '\0'){
+        return GTK_INVALID_LIST_POSITION;
+    }
+
+    n_items = g_list_model_get_n_items(G_LIST_MODEL(store));
+    for (i = 0; i < n_items; i++) {
+        const char *item;
+
+        item = gtk_string_list_get_string(store, i);
+        if (g_strcmp0(item, text) == 0){
+            return i;
+        }
+    }
+
+    return GTK_INVALID_LIST_POSITION;
+}
+
+static const char *quick_server_combo_box_get_active_id(SuiConnectPanel *self){
+    GtkStringObject *item;
+
+    item = gtk_drop_down_get_selected_item(self->quick_server_combo_box);
+    if (!item){
+        return NULL;
+    }
+
+    return gtk_string_object_get_string(item);
+}
+
+static void quick_server_combo_box_set_active_id(SuiConnectPanel *self,
+        const char *srv_name){
+    guint position;
+
+    position = string_list_find(self->server_list_store, srv_name);
+    gtk_drop_down_set_selected(self->quick_server_combo_box, position);
+}
+
+static SrnLoginMethod login_method_combo_box_get_active(
+        SuiConnectPanel *self){
+    guint position;
+
+    position = gtk_drop_down_get_selected(self->login_method_combo_box);
+    if (position == GTK_INVALID_LIST_POSITION ||
+            position >= G_N_ELEMENTS(login_methods)){
+        return SRN_LOGIN_METHOD_NONE;
+    }
+
+    return login_methods[position];
+}
+
+static void login_method_combo_box_set_active(SuiConnectPanel *self,
+        SrnLoginMethod method){
+    guint i;
+
+    for (i = 0; i < G_N_ELEMENTS(login_methods); i++) {
+        if (login_methods[i] == method){
+            gtk_drop_down_set_selected(self->login_method_combo_box, i);
+            return;
+        }
+    }
+
+    gtk_drop_down_set_selected(self->login_method_combo_box,
+            GTK_INVALID_LIST_POSITION);
+}
+#endif
 
 static GtkWidget *find_entry_in_widget(GtkWidget *widget){
 #if GTK_MAJOR_VERSION >= 4
@@ -147,16 +250,22 @@ static GtkWidget *find_entry_in_widget(GtkWidget *widget){
 static GtkEntry *server_combo_box_get_entry(SuiConnectPanel *self){
     GtkWidget *child;
 
-    child = srn_gtk_widget_get_child(GTK_WIDGET(self->server_combo_box));
 #if GTK_MAJOR_VERSION >= 4
-    child = find_entry_in_widget(child);
+    child = GTK_WIDGET(self->server_combo_box);
+#else
+    child = srn_gtk_widget_get_child(GTK_WIDGET(self->server_combo_box));
 #endif
+    child = find_entry_in_widget(child);
     g_return_val_if_fail(GTK_IS_ENTRY(child), NULL);
 
     return (GtkEntry *)child;
 }
 
 static void sui_connect_panel_init(SuiConnectPanel *self){
+#if GTK_MAJOR_VERSION >= 4
+    GtkExpression *expression;
+#endif
+
     gtk_widget_init_template(GTK_WIDGET(self));
 
 #if GTK_CHECK_VERSION(3, 18, 0)
@@ -165,6 +274,23 @@ static void sui_connect_panel_init(SuiConnectPanel *self){
 #endif
 
     /* Set server list model */
+#if GTK_MAJOR_VERSION >= 4
+    expression = gtk_property_expression_new(GTK_TYPE_STRING_OBJECT, NULL,
+            "string");
+
+    self->server_list_store = gtk_string_list_new(NULL);
+    gtk_drop_down_set_model(self->quick_server_combo_box,
+            G_LIST_MODEL(self->server_list_store));
+    gtk_drop_down_set_expression(self->quick_server_combo_box, expression);
+    gtk_drop_down_set_enable_search(self->quick_server_combo_box, TRUE);
+
+    self->login_method_list_store = gtk_string_list_new(NULL);
+    gtk_drop_down_set_model(self->login_method_combo_box,
+            G_LIST_MODEL(self->login_method_list_store));
+    gtk_drop_down_set_expression(self->login_method_combo_box, expression);
+
+    g_object_unref(expression);
+#else
     self->server_list_store = gtk_list_store_new(1, G_TYPE_STRING);
     gtk_combo_box_set_model(self->quick_server_combo_box,
             GTK_TREE_MODEL(self->server_list_store));
@@ -184,6 +310,8 @@ static void sui_connect_panel_init(SuiConnectPanel *self){
             GTK_TREE_MODEL(self->login_method_list_store));
     gtk_combo_box_set_id_column(self->login_method_combo_box, 1);
 
+#endif
+
     g_object_bind_property(
             self->quick_nick_entry, "text",
             self->nick_entry, "text",
@@ -192,14 +320,24 @@ static void sui_connect_panel_init(SuiConnectPanel *self){
     g_signal_connect(self->stack, "notify::visible-child",
             G_CALLBACK(stack_on_child_changed), self);
 
+#if GTK_MAJOR_VERSION >= 4
+    g_signal_connect(self->quick_server_combo_box, "notify::selected",
+            G_CALLBACK(server_combo_box_on_changed), self);
+#else
     g_signal_connect(self->quick_server_combo_box, "changed",
             G_CALLBACK(server_combo_box_on_changed), self);
+#endif
     g_signal_connect(server_combo_box_get_entry(self),
             "changed", G_CALLBACK(server_combo_box_on_changed), self);
     g_signal_connect(self->nick_entry, "changed",
             G_CALLBACK(nick_entry_on_changed), self);
+#if GTK_MAJOR_VERSION >= 4
+    g_signal_connect(self->login_method_combo_box, "notify::selected",
+            G_CALLBACK(login_method_combo_box_on_changed), self);
+#else
     g_signal_connect(self->login_method_combo_box, "changed",
             G_CALLBACK(login_method_combo_box_on_changed), self);
+#endif
     g_signal_connect_swapped(self->connect_button, "clicked",
             G_CALLBACK(connect_button_on_click), self);
     g_signal_connect_swapped(self->cancel_button, "clicked",
@@ -276,7 +414,12 @@ SuiConnectPanel* sui_connect_panel_new(){
 
 static void update(SuiConnectPanel *self, const char *srv_name){
     if (!srv_name || !strlen(srv_name)){
+#if GTK_MAJOR_VERSION >= 4
+        quick_server_combo_box_set_active_id(self, NULL);
+        srn_gtk_entry_set_text(self->server_combo_box, "");
+#else
         gtk_combo_box_set_active_iter(self->server_combo_box, NULL);
+#endif
 
         srn_gtk_entry_set_text(self->host_entry, "");
         srn_gtk_entry_set_text(self->port_entry, "");
@@ -289,7 +432,12 @@ static void update(SuiConnectPanel *self, const char *srv_name){
                 GTK_TOGGLE_BUTTON(self->tls_noverify_check_button), FALSE);
 
         srn_gtk_entry_set_text(self->nick_entry, "");
+#if GTK_MAJOR_VERSION >= 4
+        gtk_drop_down_set_selected(self->login_method_combo_box,
+                GTK_INVALID_LIST_POSITION);
+#else
         gtk_combo_box_set_active_iter(self->login_method_combo_box, NULL);
+#endif
         srn_gtk_entry_set_text(self->login_password_entry, "");
         gtk_toggle_button_set_active(
                 GTK_TOGGLE_BUTTON(self->remember_login_password_check_button), FALSE);
@@ -335,11 +483,19 @@ static void update(SuiConnectPanel *self, const char *srv_name){
                 GTK_TOGGLE_BUTTON(self->tls_noverify_check_button),
                 srv_cfg->irc->tls_noverify);
 
+        srn_gtk_entry_set_text(server_combo_box_get_entry(self), srv_name);
+#if GTK_MAJOR_VERSION >= 4
+        quick_server_combo_box_set_active_id(self, srv_name);
+#endif
         srn_gtk_entry_set_text(self->nick_entry,
                 srv_cfg->user->nick? srv_cfg->user->nick: "");
 
+#if GTK_MAJOR_VERSION >= 4
+        login_method_combo_box_set_active(self, srv_cfg->user->login->method);
+#else
         gtk_combo_box_set_active_id(self->login_method_combo_box,
                 srn_login_method_to_string(srv_cfg->user->login->method));
+#endif
         srn_gtk_entry_set_text(self->login_password_entry,
                 srv_cfg->user->login->password ?
                 srv_cfg->user->login->password : "");
@@ -359,14 +515,27 @@ static void update(SuiConnectPanel *self, const char *srv_name){
 static void refresh_server_list(SuiConnectPanel *self){
     GList *lst;
     GList *srv_cfg_lst;
+#if GTK_MAJOR_VERSION >= 4
+    GtkStringList *store;
+    guint n_items;
+#else
     GtkTreeIter iter;
     GtkListStore *store;
+#endif
     SrnRet ret;
     SrnApplication *app_model;
 
     app_model = sui_application_get_ctx(sui_application_get_instance());
     store = self->server_list_store;
+#if GTK_MAJOR_VERSION >= 4
+    n_items = g_list_model_get_n_items(G_LIST_MODEL(store));
+    while (n_items > 0){
+        n_items--;
+        gtk_string_list_remove(store, n_items);
+    }
+#else
     gtk_list_store_clear(store);
+#endif
 
     srv_cfg_lst = NULL;
     ret = srn_config_manager_read_server_config_list(
@@ -378,10 +547,14 @@ static void refresh_server_list(SuiConnectPanel *self){
 
     lst = srv_cfg_lst;
     while (lst) {
+#if GTK_MAJOR_VERSION >= 4
+        gtk_string_list_append(store, lst->data);
+#else
         gtk_list_store_append(store, &iter);
         gtk_list_store_set(store, &iter,
                 SERVER_LIST_STORE_COL_NAME, lst->data,
                 -1);
+#endif
         lst = g_list_next(lst);
     }
 
@@ -389,31 +562,68 @@ static void refresh_server_list(SuiConnectPanel *self){
 }
 
 static void refresh_login_method_list(SuiConnectPanel *self){
+#if GTK_MAJOR_VERSION >= 4
+    GtkStringList *store;
+    guint n_items;
+#else
     GtkTreeIter iter;
     GtkListStore *store;
-
-    // Supported login methods
-    static SrnLoginMethod lms[] = {
-        SRN_LOGIN_METHOD_NONE,
-        SRN_LOGIN_METHOD_NICKSERV,
-        SRN_LOGIN_METHOD_MSG_NICKSERV,
-        SRN_LOGIN_METHOD_SASL_PLAIN,
-        SRN_LOGIN_METHOD_SASL_ECDSA_NIST256P_CHALLENGE,
-        SRN_LOGIN_METHOD_SASL_EXTERNAL,
-    };
+#endif
 
     store = self->login_method_list_store;
+#if GTK_MAJOR_VERSION >= 4
+    n_items = g_list_model_get_n_items(G_LIST_MODEL(store));
+    while (n_items > 0){
+        n_items--;
+        gtk_string_list_remove(store, n_items);
+    }
+#else
     gtk_list_store_clear(store);
+#endif
 
-    for (int i = 0; i < sizeof(lms) / sizeof(lms[0]); i++) {
+    for (int i = 0; i < G_N_ELEMENTS(login_methods); i++) {
+#if GTK_MAJOR_VERSION >= 4
+        gtk_string_list_append(store,
+                srn_login_method_to_string(login_methods[i]));
+#else
         gtk_list_store_append(store, &iter);
         gtk_list_store_set(store, &iter,
-                LOGIN_METHOD_LIST_STORE_COL_ID, (int)lms[i],
-                LOGIN_METHOD_LIST_STORE_COL_NAME, srn_login_method_to_string(lms[i]),
+                LOGIN_METHOD_LIST_STORE_COL_ID, (int)login_methods[i],
+                LOGIN_METHOD_LIST_STORE_COL_NAME,
+                srn_login_method_to_string(login_methods[i]),
                 -1);
+#endif
     }
 }
 
+#if GTK_MAJOR_VERSION >= 4
+static void server_combo_box_on_changed(GObject *object, GParamSpec *pspec,
+        gpointer user_data){
+    const char *srv_name;
+    GtkEntry *entry;
+    SuiConnectPanel *self;
+
+    (void)pspec;
+
+    self = SUI_CONNECT_PANEL(user_data);
+    entry = server_combo_box_get_entry(self);
+    if (GTK_IS_DROP_DOWN(object)){
+        srv_name = quick_server_combo_box_get_active_id(self);
+        srn_gtk_entry_set_text(entry, srv_name ? srv_name : "");
+    }
+
+    srv_name = srn_gtk_entry_get_text(entry);
+
+    if (string_list_find(self->server_list_store, srv_name) ==
+            gtk_drop_down_get_selected(self->quick_server_combo_box)){
+        update(self, srv_name);
+        return;
+    }
+
+    quick_server_combo_box_set_active_id(self, srv_name);
+    update(self, srv_name);
+}
+#else
 static void server_combo_box_on_changed(GtkComboBox *combo_box,
         gpointer user_data){
     const char *srv_name;
@@ -425,7 +635,21 @@ static void server_combo_box_on_changed(GtkComboBox *combo_box,
     srv_name = srn_gtk_entry_get_text(entry);
     update(self, srv_name);
 }
+#endif
 
+#if GTK_MAJOR_VERSION >= 4
+static void login_method_combo_box_on_changed(GObject *object,
+        GParamSpec *pspec, gpointer user_data){
+    const char *page;
+    SrnLoginMethod lm;
+    SuiConnectPanel *self;
+
+    (void)object;
+    (void)pspec;
+
+    self = SUI_CONNECT_PANEL(user_data);
+    lm = login_method_combo_box_get_active(self);
+#else
 static void login_method_combo_box_on_changed(GtkComboBox *combo_box,
         gpointer user_data){
     const char *page;
@@ -445,6 +669,7 @@ static void login_method_combo_box_on_changed(GtkComboBox *combo_box,
                 LOGIN_METHOD_LIST_STORE_COL_ID, &lm,
                 -1);
     }
+#endif
 
     switch (lm) {
         case SRN_LOGIN_METHOD_NICKSERV:
@@ -485,7 +710,11 @@ static void connect_button_on_click(gpointer user_data){
     if (g_ascii_strcasecmp(page, PAGE_QUICK_MODE) == 0){
         const char *nick;
 
+#if GTK_MAJOR_VERSION >= 4
+        srv_name = quick_server_combo_box_get_active_id(self);
+#else
         srv_name = gtk_combo_box_get_active_id(self->quick_server_combo_box);
+#endif
         if (!srv_name){
             ret = RET_ERR(_("No server selected"));
             goto FIN;
@@ -511,7 +740,9 @@ static void connect_button_on_click(gpointer user_data){
         bool tls;
         bool tls_noverify;
         const char *nick;
+#if GTK_MAJOR_VERSION < 4
         const char *method_str;
+#endif
         const char *login_passwd;
         bool rmb_login_passwd;
         const char *login_cert_file;
@@ -580,8 +811,12 @@ static void connect_button_on_click(gpointer user_data){
             str_assign(&srv_cfg->user->nick, nick);
         }
 
+#if GTK_MAJOR_VERSION >= 4
+        method = login_method_combo_box_get_active(self);
+#else
         method_str = gtk_combo_box_get_active_id(self->login_method_combo_box);
         method = srn_login_method_from_string(method_str);
+#endif
         srv_cfg->user->login->method = method;
 
         login_passwd = srn_gtk_entry_get_text(self->login_password_entry);

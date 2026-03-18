@@ -37,14 +37,8 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkComboBox" id="quick_server_combo_box">
+                  <object class="GtkDropDown" id="quick_server_combo_box">
                     <property name="halign">end</property>
-                    <child>
-                      <object class="GtkCellRendererText"/>
-                      <attributes>
-                        <attribute name="text">0</attribute>
-                      </attributes>
-                    </child>
                     <layout>
                       <property name="column">1</property>
                       <property name="row">0</property>
@@ -96,18 +90,8 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkComboBox" id="server_combo_box">
+                  <object class="GtkEntry" id="server_combo_box">
                     <property name="halign">end</property>
-                    <property name="has-entry">True</property>
-                    <child>
-                      <object class="GtkCellRendererText"/>
-                      <attributes>
-                        <attribute name="text">0</attribute>
-                      </attributes>
-                    </child>
-                    <property name="child">
-                      <object class="GtkEntry"/>
-                    </property>
                     <layout>
                       <property name="column">1</property>
                       <property name="row">0</property>
@@ -243,15 +227,9 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkComboBox" id="login_method_combo_box">
+                  <object class="GtkDropDown" id="login_method_combo_box">
                     <property name="halign">end</property>
                     <property name="hexpand">True</property>
-                    <child>
-                      <object class="GtkCellRendererText"/>
-                      <attributes>
-                        <attribute name="text">1</attribute>
-                      </attributes>
-                    </child>
                     <layout>
                       <property name="column">1</property>
                       <property name="row">7</property>
