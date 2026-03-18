@@ -19,6 +19,7 @@
 #include <gtk/gtk.h>
 #include <string.h>
 
+#include "i18n.h"
 #include "log.h"
 
 #include "sui_common.h"
@@ -59,10 +60,22 @@ static void nick_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
     g_variant_dict_unref(params);
 }
 
+static GtkMenuItem *new_nick_menu_item(const char *name, const char *label,
+        const char *nick){
+    GtkMenuItem *item;
+
+    item = GTK_MENU_ITEM(gtk_menu_item_new_with_mnemonic(label));
+    gtk_widget_set_name(GTK_WIDGET(item), name);
+    gtk_widget_show(GTK_WIDGET(item));
+    g_signal_connect(item, "activate",
+            G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
+
+    return item;
+}
+
 void nick_menu_popup(GtkWidget *widget, GdkEventButton *event, const char *nick){
     int n;
     GList *lst;
-    GtkBuilder *builder;
     GtkMenu *nick_menu;
     GtkMenuItem *whois_menu_item;
     GtkMenuItem *ignore_menu_item;
@@ -71,23 +84,20 @@ void nick_menu_popup(GtkWidget *widget, GdkEventButton *event, const char *nick)
     GtkMenuItem *invite_menu_item;
     GtkMenu *invite_submenu;
 
-    builder = gtk_builder_new_from_resource ("/im/srain/Srain/nick_menu.glade");
+    nick_menu = GTK_MENU(gtk_menu_new());
+    whois_menu_item = new_nick_menu_item("whois_menu_item", _("_Whois"), nick);
+    ignore_menu_item = new_nick_menu_item("ignore_menu_item", _("_Ignore"), nick);
+    kick_menu_item = new_nick_menu_item("kick_menu_item", _("_Kick"), nick);
+    chat_menu_item = new_nick_menu_item("chat_menu_item", _("_Chat"), nick);
+    invite_menu_item = GTK_MENU_ITEM(gtk_menu_item_new_with_mnemonic(_("Invite to...")));
+    gtk_widget_set_name(GTK_WIDGET(invite_menu_item), "invite_menu_item");
+    gtk_widget_show(GTK_WIDGET(invite_menu_item));
 
-    nick_menu = (GtkMenu *)gtk_builder_get_object(builder, "nick_menu");
-    whois_menu_item = (GtkMenuItem *)gtk_builder_get_object(builder, "whois_menu_item");
-    ignore_menu_item = (GtkMenuItem *)gtk_builder_get_object(builder, "ignore_menu_item");
-    kick_menu_item = (GtkMenuItem *)gtk_builder_get_object(builder, "kick_menu_item");
-    chat_menu_item = (GtkMenuItem *)gtk_builder_get_object(builder, "chat_menu_item");
-    invite_menu_item = (GtkMenuItem *)gtk_builder_get_object(builder, "invite_menu_item");
-
-    g_signal_connect(whois_menu_item, "activate",
-            G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
-    g_signal_connect(ignore_menu_item, "activate",
-            G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
-    g_signal_connect(kick_menu_item, "activate",
-            G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
-    g_signal_connect(chat_menu_item, "activate",
-            G_CALLBACK(nick_menu_item_on_activate), (char *)nick);
+    gtk_menu_shell_append(GTK_MENU_SHELL(nick_menu), GTK_WIDGET(whois_menu_item));
+    gtk_menu_shell_append(GTK_MENU_SHELL(nick_menu), GTK_WIDGET(ignore_menu_item));
+    gtk_menu_shell_append(GTK_MENU_SHELL(nick_menu), GTK_WIDGET(kick_menu_item));
+    gtk_menu_shell_append(GTK_MENU_SHELL(nick_menu), GTK_WIDGET(chat_menu_item));
+    gtk_menu_shell_append(GTK_MENU_SHELL(nick_menu), GTK_WIDGET(invite_menu_item));
 
     /* Create subitems for invite_menu_item */
     n = 0;
@@ -116,5 +126,6 @@ void nick_menu_popup(GtkWidget *widget, GdkEventButton *event, const char *nick)
     }
 
     gtk_menu_popup_at_pointer(nick_menu, (GdkEvent*) event);
-    g_object_unref(builder);
+    g_object_ref_sink(nick_menu);
+    g_object_unref(nick_menu);
 }

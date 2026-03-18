@@ -31,6 +31,8 @@ What is in place now
   application popover menu and shared menu models.
 - ``buffer_menu.glade`` has been removed; buffer and chat menu items are now
   created in code, which isolates the remaining menu migration to runtime APIs.
+- ``nick_menu.glade`` has been removed; nick context menus are now built in
+  code, leaving fewer UI resources tied to deprecated GTK menu widgets.
 
 Recommended order
 =================
