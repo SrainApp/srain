@@ -131,7 +131,10 @@ void sui_side_bar_item_highlight(SuiSideBarItem *self){
 void sui_side_bar_item_inc_count(SuiSideBarItem *self){
     int count;
     char *buf;
-    count = atoi(gtk_label_get_text(self->unread_count_label));
+    const char *text;
+
+    text = gtk_label_get_text(self->unread_count_label);
+    count = (text && text[0]) ? atoi(text) : 0;
     buf = g_strdup_printf("%d", count + 1);
     gtk_label_set_text(self->unread_count_label, buf);
     g_free(buf);
