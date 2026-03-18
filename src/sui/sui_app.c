@@ -706,6 +706,6 @@ static void tray_icon_on_popup_menu(GtkStatusIcon *status_icon, guint button,
 
     self = user_data;
 
-    gtk_menu_popup_at_pointer(GTK_MENU(self->menu), NULL);
+    srn_gtk_menu_popup(self->menu, NULL);
 }
 #endif

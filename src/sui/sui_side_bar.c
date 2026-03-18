@@ -113,8 +113,7 @@ list_box_on_popup(GtkWidget *widget, GdkEventButton *event, gpointer user_data){
         item = SUI_SIDE_BAR_ITEM(srn_gtk_widget_get_child(widget));
         child = g_object_get_data(G_OBJECT(item), "stack-child");
 
-        gtk_menu_popup_at_pointer(GTK_MENU(sui_buffer_get_menu(child)),
-                (GdkEvent *)event);
+        srn_gtk_menu_popup(sui_buffer_get_menu(child), (GdkEvent *)event);
 
         return TRUE;
     }
@@ -236,12 +235,7 @@ add_child(GtkWidget *child, gpointer user_data){
 
     /* The event_box is the actual row inserted in the list, and contains the child.
      * This allows listening for right-click events and display the contextual menu. */
-    event_box =
-#if GTK_MAJOR_VERSION >= 4
-        gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-#else
-        gtk_event_box_new();
-#endif
+    event_box = srn_gtk_event_box_new();
     srn_gtk_widget_add_child(event_box, GTK_WIDGET(item));
 
     g_object_set_data(G_OBJECT(item), "stack-child", child);

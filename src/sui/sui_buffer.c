@@ -124,6 +124,7 @@ static void sui_buffer_init(SuiBuffer *self){
     gtk_widget_init_template(GTK_WIDGET(self));
 
     /* Init menus */
+    self->menu = srn_gtk_menu_new();
     self->topic_menu_item = sui_buffer_append_check_menu_item(self,
             _("Show _Topic"));
 
@@ -215,7 +216,6 @@ static void sui_buffer_class_init(SuiBufferClass *class){
             widget_class, "/im/srain/Srain/buffer.glade");
 #endif
 
-    gtk_widget_class_bind_template_child(widget_class, SuiBuffer, menu);
     gtk_widget_class_bind_template_child(widget_class, SuiBuffer, topic_revealer);
     gtk_widget_class_bind_template_child(widget_class, SuiBuffer, topic_label);
     gtk_widget_class_bind_template_child(widget_class, SuiBuffer, user_list_revealer);

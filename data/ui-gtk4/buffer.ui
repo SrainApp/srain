@@ -64,7 +64,4 @@
   </template>
 
   <object class="GtkTextBuffer" id="input_text_buffer"/>
-  <object class="GtkBox" id="menu">
-    <property name="orientation">vertical</property>
-  </object>
 </interface>

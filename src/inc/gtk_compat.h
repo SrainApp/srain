@@ -110,11 +110,37 @@ static inline GtkWidget *srn_gtk_check_menu_item_new_with_mnemonic(
 #endif
 }
 
+static inline GtkWidget *srn_gtk_menu_new(void){
+#if GTK_MAJOR_VERSION >= 4
+    return gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+#else
+    return gtk_menu_new();
+#endif
+}
+
+static inline GtkWidget *srn_gtk_event_box_new(void){
+#if GTK_MAJOR_VERSION >= 4
+    return gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+#else
+    return gtk_event_box_new();
+#endif
+}
+
 static inline void srn_gtk_menu_append(GtkWidget *menu, GtkWidget *item){
 #if GTK_MAJOR_VERSION >= 4
     gtk_box_append(GTK_BOX(menu), item);
 #else
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+#endif
+}
+
+static inline void srn_gtk_menu_popup(GtkWidget *menu, gpointer event){
+#if GTK_MAJOR_VERSION >= 4
+    (void)menu;
+    (void)event;
+    g_assert_not_reached();
+#else
+    gtk_menu_popup_at_pointer(GTK_MENU(menu), event);
 #endif
 }
 

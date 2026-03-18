@@ -43,29 +43,44 @@ struct _SuiUserList {
     GtkBox parent;
 
     GtkLabel *stat_label;   // users statistics
+#if GTK_MAJOR_VERSION >= 4
+    GtkListBox *user_list_box;
+    GHashTable *user_rows;
+#else
     GtkTreeView *user_tree_view;
     GtkTreeViewColumn *user_tree_view_column;
     GtkCellRendererText *user_name_cell_renderer;
     GtkCellRendererPixbuf *user_icon_cell_renderer;
+#endif
 
     /* Data model */
     SuiUserStat user_stat;
     GtkListStore *user_list_store;
+#if GTK_MAJOR_VERSION < 4
     GtkTreeModel *user_tree_model_filter;   // FilterTreeModel of user_list_store
                                             // TODO: user search
+#endif
 };
 
 struct _SuiUserListClass {
     GtkBoxClass parent_class;
 };
 
-static void user_tree_view_set_model(SuiUserList *self);
+static void user_view_set_model(SuiUserList *self);
 static void stat_label_update_stat(SuiUserList *self);
 static int user_list_store_sort_func(GtkTreeModel *model,
         GtkTreeIter *iter1, GtkTreeIter *iter2, gpointer user_data);
+#if GTK_MAJOR_VERSION >= 4
+static const char *user_type_marker(SrnChatUserType type);
+static int user_list_box_sort_func(GtkListBoxRow *row1, GtkListBoxRow *row2,
+        gpointer user_data);
+static GtkListBoxRow *user_list_box_find_row(SuiUserList *self, SuiUser *user);
+static GtkWidget *new_user_row(SuiUser *user);
+static void update_user_row(SuiUserList *self, SuiUser *user);
+#endif
 
 #if GTK_MAJOR_VERSION >= 4
-static void user_tree_view_on_popup(GtkGestureClick *gesture, int n_press,
+static void user_list_box_on_popup(GtkGestureClick *gesture, int n_press,
         double x, double y, gpointer user_data);
 #else
 static gboolean user_tree_view_on_popup(GtkWidget *widget,
@@ -88,15 +103,16 @@ static void sui_user_list_init(SuiUserList *self){
 
     gtk_widget_init_template(GTK_WIDGET(self));
 
-    user_tree_view_set_model(self);
+    user_view_set_model(self);
     stat_label_update_stat(self);
 
 #if GTK_MAJOR_VERSION >= 4
+    self->user_rows = g_hash_table_new(NULL, NULL);
     click = gtk_gesture_click_new();
-    gtk_widget_add_controller(GTK_WIDGET(self->user_tree_view),
+    gtk_widget_add_controller(GTK_WIDGET(self->user_list_box),
             GTK_EVENT_CONTROLLER(click));
     g_signal_connect(click, "pressed",
-            G_CALLBACK(user_tree_view_on_popup), NULL);
+            G_CALLBACK(user_list_box_on_popup), self);
 #else
     g_signal_connect(self->user_tree_view, "button-press-event",
             G_CALLBACK(user_tree_view_on_popup), NULL);
@@ -112,14 +128,23 @@ static void sui_user_list_class_init(SuiUserListClass *class){
 
     widget_class = GTK_WIDGET_CLASS(class);
 
+#if GTK_MAJOR_VERSION >= 4
+    gtk_widget_class_set_template_from_resource(widget_class,
+            "/im/srain/Srain/user_list.ui");
+#else
     gtk_widget_class_set_template_from_resource(widget_class,
             "/im/srain/Srain/user_list.glade");
+#endif
 
     gtk_widget_class_bind_template_child(widget_class, SuiUserList, stat_label);
+#if GTK_MAJOR_VERSION >= 4
+    gtk_widget_class_bind_template_child(widget_class, SuiUserList, user_list_box);
+#else
     gtk_widget_class_bind_template_child(widget_class, SuiUserList, user_tree_view);
     gtk_widget_class_bind_template_child(widget_class, SuiUserList, user_tree_view_column);
     gtk_widget_class_bind_template_child(widget_class, SuiUserList, user_name_cell_renderer);
     gtk_widget_class_bind_template_child(widget_class, SuiUserList, user_icon_cell_renderer);
+#endif
 }
 
 /*****************************************************************************
@@ -135,6 +160,15 @@ void sui_user_list_add_user(SuiUserList *self, SuiUser *user){
     sui_user_set_list(user, self->user_list_store);
     sui_user_set_stat(user, &self->user_stat);
     self->user_stat.total++;
+#if GTK_MAJOR_VERSION >= 4
+    {
+        GtkWidget *row;
+
+        row = new_user_row(user);
+        g_hash_table_insert(self->user_rows, sui_user_get_ctx(user), row);
+        gtk_list_box_insert(self->user_list_box, row, -1);
+    }
+#endif
     sui_user_list_update_user(self, user);
 }
 
@@ -145,6 +179,17 @@ void sui_user_list_rm_user(SuiUserList *self, SuiUser *user){
 
     self->user_stat.total--;
     sui_user_list_update_user(self, user);
+#if GTK_MAJOR_VERSION >= 4
+    {
+        GtkListBoxRow *row;
+
+        row = user_list_box_find_row(self, user);
+        if (row){
+            gtk_list_box_remove(self->user_list_box, GTK_WIDGET(row));
+            g_hash_table_remove(self->user_rows, sui_user_get_ctx(user));
+        }
+    }
+#endif
     gtk_list_store_remove(self->user_list_store, (GtkTreeIter *)user);
     sui_user_set_list(user, NULL);
     sui_user_set_stat(user, NULL);
@@ -154,10 +199,20 @@ void sui_user_list_update_user(SuiUserList *self, SuiUser *user){
     sui_user_update(user,
             gtk_widget_get_style_context(GTK_WIDGET(self)),
             srn_gtk_widget_get_surface(GTK_WIDGET(self)));
+#if GTK_MAJOR_VERSION >= 4
+    update_user_row(self, user);
+#endif
 }
 
 void sui_user_list_clear(SuiUserList *self){
     gtk_list_store_clear(self->user_list_store);
+#if GTK_MAJOR_VERSION >= 4
+    while (gtk_widget_get_first_child(GTK_WIDGET(self->user_list_box))){
+        gtk_list_box_remove(self->user_list_box,
+                gtk_widget_get_first_child(GTK_WIDGET(self->user_list_box)));
+    }
+    g_hash_table_remove_all(self->user_rows);
+#endif
     memset(&self->user_stat, 0, sizeof(self->user_stat));
 }
 
@@ -196,7 +251,16 @@ GList* sui_user_list_get_users_by_prefix(SuiUserList *self, const char *prefix){
  * Static functions
  *****************************************************************************/
 
-static void user_tree_view_set_model(SuiUserList *self){
+static void user_view_set_model(SuiUserList *self){
+#if GTK_MAJOR_VERSION >= 4
+    self->user_list_store = gtk_list_store_new(4,
+            G_TYPE_STRING,
+            CAIRO_GOBJECT_TYPE_SURFACE,
+            G_TYPE_POINTER,
+            G_TYPE_INT);
+    gtk_list_box_set_sort_func(self->user_list_box,
+            user_list_box_sort_func, self, NULL);
+#else
     GtkListStore *store;
     GtkTreeModel *filter;
     GtkTreeView *view;
@@ -227,6 +291,7 @@ static void user_tree_view_set_model(SuiUserList *self){
             GTK_TREE_SORTABLE_DEFAULT_SORT_COLUMN_ID,
             GTK_SORT_ASCENDING);
     gtk_tree_view_set_model(view, filter);
+#endif
 }
 
 static void stat_label_update_stat(SuiUserList *self){
@@ -262,43 +327,30 @@ static int user_list_store_sort_func(GtkTreeModel *model,
 }
 
 #if GTK_MAJOR_VERSION >= 4
-static void user_tree_view_on_popup(GtkGestureClick *gesture, int n_press,
+static void user_list_box_on_popup(GtkGestureClick *gesture, int n_press,
         double x, double y, gpointer user_data){
     GtkWidget *widget;
+    GtkListBoxRow *row;
     guint button;
-    GtkTreeView *view;
-    GtkTreeModel *model;
-    GtkTreeModel *child_model;
-    GtkTreeIter iter;
-    GtkTreeIter child_iter;
-    GtkTreeSelection *selection;
-    SuiUser *user;
     SrnChatUser *chat_user;
+    SuiUserList *self;
 
+    self = SUI_USER_LIST(user_data);
     button = gtk_gesture_single_get_current_button(GTK_GESTURE_SINGLE(gesture));
     if (button != GDK_BUTTON_SECONDARY){
         return;
     }
 
     widget = gtk_event_controller_get_widget(GTK_EVENT_CONTROLLER(gesture));
-    view = GTK_TREE_VIEW(widget);
-    model = gtk_tree_view_get_model(view);
-    selection = gtk_tree_view_get_selection(view);
-    if (!gtk_tree_selection_get_selected(selection, &model, &iter)){
+    row = gtk_list_box_get_row_at_y(self->user_list_box, (int)y);
+    if (!row){
         return;
     }
-    child_model = gtk_tree_model_filter_get_model(GTK_TREE_MODEL_FILTER(model));
-    gtk_tree_model_filter_convert_iter_to_child_iter(
-            GTK_TREE_MODEL_FILTER(model), &child_iter, &iter);
-
-    user = sui_user_new_from_iter(GTK_LIST_STORE(child_model), &child_iter);
-    chat_user = sui_user_get_ctx(user);
+    gtk_list_box_select_row(self->user_list_box, row);
+    chat_user = g_object_get_data(G_OBJECT(row), "chat-user");
     g_return_if_fail(chat_user);
 
-    // TODO: impl SuiUserPanel
     nick_menu_popup(widget, chat_user->srv_user->nick);
-
-    sui_user_free(user);
 }
 #else
 static gboolean user_tree_view_on_popup(GtkWidget *widget,
@@ -365,3 +417,94 @@ static void on_style_updated(SuiUserList *self, gpointer user_data) {
         sui_user_free(user);
     } while (gtk_tree_model_iter_next(model, &iter));
 }
+
+#if GTK_MAJOR_VERSION >= 4
+static const char *user_type_marker(SrnChatUserType type){
+    switch (type) {
+        case SRN_CHAT_USER_TYPE_ADMIN:
+        case SRN_CHAT_USER_TYPE_OWNER:
+        case SRN_CHAT_USER_TYPE_FULL_OP:
+            return "@";
+        case SRN_CHAT_USER_TYPE_HALF_OP:
+            return "%";
+        case SRN_CHAT_USER_TYPE_VOICED:
+            return "+";
+        default:
+            return "";
+    }
+}
+
+static int user_list_box_sort_func(GtkListBoxRow *row1, GtkListBoxRow *row2,
+        gpointer user_data){
+    SrnChatUser *chat_user1;
+    SrnChatUser *chat_user2;
+    SuiUser *user1;
+    SuiUser *user2;
+    int ret;
+
+    chat_user1 = g_object_get_data(G_OBJECT(row1), "chat-user");
+    chat_user2 = g_object_get_data(G_OBJECT(row2), "chat-user");
+    g_return_val_if_fail(chat_user1 && chat_user2, 0);
+
+    user1 = sui_user_new(chat_user1);
+    user2 = sui_user_new(chat_user2);
+    ret = sui_user_compare(user1, user2);
+    sui_user_free(user1);
+    sui_user_free(user2);
+
+    return ret;
+}
+
+static GtkListBoxRow *user_list_box_find_row(SuiUserList *self, SuiUser *user){
+    return g_hash_table_lookup(self->user_rows, sui_user_get_ctx(user));
+}
+
+static GtkWidget *new_user_row(SuiUser *user){
+    GtkWidget *row;
+    GtkWidget *box;
+    GtkWidget *type_label;
+    GtkWidget *nick_label;
+    SrnChatUser *chat_user;
+
+    chat_user = sui_user_get_ctx(user);
+    row = gtk_list_box_row_new();
+    box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
+    type_label = gtk_label_new(user_type_marker(chat_user->type));
+    nick_label = gtk_label_new(chat_user->srv_user->nick);
+
+    gtk_widget_set_halign(type_label, GTK_ALIGN_START);
+    gtk_widget_set_halign(nick_label, GTK_ALIGN_START);
+    gtk_widget_set_hexpand(nick_label, TRUE);
+
+    gtk_box_append(GTK_BOX(box), type_label);
+    gtk_box_append(GTK_BOX(box), nick_label);
+    gtk_list_box_row_set_child(GTK_LIST_BOX_ROW(row), box);
+
+    g_object_set_data(G_OBJECT(row), "chat-user", chat_user);
+    g_object_set_data(G_OBJECT(row), "type-label", type_label);
+    g_object_set_data(G_OBJECT(row), "nick-label", nick_label);
+
+    return row;
+}
+
+static void update_user_row(SuiUserList *self, SuiUser *user){
+    GtkListBoxRow *row;
+    GtkWidget *type_label;
+    GtkWidget *nick_label;
+    SrnChatUser *chat_user;
+
+    row = user_list_box_find_row(self, user);
+    if (!row){
+        return;
+    }
+
+    chat_user = sui_user_get_ctx(user);
+    type_label = g_object_get_data(G_OBJECT(row), "type-label");
+    nick_label = g_object_get_data(G_OBJECT(row), "nick-label");
+
+    gtk_label_set_text(GTK_LABEL(type_label), user_type_marker(chat_user->type));
+    gtk_label_set_text(GTK_LABEL(nick_label), chat_user->srv_user->nick);
+    g_object_set_data(G_OBJECT(row), "chat-user", chat_user);
+    gtk_list_box_invalidate_sort(self->user_list_box);
+}
+#endif

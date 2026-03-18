@@ -117,8 +117,4 @@
     </style>
   </template>
   <object class="GtkTextBuffer" id="input_text_buffer"/>
-  <object class="GtkMenu" id="menu">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-  </object>
 </interface>

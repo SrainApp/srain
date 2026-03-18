@@ -14,6 +14,7 @@
         <file alias="side_bar_item.glade" preprocess="xml-stripblanks">ui/side_bar_item.glade</file>
         <file alias="message_list.glade" preprocess="xml-stripblanks">ui/message_list.glade</file>
         <file alias="user_list.glade" preprocess="xml-stripblanks">ui/user_list.glade</file>
+        <file alias="user_list.ui" preprocess="xml-stripblanks">ui-gtk4/user_list.ui</file>
         <file alias="connect_panel.glade" preprocess="xml-stripblanks">ui/connect_panel.glade</file>
         <file alias="connect_panel.ui" preprocess="xml-stripblanks">ui-gtk4/connect_panel.ui</file>
         <file alias="join_panel.glade" preprocess="xml-stripblanks">ui/join_panel.glade</file>

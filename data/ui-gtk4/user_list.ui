@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+
+  <template class="SuiUserList" parent="GtkBox">
+    <property name="name">user_list_box</property>
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="GtkLabel" id="stat_label">
+        <property name="margin-start">2</property>
+        <property name="margin-end">2</property>
+        <property name="margin-top">2</property>
+        <property name="margin-bottom">2</property>
+        <property name="use-markup">True</property>
+        <property name="wrap">True</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator"/>
+    </child>
+    <child>
+      <object class="GtkScrolledWindow">
+        <property name="width-request">150</property>
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
+        <child>
+          <object class="GtkListBox" id="user_list_box">
+            <property name="selection-mode">browse</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>
