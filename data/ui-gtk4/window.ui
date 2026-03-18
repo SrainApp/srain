@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+
+  <template class="SuiWindow" parent="GtkApplicationWindow">
+    <property name="default-width">1050</property>
+    <property name="default-height">650</property>
+    <property name="icon-name">im.srain.Srain</property>
+
+    <child>
+      <object class="GtkBox" id="window_box">
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkBox" id="header_box">
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkPaned" id="header_paned">
+                <property name="position">300</property>
+                <property name="resize-start-child">False</property>
+                <property name="shrink-start-child">False</property>
+                <property name="start-child">
+                  <object class="GtkBox" id="side_header_box">
+                    <property name="width-request">300</property>
+                    <style>
+                      <class name="sui-nocsd-header-bar"/>
+                    </style>
+                  </object>
+                </property>
+                <property name="end-child">
+                  <object class="GtkBox" id="buffer_header_box">
+                    <style>
+                      <class name="sui-nocsd-header-bar"/>
+                    </style>
+                  </object>
+                </property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkSeparator" id="header_separator">
+            <property name="visible">False</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkStack" id="window_stack">
+            <property name="vexpand">True</property>
+            <child>
+              <object class="GtkStackPage">
+                <property name="name">welcome</property>
+                <property name="child">
+                  <object class="GtkGrid">
+                    <child>
+                      <object class="GtkBox">
+                        <property name="halign">center</property>
+                        <property name="valign">center</property>
+                        <property name="hexpand">True</property>
+                        <property name="vexpand">True</property>
+                        <property name="orientation">vertical</property>
+                        <property name="spacing">6</property>
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="row">0</property>
+                        </layout>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="opacity">0.8</property>
+                            <property name="pixel-size">64</property>
+                            <property name="icon-name">srain</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="opacity">0.8</property>
+                            <property name="label" translatable="yes">&lt;big&gt;Welcome to Srain!&lt;/big&gt;</property>
+                            <property name="use-markup">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox" id="welcome_connect_box"/>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkStackPage">
+                <property name="name">main</property>
+                <property name="child">
+                  <object class="GtkPaned" id="main_paned">
+                    <property name="position">300</property>
+                    <property name="resize-start-child">False</property>
+                    <property name="shrink-start-child">False</property>
+                    <property name="shrink-end-child">False</property>
+                    <property name="start-child">
+                      <object class="GtkBox" id="side_box">
+                        <property name="width-request">300</property>
+                        <property name="orientation">vertical</property>
+                      </object>
+                    </property>
+                    <property name="end-child">
+                      <object class="GtkBox">
+                        <property name="orientation">vertical</property>
+                        <style>
+                          <class name="linked"/>
+                        </style>
+                        <child>
+                          <object class="GtkStack" id="buffer_stack">
+                            <property name="vexpand">True</property>
+                            <style>
+                              <class name="linked"/>
+                            </style>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator"/>
+                        </child>
+                        <child>
+                          <object class="GtkBox">
+                            <style>
+                              <class name="linked"/>
+                            </style>
+                            <child>
+                              <object class="GtkButton" id="plugin_button">
+                                <property name="visible">False</property>
+                                <property name="focus-on-click">False</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkTextView" id="input_text_view">
+                                <property name="hexpand">True</property>
+                                <property name="wrap-mode">word-char</property>
+                                <property name="left-margin">4</property>
+                                <property name="right-margin">4</property>
+                                <property name="top-margin">7</property>
+                                <property name="bottom-margin">7</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="insert_emoji_button">
+                                <property name="visible">False</property>
+                                <property name="focus-on-click">False</property>
+                                <property name="tooltip-text" translatable="yes">Insert emoji</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="send_button">
+                                <property name="focus-on-click">False</property>
+                                <property name="tooltip-text" translatable="yes">Send message</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </property>
+                  </object>
+                </property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+
+    <child type="titlebar">
+      <object class="GtkPaned" id="title_paned">
+        <property name="position">300</property>
+        <property name="resize-start-child">False</property>
+        <property name="shrink-start-child">False</property>
+        <property name="start-child">
+          <object class="GtkHeaderBar" id="side_header_bar">
+            <property name="width-request">300</property>
+            <child type="start">
+              <object class="GtkBox" id="side_left_header_box">
+                <property name="name">window_header_box</property>
+                <child>
+                  <object class="GtkMenuButton" id="start_menu_button">
+                    <child>
+                      <object class="GtkImage" id="start_image">
+                        <property name="icon-name">go-home-symbolic</property>
+                        <property name="use-fallback">True</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child type="end">
+              <object class="GtkBox" id="side_right_header_box">
+                <property name="name">f</property>
+                <style>
+                  <class name="linked"/>
+                </style>
+                <child>
+                  <object class="GtkButton" id="connect_button">
+                    <property name="focus-on-click">False</property>
+                    <property name="tooltip-text" translatable="yes">Connect</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="join_button">
+                    <property name="focus-on-click">False</property>
+                    <property name="tooltip-text" translatable="yes">Join</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </property>
+        <property name="end-child">
+          <object class="GtkHeaderBar" id="buffer_header_bar">
+            <property name="title-widget">
+              <object class="GtkBox" id="buffer_title_box">
+                <property name="spacing">6</property>
+                <child>
+                  <object class="GtkLabel" id="buffer_title_label">
+                    <property name="label">&lt;title&gt;</property>
+                    <attributes>
+                      <attribute name="weight" value="bold"/>
+                    </attributes>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="buffer_subtitle_label">
+                    <property name="label">&lt;subtitle&gt;</property>
+                    <style>
+                      <class name="dim-label"/>
+                    </style>
+                  </object>
+                </child>
+              </object>
+            </property>
+            <child type="end">
+              <object class="GtkMenuButton" id="buffer_menu_button">
+                <property name="focus-on-click">False</property>
+                <property name="direction">none</property>
+              </object>
+            </child>
+          </object>
+        </property>
+      </object>
+    </child>
+  </template>
+</interface>

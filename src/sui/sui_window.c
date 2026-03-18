@@ -113,6 +113,8 @@ static int get_buffer_count(SuiWindow *self);
 static void send_message_cancel(SuiWindow *self);
 static void send_message(SuiWindow *self);
 static void set_server_visibility(SuiWindow* self);
+static void setup_window_stack_pages(SuiWindow *self);
+static void setup_button_icons(SuiWindow *self);
 
 static void on_destroy(SuiWindow *self);
 static void on_notify_is_active(GObject *object, GParamSpec *pspec,
@@ -213,6 +215,8 @@ static void sui_window_init(SuiWindow *self){
 #endif
 
     gtk_widget_init_template(GTK_WIDGET(self));
+    setup_window_stack_pages(self);
+    setup_button_icons(self);
 
     /* Bind title_paned, header_paned and main_paned */
     g_object_bind_property(
@@ -394,7 +398,12 @@ static void sui_window_class_init(SuiWindowClass *class){
             obj_properties);
 
     widget_class = GTK_WIDGET_CLASS(class);
+#if GTK_MAJOR_VERSION >= 4
+    gtk_widget_class_set_template_from_resource(widget_class,
+            "/im/srain/Srain/window.ui");
+#else
     gtk_widget_class_set_template_from_resource(widget_class, "/im/srain/Srain/window.glade");
+#endif
 
     gtk_widget_class_bind_template_child(widget_class, SuiWindow, title_paned);
     gtk_widget_class_bind_template_child(widget_class, SuiWindow, window_box);
@@ -544,6 +553,41 @@ void sui_window_set_subtitle(SuiWindow *self, const char *subtitle){
 
 static void sui_window_set_events(SuiWindow *self, SuiWindowEvents *events) {
     self->events = events;
+}
+
+static void setup_window_stack_pages(SuiWindow *self){
+#if GTK_MAJOR_VERSION >= 4
+    GtkWidget *child;
+    GtkStackPage *page;
+
+    child = gtk_widget_get_first_child(GTK_WIDGET(self->window_stack));
+    if (child) {
+        page = gtk_stack_get_page(self->window_stack, child);
+        gtk_stack_page_set_name(page, WINDOW_STACK_PAGE_WELCOME);
+        child = gtk_widget_get_next_sibling(child);
+    }
+    if (child) {
+        page = gtk_stack_get_page(self->window_stack, child);
+        gtk_stack_page_set_name(page, WINDOW_STACK_PAGE_MAIN);
+    }
+    gtk_stack_set_visible_child_name(self->window_stack,
+            WINDOW_STACK_PAGE_WELCOME);
+#endif
+}
+
+static void setup_button_icons(SuiWindow *self){
+#if GTK_MAJOR_VERSION >= 4
+    gtk_button_set_child(self->plugin_button, gtk_image_new_from_icon_name(
+                "application-x-addon-symbolic"));
+    gtk_button_set_child(self->connect_button, gtk_image_new_from_icon_name(
+                "network-server-symbolic"));
+    gtk_button_set_child(self->join_button, gtk_image_new_from_icon_name(
+                "contact-new-symbolic"));
+    gtk_button_set_child(self->insert_emoji_button,
+            gtk_image_new_from_icon_name("face-smile"));
+    gtk_button_set_child(self->send_button, gtk_image_new_from_icon_name(
+                "document-send-symbolic"));
+#endif
 }
 
 static void update_header(SuiWindow *self){
