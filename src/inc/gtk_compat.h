@@ -363,39 +363,23 @@ static inline void srn_gtk_entry_set_text(GtkEntry *entry, const char *text){
 }
 
 static inline char *srn_gtk_file_chooser_get_filename(GtkFileChooser *chooser){
-#if GTK_MAJOR_VERSION >= 4
-    GFile *file;
-    char *path;
-
-    file = gtk_file_chooser_get_file(chooser);
-    if (!file){
-        return NULL;
-    }
-
-    path = g_file_get_path(file);
-    g_object_unref(file);
-
-    return path;
-#else
+#if GTK_MAJOR_VERSION < 4
     return gtk_file_chooser_get_filename(chooser);
+#else
+    (void)chooser;
+    g_assert_not_reached();
+    return NULL;
 #endif
 }
 
 static inline void srn_gtk_file_chooser_set_filename(GtkFileChooser *chooser,
         const char *filename){
-#if GTK_MAJOR_VERSION >= 4
-    GFile *file;
-
-    if (filename == NULL || filename[0] == '\0'){
-        gtk_file_chooser_set_file(chooser, NULL, NULL);
-        return;
-    }
-
-    file = g_file_new_for_path(filename);
-    gtk_file_chooser_set_file(chooser, file, NULL);
-    g_object_unref(file);
-#else
+#if GTK_MAJOR_VERSION < 4
     gtk_file_chooser_set_filename(chooser, filename);
+#else
+    (void)chooser;
+    (void)filename;
+    g_assert_not_reached();
 #endif
 }
 

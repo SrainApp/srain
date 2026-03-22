@@ -163,9 +163,11 @@ static void stack_on_child_changed(GtkWidget *widget, GParamSpec *pspec,
 static void update_status(SuiJoinPanel *self);
 static void update_focus(SuiJoinPanel *self);
 
+#if GTK_MAJOR_VERSION >= 4
 static const int match_modes[] = {
     MATCH_CHANNEL,
 };
+#endif
 
 /*****************************************************************************
  * GObject functions

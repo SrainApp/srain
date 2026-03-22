@@ -24,22 +24,29 @@ gnome = import('gnome')
 srcs += gnome.compile_resources('srain-resources', 'srain.gresource.xml')
 
 if get_option('gtk4_experimental')
-  blueprint_compiler = find_program('blueprint-compiler')
-  gtk4_blueprints = custom_target('gtk4-blueprints',
-    input: files(
-      'ui-gtk4/app_menu.blp',
-      'ui-gtk4/side_bar_item.blp',
-    ),
-    output: '.',
-    command: [
-      blueprint_compiler,
-      'batch-compile',
-      '@OUTPUT@',
-      '@CURRENT_SOURCE_DIR@',
-      '@INPUT@',
-    ],
-    build_by_default: true,
-  )
+  blueprint_compiler = find_program('blueprint-compiler', required: false)
+  if blueprint_compiler.found()
+    gtk4_blueprints = custom_target('gtk4-blueprints',
+      input: files(
+        'ui-gtk4/app_menu.blp',
+        'ui-gtk4/side_bar_item.blp',
+      ),
+      output: [
+        'app_menu.ui',
+        'side_bar_item.ui',
+      ],
+      command: [
+        blueprint_compiler,
+        'batch-compile',
+        '@OUTDIR@',
+        '@CURRENT_SOURCE_DIR@',
+        '@INPUT@',
+      ],
+      build_by_default: true,
+    )
+  else
+    warning('blueprint-compiler not found; skipping gtk4 blueprint generation')
+  endif
 endif
 
 subdir('metainfo')
