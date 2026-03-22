@@ -21,6 +21,12 @@
 
 #include <gtk/gtk.h>
 
+#if GTK_MAJOR_VERSION >= 4
+typedef GdkSurface SuiUserSurface;
+#else
+typedef GdkWindow SuiUserSurface;
+#endif
+
 typedef struct _SuiUser SuiUser;
 typedef struct _SuiUserStat SuiUserStat;
 
@@ -37,7 +43,8 @@ SuiUser *sui_user_new_from_iter(GtkListStore *list_store, GtkTreeIter *iter);
 #endif
 void sui_user_free(SuiUser *self);
 
-void sui_user_update(SuiUser *self, GtkStyleContext *style_context, GdkSurface *surface);
+void sui_user_update(SuiUser *self, GtkStyleContext *style_context,
+        SuiUserSurface *surface);
 int sui_user_compare(SuiUser *user1, SuiUser *user2);
 
 #if GTK_MAJOR_VERSION < 4

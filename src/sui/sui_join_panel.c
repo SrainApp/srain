@@ -137,7 +137,6 @@ static void refresh_button_on_clicked(gpointer user_data);
 static void chan_list_box_on_row_activated(GtkListBox *box, GtkListBoxRow *row,
         gpointer user_data);
 static void rebuild_chan_list_box(SuiJoinPanel *self);
-static const char *get_selected_channel(SuiJoinPanel *self);
 static GtkWidget *new_channel_row(const char *chan, int users, const char *topic);
 static gboolean chan_item_visible(SuiJoinPanel *self, const char *chan,
         int users, const char *topic);
@@ -147,6 +146,7 @@ static void chan_list_model_on_items_changed(GListModel *model,
 static void chan_tree_view_on_row_activate(GtkTreeView *view,
         GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data);
 #endif
+static const char *get_selected_channel(SuiJoinPanel *self);
 gboolean chan_tree_visible_func(GtkTreeModel *model, GtkTreeIter *iter,
         gpointer user_data);
 static void chan_tree_model_filter_refilter(gpointer user_data);
@@ -604,6 +604,28 @@ static void chan_tree_view_on_row_activate(GtkTreeView *view,
     gtk_stack_set_visible_child_name(self->stack, PAGE_JOIN_CHANNEL);
 
     g_free(chan);
+}
+
+static const char *get_selected_channel(SuiJoinPanel *self){
+    GtkTreeSelection *selection;
+    GtkTreeModel *model;
+    GtkTreeIter iter;
+    char *chan;
+
+    selection = gtk_tree_view_get_selection(self->chan_tree_view);
+    if (!gtk_tree_selection_get_selected(selection, &model, &iter)){
+        return NULL;
+    }
+
+    gtk_tree_model_get(model, &iter,
+            CHANNEL_LIST_STORE_COL_CHANNEL, &chan,
+            -1);
+    if (!chan){
+        return NULL;
+    }
+
+    g_object_set_data_full(G_OBJECT(self), "selected-channel", chan, g_free);
+    return g_object_get_data(G_OBJECT(self), "selected-channel");
 }
 #endif
 

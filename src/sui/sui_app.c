@@ -654,7 +654,7 @@ static void on_action_prefs(GSimpleAction *action, GVariant  *parameter,
         default:
             break;
     }
-    gtk_window_destroy(GTK_WINDOW(dialog));
+    srn_gtk_window_destroy(GTK_WINDOW(dialog));
 }
 
 static void on_action_exit(GSimpleAction *action, GVariant  *parameter,

@@ -374,7 +374,7 @@ void sui_message_box(const char *title, const char *msg){
         // TODO: accpet markuped message
         gtk_message_dialog_set_markup(GTK_MESSAGE_DIALOG(dia), markuped_msg);
         srn_gtk_dialog_run(GTK_DIALOG(dia));
-        gtk_window_destroy(GTK_WINDOW(dia));
+        srn_gtk_window_destroy(GTK_WINDOW(dia));
     }
 #endif
     g_free(markuped_msg);

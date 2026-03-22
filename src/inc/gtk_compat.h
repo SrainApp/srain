@@ -459,8 +459,8 @@ static inline GtkWindow *srn_gtk_widget_get_window_root(GtkWidget *widget){
 #endif
 }
 
-static inline GdkSurface *srn_gtk_widget_get_surface(GtkWidget *widget){
 #if GTK_MAJOR_VERSION >= 4
+static inline GdkSurface *srn_gtk_widget_get_surface(GtkWidget *widget){
     GtkRoot *root;
 
     root = gtk_widget_get_root(widget);
@@ -468,10 +468,12 @@ static inline GdkSurface *srn_gtk_widget_get_surface(GtkWidget *widget){
         return NULL;
     }
     return gtk_native_get_surface(GTK_NATIVE(root));
-#else
-    return gtk_widget_get_window(widget);
-#endif
 }
+#else
+static inline GdkWindow *srn_gtk_widget_get_surface(GtkWidget *widget){
+    return gtk_widget_get_window(widget);
+}
+#endif
 
 static inline void srn_gtk_process_pending_events(void){
 #if GTK_MAJOR_VERSION >= 4
@@ -525,6 +527,14 @@ static inline void srn_gtk_dialog_response(GtkDialog *dialog, int response_id){
     g_signal_emit_by_name(dialog, "response", response_id);
 #else
     gtk_dialog_response(dialog, response_id);
+#endif
+}
+
+static inline void srn_gtk_window_destroy(GtkWindow *window){
+#if GTK_MAJOR_VERSION >= 4
+    gtk_window_destroy(window);
+#else
+    gtk_widget_destroy(GTK_WIDGET(window));
 #endif
 }
 

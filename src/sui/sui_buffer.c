@@ -290,7 +290,11 @@ GtkTreeModel* sui_buffer_completion_func(const char *context, void *user_data) {
     class = SUI_BUFFER_GET_CLASS(self);
     g_return_val_if_fail(class->completion_func, NULL);
 
+#if GTK_MAJOR_VERSION >= 4
     return class->completion_func(self, context);
+#else
+    return GTK_TREE_MODEL(class->completion_func(self, context));
+#endif
 }
 
 /**

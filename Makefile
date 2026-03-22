@@ -15,6 +15,7 @@ default:
 
 .PHONY: build
 build: | $(BUILDDIR)
+	$(MESON) configure $(BUILDDIR) -Dgtk4_experimental=false
 	$(MESON) compile -C $(BUILDDIR)
 
 .PHONY: run
@@ -39,6 +40,7 @@ inspect:
 
 .PHONY: install
 install: | $(BUILDDIR) $(PREFIX)
+	$(MESON) configure $(BUILDDIR) -Dgtk4_experimental=false
 	$(MESON) install -C $(BUILDDIR)
 
 .PHONY: clean
@@ -55,9 +57,9 @@ $(BUILDDIR): meson.build | $(PREFIX)
 		source ./script/macos-pkgconfig-path.sh; \
 	fi; \
     if [[ "$$OSTYPE" == "linux-gnu"* ]]; then \
-		$(MESON) setup --prefix=$(PREFIX) --buildtype=debug $@; \
+		$(MESON) setup --prefix=$(PREFIX) --buildtype=debug -Dgtk4_experimental=false $@; \
 	else \
-		$(MESON) setup --prefix=$(PREFIX) --buildtype=debug -Dapp_indicator=false $@; \
+		$(MESON) setup --prefix=$(PREFIX) --buildtype=debug -Dapp_indicator=false -Dgtk4_experimental=false $@; \
 	fi
 
 $(PREFIX):

@@ -53,7 +53,7 @@ struct _SuiUser {
 };
 
 static cairo_surface_t* new_user_icon_from_type(SrnChatUserType type,
-        GtkStyleContext *style_context, GdkSurface *surface);
+        GtkStyleContext *style_context, SuiUserSurface *surface);
 
 /*****************************************************************************
  * Expored functions
@@ -102,7 +102,7 @@ int sui_user_compare(SuiUser *user1, SuiUser *user2){
 }
 
 void sui_user_update(SuiUser *self, GtkStyleContext *style_context,
-        GdkSurface *surface){
+        SuiUserSurface *surface){
     g_return_if_fail(self->stat);
     g_return_if_fail(self->ctx);
 
@@ -189,7 +189,7 @@ const char* sui_user_get_nickname(SuiUser *self){
  *****************************************************************************/
 
 static cairo_surface_t* new_user_icon_from_type(SrnChatUserType type,
-        GtkStyleContext *style_context, GdkSurface *gdk_surface){
+        GtkStyleContext *style_context, SuiUserSurface *gdk_surface){
 #if GTK_MAJOR_VERSION >= 4
     return NULL;
 #else
@@ -227,14 +227,22 @@ static cairo_surface_t* new_user_icon_from_type(SrnChatUserType type,
             gtk_icon_theme_get_default(),
             "user-available",
             16,
+#if GTK_MAJOR_VERSION >= 4
             gdk_surface_get_scale_factor(gdk_surface),
+#else
+            gdk_window_get_scale_factor(gdk_surface),
+#endif
             GTK_ICON_LOOKUP_FORCE_SYMBOLIC);
     if (!icon_info) {
         icon_info = gtk_icon_theme_lookup_icon_for_scale(
                 gtk_icon_theme_get_default(),
                 "user-available",
                 16,
+#if GTK_MAJOR_VERSION >= 4
                 gdk_surface_get_scale_factor(gdk_surface),
+#else
+                gdk_window_get_scale_factor(gdk_surface),
+#endif
                 0);
     }
     g_return_val_if_fail(icon_info, NULL);
@@ -256,7 +264,11 @@ static cairo_surface_t* new_user_icon_from_type(SrnChatUserType type,
 
     g_return_val_if_fail(pixbuf, NULL);
     icon_surface = gdk_cairo_surface_create_from_pixbuf(pixbuf,
+#if GTK_MAJOR_VERSION >= 4
             gdk_surface_get_scale_factor(gdk_surface), gdk_surface);
+#else
+            gdk_window_get_scale_factor(gdk_surface), gdk_surface);
+#endif
     g_object_unref(pixbuf);
     return icon_surface;
 #endif
