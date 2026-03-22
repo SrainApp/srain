@@ -29,11 +29,13 @@ if get_option('gtk4_experimental')
     gtk4_blueprints = custom_target('gtk4-blueprints',
       input: files(
         'ui-gtk4/app_menu.blp',
+        'ui-gtk4/image_window.blp',
         'ui-gtk4/side_bar_item.blp',
         'ui-gtk4/user_list.blp',
       ),
       output: [
         'app_menu.ui',
+        'image_window.ui',
         'side_bar_item.ui',
         'user_list.ui',
       ],
