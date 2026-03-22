@@ -190,8 +190,7 @@ static char *strip_markup_tag(const char *markup){
     g_markup_parse_context_end_parse(ctx, NULL);
     g_markup_parse_context_free(ctx);
 
-    text = str->str;
-    g_string_free(str, FALSE);
+    text = g_string_free_and_steal(str);
 
     return text;
 }

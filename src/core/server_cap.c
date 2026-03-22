@@ -222,8 +222,7 @@ char* srn_server_cap_dump(SrnServerCap *scap){
         }
     }
 
-    res = str->str;
-    g_string_free(str, FALSE);
+    res = g_string_free_and_steal(str);
 
     return res;
 }

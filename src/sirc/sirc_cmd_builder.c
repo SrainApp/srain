@@ -169,7 +169,6 @@ char* sirc_command_builder_build(SircCommandBuilder *self) {
     g_string_append(buf, SIRC_RFC_CRLF);
 
     g_warn_if_fail(buf->len == self->expected_len);
-    char *cmd = buf->str;
-    g_string_free(buf, FALSE);
+    char *cmd = g_string_free_and_steal(buf);
     return cmd;
 }

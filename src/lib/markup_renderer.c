@@ -93,8 +93,7 @@ SrnRet srn_markup_renderer_render(SrnMarkupRenderer *self,
     }
 
     if (markup_out) {
-        *markup_out = self->str->str;
-        g_string_free(self->str, FALSE);
+        *markup_out = g_string_free_and_steal(self->str);
     } else {
         g_string_free(self->str, TRUE);
     }

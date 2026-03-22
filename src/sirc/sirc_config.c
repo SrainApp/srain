@@ -70,8 +70,7 @@ char* sirc_config_dump(SircConfig *cfg){
             _("TLS: %1$s, TLS verify certificate: %2$s, Encoding: %3$s"),
             cfg->tls ? t : f, cfg->tls_noverify ? f : t, cfg->encoding);
 
-    char *dump = str->str;
-    g_string_free(str, FALSE);
+    char *dump = g_string_free_and_steal(str);
 
     return dump;
 }
