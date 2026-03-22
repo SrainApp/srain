@@ -68,8 +68,13 @@ static void sui_side_bar_item_class_init(SuiSideBarItemClass *class){
     GtkWidgetClass *widget_class;
 
     widget_class = GTK_WIDGET_CLASS(class);
+#if GTK_MAJOR_VERSION >= 4
+    gtk_widget_class_set_template_from_resource(widget_class,
+            "/im/srain/Srain/side_bar_item.ui");
+#else
     gtk_widget_class_set_template_from_resource(widget_class,
             "/im/srain/Srain/side_bar_item.glade");
+#endif
     gtk_widget_class_bind_template_child(widget_class, SuiSideBarItem, image);
     gtk_widget_class_bind_template_child(widget_class, SuiSideBarItem, title_label);
     gtk_widget_class_bind_template_child(widget_class, SuiSideBarItem, subtitle_label);

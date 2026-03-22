@@ -523,18 +523,30 @@ static GMenuModel *new_app_menu_model(bool tray_menu){
 
 static void on_startup(SuiApplication *self){
     SrnRet ret;
+#if GTK_MAJOR_VERSION >= 4
+    GtkBuilder *builder;
+#endif
     GMenuModel *tray_menu_model;
-    GMenuModel *popover_menu_model;
 
     tray_menu_model = new_app_menu_model(TRUE);
-    popover_menu_model = new_app_menu_model(FALSE);
-
     self->menu = GTK_WIDGET(srn_gtk_popover_new_from_menu_model(tray_menu_model));
+    g_object_unref(tray_menu_model);
+
+#if GTK_MAJOR_VERSION >= 4
+    builder = gtk_builder_new_from_resource("/im/srain/Srain/app_menu.ui");
+    self->popover_menu = GTK_POPOVER(gtk_builder_get_object(builder,
+            "app_popover_menu"));
+    g_object_ref_sink(self->popover_menu);
+    g_object_unref(builder);
+#else
+    GMenuModel *popover_menu_model;
+
+    popover_menu_model = new_app_menu_model(FALSE);
     self->popover_menu = srn_gtk_popover_new_from_menu_model(
             popover_menu_model);
     srn_gtk_widget_add_css_class(GTK_WIDGET(self->popover_menu), "sui-panel");
-    g_object_unref(tray_menu_model);
     g_object_unref(popover_menu_model);
+#endif
 
 #ifdef ENABLE_APP_INDICATOR
     self->tray_icon = app_indicator_new(PACKAGE_APPID, APP_ICON,
