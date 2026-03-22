@@ -38,6 +38,7 @@
 #include "sui_window.h"
 #include "sui_buffer.h"
 #include "sui_chat_buffer.h"
+#include "sui_server_buffer.h"
 #include "gtk_compat.h"
 #include "sui_join_panel.h"
 
@@ -89,8 +90,10 @@ struct _SuiJoinPanel {
     GtkTreeViewColumn *topic_tree_view_column;
 #endif
     /* Channel list models */
+#if GTK_MAJOR_VERSION >= 4
+    GListModel *chan_list_model;
+#else
     GtkTreeModel *chan_tree_model;
-#if GTK_MAJOR_VERSION < 4
     GtkTreeModelFilter *chan_tree_model_filter;
     GtkTreeModelSort *chan_tree_model_sorter;
 #endif
@@ -136,6 +139,10 @@ static void chan_list_box_on_row_activated(GtkListBox *box, GtkListBoxRow *row,
 static void rebuild_chan_list_box(SuiJoinPanel *self);
 static const char *get_selected_channel(SuiJoinPanel *self);
 static GtkWidget *new_channel_row(const char *chan, int users, const char *topic);
+static gboolean chan_item_visible(SuiJoinPanel *self, const char *chan,
+        int users, const char *topic);
+static void chan_list_model_on_items_changed(GListModel *model,
+        guint position, guint removed, guint added, gpointer user_data);
 #else
 static void chan_tree_view_on_row_activate(GtkTreeView *view,
         GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data);
@@ -143,8 +150,10 @@ static void chan_tree_view_on_row_activate(GtkTreeView *view,
 gboolean chan_tree_visible_func(GtkTreeModel *model, GtkTreeIter *iter,
         gpointer user_data);
 static void chan_tree_model_filter_refilter(gpointer user_data);
+#if GTK_MAJOR_VERSION < 4
 static void chan_tree_model_on_row_changed(GtkTreeModel *tree_model,
         GtkTreePath *path, GtkTreeIter *iter, gpointer user_data);
+#endif
 static void chan_entry_on_changed(GtkEditable *editable, gpointer user_data);
 static void on_password_lookup(GObject *source, GAsyncResult *result,
         gpointer user_data);
@@ -286,14 +295,21 @@ void sui_join_panel_clear(SuiJoinPanel *self){
     gtk_spin_button_set_value(self->max_users_spin_button, -1);
 }
 
-void sui_join_panel_set_model(SuiJoinPanel *self, GtkTreeModel *model){
 #if GTK_MAJOR_VERSION >= 4
-    g_return_if_fail(!self->chan_tree_model);
+void sui_join_panel_set_list_model(SuiJoinPanel *self, GListModel *model){
+    g_return_if_fail(!self->chan_list_model);
+
+    self->chan_list_model = g_object_ref(model);
+    g_signal_connect(self->chan_list_model, "items-changed",
+            G_CALLBACK(chan_list_model_on_items_changed), self);
+    rebuild_chan_list_box(self);
+    update_status(self);
+}
 #else
+void sui_join_panel_set_model(SuiJoinPanel *self, GtkTreeModel *model){
     g_return_if_fail(!self->chan_tree_model
             && !self->chan_tree_model_filter
             && !self->chan_tree_model_sorter);
-#endif
 
     /* Init model */
     self->chan_tree_model = model;
@@ -302,9 +318,6 @@ void sui_join_panel_set_model(SuiJoinPanel *self, GtkTreeModel *model){
     g_signal_connect(self->chan_tree_model, "row-changed",
             G_CALLBACK(chan_tree_model_on_row_changed), self);
 
-#if GTK_MAJOR_VERSION >= 4
-    rebuild_chan_list_box(self);
-#else
     /* Init filter */
     self->chan_tree_model_filter =
         GTK_TREE_MODEL_FILTER(gtk_tree_model_filter_new(model, NULL));
@@ -317,8 +330,8 @@ void sui_join_panel_set_model(SuiJoinPanel *self, GtkTreeModel *model){
                     GTK_TREE_MODEL(self->chan_tree_model_filter)));
     gtk_tree_view_set_model(self->chan_tree_view,
             GTK_TREE_MODEL(self->chan_tree_model_sorter));
-#endif
 }
+#endif
 
 void sui_join_panel_set_is_adding(SuiJoinPanel *self, bool is_adding) {
     self->is_adding = is_adding;
@@ -596,36 +609,38 @@ static void chan_tree_view_on_row_activate(GtkTreeView *view,
 
 static void chan_tree_model_filter_refilter(gpointer user_data){
     char *status;
-    GtkTreeModel *model;
     SuiJoinPanel *self;
     int cur;
     int max;
 
     self = user_data;
-    model = self->chan_tree_model;
 
 #if GTK_MAJOR_VERSION < 4
+    GtkTreeModel *model;
     GtkTreeModelFilter *filter;
 
+    model = self->chan_tree_model;
     filter = self->chan_tree_model_filter;
     gtk_tree_model_filter_refilter(GTK_TREE_MODEL_FILTER(filter));
     /* Update status while all channels have loaded */
     cur = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(filter), NULL);
+    max = model ? gtk_tree_model_iter_n_children(model, NULL) : 0;
 #else
     rebuild_chan_list_box(self);
-    cur = gtk_widget_get_first_child(GTK_WIDGET(self->chan_list_box)) ? 0 : 0;
+    cur = 0;
     for (GtkWidget *child = gtk_widget_get_first_child(GTK_WIDGET(self->chan_list_box));
             child != NULL;
             child = gtk_widget_get_next_sibling(child)){
         cur++;
     }
+    max = self->chan_list_model ? g_list_model_get_n_items(self->chan_list_model) : 0;
 #endif
-    max = model ? gtk_tree_model_iter_n_children(model, NULL) : 0;
     status = g_strdup_printf(_("Showing %1$d of %2$d channels"), cur, max);
     gtk_label_set_text(self->status_label, status);
     g_free(status);
 }
 
+#if GTK_MAJOR_VERSION < 4
 gboolean chan_tree_visible_func(GtkTreeModel *model, GtkTreeIter *iter,
         gpointer user_data){
     int users;
@@ -686,7 +701,9 @@ FIN:
 
     return visable;
 }
+#endif
 
+#if GTK_MAJOR_VERSION < 4
 static void chan_tree_model_on_row_changed(GtkTreeModel *tree_model,
         GtkTreePath *path, GtkTreeIter *iter, gpointer user_data){
     SuiJoinPanel *self;
@@ -698,6 +715,7 @@ static void chan_tree_model_on_row_changed(GtkTreeModel *tree_model,
 #endif
     update_status(self);
 }
+#endif
 
 static void update_status(SuiJoinPanel *self){
     int cur;
@@ -710,7 +728,13 @@ static void update_status(SuiJoinPanel *self){
         gtk_spinner_stop(self->status_spinner);
     }
 
-    if (self->chan_tree_model) {
+    if (
+#if GTK_MAJOR_VERSION >= 4
+            self->chan_list_model
+#else
+            self->chan_tree_model
+#endif
+       ) {
 #if GTK_MAJOR_VERSION >= 4
         cur = 0;
         for (GtkWidget *child = gtk_widget_get_first_child(GTK_WIDGET(self->chan_list_box));
@@ -718,7 +742,7 @@ static void update_status(SuiJoinPanel *self){
                 child = gtk_widget_get_next_sibling(child)){
             cur++;
         }
-        max = gtk_tree_model_iter_n_children(self->chan_tree_model, NULL);
+        max = g_list_model_get_n_items(self->chan_list_model);
 #else
         cur = gtk_tree_model_iter_n_children(
                 GTK_TREE_MODEL(self->chan_tree_model_filter), NULL);
@@ -802,41 +826,86 @@ static void update_focus(SuiJoinPanel *self) {
 }
 
 #if GTK_MAJOR_VERSION >= 4
-static void rebuild_chan_list_box(SuiJoinPanel *self){
-    GtkTreeIter iter;
-    GtkTreeModel *model;
+static gboolean chan_item_visible(SuiJoinPanel *self, const char *chan,
+        int users, const char *topic){
+    int min_users;
+    int max_users;
+    const char *input;
 
+    (void)topic;
+
+    DBG_FR("cha: %s, users: %d, topic: %s", chan, users, topic);
+
+    if (!chan) {
+        return FALSE;
+    }
+
+    min_users = gtk_spin_button_get_value(self->min_users_spin_button);
+    max_users = gtk_spin_button_get_value(self->max_users_spin_button);
+    input = srn_gtk_entry_get_text(self->search_entry);
+
+    if (min_users != -1 && users < min_users){
+        return FALSE;
+    }
+    if (max_users != -1 && users > max_users){
+        return FALSE;
+    }
+
+    switch (self->match){
+        case MATCH_CHANNEL:
+            return str_is_empty(input) || g_strstr_len(chan, -1, input) != NULL;
+        case MATCH_CHANNEL_WITH_REGEX:
+        default:
+            ERR_FR("Unsupported match type");
+            return FALSE;
+    }
+}
+
+static void chan_list_model_on_items_changed(GListModel *model,
+        guint position, guint removed, guint added, gpointer user_data){
+    SuiJoinPanel *self;
+
+    (void)model;
+    (void)position;
+    (void)removed;
+    (void)added;
+
+    self = SUI_JOIN_PANEL(user_data);
+    rebuild_chan_list_box(self);
+    update_status(self);
+}
+
+static void rebuild_chan_list_box(SuiJoinPanel *self){
     while (gtk_widget_get_first_child(GTK_WIDGET(self->chan_list_box))){
         gtk_list_box_remove(self->chan_list_box,
                 gtk_widget_get_first_child(GTK_WIDGET(self->chan_list_box)));
     }
 
-    if (!self->chan_tree_model){
+    if (!self->chan_list_model){
         return;
     }
 
-    model = self->chan_tree_model;
-    if (!gtk_tree_model_get_iter_first(model, &iter)){
-        return;
-    }
-
-    do {
-        char *chan;
-        char *topic;
+    for (guint i = 0; i < g_list_model_get_n_items(self->chan_list_model); i++){
+        SuiChannelListItem *item;
+        const char *chan;
+        const char *topic;
         int users;
 
-        gtk_tree_model_get(model, &iter,
-                CHANNEL_LIST_STORE_COL_CHANNEL, &chan,
-                CHANNEL_LIST_STORE_COL_USERS, &users,
-                CHANNEL_LIST_STORE_COL_TOPIC, &topic,
-                -1);
-        if (chan && chan_tree_visible_func(model, &iter, self)){
+        item = g_list_model_get_item(self->chan_list_model, i);
+        if (!item){
+            continue;
+        }
+
+        chan = sui_channel_list_item_get_channel(item);
+        users = sui_channel_list_item_get_users(item);
+        topic = sui_channel_list_item_get_topic(item);
+
+        if (chan_item_visible(self, chan, users, topic)){
             gtk_list_box_insert(self->chan_list_box,
                     new_channel_row(chan, users, topic), -1);
         }
-        g_free(chan);
-        g_free(topic);
-    } while (gtk_tree_model_iter_next(model, &iter));
+        g_object_unref(item);
+    }
 }
 
 static const char *get_selected_channel(SuiJoinPanel *self){

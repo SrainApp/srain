@@ -43,7 +43,11 @@ struct _SuiServerBuffer {
     GtkWidget *quit_menu_item;
     GtkWidget *reconn_menu_item;
 
+#if GTK_MAJOR_VERSION >= 4
+    GListStore *chan_list_store;
+#else
     GtkListStore *chan_list_store;
+#endif
     SuiJoinPanel *join_panel;
 };
 
@@ -54,6 +58,67 @@ struct _SuiServerBufferClass {
 static void disconn_menu_item_on_activate(GtkWidget* widget, gpointer user_data);
 static void quit_menu_item_on_activate(GtkWidget* widget, gpointer user_data);
 static void reconn_menu_item_on_activate(GtkWidget* widget, gpointer user_data);
+
+#if GTK_MAJOR_VERSION >= 4
+struct _SuiChannelListItem {
+    GObject parent;
+
+    char *chan;
+    int users;
+    char *topic;
+};
+
+typedef struct _SuiChannelListItemClass {
+    GObjectClass parent_class;
+} SuiChannelListItemClass;
+
+G_DEFINE_TYPE(SuiChannelListItem, sui_channel_list_item, G_TYPE_OBJECT);
+
+static void sui_channel_list_item_finalize(GObject *object){
+    SuiChannelListItem *self;
+
+    self = (SuiChannelListItem *)object;
+    g_free(self->chan);
+    g_free(self->topic);
+
+    G_OBJECT_CLASS(sui_channel_list_item_parent_class)->finalize(object);
+}
+
+static void sui_channel_list_item_class_init(SuiChannelListItemClass *class){
+    GObjectClass *object_class;
+
+    object_class = G_OBJECT_CLASS(class);
+    object_class->finalize = sui_channel_list_item_finalize;
+}
+
+static void sui_channel_list_item_init(SuiChannelListItem *self){
+    (void)self;
+}
+
+static SuiChannelListItem *sui_channel_list_item_new(const char *chan,
+        int users, const char *topic){
+    SuiChannelListItem *self;
+
+    self = g_object_new(sui_channel_list_item_get_type(), NULL);
+    self->chan = g_strdup(chan);
+    self->users = users;
+    self->topic = g_strdup(topic);
+
+    return self;
+}
+
+const char *sui_channel_list_item_get_channel(SuiChannelListItem *self){
+    return self->chan;
+}
+
+int sui_channel_list_item_get_users(SuiChannelListItem *self){
+    return self->users;
+}
+
+const char *sui_channel_list_item_get_topic(SuiChannelListItem *self){
+    return self->topic;
+}
+#endif
 
 /*****************************************************************************
  * GObject functions
@@ -100,13 +165,22 @@ static void sui_server_buffer_init(SuiServerBuffer *self){
     self->buffer_list = NULL;
 
     /* Init channel list */
+#if GTK_MAJOR_VERSION >= 4
+    self->chan_list_store = g_list_store_new(sui_channel_list_item_get_type());
+#else
     self->chan_list_store = gtk_list_store_new(3,
             G_TYPE_STRING,
             G_TYPE_INT,
             G_TYPE_STRING);
+#endif
     self->join_panel = g_object_ref(sui_join_panel_new());
+#if GTK_MAJOR_VERSION >= 4
+    sui_join_panel_set_list_model(self->join_panel,
+            G_LIST_MODEL(self->chan_list_store));
+#else
     sui_join_panel_set_model(self->join_panel,
             GTK_TREE_MODEL(self->chan_list_store));
+#endif
 
     srn_gtk_menu_item_connect_activate(self->disconn_menu_item,
             G_CALLBACK(disconn_menu_item_on_activate), self);
@@ -195,6 +269,13 @@ SuiJoinPanel* sui_server_buffer_get_join_panel(SuiServerBuffer *self){
 
 void sui_server_buffer_add_channel(SuiServerBuffer *self,
         const char *chan, int users, const char *topic){
+#if GTK_MAJOR_VERSION >= 4
+    SuiChannelListItem *item;
+
+    item = sui_channel_list_item_new(chan, users, topic);
+    g_list_store_append(self->chan_list_store, item);
+    g_object_unref(item);
+#else
     GtkTreeIter iter;
     GtkListStore *store;
 
@@ -205,10 +286,15 @@ void sui_server_buffer_add_channel(SuiServerBuffer *self,
             CHANNEL_LIST_STORE_COL_USERS, users,
             CHANNEL_LIST_STORE_COL_TOPIC, topic,
             -1);
+#endif
 }
 
 void sui_server_buffer_clear_channel(SuiServerBuffer *self){
+#if GTK_MAJOR_VERSION >= 4
+    g_list_store_remove_all(self->chan_list_store);
+#else
     gtk_list_store_clear(self->chan_list_store);
+#endif
 }
 
 /*****************************************************************************

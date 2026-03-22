@@ -36,7 +36,11 @@ SuiJoinPanel* sui_join_panel_new();
 
 void sui_join_panel_clear(SuiJoinPanel *self);
 
+#if GTK_MAJOR_VERSION >= 4
+void sui_join_panel_set_list_model(SuiJoinPanel *self, GListModel *model);
+#else
 void sui_join_panel_set_model(SuiJoinPanel *self, GtkTreeModel *model);
+#endif
 void sui_join_panel_set_is_adding(SuiJoinPanel *self, bool is_adding);
 bool sui_join_panel_get_is_adding(SuiJoinPanel *self);
 

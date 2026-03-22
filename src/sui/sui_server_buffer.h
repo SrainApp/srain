@@ -24,6 +24,10 @@
 #include "sui/sui.h"
 #include "sui_join_panel.h"
 
+#if GTK_MAJOR_VERSION >= 4
+typedef struct _SuiChannelListItem SuiChannelListItem;
+#endif
+
 #define CHANNEL_LIST_STORE_COL_CHANNEL     0
 #define CHANNEL_LIST_STORE_COL_USERS       1
 #define CHANNEL_LIST_STORE_COL_TOPIC       2
@@ -37,6 +41,13 @@ typedef struct _SuiServerBufferClass SuiServerBufferClass;
 
 GType sui_server_buffer_get_type(void);
 SuiServerBuffer* sui_server_buffer_new(void *ctx, SuiBufferEvents *events, SuiBufferConfig *cfg);
+
+#if GTK_MAJOR_VERSION >= 4
+GType sui_channel_list_item_get_type(void);
+const char *sui_channel_list_item_get_channel(SuiChannelListItem *self);
+int sui_channel_list_item_get_users(SuiChannelListItem *self);
+const char *sui_channel_list_item_get_topic(SuiChannelListItem *self);
+#endif
 
 void sui_server_buffer_add_buffer(SuiServerBuffer *self, SuiBuffer *buf);
 void sui_server_buffer_rm_buffer(SuiServerBuffer *self, SuiBuffer *buf);
