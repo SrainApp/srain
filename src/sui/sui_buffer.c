@@ -42,7 +42,11 @@
 #include "i18n.h"
 #include "utils.h"
 
+#if GTK_MAJOR_VERSION >= 4
+static GListModel* real_completion_func(SuiBuffer *self, const char *context);
+#else
 static GtkListStore* real_completion_func(SuiBuffer *self, const char *context);
+#endif
 static bool push_input_history(SuiBuffer *self, char *msg);
 static void start_browse_input(SuiBuffer *self);
 static void reset_browse_input(SuiBuffer *self);
@@ -273,7 +277,11 @@ void sui_buffer_complete(SuiBuffer *self){
     sui_completion_complete(self->completion, sui_buffer_completion_func, self);
 }
 
+#if GTK_MAJOR_VERSION >= 4
+GListModel* sui_buffer_completion_func(const char *context, void *user_data) {
+#else
 GtkTreeModel* sui_buffer_completion_func(const char *context, void *user_data) {
+#endif
     SuiBuffer *self;
     SuiBufferClass *class;
 
@@ -282,7 +290,7 @@ GtkTreeModel* sui_buffer_completion_func(const char *context, void *user_data) {
     class = SUI_BUFFER_GET_CLASS(self);
     g_return_val_if_fail(class->completion_func, NULL);
 
-    return GTK_TREE_MODEL(class->completion_func(self, context));
+    return class->completion_func(self, context);
 }
 
 /**
@@ -510,33 +518,56 @@ static void topic_menu_item_on_toggled(GtkWidget* widget, gpointer user_data){
     }
 }
 
-static GtkListStore* real_completion_func(SuiBuffer *self, const char *context){
+static
+#if GTK_MAJOR_VERSION >= 4
+GListModel*
+#else
+GtkListStore*
+#endif
+real_completion_func(SuiBuffer *self, const char *context){
     const char *prev;
     const char *prefix;
     char *normalized_prefix;
     GList *msgs;
     GList *cmds;
-    GtkListStore *store;
     SrnChat *ctx;
+#if GTK_MAJOR_VERSION >= 4
+    GListStore *store;
+#else
+    GtkListStore *store;
+#endif
 
+#if GTK_MAJOR_VERSION >= 4
+    store = g_list_store_new(sui_completion_item_get_type());
+#else
     store = gtk_list_store_new(SUI_COMPLETION_N_COLUMNS,
             G_TYPE_STRING,
             G_TYPE_STRING,
             G_TYPE_STRING);
+#endif
 
     /* Get command completions */
     ctx = sui_buffer_get_ctx(self);
     cmds = srn_chat_complete_command(ctx, context);
     for (GList *lst = cmds; lst; lst = g_list_next(lst)){
         const char *cmd;
-        GtkTreeIter iter;
 
         cmd = lst->data;
+#if GTK_MAJOR_VERSION >= 4
+        SuiCompletionItem *item;
+
+        item = sui_completion_item_new(context, cmd + strlen(context));
+        g_list_store_append(store, item);
+        g_object_unref(item);
+#else
+        GtkTreeIter iter;
+
         gtk_list_store_append(store, &iter);
         gtk_list_store_set(store, &iter,
                 SUI_COMPLETION_COLUMN_PREFIX, context,
                 SUI_COMPLETION_COLUMN_SUFFIX, cmd + strlen(context),
                 -1);
+#endif
     }
     g_list_free_full(cmds, g_free);
 
@@ -561,7 +592,6 @@ static GtkListStore* real_completion_func(SuiBuffer *self, const char *context){
     for (GList *lst = msgs; lst; lst = g_list_next(lst)){
         const char *user;
         char *normalized_user;
-        GtkTreeIter iter;
         SuiRecvMessage *rmsg;
 
         if (!SUI_IS_RECV_MESSAGE(lst->data)){
@@ -571,14 +601,24 @@ static GtkListStore* real_completion_func(SuiBuffer *self, const char *context){
         user = gtk_label_get_text(rmsg->sender_label);
         normalized_user = g_utf8_strdown(user, -1);
         if (g_str_has_prefix(normalized_user, normalized_prefix)){
-            gtk_list_store_append(store, &iter);
-
             // "Same" prefix, but with the right casing for the user
             char *corrected_prefix = g_strndup(user, strlen(prefix));
+#if GTK_MAJOR_VERSION >= 4
+            SuiCompletionItem *item;
+
+            item = sui_completion_item_new(corrected_prefix,
+                    user + strlen(prefix));
+            g_list_store_append(store, item);
+            g_object_unref(item);
+#else
+            GtkTreeIter iter;
+
+            gtk_list_store_append(store, &iter);
             gtk_list_store_set(store, &iter,
                     SUI_COMPLETION_COLUMN_PREFIX, corrected_prefix,
                     SUI_COMPLETION_COLUMN_SUFFIX, user + strlen(prefix),
                     -1);
+#endif
             g_free(corrected_prefix);
         }
         g_free(normalized_user);
@@ -586,7 +626,11 @@ static GtkListStore* real_completion_func(SuiBuffer *self, const char *context){
     g_free(normalized_prefix);
     g_list_free(msgs);
 
+#if GTK_MAJOR_VERSION >= 4
+    return G_LIST_MODEL(store);
+#else
     return store;
+#endif
 }
 
 static bool push_input_history(SuiBuffer *self, char *msg){

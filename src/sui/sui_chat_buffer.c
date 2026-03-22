@@ -129,14 +129,23 @@ static void sui_chat_buffer_finalize(GObject *object){
     G_OBJECT_CLASS(sui_chat_buffer_parent_class)->finalize(object);
 }
 
-static GtkListStore* sui_chat_buffer_completion_func(SuiBuffer *_self,
-        const char *context){
+static
+#if GTK_MAJOR_VERSION >= 4
+GListModel*
+#else
+GtkListStore*
+#endif
+sui_chat_buffer_completion_func(SuiBuffer *_self, const char *context){
     const char *prev;
     const char *prefix;
     GList *users;
-    GtkListStore *store;
     SuiChatBuffer *self;
     SuiBufferConfig *cfg;
+#if GTK_MAJOR_VERSION >= 4
+    GListModel *store;
+#else
+    GtkListStore *store;
+#endif
 
     self = SUI_CHAT_BUFFER(_self);
     store = SUI_BUFFER_CLASS(sui_chat_buffer_parent_class)->completion_func(_self, context);
@@ -161,7 +170,6 @@ static GtkListStore* sui_chat_buffer_completion_func(SuiBuffer *_self,
     users = sui_user_list_get_users_by_prefix(self->user_list, prefix);
     for (GList *lst = users; lst; lst = g_list_next(lst)){
         SuiUser *user;
-        GtkTreeIter iter;
         char *suffix;
         char *corrected_prefix;
 
@@ -169,14 +177,27 @@ static GtkListStore* sui_chat_buffer_completion_func(SuiBuffer *_self,
         suffix = cfg->nick_completion_suffix;
         gchar *nick_with_suffix = g_strconcat(sui_user_get_nickname(user), 
                 suffix, NULL);
-        gtk_list_store_append(store, &iter);
 
         // "Same" prefix, but with the right casing for the user
         corrected_prefix = g_strndup(nick_with_suffix, strlen(prefix));
+#if GTK_MAJOR_VERSION >= 4
+        {
+            SuiCompletionItem *item;
+
+            item = sui_completion_item_new(corrected_prefix,
+                    nick_with_suffix + strlen(prefix));
+            g_list_store_append(G_LIST_STORE(store), item);
+            g_object_unref(item);
+        }
+#else
+        GtkTreeIter iter;
+
+        gtk_list_store_append(store, &iter);
         gtk_list_store_set(store, &iter,
                 SUI_COMPLETION_COLUMN_PREFIX, corrected_prefix,
                 SUI_COMPLETION_COLUMN_SUFFIX, nick_with_suffix + strlen(prefix),
                 -1);
+#endif
         g_free(nick_with_suffix);
         g_free(corrected_prefix);
     }

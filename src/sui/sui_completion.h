@@ -31,6 +31,16 @@ enum {
     SUI_COMPLETION_N_COLUMNS,
 };
 
+#if GTK_MAJOR_VERSION >= 4
+typedef struct _SuiCompletionItem SuiCompletionItem;
+
+GType sui_completion_item_get_type(void);
+SuiCompletionItem *sui_completion_item_new(const char *prefix,
+        const char *suffix);
+const char *sui_completion_item_get_prefix(SuiCompletionItem *self);
+const char *sui_completion_item_get_suffix(SuiCompletionItem *self);
+#endif
+
 /**
  * @brief SuiCompletionFunc returns a list of completion result according the
  * context
@@ -41,7 +51,11 @@ enum {
  * @return Completion result, which is a multi-column list. See
  * SUI_COMPLETION_COL_RESULT and SUI_TYPE_COMPLETION
  */
+#if GTK_MAJOR_VERSION >= 4
+typedef GListModel* (SuiCompletionFunc) (const char *context, void *user_data);
+#else
 typedef GtkTreeModel* (SuiCompletionFunc) (const char *context, void *user_data);
+#endif
 
 typedef struct _SuiCompletion SuiCompletion;
 typedef struct _SuiCompletionClass SuiCompletionClass;

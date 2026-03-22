@@ -69,7 +69,11 @@ struct _SuiBufferClass {
 
     // SuiBuffer and its child class should implement this functions for input
     // completing.
+#if GTK_MAJOR_VERSION >= 4
+    GListModel* (*completion_func)(SuiBuffer *self, const char *context);
+#else
     GtkListStore* (*completion_func)(SuiBuffer *self, const char *context);
+#endif
 };
 
 GType sui_buffer_get_type(void);
@@ -77,7 +81,11 @@ GType sui_buffer_get_type(void);
 void sui_buffer_insert_text(SuiBuffer *self, const char *text, int line, int offset);
 void sui_buffer_show_topic(SuiBuffer *self, bool show);
 void sui_buffer_complete(SuiBuffer *self);
+#if GTK_MAJOR_VERSION >= 4
+GListModel* sui_buffer_completion_func(const char *context, void *user_data);
+#else
 GtkTreeModel* sui_buffer_completion_func(const char *context, void *user_data);
+#endif
 bool sui_buffer_send_input(SuiBuffer *self);
 void sui_buffer_browse_prev_input(SuiBuffer *self);
 void sui_buffer_browse_next_input(SuiBuffer *self);

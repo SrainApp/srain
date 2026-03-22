@@ -46,8 +46,13 @@ struct _SuiCompletion {
     char *last_prefix;  // Prefix of last completion
     char *last_suffix;  // Suffix of last completion
 
+#if GTK_MAJOR_VERSION >= 4
+    GListModel *model;
+    guint position;
+#else
     GtkTreeModel *model;
     GtkTreeIter iter;
+#endif
 };
 
 struct _SuiCompletionClass {
@@ -56,6 +61,61 @@ struct _SuiCompletionClass {
 
 static bool reset_state(SuiCompletion *self, SuiCompletionFunc *func,
         void *user_data);
+
+#if GTK_MAJOR_VERSION >= 4
+struct _SuiCompletionItem {
+    GObject parent;
+
+    char *prefix;
+    char *suffix;
+};
+
+typedef struct _SuiCompletionItemClass {
+    GObjectClass parent_class;
+} SuiCompletionItemClass;
+
+G_DEFINE_TYPE(SuiCompletionItem, sui_completion_item, G_TYPE_OBJECT);
+
+static void sui_completion_item_finalize(GObject *object){
+    SuiCompletionItem *self;
+
+    self = (SuiCompletionItem *)object;
+    g_free(self->prefix);
+    g_free(self->suffix);
+
+    G_OBJECT_CLASS(sui_completion_item_parent_class)->finalize(object);
+}
+
+static void sui_completion_item_class_init(SuiCompletionItemClass *class){
+    GObjectClass *object_class;
+
+    object_class = G_OBJECT_CLASS(class);
+    object_class->finalize = sui_completion_item_finalize;
+}
+
+static void sui_completion_item_init(SuiCompletionItem *self){
+    (void)self;
+}
+
+SuiCompletionItem *sui_completion_item_new(const char *prefix,
+        const char *suffix){
+    SuiCompletionItem *self;
+
+    self = g_object_new(sui_completion_item_get_type(), NULL);
+    self->prefix = g_strdup(prefix);
+    self->suffix = g_strdup(suffix);
+
+    return self;
+}
+
+const char *sui_completion_item_get_prefix(SuiCompletionItem *self){
+    return self->prefix;
+}
+
+const char *sui_completion_item_get_suffix(SuiCompletionItem *self){
+    return self->suffix;
+}
+#endif
 
 /*****************************************************************************
  * GObject functions
@@ -225,12 +285,25 @@ void sui_completion_complete(SuiCompletion *self, SuiCompletionFunc *func,
         return;
     }
 
+#if GTK_MAJOR_VERSION >= 4
+    {
+        SuiCompletionItem *item;
+
+        item = g_list_model_get_item(self->model, self->position);
+        g_return_if_fail(item);
+
+        str_assign(&self->last_prefix, sui_completion_item_get_prefix(item));
+        str_assign(&self->last_suffix, sui_completion_item_get_suffix(item));
+        g_object_unref(item);
+    }
+#else
     str_assign(&self->last_prefix, NULL);
     str_assign(&self->last_suffix, NULL);
     gtk_tree_model_get(self->model, &self->iter,
             SUI_COMPLETION_COLUMN_PREFIX, &self->last_prefix,
             SUI_COMPLETION_COLUMN_SUFFIX, &self->last_suffix,
             -1);
+#endif
     DBG_FR("Completion: prefix: '%s', suffix: '%s'",
             self->last_prefix, self->last_suffix);
 
@@ -245,12 +318,19 @@ void sui_completion_complete(SuiCompletion *self, SuiCompletionFunc *func,
     gtk_text_buffer_insert(buf, &comp, self->last_prefix, strlen(self->last_prefix));
     gtk_text_buffer_insert(buf, &comp, self->last_suffix, strlen(self->last_suffix));
 
+#if GTK_MAJOR_VERSION >= 4
+    self->position++;
+    if (self->position >= g_list_model_get_n_items(self->model)){
+        self->position = 0;
+    }
+#else
     if (!gtk_tree_model_iter_next(self->model, &self->iter)){
         if (!gtk_tree_model_get_iter_first(self->model, &self->iter)){
             DBG_FR("No next iterator");
             g_return_if_reached();
         }
     }
+#endif
 }
 
 GtkTextBuffer* sui_completion_get_text_buffer(SuiCompletion *self){
@@ -300,6 +380,17 @@ static bool reset_state(SuiCompletion *self, SuiCompletionFunc *func,
     g_free(ctx);
     g_return_val_if_fail(self->model, FALSE);
 
+#if GTK_MAJOR_VERSION >= 4
+    self->position = 0;
+    if (g_list_model_get_n_items(self->model) == 0){
+        DBG_FR("Empty completion model");
+
+        g_object_unref(self->model);
+        self->model = NULL;
+
+        return FALSE;
+    }
+#else
     if (!gtk_tree_model_get_iter_first(self->model, &self->iter)){
         DBG_FR("Empty completion model");
 
@@ -308,6 +399,7 @@ static bool reset_state(SuiCompletion *self, SuiCompletionFunc *func,
 
         return FALSE;
     }
+#endif
 
     return TRUE;
 }
