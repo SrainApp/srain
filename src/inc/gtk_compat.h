@@ -76,14 +76,40 @@ static inline void srn_gtk_image_set_icon_name(GtkImage *image,
 static inline void srn_gtk_image_set_from_pixbuf(GtkImage *image,
         GdkPixbuf *pixbuf){
 #if GTK_MAJOR_VERSION >= 4
+    GBytes *bytes;
+    GError *error;
     GdkTexture *texture;
+    char *buffer;
+    gsize length;
 
     if (!pixbuf){
         gtk_image_clear(image);
         return;
     }
 
-    texture = gdk_texture_new_for_pixbuf(pixbuf);
+    error = NULL;
+    buffer = NULL;
+    length = 0;
+    if (!gdk_pixbuf_save_to_buffer(pixbuf, &buffer, &length, "png",
+                &error, NULL)){
+        if (error){
+            g_error_free(error);
+        }
+        gtk_image_clear(image);
+        return;
+    }
+
+    bytes = g_bytes_new_take(buffer, length);
+    texture = gdk_texture_new_from_bytes(bytes, &error);
+    g_bytes_unref(bytes);
+    if (!texture){
+        if (error){
+            g_error_free(error);
+        }
+        gtk_image_clear(image);
+        return;
+    }
+
     gtk_image_set_from_paintable(image, GDK_PAINTABLE(texture));
     g_object_unref(texture);
 #else
