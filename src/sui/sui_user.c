@@ -52,8 +52,10 @@ struct _SuiUser {
     SuiUserStat *stat;
 };
 
+#if GTK_MAJOR_VERSION < 4
 static cairo_surface_t* new_user_icon_from_type(SrnChatUserType type,
         GtkStyleContext *style_context, SuiUserSurface *surface);
+#endif
 
 /*****************************************************************************
  * Expored functions
@@ -188,11 +190,9 @@ const char* sui_user_get_nickname(SuiUser *self){
  * Static functions
  *****************************************************************************/
 
+#if GTK_MAJOR_VERSION < 4
 static cairo_surface_t* new_user_icon_from_type(SrnChatUserType type,
         GtkStyleContext *style_context, SuiUserSurface *gdk_surface){
-#if GTK_MAJOR_VERSION >= 4
-    return NULL;
-#else
     const char *color_str;
     GError *err;
     GdkRGBA fg_color;
@@ -264,12 +264,8 @@ static cairo_surface_t* new_user_icon_from_type(SrnChatUserType type,
 
     g_return_val_if_fail(pixbuf, NULL);
     icon_surface = gdk_cairo_surface_create_from_pixbuf(pixbuf,
-#if GTK_MAJOR_VERSION >= 4
-            gdk_surface_get_scale_factor(gdk_surface), gdk_surface);
-#else
             gdk_window_get_scale_factor(gdk_surface), gdk_surface);
-#endif
     g_object_unref(pixbuf);
     return icon_surface;
-#endif
 }
+#endif
