@@ -326,13 +326,10 @@ static void on_connect_ready(GObject *obj, GAsyncResult *res, gpointer user_data
              return;
          }
 
-         if (sirc->cfg->tls_noverify){
-             g_tls_client_connection_set_validation_flags(
-                     G_TLS_CLIENT_CONNECTION(tls_conn), 0);
-         } else {
-             g_tls_client_connection_set_validation_flags(
-                     G_TLS_CLIENT_CONNECTION(tls_conn), G_TLS_CERTIFICATE_VALIDATE_ALL);
-         }
+         g_object_set(G_TLS_CLIENT_CONNECTION(tls_conn),
+                 "validation-flags",
+                 sirc->cfg->tls_noverify ? 0 : G_TLS_CERTIFICATE_VALIDATE_ALL,
+                 NULL);
 
          g_signal_connect(tls_conn, "accept-certificate",
                  G_CALLBACK(on_accept_certificate), NULL);

@@ -1174,7 +1174,7 @@ static void irc_event_cap(SircSession *sirc, const char *event,
     g_return_if_fail(count >= 3);
     cap_end = FALSE;
     cap_event = params[1];
-    rawcaps = params[2];
+    rawcaps = g_strdup(params[2]);
 
     srv = sirc_get_ctx(sirc);
     g_return_if_fail(srn_server_is_valid(srv));
@@ -1185,7 +1185,8 @@ static void irc_event_cap(SircSession *sirc, const char *event,
             && g_ascii_strcasecmp(rawcaps, "*") == 0);
     if (multiline){
         g_return_if_fail(count == 4);
-        rawcaps = params[3];
+        g_free(rawcaps);
+        rawcaps = g_strdup(params[3]);
     }
     rawcaps = g_strchomp(rawcaps);
     caps = g_strsplit(rawcaps, " ", 0);
@@ -1349,6 +1350,7 @@ static void irc_event_cap(SircSession *sirc, const char *event,
     }
 
     g_strfreev(caps);
+    g_free(rawcaps);
 }
 
 static void irc_event_authenticate(SircSession *sirc, const char *event,
@@ -1539,7 +1541,7 @@ static void irc_event_numeric(SircSession *sirc, int event,
         case SIRC_RFC_RPL_ISUPPORT:
             {
                 for (int i = 1; i < count; i++){
-                    char *delim = strchr(params[i], '=');
+                    const char *delim = strchr(params[i], '=');
                     char *key, *value;
                     if (delim){
                         /* ISUPPORT token with value */
