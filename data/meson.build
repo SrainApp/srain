@@ -30,12 +30,14 @@ if get_option('gtk4_experimental')
       input: files(
         'ui-gtk4/app_menu.blp',
         'ui-gtk4/image_window.blp',
+        'ui-gtk4/join_panel.blp',
         'ui-gtk4/side_bar_item.blp',
         'ui-gtk4/user_list.blp',
       ),
       output: [
         'app_menu.ui',
         'image_window.ui',
+        'join_panel.ui',
         'side_bar_item.ui',
         'user_list.ui',
       ],

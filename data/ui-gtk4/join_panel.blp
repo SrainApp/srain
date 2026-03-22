@@ -1,0 +1,108 @@
+using Gtk 4.0;
+
+template $SuiJoinPanel : Gtk.Box {
+  orientation: vertical;
+
+  Gtk.Stack stack {
+    transition-type: crossfade;
+
+    Gtk.StackPage {
+      name: "join_channel_page";
+
+      child: Gtk.Box {
+        orientation: vertical;
+        spacing: 8;
+
+        Gtk.Entry chan_entry {
+          placeholder-text: _("Channel");
+        }
+
+        Gtk.PasswordEntry password_entry {
+          placeholder-text: _("Password");
+        }
+
+        Gtk.CheckButton remember_password_check_button {
+          label: _("Remember password");
+        }
+      };
+    }
+
+    Gtk.StackPage {
+      name: "search_channel_page";
+
+      child: Gtk.Box {
+        orientation: vertical;
+        spacing: 8;
+
+        Gtk.Box {
+          spacing: 6;
+
+          Gtk.Entry search_entry {
+            hexpand: true;
+            placeholder-text: _("Search channel");
+          }
+
+          Gtk.Button refresh_button {
+            label: _("Refresh");
+          }
+        }
+
+        Gtk.Box {
+          spacing: 6;
+
+          Gtk.SpinButton min_users_spin_button {
+            adjustment: Gtk.Adjustment {
+              lower: -1;
+              upper: 100000;
+              step-increment: 1;
+            };
+          }
+
+          Gtk.SpinButton max_users_spin_button {
+            adjustment: Gtk.Adjustment {
+              lower: -1;
+              upper: 100000;
+              step-increment: 1;
+            };
+          }
+
+          Gtk.DropDown match_combo_box {
+            selected: 0;
+          }
+        }
+
+        Gtk.ScrolledWindow {
+          hexpand: true;
+          vexpand: true;
+          min-content-height: 200;
+
+          Gtk.ListBox chan_list_box {
+            selection-mode: browse;
+            styles ["boxed-list"]
+          }
+        }
+
+        Gtk.Box {
+          spacing: 6;
+
+          Gtk.Label status_label {}
+
+          Gtk.Spinner status_spinner {}
+        }
+      };
+    }
+  }
+
+  Gtk.Box {
+    halign: end;
+    spacing: 6;
+
+    Gtk.Button cancel_button {
+      label: _("Cancel");
+    }
+
+    Gtk.Button join_button {
+      label: _("Join");
+    }
+  }
+}
