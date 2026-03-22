@@ -1,0 +1,27 @@
+using Gtk 4.0;
+
+template $SuiUserList : Gtk.Box {
+  name: "user_list_box";
+  orientation: vertical;
+
+  Gtk.Label stat_label {
+    margin-start: 2;
+    margin-end: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+    use-markup: true;
+    wrap: true;
+  }
+
+  Gtk.Separator {}
+
+  Gtk.ScrolledWindow {
+    width-request: 150;
+    hexpand: true;
+    vexpand: true;
+
+    Gtk.ListBox user_list_box {
+      selection-mode: browse;
+    }
+  }
+}
