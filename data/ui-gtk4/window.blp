@@ -1,0 +1,188 @@
+using Gtk 4.0;
+
+template $SuiWindow : Gtk.ApplicationWindow {
+  default-width: 1050;
+  default-height: 650;
+  icon-name: "im.srain.Srain";
+
+  Gtk.Box window_box {
+    orientation: vertical;
+
+    Gtk.Box header_box {
+      orientation: vertical;
+
+      Gtk.Paned header_paned {
+        position: 300;
+        resize-start-child: false;
+        shrink-start-child: false;
+
+        start-child: Gtk.Box side_header_box {
+          width-request: 300;
+          styles ["sui-nocsd-header-bar"]
+        };
+
+        end-child: Gtk.Box buffer_header_box {
+          styles ["sui-nocsd-header-bar"]
+        };
+      }
+    }
+
+    Gtk.Separator header_separator {
+      visible: false;
+    }
+
+    Gtk.Stack window_stack {
+      vexpand: true;
+
+      Gtk.StackPage {
+        name: "welcome";
+
+        child: Gtk.Grid {
+          Gtk.Box {
+            halign: center;
+            valign: center;
+            hexpand: true;
+            vexpand: true;
+            orientation: vertical;
+            spacing: 6;
+
+            layout {
+              column: 0;
+              row: 0;
+            }
+
+            Gtk.Image {
+              opacity: 0.8;
+              pixel-size: 64;
+              icon-name: "srain";
+            }
+
+            Gtk.Label {
+              opacity: 0.8;
+              label: _("<big>Welcome to Srain!</big>");
+              use-markup: true;
+            }
+
+            Gtk.Box welcome_connect_box {}
+          }
+        };
+      }
+
+      Gtk.StackPage {
+        name: "main";
+
+        child: Gtk.Paned main_paned {
+          position: 300;
+          resize-start-child: false;
+          shrink-start-child: false;
+          shrink-end-child: false;
+
+          start-child: Gtk.Box side_box {
+            width-request: 300;
+            orientation: vertical;
+          };
+
+          end-child: Gtk.Box {
+            orientation: vertical;
+            styles ["linked"]
+
+            Gtk.Stack buffer_stack {
+              vexpand: true;
+              styles ["linked"]
+            }
+
+            Gtk.Separator {}
+
+            Gtk.Box {
+              styles ["linked"]
+
+              Gtk.Button plugin_button {
+                visible: false;
+                focus-on-click: false;
+              }
+
+              Gtk.TextView input_text_view {
+                hexpand: true;
+                wrap-mode: word_char;
+                left-margin: 4;
+                right-margin: 4;
+                top-margin: 7;
+                bottom-margin: 7;
+              }
+
+              Gtk.Button insert_emoji_button {
+                visible: false;
+                focus-on-click: false;
+                tooltip-text: _("Insert emoji");
+              }
+
+              Gtk.Button send_button {
+                focus-on-click: false;
+                tooltip-text: _("Send message");
+              }
+            }
+          };
+        };
+      }
+    }
+  }
+
+  titlebar: Gtk.Paned title_paned {
+    position: 300;
+    resize-start-child: false;
+    shrink-start-child: false;
+
+    start-child: Gtk.HeaderBar side_header_bar {
+      width-request: 300;
+
+      [start]
+      Gtk.Box side_left_header_box {
+        name: "window_header_box";
+
+        Gtk.MenuButton start_menu_button {
+          Gtk.Image start_image {
+            icon-name: "go-home-symbolic";
+            use-fallback: true;
+          }
+        }
+      }
+
+      [end]
+      Gtk.Box side_right_header_box {
+        name: "f";
+        styles ["linked"]
+
+        Gtk.Button connect_button {
+          focus-on-click: false;
+          tooltip-text: _("Connect");
+        }
+
+        Gtk.Button join_button {
+          focus-on-click: false;
+          tooltip-text: _("Join");
+        }
+      }
+    };
+
+    end-child: Gtk.HeaderBar buffer_header_bar {
+      title-widget: Gtk.Box buffer_title_box {
+        spacing: 6;
+
+        Gtk.Label buffer_title_label {
+          label: "<title>";
+        }
+
+        Gtk.Label buffer_subtitle_label {
+          label: "<subtitle>";
+          styles ["dim-label"]
+        }
+      };
+
+      [end]
+      Gtk.MenuButton buffer_menu_button {
+        focus-on-click: false;
+        direction: none;
+      }
+    };
+  };
+}
