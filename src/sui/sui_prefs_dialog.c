@@ -32,6 +32,7 @@
 
 #include "core/core.h"
 #include "sui_common.h"
+#include "gtk_compat.h"
 #include "sui_prefs_dialog.h"
 #include "i18n.h"
 #include "path.h"
@@ -135,7 +136,7 @@ static void ok_button_on_clicked(GtkWidget *widget, gpointer user_data){
 
     self = SUI_PREFS_DIALOG(user_data);
 
-    gtk_dialog_response(GTK_DIALOG(self), GTK_RESPONSE_OK);
+    srn_gtk_dialog_response(GTK_DIALOG(self), GTK_RESPONSE_OK);
 }
 
 static void cancel_button_on_clicked(GtkWidget *widget, gpointer user_data){
@@ -143,7 +144,7 @@ static void cancel_button_on_clicked(GtkWidget *widget, gpointer user_data){
 
     self = SUI_PREFS_DIALOG(user_data);
 
-    gtk_dialog_response(GTK_DIALOG(self), GTK_RESPONSE_CANCEL);
+    srn_gtk_dialog_response(GTK_DIALOG(self), GTK_RESPONSE_CANCEL);
 }
 
 static void reload_config_button_on_clicked(GtkWidget *widget,

@@ -520,6 +520,14 @@ static inline int srn_gtk_dialog_run(GtkDialog *dialog){
 #endif
 }
 
+static inline void srn_gtk_dialog_response(GtkDialog *dialog, int response_id){
+#if GTK_MAJOR_VERSION >= 4
+    g_signal_emit_by_name(dialog, "response", response_id);
+#else
+    gtk_dialog_response(dialog, response_id);
+#endif
+}
+
 static inline void srn_gtk_header_bar_set_show_close_button(
         GtkHeaderBar *header_bar, gboolean visible){
 #if GTK_MAJOR_VERSION >= 4
