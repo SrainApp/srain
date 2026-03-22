@@ -1,0 +1,48 @@
+using Gtk 4.0;
+
+template $SuiBuffer : Gtk.Box {
+  orientation: horizontal;
+  styles ["sui-buffer"]
+
+  Gtk.Box chat_box {
+    orientation: vertical;
+    hexpand: true;
+    vexpand: true;
+
+    Gtk.Revealer topic_revealer {
+      Gtk.Box topic_box {
+        orientation: vertical;
+
+        Gtk.Label topic_label {
+          halign: start;
+          use-markup: true;
+          wrap: true;
+          wrap-mode: word_char;
+          selectable: true;
+          ellipsize: end;
+          lines: 5;
+          styles ["sui-buffer-topic"]
+        }
+
+        Gtk.Separator {}
+      }
+    }
+
+    Gtk.Box msg_list_box {
+      name: "msg_list_box";
+      orientation: vertical;
+      hexpand: true;
+      vexpand: true;
+    }
+  }
+
+  Gtk.Separator {
+    orientation: vertical;
+  }
+
+  Gtk.Revealer user_list_revealer {
+    transition-type: slide_left;
+  }
+}
+
+Gtk.TextBuffer input_text_buffer {}
