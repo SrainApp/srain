@@ -1,0 +1,335 @@
+using Gtk 4.0;
+
+template $SuiConnectPanel : Gtk.Box {
+  orientation: vertical;
+  spacing: 4;
+
+  Gtk.StackSwitcher {
+    halign: center;
+    stack: stack;
+  }
+
+  Gtk.Stack stack {
+    hhomogeneous: false;
+    vhomogeneous: false;
+    transition-type: slide_left_right;
+
+    Gtk.StackPage {
+      name: "quick_mode_page";
+      title: _("Quick Mode");
+
+      child: Gtk.Grid {
+        row-spacing: 4;
+        column-spacing: 4;
+
+        Gtk.Label {
+          halign: start;
+          hexpand: true;
+          label: _("Server:");
+          layout {
+            column: 0;
+            row: 0;
+          }
+        }
+
+        Gtk.DropDown quick_server_combo_box {
+          halign: end;
+          layout {
+            column: 1;
+            row: 0;
+          }
+        }
+
+        Gtk.Label {
+          halign: start;
+          hexpand: true;
+          label: _("Nickname:");
+          layout {
+            column: 0;
+            row: 1;
+          }
+        }
+
+        Gtk.Entry quick_nick_entry {
+          halign: end;
+          layout {
+            column: 1;
+            row: 1;
+          }
+        }
+      };
+    }
+
+    Gtk.StackPage {
+      name: "advanced_mode_page";
+      title: _("Advanced Mode");
+
+      child: Gtk.Grid {
+        row-spacing: 4;
+        column-spacing: 4;
+
+        Gtk.Label {
+          halign: start;
+          hexpand: true;
+          label: _("_Server:");
+          use-underline: true;
+          layout {
+            column: 0;
+            row: 0;
+          }
+        }
+
+        Gtk.Entry server_combo_box {
+          halign: end;
+          layout {
+            column: 1;
+            row: 0;
+          }
+        }
+
+        Gtk.Label {
+          halign: start;
+          hexpand: true;
+          label: _("_Address:");
+          use-underline: true;
+          mnemonic-widget: host_entry;
+          layout {
+            column: 0;
+            row: 1;
+          }
+        }
+
+        Gtk.Box {
+          halign: end;
+
+          Gtk.Entry host_entry {
+            hexpand: true;
+            input-purpose: url;
+          }
+
+          Gtk.Label {
+            label: " : ";
+          }
+
+          Gtk.Entry port_entry {
+            max-length: 5;
+            width-chars: 5;
+            input-purpose: number;
+          }
+
+          layout {
+            column: 1;
+            row: 1;
+          }
+        }
+
+        Gtk.Label {
+          halign: start;
+          hexpand: true;
+          label: _("_Password:");
+          use-underline: true;
+          mnemonic-widget: password_entry;
+          layout {
+            column: 0;
+            row: 2;
+          }
+        }
+
+        Gtk.Entry password_entry {
+          halign: end;
+          visibility: false;
+          placeholder-text: _("Optional");
+          input-purpose: password;
+          layout {
+            column: 1;
+            row: 2;
+          }
+        }
+
+        Gtk.CheckButton remember_password_check_button {
+          label: _("Remember password");
+          halign: end;
+          layout {
+            column: 1;
+            row: 3;
+          }
+        }
+
+        Gtk.CheckButton tls_check_button {
+          label: _("Use secure connection");
+          halign: end;
+          layout {
+            column: 1;
+            row: 4;
+          }
+        }
+
+        Gtk.CheckButton tls_noverify_check_button {
+          label: _("Do not verify certificate");
+          halign: end;
+          layout {
+            column: 1;
+            row: 5;
+          }
+        }
+
+        Gtk.Label {
+          halign: start;
+          hexpand: true;
+          label: _("_Nickname:");
+          use-underline: true;
+          layout {
+            column: 0;
+            row: 6;
+          }
+        }
+
+        Gtk.Entry nick_entry {
+          halign: end;
+          layout {
+            column: 1;
+            row: 6;
+          }
+        }
+
+        Gtk.Label {
+          halign: start;
+          hexpand: true;
+          label: _("_Login method:");
+          use-underline: true;
+          layout {
+            column: 0;
+            row: 7;
+          }
+        }
+
+        Gtk.DropDown login_method_combo_box {
+          halign: end;
+          hexpand: true;
+          layout {
+            column: 1;
+            row: 7;
+          }
+        }
+
+        Gtk.Stack login_method_stack {
+          vhomogeneous: false;
+          transition-type: slide_up_down;
+
+          Gtk.StackPage {
+            name: "none";
+            child: Gtk.Grid {};
+          }
+
+          Gtk.StackPage {
+            name: "password";
+            child: Gtk.Grid {
+              row-spacing: 4;
+              column-spacing: 4;
+
+              Gtk.Label {
+                halign: start;
+                hexpand: true;
+                label: _("Login password:");
+                layout {
+                  column: 0;
+                  row: 0;
+                }
+              }
+
+              Gtk.Entry login_password_entry {
+                halign: end;
+                visibility: false;
+                input-purpose: password;
+                layout {
+                  column: 1;
+                  row: 0;
+                }
+              }
+
+              Gtk.CheckButton remember_login_password_check_button {
+                label: _("Remember login password");
+                layout {
+                  column: 1;
+                  row: 1;
+                }
+              }
+            };
+          }
+
+          Gtk.StackPage {
+            name: "ecdsa-certificate";
+            child: Gtk.Grid {
+              row-spacing: 4;
+              column-spacing: 4;
+
+              Gtk.Label {
+                halign: start;
+                hexpand: true;
+                label: _("Login certificate:");
+                layout {
+                  column: 0;
+                  row: 0;
+                }
+              }
+
+              Gtk.Entry login_cert_file_chooser_button {
+                halign: end;
+                placeholder-text: _("Certificate path");
+                layout {
+                  column: 1;
+                  row: 0;
+                }
+              }
+            };
+          }
+
+          Gtk.StackPage {
+            name: "tls-certificate";
+            child: Gtk.Grid {
+              row-spacing: 4;
+              column-spacing: 4;
+
+              Gtk.Label {
+                halign: start;
+                hexpand: true;
+                label: _("Client certificate:");
+                layout {
+                  column: 0;
+                  row: 0;
+                }
+              }
+
+              Gtk.Entry client_cert_file_chooser_button {
+                halign: end;
+                placeholder-text: _("Certificate path");
+                layout {
+                  column: 1;
+                  row: 0;
+                }
+              }
+            };
+          }
+
+          layout {
+            column: 0;
+            row: 8;
+            column-span: 2;
+          }
+        }
+      };
+    }
+  }
+
+  Gtk.Box {
+    homogeneous: true;
+
+    Gtk.Button cancel_button {
+      label: _("Cancel");
+    }
+
+    Gtk.Button connect_button {
+      label: _("Connect");
+    }
+  }
+}

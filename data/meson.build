@@ -30,6 +30,7 @@ if get_option('gtk4_experimental')
       input: files(
         'ui-gtk4/app_menu.blp',
         'ui-gtk4/buffer.blp',
+        'ui-gtk4/connect_panel.blp',
         'ui-gtk4/image_window.blp',
         'ui-gtk4/join_panel.blp',
         'ui-gtk4/side_bar_item.blp',
@@ -38,6 +39,7 @@ if get_option('gtk4_experimental')
       output: [
         'app_menu.ui',
         'buffer.ui',
+        'connect_panel.ui',
         'image_window.ui',
         'join_panel.ui',
         'side_bar_item.ui',
