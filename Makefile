@@ -3,6 +3,7 @@ RM = rm
 MKDIR = mkdir
 MESON = meson
 DBG = gdb
+OS ?= $(shell uname -s)
 
 BUILDDIR = builddir
 PREFIX = $(PWD)/prefix
@@ -51,14 +52,14 @@ doc:
 	xdg-open $(PREFIX)/share/doc/srain/html/index.html
 
 $(BUILDDIR): meson.build | $(PREFIX)
-	if [[ "$$OSTYPE" == "darwin"* ]]; then \
-		source ./script/macos-pkgconfig-path.sh; \
-	fi; \
-    if [[ "$$OSTYPE" == "linux-gnu"* ]]; then \
-		$(MESON) setup --prefix=$(PREFIX) --buildtype=debug $@; \
-	else \
-		$(MESON) setup --prefix=$(PREFIX) --buildtype=debug -Dapp_indicator=false $@; \
-	fi
+ifeq ($(OS), Darwin)
+	. ./script/macos-pkgconfig-path.sh
+else ifeq ($(OS), Linux)
+	$(MESON) setup --prefix=$(PREFIX) --buildtype=debug $@
+else
+	$(MESON) setup --prefix=$(PREFIX) --buildtype=debug -Dapp_indicator=false $@; \
+endif
+endif
 
 $(PREFIX):
 	$(MKDIR) $@

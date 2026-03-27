@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Type: GtkWidget
 # Variations:
@@ -28,13 +28,13 @@ old_var=($(gen_var ${OLD_TYPE}))
 new_var=($(gen_var ${NEW_TYPE}))
 
 for f in $(find ./src/ \( -name '*.h' -o -name '*.c' \)); do
-    sed -i "s/\b${old_var[0]}\b/${new_var[0]}/g" ${f} # GtkWidget
-    sed -i "s/\b${old_var[0]}Class\b/${new_var[0]}Class/g" ${f} # GtkWidgetClass
-    sed -i "s/\b_${old_var[0]}\b/_${new_var[0]}/g" ${f} # _GtkWidget
-    sed -i "s/\b_${old_var[0]}Class\b/_${new_var[0]}Class/g" ${f} # _GtkWidgetClass
-    sed -i "s/\b${old_var[1]}\b/${new_var[1]}/g" ${f} # GTK_TYPE_WIDGET
-    sed -i "s/\b${old_var[2]}\([0-9a-zA-Z_]*\b\)/${new_var[2]}\1/g" ${f} # GTK_WIDGET[xxx]
-    sed -i "s/\b${old_var[3]}\b/${new_var[3]}/g" ${f} # gtk_widget
-    sed -i "s/\b${old_var[3]}\([0-9a-zA-Z_ ]*(\)/${new_var[3]}\1/g" ${f} # gtk_widget[xxx](
-    sed -i "s/\b${old_var[4]}\b/${new_var[4]}/g" ${f} # GTK_IS_WIDGET
+    sed -i "s/\b${old_var[0]}\b/${new_var[0]}/g" "${f}" # GtkWidget
+    sed -i "s/\b${old_var[0]}Class\b/${new_var[0]}Class/g" "${f}" # GtkWidgetClass
+    sed -i "s/\b_${old_var[0]}\b/_${new_var[0]}/g" "${f}" # _GtkWidget
+    sed -i "s/\b_${old_var[0]}Class\b/_${new_var[0]}Class/g" "${f}" # _GtkWidgetClass
+    sed -i "s/\b${old_var[1]}\b/${new_var[1]}/g" "${f}" # GTK_TYPE_WIDGET
+    sed -i "s/\b${old_var[2]}\([0-9a-zA-Z_]*\b\)/${new_var[2]}\1/g" "${f}" # GTK_WIDGET[xxx]
+    sed -i "s/\b${old_var[3]}\b/${new_var[3]}/g" "${f}" # gtk_widget
+    sed -i "s/\b${old_var[3]}\([0-9a-zA-Z_ ]*(\)/${new_var[3]}\1/g" "${f}" # gtk_widget[xxx](
+    sed -i "s/\b${old_var[4]}\b/${new_var[4]}/g" "${f}" # GTK_IS_WIDGET
 done

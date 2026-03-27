@@ -735,6 +735,7 @@ static gboolean input_text_view_on_key_press(GtkTextView *text_view,
                 break;
             }
         case GDK_KEY_Return:
+        case GDK_KEY_KP_Enter:
             {
                 if ((self->cfg->send_on_ctrl_enter)
                         ^ (event->state & GDK_CONTROL_MASK )){
