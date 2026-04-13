@@ -26,6 +26,9 @@ What is in place now
 - ``script/report-gtk4-blockers.sh`` reports the remaining GTK3-only API usage.
 - ``script/update-gtk4-blueprints.sh`` regenerates checked-in ``data/ui-gtk4/*.ui``
   files from ``.blp`` sources. ``make blueprints`` wraps this workflow.
+- ``script/check-gtk4-blueprints.sh`` verifies that checked-in GTK4 ``.ui``
+  files still match the generated Blueprint output. ``make blueprints-check``
+  wraps this verification.
 - ``src/inc/gtk_compat.h`` centralizes low-risk CSS and icon helpers that work
   in both GTK3 and GTK4.
 - The application-level menu in ``src/sui/sui_app.c`` is now backed by

@@ -47,6 +47,10 @@ install: | $(BUILDDIR) $(PREFIX)
 blueprints:
 	./script/update-gtk4-blueprints.sh
 
+.PHONY: blueprints-check
+blueprints-check:
+	./script/check-gtk4-blueprints.sh
+
 .PHONY: clean
 clean:
 	$(RM) -rf $(BUILDDIR)
