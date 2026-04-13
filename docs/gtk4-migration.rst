@@ -7,17 +7,16 @@ have also been mirrored into ``data/ui-gtk4/*.blp`` so Blueprint can serve as
 the editable source format while ``.ui`` files remain the checked-in generated
 artifacts.
 
-Current blockers
-================
+Current status
+==============
 
-- ``GtkMenu`` and ``populate-popup`` are used for buffer, nick, and message
-  context menus. These need ``GMenuModel`` plus ``GtkPopoverMenu``.
-- ``GtkTreeView`` powers the join panel and user list. GTK4 requires
-  ``GtkColumnView`` or ``GtkListView`` plus factories.
-- ``gtk_container_*``, ``gtk_box_pack_*``, and ``gtk_bin_get_child()`` are
-  widely used in ``src/sui/`` and must be replaced with GTK4 child APIs.
-- ``gtk_dialog_run()`` is still used for synchronous dialogs and must be
-  replaced by signal-driven response handling.
+- The default local build, install, and startup path now work on ``gtk4``.
+- ``script/report-gtk4-blockers.sh`` reports zero hits for the original
+  GTK3-only API blocker set.
+- The remaining migration work is no longer centered on widget availability;
+  it is mostly about long-tail GTK3 fallback resources, keeping checked-in
+  ``.ui`` files synchronized with Blueprint sources, and broader runtime
+  regression coverage.
 
 What is in place now
 ====================
@@ -36,6 +35,10 @@ What is in place now
 - ``data/ui-gtk4/*.blp`` now covers the GTK4 window, buffer, connect panel,
   join panel, user list, side bar item, image window, and application menu
   templates.
+- ``src/sui/`` still keeps GTK3 fallback Glade paths for widgets such as
+  ``window``, ``buffer``, ``connect_panel``, ``join_panel``, ``user_list``,
+  ``side_bar_item``, ``message_list``, ``recv_message``, ``misc_message``,
+  ``send_message``, ``url_previewer``, and ``prefs_dialog``.
 - ``buffer_menu.glade`` has been removed; buffer and chat menu items are now
   created in code, which isolates the remaining menu migration to runtime APIs.
 - ``nick_menu.glade`` has been removed; nick context menus are now built in
@@ -44,8 +47,9 @@ What is in place now
 Recommended order
 =================
 
-1. Replace menus and popup flows with action-based popovers.
-2. Port ``GtkTreeView`` screens to list/column factories.
-3. Remove ``GtkContainer`` and ``GtkBin`` helpers from composite widgets.
-4. Remove leftover Glade resources and stop checking in generated GTK4 ``.ui``
-   files once the project is ready to rely on Blueprint at build time only.
+1. Keep expanding runtime validation for the GTK4 path, especially around
+   window, buffer, connect, and join flows.
+2. Remove leftover GTK3-only Glade resources once their fallback paths are no
+   longer needed.
+3. Decide whether checked-in GTK4 ``.ui`` files remain a permanent artifact or
+   become generated-only build outputs.
