@@ -211,6 +211,7 @@ static void sui_window_init(SuiWindow *self){
 #if GTK_MAJOR_VERSION >= 4
     GtkEventController *input_key_controller;
     GtkEventController *window_key_controller;
+    PangoAttrList *attrs;
 #else
     GClosure *closure_j;
     GClosure *closure_k;
@@ -219,6 +220,12 @@ static void sui_window_init(SuiWindow *self){
 #endif
 
     gtk_widget_init_template(GTK_WIDGET(self));
+#if GTK_MAJOR_VERSION >= 4
+    attrs = pango_attr_list_new();
+    pango_attr_list_insert(attrs, pango_attr_weight_new(PANGO_WEIGHT_BOLD));
+    gtk_label_set_attributes(self->buffer_title_label, attrs);
+    pango_attr_list_unref(attrs);
+#endif
     setup_window_stack_pages(self);
     setup_button_icons(self);
 

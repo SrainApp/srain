@@ -20,13 +20,13 @@ desktop = i18n.merge_file(
 )
 
 gnome = import('gnome')
-
-srcs += gnome.compile_resources('srain-resources', 'srain.gresource.xml')
+resource_dependencies = []
+resource_source_dirs = [meson.current_source_dir()]
 
 if get_option('gtk4_experimental')
   blueprint_compiler = find_program('blueprint-compiler', required: false)
   if blueprint_compiler.found()
-    gtk4_blueprints = custom_target('gtk4-blueprints',
+    gtk4_blueprints = custom_target('gtk4-blueprint-files',
       input: files(
         'ui-gtk4/app_menu.blp',
         'ui-gtk4/buffer.blp',
@@ -37,29 +37,30 @@ if get_option('gtk4_experimental')
         'ui-gtk4/user_list.blp',
         'ui-gtk4/window.blp',
       ),
-      output: [
-        'app_menu.ui',
-        'buffer.ui',
-        'connect_panel.ui',
-        'image_window.ui',
-        'join_panel.ui',
-        'side_bar_item.ui',
-        'user_list.ui',
-        'window.ui',
-      ],
+      output: '.',
       command: [
         blueprint_compiler,
         'batch-compile',
-        '@OUTDIR@',
+        '@OUTPUT@',
         '@CURRENT_SOURCE_DIR@',
         '@INPUT@',
       ],
-      build_by_default: true,
     )
+    run_target('gtk4-blueprints',
+      command: ['true'],
+      depends: [gtk4_blueprints],
+    )
+    resource_dependencies += gtk4_blueprints
+    resource_source_dirs += meson.current_build_dir()
   else
     warning('blueprint-compiler not found; skipping gtk4 blueprint generation')
   endif
 endif
+
+srcs += gnome.compile_resources('srain-resources', 'srain.gresource.xml',
+  source_dir: resource_source_dirs,
+  dependencies: resource_dependencies,
+)
 
 subdir('metainfo')
 subdir('icons')
