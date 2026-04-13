@@ -2,9 +2,10 @@
 GTK4 Migration
 ==============
 
-This repository is still a GTK3 application. A direct switch to ``gtk4`` would
-break large parts of the UI layer because several core widgets and APIs are no
-longer available.
+The default local build now targets ``gtk4``. Most composite GTK4 templates
+have also been mirrored into ``data/ui-gtk4/*.blp`` so Blueprint can serve as
+the editable source format while ``.ui`` files remain the checked-in generated
+artifacts.
 
 Current blockers
 ================
@@ -23,12 +24,15 @@ What is in place now
 
 - ``meson_options.txt`` includes ``gtk4_experimental`` as the migration switch.
 - ``script/report-gtk4-blockers.sh`` reports the remaining GTK3-only API usage.
+- ``script/update-gtk4-blueprints.sh`` regenerates checked-in ``data/ui-gtk4/*.ui``
+  files from ``.blp`` sources. ``make blueprints`` wraps this workflow.
 - ``src/inc/gtk_compat.h`` centralizes low-risk CSS and icon helpers that work
   in both GTK3 and GTK4.
 - The application-level menu in ``src/sui/sui_app.c`` is now backed by
   ``GMenuModel`` instead of Glade-defined ``GtkMenuItem`` trees.
-- ``data/ui-gtk4/app_menu.blp`` now captures the GTK4 Blueprint shape for the
-  application popover menu and shared menu models.
+- ``data/ui-gtk4/*.blp`` now covers the GTK4 window, buffer, connect panel,
+  join panel, user list, side bar item, image window, and application menu
+  templates.
 - ``buffer_menu.glade`` has been removed; buffer and chat menu items are now
   created in code, which isolates the remaining menu migration to runtime APIs.
 - ``nick_menu.glade`` has been removed; nick context menus are now built in
@@ -40,4 +44,5 @@ Recommended order
 1. Replace menus and popup flows with action-based popovers.
 2. Port ``GtkTreeView`` screens to list/column factories.
 3. Remove ``GtkContainer`` and ``GtkBin`` helpers from composite widgets.
-4. Convert Glade templates into Blueprint once each widget tree is GTK4-safe.
+4. Remove leftover Glade resources and stop checking in generated GTK4 ``.ui``
+   files once the project is ready to rely on Blueprint at build time only.

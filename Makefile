@@ -43,6 +43,10 @@ install: | $(BUILDDIR) $(PREFIX)
 	$(MESON) configure $(BUILDDIR) -Dgtk4_experimental=true -Dapp_indicator=false
 	$(MESON) install -C $(BUILDDIR)
 
+.PHONY: blueprints
+blueprints:
+	./script/update-gtk4-blueprints.sh
+
 .PHONY: clean
 clean:
 	$(RM) -rf $(BUILDDIR)
