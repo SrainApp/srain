@@ -51,6 +51,7 @@ static SrnRet read_server_config_list_from_cfg(config_t *cfg, GList **srv_cfg_li
 static SrnRet read_server_config_from_server(config_setting_t *server, SrnServerConfig *cfg);
 static SrnRet read_server_config_from_server_list(config_setting_t *server_list, SrnServerConfig *cfg, const char *srv_name);
 static SrnRet read_server_config_from_cfg(config_t *cfg, SrnServerConfig *srv_cfg, const char *srv_name);
+static bool should_skip_secret_lookup(void);
 
 static SrnRet read_chat_config_from_chat(config_setting_t *chat, SrnChatConfig *cfg);
 static SrnRet read_chat_config_from_chat_list(config_setting_t *chat_list, SrnChatConfig *cfg, const char *chat_name);
@@ -138,6 +139,9 @@ SrnRet srn_config_manager_read_server_config(SrnConfigManager *mgr,
                 config_setting_source_file(config_root_setting(&mgr->user_cfg)),
                 RET_MSG(ret));
     }
+    if (should_skip_secret_lookup()){
+        return SRN_OK;
+    }
     ret = srn_config_manager_lookup_server_password(mgr, &cfg->password, srv_name);
     if (!RET_IS_OK(ret)){
         WARN_FR(_("Error occurred while looking up server password: %1$s"),
@@ -151,6 +155,10 @@ SrnRet srn_config_manager_read_server_config(SrnConfigManager *mgr,
     }
 
     return SRN_OK;
+}
+
+static bool should_skip_secret_lookup(void){
+    return g_strcmp0(g_getenv("SRAIN_GTK4_SMOKE"), "1") == 0;
 }
 
 SrnRet srn_config_manager_read_server_config_by_addr(SrnConfigManager *mgr,

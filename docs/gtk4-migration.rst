@@ -28,13 +28,19 @@ What is in place now
 - ``script/check-gtk4-blueprints.sh`` verifies that checked-in GTK4 ``.ui``
   files still match the generated Blueprint output. ``make blueprints-check``
   wraps this verification.
+- ``make smoke-gtk4`` installs the GTK4 build and runs a startup smoke pass
+  with ``SRAIN_GTK4_SMOKE=1`` in a temporary HOME/XDG environment.
 - ``src/inc/gtk_compat.h`` centralizes low-risk CSS and icon helpers that work
   in both GTK3 and GTK4.
 - The application-level menu in ``src/sui/sui_app.c`` is now backed by
   ``GMenuModel`` instead of Glade-defined ``GtkMenuItem`` trees.
 - ``data/ui-gtk4/*.blp`` now covers the GTK4 window, buffer, connect panel,
-  join panel, user list, side bar item, image window, and application menu
-  templates.
+  join panel, user list, side bar item, image window, application menu,
+  message list, and URL previewer templates.
+- ``data/ui-gtk4/send_message.ui``, ``recv_message.ui``, and
+  ``misc_message.ui`` are still maintained as checked-in GTK4 ``.ui`` files
+  because the current Blueprint toolchain cannot describe templates whose
+  parent type is the project-defined ``SuiMessage`` class.
 - ``src/sui/`` still keeps GTK3 fallback Glade paths for widgets such as
   ``window``, ``buffer``, ``connect_panel``, ``join_panel``, ``user_list``,
   ``side_bar_item``, ``message_list``, ``recv_message``, ``misc_message``,
@@ -48,8 +54,8 @@ Recommended order
 =================
 
 1. Keep expanding runtime validation for the GTK4 path, especially around
-   window, buffer, connect, and join flows.
+   interaction-heavy flows, not just widget construction.
 2. Remove leftover GTK3-only Glade resources once their fallback paths are no
    longer needed.
-3. Decide whether checked-in GTK4 ``.ui`` files remain a permanent artifact or
-   become generated-only build outputs.
+3. Revisit the remaining manual GTK4 ``.ui`` files if Blueprint gains support
+   for custom template parent types.

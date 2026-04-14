@@ -53,10 +53,15 @@ blueprints-check:
 
 .PHONY: smoke-gtk4
 smoke-gtk4: install
-	unset XDG_CONFIG_HOME XDG_DATA_HOME XDG_CACHE_HOME; \
-	export HOME=$(FAKE_HOME); \
+	SMOKE_HOME=$$(mktemp -d /tmp/srain-smoke-home.XXXXXX); \
+	trap 'rm -rf "$$SMOKE_HOME"' EXIT; \
+	export HOME=$$SMOKE_HOME; \
+	export XDG_CONFIG_HOME=$$SMOKE_HOME/config; \
+	export XDG_DATA_HOME=$$SMOKE_HOME/data; \
+	export XDG_CACHE_HOME=$$SMOKE_HOME/cache; \
 	export XDG_DATA_DIRS=$(FAKE_XDG_DATA_DIRS); \
 	export SRAIN_GTK4_SMOKE=1; \
+	mkdir -p "$$XDG_CONFIG_HOME" "$$XDG_DATA_HOME" "$$XDG_CACHE_HOME"; \
 	"$(PREFIX)/bin/srain"
 
 .PHONY: clean

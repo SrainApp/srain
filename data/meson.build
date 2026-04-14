@@ -34,7 +34,6 @@ if get_option('gtk4_experimental')
         'ui-gtk4/image_window.blp',
         'ui-gtk4/join_panel.blp',
         'ui-gtk4/message_list.blp',
-        'ui-gtk4/prefs_dialog.blp',
         'ui-gtk4/side_bar_item.blp',
         'ui-gtk4/user_list.blp',
         'ui-gtk4/url_previewer.blp',
