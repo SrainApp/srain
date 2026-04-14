@@ -1,0 +1,83 @@
+using Gtk 4.0;
+
+Gtk.Label expander_label {
+  ellipsize: end;
+  width-chars: 0;
+  max-width-chars: 32;
+}
+
+template $SuiUrlPreviewer : Gtk.Box {
+  orientation: vertical;
+  spacing: 6;
+  styles ["sui-url-previewer"]
+
+  Gtk.Expander expander {
+    child: Gtk.Stack stack {
+      transition-type: crossfade;
+      styles ["sui-url-content"]
+
+      Gtk.StackPage {
+        name: "preload";
+
+        child: Gtk.Box {
+          orientation: vertical;
+
+          Gtk.Button preview_button {
+            label: _("_Preview");
+            focus-on-click: false;
+            halign: center;
+            use-underline: true;
+          }
+        };
+      }
+
+      Gtk.StackPage {
+        name: "loading";
+
+        child: Gtk.Box {
+          orientation: vertical;
+
+          Gtk.Button cancel_button {
+            focus-on-click: false;
+            halign: center;
+            use-underline: true;
+
+            child: Gtk.Spinner spinner {
+              halign: center;
+              valign: center;
+              spinning: true;
+            };
+          }
+        };
+      }
+
+      Gtk.StackPage {
+        name: "text";
+
+        child: Gtk.Box {
+          orientation: vertical;
+
+          Gtk.Label text_label {
+            halign: start;
+            justify: right;
+            styles ["sui-url-preview-text"]
+          }
+        };
+      }
+
+      Gtk.StackPage {
+        name: "image";
+
+        child: Gtk.Box {
+          orientation: vertical;
+
+          Gtk.Box image_event_box {
+            Gtk.Image image {
+              icon-name: "image-missing";
+            }
+          }
+        };
+      }
+    };
+  }
+}

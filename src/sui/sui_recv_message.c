@@ -63,8 +63,7 @@ static void sui_recv_message_init(SuiRecvMessage *self){
 
     g_signal_connect(SUI_MESSAGE(self)->message_label, "activate-link",
             G_CALLBACK(sui_common_activate_gtk_label_link), self);
-    g_signal_connect(SUI_MESSAGE(self)->message_label, "populate-popup",
-            G_CALLBACK(sui_message_label_on_popup), self);
+    sui_message_label_connect_popup(SUI_MESSAGE(self)->message_label, self);
 #if GTK_MAJOR_VERSION >= 4
     click = gtk_gesture_click_new();
     gtk_widget_add_controller(self->sender_event_box,
@@ -85,8 +84,13 @@ static void sui_recv_message_class_init(SuiRecvMessageClass *class){
     SuiMessageClass *message_class;
 
     widget_class = GTK_WIDGET_CLASS(class);
+#if GTK_MAJOR_VERSION >= 4
+    gtk_widget_class_set_template_from_resource(widget_class,
+            "/im/srain/Srain/recv_message.ui");
+#else
     gtk_widget_class_set_template_from_resource(widget_class,
             "/im/srain/Srain/recv_message.glade");
+#endif
     gtk_widget_class_bind_template_child(widget_class, SuiMessage, content_box);
     gtk_widget_class_bind_template_child(widget_class, SuiMessage, message_label);
     gtk_widget_class_bind_template_child(widget_class, SuiRecvMessage, time_label);

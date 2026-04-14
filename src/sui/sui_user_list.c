@@ -122,9 +122,10 @@ static void sui_user_list_init(SuiUserList *self){
             G_CALLBACK(user_tree_view_on_popup), NULL);
     g_signal_connect(self->user_list_store, "row-changed",
             G_CALLBACK(user_list_store_on_row_changed), self);
-#endif
     g_signal_connect(self, "style-updated",
             G_CALLBACK(on_style_updated), NULL);
+#endif
+    on_style_updated(self, NULL);
 }
 
 static void sui_user_list_class_init(SuiUserListClass *class){

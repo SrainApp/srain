@@ -101,8 +101,13 @@ static void sui_prefs_dialog_class_init(SuiPrefsDialogClass *class){
     GtkWidgetClass *widget_class;
 
     widget_class = GTK_WIDGET_CLASS(class);
+#if GTK_MAJOR_VERSION >= 4
+    gtk_widget_class_set_template_from_resource(widget_class,
+            "/im/srain/Srain/prefs_dialog.ui");
+#else
     gtk_widget_class_set_template_from_resource(widget_class,
             "/im/srain/Srain/prefs_dialog.glade");
+#endif
 
     gtk_widget_class_bind_template_child(widget_class, SuiPrefsDialog, ok_button);
     gtk_widget_class_bind_template_child(widget_class, SuiPrefsDialog, cancel_button);

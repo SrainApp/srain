@@ -78,6 +78,8 @@ struct _SuiBufferClass {
 
 GType sui_buffer_get_type(void);
 
+SuiBuffer* sui_buffer_new(void *ctx, SuiBufferEvents *events,
+        SuiBufferConfig *cfg);
 void sui_buffer_insert_text(SuiBuffer *self, const char *text, int line, int offset);
 void sui_buffer_show_topic(SuiBuffer *self, bool show);
 void sui_buffer_complete(SuiBuffer *self);

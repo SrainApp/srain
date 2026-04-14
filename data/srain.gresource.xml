@@ -7,14 +7,19 @@
         <file alias="buffer.ui" preprocess="xml-stripblanks">ui-gtk4/buffer.ui</file>
         <file alias="app_menu.ui" preprocess="xml-stripblanks">ui-gtk4/app_menu.ui</file>
         <file alias="misc_message.glade" preprocess="xml-stripblanks">ui/misc_message.glade</file>
+        <file alias="misc_message.ui" preprocess="xml-stripblanks">ui-gtk4/misc_message.ui</file>
         <file alias="send_message.glade" preprocess="xml-stripblanks">ui/send_message.glade</file>
+        <file alias="send_message.ui" preprocess="xml-stripblanks">ui-gtk4/send_message.ui</file>
         <file alias="recv_message.glade" preprocess="xml-stripblanks">ui/recv_message.glade</file>
+        <file alias="recv_message.ui" preprocess="xml-stripblanks">ui-gtk4/recv_message.ui</file>
         <file alias="url_previewer.glade" preprocess="xml-stripblanks">ui/url_previewer.glade</file>
+        <file alias="url_previewer.ui" preprocess="xml-stripblanks">ui-gtk4/url_previewer.ui</file>
         <file alias="image_window.glade" preprocess="xml-stripblanks">ui/image_window.glade</file>
         <file alias="image_window.ui" preprocess="xml-stripblanks">ui-gtk4/image_window.ui</file>
         <file alias="side_bar_item.glade" preprocess="xml-stripblanks">ui/side_bar_item.glade</file>
         <file alias="side_bar_item.ui" preprocess="xml-stripblanks">ui-gtk4/side_bar_item.ui</file>
         <file alias="message_list.glade" preprocess="xml-stripblanks">ui/message_list.glade</file>
+        <file alias="message_list.ui" preprocess="xml-stripblanks">ui-gtk4/message_list.ui</file>
         <file alias="user_list.glade" preprocess="xml-stripblanks">ui/user_list.glade</file>
         <file alias="user_list.ui" preprocess="xml-stripblanks">ui-gtk4/user_list.ui</file>
         <file alias="connect_panel.glade" preprocess="xml-stripblanks">ui/connect_panel.glade</file>
@@ -22,6 +27,7 @@
         <file alias="join_panel.glade" preprocess="xml-stripblanks">ui/join_panel.glade</file>
         <file alias="join_panel.ui" preprocess="xml-stripblanks">ui-gtk4/join_panel.ui</file>
         <file alias="prefs_dialog.glade" preprocess="xml-stripblanks">ui/prefs_dialog.glade</file>
+        <file alias="prefs_dialog.ui" preprocess="xml-stripblanks">ui-gtk4/prefs_dialog.ui</file>
         <file alias="window.ui" preprocess="xml-stripblanks">ui-gtk4/window.ui</file>
     </gresource>
 

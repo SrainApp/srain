@@ -266,8 +266,13 @@ static void sui_url_previewer_class_init(SuiUrlPreviewerClass *class){
             obj_properties);
 
     widget_class = GTK_WIDGET_CLASS(class);
+#if GTK_MAJOR_VERSION >= 4
+    gtk_widget_class_set_template_from_resource(widget_class,
+            "/im/srain/Srain/url_previewer.ui");
+#else
     gtk_widget_class_set_template_from_resource(widget_class,
             "/im/srain/Srain/url_previewer.glade");
+#endif
 
     gtk_widget_class_bind_template_child(widget_class, SuiUrlPreviewer, expander);
     gtk_widget_class_bind_template_child(widget_class, SuiUrlPreviewer, expander_label);

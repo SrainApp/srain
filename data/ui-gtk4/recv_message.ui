@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <template class="SuiRecvMessage" parent="SuiMessage">
+    <property name="halign">start</property>
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="GtkBox" id="message_box">
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkBox" id="sender_box">
+            <property name="spacing">2</property>
+            <child>
+              <object class="GtkBox" id="sender_event_box">
+                <child>
+                  <object class="GtkLabel" id="sender_label">
+                    <property name="label">Unable to display nickname</property>
+                    <property name="wrap">True</property>
+                    <property name="lines">0</property>
+                    <attributes>
+                      <attribute name="weight" value="semibold"/>
+                    </attributes>
+                    <style>
+                      <class name="sui-message-nick-label"/>
+                    </style>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="remark_label">
+                <property name="use-underline">True</property>
+                <attributes>
+                  <attribute name="weight" value="normal"/>
+                </attributes>
+                <style>
+                  <class name="sui-message-subnick-label"/>
+                  <class name="dim-label"/>
+                </style>
+              </object>
+            </child>
+            <style>
+              <class name="sui-user-box"/>
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <child>
+              <object class="GtkBox" id="content_box">
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkLabel" id="message_label">
+                    <property name="halign">start</property>
+                    <property name="label">&lt;span color="red"&gt;Unable to display message content &lt;sup&gt;ERROR&lt;/sup&gt;&lt;/span&gt;</property>
+                    <property name="use-markup">True</property>
+                    <property name="wrap">True</property>
+                    <property name="wrap-mode">word-char</property>
+                    <property name="selectable">True</property>
+                    <property name="max-width-chars">80</property>
+                    <style>
+                      <class name="sui-message-label"/>
+                    </style>
+                  </object>
+                </child>
+                <style>
+                  <class name="sui-message-content"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="time_label">
+                <property name="name">time_label</property>
+                <property name="halign">end</property>
+                <property name="valign">end</property>
+                <property name="label">19:51</property>
+                <style>
+                  <class name="sui-message-time-label"/>
+                </style>
+              </object>
+            </child>
+          </object>
+        </child>
+        <style>
+          <class name="sui-message-frame"/>
+        </style>
+      </object>
+    </child>
+    <style>
+      <class name="sui-recv-message"/>
+      <class name="sui-message"/>
+    </style>
+  </template>
+</interface>

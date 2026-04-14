@@ -45,8 +45,7 @@ static void sui_send_message_init(SuiSendMessage *self){
 
     g_signal_connect(SUI_MESSAGE(self)->message_label, "activate-link",
             G_CALLBACK(sui_common_activate_gtk_label_link), self);
-    g_signal_connect(SUI_MESSAGE(self)->message_label, "populate-popup",
-            G_CALLBACK(sui_message_label_on_popup), self);
+    sui_message_label_connect_popup(SUI_MESSAGE(self)->message_label, self);
 }
 
 static void sui_send_message_class_init(SuiSendMessageClass *class){
@@ -54,8 +53,13 @@ static void sui_send_message_class_init(SuiSendMessageClass *class){
     SuiMessageClass *message_class;
 
     widget_class = GTK_WIDGET_CLASS(class);
+#if GTK_MAJOR_VERSION >= 4
+    gtk_widget_class_set_template_from_resource(widget_class,
+            "/im/srain/Srain/send_message.ui");
+#else
     gtk_widget_class_set_template_from_resource(widget_class,
             "/im/srain/Srain/send_message.glade");
+#endif
     gtk_widget_class_bind_template_child(widget_class, SuiMessage, content_box);
     gtk_widget_class_bind_template_child(widget_class, SuiMessage, message_label);
     gtk_widget_class_bind_template_child(widget_class, SuiSendMessage, time_label);

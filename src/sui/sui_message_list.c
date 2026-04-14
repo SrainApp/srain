@@ -127,8 +127,13 @@ static void sui_message_list_class_init(SuiMessageListClass *class){
     object_class->finalize = sui_message_list_finalize;
 
     widget_class = GTK_WIDGET_CLASS(class);
+#if GTK_MAJOR_VERSION >= 4
+    gtk_widget_class_set_template_from_resource(widget_class,
+            "/im/srain/Srain/message_list.ui");
+#else
     gtk_widget_class_set_template_from_resource(widget_class,
             "/im/srain/Srain/message_list.glade");
+#endif
 
     gtk_widget_class_bind_template_child(widget_class, SuiMessageList, scrolled_window);
     gtk_widget_class_bind_template_child(widget_class, SuiMessageList, viewport);

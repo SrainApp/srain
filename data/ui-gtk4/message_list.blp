@@ -1,0 +1,84 @@
+using Gtk 4.0;
+
+template $SuiMessageList : Gtk.Box {
+  orientation: vertical;
+
+  Gtk.Overlay {
+    Gtk.ScrolledWindow scrolled_window {
+      hscrollbar-policy: never;
+
+      Gtk.Viewport viewport {
+        Gtk.ListBox list_box {
+          selection-mode: multiple;
+        }
+      }
+
+      styles [
+        "sui-message-list",
+      ]
+    }
+
+    [overlay]
+    Gtk.Revealer tool_bar_revealer {
+      halign: end;
+      valign: end;
+      transition-type: slide_left;
+      styles [
+        "sui-message-tool-bar",
+      ]
+
+      Gtk.Box {
+        halign: end;
+        valign: end;
+        orientation: vertical;
+        styles [
+          "sui-message-tool-bar",
+        ]
+
+        Gtk.Button clear_selection_button {
+          tooltip-text: _("Clear selection");
+          styles [
+            "circular",
+          ]
+
+          child: Gtk.Image {
+            icon-name: "edit-clear-all-symbolic";
+          };
+        }
+
+        Gtk.Button go_prev_mention_button {
+          tooltip-text: _("Previous mention");
+          styles [
+            "circular",
+          ]
+
+          child: Gtk.Image {
+            icon-name: "go-up-symbolic";
+          };
+        }
+
+        Gtk.Button go_next_mention_button {
+          tooltip-text: _("Next mention");
+          styles [
+            "circular",
+          ]
+
+          child: Gtk.Image {
+            icon-name: "go-down-symbolic";
+          };
+        }
+
+        Gtk.Button go_bottom_button {
+          tooltip-text: _("Scroll to bottom");
+          styles [
+            "circular",
+          ]
+
+          child: Gtk.Image {
+            icon-name: "go-bottom-symbolic";
+          };
+        }
+      }
+    }
+  }
+}

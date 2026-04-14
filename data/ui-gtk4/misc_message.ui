@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <template class="SuiMiscMessage" parent="SuiMessage">
+    <property name="halign">center</property>
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="GtkBox" id="message_box">
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkBox" id="content_box">
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkLabel" id="message_label">
+                <property name="label">&lt;span color="red"&gt;Unable to display message content &lt;sup&gt;ERROR&lt;/sup&gt;&lt;/span&gt;</property>
+                <property name="use-markup">True</property>
+                <property name="wrap">True</property>
+                <property name="wrap-mode">word-char</property>
+                <property name="selectable">True</property>
+                <property name="max-width-chars">80</property>
+                <style>
+                  <class name="sui-message-label"/>
+                </style>
+              </object>
+            </child>
+            <style>
+              <class name="sui-message-content"/>
+            </style>
+          </object>
+        </child>
+        <style>
+          <class name="sui-message-frame"/>
+        </style>
+      </object>
+    </child>
+    <style>
+      <class name="sui-misc-message"/>
+      <class name="sui-message"/>
+    </style>
+  </template>
+</interface>

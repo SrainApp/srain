@@ -41,6 +41,15 @@
 #include "sui_common.h"
 #include "sui_event_hdr.h"
 #include "sui_app.h"
+#include "sui_buffer.h"
+#include "sui_connect_panel.h"
+#include "sui_join_panel.h"
+#include "sui_misc_message.h"
+#include "sui_recv_message.h"
+#include "sui_send_message.h"
+#include "sui_side_bar_item.h"
+#include "sui_user_list.h"
+#include "sui_url_previewer.h"
 #include "sui_window.h"
 #include "sui_prefs_dialog.h"
 #include "gtk_compat.h"
@@ -87,6 +96,9 @@ static void sui_application_set_events(SuiApplication *self,
 
 static void show_about_dialog(SuiApplication *self);
 static GMenuModel *new_app_menu_model(bool tray_menu);
+static bool should_run_gtk4_smoke_checks(void);
+static void run_gtk4_smoke_checks(SuiApplication *self);
+static void smoke_check_image_window(void);
 
 static void on_startup(SuiApplication *self);
 static void on_activate(SuiApplication *self);
@@ -578,11 +590,24 @@ static void on_startup(SuiApplication *self){
     if (!RET_IS_OK(ret)){
         sui_message_box(_("Error"), RET_MSG(ret));
     }
+
+#if GTK_MAJOR_VERSION >= 4
+    if (should_run_gtk4_smoke_checks()){
+        run_gtk4_smoke_checks(self);
+        g_application_quit(G_APPLICATION(self));
+    }
+#endif
 }
 
 static void on_activate(SuiApplication *self){
     SrnRet ret;
     GList *wins;
+
+#if GTK_MAJOR_VERSION >= 4
+    if (should_run_gtk4_smoke_checks()){
+        return;
+    }
+#endif
 
     /* Always show window when application activated */
     wins = gtk_application_get_windows(GTK_APPLICATION(self));
@@ -642,6 +667,101 @@ static int on_command_line(SuiApplication *self,
     }
 
     return 0;
+}
+
+static bool should_run_gtk4_smoke_checks(void){
+    return g_strcmp0(g_getenv("SRAIN_GTK4_SMOKE"), "1") == 0;
+}
+
+static void run_gtk4_smoke_checks(SuiApplication *self){
+    SuiWindowConfig *window_cfg;
+    SuiBufferConfig *buffer_cfg;
+    GtkWidget *widget;
+    SuiWindow *window;
+
+    window_cfg = sui_window_config_new();
+    window_cfg->csd = TRUE;
+    window_cfg->server_visibility = TRUE;
+    window = sui_window_new(self, NULL, window_cfg);
+    g_return_if_fail(window);
+    g_object_ref_sink(window);
+
+    buffer_cfg = sui_buffer_config_new();
+    buffer_cfg->show_topic = TRUE;
+    widget = GTK_WIDGET(sui_buffer_new(NULL, NULL, buffer_cfg));
+    g_return_if_fail(widget);
+    g_object_ref_sink(widget);
+    g_object_unref(widget);
+    sui_buffer_config_free(buffer_cfg);
+
+    widget = GTK_WIDGET(sui_connect_panel_new());
+    g_return_if_fail(widget);
+    g_object_ref_sink(widget);
+    g_object_unref(widget);
+
+    widget = GTK_WIDGET(sui_join_panel_new());
+    g_return_if_fail(widget);
+    g_object_ref_sink(widget);
+    g_object_unref(widget);
+
+    widget = GTK_WIDGET(sui_user_list_new());
+    g_return_if_fail(widget);
+    g_object_ref_sink(widget);
+    g_object_unref(widget);
+
+    widget = GTK_WIDGET(sui_side_bar_item_new("buffer", "server",
+            "network-server-symbolic"));
+    g_return_if_fail(widget);
+    g_object_ref_sink(widget);
+    g_object_unref(widget);
+
+    widget = GTK_WIDGET(sui_send_message_new(NULL));
+    g_return_if_fail(widget);
+    g_object_ref_sink(widget);
+    g_object_unref(widget);
+
+    widget = GTK_WIDGET(sui_recv_message_new(NULL));
+    g_return_if_fail(widget);
+    g_object_ref_sink(widget);
+    g_object_unref(widget);
+
+    widget = GTK_WIDGET(sui_misc_message_new(NULL, SUI_MISC_MESSAGE_STYLE_NORMAL));
+    g_return_if_fail(widget);
+    g_object_ref_sink(widget);
+    g_object_unref(widget);
+
+    widget = GTK_WIDGET(sui_url_previewer_new("https://example.com"));
+    g_return_if_fail(widget);
+    g_object_ref_sink(widget);
+    g_object_unref(widget);
+
+    widget = GTK_WIDGET(sui_prefs_dialog_new(self, window));
+    g_return_if_fail(widget);
+    g_object_ref_sink(widget);
+    gtk_window_destroy(GTK_WINDOW(widget));
+    g_object_unref(widget);
+
+    smoke_check_image_window();
+
+    gtk_window_destroy(GTK_WINDOW(window));
+    g_object_unref(window);
+    sui_window_config_free(window_cfg);
+}
+
+static void smoke_check_image_window(void){
+    GtkBuilder *builder;
+    GtkWidget *widget;
+
+    builder = gtk_builder_new_from_resource("/im/srain/Srain/image_window.ui");
+    g_return_if_fail(builder);
+
+    widget = GTK_WIDGET(gtk_builder_get_object(builder, "image_window"));
+    g_return_if_fail(widget);
+    g_object_ref_sink(widget);
+    gtk_window_destroy(GTK_WINDOW(widget));
+    g_object_unref(widget);
+
+    g_object_unref(builder);
 }
 
 static void on_action_about(GSimpleAction *action, GVariant  *parameter,

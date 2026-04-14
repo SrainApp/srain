@@ -57,6 +57,10 @@ static void copy_menu_item_on_activate(GtkWidget* widget, gpointer user_data);
 static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_data);
 static void url_previewer_on_notify_content_type(GObject *object,
         GParamSpec *pspec, gpointer data);
+#if GTK_MAJOR_VERSION >= 4
+static void message_label_on_click(GtkGestureClick *gesture, int n_press,
+        double x, double y, gpointer user_data);
+#endif
 
 /*****************************************************************************
  * GObject functions
@@ -309,6 +313,20 @@ void sui_message_label_on_popup(GtkLabel *label, GtkWidget *menu, gpointer user_
 #endif
 }
 
+void sui_message_label_connect_popup(GtkLabel *label, gpointer user_data){
+#if GTK_MAJOR_VERSION >= 4
+    GtkGesture *click;
+
+    click = gtk_gesture_click_new();
+    gtk_widget_add_controller(GTK_WIDGET(label), GTK_EVENT_CONTROLLER(click));
+    g_signal_connect(click, "pressed",
+            G_CALLBACK(message_label_on_click), user_data);
+#else
+    g_signal_connect(label, "populate-popup",
+            G_CALLBACK(sui_message_label_on_popup), user_data);
+#endif
+}
+
 const char* sui_message_get_time(SuiMessage *self){
     SrnMessage *ctx;
 
@@ -496,6 +514,29 @@ static void copy_menu_item_on_activate(GtkWidget* widget, gpointer user_data){
 #endif
     g_free(copied);
 }
+
+#if GTK_MAJOR_VERSION >= 4
+static void message_label_on_click(GtkGestureClick *gesture, int n_press,
+        double x, double y, gpointer user_data){
+    GtkLabel *label;
+    GtkWidget *menu;
+    GtkWidget *widget;
+    guint button;
+
+    (void)n_press;
+
+    button = gtk_gesture_single_get_current_button(GTK_GESTURE_SINGLE(gesture));
+    if (button != GDK_BUTTON_SECONDARY){
+        return;
+    }
+
+    widget = gtk_event_controller_get_widget(GTK_EVENT_CONTROLLER(gesture));
+    label = GTK_LABEL(widget);
+    menu = srn_gtk_menu_new();
+    sui_message_label_on_popup(label, menu, user_data);
+    sui_common_popup_panel_at_point(widget, menu, x, y);
+}
+#endif
 
 static void froward_submenu_item_on_activate(GtkWidget* widget, gpointer user_data){
     const char *target;

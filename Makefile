@@ -51,6 +51,14 @@ blueprints:
 blueprints-check:
 	./script/check-gtk4-blueprints.sh
 
+.PHONY: smoke-gtk4
+smoke-gtk4: install
+	unset XDG_CONFIG_HOME XDG_DATA_HOME XDG_CACHE_HOME; \
+	export HOME=$(FAKE_HOME); \
+	export XDG_DATA_DIRS=$(FAKE_XDG_DATA_DIRS); \
+	export SRAIN_GTK4_SMOKE=1; \
+	"$(PREFIX)/bin/srain"
+
 .PHONY: clean
 clean:
 	$(RM) -rf $(BUILDDIR)
