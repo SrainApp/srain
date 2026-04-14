@@ -26,8 +26,9 @@ What is in place now
 - ``script/update-gtk4-blueprints.sh`` regenerates checked-in ``data/ui-gtk4/*.ui``
   files from ``.blp`` sources. ``make blueprints`` wraps this workflow.
 - ``script/check-gtk4-blueprints.sh`` verifies that checked-in GTK4 ``.ui``
-  files still match the generated Blueprint output. ``make blueprints-check``
-  wraps this verification.
+  files still match the generated Blueprint output, and that the remaining
+  hand-maintained GTK4 ``.ui`` files stay limited to an explicit allowlist.
+  ``make blueprints-check`` wraps this verification.
 - ``make smoke-gtk4`` installs the GTK4 build and runs a startup smoke pass
   with ``SRAIN_GTK4_SMOKE=1`` in a temporary HOME/XDG environment.
 - ``src/inc/gtk_compat.h`` centralizes low-risk CSS and icon helpers that work

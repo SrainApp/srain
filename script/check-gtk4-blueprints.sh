@@ -7,6 +7,10 @@ REPO_ROOT=$(CDPATH= cd -- "$SCRIPT_DIR/.." && pwd)
 COMPILER=${BLUEPRINT_COMPILER:-blueprint-compiler}
 TMPDIR=$(mktemp -d)
 STATUS=0
+EXPECTED_MANUAL_UIS="misc_message
+prefs_dialog
+recv_message
+send_message"
 
 cleanup() {
     rm -rf "$TMPDIR"
@@ -31,5 +35,18 @@ for blueprint in "$REPO_ROOT"/data/ui-gtk4/*.blp; do
         STATUS=1
     fi
 done
+
+cd "$REPO_ROOT/data/ui-gtk4"
+ls *.ui | sed 's/\.ui$//g' | sort > "$TMPDIR/all-ui.txt"
+ls *.blp | sed 's/\.blp$//g' | sort > "$TMPDIR/all-blp.txt"
+cd "$REPO_ROOT"
+
+actual_manual_uis=$(comm -23 "$TMPDIR/all-ui.txt" "$TMPDIR/all-blp.txt")
+
+if [ "$actual_manual_uis" != "$EXPECTED_MANUAL_UIS" ]; then
+    printf '%s\n' "Unexpected manual GTK4 UI files:" >&2
+    printf '%s\n' "$actual_manual_uis" >&2
+    STATUS=1
+fi
 
 exit "$STATUS"
