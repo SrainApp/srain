@@ -1670,8 +1670,10 @@ static void irc_event_numeric(SircSession *sirc, int event,
                     chat_user = srn_chat_add_and_get_user(chat, srv_user);
                     g_warn_if_fail(chat_user);
                     if (!chat_user) continue;
-                    srn_chat_user_set_is_joined(chat_user, TRUE);
+                    /* Prefix first, then show the user, so a newly joined
+                     * nick is inserted once with its final type. */
                     srn_chat_user_set_type(chat_user, type);
+                    srn_chat_user_set_is_joined(chat_user, TRUE);
                 }
                 g_free(dup_names);
                 break;

@@ -31,11 +31,21 @@ struct _SuiUserStat {
     int total;
 };
 
+/* Columns of the GtkListStore owned by SuiUserList. */
+enum {
+    SUI_USER_COLUMN_NAME = 0,
+    SUI_USER_COLUMN_ICON,
+    SUI_USER_COLUMN_USER,
+    SUI_USER_COLUMN_TYPE,
+    SUI_USER_N_COLUMNS
+};
+
 SuiUser *sui_user_new(void *ctx);
 SuiUser *sui_user_new_from_iter(GtkListStore *list_store, GtkTreeIter *iter);
 void sui_user_free(SuiUser *self);
 
 void sui_user_update(SuiUser *self, GtkStyleContext *style_context, GdkWindow *window);
+void sui_user_invalidate_icon_cache(void);
 int sui_user_compare(SuiUser *user1, SuiUser *user2);
 
 void sui_user_set_list(SuiUser *self, GtkListStore *list);
