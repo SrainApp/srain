@@ -52,14 +52,26 @@ struct _SuiUserList {
     GtkListStore *user_list_store;
     GtkTreeModel *user_tree_model_filter;   // FilterTreeModel of user_list_store
                                             // TODO: user search
+
+    /* Coalesced sort + statistics refresh. See sui_user_list_defer_refresh(). */
+    gboolean refresh_pending;
+    guint refresh_source;
 };
 
 struct _SuiUserListClass {
     GtkBoxClass parent_class;
 };
 
+/* Run after the current IRC read burst (G_PRIORITY_DEFAULT) and before
+ * GTK paints (G_PRIORITY_HIGH_IDLE). A bouncer's NAMES dump is then
+ * sorted once, and the unsorted intermediate state is never drawn.
+ * See https://github.com/SrainApp/srain/issues/420. */
+#define SUI_USER_LIST_REFRESH_PRIORITY (G_PRIORITY_DEFAULT + 10)
+
 static void user_tree_view_set_model(SuiUserList *self);
 static void stat_label_update_stat(SuiUserList *self);
+static void sui_user_list_defer_refresh(SuiUserList *self);
+static gboolean sui_user_list_refresh(gpointer user_data);
 static int user_list_store_sort_func(GtkTreeModel *model,
         GtkTreeIter *iter1, GtkTreeIter *iter2, gpointer user_data);
 
@@ -89,8 +101,29 @@ static void sui_user_list_init(SuiUserList *self){
             G_CALLBACK(on_style_updated), NULL);
 }
 
+static void sui_user_list_finalize(GObject *object){
+    SuiUserList *self;
+
+    self = SUI_USER_LIST(object);
+    if (self->refresh_source){
+        g_source_remove(self->refresh_source);
+        self->refresh_source = 0;
+    }
+    if (self->refresh_pending){
+        g_signal_handlers_unblock_by_func(self->user_list_store,
+                G_CALLBACK(user_list_store_on_row_changed), self);
+        self->refresh_pending = FALSE;
+    }
+
+    G_OBJECT_CLASS(sui_user_list_parent_class)->finalize(object);
+}
+
 static void sui_user_list_class_init(SuiUserListClass *class){
+    GObjectClass *object_class;
     GtkWidgetClass *widget_class;
+
+    object_class = G_OBJECT_CLASS(class);
+    object_class->finalize = sui_user_list_finalize;
 
     widget_class = GTK_WIDGET_CLASS(class);
 
@@ -113,6 +146,10 @@ SuiUserList* sui_user_list_new(void){
 }
 
 void sui_user_list_add_user(SuiUserList *self, SuiUser *user){
+    /* Sorting must be off before the row is filled in. While a sort
+     * function is active, GtkListStore reorders the whole list on every
+     * gtk_list_store_set(). */
+    sui_user_list_defer_refresh(self);
     gtk_list_store_append(self->user_list_store, (GtkTreeIter *)user);
     sui_user_set_list(user, self->user_list_store);
     sui_user_set_stat(user, &self->user_stat);
@@ -121,8 +158,12 @@ void sui_user_list_add_user(SuiUserList *self, SuiUser *user){
 }
 
 void sui_user_list_rm_user(SuiUserList *self, SuiUser *user){
+    SrnChatUser *chat_user;
+
+    sui_user_list_defer_refresh(self);
+
     // FIXME: A hack for correcting user statistic
-    SrnChatUser *chat_user = sui_user_get_ctx(user);
+    chat_user = sui_user_get_ctx(user);
     chat_user->type = SRN_CHAT_USER_TYPE_CHIGUA;
 
     self->user_stat.total--;
@@ -133,6 +174,7 @@ void sui_user_list_rm_user(SuiUserList *self, SuiUser *user){
 }
 
 void sui_user_list_update_user(SuiUserList *self, SuiUser *user){
+    sui_user_list_defer_refresh(self);
     sui_user_update(user,
             gtk_widget_get_style_context(GTK_WIDGET(self)),
             gtk_widget_get_window(GTK_WIDGET(self)));
@@ -183,16 +225,17 @@ static void user_tree_view_set_model(SuiUserList *self){
     GtkTreeModel *filter;
     GtkTreeView *view;
 
-    /* 4 columns: user, icon, model, type */
-    self->user_list_store = gtk_list_store_new(4,
+    self->user_list_store = gtk_list_store_new(SUI_USER_N_COLUMNS,
             G_TYPE_STRING,
             CAIRO_GOBJECT_TYPE_SURFACE,
             G_TYPE_POINTER,
             G_TYPE_INT);
     gtk_tree_view_column_add_attribute(self->user_tree_view_column,
-            GTK_CELL_RENDERER(self->user_name_cell_renderer), "text", 0);
+            GTK_CELL_RENDERER(self->user_name_cell_renderer), "text",
+            SUI_USER_COLUMN_NAME);
     gtk_tree_view_column_add_attribute(self->user_tree_view_column,
-            GTK_CELL_RENDERER(self->user_icon_cell_renderer), "surface", 1);
+            GTK_CELL_RENDERER(self->user_icon_cell_renderer), "surface",
+            SUI_USER_COLUMN_ICON);
 
     store = self->user_list_store;
     view = self->user_tree_view;
@@ -228,19 +271,27 @@ static void stat_label_update_stat(SuiUserList *self){
 
 static int user_list_store_sort_func(GtkTreeModel *model,
         GtkTreeIter *iter1, GtkTreeIter *iter2, gpointer user_data){
-    int ret;
-    SuiUser *user1;
-    SuiUser *user2;
+    SrnChatUser *user1;
+    SrnChatUser *user2;
 
-    user1 = sui_user_new_from_iter(GTK_LIST_STORE(model), iter1);
-    user2 = sui_user_new_from_iter(GTK_LIST_STORE(model), iter2);
+    /* Read the chat user directly. Building a SuiUser per comparison
+     * allocates, and this function runs O(n log n) times per sort. */
+    gtk_tree_model_get(model, iter1, SUI_USER_COLUMN_USER, &user1, -1);
+    gtk_tree_model_get(model, iter2, SUI_USER_COLUMN_USER, &user2, -1);
 
-    ret = sui_user_compare(user1, user2);
-
-    sui_user_free(user1);
-    sui_user_free(user2);
-
-    return ret;
+    if (user1 == user2){
+        return 0;
+    }
+    if (!user1){
+        return -1;
+    }
+    if (!user2){
+        return 1;
+    }
+    if (user1->type != user2->type){
+        return user1->type - user2->type;
+    }
+    return g_ascii_strcasecmp(user1->srv_user->nick, user2->srv_user->nick);
 }
 
 static gboolean user_tree_view_on_popup(GtkWidget *widget,
@@ -289,9 +340,50 @@ static void user_list_store_on_row_changed(GtkTreeModel *tree_model,
     stat_label_update_stat(self);
 }
 
+static void sui_user_list_defer_refresh(SuiUserList *self){
+    if (!self->refresh_pending){
+        self->refresh_pending = TRUE;
+        /* row-changed rewrites the statistics label. Skip that until
+         * every nick in this turn has been applied. */
+        g_signal_handlers_block_by_func(self->user_list_store,
+                G_CALLBACK(user_list_store_on_row_changed), self);
+        gtk_tree_sortable_set_sort_column_id(
+                GTK_TREE_SORTABLE(self->user_list_store),
+                GTK_TREE_SORTABLE_UNSORTED_SORT_COLUMN_ID,
+                GTK_SORT_ASCENDING);
+    }
+    if (!self->refresh_source){
+        self->refresh_source = g_idle_add_full(SUI_USER_LIST_REFRESH_PRIORITY,
+                sui_user_list_refresh, self, NULL);
+    }
+}
+
+static gboolean sui_user_list_refresh(gpointer user_data){
+    SuiUserList *self;
+
+    self = SUI_USER_LIST(user_data);
+    self->refresh_source = 0;
+    if (!self->refresh_pending){
+        return G_SOURCE_REMOVE;
+    }
+
+    gtk_tree_sortable_set_sort_column_id(
+            GTK_TREE_SORTABLE(self->user_list_store),
+            GTK_TREE_SORTABLE_DEFAULT_SORT_COLUMN_ID,
+            GTK_SORT_ASCENDING);
+    g_signal_handlers_unblock_by_func(self->user_list_store,
+            G_CALLBACK(user_list_store_on_row_changed), self);
+    self->refresh_pending = FALSE;
+    stat_label_update_stat(self);
+
+    return G_SOURCE_REMOVE;
+}
+
 static void on_style_updated(SuiUserList *self, gpointer user_data) {
     GtkTreeModel *model;
     GtkTreeIter iter;
+
+    sui_user_invalidate_icon_cache();
 
     model = GTK_TREE_MODEL(self->user_list_store);
     if (!gtk_tree_model_get_iter_first(model, &iter)){

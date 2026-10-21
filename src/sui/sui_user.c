@@ -30,11 +30,6 @@
 
 #include "sui_user.h"
 
-#define COL_NAME    0
-#define COL_ICON    1
-#define COL_USER    2
-#define COL_TYPE    3
-
 /**
  * @brief SuiUser is a iterator of SuiUserList.
  */
@@ -50,6 +45,13 @@ struct _SuiUser {
 
 static cairo_surface_t* new_user_icon_from_type(SrnChatUserType type,
         GtkStyleContext *style_context, GdkWindow *window);
+static cairo_surface_t* cached_user_icon(SrnChatUserType type,
+        GtkStyleContext *style_context, GdkWindow *window);
+
+/* Icons only depend on user type and the window scale, so reuse them
+ * instead of asking the icon theme once per nick. */
+static cairo_surface_t *user_icon_cache[SRN_SERVER_USER_TYPE_MAX];
+static int user_icon_cache_scale;
 
 /*****************************************************************************
  * Expored functions
@@ -72,8 +74,8 @@ SuiUser *sui_user_new_from_iter(GtkListStore *list, GtkTreeIter *iter){
     self->list = list;
     self->iter = *iter; // Copy iter
     gtk_tree_model_get(GTK_TREE_MODEL(list), iter,
-            COL_USER, &self->ctx,
-            COL_TYPE, &self->type,
+            SUI_USER_COLUMN_USER, &self->ctx,
+            SUI_USER_COLUMN_TYPE, &self->type,
             -1);
 
     return self;
@@ -135,18 +137,39 @@ void sui_user_update(SuiUser *self, GtkStyleContext *style_context,
         }
     }
     self->type = self->ctx->type;
-    gtk_list_store_set(self->list, (GtkTreeIter *)self,
-            COL_NAME, self->ctx->srv_user->nick,
-            COL_USER, self->ctx,
-            COL_TYPE, self->ctx->type,
-            -1);
 
-    // Update icon only when GdkWindow available
+    /* One store update: while sorting is enabled, every gtk_list_store_set()
+     * reorders the model and notifies the tree view. */
     if (window) {
-        cairo_surface_t *icon = new_user_icon_from_type(self->ctx->type,
-                style_context, window);
-        gtk_list_store_set(self->list, (GtkTreeIter *)self, COL_ICON, icon, -1);
-        cairo_surface_destroy(icon);
+        cairo_surface_t *icon;
+
+        icon = cached_user_icon(self->ctx->type, style_context, window);
+        if (icon) {
+            gtk_list_store_set(self->list, (GtkTreeIter *)self,
+                    SUI_USER_COLUMN_NAME, self->ctx->srv_user->nick,
+                    SUI_USER_COLUMN_USER, self->ctx,
+                    SUI_USER_COLUMN_TYPE, self->ctx->type,
+                    SUI_USER_COLUMN_ICON, icon,
+                    -1);
+            cairo_surface_destroy(icon);
+            return;
+        }
+    }
+    gtk_list_store_set(self->list, (GtkTreeIter *)self,
+            SUI_USER_COLUMN_NAME, self->ctx->srv_user->nick,
+            SUI_USER_COLUMN_USER, self->ctx,
+            SUI_USER_COLUMN_TYPE, self->ctx->type,
+            -1);
+}
+
+void sui_user_invalidate_icon_cache(void){
+    int i;
+
+    for (i = 0; i < SRN_SERVER_USER_TYPE_MAX; i++){
+        if (user_icon_cache[i]){
+            cairo_surface_destroy(user_icon_cache[i]);
+            user_icon_cache[i] = NULL;
+        }
     }
 }
 
@@ -173,6 +196,31 @@ const char* sui_user_get_nickname(SuiUser *self){
 /*****************************************************************************
  * Static functions
  *****************************************************************************/
+
+static cairo_surface_t* cached_user_icon(SrnChatUserType type,
+        GtkStyleContext *style_context, GdkWindow *window){
+    int scale;
+
+    if (type < 0 || type >= SRN_SERVER_USER_TYPE_MAX){
+        return NULL;
+    }
+
+    scale = gdk_window_get_scale_factor(window);
+    if (scale != user_icon_cache_scale){
+        sui_user_invalidate_icon_cache();
+        user_icon_cache_scale = scale;
+    }
+
+    if (!user_icon_cache[type]){
+        user_icon_cache[type] = new_user_icon_from_type(type,
+                style_context, window);
+    }
+    if (!user_icon_cache[type]){
+        return NULL;
+    }
+
+    return cairo_surface_reference(user_icon_cache[type]);
+}
 
 static cairo_surface_t* new_user_icon_from_type(SrnChatUserType type,
         GtkStyleContext *style_context, GdkWindow *window){
